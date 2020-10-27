@@ -1,0 +1,344 @@
+.benchmark-table {
+    width: 100%;
+    border: solid 1px var(--N200);
+}
+
+.benchmark__description {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.benchmark-table__row {
+    font-weight: 400;
+    background-color: var(--N000);
+}
+
+.benchmark-table__cell {
+    padding: 12px;
+    width: 20%;
+    font-weight: 400;
+    border: solid 1px var(--N200);
+}
+
+.benchmark-table__cell--elite {
+    background-color: #c4b6e9;
+    font-weight: 600;
+}
+
+.benchmark-table__cell--high {
+    background-color: var(--G200);
+    font-weight: 600;
+}
+
+.benchmark-table__cell--medium {
+    background-color: var(--Y200);
+    font-weight: 600;
+}
+
+.benchmark-table__cell--low {
+    background-color: var(--R200);
+    font-weight: 600;
+}
+
+.pro-tip {
+    padding: 16px;
+    border-radius: 4px;
+    border: solid 1px var(--Y300);
+    background-color: var(--Y100);
+}
+
+.pro-tip__title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.pro-tip__subtitle {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: #151515;
+    padding-left: 30px;
+}
+
+.main-graph__title {
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.deployment-metrics__inputs {
+    display: flex;
+    padding: 16px 24px;
+}
+
+.deployment-metrics__graphs {
+    display: flex;
+    padding: 16px 24px;
+    width: 100%;
+    height: 326px;
+    background-color: var(--N000);
+    border-bottom: solid 1px var(--N200);
+}
+
+.deployment-metrics__frequency-graph {
+    flex: 2 1 0;
+}
+
+.deployment-metrics__lead-graph {
+    flex: 1 1 0;
+}
+
+.deployment-metrics__recovery-graph {
+    flex: 1 1 0;
+}
+
+.deployment-metrics__body {
+    background-color: var(--N000);
+    min-height: calc(100vh - 293px);
+    padding: 16px 24px;
+    padding-bottom: 0px;
+}
+
+.graph-legend__primary-label {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 0px;
+}
+
+.graph-legend__secondary-label {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 0px;
+}
+
+.graph-legend__primary-value {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.graph-legend__secondary-value {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.main-graph {
+    border-radius: 8px;
+    border: solid 1px var(--N200);
+}
+
+.graph-tooltip {
+    background-color: var(--N900);
+    color: var(--N000);
+    border-radius: 4px;
+    padding: 12px;
+    min-width: 180px;
+    font-weight: 600;
+}
+
+.graph-tooltip__icon {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+.deployment-table__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.deployment-table__title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    color: var(--N700);
+}
+
+.deployment-table {
+    width: 100%;
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+}
+
+.deployment-table__row {
+    border-bottom: solid 1px var(--N200);
+}
+
+.deployment-table__row:last-child {
+    border: none;
+}
+
+.deployment-table__header-cell {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    padding: 12px 10px;
+    white-space: nowrap;
+    color: var(--N500);
+}
+
+.deployment-table__cell-deployed {
+    width: 25%;
+    white-space: nowrap;
+    padding: 12px 10px;
+}
+
+.deployment-table__cell-cycle {
+    padding: 12px 10px;
+    width: 10%;
+}
+
+.deployment-table__cell-lead {
+    padding: 12px 10px;
+    width: 10%;
+}
+
+.deployment-table__cell-recovery {
+    padding: 12px 10px;
+    width: 10%;
+}
+
+.deployment-table__cell-size {
+    padding: 12px 10px;
+    width: 12%;
+}
+
+.deployment-table__cell-image {
+    padding: 12px 10px;
+    width: 10%;
+}
+
+.sort-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.main-graph__legend {
+    padding: 20px;
+}
+
+.main-graph__legend-item {
+    width: 170px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.main-graph__legend-heading {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 0px;
+}
+
+.main-graph__timespan {
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N200);
+}
+
+.graph-legend {
+    border-left: solid 1px var(--N200);
+    padding-left: 16px;
+    margin-bottom: 16px;
+}
+
+.category__label {
+    border-radius: 4px;
+    text-transform: uppercase;
+    padding: 1px 4px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-left: 5px;
+}
+
+.category__label--low {
+    background-color: var(--R100);
+    border: solid 1px var(--R300);
+    color: var(--R500);
+}
+
+.category__label--medium {
+    background-color: var(--Y100);
+    border: solid 1px #ffbc76;
+    color: #ff8300;
+}
+
+.category__label--high {
+    background-color: var(--G100);
+    border: solid 1px var(--G300);
+    color: var(--G500);
+}
+
+.category__label--elite {
+    background-color: #E5D1FA;
+    border: solid 1px #c69cf4;
+    color: #8930e8;
+}
+
+.modal__title--benchmark {
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+
+.modal__header--benchmark {
+    margin-bottom: 5px;
+}
+
+.deployment-table__empty {
+    width: 100%;
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px var(--N200);
+    border-top: none;
+}
+
+.deployment-table__empty-text {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--N400);
+}

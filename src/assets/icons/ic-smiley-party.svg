@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic-smiley-party</title>
+    <defs>
+        <circle id="path-1" cx="14" cy="14" r="14"></circle>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#FEDB29" offset="0%"></stop>
+            <stop stop-color="#FEDB29" offset="24.3243243%"></stop>
+            <stop stop-color="#F9C631" offset="86.0067427%"></stop>
+            <stop stop-color="#F9C631" offset="100%"></stop>
+        </linearGradient>
+        <path d="M5.99059906,6 C8.99774596,6 11.4941469,3.83842745 11.9763591,1.00140583 C12.0317105,0.675754333 12.0758222,0 11.0511383,0 C7.04076423,0 5.06891325,0 0.933529049,0 C-0.078416485,0 -0.00450248112,0.946386276 0.00465854999,1.00034328 C0.486427941,3.83788772 2.98307674,6 5.99059906,6 Z" id="path-4"></path>
+        <path d="M6,0 L11.7564697,12.5922774 C11.8711992,12.8434158 11.7606928,13.1400382 11.5095833,13.2548311 C11.483691,13.2666676 11.4568349,13.2762707 11.429308,13.2835358 C9.61953864,13.7611786 7.80976932,14 6,14 C4.19023982,14 2.38047963,13.761181 0.570719448,13.283543 C0.303707349,13.2130883 0.144381445,12.9395084 0.214851134,12.6725003 C0.222117437,12.6449684 0.231722258,12.6181076 0.243560851,12.5922106 L6,0 L6,0 Z" id="path-6"></path>
+    </defs>
+    <g id="Deployment-Metrics" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic-smiley-party">
+            <polyline id="Path-4" stroke="#3CBDF4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(6.000000, 16.000000) scale(1, -1) translate(-6.000000, -16.000000) " points="4 18 6 18 6 16 8 16 8 14"></polyline>
+            <g id="Group" transform="translate(6.000000, 10.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#FBB823" xlink:href="#path-1"></use>
+                <circle id="Oval" fill="url(#linearGradient-3)" mask="url(#mask-2)" cx="12" cy="12" r="14"></circle>
+            </g>
+            <g id="Group-35" transform="translate(11.000000, 18.000000)">
+                <g id="Group-34">
+                    <circle id="Oval" fill="#FFFFFF" cx="4" cy="4" r="4"></circle>
+                    <circle id="Oval" fill="#50433E" cx="4" cy="4" r="2.75"></circle>
+                    <circle id="Oval" fill="#FFFFFF" cx="5.05" cy="2.75" r="1.25"></circle>
+                </g>
+                <g id="Group-34" transform="translate(10.000000, 0.000000)">
+                    <circle id="Oval" fill="#FFFFFF" cx="4" cy="4" r="4"></circle>
+                    <circle id="Oval" fill="#50433E" cx="4" cy="4" r="2.75"></circle>
+                    <circle id="Oval" fill="#FFFFFF" cx="5.05" cy="2.75" r="1.25"></circle>
+                </g>
+            </g>
+            <g id="Oval-2" transform="translate(14.000000, 27.000000)">
+                <mask id="mask-5" fill="white">
+                    <use xlink:href="#path-4"></use>
+                </mask>
+                <use id="Mask" fill="#50433E" xlink:href="#path-4"></use>
+                <rect id="Rectangle" fill="#FFFFFF" mask="url(#mask-5)" x="2" y="-1" width="8" height="2" rx="1"></rect>
+                <circle id="Oval" fill="#F05B25" mask="url(#mask-5)" cx="6" cy="8" r="4"></circle>
+            </g>
+            <g id="Group-36" transform="translate(15.000000, 7.000000) rotate(-19.000000) translate(-15.000000, -7.000000) translate(9.000000, 0.000000)">
+                <mask id="mask-7" fill="white">
+                    <use xlink:href="#path-6"></use>
+                </mask>
+                <use id="Mask" fill="#3CBDF4" xlink:href="#path-6"></use>
+                <path d="M13.3078149,12.4738335 L14.0570281,14.3282012 L-0.777913621,20.3219067 L-1.52712681,18.467539 L13.3078149,12.4738335 Z M13.3630989,9.31327701 L14.1123121,11.1676447 L-0.722629578,17.1613502 L-1.47184276,15.3069825 L13.3630989,9.31327701 Z M13.418383,6.15272049 L14.1675961,8.0070882 L-0.667345534,14.0007937 L-1.41655872,12.146426 L13.418383,6.15272049 Z M13.473667,2.99216397 L14.2228802,4.84653167 L-0.61206149,10.8402372 L-1.36127468,8.98586946 L13.473667,2.99216397 Z M13.528951,-0.168392556 L14.2781642,1.68597515 L-0.556777446,7.67968065 L-1.30599063,5.82531294 L13.528951,-0.168392556 Z M13.5842351,-3.32894908 L14.3334483,-1.47458137 L-0.501493402,4.51912413 L-1.25070659,2.66475642 L13.5842351,-3.32894908 Z M13.6395191,-6.4895056 L14.3887323,-4.63513789 L-0.446209359,1.35856761 L-1.19542255,-0.495800104 L13.6395191,-6.4895056 Z" id="Combined-Shape" fill="#2498CA" mask="url(#mask-7)"></path>
+            </g>
+            <circle id="Oval" fill="#3CBDF4" cx="29.5" cy="8.5" r="1.5"></circle>
+            <circle id="Oval" fill="#F05B25" cx="29" cy="35" r="1"></circle>
+            <circle id="Oval" fill="#F05B25" cx="4" cy="22" r="1"></circle>
+            <polyline id="Path-4" stroke="#3CBDF4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="32 23 34 23 34 21 36 21 36 19"></polyline>
+        </g>
+    </g>
+</svg>

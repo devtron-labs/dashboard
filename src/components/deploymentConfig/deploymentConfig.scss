@@ -1,0 +1,44 @@
+.config-json {
+    padding: 10px;
+    width: 100%;
+}
+
+#deployment-config .tab-content {
+    width: 100%;
+}
+
+.json-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px;
+}
+
+.chart-version-warning {
+    background-color: #ffebeb;
+    color: var(--R500);
+    margin-bottom: -1px;
+}
+
+.white-card__deployment-config {
+    padding: 16px;
+    margin-bottom: 16px;
+    .select-button {
+        padding-left: 8px;
+        height: 40px;
+    }
+}
+
+#opt-metrics {
+    margin-bottom: 8px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.form__row--code-editor-container{
+    height: 500px;
+    border: 1px solid var(--N200);
+    display: grid;
+    grid-template-rows: 40px 1fr;
+    border-radius: 4px;
+    overflow: hidden;
+}

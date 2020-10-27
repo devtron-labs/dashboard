@@ -1,0 +1,51 @@
+/* OVerride Date picker */
+
+.DayPicker__horizontal {
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .05), 0 0 0 1px rgba(0, 0, 0, .07);
+}
+
+.DateRangePickerInput__withBorder {
+    border: solid 1px var(--N200);
+}
+
+.DateRangePickerInput {
+    height: 40px;
+    border-radius: 4px;
+}
+
+.DateInput__small,
+.DateInput_input__focused,
+.DateInput_input {
+    height: 100%;
+}
+
+.DateInput_input {
+    font-weight: 400
+}
+
+.DateInput_input__focused {
+    border-bottom: solid 2px var(--B500);
+}
+
+.DateInput__small:first-child {
+    height: 100%;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.DateInput__small:first-child .DateInput_input {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.DateInput__small:last-child {
+    height: 100%;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.DateInput__small:last-child .DateInput_input {
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+}

@@ -1,0 +1,61 @@
+.white-card__docker-config {
+    padding: 24px 24px 12px 24px;
+    .form-row {
+        margin-bottom: 24px;
+    }
+    .form-row__key-value {
+        display: grid;
+        grid-template-columns: 50% 1fr;
+        grid-column-gap: 16px;
+    }
+    .form-row__add-parameters {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .add-parameter {
+            .fa.fa-plus {
+                margin-right: 4px;
+            }
+            color: var(--B500);
+            text-align: right;
+        }
+    }
+    .form-row__docker {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        grid-column-gap: 16px;
+        .popup-button {
+            height: 40px;
+        }
+        .select-popup {
+            width: 240px;
+        }
+        .form__field {
+            margin-bottom: 16px;
+        }
+        .form__error {
+            position: unset;
+            display: flex;
+            align-items: center;
+            margin-top: 4px;
+            &.form__error--info {
+                color: #6b778c;
+                &:before {
+                    content: '';
+                    background: url('../../assets/icons/ic-info-warn.svg');
+                    height: 14px;
+                    width: 14px;
+                    display: inline-block;
+                    background-size: contain;
+                    margin-right: 4px;
+                }
+            }
+        }
+    }
+    .popup-button {
+        .select-button {
+            height: 40px;
+            padding-left: 10px;
+        }
+    }
+}

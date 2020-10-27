@@ -1,0 +1,486 @@
+.global-configuration {
+    display: grid;
+    grid-template-rows: 80px 1fr;
+    grid-template-columns: 240px 1fr;
+    height: 100vh;
+    .page-header {
+        grid-column: 1 / -1;
+    }
+    .global-configuration__navigation {
+        padding: 16px 24px 0 24px;
+        border-right: solid 1px #d6dbdf;
+        background: white;
+        a {
+            font-size: 13px;
+            line-height: 40px;
+            color: var(--N700);
+            width: 100%;
+            border-radius: 4px;
+            padding: 0 8px;
+        }
+        a {
+            text-decoration: none;
+            &:hover {
+                text-decoration: none;
+            }
+            &.active-route {
+                color: var(--B500);
+                font-weight: 600;
+                background: #f0f7ff;
+            }
+        }
+    }
+    .global-configuration__component-wrapper {
+        padding: 0;
+        overflow-y: auto;
+        position: relative;
+        max-height: 100%;
+    }
+    .form__buttons {
+        button.cta {
+            cursor: pointer;
+            margin-left: 8px;
+        }
+    }
+    .form__input.popup-body {
+        max-height: 250px;
+        height: min-content;
+        &:hover {
+            border: 1px solid transparent;
+        }
+    }
+    .protected-input-container {
+        padding: 0;
+        overflow: hidden;
+        border-radius: 4px;
+        border: solid 1px #d6dbdf;
+        width: 100%;
+        height: 40px;
+        input {
+            height: 100%;
+            border: none;
+            outline: none;
+            width: calc( 100% - 34px);
+            padding: 0 10px;
+            background: transparent;
+        }
+        svg {
+            margin-right: 10px;
+        }
+    }
+    .form__error {
+        position: unset;
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+        &:before {
+            content: '';
+            background: url('../../assets/icons/misc/errorInfo.svg');
+            height: 14px;
+            width: 14px;
+            display: inline-block;
+            background-size: contain;
+            margin-right: 4px;
+        }
+    }
+    textarea {
+        border-radius: 4px;
+        border: solid 1px #d6dbdf;
+    }
+}
+
+.page-enter {
+    opacity: 0;
+}
+
+.page-enter-active {
+    opacity: 1;
+    transition: opacity 300ms linear 150ms;
+}
+
+.page-exit {
+    opacity: 1;
+}
+
+.page-exit-active {
+    opacity: 0;
+    transition: opacity 300ms linear 150ms;
+}
+
+.git-page,
+.docker-page,
+.cluster-page,
+.project-list,
+.add-notification-page {
+    margin: 0 auto;
+    max-width: 1012px;
+    padding: 24px;
+}
+
+.auth-page {
+    height: 100%;
+}
+
+.list {
+    height: 64px;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    align-items: center;
+    background: white;
+    grid-column-gap: 8px;
+    cursor: pointer;
+    .toggle__switch,
+    .tooltip-button {
+        width: 32px;
+        margin-left: auto;
+        margin-bottom: 0;
+    }
+    .list__title {
+        font-size: 14px;
+        color: var(--N900);
+    }
+    .list__subtitle {
+        color: var(--N600);
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .tag {
+        height: 20px;
+        border-radius: 2px;
+        border: solid 1px #b5d3f2;
+        background-blend-mode: multiply;
+        background-image: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
+        color: var(--B500);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 0 6px;
+        margin-left: 8px;
+        line-height: 23px;
+    }
+    .list__logo.git-logo {
+        width: 24px;
+        height: 24px;
+        background: url('../../assets/icons/git/git.svg');
+        &.github {
+            background: url('../../assets/icons/git/github.svg')
+        }
+        &.gitlab {
+            background: url('../../assets/icons/git/gitlab.svg')
+        }
+        &.bitbucket {
+            background: url('../../assets/icons/git/bitbucket.svg')
+        }
+        &.docker {
+            background: url('../../assets/icons/git/docker.svg')
+        }
+    }
+}
+
+.list__add-item {
+    color: var(--B500);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.cluster-list {
+    border: 1px solid #d6dbdf;
+    overflow: hidden;
+    margin-bottom: 16px;
+    background: white;
+    border-radius: 8px;
+    &>.list {
+        border: unset;
+        margin-bottom: unset;
+        grid-template-columns: 1fr 24px;
+        align-items: center;
+    }
+    &.cluster-list--create {
+        &>.list {
+            grid-template-columns: 24px 1fr 24px;
+        }
+        .list__title {
+            color: var(--B500);
+            font-weight: 600;
+        }
+    }
+    .cluster-environment {
+        &.cluster-environment--update {
+            .fa {
+                color: var(--B500);
+                font-size: 18px;
+            }
+        }
+    }
+    .environments-container {
+        padding: 0 24px 24px 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-row-gap: 16px;
+        grid-column-gap: 16px;
+        .list {
+            border-radius: 4px;
+            border: 1px solid #d6dbdf;
+        }
+        .cluster-environment--create {
+            border: 1px #d6dbdf dashed;
+        }
+    }
+}
+
+.cluster-list--create {
+    border-style: dashed;
+}
+
+.collapsed-list {
+    &.collapsed-list--git,
+    &.collapsed-list--docker {
+        border: 1px dashed #d6dbdf;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+    }
+    &.collapsed-list--create {
+        .add-icon {
+            background: url('../../assets/icons/ic-add.svg');
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+        }
+        .list__title {
+            color: var(--B500);
+            font-weight: 600;
+        }
+    }
+}
+
+.form__row--two-third {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 16px;
+}
+
+.form__row--auth-type {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid #d6dbdf;
+    height: 48px;
+    border-radius: 4px;
+    align-items: center;
+    .flex {
+        padding-left: 20px;
+        height: 100%;
+        &:not(:first-child) {
+            border-left: 1px solid #d6dbdf;
+        }
+        input[type=radio] {
+            margin: 0 8px 0 0;
+        }
+    }
+}
+
+.git-form,
+.docker-form {
+    padding: 0 24px;
+}
+
+.git-form {
+    .form__row--auth-type {
+        label {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.docker-form {
+    .select-button {
+        height: 100%;
+        width: 100%;
+        border: unset;
+    }
+    .form__buttons {
+        align-items: center;
+        .docker-default {
+            margin-right: auto;
+            color: var(--N700);
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 18px;
+            input[type="checkbox"] {
+                height: 16px;
+                width: 16px;
+                border-radius: 3px;
+                border: 1px solid var(--N200);
+                margin: 0 12px 0 0;
+            }
+        }
+    }
+}
+
+.select-button--docker-register {
+    padding: 8px 0 8px 10px;
+    font-weight: 500;
+}
+
+.cluster-form {
+    padding: 24px;
+    .form__row--bearer-token .bearer-token {
+        display: flex;
+        width: 100%;
+        img {
+            margin-left: 16px;
+        }
+        input,
+        textarea {
+            width: 100%
+        }
+        textarea {
+            resize: vertical;
+        }
+    }
+}
+
+.environment-create-body {
+    width: 450px;
+    border-radius: 8px;
+    background: white;
+    padding: 24px;
+    margin: 5% auto auto auto;
+    .form__title+img {
+        margin-left: auto;
+        cursor: pointer;
+    }
+    .form__title {
+        font-weight: 600;
+        margin-bottom: unset;
+    }
+    .environment-type {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        height: 48px;
+        border: 1px solid #d6dbdf;
+        border-radius: 4px;
+        cursor: pointer;
+        .form__label {
+            margin-bottom: 0;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type="radio"] {
+            margin: 0 8px 0 8px;
+            cursor: pointer;
+        }
+        input:checked+span {
+            color: var(--B500);
+        }
+        .environment--non-production {
+            border-left: 1px solid #d6dbdf;
+        }
+    }
+    .form__row--namespace {
+        .form__error {
+            color: --N400;
+        }
+    }
+    .form__row--ignore-namespace {
+        margin-bottom: 4px;
+        input {
+            margin-right: 8px;
+            height: 16px;
+            width: 16px;
+        }
+        .form__label.bold {
+            display: inline;
+        }
+    }
+    .form__row--warn {
+        margin-bottom: 4px;
+    }
+}
+
+.cluster-create-status {
+    padding: 8px 24px;
+    display: grid;
+    grid-template-columns: 20px auto 48px;
+    column-gap: 16px;
+}
+
+.cluster-create-status--healthy {
+    background-color: var(--G100);
+}
+
+.cluster-create-status--installing {
+    background-color: var(--Y100);
+}
+
+.cluster-create-status--failed {
+    background-color: var(--R100);
+}
+
+.cluster-create-status__title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.cluster-create-status__status-installing path {
+    fill: var(--orange);
+}
+
+.cluster-create-status__status-failed path {
+    fill: var(--R500);
+}
+
+.cluster-create-status__button {
+    height: 20px;
+    background-color: transparent;
+    padding: 0px;
+    font-weight: 600;
+    border: none;
+    color: var(--B500);
+}
+
+.cluster-component__list {
+    list-style: none;
+    max-height: 320px;
+    overflow: auto;
+}
+
+.cluster-component__list-item {
+    padding: 13px 24px;
+    padding-right: 0px;
+    cursor: pointer;
+}
+
+.cluster-component__list-item:hover {
+    background-color: var(--N100);
+}
+
+.cluster-component__list-item:hover .cluster-component__name {
+    color: var(--B500);
+}
+
+.cluster-component__name {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.cluster-component__status {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    color: var(--N700);
+}
+
+.align-self-top {
+    align-self: flex-start;
+}
