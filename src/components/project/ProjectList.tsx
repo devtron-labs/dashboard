@@ -112,7 +112,9 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
     renderPageHeader() {
         return <>
             <h1 className="form__title">Projects</h1>
-            <p className="form__subtitle">Manage your organization's projects.</p>
+            <p className="form__subtitle">Manage your organization's projects.&nbsp;
+                <a href="https://docs.devtron.ai/global-configurations/projects" rel="noopener noreferer" target="_blank">Learn more about projects.</a>
+            </p>
         </>
     }
 
