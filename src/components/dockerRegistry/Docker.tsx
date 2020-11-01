@@ -99,6 +99,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 }))
                 return
             }
+            }
         else if (state.registryType.value === 'other') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
