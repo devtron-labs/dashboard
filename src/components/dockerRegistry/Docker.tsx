@@ -118,6 +118,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryType: state.registryType.value,
             isDefault: Isdefault,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
+            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value } : {}),
         }
 
@@ -144,7 +145,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
                     <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
                         <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
-                        {['ecr', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
+                        {['ecr','docker hub', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
@@ -164,6 +165,12 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="form__row form__row--two-third">
                     <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
                     <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
+                </div>
+            </>}
+            {state.registryType.value === 'docker-hub' && <>
+                <div className="form__row form__row--two-third">
+                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
