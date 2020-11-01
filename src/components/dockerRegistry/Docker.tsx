@@ -90,6 +90,15 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
+                else if (state.registryType.value === 'docker hub') {
+            if (!customState.username.value || !customState.password.value) {
+                setCustomState(st => ({
+                    ...st,
+                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' }
+                }))
+                return
+            }
         else if (state.registryType.value === 'other') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
