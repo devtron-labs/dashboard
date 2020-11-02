@@ -181,7 +181,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             <h1 className="form__title form__title--workflow-editor">Workflows</h1>
             <p className="form__subtitle form__subtitle--workflow-editor">
                 Workflows consist of pipelines from build to deployment stages of an application.&nbsp;
-                <a href="https://app.zeplin.io/project/5d2f226b19359d548dd6dfee/screen/5da83e27c7e39718865def68/" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
+                <a href="https://docs.devtron.ai/creating-application/workflow" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
             </p>
             <Link className="no-decor" to={this.openCreateWorkflow()}>
                 <button type="button" className="cta">Create Workflow</button>
@@ -234,7 +234,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             <div className="workflow-editor">
                 <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                 <p>Workflow consist of pipelines from buid to deployment stages of an application.&nbsp;
-                    <a href="https://app.zeplin.io/project/5d2f226b19359d548dd6dfee/screen/5da83e27c7e39718865def68/" target="blank" rel="noreferrer noopener">Learn about creating workingflows</a>
+                    <a href="https://docs.devtron.ai/creating-application/workflow" target="blank" rel="noreferrer noopener">Learn about creating workingflows</a>
                 </p>
                 {this.renderRouter()}
                 <Link to={this.openCreateWorkflow()} className="cta mb-12 cta-with-img no-decor" style={{ width: '140px' }}>

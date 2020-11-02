@@ -188,7 +188,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                          <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true}
                             placement="top" content={
-                                <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank"
+                                <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank" rel="noopener noreferrer"
                                     style={{ color: "white", textTransform: "none" }}>
                                     Learn how to setup slack webhooks
                                 </a>

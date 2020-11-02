@@ -22,7 +22,7 @@ export class ScanVulnerabilitiesTable extends Component<ScanVulnerabilitiesTable
             window.open(`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${vulnerability.name}`, '_blank');
         }}>
             <td className="security-tab__cell-cve cve-cell">
-                <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${vulnerability.name}`} target="_blank">
+                <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${vulnerability.name}`} rel="noopener noreferrer" target="_blank">
                     {vulnerability.name}
                 </a>
             </td>
