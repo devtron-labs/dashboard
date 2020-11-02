@@ -6,6 +6,12 @@ import { List, CustomInput, ProtectedInput } from '../globalConfigurations/Globa
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 
+const DockerRegistryType = [
+    { label: 'docker hub', value: 'docker-hub' },
+    { label: 'ecr', value: 'ecr' },
+    { label: 'other', value: 'other' }
+];
+
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     if (loading && !result) return <Progressing pageLoader />
@@ -90,7 +96,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
-                else if (state.registryType.value === 'docker hub') {
+        else if (state.registryType.value === 'docker-hub') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
                     ...st,
@@ -99,7 +105,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 }))
                 return
             }
-            }
+        }
         else if (state.registryType.value === 'other') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
@@ -133,8 +139,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         } finally {
             toggleLoading(false)
         }
-
     }
+
+    let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     return (
         <form onSubmit={handleOnSubmit} className="docker-form">
             <div className="form__row">
@@ -144,8 +151,8 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="flex left column top">
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
                     <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
-                        <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
-                        {['ecr','docker hub', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
+                        <Select.Button rootClassName="select-button--docker-register">{selectedDckerRegistryType?.label || `Select Docker Registry`}</Select.Button>
+                        {DockerRegistryType.map(type => <Select.Option value={type.value} key={type.value}>{type.label}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
