@@ -16,7 +16,11 @@ export default function Docker({ ...props }) {
     return (
         <section className="docker-page">
             <h2 className="form__title">Docker registries</h2>
-            <h5 className="form__subtitle">Manage your organization’s docker registries</h5>
+            <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
+            <a href={`https://docs.devtron.ai/global-configurations/docker-registries`} rel="noopener noreferrer" target="_blank">
+                    Learn more about docker registries
+            </a>
+            </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
     )

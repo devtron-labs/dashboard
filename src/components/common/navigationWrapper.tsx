@@ -32,7 +32,7 @@ export default function NavigationWrapper() {
         if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.GA_ENABLED) {
             let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
             let path = location.pathname;
-            ReactGA.initialize(process.env.GA_TRACKING_ID, {
+            ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                 debug: false,
                 titleCase: false,
                 gaOptions: {
