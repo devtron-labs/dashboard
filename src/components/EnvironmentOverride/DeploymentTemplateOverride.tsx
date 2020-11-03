@@ -215,7 +215,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gridColumnGap:'16px', marginBottom:'16px'}}>
                 <div className="flex left column">
                     <label htmlFor="" className="form__label">Template version {state.duplicate ? '(app default)' : ''}</label>
-                    <input value={state.charts.get(state.data.globalChartRefId).version} className="form__input" disabled />
+                    <input autoComplete="off" value={state.charts.get(state.data.globalChartRefId).version} className="form__input" disabled />
                 </div>
                 {state.duplicate && <div className="flex left column">
                         <label htmlFor="" className="form__label">Template version (environment override)</label>
@@ -296,7 +296,7 @@ function NameSpace({ originalNamespace="", chartRefId, id }) {
         <form className="namespace" onSubmit={handleSubmit}>
             <label htmlFor="" className="form__label">Namespace</label>
             <div className="flex">
-                <input type="text" className="form__input" disabled={!!originalNamespace} onChange={e=>setNamespace(e.target.value)} value={namespace}/>
+                <input type="text" autoComplete="off" className="form__input" disabled={!!originalNamespace} onChange={e=>setNamespace(e.target.value)} value={namespace}/>
                 {!originalNamespace && <button className="cta" type="submit" style={{ marginLeft: '16px' }}>{loading ? <Progressing /> : 'Save'}</button>}
             </div>
             {!originalNamespace && <div className="flex left">

@@ -62,7 +62,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
             {typeof onDelete === 'function' && <Trash onClick={e => onDelete(e, index)} className="cursor icon-delete icon-n4" />}
             <div className="form__field">
                 <label>{keyLabel}
-                    <input type="text" placeholder="" value={k} onChange={e => onChange(index, e.target.value, v)} className="form__input" disabled={typeof onChange !== 'function'} />
+                    <input type="text" autoComplete="off" placeholder="" value={k} onChange={e => onChange(index, e.target.value, v)} className="form__input" disabled={typeof onChange !== 'function'} />
                     {keyError ? <span className="form__error">{keyError}</span> : <div />}
                 </label>
             </div>
@@ -70,7 +70,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
                 <label>{valueLabel}</label>
                 {valueType === 'textarea' ?
                     <ResizableTextarea value={v} onChange={e => onChange(index, k, e.target.value)} disabled={typeof onChange !== 'function'} placeholder="" maxHeight={300} />
-                    : <input type="text" value={v} onChange={e => onChange(index, k, e.target.value)} className="form__input" disabled={typeof onChange !== 'function'} />
+                    : <input type="text" autoComplete="off" value={v} onChange={e => onChange(index, k, e.target.value)} className="form__input" disabled={typeof onChange !== 'function'} />
                 }
                 {valueError ? <span className="form__error">{valueError}</span> : <div />}
             </div>
@@ -364,7 +364,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             </div> : null}
             <div className="form__row">
                 <label className="form__label">Name*</label>
-                <input value={configName.value} onChange={isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
+                <input value={configName.value} autoComplete="off" onChange={isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
 
@@ -375,6 +375,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
 
             {selectedTab === 'Data Volume' ? <div className="form__row">
                 <CustomInput value={volumeMountPath.value}
+                    autoComplete="off"
                     tabIndex={5}
                     label={"Volume mount path*"}
                     placeholder={"/directory-path"}

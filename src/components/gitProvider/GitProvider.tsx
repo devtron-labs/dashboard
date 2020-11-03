@@ -139,14 +139,14 @@ function GitForm({ id=null, name="", active=false, url="", authMode=null,accessT
     return (
         <form onSubmit={handleOnSubmit} className="git-form">
             <div className="form__row form__row--two-third">
-                <CustomInput value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                <CustomInput autoComplete="off" value={state.name.value}  onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
             </div>
             <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pointer">
                 {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }, ]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value}/> {Lable}
+                        <input type="radio" autoComplete="off"  name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value}/> {Lable}
                 </label>)}
             </div>
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
