@@ -102,7 +102,7 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
         <label className="form__label">{label}</label>
         <input type={type}
             name={name}
-            autoComplete={autoComplete}
+            autoComplete="off"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}
