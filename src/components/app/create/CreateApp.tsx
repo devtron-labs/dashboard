@@ -169,7 +169,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <Select value={this.state.form.projectId} onChange={e => this.handleProject(e.target.value, this.state.form.appId)} >
                         <Select.Button rootClassName="select-button--default">{provider ? provider.name : "Select Project"}</Select.Button>
                         {this.state.projects.map((team) => {
-                            return <Select.Option value={team.id} key={team.id} autoComplete="off">
+                            return <Select.Option value={team.id} key={team.id} >
                                 {team.name}
                             </Select.Option>
                         })}
