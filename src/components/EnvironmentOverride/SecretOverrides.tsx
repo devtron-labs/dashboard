@@ -427,7 +427,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             {isHashiOrAWS ? <div className="form__row form__row--flex">
                 <div className="w-50">
                     <CustomInput value={roleARN}
-                        autoComplete={"off"}
+                        autoComplete="off"
                         label={"Role ARN"}
                         disabled={state.locked}
                         placeholder={"Enter Role ARN"}
