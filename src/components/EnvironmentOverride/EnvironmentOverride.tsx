@@ -58,7 +58,7 @@ export default function EnvironmentOverride() {
             {environments.size && !loading && <>
                 <div className="form__title">{environments.has(+params.envId) ? environments.get(+params.envId).environment_name : ''}</div>
                 <div className="form__subtitle">Manage environment configurations for this application.&nbsp;
-                        <a rel="noreferre noopener" href="https://docs.devtron.ai/docs/reference/creating-application/environment-overrides/" target="blank">Learn about Environment Overrides</a>
+                        <a rel="noreferre noopener" href="https://docs.devtron.ai/creating-application/environment-overrides" target="blank">Learn about Environment Overrides</a>
                 </div>
             </>}
             <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />

@@ -158,7 +158,7 @@ function HeaderSection() {
         <div className="auth-page__header">
             <h1 className="form__title">User access</h1>
             <p className="form__subtitle">Manage user permissions.&nbsp;
-                <a rel="noreferrer noopener" href="https://docs.devtron.ai/docs/reference/global-configurations/user-access/" target="_blank">Learn more about User Access</a>
+                <a rel="noreferrer noopener" href="https://docs.devtron.ai/global-configurations/user-access" target="_blank">Learn more about User Access</a>
             </p>
 
             <ul role="tablist" className="tab-list">
