@@ -9,6 +9,7 @@ import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.s
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
 import { Link } from 'react-router-dom';
+import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
@@ -22,6 +23,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const [calendarInputs, setCalendarInput] = useState<{ startDate: string, endDate: string }>({
         startDate: 'now-5m',
         endDate: 'now',
+    });
+    const [datasource, setDatasource] = useState({
+        isConfigured: false,
+        isHealthy: false,
     });
     const [focusedInput, setFocusedInput] = useState('startDate')
     const [tab, setTab] = useState<'pod' | 'aggregate'>('aggregate');
@@ -77,6 +82,23 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setCalendarValue(str);
     }
 
+    async function checkDatasource() {
+        try {
+            let datasourceConfiguredRes, datasourceHealthyRes;
+            datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
+            if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
+            
+            console.log(datasourceConfiguredRes, datasourceHealthyRes);
+            setDatasource({
+                isConfigured: !!datasourceConfiguredRes.id,
+                isHealthy: datasourceHealthyRes.status === 200,
+            })
+        }
+        catch (error) {
+
+        }
+    }
+
     function handlePredefinedRange(start: Moment, end: Moment, endStr: string): void {
         setDateRange({
             startDate: start,
@@ -110,6 +132,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
+
     useEffect(() => {
         const startDateString = calendarInputs.startDate;
         const endDateString = calendarInputs.endDate;
@@ -121,13 +144,20 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
         setCalendarValue(str);
         getNewGraphs();
+        checkDatasource();
     }, [])
 
     useEffect(() => {
         getNewGraphs();
     }, [calendarValue])
 
-    return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
+    if (!datasource.isConfigured) {
+        return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
+    }
+    else if (!datasource.isHealthy) {
+        return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
+    }
+    else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
         {(appMetrics || infraMetrics) && (
             <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
@@ -256,4 +286,21 @@ function EnableAppMetrics() {
             </Link>
         </div>
     );
+}
+
+function AppMetricsEmptyState(props) {
+    return <div className="app-metrics-graph__empty-state-wrapper">
+        <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
+            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
+        </h4>
+        <article className="app-metrics-graph__empty-state">
+            <img src={PrometheusErrorImage} alt="" className="w-100" />
+            <div>
+                <p className="app-metrics-graph__empty-state-title">Unable to show app metrics</p>
+                <p className="app-metrics-graph__empty-state-subtitle">{props.subtitle}</p>
+                <a href={`/global-config/cluster-env`} target="_blank" className="cta small text" style={{ paddingLeft: '0px' }} >See how to fix</a>
+                <Link to={`/global-config/cluster-env`} className="cta small text">Review Configuration</Link>
+            </div>
+        </article>
+    </div>
 }
