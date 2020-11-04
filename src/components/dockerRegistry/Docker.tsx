@@ -16,7 +16,11 @@ export default function Docker({ ...props }) {
     return (
         <section className="docker-page">
             <h2 className="form__title">Docker registries</h2>
-            <h5 className="form__subtitle">Manage your organization’s docker registries</h5>
+            <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
+            <a href={`https://docs.devtron.ai/global-configurations/docker-registries`} rel="noopener noreferrer" target="_blank">
+                    Learn more about docker registries
+            </a>
+            </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
     )
@@ -90,16 +94,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
-                else if (state.registryType.value === 'docker hub') {
-            if (!customState.username.value || !customState.password.value) {
-                setCustomState(st => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' }
-                }))
-                return
-            }
-            }
         else if (state.registryType.value === 'other') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
@@ -118,7 +112,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryType: state.registryType.value,
             isDefault: Isdefault,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
-            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value } : {}),
         }
 
@@ -145,7 +138,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
                     <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
                         <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
-                        {['ecr','docker hub', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
+                        {['ecr', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
@@ -165,12 +158,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="form__row form__row--two-third">
                     <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
                     <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
-                </div>
-            </>}
-            {state.registryType.value === 'docker-hub' && <>
-                <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
-                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
