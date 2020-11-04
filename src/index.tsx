@@ -10,6 +10,7 @@ interface customEnv{
     SENTRY_ENABLED ?: boolean,
     HOTJAR_ENABLED ?: boolean;
     GA_ENABLED?: boolean;
+    GA_TRACKING_ID?: string;
 }
 declare global {
     interface Window {

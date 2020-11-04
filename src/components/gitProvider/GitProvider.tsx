@@ -1,38 +1,42 @@
-import React, {useState} from 'react'
-import {getGitProviderList, saveGitProviderConfig, updateGitProviderConfig} from './service'
-import {showError, useForm, useEffectAfterMount, useAsync, Progressing} from '../common'
-import {List, CustomInput, ProtectedInput} from '../globalConfigurations/GlobalConfiguration'
+import React, { useState } from 'react'
+import { getGitProviderList, saveGitProviderConfig, updateGitProviderConfig } from './service'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common'
+import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
-    if(loading && !result) return <Progressing pageLoader/>
-    if(error){
+    if (loading && !result) return <Progressing pageLoader />
+    if (error) {
         showError(error)
-        if(!result) return null
+        if (!result) return null
     }
 
     return (
         <section className="git-page">
             <h2 className="form__title">Git accounts</h2>
-            <h5 className="form__subtitle">Manage your organization’s git accounts</h5>
-            {[{ id: null, name: "", active: true, url: "", authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload}/>)}
+            <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+            <a href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
+                    Learn more about git accounts
+            </a>
+            </h5>
+            {[{ id: null, name: "", active: true, url: "", authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
         </section>
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "",reload,  ...props}){
+function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
 
-    useEffectAfterMount(()=>{
-        if(!collapsed) return
-        async function update(){
+    useEffectAfterMount(() => {
+        if (!collapsed) return
+        async function update() {
             let payload = {
                 id: id || 0, name, url, authMode, active: enabled,
-                ...(authMode === 'USERNAME_PASSWORD' ? { username : userName, password } : {}),
+                ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {})
             }
             try {
@@ -47,39 +51,39 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
             }
         }
         update()
-    },[enabled])
-    
-    return(
+    }, [enabled])
+
+    return (
         <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo>{id ? <div className={`${url.split(".")[0]} list__logo git-logo`}></div> : <div className="add-icon"/>}</List.Logo>
+                <List.Logo>{id ? <div className={`${url.split(".")[0]} list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
-                    {id && 
+                    {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
                             <span style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                )}
+                                        <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                    )}
                             </span>
                         </Tippy>
                     }
                 </div>
-                {id && <List.DropDown onClick={e => {e.stopPropagation(); toggleCollapse(t => !t)}} className="rotate" style={{['--rotateBy' as any] : `${Number(!collapsed) * 180}deg`}}/>}
+                {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse}}/>}
+            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
         </article>
     )
 }
 
-function GitForm({ id=null, name="", active=false, url="", authMode=null,accessToken="", userName="", password="",reload,toggleCollapse, ...props}){
+function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            name: { value:  name , error: "" },
+            name: { value: name, error: "" },
             url: { value: url, error: "" },
-            auth:{ value: authMode, error:"" }
+            auth: { value: authMode, error: "" }
         },
         {
             name: {
@@ -90,52 +94,52 @@ function GitForm({ id=null, name="", active=false, url="", authMode=null,accessT
                 required: true,
                 validator: { error: 'URL is required', regex: /^.{10,}$/ }
             },
-            auth:{
+            auth: {
                 required: true,
-                validator:{ error:'Mode is required', regex: /^.*$/ }
+                validator: { error: 'Mode is required', regex: /^.*$/ }
             }
         }, onValidation);
-        const [loading, setLoading] = useState(false)
-        const [customState, setCustomState]=useState({password:{value:password, error:''}, username:{value:userName, error:''}, accessToken:{value:accessToken, error:''}})
-        const customHandleChange = e => setCustomState(state=>({...state,[e.target.name]:{value:  e.target.value, error:""}}))
+    const [loading, setLoading] = useState(false)
+    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
+    const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
-        async function onValidation(){
-            if(state.auth.value === 'USERNAME_PASSWORD'){
-                if(!customState.password.value || !customState.username.value){
-                    setCustomState(state=>({...state, password:{value: state.password.value, error:'Required'}, username:{value: state.username.value, error:'Required'}}))
-                    return
-                }
-            }
-            else if(state.auth.value === "ACCESS_TOKEN"){
-                if(!customState.accessToken.value){
-                    setCustomState(state=>({...state, accessToken:{value: '', error:'Required'}}))
-                    return
-                }
-            }
-
-            let payload = {
-                id: id || 0,
-                name: state.name.value,
-                url: state.url.value,
-                authMode: state.auth.value,
-                active,
-                ...(state.auth.value === 'USERNAME_PASSWORD' ? {username: customState.username.value, password: customState.password.value} : {}),
-                ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
-            }
-            const api = id ? updateGitProviderConfig : saveGitProviderConfig
-            try{
-                setLoading(true)
-                const {result} = await api(payload, id);
-                await reload();
-                toast.success('Successfully saved.')
-            }
-            catch(err){
-                showError(err)
-            }
-            finally{
-                setLoading(false);
+    async function onValidation() {
+        if (state.auth.value === 'USERNAME_PASSWORD') {
+            if (!customState.password.value || !customState.username.value) {
+                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
+                return
             }
         }
+        else if (state.auth.value === "ACCESS_TOKEN") {
+            if (!customState.accessToken.value) {
+                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
+                return
+            }
+        }
+
+        let payload = {
+            id: id || 0,
+            name: state.name.value,
+            url: state.url.value,
+            authMode: state.auth.value,
+            active,
+            ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
+            ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+        }
+        const api = id ? updateGitProviderConfig : saveGitProviderConfig
+        try {
+            setLoading(true)
+            const { result } = await api(payload, id);
+            await reload();
+            toast.success('Successfully saved.')
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setLoading(false);
+        }
+    }
     return (
         <form onSubmit={handleOnSubmit} className="git-form">
             <div className="form__row form__row--two-third">
@@ -144,21 +148,23 @@ function GitForm({ id=null, name="", active=false, url="", authMode=null,accessT
             </div>
             <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pointer">
-                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }, ]
+                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-                        <input type="radio" autoComplete="off"  name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value}/> {Lable}
-                </label>)}
+
+                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                    </label>)}
+
             </div>
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
             {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
                 <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*"/>
+                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
             </div>}
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>}
             <div className="form__row form__buttons">
-                <button className="cta cancel" type="button" onClick={e=>toggleCollapse(t=>!t)}>Cancel</button>
+                <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
             </div>
         </form>

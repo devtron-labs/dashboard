@@ -267,7 +267,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
         return <>
             <h1 className="form__title form__title--artifacts">Git Materials</h1>
             <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application.&nbsp;
-                 <a rel="noreferrer noopener" href="https://docs.devtron.ai/docs/reference/creating-application/git-material/" target="_blank" className="">Learn more about Git Material</a>
+                 <a rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/git-material" target="_blank" className="">Learn more about Git Material</a>
             </p>
         </>
     }

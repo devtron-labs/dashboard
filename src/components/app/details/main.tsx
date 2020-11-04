@@ -33,9 +33,10 @@ export default function AppDetailsPage() {
                         <Route path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
                             <CDDetails key={appId} />
                         </Route>
-                        <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
+                        {/* commented for time being */}
+                        {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             render={() => <TestRunList />}
-                        />
+                        /> */}
                         <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
                     </Switch>
                 </Suspense>
@@ -144,11 +145,12 @@ export function AppHeader() {
                         Deployment Metrics
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
+                {/* commented for time being */}
+                {/* <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
                         Tests
                     </NavLink>
-                </li>
+                </li> */}
             </ul>
             <div className="flex page-header__cta-container">
                 <button type="button"
