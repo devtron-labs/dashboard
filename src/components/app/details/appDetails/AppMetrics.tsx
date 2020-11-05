@@ -87,11 +87,11 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             let datasourceConfiguredRes, datasourceHealthyRes;
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
-            
+
             console.log(datasourceConfiguredRes, datasourceHealthyRes);
             setDatasource({
                 isConfigured: !!datasourceConfiguredRes.id,
-                isHealthy: datasourceHealthyRes.status === 200,
+                isHealthy: datasourceHealthyRes.status.toLowercase() === 'success',
             })
         }
         catch (error) {
