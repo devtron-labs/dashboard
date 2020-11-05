@@ -163,7 +163,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         </div>
     </div>
     if (!datasource.isConfigured) {
-        return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
+        return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
     }
     else if (!datasource.isHealthy) {
         return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
