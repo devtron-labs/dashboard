@@ -16,8 +16,9 @@ import { getTestSuites, getTestCase, getSuiteDetail } from './service';
 import { PieChart, Pie, Cell } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {SelectedNames} from './Test.types'
+import { getBinWiseArr } from "./testRunDetails.util";
 
-const computeHistogram = require('compute-histogram');
+// const computeHistogram = require('compute-histogram');
 
 export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedNames})=>{
     const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>();
@@ -623,14 +624,15 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
         const binWidth = testTimeArray[testTimeArray.length - 1] / 10
         // const bins = computeHistogram(testTimeArray, numOfBins);
         // console.log(bins);
-        const binWiseArr = Array(numOfBins).fill(0);
-        for (let i = 0; i < testTimeArray.length; i++) {
-            let indexToPush = Math.floor(Number(testTimeArray[i]) / binWidth);
-            if (indexToPush === numOfBins) {
-                indexToPush--;
-            }
-            binWiseArr[indexToPush] += 1;
-        }
+        // const binWiseArr = Array(numOfBins).fill(0);
+        // for (let i = 0; i < testTimeArray.length; i++) {
+        //     let indexToPush = Math.floor(Number(testTimeArray[i]) / binWidth);
+        //     if (indexToPush === numOfBins) {
+        //         indexToPush--;
+        //     }
+        //     binWiseArr[indexToPush] += 1;
+        // }
+        const binWiseArr = getBinWiseArr(testTimeArray, numOfBins, binWidth);
         console.log(binWiseArr)
         const chartData = [];
         console.log(binWidth)
