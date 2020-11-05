@@ -154,6 +154,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs();
     }, [calendarValue])
 
+    console.log(datasource.isLoading);
+
     if (datasource.isLoading) return <div style={{ width: '100%', height: '260px', backgroundColor: "white" }}>
         <Progressing pageLoader />
     </div>
