@@ -2,15 +2,19 @@
     display: flex;
     #{$horizontal}: center;
     #{$vertical}: center;
+
     &.left {
         #{$horizontal}: flex-start;
     }
+
     &.right {
         #{$horizontal}: flex-end;
     }
+
     &.top {
         #{$vertical}: flex-start;
     }
+
     &.bottom {
         #{$vertical}: flex-end;
     }
@@ -18,6 +22,7 @@
 
 .flex {
     @include flex(justify-content, align-items);
+
     &.column {
         @include flex(align-items, justify-content);
         flex-direction: column;
@@ -26,10 +31,12 @@
 
 // margins and paddings from 0-40
 $margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+
 @each $margin,
 $style in $margins {
     @for $i from 0 through 40 {
         $tempStyle: $style;
+
         .#{$margin}-#{$i} {
             #{$tempStyle}: 0px + $i;
         }
@@ -57,26 +64,33 @@ G,
 Y,
 R;
 $color-suffix: 00;
+
 @each $color in $colors {
     @for $i from 0 through 9 {
         .c#{to-lower-case($color)}-#{$i} {
             color: var(--#{$color}($i * 100));
         }
+
         .bc#{to-lower-case($color)}-#{$i} {
             background-color: var(--#{$color}($i * 100));
         }
+
         .e#{to-lower-case($color)}-#{$i} {
             border-color: var(--#{$color}($i * 100));
             border-style: solid;
         }
+
         .sc#{to-lower-case($color)}-#{$i} {
             stroke: var(--#{$color}($i * 100));
+
             path {
                 stroke: var(--#{$color}($i * 100));
             }
         }
+
         .fc#{to-lower-case($color)}-#{$i} {
             fill: var(--#{$color}($i * 100));
+
             path {
                 fill: var(--#{$color}($i * 100));
             }
@@ -89,6 +103,7 @@ $color-suffix: 00;
     .br-#{$i} {
         border-radius: 0px + $i;
     }
+
     .bw-#{$i} {
         border-width: 0px + $i;
     }
@@ -103,6 +118,7 @@ $color-suffix: 00;
     color: $color;
     border: 1px solid $border;
     cursor: $cursor;
+
     svg {
         path {
             fill: $color;
@@ -124,56 +140,82 @@ $color-suffix: 00;
     line-height: 40px;
     text-align: center;
     @include cta(var(--B500), var(--white), transparent);
+
     &.small {
         height: 32px;
         min-width: 64px;
         padding: 0 12px;
         line-height: 32px;
     }
+
     &.ghosted {
         @include cta(var(--white), var(--B500), var(--B500));
+
         &:hover {
             @include cta(var(--B500), var(--white), var(--B500));
         }
     }
+
     &.secondary {
         @include cta(var(--white), var(--B500), var(--N200));
+
         &:hover {
             @include cta(var(--B100), var(--B500), var(--N200));
         }
     }
+
     &.tertiary {
         @include cta(var(--white), var(--N400), var(--white));
+
         &:hover {
             @include cta(var(--white), var(--N400), var(--white));
         }
     }
+
+    &.text {
+        @include cta(white, var(--B500), white);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(white, var(--B500), white);
+        }
+    }
+
     &.delete {
         @include cta(white, var(--R500), var(--R500));
+
         &:hover {
             @include cta(var(--R500), white, white);
         }
+
         &:active,
         &:focus {
             @include cta(var(--R600), white, white);
         }
     }
+
     &.cancel {
         @include cta(white, var(--N700), var(--N200));
+
         &:hover {
             @include cta(white, var(--N700), var(--N700));
         }
+
         &:active,
         &:focus {
             @include cta(var(--N700), white, transparent);
         }
     }
+
     &:hover {
         @include cta(#004f9e, var(--white), transparent);
     }
+
     &:focus {
         @include cta(#004f9e, var(--white), transparent);
     }
+
     &.delete,
     &.small,
     &.ghosted,
@@ -182,8 +224,9 @@ $color-suffix: 00;
     &.neutral,
     &.tertiary,
     & {
+
         &:disabled,
-         :disabled:hover,
+        :disabled:hover,
         &.disabled,
         &.disabled:hover {
             @include cta(var(--N100), var(--N400), var(--N200), not-allowed);
