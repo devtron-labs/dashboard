@@ -154,8 +154,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs();
     }, [calendarValue])
 
-    console.log(datasource.isLoading);
-
     if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
