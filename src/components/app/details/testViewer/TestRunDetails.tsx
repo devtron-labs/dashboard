@@ -654,7 +654,7 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
             <ResponsiveContainer>
                 <BarChart data={hist}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <YAxis />
+                    <YAxis allowDecimals={false}/>
                     <XAxis dataKey="time spent" unit={'ms'}/>
                     <Tooltip cursor={{fill: 'transparent'}}/>
                     <Bar radius={8} dataKey={'number of tests'} fill={'var(--B500)'} />
