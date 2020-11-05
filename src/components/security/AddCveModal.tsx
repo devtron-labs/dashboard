@@ -157,7 +157,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
                     <div className="whitelist-cve__cve-id ml-24 mr-24 mb-20">
                         <label className="block flex-1 mb-5 mr-16 ">
                             <span className="form__label">CVE ID</span>
-                            <input ref={node => this._inputRef = node} type="text" className="form__input" autoFocus tabIndex={1} placeholder="Enter CVE ID" value={this.state.cve} onChange={this.handleCveChange} />
+                            <input autoComplete="off" ref={node => this._inputRef = node} type="text" className="form__input" autoFocus tabIndex={1} placeholder="Enter CVE ID" value={this.state.cve} onChange={this.handleCveChange} />
                             <span className="form__error">
                                 {this.state.cveError ? <><Error className="form__icon form__icon--error" /> CVE ID not found <br /></>
                                     : null}

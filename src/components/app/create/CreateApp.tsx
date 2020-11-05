@@ -153,7 +153,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <label className="form__row">
                     <span className="form__label">App Name*</span>
                     <input ref={node => this._inputAppName = node} className="form__input" type="text" name="app-name" value={this.state.form.appName}
-                        placeholder="e.g. my-first-app" autoFocus={true} tabIndex={1} onChange={this.handleAppname} required />
+                        placeholder="e.g. my-first-app" autoComplete="off" autoFocus={true} tabIndex={1} onChange={this.handleAppname} required />
                     <span className="form__error">
                         {showError && !this.state.isValid.appName
                             ? <><Error className="form__icon form__icon--error" />{errorObject[0].message} <br /></>
@@ -169,7 +169,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <Select value={this.state.form.projectId} onChange={e => this.handleProject(e.target.value, this.state.form.appId)} >
                         <Select.Button rootClassName="select-button--default">{provider ? provider.name : "Select Project"}</Select.Button>
                         {this.state.projects.map((team) => {
-                            return <Select.Option value={team.id} key={team.id}>
+                            return <Select.Option value={team.id} key={team.id} >
                                 {team.name}
                             </Select.Option>
                         })}

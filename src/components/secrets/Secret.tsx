@@ -490,7 +490,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             </div> : null}
         <div className="form-row">
             <label className="form__label">Name*</label>
-            <input value={configName.value} onChange={props.isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-secret`} disabled={props.isUpdate} />
+            <input value={configName.value} autoComplete="off" onChange={props.isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-secret`} disabled={props.isUpdate} />
             {configName.error && <label className="form__error">{configName.error}</label>}
         </div>
         <label className="forn__label--lower form__label">{`How do you want to use this Secret?`}</label>
@@ -499,6 +499,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         </div>
         {selectedTab === "Data Volume" ? <div className="form__row">
             <CustomInput value={volumeMountPath.value}
+                autoComplete="off"
                 tabIndex={5}
                 label={"Volume mount path*"}
                 placeholder={"Enter mount path"}
@@ -508,6 +509,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         </div> : null}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
+            autoComplete="off"
                 tabIndex={4}
                 label={"Role ARN"}
                 placeholder={"Enter Role ARN"}

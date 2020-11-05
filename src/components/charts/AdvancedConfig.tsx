@@ -137,7 +137,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     <h1 className="form__title form__title--mb-24">{chartName}</h1>
                     {handleNameChange && <div className="flex column left top mb-16">
                         <label htmlFor="" className="form__label">App name*</label>
-                        <input type="text" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
+                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
                         {appName?.error &&
                             <span className="form__error flex left">
                                 <WarningIcon className="mr-5" />{appName?.error || ""}
@@ -155,7 +155,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                         </div>
                         <div className="flex column half left top">
                             <label htmlFor="" className="form__label">Namespace*</label>
-                            <input disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} />
+                            <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} />
                         </div>
                     </div>}
                     <div className="flex top mb-16">

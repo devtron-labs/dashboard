@@ -14,6 +14,7 @@ export interface CustomInputProps {
     name?: string;
     tabIndex?: number;
     onChange: (...args) => void;
+    autoComplete:string
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -25,6 +26,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
         return <>
             <label className={labelClasses}>{this.props.label}</label>
             <input type="text"
+                autoComplete={this.props.autoComplete}
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
                 placeholder={this.props.placeholder}
