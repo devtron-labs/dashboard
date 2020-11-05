@@ -156,8 +156,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     console.log(datasource.isLoading);
 
-    if (datasource.isLoading) return <div style={{ width: '100%', height: '260px', backgroundColor: "white" }}>
-        <Progressing pageLoader />
+    if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper">
+        <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
+            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
+        </h4>
+        <div style={{ height: '240px' }}>
+            <Progressing pageLoader />
+        </div>
     </div>
     if (!datasource.isConfigured) {
         return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
