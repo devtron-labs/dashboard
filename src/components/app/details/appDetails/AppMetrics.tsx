@@ -4,7 +4,7 @@ import { getIframeSrc, ThroughputSelect } from './appDetails.util';
 import { ChartTypes } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets } from '../../../common';
+import { DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
@@ -25,6 +25,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         endDate: 'now',
     });
     const [datasource, setDatasource] = useState({
+        isLoading: true,
         isConfigured: false,
         isHealthy: false,
     });
@@ -88,12 +89,16 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
             setDatasource({
+                isLoading: false,
                 isConfigured: !!datasourceConfiguredRes.id,
                 isHealthy: datasourceHealthyRes.status.toLowerCase() === "success",
             })
         }
         catch (error) {
-
+            setDatasource({
+                ...datasource,
+                isLoading: false,
+            })
         }
     }
 
@@ -149,6 +154,9 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs();
     }, [calendarValue])
 
+    if (datasource.isLoading) return <div style={{ width: '100%', height: '260px', backgroundColor: "white" }}>
+        <Progressing pageLoader />
+    </div>
     if (!datasource.isConfigured) {
         return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
     }
