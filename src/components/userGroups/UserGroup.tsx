@@ -251,7 +251,7 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
         .filter(userOrGroup => (userOrGroup.email_id?.includes(searchString) || userOrGroup.name?.includes(searchString) || userOrGroup.description?.includes(searchString)))
     return (
         <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {result.length > 0 && <input value={searchString} ref={searchRef} type="search" placeholder={`search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
+            {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
             {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
             {filteredAndSorted
                 .map((data, index) =>

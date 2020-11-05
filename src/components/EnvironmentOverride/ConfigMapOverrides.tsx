@@ -284,14 +284,14 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     </div> : null}
                     <div className="form__row">
                         <label className="form__label">Usage type</label>
-                        <input type="text" className="form__input half" value={type === 'volume' ? 'Data volume' : 'Environment variable'} disabled />
+                        <input type="text" autoComplete="off" className="form__input half" value={type === 'volume' ? 'Data volume' : 'Environment variable'} disabled />
                     </div>
                     {type === 'volume' && <div className="form__row">
                         <label className="form__label">Volume mount path</label>
                         <div className="flex left">
-                            <input type="text" className="form__input half" value={defaultMountPath} disabled />
+                            <input type="text" autoComplete="off" className="form__input half" value={defaultMountPath} disabled />
                             <span style={{ width: '16px' }} />
-                            {state.duplicate && <input type="text" className="form__input half" value={state.mountPath} onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />}
+                            {state.duplicate && <input type="text" autoComplete="off" className="form__input half" value={state.mountPath} onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />}
                         </div>
                     </div>}
                     {!external && <div className="flex left mb-16">

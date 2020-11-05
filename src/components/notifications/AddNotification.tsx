@@ -341,7 +341,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     </span>
                 })}
                 {unsavedFilter ? `${unsavedFilter.type}: ` : ""}
-                {unsavedFilter ? <input type="text" className="pipeline-filter__search transparent flex-1" autoFocus onKeyDown={this.handleFilterTag}
+                {unsavedFilter ? <input autoComplete="off" type="text" className="pipeline-filter__search transparent flex-1" autoFocus onKeyDown={this.handleFilterTag}
                     placeholder="Filter by Project, applications and environment, search by name."
                     onChange={this.handleFilterInput} value={this.state.filterInput} /> : null}
             </div>
@@ -465,7 +465,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             </button>
                         </span>
                     })}
-                    {hideInput ? null : <input type="text" className="pipeline-filter__search transparent flex-1" autoFocus value={this.state.channelInput} onKeyDown={this.handleChannelTag}
+                    {hideInput ? null : <input type="text" autoComplete="off"  className="pipeline-filter__search transparent flex-1" autoFocus value={this.state.channelInput} onKeyDown={this.handleChannelTag}
                         placeholder="Enter email addresses or slack channels" onChange={this.handleChannelInput} />}
                 </div>
                 {this.state.showChannels ? <div className="transparent-div" onClick={this.toggleChannels}></div> : null}

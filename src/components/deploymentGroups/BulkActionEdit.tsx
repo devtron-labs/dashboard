@@ -236,7 +236,7 @@ export function BulkActionEdit() {
                     <h2 className="form__title">{`${Number(id) === 0 ? 'Create' : 'Update'} Deployment Group`}</h2>
                     <div className="form__label">
                         <label>Group name*</label>
-                        <input disabled={Number(id) > 0} type="text" value={state.groupName} onChange={e => dispatch({ type: 'editGroupName', value: e.target.value })} placeholder="Deployment group" className="form__input" />
+                        <input autoComplete="off" disabled={Number(id) > 0} type="text" value={state.groupName} onChange={e => dispatch({ type: 'editGroupName', value: e.target.value })} placeholder="Deployment group" className="form__input" />
                         {state.groupNameError && <label className="form__error flex left"><Info color="#f33e3e" style={{height:'16px', width:'16px'}}/>{state.groupNameError}</label>}
                     </div>
                     <TitledCard
@@ -286,7 +286,7 @@ export function BulkActionEdit() {
                                     <h5>Connected Applications</h5>
                                     {<div className="app-search flex left">
                                         <SearchIcon />
-                                        <input type="text" value={state.appSearchString} onChange={e => dispatch({ type: 'appSearch', value: e.target.value })} />
+                                        <input autoComplete="off" type="text" value={state.appSearchString} onChange={e => dispatch({ type: 'appSearch', value: e.target.value })} />
                                     </div>}
                                     {!state.appSearchString && state.applications.filter(app => app.envId === state.environmentId).length !== selectedAppIds.length && <AppSelect name="Select All" selected={false} select={e => handleSelectApp(0, null)} selectedEnvId={state.environmentId} envId={state.environmentId} searchString={"Select All"} />}
                                     {Array.isArray(state.applications) && state.applications.map((app:any) => <AppSelect key={app.id} {...app} selected={Array.isArray(selectedAppIds) && selectedAppIds.includes(app.id)} select={e => handleSelectApp(app.id, app.name)} selectedEnvId={state.environmentId} searchString={state.appSearchString} />)}

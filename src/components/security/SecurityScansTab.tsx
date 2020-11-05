@@ -267,7 +267,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 }),
               }} />
             <Search className="icon-dim-20 ml-7" />
-            <input type="text" className="search-with-dropdown__search"
+            <input autoComplete="off" type="text" className="search-with-dropdown__search"
               tabIndex={1}
               value={this.state.searchObjectValue}
               placeholder={`Search ${this.state.searchObject.label}`}

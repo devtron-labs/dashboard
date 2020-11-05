@@ -311,12 +311,12 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
         <h2 className="form__title">Edit cluster</h2>
         <div className="form__row">
-            <CustomInput name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
+            <CustomInput autoComplete="off" name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
-            <CustomInput name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
+            <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
             <label htmlFor="" className="form__label">Bearer token*</label>
@@ -328,7 +328,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         <hr></hr>
         <div className="form__input-header mb-8">Prometheus Info</div>
         <div className="form__row">
-            <CustomInput name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
+            <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
         </div>
         <div className="form__row">
             <span className="form__label">Authentication Type*</span>
@@ -426,7 +426,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 </div>
             </div>
             <div className="form__row">
-                <CustomInput disabled={!!environment_name} name="environment_name" value={state.environment_name.value} error={state.environment_name.error} onChange={handleOnChange} label="Environment Name*" />
+                <CustomInput autoComplete="off" disabled={!!environment_name} name="environment_name" value={state.environment_name.value} error={state.environment_name.error} onChange={handleOnChange} label="Environment Name*" />
             </div>
             <div className="form__row form__row--namespace">
                 <CustomInput disabled={!!namespace || ignore} name="namespace" value={state.namespace.value} error={state.namespace.error} onChange={handleOnChange} label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`} />
