@@ -11,6 +11,7 @@ import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import { Command } from '../../command/Command';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -268,6 +269,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
+                <Command />
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
