@@ -1,8 +1,24 @@
+import { getAppListMin } from '../../services/service';
 
 export function getSuggestedCommands(args) {
-    return [
-        { title: 'Go to app', desc: 'app/app_name', arguments: [{ value: 'app' }, { value: '/' }] },
-        { title: 'To a section in an application', desc: 'app/app_name/configure', arguments: [{ value: 'app' }, { value: '/' }] },
-        { title: 'Other locations', desc: 'Try user access or helm charts', arguments: [{ value: 'app' }, { value: '/' }] },
-    ];
+    let lastIndex = args.length - 2;
+    let arg = args[lastIndex];
+    console.log(arg)
+
+    switch (arg) {
+        case 'app': return getApplications();
+        case 'chart': return [];
+        case 'pod': return [];
+        case 'pod': return [];
+        default: return []
+    }
+
+}
+
+function getApplications() {
+
+    getAppListMin().then((response) => {
+        console.log(response);
+        return [];
+    })
 }
