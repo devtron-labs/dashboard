@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { getSuggestedCommands } from './command.util';
+import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import './command.css';
 interface CommandProps {
     defaultArguments: { label: string; value: string; }[];
@@ -36,6 +37,7 @@ export class Command extends Component<any, CommandState>  {
         this.selectTab = this.selectTab.bind(this);
         this.invoke = this.invoke.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
+        this.selectSuggestedCommand = this.selectSuggestedCommand.bind(this);
     }
 
     componentDidMount() {
@@ -50,6 +52,10 @@ export class Command extends Component<any, CommandState>  {
 
     selectOption(option: { label: string; argument: string; }): void {
         this.setState({ arguments: [{ value: option.argument }, { value: "/" }] });
+    }
+
+    selectSuggestedCommand(cmd): void {
+        this.setState({ arguments: cmd.arguments });
     }
 
     selectTab(event): void {
@@ -97,10 +103,10 @@ export class Command extends Component<any, CommandState>  {
                     {this.props.isTabMode ? <div>
                         <label>
                             <input type="radio" name="command-tab" value="this-app" onChange={this.selectTab} />This App
-                    </label>
+                        </label>
                         <label>
                             <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
-                    </label>
+                        </label>
                     </div> : null}
                     <div className="command-arg">
                         {this.state.arguments.map((arg, index) => {
@@ -110,12 +116,24 @@ export class Command extends Component<any, CommandState>  {
                             placeholder="Search for anything accross devtron" onChange={this.handleArgumentInputChange} />
                     </div>
                     <div className="p-8">
-                        <p className="mb-0">I'm looking for...</p>
+                        <p className="mt-18 mb-8">I'm looking for...</p>
                         <p className="command-options mb-0">
                             {this.state.options.map((opt) => {
                                 return <span key={opt.label} className="command-options__option" onClick={() => this.selectOption(opt)}>{opt.label}</span>
                             })}
                         </p>
+                    </div>
+                    <div className="">
+                        <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
+                        {this.state.suggestedCommands.map((s) => {
+                            return <article className="suggested-command p-8" onClick={(event) => this.selectSuggestedCommand(s)}>
+                                <Arrow className="scn-4" />
+                                <div>
+                                    <p className="m-0">{s.title}</p>
+                                    <p className="m-0">{s.desc}</p>
+                                </div>
+                            </article>
+                        })}
                     </div>
                 </div>
             </div>
