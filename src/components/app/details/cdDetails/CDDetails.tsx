@@ -194,7 +194,7 @@ const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
         >
         <NavLink to={generatePath(path, { ...rest, triggerId: triggerDetails.id })} className="w-100 ci-details__build-card" activeClassName="active">
             <div className="w-100" style={{ height: '64px', display: 'grid', gridTemplateColumns: '20px 1fr', padding: '12px 0', gridColumnGap: '12px' }}>
-                <div className={`app-summary__icon icon-dim-20 ${triggerDetails.status?.toLocaleLowerCase().replace(/\s+/g, '')}`}>
+                <div className={`app-summary__icon icon-dim-22 ${triggerDetails.status?.toLocaleLowerCase().replace(/\s+/g, '')}`}>
 
                 </div>
                 <div className="flex column left ellipsis-right">
