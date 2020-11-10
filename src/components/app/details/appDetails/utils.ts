@@ -7,7 +7,7 @@ import {
     AggregatedNodes,
     PodMetadatum,
 } from '../../types';
-import {mapByKey} from '../../../common'
+import { mapByKey } from '../../../common'
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -32,7 +32,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
         case Nodes.ServiceAccount:
         case Nodes.ClusterRoleBinding:
         case Nodes.RoleBinding:
-        case Nodes.ClusterRole: 
+        case Nodes.ClusterRole:
         case Nodes.Role:
             return AggregationKeys.RBAC;
         case Nodes.MutatingWebhookConfiguration:
@@ -53,19 +53,19 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
     const nodesGroup = nodes.reduce((agg, curr) => {
         agg[curr.kind] = agg[curr.kind] || new Map();
         if (curr.kind === Nodes.Pod) {
-            curr.info.forEach(({name, value}) => {
-                if(name === 'Status Reason'){
+            curr.info.forEach(({ name, value }) => {
+                if (name === 'Status Reason') {
                     curr.status = value.toLowerCase()
                 }
-                else if( name === 'Containers'){
+                else if (name === 'Containers') {
                     curr.ready = value
                 }
             });
             const podMeta = podMetadataMap.has(curr.name) ? podMetadataMap.get(curr.name) : {};
             agg[curr.kind].set(curr.name, { ...curr, ...podMeta });
-        } else if(curr.kind === Nodes.Service){
-             curr.url = `${curr.name}.${curr.namespace}: { portnumber }`;
-             agg[curr.kind].set(curr.name, curr);
+        } else if (curr.kind === Nodes.Service) {
+            curr.url = `${curr.name}.${curr.namespace}: { portnumber }`;
+            agg[curr.kind].set(curr.name, curr);
         } else {
             agg[curr.kind].set(curr.name, curr);
         }
@@ -97,6 +97,9 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
                         const children = parentRef.children || {};
                         children[nodeKind] = children[nodeKind] || [];
                         children[nodeKind] = [...children[nodeKind], curr.name];
+                        if (!agg.nodes[kind]) {
+                            agg.nodes[kind] = new Map();
+                        }
                         agg.nodes[kind].set(name, { ...parentRef, children });
                     }
                 });
