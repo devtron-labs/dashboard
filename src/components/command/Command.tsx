@@ -92,29 +92,31 @@ export class Command extends Component<any, CommandState>  {
 
     render() {
         if (this.state.showCommandBar) {
-            return <div className="command">
-                {this.props.isTabMode ? <div>
-                    <label>
-                        <input type="radio" name="command-tab" value="this-app" onChange={this.selectTab} />This App
+            return <div className="transparent-div" onClick={() => this.setState({ showCommandBar: false })}>
+                <div className="command" onClick={(event) => event.stopPropagation()}>
+                    {this.props.isTabMode ? <div>
+                        <label>
+                            <input type="radio" name="command-tab" value="this-app" onChange={this.selectTab} />This App
                     </label>
-                    <label>
-                        <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
+                        <label>
+                            <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
                     </label>
-                </div> : null}
-                <div className="command-arg">
-                    {this.state.arguments.map((arg, index) => {
-                        return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
-                    })}
-                    <input type="text" value={this.state.argumentInput} autoFocus className="m-4 flex-1"
-                        placeholder="Search for anything accross devtron" onChange={this.handleArgumentInputChange} />
-                </div>
-                <div className="mt-10 m-10">
-                    <p className="mb-0">I'm looking for...</p>
-                    <p className="command-options">
-                        {this.state.options.map((opt) => {
-                            return <span key={opt.label} className="command-options__option" onClick={() => this.selectOption(opt)}>{opt.label}</span>
+                    </div> : null}
+                    <div className="command-arg">
+                        {this.state.arguments.map((arg, index) => {
+                            return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                    </p>
+                        <input type="text" value={this.state.argumentInput} autoFocus className="m-4 flex-1"
+                            placeholder="Search for anything accross devtron" onChange={this.handleArgumentInputChange} />
+                    </div>
+                    <div className="p-8">
+                        <p className="mb-0">I'm looking for...</p>
+                        <p className="command-options mb-0">
+                            {this.state.options.map((opt) => {
+                                return <span key={opt.label} className="command-options__option" onClick={() => this.selectOption(opt)}>{opt.label}</span>
+                            })}
+                        </p>
+                    </div>
                 </div>
             </div>
         }
