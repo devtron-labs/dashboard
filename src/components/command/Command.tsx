@@ -1,20 +1,18 @@
 import React, { Component } from 'react'
 import { getSuggestedCommands } from './command.util';
-
+import './command.css';
 interface CommandProps {
     defaultArguments: { label: string; value: string; }[];
     isTabMode: boolean;
 }
-
 interface CommandState {
     argumentInput: string;
-    arguments: { label: string; argument: string }[];
+    arguments: { value: string }[];
     options: { label: string; argument: string }[];
     suggestedCommands: any[],
     tab: 'jump-to' | 'this-app';
     showCommandBar: boolean;
 }
-
 export class Command extends Component<any, CommandState>  {
 
     constructor(props) {
@@ -24,11 +22,11 @@ export class Command extends Component<any, CommandState>  {
             arguments: this.props.defaultArguments || [],
             options: [
                 { label: 'Applications', argument: 'app' },
-                { label: 'Helm Charts', argument: '' },
-                { label: 'Documentation', argument: '' },
-                { label: 'Deployment Group', argument: '' },
-                { label: 'Security', argument: '' },
-                { label: 'Global Configuration', argument: '' },
+                { label: 'Helm Charts', argument: 'chart' },
+                { label: 'Documentation', argument: 'docs' },
+                { label: 'Deployment Group', argument: 'deployment-group' },
+                { label: 'Security', argument: 'security' },
+                { label: 'Global Configuration', argument: 'global-config' },
             ],
             suggestedCommands: [],
             tab: 'jump-to',
@@ -51,7 +49,7 @@ export class Command extends Component<any, CommandState>  {
     }
 
     selectOption(option: { label: string; argument: string; }): void {
-        this.setState({ arguments: [option] });
+        this.setState({ arguments: [{ value: option.argument }, { value: "/" }] });
     }
 
     selectTab(event): void {
@@ -65,29 +63,58 @@ export class Command extends Component<any, CommandState>  {
         else if (event.key === "Escape") {
             this.setState({ showCommandBar: false });
         }
-        else if (event.key === '/') {
-            let suggestedCommands = getSuggestedCommands(this.state.arguments);
-            this.setState({ suggestedCommands });
+        else if ((event.key === 'Enter' || event.key === '/') && this.state.argumentInput.length) {
+            let newArguments = [
+                { value: this.state.argumentInput, argument: '' },
+                { value: '/', argument: '' }
+            ];
+            let allArgs = this.state.arguments.concat(newArguments);
+            let suggestedCommands = getSuggestedCommands(allArgs);
+            this.setState({ arguments: allArgs, suggestedCommands, argumentInput: '' });
+        }
+        else if (event.key === 'Backspace' && !this.state.argumentInput.length) {
+            let allArgs = this.state.arguments;
+            let start = this.state.arguments.length - 2;
+            allArgs.splice(start, 2);
+            let suggestedCommands = getSuggestedCommands(allArgs);
+            this.setState({ arguments: allArgs, suggestedCommands, argumentInput: '' });
         }
     }
 
     handleArgumentInputChange(event) {
-        this.setState({ argumentInput: event.target.value });
+        if (event.target.value === "/") {
+            this.setState({ argumentInput: '' });
+        }
+        else {
+            this.setState({ argumentInput: event.target.value });
+        }
     }
 
     render() {
         if (this.state.showCommandBar) {
             return <div className="command">
-                <div>
+                {this.props.isTabMode ? <div>
                     <label>
                         <input type="radio" name="command-tab" value="this-app" onChange={this.selectTab} />This App
                     </label>
                     <label>
                         <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
                     </label>
+                </div> : null}
+                <div className="command-arg">
+                    {this.state.arguments.map((arg, index) => {
+                        return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
+                    })}
+                    <input type="text" value={this.state.argumentInput} autoFocus className="m-4 flex-1"
+                        placeholder="Search for anything accross devtron" onChange={this.handleArgumentInputChange} />
                 </div>
-                <div>
-                    <input type="text" value={this.state.argumentInput} autoFocus onChange={this.handleArgumentInputChange} />
+                <div className="mt-10 m-10">
+                    <p className="mb-0">I'm looking for...</p>
+                    <p className="command-options">
+                        {this.state.options.map((opt) => {
+                            return <span key={opt.label} className="command-options__option" onClick={() => this.selectOption(opt)}>{opt.label}</span>
+                        })}
+                    </p>
                 </div>
             </div>
         }
