@@ -4,7 +4,7 @@ import { ViewType, URLS } from '../../../config';
 import EmptyState from '../../EmptyState/EmptyState';
 import { Link, withRouter } from 'react-router-dom';
 import { ErrorScreenManager, LazyImage, Progressing } from '../../common';
-import { UpdateWarn } from '../../common/deprecatedUpdateWarn';
+import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
 import check from '../../../assets/icons/misc/checkGreen.svg';
 import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'

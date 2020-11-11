@@ -17,7 +17,7 @@ import './DiscoverChartDetails.scss';
 import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
-import { DeprecatedWarn } from "../../common/deprecatedUpdateWarn";
+import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
 
 
 const DiscoverDetailsContext = React.createContext(null);

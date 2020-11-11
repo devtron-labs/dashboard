@@ -5,7 +5,7 @@ import { LazyImage, noop, ConditionalWrap } from '../../common';
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
 import Tippy from '@tippyjs/react';
-import { DeprecatedWarn } from "../../common/deprecatedUpdateWarn";
+import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
 
 interface AllChartSelectProps {
     chart: Chart;
