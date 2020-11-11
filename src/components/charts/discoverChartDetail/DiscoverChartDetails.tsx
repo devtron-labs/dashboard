@@ -234,16 +234,17 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
         <div className="chart-grid-item__icon-wrapper">
             <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
         </div>
-        <div className="repository">
-            <span className="user anchor">{chartName}/</span>
-            <span className="repo">{appStoreApplicationName}</span>
-        </div>
-        {   deprecated &&
-            <div style={{margin: '4px 0 20px 0'}}>
-                <DeprecatedWarn/>
+        <div style={{margin: '0 0 16px 0'}}>
+            <div className="repository" style={{margin: '0'}}>
+                <span className="user anchor">{chartName}/</span>
+                <span className="repo">{appStoreApplicationName}</span>
             </div>
-        }
-        
+            {   deprecated &&
+                <div style={{margin: '8px 0 0 0'}}>
+                    <DeprecatedWarn/>
+                </div>
+            }
+        </div>
         <span className="form__label">Chart version</span>
         <DevtronSelect rootClassName="select-button--default mb-20" value={selectedVersion && availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).id : null} onChange={event => { selectVersion(event.target.value) }}>
             <DevtronSelect.Button>{availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).version : 'Select version'}</DevtronSelect.Button>
