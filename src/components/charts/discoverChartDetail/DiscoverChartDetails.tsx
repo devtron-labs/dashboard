@@ -16,7 +16,9 @@ import { ChartValuesSelect } from '../util/ChartValueSelect';
 import './DiscoverChartDetails.scss';
 import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
-import AppSelector from '../../AppSelector'
+import AppSelector from '../../AppSelector';
+import { DeprecatedWarn } from "../../common/deprecatedUpdateWarn";
+
 
 const DiscoverDetailsContext = React.createContext(null);
 
@@ -231,6 +233,9 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
         <div className="repository">
             <span className="user anchor">{chartName}/</span>
             <span className="repo">{appStoreApplicationName}</span>
+        </div>
+        <div style={{margin: '8px 0 20px 0'}}>
+            <DeprecatedWarn/>
         </div>
         <span className="form__label">Chart version</span>
         <DevtronSelect rootClassName="select-button--default mb-20" value={selectedVersion && availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).id : null} onChange={event => { selectVersion(event.target.value) }}>

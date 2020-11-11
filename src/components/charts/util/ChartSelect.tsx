@@ -5,6 +5,7 @@ import { LazyImage, noop, ConditionalWrap } from '../../common';
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
 import Tippy from '@tippyjs/react';
+import { DeprecatedWarn } from "../../common/deprecatedUpdateWarn";
 
 interface AllChartSelectProps {
     chart: Chart;
@@ -73,7 +74,10 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
                 <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
                 <span>/{chart.name}</span>
             </div>
-            <div className="chart-grid-item__chart-version">{chart.version}</div>
+            <div className="flexbox" style={{alignItems: 'center'}}>
+                <div className="chart-grid-item__chart-version" style={{margin: '0 12px 0 0'}}>{chart.version}</div>
+                <DeprecatedWarn/>
+            </div>
         </div>
     )
 }
