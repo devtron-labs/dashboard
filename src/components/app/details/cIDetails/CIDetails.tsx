@@ -149,7 +149,7 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if (loading || pipelinesLoading && triggerHistory.size === 0) return <Progressing pageLoader />
+    if (loading || pipelinesLoading ) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter(pipeline => (pipeline.pipelineType !== 'EXTERNAL')) // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
