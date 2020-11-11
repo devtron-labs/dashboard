@@ -177,6 +177,12 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
                 </div>
             </>}
+            {state.registryType.value === 'docker-hub' && <>
+                <div className="form__row form__row--two-third">
+                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
+                </div>
+            </>}
             {state.registryType.value === 'other' && <>
                 <div className="form__row form__row--two-third">
                     <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
