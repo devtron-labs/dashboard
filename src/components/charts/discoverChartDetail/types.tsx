@@ -11,5 +11,6 @@ export interface DeploymentProps {
     name?: string;
     chartId: string;
     appStoreApplicationName?: string;
+    deprecated: boolean;
     availableVersions: Map<number, { id, version }>;
 }

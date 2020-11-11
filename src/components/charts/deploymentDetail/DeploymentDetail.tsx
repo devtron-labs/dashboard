@@ -84,9 +84,13 @@ export default function AppDetail() {
                     <div className="flex left page-header__title">{appDetails?.appName}</div>
                 </div>
                 <div className="page-header__cta-container flex">
-                    <div style={{margin: "0 20px 0 0"}}>
-                        <UpdateWarn/>
-                    </div>
+                    {
+                        appDetails?.deprecated &&
+                        <div style={{margin: "0 20px 0 0"}}>
+                            <UpdateWarn/>
+                        </div>
+                    }
+                    
                     <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
                         {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
                         configure

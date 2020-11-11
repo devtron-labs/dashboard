@@ -76,7 +76,10 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
             </div>
             <div className="flexbox" style={{alignItems: 'center'}}>
                 <div className="chart-grid-item__chart-version" style={{margin: '0 12px 0 0'}}>{chart.version}</div>
-                <DeprecatedWarn/>
+                {
+                    chart.deprecated && 
+                        <DeprecatedWarn/>
+                }
             </div>
         </div>
     )

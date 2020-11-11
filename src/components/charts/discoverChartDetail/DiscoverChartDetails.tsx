@@ -41,7 +41,7 @@ function mapById(arr) {
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState(new Map())
-    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '' })
+    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '', deprecated: false })
     const [chartYaml, setChartYaml] = React.useState(null)
     const [loading, setLoading] = React.useState(false);
     const [chartValuesList, setChartValuesList] = useState([])
@@ -188,7 +188,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         <ChartDeploymentList chartId={chartId} />
                     </div>
                     <div className="chart-detail-right">
-                        <Deployment chartId={chartId} {...chartInformation} availableVersions={availableVersions} />
+                        <Deployment 
+                            chartId={chartId} 
+                            {...chartInformation} 
+                            availableVersions={availableVersions} 
+                            />
                 </div>
                 </div>
             </div>
@@ -217,7 +221,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     </DiscoverDetailsContext.Provider>
 }
 
-const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, ...rest }) => {
+const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, deprecated = "", ...rest }) => {
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
     const match = useRouteMatch();
     const handleImageError = (e) => {
@@ -234,9 +238,12 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
             <span className="user anchor">{chartName}/</span>
             <span className="repo">{appStoreApplicationName}</span>
         </div>
-        <div style={{margin: '8px 0 20px 0'}}>
-            <DeprecatedWarn/>
-        </div>
+        {   deprecated &&
+            <div style={{margin: '8px 0 20px 0'}}>
+                <DeprecatedWarn/>
+            </div>
+        }
+        
         <span className="form__label">Chart version</span>
         <DevtronSelect rootClassName="select-button--default mb-20" value={selectedVersion && availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).id : null} onChange={event => { selectVersion(event.target.value) }}>
             <DevtronSelect.Button>{availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).version : 'Select version'}</DevtronSelect.Button>

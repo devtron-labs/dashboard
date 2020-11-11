@@ -45,16 +45,19 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     renderCard(chart) {
-        let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId } = chart;
+        let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
         return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" to={`deployments/${installedAppId}/env/${environmentId}`}>
             <div className="chart-grid-item__flexbox">
                 <div className="chart-grid-item__icon-wrapper">
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
-                <div>
-                    <UpdateWarn/>
-                    {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
-                </div>
+                {
+                    deprecated && 
+                    <div>
+                        <UpdateWarn/>
+                        {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
+                    </div>
+                }
             </div>
             <div className="chart-grid-item__title ellipsis-right">{appName}</div>
             <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
