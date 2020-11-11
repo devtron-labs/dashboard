@@ -239,7 +239,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
             <span className="repo">{appStoreApplicationName}</span>
         </div>
         {   deprecated &&
-            <div style={{margin: '8px 0 20px 0'}}>
+            <div style={{margin: '4px 0 20px 0'}}>
                 <DeprecatedWarn/>
             </div>
         }
