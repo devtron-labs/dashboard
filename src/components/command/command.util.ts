@@ -1,24 +1,55 @@
-import { getAppListMin } from '../../services/service';
+import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
 
 export function getSuggestedCommands(args) {
-    let lastIndex = args.length - 2;
-    let arg = args[lastIndex];
-    console.log(arg)
+    if (args.length === 0) return undefined;
 
-    switch (arg) {
-        case 'app': return getApplications();
-        case 'chart': return [];
-        case 'pod': return [];
-        case 'pod': return [];
-        default: return []
+    let arg = args[0];
+    switch (arg.value) {
+        case 'app': return getAppArguments(args);
     }
-
 }
 
-function getApplications() {
+function getAppArguments(args): Promise<any> {
+    let allArgs = args.filter(arg => arg.value === "/");
 
-    getAppListMin().then((response) => {
-        console.log(response);
-        return [];
-    })
+    if (!allArgs.length) {
+        return getAppListMin().then((response) => {
+            let list = response.result.map((a) => {
+                return {
+                    value: a.name,
+                    data: {
+                        appId: a.id,
+                    }
+                }
+            })
+            return list;
+        })
+    }
+    else if (allArgs[1] && allArgs.length === 2) { // allArgs[1] --> app
+        return getAppOtherEnvironment(allArgs[1].data.appId).then((response) => {
+            let list = response.result.map((a) => {
+                return {
+                    value: a.environmentName,
+                    data: {
+                        envId: a.environmentId
+                    }
+                }
+            })
+            return list;
+        })
+    }
+    // else if (allArgs[2] && allArgs.length === 2) { // allArgs[1] --> app
+    //     return getAppOtherEnvironment(allArgs[1].data.appId).then((response) => {
+    //         let list = response.result.map((a) => {
+    //             return {
+    //                 value: a.environmentName,
+    //                 data: {
+    //                     envId: a.environmentId
+    //                 }
+    //             }
+    //         })
+    //         return list;
+    //     })
+    // }
+
 }

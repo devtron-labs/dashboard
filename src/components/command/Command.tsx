@@ -9,9 +9,11 @@ interface CommandProps {
 }
 interface CommandState {
     argumentInput: string;
-    arguments: { value: string }[];
+    arguments: { value: string; }[];
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
+    suggestedArguments: any[];
+    showSuggestedArguments: boolean;
     tab: 'jump-to' | 'this-app';
     showCommandBar: boolean;
 }
@@ -42,17 +44,19 @@ export class Command extends Component<any, CommandState>  {
             ],
             tab: 'jump-to',
             suggestedCommands: [],
+            suggestedArguments: [],
+            showSuggestedArguments: false,
             showCommandBar: false,
         }
         this.selectCommand = this.selectCommand.bind(this);
         this.selectTab = this.selectTab.bind(this);
-        this.invoke = this.invoke.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
         this.selectSuggestedCommand = this.selectSuggestedCommand.bind(this);
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.invoke);
+        document.addEventListener("keydown", this.handleKeyPress);
         this.setState({
             suggestedCommands: [
                 { title: 'Go to app', desc: 'app/app_name', arguments: [{ value: 'app' }, { value: '/' }] },
@@ -63,11 +67,23 @@ export class Command extends Component<any, CommandState>  {
     }
 
     componentWillUnmount() {
-        document.removeEventListener("keydown", this.invoke);
+        document.removeEventListener("keydown", this.handleKeyPress);
     }
 
     selectCommand(option: { label: string; argument: string; }): void {
         this.setState({ arguments: [{ value: option.argument }, { value: "/" }] });
+    }
+
+    selectArgument(arg): void {
+        let state = { ...this.state };
+        let args = state.arguments;
+        args.push(arg);
+        args.push({ value: '/' });
+        this.setState({
+            arguments: args,
+            showSuggestedArguments: false,
+            suggestedArguments: [],
+        });
     }
 
     selectSuggestedCommand(cmd): void {
@@ -78,28 +94,39 @@ export class Command extends Component<any, CommandState>  {
         this.setState({ tab: event.target.value });
     }
 
-    invoke(event) {
+    handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
             this.setState({ showCommandBar: true });
         }
         else if (event.key === "Escape") {
             this.setState({ showCommandBar: false });
         }
-        else if ((event.key === 'Enter' || event.key === '/') && this.state.argumentInput.length) {
-            let newArguments = [
-                { value: this.state.argumentInput, argument: '' },
-                { value: '/', argument: '' }
-            ];
-            let allArgs = this.state.arguments.concat(newArguments);
-            getSuggestedCommands(allArgs)
-            this.setState({ arguments: allArgs, argumentInput: '' });
+        else if ((event.key === '/') && this.state.argumentInput.length) {
+            let allArgs = this.state.arguments.concat([
+                { value: this.state.argumentInput },
+                { value: '/' }
+            ]);
+            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                getSuggestedCommands(allArgs)?.then((response) => {
+                    this.setState({
+                        showSuggestedArguments: true,
+                        suggestedArguments: response,
+                    });
+                })
+            });
         }
         else if (event.key === 'Backspace' && !this.state.argumentInput.length) {
             let allArgs = this.state.arguments;
             let start = this.state.arguments.length - 2;
             allArgs.splice(start, 2);
-            getSuggestedCommands(allArgs);
-            this.setState({ arguments: allArgs, argumentInput: '' });
+            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                getSuggestedCommands(allArgs)?.then((response) => {
+                    this.setState({
+                        showSuggestedArguments: true,
+                        suggestedArguments: response,
+                    });
+                })
+            });
         }
     }
 
@@ -130,6 +157,11 @@ export class Command extends Component<any, CommandState>  {
                         })}
                         <input type="text" value={this.state.argumentInput} autoFocus className="m-4 flex-1"
                             placeholder="Search for anything accross devtron" onChange={this.handleArgumentInputChange} />
+                        {this.state.showSuggestedArguments && this.state.arguments.length ? <div className="suggested-arguments">
+                            {this.state.suggestedArguments.map((a) => {
+                                return <p onClick={(event) => this.selectArgument(a)}>{a.value}</p>
+                            })}
+                        </div> : null}
                     </div>
                     <div className="p-8">
                         <p className="mt-18 mb-8">I'm looking for...</p>
@@ -138,6 +170,7 @@ export class Command extends Component<any, CommandState>  {
                                 return <span key={opt.label} className="command-options__option" onClick={() => this.selectCommand(opt)}>{opt.label}</span>
                             })}
                         </p>
+
                     </div>
                     <div className="">
                         <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>

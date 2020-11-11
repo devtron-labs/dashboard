@@ -18,7 +18,8 @@
     border: solid 1px var(--B500);
     display: flex;
     flex-wrap: wrap;
-    align-items: center
+    align-items: center;
+    position: relative;
 }
 
 .command-arg__arg {
@@ -61,4 +62,16 @@
 
 .suggested-command:hover {
     background-color: var(--N100);
+}
+
+.suggested-arguments {
+    max-height: 300px;
+    overflow: auto;
+    position: absolute;
+    background-color: white;
+    width: max-content;
+    top: 100%;
+    left: 80px;
+    padding: 8px;
+    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
 }
