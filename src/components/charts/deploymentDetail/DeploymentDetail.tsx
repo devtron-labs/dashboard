@@ -10,7 +10,7 @@ import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
 import AppSelector from '../../AppSelector';
-import { UpdateWarn } from '../../common/index';
+import { UpdateWarn } from '../../common/deprecatedUpdateWarn';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
