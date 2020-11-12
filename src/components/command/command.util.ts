@@ -1,6 +1,6 @@
 import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
 
-export function getSuggestedCommands(args) {
+export function getArgumentSuggestions(args) {
     if (args.length === 0) return undefined;
 
     let arg = args[0];
@@ -10,9 +10,9 @@ export function getSuggestedCommands(args) {
 }
 
 function getAppArguments(args): Promise<any> {
-    let allArgs = args.filter(arg => arg.value === "/");
-
-    if (!allArgs.length) {
+    //["app", "appName", "envName", "pod", "podname"]
+    args = args.filter(arg => arg.value !== "/");
+    if (args.length === 1) {
         return getAppListMin().then((response) => {
             let list = response.result.map((a) => {
                 return {
@@ -25,31 +25,48 @@ function getAppArguments(args): Promise<any> {
             return list;
         })
     }
-    else if (allArgs[1] && allArgs.length === 2) { // allArgs[1] --> app
-        return getAppOtherEnvironment(allArgs[1].data.appId).then((response) => {
-            let list = response.result.map((a) => {
+    else if (args[1] && args.length === 2) { // args[1] --> appName
+        return getAppOtherEnvironment(args[1].data.appId).then((response) => {
+            let list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
                     data: {
-                        envId: a.environmentId
+                        envId: a.environmentId,
+
                     }
                 }
-            })
+            });
+            if (!list) list = [];
             return list;
         })
     }
-    // else if (allArgs[2] && allArgs.length === 2) { // allArgs[1] --> app
-    //     return getAppOtherEnvironment(allArgs[1].data.appId).then((response) => {
-    //         let list = response.result.map((a) => {
-    //             return {
-    //                 value: a.environmentName,
-    //                 data: {
-    //                     envId: a.environmentId
-    //                 }
-    //             }
-    //         })
-    //         return list;
-    //     })
-    // }
-
+    else if (args[2] && args.length === 3) { // args[2] --> envName
+        return new Promise((resolve, reject) => {
+            resolve([{
+                value: 'pod',
+            }])
+        })
+    }
+    else if (args[3] && args.length === 4) { // args[3] --> pod
+        if (args[3].value === 'pod') return new Promise((resolve, reject) => {
+            resolve([{
+                value: 'blobs-dev1-fdfc6b54-prglm',
+                data: {
+                    id: 'blobs-dev1-fdfc6b54-prglm',
+                    url: '',
+                }
+            },
+            {
+                value: 'blobs-dev1-fdfc6b54-pvphj',
+                data: {
+                    id: 'blobs-dev1-fdfc6b54-pvphj',
+                    url: `app/${args[1].data.appId}/details/${args[1].data.envId}/Pod`,
+                }
+            },
+            ])
+        })
+    }
+    else return new Promise((resolve, reject) => {
+        resolve([])
+    })
 }

@@ -69,9 +69,19 @@
     overflow: auto;
     position: absolute;
     background-color: white;
-    width: max-content;
+    width: 170px;
     top: 100%;
-    left: 80px;
-    padding: 8px;
+    left: calc(100% - 174px);
+    padding: 8px 0;
     box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+}
+
+.suggested-arguments p {
+    cursor: pointer;
+    padding: 8px;
+    margin: 0px;
+}
+
+.suggested-arguments p:hover {
+    background-color: var(--N100);
 }
