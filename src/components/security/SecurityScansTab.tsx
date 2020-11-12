@@ -63,7 +63,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         view: ViewType.FORM,
       });
     }).catch((error) => {
-      this.setState({ view: ViewType.ERROR });
+      this.setState({ responseCode: error.code, view: ViewType.ERROR });
     })
   }
 
@@ -78,7 +78,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
       });
     }).catch((error) => {
       showError(error);
-      this.setState({ view: ViewType.ERROR });
+      this.setState({ responseCode: error.code, view: ViewType.ERROR });
     })
   }
 
