@@ -6,9 +6,17 @@ interface CommandProps {
     defaultArguments: { label: string; value: string; }[];
     isTabMode: boolean;
 }
+interface ArgumentType {
+    value: string;
+    data?: {
+        kind: string;
+        value: string | number;
+        isEOC: boolean; //is end of command
+    }
+}
 interface CommandState {
     argumentInput: string;
-    arguments: { value: string; }[];
+    arguments: ArgumentType[];
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
     suggestedArguments: any[];
@@ -47,21 +55,19 @@ export class Command extends Component<any, CommandState>  {
             showSuggestedArguments: false,
             showCommandBar: false,
         }
-        this.selectCommand = this.selectCommand.bind(this);
         this.selectTab = this.selectTab.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.runCommand = this.runCommand.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
-        this.selectSuggestedCommand = this.selectSuggestedCommand.bind(this);
     }
 
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyPress);
         this.setState({
             suggestedCommands: [
-                { title: 'Go to app', desc: 'app/app_name', arguments: [{ value: 'app' }, { value: '/' }] },
-                { title: 'To a section in an application', desc: 'app/app_name/configure', arguments: [{ value: 'app' }, { value: '/' }] },
-                { title: 'Other locations', desc: 'Try user access or helm charts', arguments: [{ value: 'app' }, { value: '/' }] },
+                { title: 'Go to app', desc: 'app/app_name', argument: { value: 'app' } },
+                { title: 'To a section in an application', desc: 'app/app_name/configure', argument: { value: 'app' } },
+                { title: 'Other locations', desc: 'Try user access or helm charts', argument: { value: 'app' } },
             ]
         });
     }
@@ -70,29 +76,26 @@ export class Command extends Component<any, CommandState>  {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
 
-    selectArgument(arg): void {
-        let state = { ...this.state };
-        let args = state.arguments;
-        args.push(arg);
-        args.push({ value: '/' });
-        this.setState({ arguments: args }, () => {
-            getArgumentSuggestions(args)?.then((response) => {
+    selectArgument(arg: ArgumentType): void {
+        this.setState({ arguments: [...this.state.arguments, arg, { value: '/' }] }, () => {
+            getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
-                    showSuggestedArguments: false,
+                    showSuggestedArguments: true,
                     suggestedArguments: response,
                 });
             })
         });
     }
 
-    selectCommand(option: { label: string; argument: string; }): void {
-        this.setState({
-            arguments: [{ value: option.argument }, { value: "/" }],
+    selectFirstArgument(arg: ArgumentType): void {
+        this.setState({ arguments: [arg, { value: '/' }] }, () => {
+            getArgumentSuggestions(this.state.arguments)?.then((response) => {
+                this.setState({
+                    showSuggestedArguments: true,
+                    suggestedArguments: response,
+                });
+            })
         });
-    }
-
-    selectSuggestedCommand(cmd): void {
-        this.setState({ arguments: cmd.arguments });
     }
 
     selectTab(event): void {
@@ -104,16 +107,11 @@ export class Command extends Component<any, CommandState>  {
     }
 
     handleArgumentInputClick() {
-        if (!this.state.suggestedArguments.length) {
-            getArgumentSuggestions(this.state.arguments)?.then((response) => {
-                this.setState({
-                    showSuggestedArguments: !this.state.showSuggestedArguments,
-                    suggestedArguments: response,
-                });
-            })
-        }
-        else this.setState({
-            showSuggestedArguments: !this.state.showSuggestedArguments
+        getArgumentSuggestions(this.state.arguments).then((response) => {
+            this.setState({
+                showSuggestedArguments: !this.state.showSuggestedArguments,
+                suggestedArguments: response,
+            });
         })
     }
 
@@ -133,7 +131,7 @@ export class Command extends Component<any, CommandState>  {
                 { value: '/' }
             ]);
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                getArgumentSuggestions(allArgs)?.then((response) => {
+                getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
@@ -146,7 +144,7 @@ export class Command extends Component<any, CommandState>  {
             let start = this.state.arguments.length - 2;
             allArgs.splice(start, 2);
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                getArgumentSuggestions(allArgs)?.then((response) => {
+                getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
@@ -193,15 +191,14 @@ export class Command extends Component<any, CommandState>  {
                         <p className="mt-18 mb-8">I'm looking for...</p>
                         <p className="command-options mb-0">
                             {this.state.command.map((opt) => {
-                                return <span key={opt.label} className="command-options__option" onClick={() => this.selectCommand(opt)}>{opt.label}</span>
+                                return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
                             })}
                         </p>
-
                     </div>
                     <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
                         <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
                         {this.state.suggestedCommands.map((s) => {
-                            return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectSuggestedCommand(s)}>
+                            return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
                                 <Arrow className="scn-4" />
                                 <div>
                                     <p className="m-0">{s.title}</p>
