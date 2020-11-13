@@ -149,7 +149,7 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if (pipelinesLoading) return <Progressing pageLoader />
+    if (loading || pipelinesLoading ) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter(pipeline => (pipeline.pipelineType !== 'EXTERNAL')) // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -220,7 +220,7 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
         >
             <NavLink to={`${url}/${triggerDetails.id}`} className="w-100 ci-details__build-card" activeClassName="active">
                 <div className="w-100" style={{ height: '64px', display: 'grid', gridTemplateColumns: '20px 1fr', padding: '12px 0', gridColumnGap: '12px' }}>
-                    <div className={`app-summary__icon icon-dim-20 ${triggerDetails.status?.toLocaleLowerCase().replace(/\s+/g, '')}`}>
+                    <div className={`app-summary__icon icon-dim-22 ${triggerDetails.status?.toLocaleLowerCase().replace(/\s+/g, '')}`}>
 
                     </div>
                     <div className="flex column left ellipsis-right">
