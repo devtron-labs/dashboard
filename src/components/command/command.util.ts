@@ -1,5 +1,5 @@
 import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
-import { ArgumentType} from './Command';
+import { ArgumentType } from './Command';
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
@@ -9,6 +9,11 @@ export function getArgumentSuggestions(args): Promise<any> {
     let arg = args[0];
     switch (arg.value) {
         case 'app': return getAppArguments(args);
+        case 'chart': return getChartArguments(args);
+
+        default: return new Promise((resolve, reject) => {
+            resolve([])
+        });
     }
 }
 
@@ -21,11 +26,10 @@ function getAppArguments(args): Promise<any> {
                 return {
                     value: a.name,
                     data: {
-                        appId: a.id,
                         value: a.id,
                         kind: 'appId',
-                        isEOC: false,
                         isValid: true,
+                        url: `app/${a.id}/details`,
                     }
                 }
             })
@@ -33,25 +37,25 @@ function getAppArguments(args): Promise<any> {
         })
     }
     else if (args[1] && args.length === 2) { // args[1] --> appName
-        return getAppOtherEnvironment(args[1].data.appId).then((response) => {
-            let list: ArgumentType[] ;
+        return getAppOtherEnvironment(args[1].data.value).then((response) => {
+            let list: ArgumentType[];
             list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
                     data: {
-                        envId: a.environmentId,
                         value: a.environmentId,
                         kind: 'envId',
-                        isEOC: false,
                         isValid: true,
+                        url: `app/${args[1].data.value}/details/${a.environmentId}/Pod`,
                     }
                 }
             });
             if (!list) list = [];
             list.push({
-                value: 'config', data: {
-                    isEOC: false,
+                value: 'config',
+                data: {
                     isValid: true,
+                    url: `app/${args[1].data.value}/edit/workflow`,
                 }
             })
             return list;
@@ -63,19 +67,29 @@ function getAppArguments(args): Promise<any> {
                 {
                     value: 'git-material',
                     data: {
-                        url: `app/${args[1].data.appId}/edit/materials`,
-                        isEOC: true,
+                        url: `app/${args[1].data.value}/edit/materials`,
                         isValid: true,
-
                     },
                 },
                 {
                     value: 'docker-config',
                     data: {
-                        url: `app/${args[1].data.appId}/edit/docker-build-config`,
-                        isEOC: true,
+                        url: `app/${args[1].data.value}/edit/docker-build-config`,
                         isValid: true,
-
+                    }
+                },
+                {
+                    value: 'deployment-template',
+                    data: {
+                        url: `app/${args[1].data.value}/edit/deployment-template`,
+                        isValid: true,
+                    }
+                },
+                {
+                    value: 'workflow-editor',
+                    data: {
+                        url: `app/${args[1].data.value}/edit/workflow`,
+                        isValid: true,
                     }
                 }
             ])
@@ -95,8 +109,7 @@ function getAppArguments(args): Promise<any> {
                 value: 'blobs-dev1-fdfc6b54-prglm',
                 data: {
                     id: 'blobs-dev1-fdfc6b54-prglm',
-                    url: `app/${args[1].data.appId}/details/${args[2].data.envId}/Pod`,
-                    isEOC: true,
+                    url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
                 }
             },
@@ -104,8 +117,7 @@ function getAppArguments(args): Promise<any> {
                 value: 'blobs-dev1-fdfc6b54-pvphj',
                 data: {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
-                    url: `app/${args[1].data.appId}/details/${args[2].data.envId}/Pod`,
-                    isEOC: true,
+                    url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
                 }
             },
@@ -113,7 +125,33 @@ function getAppArguments(args): Promise<any> {
         })
 
     }
-    else return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         resolve([])
     })
+}
+
+
+function getChartArguments(args): Promise<any> {
+    args = args.filter(arg => arg.value !== "/");
+    if (args.length === 1) {
+        return new Promise((resolve, reject) => {
+            resolve([
+                {
+                    value: 'discover',
+                    data: {
+                        isValid: true,
+                    }
+                },
+                {
+                    value: 'deployed',
+                    data: {
+                        isValid: true,
+                    }
+                },
+            ])
+        });
+    }
+    return new Promise((resolve, reject) => {
+        resolve([])
+    });
 }

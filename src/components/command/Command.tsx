@@ -13,7 +13,6 @@ export interface ArgumentType {
         kind?: string;
         value?: string | number;
         url?: string;
-        isEOC: boolean; //is end of command
         isValid: boolean;
     }
 }
@@ -42,7 +41,6 @@ const COMMAND = {
 }
 
 export class Command extends Component<any, CommandState>  {
-    inputRef;
     constructor(props) {
         super(props);
         this.state = {
@@ -81,7 +79,6 @@ export class Command extends Component<any, CommandState>  {
 
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyPress);
-
         this.setState({
             suggestedCommands: [
                 { title: 'Go to app', desc: 'app/app_name', argument: { value: 'app' } },
@@ -96,14 +93,9 @@ export class Command extends Component<any, CommandState>  {
     }
 
     selectArgument(arg: ArgumentType): void {
-        let rect = this.inputRef.getBoundingClientRect();
         this.setState({
             arguments: [...this.state.arguments, arg, { value: '/' }],
             argumentInput: '',
-            inputPosition: {
-                top: rect.top,
-                left: rect.left,
-            }
         }, () => {
             let last = this.state.arguments[this.state.arguments.length - 2];
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
@@ -120,16 +112,11 @@ export class Command extends Component<any, CommandState>  {
             arguments: [arg, { value: '/' }],
             argumentInput: '',
         }, () => {
-            let last = this.state.arguments[this.state.arguments.length - 2];
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
-                let rect = this.inputRef.getBoundingClientRect();
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
-                    inputPosition: {
-                        top: rect.top,
-                        left: rect.left,
-                    }
+                    
                 });
             })
         });
@@ -140,27 +127,26 @@ export class Command extends Component<any, CommandState>  {
     }
 
     runCommand() {
-        let last = this.state.arguments[this.state.arguments.length - 2];
-        this.props.history.push(last.data.url);
+        let newArg = this.state.suggestedArguments.find(a => a.value === this.state.argumentInput);
+        if (newArg) {
+            this.setState({ arguments: [...this.state.arguments, newArg, { value: '/' }] }, () => {
+                let last = this.state.arguments[this.state.arguments.length - 2];
+                this.props.history.push(last.data.url);
+            })
+        }
+        else {
+            let last = this.state.arguments[this.state.arguments.length - 2];
+            this.props.history.push(last.data.url);
+        }
     }
 
     handleArgumentInputClick() {
         let last = this.state.arguments[this.state.arguments.length - 2];
-        if (last.data.isEOC) {
+
+        getArgumentSuggestions(this.state.arguments).then((response) => {
             this.setState({
-                suggestedArguments: [],
-                showSuggestedArguments: false,
-            })
-        }
-        else getArgumentSuggestions(this.state.arguments).then((response) => {
-            let rect = this.inputRef.getBoundingClientRect();
-            this.setState({
-                showSuggestedArguments: !this.state.showSuggestedArguments,
                 suggestedArguments: response,
-                inputPosition: {
-                    top: rect.top,
-                    left: rect.left,
-                }
+               
             });
         })
     }
@@ -176,46 +162,28 @@ export class Command extends Component<any, CommandState>  {
             this.runCommand()
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
-            let rect = this.inputRef.getBoundingClientRect();
             let argInput = this.state.argumentInput.trim();
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             if (!newArg) newArg = { value: this.state.argumentInput, data: { isValid: false } }
             let allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                let last = this.state.arguments[this.state.arguments.length - 2];
-                if (last.data.isEOC) {
-                    this.setState({
-                        suggestedArguments: [],
-                        showSuggestedArguments: false,
-                    })
-                }
-                else getArgumentSuggestions(allArgs).then((response) => {
+                getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
-                        inputPosition: {
-                            top: rect.top,
-                            left: rect.left,
-                        }
                     });
                 })
             });
         }
         else if (event.key === 'Backspace' && !this.state.argumentInput.length) {
             let allArgs = this.state.arguments;
-            let rect = this.inputRef.getBoundingClientRect();
             let start = this.state.arguments.length - 2;
             allArgs.splice(start, 2);
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                let last = this.state.arguments[this.state.arguments.length - 2];
                 getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
-                        inputPosition: {
-                            top: rect.top,
-                            left: rect.left,
-                        }
                     });
                 })
             });
@@ -224,10 +192,10 @@ export class Command extends Component<any, CommandState>  {
 
     handleArgumentInputChange(event) {
         if (event.target.value === "/") {
-            this.setState({ argumentInput: '' });
+            this.setState({ argumentInput: '', });
         }
         else {
-            this.setState({ argumentInput: event.target.value });
+            this.setState({ argumentInput: event.target.value, showSuggestedArguments: true });
         }
     }
 
@@ -247,26 +215,29 @@ export class Command extends Component<any, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" ref={(node) => this.inputRef = node} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
+                        <input type="text" tabIndex={1} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
-                        {this.state.showSuggestedArguments && this.state.arguments.length ? <div className="suggested-arguments"
-                            style={{
-                                // top: `${this.state.inputPosition.top + 20}px`,
-                                // left: `${this.state.inputPosition.left}px`
-                            }}>
-                            {this.state.suggestedArguments.map((a) => {
-                                return <p onClick={(event) => this.selectArgument(a)}>{a.value}</p>
-                            })}
-                        </div> : null}
                     </div>
-                    <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
-                        <p className="mt-18 mb-8">I'm looking for...</p>
-                        <p className="command-options mb-0">
-                            {this.state.command.map((opt) => {
-                                return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
+
+                    {this.state.arguments.length ?
+                        <div className="suggested-arguments" tabIndex={0}>
+                            {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
+                                //Filter on type
+                                if (!this.state.argumentInput.length) return <button type="button" className="" tabIndex={index + 1}
+                                    onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                else if (this.state.argumentInput.length && a.value.includes(this.state.argumentInput))
+                                    return <button type="button" className="" tabIndex={index + 1}
+                                        onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+
                             })}
-                        </p>
-                    </div>
+                        </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
+                            <p className="mt-18 mb-8">I'm looking for...</p>
+                            <p className="command-options mb-0">
+                                {this.state.command.map((opt) => {
+                                    return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
+                                })}
+                            </p>
+                        </div>}
                     <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
                         <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
                         {this.state.suggestedCommands.map((s) => {

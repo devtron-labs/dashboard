@@ -65,25 +65,31 @@
 }
 
 .suggested-arguments {
-    max-height: 300px;
+    max-height: 180px;
+    height: 100px;
     overflow: auto;
-    position: absolute;
     background-color: white;
-    width: 170px;
-    top: 100%;
-    left: calc(100% - 174px);
     padding: 8px 0;
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+    border-bottom: solid 1px var(--N100);
 }
 
-.suggested-arguments p {
+.suggested-arguments button {
     cursor: pointer;
     padding: 8px;
+    display: block;
+    width: 100%;
+    text-align: left;
     margin: 0px;
+    background-color: white;
+    border: solid 1px white;
 }
 
-.suggested-arguments p:hover {
+.suggested-arguments button:hover {
     background-color: var(--N100);
+}
+
+.suggested-arguments button:focus, .suggested-arguments button:active {
+    border: solid 1px var(--B500);
 }
 
 .command__input {
