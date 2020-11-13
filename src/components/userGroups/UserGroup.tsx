@@ -251,7 +251,7 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
         .filter(userOrGroup => (userOrGroup.email_id?.includes(searchString) || userOrGroup.name?.includes(searchString) || userOrGroup.description?.includes(searchString)))
     return (
         <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {result.length > 0 && <input value={searchString} ref={searchRef} type="search" placeholder={`search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
+            {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
             {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
             {filteredAndSorted
                 .map((data, index) =>
@@ -622,10 +622,10 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
 
     const chartGroupEditOptions: OptionType[] = useMemo(() => {
         if (chartPermission.action === ActionTypes.ADMIN) {
-            return [{ label: 'All charts', value: 'All charts' }]
+            return [{ label: 'All Chart Groups', value: 'All charts' }]
         }
         else {
-            return [{ label: 'Deny', value: 'Deny' }, { label: 'Specific Charts', value: 'Specific Charts' }]
+            return [{ label: 'Deny', value: 'Deny' }, { label: 'Specific Chart Groups', value: 'Specific Charts' }]
         }
     }, [chartPermission.action])
 
@@ -639,7 +639,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                 <input type="checkbox" checked disabled />
                 <input type="checkbox" checked={chartPermission.action === ActionTypes.ADMIN} onChange={handleChartCreateChange} />
                 <Select
-                    value={chartPermission.action === ActionTypes.ADMIN ? chartGroupEditOptions[0] : chartPermission.action === ActionTypes.VIEW ? { label: 'Deny', value: 'Deny' } : { label: 'Specific Charts', value: 'Specific Charts' }}
+                    value={chartPermission.action === ActionTypes.ADMIN ? chartGroupEditOptions[0] : chartPermission.action === ActionTypes.VIEW ? { label: 'Deny', value: 'Deny' } : { label: 'Specific Chart Groups', value: 'Specific Charts' }}
                     isDisabled={chartPermission.action === ActionTypes.ADMIN}
                     options={chartGroupEditOptions}
                     className="basic-multi-select"
@@ -657,6 +657,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
             {chartPermission.action === ActionTypes.UPDATE &&
                 <Select
                     value={chartPermission.entityName}
+                    placeholder="Select Chart Group"
                     isMulti
                     styles={{
                         ...multiSelectStyles,

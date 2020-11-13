@@ -41,6 +41,7 @@ export class Project extends Component<ProjectProps>  {
             <label className="form__row">
                 <span className="form__label">Project name*</span>
                 <input type="text"
+                   autoComplete="off"
                     name="name"
                     value={this.props.name}
                     placeholder="e.g. My Project"

@@ -360,7 +360,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                             <label className="form__label">
                                 {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : "Source Value*"}
                             </label>
-                            <input className="form__input" placeholder="Name" type="text" value={mat.value}
+                            <input className="form__input" autoComplete="off" placeholder="Name" type="text" value={mat.value}
                                 onChange={(event) => { this.handleSourceChange(event, mat.gitMaterialId) }} />
                             {this.state.showError && !errorObj.isValid ? <span className="form__error">
                                 <img src={error} className="form__icon" />
@@ -410,7 +410,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         </div>
                         <label className="form__row">
                             <span className="form__label">Stage Name*</span>
-                            <input className="form__input" placeholder="Enter stage name" type="text" value={stage.name} onChange={(event) => this.handleChange(event, stage.id, key, index, 'name')} />
+                            <input className="form__input" autoComplete="off" placeholder="Enter stage name" type="text" value={stage.name} onChange={(event) => this.handleChange(event, stage.id, key, index, 'name')} />
                         </label>
                         <label className="form__row">
                             <span className="form__label">Script to execute*</span>
@@ -428,7 +428,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         </label>
                         <label className="form__row">
                             <span className="form__label">Report Directory</span>
-                            <input className="form__input" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.handleChange(event, stage.id, key, index, 'outputLocation')} />
+                            <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.handleChange(event, stage.id, key, index, 'outputLocation')} />
                         </label>
                         <div className="form__buttons">
                             <button type="button" className="cta tertiary mr-16" onClick={(event) => this.discardChanges(stage.id, key, index)}>Cancel</button>
@@ -457,7 +457,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                             <img src={trash} onClick={(event) => { this.removeDockerArgs(index) }} />
                             <div className="form__field">
                                 <label className="form__label">Key</label>
-                                <input className="form__input w-50" placeholder="Name" type="text"
+                                <input className="form__input w-50" autoComplete="off" placeholder="Name" type="text"
                                     value={arg.key} onChange={(event) => { this.handleDockerArgChange(event, index, 'key'); }} />
                             </div>
                             <div className="form__field">
@@ -516,7 +516,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     {this.renderHeader()}
                     <label className="form__row">
                         <span className="form__label">Pipeline Name*</span>
-                        <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
+                        <input className="form__input" autoComplete="off" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
                             onChange={this.handlePipelineName} />
                         {this.state.showError && !errorObj.isValid ? <span className="form__error">
                             <img src={error} className="form__icon" />

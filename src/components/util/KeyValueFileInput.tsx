@@ -19,6 +19,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
             onClick={(event) => { props.handleDelete(props.index) }} />
         <div className="mb-16">
             <CustomInput label="Key (Filename)*"
+                autoComplete="off"
                 labelClassName="bold"
                 value={props.fileName}
                 placeholder="Enter the filename"
@@ -27,6 +28,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
         </div>
         <div className="mb-16">
             <CustomInput label="Name (Secret key)*"
+                 autoComplete="off"
                 labelClassName="bold"
                 value={props.name}
                 placeholder="Enter the secret key"
@@ -35,6 +37,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
         </div>
         <div className="mb-16">
             <CustomInput label="Property"
+               autoComplete="off"
                 labelClassName="bold"
                 placeholder="Enter the property"
                 value={props.property}

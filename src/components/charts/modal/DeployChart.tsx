@@ -244,7 +244,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     <div className="hide-scroll">
                         <label className="form__row form__row--w-100">
                             <span className="form__label">App Name</span>
-                            <input tabIndex={1} placeholder="app name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
+                            <input autoComplete="off" tabIndex={1} placeholder="app name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Project</span>

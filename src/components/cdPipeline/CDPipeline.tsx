@@ -717,7 +717,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderHeader()}
                         <div className="form__row">
                             <label className="form__label">Pipeline Name*</label>
-                            <input className="form__input" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
+                            <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
                                 onChange={this.handlePipelineName} />
                             {this.state.showError && !nameErrorObj.isValid ? <span className="form__error">
                                 <img src={error} className="form__icon" />
@@ -742,7 +742,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             </div>
                             <label className="flex-1 ml-16">
                                 <span className="form__label">Namespace*</span>
-                                <input className="form__input" placeholder="Namespace" type="text"
+                                <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
                                     disabled={!namespaceEditable}
                                     value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.state.pipelineConfig.namespace}
                                     onChange={(event) => { this.handleNamespaceChange(event, selectedEnv) }} />
