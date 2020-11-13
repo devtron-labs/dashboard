@@ -235,7 +235,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
             <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
         </div>
         <div className="mb-16">
-            <div className="repository m-0">
+            <div className="repository">
                 <span className="user anchor">{chartName}/</span>
                 <span className="repo">{appStoreApplicationName}</span>
             </div>
