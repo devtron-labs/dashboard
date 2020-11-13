@@ -7,13 +7,14 @@ interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: { label: string; value: string; }[];
     isTabMode: boolean;
 }
-interface ArgumentType {
+export interface ArgumentType {
     value: string;
     data?: {
-        kind: string;
-        value: string | number;
-        url: string;
+        kind?: string;
+        value?: string | number;
+        url?: string;
         isEOC: boolean; //is end of command
+        isValid: boolean;
     }
 }
 interface CommandState {
@@ -57,7 +58,14 @@ export class Command extends Component<any, CommandState>  {
             ],
             tab: 'jump-to',
             suggestedCommands: [],
-            suggestedArguments: [],
+            suggestedArguments: [
+                { value: COMMAND.APPLICATIONS, data: { isEOC: false, isValid: true } },
+                { value: COMMAND.CHART, data: { isEOC: false, isValid: true } },
+                { value: COMMAND.DOCUMENTATION, data: { isEOC: false, isValid: true } },
+                { value: COMMAND.DEPLOYMENT_GROUP, data: { isEOC: false, isValid: true } },
+                { value: COMMAND.SECURITY, data: { isEOC: false, isValid: true } },
+                { value: COMMAND.GLOBAL_CONFIG, data: { isEOC: false, isValid: true } },
+            ],
             showSuggestedArguments: false,
             showCommandBar: false,
             inputPosition: {
@@ -91,11 +99,13 @@ export class Command extends Component<any, CommandState>  {
         let rect = this.inputRef.getBoundingClientRect();
         this.setState({
             arguments: [...this.state.arguments, arg, { value: '/' }],
+            argumentInput: '',
             inputPosition: {
                 top: rect.top,
                 left: rect.left,
             }
         }, () => {
+            let last = this.state.arguments[this.state.arguments.length - 2];
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
@@ -106,10 +116,13 @@ export class Command extends Component<any, CommandState>  {
     }
 
     selectFirstArgument(arg: ArgumentType): void {
-        let rect = this.inputRef.getBoundingClientRect();
-
-        this.setState({ arguments: [arg, { value: '/' }] }, () => {
+        this.setState({
+            arguments: [arg, { value: '/' }],
+            argumentInput: '',
+        }, () => {
+            let last = this.state.arguments[this.state.arguments.length - 2];
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
+                let rect = this.inputRef.getBoundingClientRect();
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
@@ -128,13 +141,19 @@ export class Command extends Component<any, CommandState>  {
 
     runCommand() {
         let last = this.state.arguments[this.state.arguments.length - 2];
-        // console.log(last)
         this.props.history.push(last.data.url);
     }
 
     handleArgumentInputClick() {
-        let rect = this.inputRef.getBoundingClientRect();
-        getArgumentSuggestions(this.state.arguments).then((response) => {
+        let last = this.state.arguments[this.state.arguments.length - 2];
+        if (last.data.isEOC) {
+            this.setState({
+                suggestedArguments: [],
+                showSuggestedArguments: false,
+            })
+        }
+        else getArgumentSuggestions(this.state.arguments).then((response) => {
+            let rect = this.inputRef.getBoundingClientRect();
             this.setState({
                 showSuggestedArguments: !this.state.showSuggestedArguments,
                 suggestedArguments: response,
@@ -158,13 +177,19 @@ export class Command extends Component<any, CommandState>  {
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
             let rect = this.inputRef.getBoundingClientRect();
-
-            let allArgs = this.state.arguments.concat([
-                { value: this.state.argumentInput },
-                { value: '/' }
-            ]);
+            let argInput = this.state.argumentInput.trim();
+            let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
+            if (!newArg) newArg = { value: this.state.argumentInput, data: { isValid: false } }
+            let allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                getArgumentSuggestions(allArgs).then((response) => {
+                let last = this.state.arguments[this.state.arguments.length - 2];
+                if (last.data.isEOC) {
+                    this.setState({
+                        suggestedArguments: [],
+                        showSuggestedArguments: false,
+                    })
+                }
+                else getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
@@ -182,6 +207,7 @@ export class Command extends Component<any, CommandState>  {
             let start = this.state.arguments.length - 2;
             allArgs.splice(start, 2);
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                let last = this.state.arguments[this.state.arguments.length - 2];
                 getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
@@ -228,7 +254,6 @@ export class Command extends Component<any, CommandState>  {
                                 // top: `${this.state.inputPosition.top + 20}px`,
                                 // left: `${this.state.inputPosition.left}px`
                             }}>
-                            {console.log(this.state.inputPosition)}
                             {this.state.suggestedArguments.map((a) => {
                                 return <p onClick={(event) => this.selectArgument(a)}>{a.value}</p>
                             })}
