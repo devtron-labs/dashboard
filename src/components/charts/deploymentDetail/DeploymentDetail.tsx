@@ -86,7 +86,7 @@ export default function AppDetail() {
                 <div className="page-header__cta-container flex">
                     {
                         appDetails?.deprecated &&
-                        <div style={{margin: "0 20px 0 0"}}>
+                        <div className="m-0 m-20">
                             <UpdateWarn/>
                         </div>
                     }
