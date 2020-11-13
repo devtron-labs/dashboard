@@ -85,3 +85,11 @@
 .suggested-arguments p:hover {
     background-color: var(--N100);
 }
+
+.command__input {
+    border: none;
+}
+
+.command__input:focus, .command__input:hover {
+    outline: none;
+}

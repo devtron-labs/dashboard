@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { getArgumentSuggestions } from './command.util';
+import { RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import './command.css';
-interface CommandProps {
+interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: { label: string; value: string; }[];
     isTabMode: boolean;
 }
@@ -11,6 +12,7 @@ interface ArgumentType {
     data?: {
         kind: string;
         value: string | number;
+        url: string;
         isEOC: boolean; //is end of command
     }
 }
@@ -23,6 +25,10 @@ interface CommandState {
     showSuggestedArguments: boolean;
     tab: 'jump-to' | 'this-app';
     showCommandBar: boolean;
+    inputPosition: {
+        top: string;
+        left: string;
+    }
 }
 
 const COMMAND = {
@@ -35,7 +41,7 @@ const COMMAND = {
 }
 
 export class Command extends Component<any, CommandState>  {
-
+    inputRef;
     constructor(props) {
         super(props);
         this.state = {
@@ -54,6 +60,10 @@ export class Command extends Component<any, CommandState>  {
             suggestedArguments: [],
             showSuggestedArguments: false,
             showCommandBar: false,
+            inputPosition: {
+                top: '0px',
+                left: '0px'
+            }
         }
         this.selectTab = this.selectTab.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -63,6 +73,7 @@ export class Command extends Component<any, CommandState>  {
 
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyPress);
+
         this.setState({
             suggestedCommands: [
                 { title: 'Go to app', desc: 'app/app_name', argument: { value: 'app' } },
@@ -77,7 +88,14 @@ export class Command extends Component<any, CommandState>  {
     }
 
     selectArgument(arg: ArgumentType): void {
-        this.setState({ arguments: [...this.state.arguments, arg, { value: '/' }] }, () => {
+        let rect = this.inputRef.getBoundingClientRect();
+        this.setState({
+            arguments: [...this.state.arguments, arg, { value: '/' }],
+            inputPosition: {
+                top: rect.top,
+                left: rect.left,
+            }
+        }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
@@ -88,11 +106,17 @@ export class Command extends Component<any, CommandState>  {
     }
 
     selectFirstArgument(arg: ArgumentType): void {
+        let rect = this.inputRef.getBoundingClientRect();
+
         this.setState({ arguments: [arg, { value: '/' }] }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
+                    inputPosition: {
+                        top: rect.top,
+                        left: rect.left,
+                    }
                 });
             })
         });
@@ -103,14 +127,21 @@ export class Command extends Component<any, CommandState>  {
     }
 
     runCommand() {
-        // this.props.history.push(url);
+        let last = this.state.arguments[this.state.arguments.length - 2];
+        // console.log(last)
+        this.props.history.push(last.data.url);
     }
 
     handleArgumentInputClick() {
+        let rect = this.inputRef.getBoundingClientRect();
         getArgumentSuggestions(this.state.arguments).then((response) => {
             this.setState({
                 showSuggestedArguments: !this.state.showSuggestedArguments,
                 suggestedArguments: response,
+                inputPosition: {
+                    top: rect.top,
+                    left: rect.left,
+                }
             });
         })
     }
@@ -126,6 +157,8 @@ export class Command extends Component<any, CommandState>  {
             this.runCommand()
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
+            let rect = this.inputRef.getBoundingClientRect();
+
             let allArgs = this.state.arguments.concat([
                 { value: this.state.argumentInput },
                 { value: '/' }
@@ -135,12 +168,17 @@ export class Command extends Component<any, CommandState>  {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
+                        inputPosition: {
+                            top: rect.top,
+                            left: rect.left,
+                        }
                     });
                 })
             });
         }
         else if (event.key === 'Backspace' && !this.state.argumentInput.length) {
             let allArgs = this.state.arguments;
+            let rect = this.inputRef.getBoundingClientRect();
             let start = this.state.arguments.length - 2;
             allArgs.splice(start, 2);
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
@@ -148,6 +186,10 @@ export class Command extends Component<any, CommandState>  {
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
+                        inputPosition: {
+                            top: rect.top,
+                            left: rect.left,
+                        }
                     });
                 })
             });
@@ -179,9 +221,14 @@ export class Command extends Component<any, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" value={this.state.argumentInput} autoFocus className="m-4 flex-1"
+                        <input type="text" ref={(node) => this.inputRef = node} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
-                        {this.state.showSuggestedArguments && this.state.arguments.length ? <div className="suggested-arguments">
+                        {this.state.showSuggestedArguments && this.state.arguments.length ? <div className="suggested-arguments"
+                            style={{
+                                // top: `${this.state.inputPosition.top + 20}px`,
+                                // left: `${this.state.inputPosition.left}px`
+                            }}>
+                            {console.log(this.state.inputPosition)}
                             {this.state.suggestedArguments.map((a) => {
                                 return <p onClick={(event) => this.selectArgument(a)}>{a.value}</p>
                             })}

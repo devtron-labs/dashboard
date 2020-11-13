@@ -269,7 +269,9 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                <Command />
+                <Command location={this.props.location}
+                    match={this.props.match}
+                    history={this.props.history} />
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

@@ -1,10 +1,10 @@
 import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
 
-export function getArgumentSuggestions(args) :Promise<any>{
-    if (args.length === 0) return new Promise((resolve, reject)=>{
+export function getArgumentSuggestions(args): Promise<any> {
+    if (args.length === 0) return new Promise((resolve, reject) => {
         resolve([])
     });
-    
+
     let arg = args[0];
     switch (arg.value) {
         case 'app': return getAppArguments(args);
@@ -59,7 +59,7 @@ function getAppArguments(args): Promise<any> {
                 value: 'blobs-dev1-fdfc6b54-prglm',
                 data: {
                     id: 'blobs-dev1-fdfc6b54-prglm',
-                    url: `app/${args[1].data.appId}/details/${args[1].data.envId}/Pod`,
+                    url: `app/${args[1].data.appId}/details/${args[2].data.envId}/Pod`,
                     isEOC: true,
                 }
             },
@@ -67,7 +67,7 @@ function getAppArguments(args): Promise<any> {
                 value: 'blobs-dev1-fdfc6b54-pvphj',
                 data: {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
-                    url: `app/${args[1].data.appId}/details/${args[1].data.envId}/Pod`,
+                    url: `app/${args[1].data.appId}/details/${args[2].data.envId}/Pod`,
                     isEOC: true,
                 }
             },
