@@ -234,13 +234,13 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
         <div className="chart-grid-item__icon-wrapper">
             <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
         </div>
-        <div className="m-0 mb-16">
+        <div className="mb-16">
             <div className="repository m-0">
                 <span className="user anchor">{chartName}/</span>
                 <span className="repo">{appStoreApplicationName}</span>
             </div>
             {   deprecated &&
-                <div className="m-0 mt-8">
+                <div className="mt-8">
                     <DeprecatedWarn/>
                 </div>
             }
