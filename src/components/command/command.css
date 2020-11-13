@@ -57,17 +57,14 @@
 .suggested-command {
     display: grid;
     grid-template-columns: 32px auto;
-    cursor: pointer;
+    cursor: default;
 }
-
+/* 
 .suggested-command:hover {
     background-color: var(--N100);
-}
+} */
 
 .suggested-arguments {
-    max-height: 180px;
-    height: 100px;
-    overflow: auto;
     background-color: white;
     padding: 8px 0;
     border-bottom: solid 1px var(--N100);

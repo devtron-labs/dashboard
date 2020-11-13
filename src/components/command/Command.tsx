@@ -41,6 +41,7 @@ const COMMAND = {
 }
 
 export class Command extends Component<any, CommandState>  {
+    _input;
     constructor(props) {
         super(props);
         this.state = {
@@ -98,6 +99,7 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             let last = this.state.arguments[this.state.arguments.length - 2];
+            this._input.focus();
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
@@ -113,10 +115,12 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
+            this._input.focus();
+
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
-                    
+
                 });
             })
         });
@@ -146,7 +150,7 @@ export class Command extends Component<any, CommandState>  {
         getArgumentSuggestions(this.state.arguments).then((response) => {
             this.setState({
                 suggestedArguments: response,
-               
+
             });
         })
     }
@@ -167,6 +171,8 @@ export class Command extends Component<any, CommandState>  {
             if (!newArg) newArg = { value: this.state.argumentInput, data: { isValid: false } }
             let allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+            this._input.focus();
+
                 getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
                         showSuggestedArguments: true,
@@ -215,40 +221,41 @@ export class Command extends Component<any, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" tabIndex={1} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
+                        <input type="text" ref={(c) => this._input = c}  tabIndex={1} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                     </div>
-
-                    {this.state.arguments.length ?
-                        <div className="suggested-arguments" tabIndex={0}>
-                            {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
-                                //Filter on type
-                                if (!this.state.argumentInput.length) return <button type="button" className="" tabIndex={index + 1}
-                                    onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                else if (this.state.argumentInput.length && a.value.includes(this.state.argumentInput))
-                                    return <button type="button" className="" tabIndex={index + 1}
+                    <div style={{ height: '350px', overflow: 'auto' }}>
+                        {this.state.arguments.length ?
+                            <div className="suggested-arguments" tabIndex={0}>
+                                {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
+                                    //Filter on type
+                                    if (!this.state.argumentInput.length) return <button type="button" className="" tabIndex={index + 1}
                                         onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                    else if (this.state.argumentInput.length && a.value.includes(this.state.argumentInput))
+                                        return <button type="button" className="" tabIndex={index + 1}
+                                            onClick={(event) => this.selectArgument(a)}>{a.value}</button>
 
-                            })}
-                        </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
-                            <p className="mt-18 mb-8">I'm looking for...</p>
-                            <p className="command-options mb-0">
-                                {this.state.command.map((opt) => {
-                                    return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
                                 })}
-                            </p>
-                        </div>}
-                    <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
-                        <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
-                        {this.state.suggestedCommands.map((s) => {
-                            return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
-                                <Arrow className="scn-4" />
-                                <div>
-                                    <p className="m-0">{s.title}</p>
-                                    <p className="m-0">{s.desc}</p>
-                                </div>
-                            </article>
-                        })}
+                            </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
+                                <p className="mt-18 mb-8">I'm looking for...</p>
+                                <p className="command-options mb-0">
+                                    {this.state.command.map((opt) => {
+                                        return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
+                                    })}
+                                </p>
+                            </div>}
+                        <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
+                            <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
+                            {this.state.suggestedCommands.map((s) => {
+                                return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
+                                    <Arrow className="scn-4" />
+                                    <div>
+                                        <p className="m-0">{s.title}</p>
+                                        <p className="m-0">{s.desc}</p>
+                                    </div>
+                                </article>
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
