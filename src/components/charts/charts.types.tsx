@@ -73,7 +73,6 @@ export interface Chart {
     availableChartValues?: ChartValues[];
     valuesYaml?: string;
     appStoreApplicationVersionId?: number;
-    deprecated: boolean;
 }
 
 export interface ProjectType {

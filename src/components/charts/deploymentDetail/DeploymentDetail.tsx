@@ -9,8 +9,7 @@ import DeployChart from '../modal/DeployChart';
 import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
-import AppSelector from '../../AppSelector';
-import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
+import AppSelector from '../../AppSelector'
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -84,13 +83,6 @@ export default function AppDetail() {
                     <div className="flex left page-header__title">{appDetails?.appName}</div>
                 </div>
                 <div className="page-header__cta-container flex">
-                    {
-                        appDetails?.deprecated &&
-                        <div className="mr-20">
-                            <UpdateWarn/>
-                        </div>
-                    }
-                    
                     <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
                         {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
                         configure

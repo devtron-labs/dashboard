@@ -4,7 +4,6 @@ import { ViewType, URLS } from '../../../config';
 import EmptyState from '../../EmptyState/EmptyState';
 import { Link, withRouter } from 'react-router-dom';
 import { ErrorScreenManager, LazyImage, Progressing } from '../../common';
-import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
 import check from '../../../assets/icons/misc/checkGreen.svg';
 import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
@@ -45,19 +44,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     renderCard(chart) {
-        let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
+        let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId } = chart;
         return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" to={`deployments/${installedAppId}/env/${environmentId}`}>
             <div className="chart-grid-item__flexbox">
                 <div className="chart-grid-item__icon-wrapper">
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
-                {
-                    deprecated && 
-                    <div>
-                        <UpdateWarn/>
-                        {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
-                    </div>
-                }
+                <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div>
             </div>
             <div className="chart-grid-item__title ellipsis-right">{appName}</div>
             <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
