@@ -233,7 +233,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         setLoading(true)
         try {
             const { result } = await getChartVersionsMin(chartIdFromDeploymentDetail);
-            console.log(result);
+            // console.log(result);
             setChartVersionsData(result);
         }
         catch (err) {
@@ -298,7 +298,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 :
                                 <div className="w-50">
                                     <span className="form__label">Chart Version</span>
-                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersionUpdatePage} onChange={event => setSelectedVersionUpdatePage({id: event.target.value, version: event.target.innerText})}>
+                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersionUpdatePage.id} onChange={event => setSelectedVersionUpdatePage({id: event.target.value, version: event.target.innerText})}>
                                         <Select.Button>{selectedVersionUpdatePage.version}</Select.Button>
                                         {chartVersionsData.map(({version, id}) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
                                     </Select>
@@ -311,6 +311,13 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     onChange={(event) => { setChartValues(event) }} />
                             </div>
                         </div>
+                        {
+                            isUpdate && 
+                            <div className="form__row form__row--w-100">
+                                <span className="form__label">Environment</span>
+
+                            </div>
+                        }
                         <div className="code-editor-container" ref={deployChartEditor}>
                             <CodeEditor
                                 value={textRef}

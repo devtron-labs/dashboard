@@ -85,12 +85,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
 
 function Option({ children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
     const { selected, searchString, valueComparator, handleClick } = useSelectContext()
-    if (typeof(selected) === 'object') {
-        active = selected.id === value;
-    }
-    else {
-        active = active || selected === value;
-    }
+    active = active || selected === value;
     if (typeof value === 'object') {
         active = active || valueComparator(value)
     }
