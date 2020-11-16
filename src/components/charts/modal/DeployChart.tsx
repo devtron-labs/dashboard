@@ -8,7 +8,7 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import { useHistory, useParams } from 'react-router'
 import { URLS } from '../../../config'
 import deleteIcon from '../../../assets/icons/ic-delete.svg'
-import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues } from '../charts.service'
+import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
 import './DeployChart.scss';
@@ -42,7 +42,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [environments, setEnvironments] = useState(new Map())
     const [loading, setLoading] = useState(false);
     const [selectedVersion, selectVersion] = useState(appStoreVersion)
+    const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedTeam, selectTeam] = useState(teamId)
+    const [chartVersionsData, setChartVersionsData] = useState<{version: string, id: number}[]>([]);
     const [selectedEnvironment, selectEnvironment] = useState(environmentId)
     const [appName, setAppName] = useState(originalName)
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
@@ -227,11 +229,34 @@ const DeployChart: React.FC<DeployChartProps> = ({
         push(url);
     }
 
+    async function fetchChartVersionsData() {
+        setLoading(true)
+        try {
+            const { result } = await getChartVersionsMin(chartIdFromDeploymentDetail);
+            console.log(result);
+            setChartVersionsData(result);
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setLoading(false)
+        }
+    }
+
     let isUpdate = environmentId && teamId;
     let isDisabled = isUpdate ? false : !(selectedEnvironment && selectedTeam && selectedVersion && appName?.length);
     let teamObj = teams.get(selectedTeam);
     let envObj = environments.get(selectedEnvironment);
     let chartVersionObj = versions.get(selectedVersion);
+    // console.log(chartVersionObj);
+    // console.log(isUpdate);
+    // fetch chart versions for update route
+    useEffect(() => {
+        if (isUpdate !== null) {
+            fetchChartVersionsData()
+        }
+    }, []);
     return (<>
         <div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`}>
             <div className="header-container flex column">
@@ -261,13 +286,24 @@ const DeployChart: React.FC<DeployChartProps> = ({
                             </Select>
                         </div>
                         <div className="form__row form__row--flex form__row--w-100">
-                            <div className="w-50">
-                                <span className="form__label">Chart Version</span>
-                                <Select tabIndex={4} rootClassName="select-button--default" disabled={!!environmentId && !!teamId} value={selectedVersion} onChange={event => selectVersion(event.target.value)}>
-                                    <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
-                                    {Array.from(versions).map(([versionId, versionData], idx) => <Select.Option key={versionId} value={versionId}>{versionData.version}</Select.Option>)}
-                                </Select>
-                            </div>
+                            {
+                            isUpdate === null ? 
+                                <div className="w-50">
+                                    <span className="form__label">Chart Version</span>
+                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersion} onChange={event => selectVersion(event.target.value)}>
+                                        <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
+                                        {Array.from(versions).map(([versionId, versionData], idx) => <Select.Option key={versionId} value={versionId}>{versionData.version}</Select.Option>)}
+                                    </Select>
+                                </div>
+                                :
+                                <div className="w-50">
+                                    <span className="form__label">Chart Version</span>
+                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersionUpdatePage} onChange={event => setSelectedVersionUpdatePage({id: event.target.value, version: event.target.innerText})}>
+                                        <Select.Button>{selectedVersionUpdatePage.version}</Select.Button>
+                                        {chartVersionsData.map(({version, id}) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
+                                    </Select>
+                                </div>
+                            }
                             <span className="mr-16"></span>
                             <div className="w-50">
                                 <span className="form__label">Chart Values*</span>
