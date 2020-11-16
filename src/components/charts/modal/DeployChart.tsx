@@ -11,6 +11,7 @@ import deleteIcon from '../../../assets/icons/ic-delete.svg'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
+import AsyncSelect from 'react-select/async';
 import './DeployChart.scss';
 import ReactGA from 'react-ga';
 
@@ -51,6 +52,44 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [textRef, setTextRef] = useState(rawValues)
+    const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
+    const [repoChartOptions, setRepoChartOptions] = useState<{
+        appStoreApplicationVersionId: number,
+        chartRepoName: string,
+        chartRepoId: number,
+        chartId: number,
+        chartName: string,
+        version: string,
+        deprecated: boolean,
+    }[]>([{
+        appStoreApplicationVersionId: 12,
+        chartRepoName: name,
+        chartRepoId: 12,
+        chartId: 12,
+        chartName: chartName,
+        version: versions.get(selectedVersion).version,
+        deprecated: true,
+    },
+    {
+        appStoreApplicationVersionId: 13,
+        chartRepoName: name + 'p',
+        chartRepoId: 13,
+        chartId: 13,
+        chartName: chartName + 'p',
+        version: versions.get(selectedVersion).version,
+        deprecated: false,
+    }]);
+    const [repoChartValue, setRepoChartValue] = useState(
+        {
+            appStoreApplicationVersionId: 12,
+            chartRepoName: name,
+            chartRepoId: 12,
+            chartId: 12,
+            chartName: chartName,
+            version: versions.get(selectedVersion).version,
+            deprecated: true,
+        },
+    );
     const [obj, json, yaml, error] = useJsonYaml(textRef, 4, 'yaml', true)
     const [chartValuesList, setChartValuesList] = useState([])
     const [chartValues, setChartValues] = useState(chartValuesFromParent);
@@ -244,6 +283,36 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
+    function handlerepoChartFocus() {
+        if (!repoChartAPIMade) {
+            setRepoChartAPIMade(true)
+            console.log("called");
+        }
+    }
+
+    function filterRepoOptions(inputValue: string) {
+        return repoChartOptions.filter(currentOption => currentOption.chartName.includes(inputValue));
+    }
+
+    function repoChartLoadOptions(inputValue: string, callback) {
+        // Make API call here
+        console.log(inputValue);
+        callback(filterRepoOptions(inputValue));
+    }
+
+    function handlerepoChartInputChange(inputValue: string) {
+        
+    }
+
+    function repoChartOptionLabel({deprecated, chartName}) {
+        return <div>{chartName}</div>
+    }
+
+    function handleRepoChartValueChange(event) {
+        // console.log(event);
+        setRepoChartValue(event);
+    }
+
     let isUpdate = environmentId && teamId;
     let isDisabled = isUpdate ? false : !(selectedEnvironment && selectedTeam && selectedVersion && appName?.length);
     let teamObj = teams.get(selectedTeam);
@@ -285,6 +354,39 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 {environments && Array.from(environments).map(([envId, envData], idx) => <Select.Option key={envId} value={envId}>{envData.environment_name}</Select.Option>)}
                             </Select>
                         </div>
+                        {
+                            isUpdate && 
+                            <div className="form__row form__row--w-100">
+                                <span className="form__label">Repo/Chart</span>
+                                <AsyncSelect
+                                    cacheOptions
+                                    defaultOptions={repoChartOptions}
+                                    formatOptionLabel={repoChartOptionLabel}
+                                    value={repoChartValue}
+                                    loadOptions={repoChartLoadOptions}
+                                    onInputChange={handlerepoChartInputChange}
+                                    onFocus={handlerepoChartFocus}
+                                    onChange={handleRepoChartValueChange}
+                                    components={{
+                                        IndicatorSeparator: () => null
+                                    }}
+                                    styles={{
+                                        control: (base, state) => ({
+                                            ...base,
+                                            boxShadow: 'none',
+                                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N500)',
+                                        }),
+                                        option: (base, state) => {
+                                            return ({
+                                                ...base,
+                                                color: 'var(--N900)',
+                                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                            })
+                                        },
+                                    }}
+                                />
+                            </div>
+                        }
                         <div className="form__row form__row--flex form__row--w-100">
                             {
                             isUpdate === null ? 
@@ -311,13 +413,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     onChange={(event) => { setChartValues(event) }} />
                             </div>
                         </div>
-                        {
-                            isUpdate && 
-                            <div className="form__row form__row--w-100">
-                                <span className="form__label">Environment</span>
-
-                            </div>
-                        }
                         <div className="code-editor-container" ref={deployChartEditor}>
                             <CodeEditor
                                 value={textRef}
