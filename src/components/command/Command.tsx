@@ -42,8 +42,11 @@ const COMMAND = {
 
 export class Command extends Component<any, CommandState>  {
     _input;
+    _commandArg;
+
     constructor(props) {
         super(props);
+
         this.state = {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
@@ -79,6 +82,10 @@ export class Command extends Component<any, CommandState>  {
     }
 
     componentDidMount() {
+        setTimeout(() => {
+            this._commandArg?.focus();
+            console.log(this._commandArg);
+        }, 1500)
         document.addEventListener("keydown", this.handleKeyPress);
         this.setState({
             suggestedCommands: [
@@ -99,7 +106,7 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             let last = this.state.arguments[this.state.arguments.length - 2];
-            this._input.focus();
+            // this._input.focus();
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
@@ -115,7 +122,7 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
-            this._input.focus();
+                this._input.focus();
 
                 this.setState({
                     showSuggestedArguments: true,
@@ -146,7 +153,6 @@ export class Command extends Component<any, CommandState>  {
 
     handleArgumentInputClick() {
         let last = this.state.arguments[this.state.arguments.length - 2];
-
         getArgumentSuggestions(this.state.arguments).then((response) => {
             this.setState({
                 suggestedArguments: response,
@@ -156,14 +162,33 @@ export class Command extends Component<any, CommandState>  {
     }
 
     handleKeyPress(event) {
+        const active = document.activeElement || this._input;
         if (event.metaKey && event.key === '/') {
             this.setState({ showCommandBar: true });
         }
         else if (event.key === "Escape") {
             this.setState({ showCommandBar: false, showSuggestedArguments: false });
         }
+        else if (event.key === "Tab") {
+            // event.preventDefault()
+        }
         else if (event.key === "Enter") {
-            this.runCommand()
+            this.runCommand();
+        }
+        else if (event.key === "ArrowDown" && active.nextSibling) {
+            event.preventDefault()
+            //@ts-ignore
+            active.nextSibling.focus();
+            this.setState({ argumentInput: active.nextSibling.value });
+        }
+        else if (event.key === "ArrowUp" && active.previousSibling) {
+            event.preventDefault()
+            //@ts-ignore
+            active.previousSibling.focus();
+            this.setState({ argumentInput: active.previousSibling.value });
+        }
+        else if (event.key === "ArrowRight" && active.previousSibling) {
+
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
@@ -171,7 +196,7 @@ export class Command extends Component<any, CommandState>  {
             if (!newArg) newArg = { value: this.state.argumentInput, data: { isValid: false } }
             let allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-            this._input.focus();
+                // this._input.focus();
 
                 getArgumentSuggestions(allArgs).then((response) => {
                     this.setState({
@@ -217,24 +242,31 @@ export class Command extends Component<any, CommandState>  {
                             <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
                         </label>
                     </div> : null}
-                    <div className="command-arg">
+                    <div className="command-arg" ref={this._commandArg} tabIndex={0}>
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" ref={(c) => this._input = c}  tabIndex={1} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
+                        <input type="text" tabIndex={1} value={this.state.argumentInput} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                     </div>
                     <div style={{ height: '350px', overflow: 'auto' }}>
                         {this.state.arguments.length ?
-                            <div className="suggested-arguments" tabIndex={0}>
+                            <div className="suggested-arguments" tabIndex={0} >
+                                <button type="button"
+                                    ref={this._input}
+                                    className=""
+                                    value={this.state.arguments[0].value}
+                                    style={{ display: this.state.argumentInput.length ? 'block' : this.state.arguments[0].value.includes(this.state.argumentInput) ? 'block' : 'none' }}
+                                    tabIndex={1}
+                                    onClick={(event) => this.selectArgument(this.state.arguments[0])}>{this.state.arguments[0].value}</button>
                                 {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
                                     //Filter on type
-                                    if (!this.state.argumentInput.length) return <button type="button" className="" tabIndex={index + 1}
+                                    if (index > 0) return <button type="button"
+                                        className=""
+                                        value={a.value}
+                                        style={{ display: this.state.argumentInput.length ? 'block' : a.value.includes(this.state.argumentInput) ? 'block' : 'none' }}
+                                        tabIndex={index + 1}
                                         onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                    else if (this.state.argumentInput.length && a.value.includes(this.state.argumentInput))
-                                        return <button type="button" className="" tabIndex={index + 1}
-                                            onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-
                                 })}
                             </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
                                 <p className="mt-18 mb-8">I'm looking for...</p>

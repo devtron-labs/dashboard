@@ -15,13 +15,15 @@
     padding: 8px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    border: solid 1px var(--B500);
+    border: solid 1px var(--N200);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     position: relative;
 }
-
+.command-arg:focus {
+    border: solid 1px var(--B500);
+}
 .command-arg__arg {
     padding: 4px 6px;
     color: var(--N700);
@@ -59,10 +61,6 @@
     grid-template-columns: 32px auto;
     cursor: default;
 }
-/* 
-.suggested-command:hover {
-    background-color: var(--N100);
-} */
 
 .suggested-arguments {
     background-color: white;
