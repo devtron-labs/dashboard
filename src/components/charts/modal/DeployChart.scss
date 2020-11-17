@@ -128,3 +128,17 @@
 .form__row.form__row--w-100 {
     width: 100%;
 }
+
+.dropdown__deprecated-text {
+    font-size: 12px;
+    line-height: 1.33;
+    color: var(--Y700);
+}
+
+.repochart-dropdown-wrap {
+    padding: 12px;
+    cursor: pointer;
+    &:hover {
+        background-color: var(--N100)
+    }
+}

@@ -13,6 +13,7 @@ import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
 import AsyncSelect from 'react-select/async';
 import './DeployChart.scss';
+import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 
 function mapById(arr) {
@@ -63,29 +64,29 @@ const DeployChart: React.FC<DeployChartProps> = ({
         deprecated: boolean,
     }[]>([{
         appStoreApplicationVersionId: 12,
-        chartRepoName: name,
+        chartRepoName: chartName,
         chartRepoId: 12,
         chartId: 12,
-        chartName: chartName,
+        chartName: name,
         version: versions.get(selectedVersion).version,
         deprecated: true,
     },
     {
         appStoreApplicationVersionId: 13,
-        chartRepoName: name + 'p',
+        chartRepoName: chartName + 'p',
         chartRepoId: 13,
         chartId: 13,
-        chartName: chartName + 'p',
+        chartName: name + 'p',
         version: versions.get(selectedVersion).version,
         deprecated: false,
     }]);
     const [repoChartValue, setRepoChartValue] = useState(
         {
             appStoreApplicationVersionId: 12,
-            chartRepoName: name,
+            chartRepoName: chartName,
             chartRepoId: 12,
             chartId: 12,
-            chartName: chartName,
+            chartName: name,
             version: versions.get(selectedVersion).version,
             deprecated: true,
         },
@@ -304,8 +305,21 @@ const DeployChart: React.FC<DeployChartProps> = ({
         
     }
 
-    function repoChartOptionLabel({deprecated, chartName}) {
-        return <div>{chartName}</div>
+    function repoChartOptionLabel(props) {
+        console.log(props);
+        const { innerProps, innerRef } = props;
+        // console.log(repoChartValue);
+        // {repoChartValue.chartId === chartId && <img src={checkIcon} className="select__check-icon" />}
+        return (
+            <div ref={innerRef} {...innerProps} className="repochart-dropdown-wrap">
+                <div>{props.data.chartRepoName}/{props.data.chartName}</div>
+                {props.data.deprecated && <div className="dropdown__deprecated-text">Chart deprecated</div>}
+            </div>
+        )
+    }
+
+    function repoChartSelectOptionLabel({chartRepoName, chartName}) {
+        return <div>{chartRepoName}/{chartName}</div>
     }
 
     function handleRepoChartValueChange(event) {
@@ -361,26 +375,30 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <AsyncSelect
                                     cacheOptions
                                     defaultOptions={repoChartOptions}
-                                    formatOptionLabel={repoChartOptionLabel}
+                                    formatOptionLabel={repoChartSelectOptionLabel}
                                     value={repoChartValue}
                                     loadOptions={repoChartLoadOptions}
                                     onInputChange={handlerepoChartInputChange}
                                     onFocus={handlerepoChartFocus}
                                     onChange={handleRepoChartValueChange}
+                                    // menuIsOpen={true}
                                     components={{
-                                        IndicatorSeparator: () => null
+                                        IndicatorSeparator: () => null,
+                                        Option: repoChartOptionLabel
                                     }}
                                     styles={{
                                         control: (base, state) => ({
                                             ...base,
                                             boxShadow: 'none',
                                             border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N500)',
+                                            cursor: 'pointer'
                                         }),
                                         option: (base, state) => {
                                             return ({
                                                 ...base,
                                                 color: 'var(--N900)',
                                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                                padding: '10px 12px'
                                             })
                                         },
                                     }}
