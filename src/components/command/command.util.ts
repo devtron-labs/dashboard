@@ -25,6 +25,7 @@ function getAppArguments(args): Promise<any> {
             let list = response.result.map((a) => {
                 return {
                     value: a.name,
+                    focussable: true,
                     data: {
                         value: a.id,
                         kind: 'appId',
@@ -38,10 +39,11 @@ function getAppArguments(args): Promise<any> {
     }
     else if (args[1] && args.length === 2) { // args[1] --> appName
         return getAppOtherEnvironment(args[1].data.value).then((response) => {
-            let list: ArgumentType[];
+            let list: Array<ArgumentType & { focussable: true }>;
             list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
+                    focussable: true,
                     data: {
                         value: a.environmentId,
                         kind: 'envId',
@@ -53,6 +55,7 @@ function getAppArguments(args): Promise<any> {
             if (!list) list = [];
             list.push({
                 value: 'config',
+                focussable: true,
                 data: {
                     isValid: true,
                     url: `app/${args[1].data.value}/edit/workflow`,
@@ -66,6 +69,7 @@ function getAppArguments(args): Promise<any> {
             resolve([
                 {
                     value: 'git-material',
+                    focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/materials`,
                         isValid: true,
@@ -73,6 +77,7 @@ function getAppArguments(args): Promise<any> {
                 },
                 {
                     value: 'docker-config',
+                    focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/docker-build-config`,
                         isValid: true,
@@ -80,6 +85,7 @@ function getAppArguments(args): Promise<any> {
                 },
                 {
                     value: 'deployment-template',
+                    focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/deployment-template`,
                         isValid: true,
@@ -87,6 +93,7 @@ function getAppArguments(args): Promise<any> {
                 },
                 {
                     value: 'workflow-editor',
+                    focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/workflow`,
                         isValid: true,
@@ -97,6 +104,7 @@ function getAppArguments(args): Promise<any> {
         else return new Promise((resolve, reject) => {
             resolve([{
                 value: 'pod',
+                focussable: true,
                 data: {
                     isValid: true,
                 }
@@ -107,6 +115,7 @@ function getAppArguments(args): Promise<any> {
         if (args[3].value === 'pod') return new Promise((resolve, reject) => {
             resolve([{
                 value: 'blobs-dev1-fdfc6b54-prglm',
+                focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-prglm',
                     url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
@@ -115,6 +124,7 @@ function getAppArguments(args): Promise<any> {
             },
             {
                 value: 'blobs-dev1-fdfc6b54-pvphj',
+                focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
                     url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
