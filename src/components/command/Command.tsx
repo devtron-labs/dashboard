@@ -23,6 +23,7 @@ interface CommandState {
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
     suggestedArguments: Array<ArgumentType & { focussable: boolean; ref: any; }>;
+    suggestedArg: string;
     showSuggestedArguments: boolean;
     focussedArgument: number; //index
     tab: 'jump-to' | 'this-app';
@@ -43,13 +44,15 @@ const COMMAND = {
 }
 
 export class Command extends Component<any, CommandState>  {
-
     _menu;
+    _input;
+
     constructor(props) {
         super(props);
         this.state = {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
+
             command: [
                 { label: 'Applications', argument: COMMAND.APPLICATIONS },
                 { label: 'Helm Charts', argument: COMMAND.CHART },
@@ -68,6 +71,7 @@ export class Command extends Component<any, CommandState>  {
                 { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true } },
                 { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true } },
             ],
+            suggestedArg: 'test',
             focussedArgument: 0,
             showSuggestedArguments: false,
             showCommandBar: false,
@@ -161,7 +165,6 @@ export class Command extends Component<any, CommandState>  {
         var eTop = element.offsetTop - 64;
         var eBottom = eTop + element.clientHeight;
         var isTotal = (eTop >= cTop && eBottom <= cBottom);
-        // var isPartial = (eTop < cTop && eBottom > cTop) || (eBottom > cBottom && eTop < cBottom);
         return (isTotal);
     }
 
@@ -176,6 +179,9 @@ export class Command extends Component<any, CommandState>  {
         }
         else if (event.key === "Enter") {
             this.runCommand();
+        }
+        else if (event.key === "ArrowRight") {
+            // this.setState({ argumentInput: this.state.suggestedArg, suggestedArg: '' });
         }
         else if (event.key === "ArrowDown") {
             // event.preventDefault();
@@ -280,7 +286,11 @@ export class Command extends Component<any, CommandState>  {
                 suggestedArguments: suggestedArguments,
                 showSuggestedArguments: true,
                 focussedArgument: 0,
-            });
+            }, () => {
+                let focussableArgs = this.state.suggestedArguments.filter(s => s.focussable);
+                if (focussableArgs.length === 1) {
+                }
+            })
         }
     }
 
@@ -300,8 +310,9 @@ export class Command extends Component<any, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
+                        <input type="text" ref={node => this._input = node} value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                        {<span className="">{this.state.suggestedArg}</span>}
                     </div>
                     <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
                         {this.state.arguments.length ?
