@@ -51,10 +51,12 @@ export default class VerticalNav extends Component<RouteComponentProps<{}>, { lo
 	}
 
 	componentDidMount() {
-		const tagManagerArgs = {
-			gtmId: 'GTM-59Q5GDK'
+		if(process.env.NODE_ENV === 'production' && window._env_ && window._env_.GTM_ID) {
+			const tagManagerArgs = {
+				gtmId: window._env_.GTM_ID
+			}
+			TagManager.initialize(tagManagerArgs)
 		}
-		TagManager.initialize(tagManagerArgs)
 	}
 
 	toggleLogoutCard() {
