@@ -43,7 +43,6 @@ const COMMAND = {
 }
 
 export class Command extends Component<any, CommandState>  {
-    _input;
 
     constructor(props) {
         super(props);
@@ -83,8 +82,6 @@ export class Command extends Component<any, CommandState>  {
     }
 
     componentDidMount() {
-        setTimeout(() => {
-        }, 1500)
         document.addEventListener("keydown", this.handleKeyPress);
         this.setState({
             suggestedCommands: [
@@ -188,14 +185,13 @@ export class Command extends Component<any, CommandState>  {
             }
             this.setState({
                 focussedArgument: pos,
-                argumentInput: this.state.suggestedArguments[pos].value,
+                argumentInput: this.state.suggestedArguments[pos]?.value,
             });
         }
         else if (event.key === "ArrowUp") {
             let pos = -1;
             let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length - 1 : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
-                console.log(this.state.suggestedArguments[i])
                 if (this.state.suggestedArguments[i].focussable) {
                     pos = i;
                     break;
@@ -211,12 +207,7 @@ export class Command extends Component<any, CommandState>  {
             }
             this.setState({
                 focussedArgument: pos,
-                argumentInput: this.state.suggestedArguments[pos].value,
-            });
-        }
-        else if (event.key === "ArrowRight") {
-            this.setState({
-                argumentInput: this.state.suggestedArguments[this.state.focussedArgument].value,
+                argumentInput: this.state.suggestedArguments[pos]?.value,
             });
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
@@ -298,8 +289,9 @@ export class Command extends Component<any, CommandState>  {
                                     if (a.focussable)
                                         return <button type="button"
                                             className=""
+                                            key={a.value}
                                             value={a.value}
-                                            // ref={a[index].ref}
+                                            ref={node => a['ref'] = node}
                                             style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}
                                             onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                 })}
