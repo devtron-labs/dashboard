@@ -108,6 +108,12 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
+                response = response.map((a) => {
+                    return {
+                        ...a,
+                        focussable: a.value.includes(this.state.argumentInput)
+                    }
+                })
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
@@ -122,6 +128,12 @@ export class Command extends Component<any, CommandState>  {
             argumentInput: '',
         }, () => {
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
+                response = response.map((a) => {
+                    return {
+                        ...a,
+                        focussable: a.value.includes(this.state.argumentInput)
+                    }
+                })
                 this.setState({
                     showSuggestedArguments: true,
                     suggestedArguments: response,
@@ -150,6 +162,12 @@ export class Command extends Component<any, CommandState>  {
 
     handleArgumentInputClick() {
         getArgumentSuggestions(this.state.arguments).then((response) => {
+            response = response.map((a) => {
+                return {
+                    ...a,
+                    focussable: a.value.includes(this.state.argumentInput)
+                }
+            })
             this.setState({
                 suggestedArguments: response,
             });
@@ -244,6 +262,12 @@ export class Command extends Component<any, CommandState>  {
             let allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '' }, () => {
                 getArgumentSuggestions(allArgs).then((response) => {
+                    response = response.map((a) => {
+                        return {
+                            ...a,
+                            focussable: a.value.includes(this.state.argumentInput)
+                        }
+                    })
                     this.setState({
                         showSuggestedArguments: true,
                         suggestedArguments: response,
@@ -259,6 +283,12 @@ export class Command extends Component<any, CommandState>  {
                 allArgs.splice(start, 2);
                 this.setState({ arguments: allArgs, argumentInput: '' }, () => {
                     getArgumentSuggestions(allArgs).then((response) => {
+                        response = response.map((a) => {
+                            return {
+                                ...a,
+                                focussable: a.value.includes(this.state.argumentInput)
+                            }
+                        })
                         this.setState({
                             showSuggestedArguments: true,
                             suggestedArguments: response,
@@ -289,6 +319,7 @@ export class Command extends Component<any, CommandState>  {
             }, () => {
                 let focussableArgs = this.state.suggestedArguments.filter(s => s.focussable);
                 if (focussableArgs.length === 1) {
+
                 }
             })
         }
