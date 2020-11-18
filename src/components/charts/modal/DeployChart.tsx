@@ -310,11 +310,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
     function repoChartOptionLabel(props) {
         console.log(props);
         const { innerProps, innerRef } = props;
+        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId;
         // console.log(repoChartValue);
         // {repoChartValue.chartId === chartId && <img src={checkIcon} className="select__check-icon" />}
         return (
             <div ref={innerRef} {...innerProps} className="repochart-dropdown-wrap">
-                <div>{props.data.chartRepoName}/{props.data.chartName}</div>
+                <div className="flex left">
+                    {isCurrentlySelected && <img src={checkIcon} className="select__check-icon"></img>}
+                    <span>
+                        {props.data.chartRepoName}/{props.data.chartName}
+                    </span>
+                </div>
                 {props.data.deprecated && <div className="dropdown__deprecated-text">Chart deprecated</div>}
             </div>
         )

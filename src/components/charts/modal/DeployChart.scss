@@ -146,10 +146,15 @@
 }
 
 .repochart-dropdown-wrap {
-    padding: 12px;
+    padding: 12px 16px 12px 52px;
     cursor: pointer;
     &:hover {
         background-color: var(--N100)
+    }
+    .select__check-icon {
+        position: absolute;
+        // top: 10px;
+        left: 20px;
     }
 }
 
@@ -186,5 +191,5 @@
 }
 
 .update-chart path {
-    fill: olivedrab
+    fill: var(--Y700)
 }
