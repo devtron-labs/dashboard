@@ -188,6 +188,7 @@ export class Command extends Component<any, CommandState>  {
             }
             this.setState({
                 focussedArgument: pos,
+                argumentInput: this.state.suggestedArguments[pos].value,
             });
         }
         else if (event.key === "ArrowUp") {
@@ -201,7 +202,7 @@ export class Command extends Component<any, CommandState>  {
                 }
             }
             if (pos === -1) {
-                for (let i = this.state.suggestedArguments.length; i >= focussedArgument; i--) {
+                for (let i = this.state.suggestedArguments.length - 1; i >= focussedArgument; i--) {
                     if (this.state.suggestedArguments[i].focussable) {
                         pos = i;
                         break;
@@ -209,7 +210,8 @@ export class Command extends Component<any, CommandState>  {
                 }
             }
             this.setState({
-                focussedArgument: pos
+                focussedArgument: pos,
+                argumentInput: this.state.suggestedArguments[pos].value,
             });
         }
         else if (event.key === "ArrowRight") {
