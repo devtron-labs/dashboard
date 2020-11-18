@@ -162,7 +162,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             toggleConfirmation(false)
         }
     }
-    const appMetricsEnvironmentVariableEnabled = process.env.NODE_ENV === 'production' && window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>

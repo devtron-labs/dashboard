@@ -203,7 +203,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             setLoading(not)
         }
     }
-    const appMetricsEnvironmentVariableEnabled = process.env.NODE_ENV === 'production' && window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return(
         <>
         <form className="deployment-template-override-form" style={{marginBottom:'16px'}} onSubmit={handleSubmit}>
