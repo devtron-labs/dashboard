@@ -71,7 +71,7 @@ export class Command extends Component<any, CommandState>  {
                 { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true } },
                 { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true } },
             ],
-            suggestedArg: 'test',
+            suggestedArg: '',
             focussedArgument: 0,
             showSuggestedArguments: false,
             showCommandBar: false,
