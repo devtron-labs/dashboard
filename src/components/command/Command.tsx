@@ -171,39 +171,45 @@ export class Command extends Component<any, CommandState>  {
             //@ts-ignore
             // active.nextSibling.focus();
             let pos = -1;
-            for (let i = this.state.focussedArgument; i < this.state.suggestedArguments.length; i++) {
+            let focussedArgument = this.state.focussedArgument < 0 ? 0 : this.state.focussedArgument;
+            for (let i = focussedArgument + 1; i < this.state.suggestedArguments.length; i++) {
                 if (this.state.suggestedArguments[i].focussable) {
                     pos = i;
                     break;
                 }
             }
-            for (let i = 0; i < this.state.focussedArgument; i++) {
-                if (this.state.suggestedArguments[i].focussable) {
-                    pos = i;
-                    break;
+            if (pos === -1) {
+                for (let i = 0; i <= focussedArgument; i++) {
+                    if (this.state.suggestedArguments[i].focussable) {
+                        pos = i;
+                        break;
+                    }
                 }
             }
             this.setState({
-                focussedArgument: this.state.focussedArgument + 1,
+                focussedArgument: pos,
             });
         }
         else if (event.key === "ArrowUp") {
             let pos = -1;
-            for (let i = this.state.focussedArgument; i >= 0; i--) {
+            let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length - 1 : this.state.focussedArgument;
+            for (let i = focussedArgument - 1; i >= 0; i--) {
+                console.log(this.state.suggestedArguments[i])
                 if (this.state.suggestedArguments[i].focussable) {
                     pos = i;
                     break;
                 }
             }
-            for (let i = this.state.suggestedArguments.length; i > this.state.focussedArgument; i--) {
-                if (this.state.suggestedArguments[i].focussable) {
-                    pos = i;
-                    break;
+            if (pos === -1) {
+                for (let i = this.state.suggestedArguments.length; i >= focussedArgument; i--) {
+                    if (this.state.suggestedArguments[i].focussable) {
+                        pos = i;
+                        break;
+                    }
                 }
             }
-
             this.setState({
-                focussedArgument: this.state.focussedArgument - 1,
+                focussedArgument: pos
             });
         }
         else if (event.key === "ArrowRight") {
@@ -225,24 +231,27 @@ export class Command extends Component<any, CommandState>  {
                 })
             });
         }
-        else if (event.key === 'Backspace' && !this.state.argumentInput.length) {
-            let allArgs = this.state.arguments;
-            let start = this.state.arguments.length - 2;
-            allArgs.splice(start, 2);
-            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                getArgumentSuggestions(allArgs).then((response) => {
-                    this.setState({
-                        showSuggestedArguments: true,
-                        suggestedArguments: response,
-                    });
-                })
-            });
+        else if (event.key === 'Backspace') {
+            this.setState({ focussedArgument: 0 });
+            if (!this.state.argumentInput.length) {
+                let allArgs = this.state.arguments;
+                let start = this.state.arguments.length - 2;
+                allArgs.splice(start, 2);
+                this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                    getArgumentSuggestions(allArgs).then((response) => {
+                        this.setState({
+                            showSuggestedArguments: true,
+                            suggestedArguments: response,
+                        });
+                    })
+                });
+            }
         }
     }
 
     handleArgumentInputChange(event) {
         if (event.target.value === "/") {
-            this.setState({ argumentInput: '', });
+            this.setState({ argumentInput: '', focussedArgument: 0 });
         }
         else {
             let suggestedArguments = this.state.suggestedArguments;
@@ -255,7 +264,8 @@ export class Command extends Component<any, CommandState>  {
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
-                showSuggestedArguments: true
+                showSuggestedArguments: true,
+                focussedArgument: 0,
             });
         }
     }
