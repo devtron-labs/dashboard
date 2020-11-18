@@ -223,7 +223,6 @@ export class Command extends Component<any, CommandState>  {
             }
             if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "end", });
-                console.log("Scroll")
             }
             this.setState({
                 focussedArgument: pos,
@@ -231,6 +230,7 @@ export class Command extends Component<any, CommandState>  {
             });
         }
         else if (event.key === "ArrowUp") {
+            event.preventDefault();
             let pos = -1;
             let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
