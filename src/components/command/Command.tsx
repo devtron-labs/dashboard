@@ -45,7 +45,6 @@ const COMMAND = {
 
 export class Command extends Component<any, CommandState>  {
     _menu;
-    _input;
 
     constructor(props) {
         super(props);
@@ -85,6 +84,7 @@ export class Command extends Component<any, CommandState>  {
         this.runCommand = this.runCommand.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
         this.isInViewport = this.isInViewport.bind(this);
+        this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
     }
 
     componentDidMount() {
@@ -96,6 +96,12 @@ export class Command extends Component<any, CommandState>  {
                 { title: 'Other locations', desc: 'Try user access or helm charts', argument: { value: 'app' } },
             ]
         });
+    }
+
+    noopOnArgumentInput(event): void {
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+        }
     }
 
     componentWillUnmount() {
@@ -230,7 +236,6 @@ export class Command extends Component<any, CommandState>  {
             });
         }
         else if (event.key === "ArrowUp") {
-            event.preventDefault();
             let pos = -1;
             let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
@@ -341,8 +346,8 @@ export class Command extends Component<any, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "ml-4 mr-4"}>{arg.value}</span>
                         })}
-                        <input type="text" ref={node => this._input = node} value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
-                            placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                        <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
+                            placeholder="Search for anything accross devtron" onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                         {<span className="">{this.state.suggestedArg}</span>}
                     </div>
                     <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
