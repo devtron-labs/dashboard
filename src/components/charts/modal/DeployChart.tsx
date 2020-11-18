@@ -15,6 +15,8 @@ import AsyncSelect from 'react-select/async';
 import './DeployChart.scss';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
+
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -368,6 +370,19 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 {environments && Array.from(environments).map(([envId, envData], idx) => <Select.Option key={envId} value={envId}>{envData.environment_name}</Select.Option>)}
                             </Select>
                         </div>
+                        {/* to-do replace with incoming prop */}
+                        {   repoChartValue.deprecated && 
+                            <div className="info__container--update-chart">
+                                <div className="flex left"> 
+                                    <AlertTriangle className="icon-dim-24 update-chart"/>
+                                    <div className="info__container--update-chart-text">{chartName}/{name} is deprecated</div> 
+                                </div>
+                                <div className="info__container--update-chart-disclaimer">
+                                    Selected chart has been deprecated. Please select another chart to continue receiving updates in future.
+                                </div>
+                            </div>
+                        }
+                        
                         {
                             isUpdate && 
                             <div className="form__row form__row--w-100">
@@ -403,6 +418,13 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                         },
                                     }}
                                 />
+                                {
+                                    repoChartValue.deprecated && 
+                                    <div className="deprecated-text-image flex left">
+                                        <AlertTriangle className="icon-dim-16 update-chart"/>
+                                        <span className="deprecated-text">This chart has been deprecated. Select another chart.</span>
+                                    </div>
+                                }
                             </div>
                         }
                         <div className="form__row form__row--flex form__row--w-100">
