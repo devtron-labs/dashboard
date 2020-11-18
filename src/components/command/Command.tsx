@@ -152,26 +152,17 @@ export class Command extends Component<any, CommandState>  {
         })
     }
 
-    isInViewport(element) {
+    isInViewport(element): boolean {
+        if (!element) return true;
+
         var container = this._menu;
-        var partial = true;
         var cTop = container.scrollTop;
         var cBottom = cTop + container.clientHeight;
-        var eTop = element.offsetTop;
+        var eTop = element.offsetTop - 64;
         var eBottom = eTop + element.clientHeight;
         var isTotal = (eTop >= cTop && eBottom <= cBottom);
-        var isPartial;
-
-        if (partial === true) {
-            isPartial = (eTop < cTop && eBottom > cTop) || (eBottom > cBottom && eTop < cBottom);
-        } else if (typeof partial === "number") {
-            if (eTop < cTop && eBottom > cTop) {
-                isPartial = ((eBottom - cTop) * 100) / element.clientHeight > partial;
-            } else if (eBottom > cBottom && eTop < cBottom) {
-                isPartial = ((cBottom - eTop) * 100) / element.clientHeight > partial;
-            }
-        }
-        return (isTotal || isPartial);
+        // var isPartial = (eTop < cTop && eBottom > cTop) || (eBottom > cBottom && eTop < cBottom);
+        return (isTotal);
     }
 
     handleKeyPress(event) {
@@ -217,7 +208,7 @@ export class Command extends Component<any, CommandState>  {
         }
         else if (event.key === "ArrowUp") {
             let pos = -1;
-            let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length - 1 : this.state.focussedArgument;
+            let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
                 if (this.state.suggestedArguments[i].focussable) {
                     pos = i;
@@ -256,7 +247,7 @@ export class Command extends Component<any, CommandState>  {
         }
         else if (event.key === 'Backspace') {
             this.setState({ focussedArgument: 0 });
-            if (!this.state.argumentInput.length) {
+            if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 2;
                 allArgs.splice(start, 2);
