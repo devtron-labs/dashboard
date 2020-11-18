@@ -44,6 +44,7 @@ const COMMAND = {
 
 export class Command extends Component<any, CommandState>  {
 
+    _menu;
     constructor(props) {
         super(props);
         this.state = {
@@ -79,6 +80,7 @@ export class Command extends Component<any, CommandState>  {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.runCommand = this.runCommand.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
+        this.isInViewport = this.isInViewport.bind(this);
     }
 
     componentDidMount() {
@@ -101,7 +103,6 @@ export class Command extends Component<any, CommandState>  {
             arguments: [...this.state.arguments, arg, { value: '/' }],
             argumentInput: '',
         }, () => {
-            let last = this.state.arguments[this.state.arguments.length - 2];
             getArgumentSuggestions(this.state.arguments)?.then((response) => {
                 this.setState({
                     showSuggestedArguments: true,
@@ -151,6 +152,28 @@ export class Command extends Component<any, CommandState>  {
         })
     }
 
+    isInViewport(element) {
+        var container = this._menu;
+        var partial = true;
+        var cTop = container.scrollTop;
+        var cBottom = cTop + container.clientHeight;
+        var eTop = element.offsetTop;
+        var eBottom = eTop + element.clientHeight;
+        var isTotal = (eTop >= cTop && eBottom <= cBottom);
+        var isPartial;
+
+        if (partial === true) {
+            isPartial = (eTop < cTop && eBottom > cTop) || (eBottom > cBottom && eTop < cBottom);
+        } else if (typeof partial === "number") {
+            if (eTop < cTop && eBottom > cTop) {
+                isPartial = ((eBottom - cTop) * 100) / element.clientHeight > partial;
+            } else if (eBottom > cBottom && eTop < cBottom) {
+                isPartial = ((cBottom - eTop) * 100) / element.clientHeight > partial;
+            }
+        }
+        return (isTotal || isPartial);
+    }
+
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
             this.setState({ showCommandBar: true });
@@ -183,6 +206,10 @@ export class Command extends Component<any, CommandState>  {
                     }
                 }
             }
+            if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
+                this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "end", });
+                console.log("Scroll")
+            }
             this.setState({
                 focussedArgument: pos,
                 argumentInput: this.state.suggestedArguments[pos]?.value,
@@ -204,6 +231,9 @@ export class Command extends Component<any, CommandState>  {
                         break;
                     }
                 }
+            }
+            if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
+                this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "start", });
             }
             this.setState({
                 focussedArgument: pos,
@@ -282,7 +312,7 @@ export class Command extends Component<any, CommandState>  {
                         <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                     </div>
-                    <div style={{ height: '350px', overflow: 'auto' }}>
+                    <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
                         {this.state.arguments.length ?
                             <div className="suggested-arguments" tabIndex={0}>
                                 {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
