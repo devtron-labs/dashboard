@@ -52,7 +52,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 { label: 'Security', argument: COMMAND.SECURITY },
                 { label: 'Global Configuration', argument: COMMAND.GLOBAL_CONFIG },
             ],
-            tab: 'jump-to',
+            tab: 'this-app',
             suggestedCommands: [],
             suggestedArguments: [
                 { value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true } },
@@ -77,6 +77,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
         this.isInViewport = this.isInViewport.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
+        this.disableTab = this.disableTab.bind(this);
     }
 
     componentDidMount() {
@@ -106,6 +107,12 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     noopOnArgumentInput(event): void {
         if (event.key === "ArrowUp") {
+            event.preventDefault();
+        }
+    }
+
+    disableTab(event): void {
+        if (event.key === "Tab") {
             event.preventDefault();
         }
     }
@@ -192,7 +199,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         var container = this._menu;
         var cTop = container.scrollTop;
         var cBottom = cTop + container.clientHeight;
-        var eTop = element.offsetTop - 64;
+        var eTop = element.offsetTop - 98;
         var eBottom = eTop + element.clientHeight;
         var isTotal = (eTop >= cTop && eBottom <= cBottom);
         return (isTotal);
@@ -206,6 +213,9 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({ showCommandBar: false, showSuggestedArguments: false });
         }
         else if (event.key === "Tab") {
+            this.setState({
+                tab: this.state.tab === 'this-app' ? 'jump-to' : 'this-app',
+            })
         }
         else if (event.key === "Enter") {
             this.runCommand();
@@ -333,17 +343,64 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
+    renderTabContent() {
+        if (this.state.tab === 'this-app') {
+            return <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
+                {this.state.arguments.length ?
+                    <div className="suggested-arguments" tabIndex={0}>
+                        {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
+                            if (a.focussable)
+                                return <button type="button"
+                                    className=""
+                                    key={a.value}
+                                    value={a.value}
+                                    ref={node => a['ref'] = node}
+                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}
+                                    onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                        })}
+                    </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
+                        <p className="mt-18 mb-8">I'm looking for...</p>
+                        <p className="command-options mb-0">
+                            {this.state.command.map((opt) => {
+                                return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
+                            })}
+                        </p>
+                    </div>}
+                <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
+                    <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
+                    {this.state.suggestedCommands.map((s) => {
+                        return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
+                            <Arrow className="scn-4" />
+                            <div>
+                                <p className="m-0">{s.title}</p>
+                                <p className="m-0">{s.desc}</p>
+                            </div>
+                        </article>
+                    })}
+                </div>
+            </div>
+        }
+        else {
+            return <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
+
+            </div>
+        }
+    }
+
     render() {
         if (this.state.showCommandBar) {
-            return <div className="transparent-div" onClick={() => this.setState({ showCommandBar: false })}>
+            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.setState({ showCommandBar: false })}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
-                    {this.props.isTabMode ? <div>
-                        <label>
-                            <input type="radio" name="command-tab" value="this-app" onChange={this.selectTab} />This App
-                        </label>
-                        <label>
-                            <input type="radio" name="command-tab" value="jump-to" onChange={this.selectTab} />Jump To
-                        </label>
+                    {this.props.isTabMode ? <div className="command-tab">
+                        <div className="">
+                            <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />Applications
+                            </label>
+                            <label className={this.state.tab === "jump-to" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
+                            </label>
+                        </div>
+                        <span className="command__press-tab">Press tab to switch</span>
                     </div> : null}
                     <div className="command-arg" tabIndex={0}>
                         {this.state.arguments.map((arg, index) => {
@@ -353,40 +410,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             placeholder="Search for anything accross devtron" onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                         {<span className="">{this.state.suggestedArg}</span>}
                     </div>
-                    <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
-                        {this.state.arguments.length ?
-                            <div className="suggested-arguments" tabIndex={0}>
-                                {this.state.showSuggestedArguments && this.state.suggestedArguments.map((a, index) => {
-                                    if (a.focussable)
-                                        return <button type="button"
-                                            className=""
-                                            key={a.value}
-                                            value={a.value}
-                                            ref={node => a['ref'] = node}
-                                            style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}
-                                            onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                })}
-                            </div> : <div className="p-8" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
-                                <p className="mt-18 mb-8">I'm looking for...</p>
-                                <p className="command-options mb-0">
-                                    {this.state.command.map((opt) => {
-                                        return <span key={opt.label} className="command-options__option" onClick={() => this.selectFirstArgument({ value: opt.argument })}>{opt.label}</span>
-                                    })}
-                                </p>
-                            </div>}
-                        <div className="" onClick={(e) => { this.setState({ showSuggestedArguments: false }) }}>
-                            <p className="mt-18 mb-8 ml-8 mr-8">Jump to</p>
-                            {this.state.suggestedCommands.map((s) => {
-                                return <article className="suggested-command p-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
-                                    <Arrow className="scn-4" />
-                                    <div>
-                                        <p className="m-0">{s.title}</p>
-                                        <p className="m-0">{s.desc}</p>
-                                    </div>
-                                </article>
-                            })}
-                        </div>
-                    </div>
+                    {this.renderTabContent()}
                 </div>
             </div>
         }
