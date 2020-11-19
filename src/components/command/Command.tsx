@@ -166,6 +166,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.setState({
                     suggestedArguments: response,
                     showSuggestedArguments: true,
+                    focussedArgument: response.findIndex(a => a.focussable),
                 });
             })
         }
@@ -203,6 +204,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
         }
         else if (event.key === 'Backspace') {
+            this._input.current.placeholder = PlaceholderText;
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 2;
@@ -214,7 +216,8 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
         else if (event.key === "ArrowRight") {
             let currentSuggestion = this._input.current.placeholder.trim();
-            let newArg = this.state.suggestedArguments.find(a => a.value == currentSuggestion);
+            // let newArg = this.state.suggestedArguments.find(a => a.value === currentSuggestion);
+            let newArg = this.state.suggestedArguments[this.state.focussedArgument];
             if (!newArg) return;
 
             this._input.current.placeholder = PlaceholderText;
@@ -247,10 +250,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "end", });
             }
-            this.setState({
-                focussedArgument: pos,
-                // argumentInput: this.state.suggestedArguments[pos]?.value,
-            });
+            this.setState({ focussedArgument: pos });
             this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
         }
         else if (event.key === "ArrowUp") {
@@ -273,10 +273,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "start", });
             }
-            this.setState({
-                focussedArgument: pos,
-                // argumentInput: this.state.suggestedArguments[pos]?.value,
-            });
+            this.setState({ focussedArgument: pos });
             this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
@@ -305,12 +302,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                     focussable: s.value.includes(event.target.value)
                 }
             })
-            let firstFocussableArgIndex = suggestedArguments.findIndex(a => a.focussable);
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
                 showSuggestedArguments: true,
-                focussedArgument: firstFocussableArgIndex || 0,
+                focussedArgument: suggestedArguments.findIndex(a => a.focussable),
             })
         }
     }
