@@ -36,12 +36,14 @@ interface CommandState {
     }
 }
 
-
+const PlaceholderText = "Search for anything accross devtron";
 export class Command extends Component<CommandProps, CommandState>  {
+    _input;
     _menu;
 
     constructor(props) {
         super(props);
+        this._input = React.createRef();
         this.state = {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
@@ -108,6 +110,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.setState({
             arguments: [...this.state.arguments, arg, { value: '/' }],
             argumentInput: '',
+            suggestedArguments: []
         }, () => {
             this.callGetArgumentSuggestions(this.state.arguments);
         });
@@ -117,6 +120,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.setState({
             arguments: [arg, { value: '/' }],
             argumentInput: '',
+            suggestedArguments: []
         }, () => {
             this.callGetArgumentSuggestions(this.state.arguments);
         });
@@ -203,13 +207,25 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 2;
                 allArgs.splice(start, 2);
-                this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                     this.callGetArgumentSuggestions(this.state.arguments);
                 });
             }
         }
         else if (event.key === "ArrowRight") {
-            // this.setState({ argumentInput: this.state.suggestedArg, suggestedArg: '' });
+            let currentSuggestion = this._input.current.placeholder.trim();
+            let newArg = this.state.suggestedArguments.find(a => a.value == currentSuggestion);
+            if (!newArg) return;
+
+            this._input.current.placeholder = PlaceholderText;
+            this.setState({
+                argumentInput: '',
+                arguments: [...this.state.arguments, newArg, { value: "/" }],
+                suggestedArguments: [],
+            }, () => {
+                this.callGetArgumentSuggestions(this.state.arguments)
+            });
+
         }
         else if (event.key === "ArrowDown") {
             let pos = -1;
@@ -233,8 +249,9 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
             this.setState({
                 focussedArgument: pos,
-                argumentInput: this.state.suggestedArguments[pos]?.value,
+                // argumentInput: this.state.suggestedArguments[pos]?.value,
             });
+            this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
         }
         else if (event.key === "ArrowUp") {
             let pos = -1;
@@ -258,8 +275,9 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
             this.setState({
                 focussedArgument: pos,
-                argumentInput: this.state.suggestedArguments[pos]?.value,
+                // argumentInput: this.state.suggestedArguments[pos]?.value,
             });
+            this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
@@ -269,7 +287,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 newArg = { value: this.state.argumentInput, focussable: true, ref: undefined, data: { isValid: false } };
             }
             allArgs = [...this.state.arguments, newArg, { value: '/' }];
-            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+            this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                 this.callGetArgumentSuggestions(this.state.arguments);
             });
         }
@@ -360,7 +378,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                         {this.state.arguments.map((arg, index) => {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "m-4"}>{arg.value}</span>
                         })}
-                        <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
+                        <input ref={this._input} type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="m-4 flex-1 command__input"
                             placeholder="Search for anything accross devtron" onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                         {<span className="">{this.state.suggestedArg}</span>}
                     </div>
