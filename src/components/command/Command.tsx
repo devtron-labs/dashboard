@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
-import { getArgumentSuggestions } from './command.util';
+import { COMMAND, getArgumentSuggestions } from './command.util';
 import { RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import './command.css';
 interface CommandProps extends RouteComponentProps<{}> {
-    defaultArguments: { label: string; value: string; }[];
+    defaultArguments: ArgumentType[];
     isTabMode: boolean;
 }
 export interface ArgumentType {
     value: string;
-
     data?: {
         kind?: string;
         value?: string | number;
@@ -17,12 +16,14 @@ export interface ArgumentType {
         isValid: boolean;
     }
 }
+
+type SuggestedArgumentType = ArgumentType & { focussable: boolean; ref: any; };
 interface CommandState {
     argumentInput: string;
     arguments: ArgumentType[];
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
-    suggestedArguments: Array<ArgumentType & { focussable: boolean; ref: any; }>;
+    suggestedArguments: SuggestedArgumentType[];
     suggestedArg: string;
     showSuggestedArguments: boolean;
     focussedArgument: number; //index
@@ -34,16 +35,8 @@ interface CommandState {
     }
 }
 
-const COMMAND = {
-    APPLICATIONS: 'app',
-    CHART: 'chart',
-    DOCUMENTATION: 'docs',
-    DEPLOYMENT_GROUP: 'deployment-group',
-    SECURITY: 'security',
-    GLOBAL_CONFIG: 'global-config'
-}
 
-export class Command extends Component<any, CommandState>  {
+export class Command extends Component<CommandProps, CommandState>  {
     _menu;
 
     constructor(props) {
@@ -51,7 +44,6 @@ export class Command extends Component<any, CommandState>  {
         this.state = {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
-
             command: [
                 { label: 'Applications', argument: COMMAND.APPLICATIONS },
                 { label: 'Helm Charts', argument: COMMAND.CHART },
@@ -72,7 +64,7 @@ export class Command extends Component<any, CommandState>  {
             ],
             suggestedArg: '',
             focussedArgument: 0,
-            showSuggestedArguments: false,
+            showSuggestedArguments: true,
             showCommandBar: false,
             inputPosition: {
                 top: '0px',
@@ -96,6 +88,20 @@ export class Command extends Component<any, CommandState>  {
                 { title: 'Other locations', desc: 'Try user access or helm charts', argument: { value: 'app' } },
             ]
         });
+        if (this.state.arguments.length) {
+            getArgumentSuggestions(this.state.arguments).then((response) => {
+                response = response.map((a) => {
+                    return {
+                        ...a,
+                        focussable: a.value.includes(this.state.argumentInput)
+                    }
+                })
+                this.setState({
+                    showSuggestedArguments: true,
+                    suggestedArguments: response,
+                });
+            })
+        }
     }
 
     noopOnArgumentInput(event): void {
@@ -208,9 +214,6 @@ export class Command extends Component<any, CommandState>  {
             // this.setState({ argumentInput: this.state.suggestedArg, suggestedArg: '' });
         }
         else if (event.key === "ArrowDown") {
-            // event.preventDefault();
-            //@ts-ignore
-            // active.nextSibling.focus();
             let pos = -1;
             let focussedArgument = this.state.focussedArgument < 0 ? 0 : this.state.focussedArgument;
             for (let i = focussedArgument + 1; i < this.state.suggestedArguments.length; i++) {

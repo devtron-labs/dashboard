@@ -12,6 +12,7 @@ import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { TriggerInfoModal } from './TriggerInfo';
 import { Command } from '../../command/Command';
+import { COMMAND } from '../../command/command.util';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -271,7 +272,10 @@ export class AppListView extends Component<AppListViewProps>{
             return <React.Fragment>
                 <Command location={this.props.location}
                     match={this.props.match}
-                    history={this.props.history} />
+                    history={this.props.history}
+                    isTabMode={true}
+                    defaultArguments={[{ value: COMMAND.APPLICATIONS, data: { isValid: true } }, { value: "/" }]}
+                />
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

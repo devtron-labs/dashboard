@@ -1,6 +1,15 @@
 import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
 import { ArgumentType } from './Command';
 
+export const COMMAND = {
+    APPLICATIONS: 'app',
+    CHART: 'chart',
+    DOCUMENTATION: 'docs',
+    DEPLOYMENT_GROUP: 'deployment-group',
+    SECURITY: 'security',
+    GLOBAL_CONFIG: 'global-config'
+}
+
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve([])
