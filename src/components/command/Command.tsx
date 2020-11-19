@@ -199,7 +199,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
         }
         else if (event.key === 'Backspace') {
-            this.setState({ focussedArgument: 0 });
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 2;
@@ -288,16 +287,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                     focussable: s.value.includes(event.target.value)
                 }
             })
+            let firstFocussableArgIndex = suggestedArguments.findIndex(a => a.focussable);
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
                 showSuggestedArguments: true,
-                focussedArgument: 0,
-            }, () => {
-                let focussableArgs = this.state.suggestedArguments.filter(s => s.focussable);
-                if (focussableArgs.length === 1) {
-
-                }
+                focussedArgument: firstFocussableArgIndex || 0,
             })
         }
     }

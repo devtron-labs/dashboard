@@ -44,7 +44,7 @@
 }
 
 .command-arg {
-    padding: 14px 18px;
+    padding: 6px 18px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border: solid 1px var(--N200);
