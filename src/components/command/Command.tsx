@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { COMMAND, getArgumentSuggestions } from './command.util';
 import { RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
+import { toast } from 'react-toastify';
 import './command.css';
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
@@ -54,14 +55,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             ],
             tab: 'this-app',
             suggestedCommands: [],
-            suggestedArguments: [
-                { value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true } },
-                { value: COMMAND.CHART, focussable: true, ref: undefined, data: { isValid: true } },
-                { value: COMMAND.DOCUMENTATION, focussable: true, ref: undefined, data: { isValid: true } },
-                { value: COMMAND.DEPLOYMENT_GROUP, focussable: true, ref: undefined, data: { isValid: true } },
-                { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true } },
-                { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true } },
-            ],
+            suggestedArguments: [],
             suggestedArg: '',
             focussedArgument: 0,
             showSuggestedArguments: true,
@@ -90,18 +84,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             ]
         });
         if (this.state.arguments.length) {
-            getArgumentSuggestions(this.state.arguments).then((response) => {
-                response = response.map((a) => {
-                    return {
-                        ...a,
-                        focussable: a.value.includes(this.state.argumentInput)
-                    }
-                })
-                this.setState({
-                    showSuggestedArguments: true,
-                    suggestedArguments: response,
-                });
-            })
+            this.callGetArgumentSuggestions(this.state.arguments);
         }
     }
 
@@ -126,18 +109,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             arguments: [...this.state.arguments, arg, { value: '/' }],
             argumentInput: '',
         }, () => {
-            getArgumentSuggestions(this.state.arguments)?.then((response) => {
-                response = response.map((a) => {
-                    return {
-                        ...a,
-                        focussable: a.value.includes(this.state.argumentInput)
-                    }
-                })
-                this.setState({
-                    showSuggestedArguments: true,
-                    suggestedArguments: response,
-                });
-            })
+            this.callGetArgumentSuggestions(this.state.arguments);
         });
     }
 
@@ -146,18 +118,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             arguments: [arg, { value: '/' }],
             argumentInput: '',
         }, () => {
-            getArgumentSuggestions(this.state.arguments)?.then((response) => {
-                response = response.map((a) => {
-                    return {
-                        ...a,
-                        focussable: a.value.includes(this.state.argumentInput)
-                    }
-                })
-                this.setState({
-                    showSuggestedArguments: true,
-                    suggestedArguments: response,
-                });
-            })
+            this.callGetArgumentSuggestions(this.state.arguments);
         });
     }
 
@@ -179,8 +140,14 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    handleArgumentInputClick() {
-        getArgumentSuggestions(this.state.arguments).then((response) => {
+    callGetArgumentSuggestions(args): void {
+        let invalidArgs = args.filter((a) => {
+            if (a.value !== "/" && !a.data.isValid) return true;
+        })
+        if (invalidArgs.length) {
+            toast.error("You have at least one Invalid Argument");
+        }
+        getArgumentSuggestions(args).then((response) => {
             response = response.map((a) => {
                 return {
                     ...a,
@@ -189,8 +156,13 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
             this.setState({
                 suggestedArguments: response,
+                showSuggestedArguments: true,
             });
         })
+    }
+
+    handleArgumentInputClick() {
+        this.callGetArgumentSuggestions(this.state.arguments);
     }
 
     isInViewport(element): boolean {
@@ -212,13 +184,24 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (event.key === "Escape") {
             this.setState({ showCommandBar: false, showSuggestedArguments: false });
         }
+        else if (event.key === "Enter") {
+            this.runCommand();
+        }
         else if (event.key === "Tab") {
             this.setState({
                 tab: this.state.tab === 'this-app' ? 'jump-to' : 'this-app',
             })
         }
-        else if (event.key === "Enter") {
-            this.runCommand();
+        else if (event.key === 'Backspace') {
+            this.setState({ focussedArgument: 0 });
+            if (!this.state.argumentInput?.length) {
+                let allArgs = this.state.arguments;
+                let start = this.state.arguments.length - 2;
+                allArgs.splice(start, 2);
+                this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                    this.callGetArgumentSuggestions(this.state.arguments);
+                });
+            }
         }
         else if (event.key === "ArrowRight") {
             // this.setState({ argumentInput: this.state.suggestedArg, suggestedArg: '' });
@@ -276,44 +259,14 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if ((event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
-            if (!newArg) newArg = { value: this.state.argumentInput, focussable: true, ref: undefined, data: { isValid: false } }
-            let allArgs = [...this.state.arguments, newArg, { value: '/' }];
-            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                getArgumentSuggestions(allArgs).then((response) => {
-                    response = response.map((a) => {
-                        return {
-                            ...a,
-                            focussable: a.value.includes(this.state.argumentInput)
-                        }
-                    })
-                    this.setState({
-                        showSuggestedArguments: true,
-                        suggestedArguments: response,
-                    });
-                })
-            });
-        }
-        else if (event.key === 'Backspace') {
-            this.setState({ focussedArgument: 0 });
-            if (!this.state.argumentInput?.length) {
-                let allArgs = this.state.arguments;
-                let start = this.state.arguments.length - 2;
-                allArgs.splice(start, 2);
-                this.setState({ arguments: allArgs, argumentInput: '' }, () => {
-                    getArgumentSuggestions(allArgs).then((response) => {
-                        response = response.map((a) => {
-                            return {
-                                ...a,
-                                focussable: a.value.includes(this.state.argumentInput)
-                            }
-                        })
-                        this.setState({
-                            showSuggestedArguments: true,
-                            suggestedArguments: response,
-                        });
-                    })
-                });
+            let allArgs = [];
+            if (!newArg) {
+                newArg = { value: this.state.argumentInput, focussable: true, ref: undefined, data: { isValid: false } };
             }
+            allArgs = [...this.state.arguments, newArg, { value: '/' }];
+            this.setState({ arguments: allArgs, argumentInput: '' }, () => {
+                this.callGetArgumentSuggestions(this.state.arguments);
+            });
         }
     }
 

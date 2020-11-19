@@ -12,7 +12,12 @@ export const COMMAND = {
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve([])
+        resolve([{ value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true } },
+        { value: COMMAND.CHART, focussable: true, ref: undefined, data: { isValid: true } },
+        { value: COMMAND.DOCUMENTATION, focussable: true, ref: undefined, data: { isValid: true } },
+        { value: COMMAND.DEPLOYMENT_GROUP, focussable: true, ref: undefined, data: { isValid: true } },
+        { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true } },
+        { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true } }])
     });
 
     let arg = args[0];
