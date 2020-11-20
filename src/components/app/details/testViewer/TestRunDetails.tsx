@@ -63,7 +63,7 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             }
             return agg;
         }, {});
-        console.log(timeAggregation);
+        // console.log(timeAggregation);
         const statusAggregation = result?.result?.result?.testsuites?.reduce((agg, curr) => {
             const { testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount } = curr;
             agg['testCount'] += testCount || 0;
@@ -578,6 +578,7 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
 
 const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) => {
     function calculateHistogram(dist, numOfBins=10){
+        // console.log(dist);
         let testTimeData = [];
         const uniqueTimeKeys = Object.keys(dist);
         for (let i = 0; i < uniqueTimeKeys.length; i++) {
