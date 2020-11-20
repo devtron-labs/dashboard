@@ -52,6 +52,7 @@
     flex-wrap: wrap;
     align-items: center;
     position: relative;
+    background-color: white;
     margin: 20px;
 }
 
@@ -122,6 +123,10 @@
 
 .command__input {
     border: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: transparent;
 }
 
 .command__input:focus, .command__input:hover {
