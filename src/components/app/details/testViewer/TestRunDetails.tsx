@@ -63,6 +63,7 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             }
             return agg;
         }, {});
+        console.log(timeAggregation);
         const statusAggregation = result?.result?.result?.testsuites?.reduce((agg, curr) => {
             const { testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount } = curr;
             agg['testCount'] += testCount || 0;
@@ -577,80 +578,27 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
 
 const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) => {
     function calculateHistogram(dist, numOfBins=10){
-        // dist = {
-        //     1: 3,
-        //     12: 7,
-        //     13: 5,
-        //     2: 4,
-        //     90: 12,
-        //     20: 2,
-        //     25: 6,
-        //     32: 4,
-        //     56: 3
-        // }
-        dist = {
-            // 2: 3,
-            // 1: 1,
-            15: 3,
-            0.1: 1
-        }
-        // dist = {
-        //     1: 4,
-        //     2: 5,
-        //     3: 4,
-        //     4: 6,
-        //     7: 9,
-        //     13: 2,
-        //     20: 1,
-        //     100: 1,
-        //     110: 3,
-        //     200: 3,
-        //     300: 4
-        // }
-        // console.log(dist)
-        // const arr = Object.keys(dist).map(Number).sort((a,b)=>a-b)
-        // let arr = [];
-        // arr = Array(34).fill(1).concat(Array(32).fill(12)).concat(Array(5).fill(13)).concat(Array(4).fill(2)).concat(Array(12).fill(90))
-        // console.log(arr)
-        let testTimeArray = [];
+        let testTimeData = [];
         const uniqueTimeKeys = Object.keys(dist);
-        console.log(uniqueTimeKeys)
         for (let i = 0; i < uniqueTimeKeys.length; i++) {
-            console.log(uniqueTimeKeys[i], dist[uniqueTimeKeys[i]], Array(uniqueTimeKeys[i]).fill(dist[uniqueTimeKeys[i]]))
-            testTimeArray = testTimeArray.concat(Array(dist[uniqueTimeKeys[i]]).fill(uniqueTimeKeys[i]));
+            // create an array with values filled equal to the times the key is repeated
+            const dataToConcat = Array(dist[uniqueTimeKeys[i]]).fill(uniqueTimeKeys[i]);
+            testTimeData = testTimeData.concat(dataToConcat);
         }
-        testTimeArray.sort((a,b) => a - b);
-        console.log(testTimeArray)
-        const binWidth = testTimeArray[testTimeArray.length - 1] / 10
-        // const bins = computeHistogram(testTimeArray, numOfBins);
-        // console.log(bins);
-        // const binWiseArr = Array(numOfBins).fill(0);
-        // for (let i = 0; i < testTimeArray.length; i++) {
-        //     let indexToPush = Math.floor(Number(testTimeArray[i]) / binWidth);
-        //     if (indexToPush === numOfBins) {
-        //         indexToPush--;
-        //     }
-        //     binWiseArr[indexToPush] += 1;
-        // }
-        const binWiseArr = getBinWiseArr(testTimeArray, numOfBins, binWidth);
-        console.log(binWiseArr)
+        testTimeData.sort((a,b) => a - b);
+        const binWidth = testTimeData[testTimeData.length - 1] / 10;
+        const binWiseArr = getBinWiseArr(testTimeData, numOfBins, binWidth);
         const chartData = [];
-        console.log(binWidth)
         for (let i = 0; i < binWiseArr.length; i++) {
             chartData.push({
                 'number of tests':  binWiseArr[i],
                 'time spent': `${Number((i * binWidth).toFixed(2))} - ${Number(((i + 1) * binWidth).toFixed(2))}`
             })
         }
-        // const histogram = computeHistogram(testTimeArray, numOfBins).map(arr=>arr.reduce((a,b)=>a+b, 0))
-        // console.log(histogram)
         return chartData;
     }
     const hist = useMemo(()=>calculateHistogram(timeAggregation), [timeAggregation]);
-    // const data = Object.entries(hist).map(([timeSpent, freq]) => ({
-    //     'time spent': timeSpent,
-    //     'number of tests': freq,
-    // }));
+
     return (
         <div className="w-100 bcn-0 br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
             <ResponsiveContainer>
