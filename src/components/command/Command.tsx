@@ -113,8 +113,8 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    toggleCommandBar() {
-        this.setState({ showCommandBar: !this.state.showCommandBar });
+    toggleCommandBar(flag) {
+        this.setState({ showCommandBar: flag });
     }
 
     componentWillUnmount() {
@@ -211,10 +211,10 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
-            this.toggleCommandBar()
+            this.toggleCommandBar(true)
         }
         else if (event.key === "Escape") {
-            this.toggleCommandBar()
+            this.toggleCommandBar(false)
         }
         else if (event.key === "Enter") {
             this.runCommand();
@@ -384,7 +384,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         if (this.state.showCommandBar) {
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={this.toggleCommandBar}>
+            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.toggleCommandBar(false)}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">
@@ -410,7 +410,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 </div>
                             </div>
                             {this.state.arguments.find(a => a?.data?.url) &&
-                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{lineHeight: "1.1", backgroundColor: "var(--N100)"}}> &crarr;</span>
+                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}> &crarr;</span>
                             }
                         </div>
                     </div>
