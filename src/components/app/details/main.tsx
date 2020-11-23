@@ -33,7 +33,6 @@ export default function AppDetailsPage() {
                         <Route path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
                             <CDDetails key={appId} />
                         </Route>
-                        {/* commented for time being */}
                         <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             render={() => <TestRunList />}
                         />
@@ -145,7 +144,6 @@ export function AppHeader() {
                         Deployment Metrics
                     </NavLink>
                 </li>
-                {/* commented for time being */}
                 <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
                         Tests
