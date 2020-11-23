@@ -111,7 +111,6 @@
 
 .suggested-arguments {
     background-color: white;
-    border-bottom: solid 1px var(--N100);
 }
 
 .suggested-arguments button {
@@ -119,10 +118,6 @@
     margin: 0px;
     background-color: inherit;
     border: solid 1px transparent;
-}
-
-.suggested-arguments div:hover {
-    background-color: var(--N100);
 }
 
 .command__input {
