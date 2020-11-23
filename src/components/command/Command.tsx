@@ -203,7 +203,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         var container = this._menu;
         var cTop = container.scrollTop;
         var cBottom = cTop + container.clientHeight;
-        var eTop = element.offsetTop - 98;
+        var eTop = element.offsetTop - 128;
         var eBottom = eTop + element.clientHeight;
         var isTotal = (eTop >= cTop && eBottom <= cBottom);
         return (isTotal);
@@ -339,7 +339,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.state.tab === 'this-app') {
             return <div ref={node => this._menu = node} className="command__suggested-args-container">
                 {this.state.arguments.length ? <>
-                    <div className="suggested-arguments" tabIndex={0}>
+                    <div className="suggested-arguments">
                         {this.state.suggestedArguments.map((a, index) => {
                             if (a.focussable)
                                 return <div ref={node => a['ref'] = node} key={a.value}
@@ -347,8 +347,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
                                     <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                     <span className="ff-monospace command__control"
-                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}
-                                    >&rarr; to accept</span>
+                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
+                                        <span className="fs-16">&nbsp;&rarr;&nbsp;</span>to accept</span>
                                 </div>
                         })}
                     </div>
@@ -397,19 +397,22 @@ export class Command extends Component<CommandProps, CommandState>  {
                         </div>
                         <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
                     </div> : null}
-                    <div className="command-arg flex top" tabIndex={0}>
-                        <div className="flex-1 flex left flex-wrap">
-                            {this.state.arguments.map((arg, index) => {
-                                return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "m-4"}>{arg.value}</span>
-                            })}
-                            <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
-                                <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
-                                <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
-                                    onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                    <div className="flexbox mb-20" style={{ backgroundColor: "var(--window-bg)" }}>
+                        <div className="command-arg flex top w-100">
+                            <div className="flex-1 flex left flex-wrap">
+                                {this.state.arguments.map((arg, index) => {
+                                    return <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
+                                })}
+                                <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                    <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
+                                    <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
+                                        onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                                </div>
                             </div>
+                            {this.state.arguments.find(a => a?.data?.url) &&
+                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{lineHeight: "1.1", backgroundColor: "var(--N100)"}}> &crarr;</span>
+                            }
                         </div>
-                        {this.state.arguments.find(a => a?.data?.url) &&
-                            <span className="ff-monospace command__control command__control--nav mt-4 mb-4"> &crarr; to navigate</span>}
                     </div>
                     {this.renderTabContent()}
                 </div>

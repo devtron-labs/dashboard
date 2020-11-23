@@ -2,7 +2,7 @@
     position: fixed;
     top: 100px;
     left: 50%;
-    width: 600px;
+    width: 800px;
     z-index: 8;
     transform: translateX(-50%);
     background-color: var(--N000);
@@ -26,7 +26,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0px 1px 1px rgba(0, 56, 112, 0.3);
+    border-bottom: solid 1px rgba(0, 56, 112, 0.3);
 }
 
 .command-tab__tab {
@@ -51,23 +51,23 @@
 
 .command-arg {
     padding: 6px 18px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border: solid 1px var(--N200);
+    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     position: relative;
     background-color: white;
     margin: 20px;
+    border: solid 1px var(--B500);
+    box-shadow: 0 3px 0 0 rgba(0, 102, 204, 0.2);
 }
 
-.command-arg:focus {
-    border: solid 1px var(--B500);
+.command-arg__arg:focus {
+    outline: none;
 }
 
 .command-arg__arg {
-    padding: 4px 6px;
+    padding: 0px 6px;
     color: var(--N700);
     border-radius: 4px;
     display: inline-block;
