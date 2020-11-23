@@ -401,7 +401,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     <div className="command-arg flex top w-100">
                         <div className="flex-1 flex left flex-wrap">
                             {this.state.arguments.map((arg, index) => {
-                                return <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
+                                return <span key={`${index}-${arg.value}`} className={arg.value == "/" ? "m-4" : "command-arg__arg m-4"}>{arg.value}</span>
                             })}
                             <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
                                 <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
