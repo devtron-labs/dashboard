@@ -107,7 +107,6 @@
 .command__suggested-args-container {
     height: 350px;
     overflow: auto;
-    /* border-top: solid 1px var(--N200); */
 }
 
 .suggested-arguments {
@@ -121,16 +120,12 @@
     width: 100%;
     text-align: left;
     margin: 0px;
-    background-color: white;
-    border: solid 1px white;
+    background-color: inherit;
+    border: solid 1px transparent;
 }
 
-.suggested-arguments button:hover {
+.suggested-arguments div:hover {
     background-color: var(--N100);
-}
-
-.suggested-arguments button:focus, .suggested-arguments button:active {
-    border: solid 1px var(--B500);
 }
 
 .command__input {

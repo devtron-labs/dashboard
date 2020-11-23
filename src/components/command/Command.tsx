@@ -36,7 +36,7 @@ interface CommandState {
     }
 }
 
-const PlaceholderText = "Search for anything accross devtron";
+const PlaceholderText = "Search in applications across devtron";
 export class Command extends Component<CommandProps, CommandState>  {
     _input;
     _menu;
@@ -113,7 +113,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     toggleCommandBar() {
         this.setState({ showCommandBar: !this.state.showCommandBar });
     }
-    
+
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
@@ -334,14 +334,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                 {this.state.arguments.length ?
                     <div className="suggested-arguments" tabIndex={0}>
                         {this.state.suggestedArguments.map((a, index) => {
-                            if (a.focussable)
-                                return <button type="button"
+                            if (a.focussable) 
+                                return <div ref={node => a['ref'] = node} key={a.value}
                                     className="pl-20 pr-20 pt-10 pb-10"
-                                    key={a.value}
-                                    value={a.value}
-                                    ref={node => a['ref'] = node}
-                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}
-                                    onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
+                                    <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                </div>
                         })}
                     </div> : <div className="pl-20 pr-20">
                         <p className="mb-8">I'm looking for...</p>
@@ -392,7 +390,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "m-4"}>{arg.value}</span>
                         })}
                         <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
-                            <input ref={this._input} type="text" placeholder="Search for anything accross devtron" className="w-100 command__input" />
+                            <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                             <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
                                 onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
                         </div>
