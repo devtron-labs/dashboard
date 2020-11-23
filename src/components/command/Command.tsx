@@ -154,11 +154,13 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({ arguments: [...this.state.arguments, newArg, { value: '/' }] }, () => {
                 let last = this.state.arguments[this.state.arguments.length - 2];
                 this.props.history.push(last.data.url);
+                this.props.toggleCommandBar(false)
             })
         }
         else {
             let last = this.state.arguments[this.state.arguments.length - 2];
             this.props.history.push(last.data.url);
+            this.props.toggleCommandBar(false)
         }
     }
 
@@ -173,7 +175,8 @@ export class Command extends Component<CommandProps, CommandState>  {
             });
         }
         else {
-            this.setState({ isLoading: true })
+            this.setState({ isLoading: true });
+
             getArgumentSuggestions(args).then((response) => {
                 response = response.map((a) => {
                     return {

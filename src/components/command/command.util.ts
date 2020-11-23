@@ -145,6 +145,7 @@ function getAppArguments(args): Promise<any> {
                 value: 'pod',
                 focussable: true,
                 data: {
+                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
                     isClearable: true,
                 }
@@ -158,7 +159,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-prglm',
-                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod/EVENTS?kind=Pod`,
                     isValid: true,
                     isClearable: true,
                 }
@@ -168,7 +169,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
-                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod/EVENTS?kind=Pod`,
                     isValid: true,
                     isClearable: true,
                 }
@@ -189,12 +190,14 @@ function getChartArguments(args): Promise<any> {
             resolve([
                 {
                     value: 'discover',
+                    focussable: true,
                     data: {
                         isValid: true,
                     }
                 },
                 {
                     value: 'deployed',
+                    focussable: true,
                     data: {
                         isValid: true,
                     }
