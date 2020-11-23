@@ -12,12 +12,12 @@ export const COMMAND = {
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve([{ value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true } },
-        { value: COMMAND.CHART, focussable: true, ref: undefined, data: { isValid: true } },
-        { value: COMMAND.DOCUMENTATION, focussable: true, ref: undefined, data: { isValid: true } },
-        { value: COMMAND.DEPLOYMENT_GROUP, focussable: true, ref: undefined, data: { isValid: true } },
-        { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true } },
-        { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true } }])
+        resolve([{ value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } },
+        { value: COMMAND.CHART, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } },
+        { value: COMMAND.DOCUMENTATION, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } },
+        { value: COMMAND.DEPLOYMENT_GROUP, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } },
+        { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } },
+        { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true, isClearable: true } }])
     });
 
     let arg = args[0];
@@ -45,6 +45,7 @@ function getAppArguments(args): Promise<any> {
                         kind: 'appId',
                         isValid: true,
                         url: `app/${a.id}/details`,
+                        isClearable: true,
                     }
                 }
             })
@@ -63,6 +64,7 @@ function getAppArguments(args): Promise<any> {
                         kind: 'envId',
                         isValid: true,
                         url: `app/${args[1].data.value}/details/${a.environmentId}/Pod`,
+                        isClearable: true,
                     }
                 }
             });
@@ -73,6 +75,7 @@ function getAppArguments(args): Promise<any> {
                 data: {
                     isValid: true,
                     url: `app/${args[1].data.value}/edit/workflow`,
+                    isClearable: true,
                 }
             })
             return list;
@@ -87,6 +90,7 @@ function getAppArguments(args): Promise<any> {
                     data: {
                         url: `app/${args[1].data.value}/edit/materials`,
                         isValid: true,
+                        isClearable: true,
                     },
                 },
                 {
@@ -94,6 +98,7 @@ function getAppArguments(args): Promise<any> {
                     focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/docker-build-config`,
+                        isClearable: true,
                         isValid: true,
                     }
                 },
@@ -102,6 +107,7 @@ function getAppArguments(args): Promise<any> {
                     focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/deployment-template`,
+                        isClearable: true,
                         isValid: true,
                     }
                 },
@@ -110,6 +116,7 @@ function getAppArguments(args): Promise<any> {
                     focussable: true,
                     data: {
                         url: `app/${args[1].data.value}/edit/workflow`,
+                        isClearable: true,
                         isValid: true,
                     }
                 }
@@ -121,6 +128,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     isValid: true,
+                    isClearable: true,
                 }
             }])
         })
@@ -134,6 +142,7 @@ function getAppArguments(args): Promise<any> {
                     id: 'blobs-dev1-fdfc6b54-prglm',
                     url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
+                    isClearable: true,
                 }
             },
             {
@@ -143,11 +152,11 @@ function getAppArguments(args): Promise<any> {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
                     url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
+                    isClearable: true,
                 }
             },
             ])
         })
-
     }
     return new Promise((resolve, reject) => {
         resolve([])

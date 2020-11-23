@@ -11,10 +11,11 @@ interface CommandProps extends RouteComponentProps<{}> {
 export interface ArgumentType {
     value: string;
     data?: {
-        kind?: string;
-        value?: string | number;
-        url?: string;
-        isValid: boolean;
+        readonly kind?: string;
+        readonly value?: string | number;
+        readonly url?: string;
+        readonly isClearable: boolean;
+        readonly isValid: boolean;
     }
 }
 
@@ -284,7 +285,13 @@ export class Command extends Component<CommandProps, CommandState>  {
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             let allArgs = [];
             if (!newArg) {
-                newArg = { value: this.state.argumentInput, focussable: true, ref: undefined, data: { isValid: false } };
+                newArg = { 
+                    value: this.state.argumentInput, focussable: true, ref: undefined, 
+                    data: { 
+                        isValid: false,
+                        isClearable: true,
+                    } 
+                };
             }
             allArgs = [...this.state.arguments, newArg, { value: '/' }];
             this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
