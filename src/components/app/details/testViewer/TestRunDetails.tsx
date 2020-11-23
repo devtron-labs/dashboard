@@ -16,7 +16,7 @@ import { getTestSuites, getTestCase, getSuiteDetail } from './service';
 import { PieChart, Pie, Cell } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {SelectedNames} from './Test.types'
-import { getBinWiseArr } from "./testRunDetails.util";
+import { getBinWiseArrayData } from "./testRunDetails.util";
 
 export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedNames})=>{
     const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>();
@@ -584,11 +584,11 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
         }
         testTimeData.sort((a,b) => a - b);
         const binWidth = testTimeData[testTimeData.length - 1] / 10;
-        const binWiseArr = getBinWiseArr(testTimeData, numOfBins, binWidth);
+        const binWiseArrayData = getBinWiseArrayData(testTimeData, numOfBins, binWidth);
         const chartData = [];
-        for (let i = 0; i < binWiseArr.length; i++) {
+        for (let i = 0; i < binWiseArrayData.length; i++) {
             chartData.push({
-                'number of tests':  binWiseArr[i],
+                'number of tests':  binWiseArrayData[i],
                 'time spent': `${Number((i * binWidth).toFixed(2))} - ${Number(((i + 1) * binWidth).toFixed(2))}`
             })
         }
