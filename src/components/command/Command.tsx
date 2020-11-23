@@ -388,15 +388,19 @@ export class Command extends Component<CommandProps, CommandState>  {
                         </div>
                         <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
                     </div> : null}
-                    <div className="command-arg" tabIndex={0}>
-                        {this.state.arguments.map((arg, index) => {
-                            return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "m-4"}>{arg.value}</span>
-                        })}
-                        <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
-                            <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
-                            <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
-                                onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                    <div className="command-arg flex top" tabIndex={0}>
+                        <div className="flex-1 flex left flex-wrap">
+                            {this.state.arguments.map((arg, index) => {
+                                return <span key={`${index}-${arg.value}`} className={arg.value !== "/" ? "command-arg__arg m-4" : "m-4"}>{arg.value}</span>
+                            })}
+                            <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
+                                <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
+                                    onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                            </div>
                         </div>
+                        {this.state.arguments.find(a => a?.data?.url) &&
+                        <span className="ff-monospace command__control command__control--nav mt-4 mb-4"> &crarr; to navigate</span>}
                     </div>
                     {this.renderTabContent()}
                 </div>

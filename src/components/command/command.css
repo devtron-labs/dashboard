@@ -140,11 +140,15 @@
 .command__control {
     font-weight: 500;
     border-radius: 2px;
-    padding: 2px 4px;
+    padding: 2px 6px;
     border-radius: 2px;
     border: solid 1px var(--N200);
     background-color: var(--N000);
     color: var(--N700);
+}
+
+.command__control--nav {
+    background-color: var(--N100);
 }
 
 .command__control--tab {

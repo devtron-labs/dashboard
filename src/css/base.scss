@@ -408,6 +408,14 @@ a:focus {
     justify-content: space-between;
 }
 
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+
 .loading-wrapper {
     height: calc(100vh - 172px);
     display: flex;
