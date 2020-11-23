@@ -166,6 +166,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                     focussedArgument: suggestArgIndex,
                 });
 
+                // this._input.current.placeholder = response[suggestArgIndex]?.value;
+                // console.log(response[suggestArgIndex]?.value)
+
+            }).catch((error) => {
+                console.error(error)
             })
         }
     }
