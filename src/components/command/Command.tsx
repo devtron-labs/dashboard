@@ -338,7 +338,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     renderTabContent() {
         if (this.state.tab === 'this-app') {
             return <div ref={node => this._menu = node} className="command__suggested-args-container">
-                {this.state.arguments.length ?
+                {this.state.arguments.length ? <>
                     <div className="suggested-arguments" tabIndex={0}>
                         {this.state.suggestedArguments.map((a, index) => {
                             if (a.focussable)
@@ -351,8 +351,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     >&rarr; to accept</span>
                                 </div>
                         })}
-                        {this.state.isLoading ? <Progressing /> : null}
-                    </div> : <div className="pl-20 pr-20">
+                    </div>
+                    {this.state.isLoading ? <Progressing /> : null}
+                </> : <div className="pl-20 pr-20">
                         <p className="mb-8">I'm looking for...</p>
                         <p className="command-options mb-0">
                             {this.state.command.map((opt) => {
