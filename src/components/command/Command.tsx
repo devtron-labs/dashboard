@@ -16,6 +16,7 @@ export interface ArgumentType {
         readonly url?: string;
         readonly isClearable: boolean;
         readonly isValid: boolean;
+        // readonly isEOC: boolean;
     }
 }
 
@@ -84,6 +85,15 @@ export class Command extends Component<CommandProps, CommandState>  {
         });
         if (this.state.arguments.length) {
             this.callGetArgumentSuggestions(this.state.arguments);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput)) {
+            this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
+            if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
+                this._input.current.placeholder = "";
+            }
         }
     }
 
@@ -165,10 +175,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     suggestedArguments: response,
                     focussedArgument: suggestArgIndex,
                 });
-
-                // this._input.current.placeholder = response[suggestArgIndex]?.value;
-                // console.log(response[suggestArgIndex]?.value)
-
             }).catch((error) => {
                 console.error(error)
             })
@@ -207,7 +213,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
         }
         else if (event.key === 'Backspace') {
-            this._input.current.placeholder = PlaceholderText;
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 if (allArgs[allArgs.length - 2]?.data?.isClearable) {
@@ -223,7 +228,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             let newArg = this.state.suggestedArguments[this.state.focussedArgument];
             if (!newArg) return;
 
-            this._input.current.placeholder = PlaceholderText;
             this.setState({
                 argumentInput: '',
                 arguments: [...this.state.arguments, newArg, { value: "/" }],
@@ -254,11 +258,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "end", });
             }
             this.setState({ focussedArgument: pos });
-            this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
-
-            if (!this._input.current.placeholder.startsWith(event.target.value)) {
-                this._input.current.placeholder = "";
-            }
 
         }
         else if (event.key === "ArrowUp") {
@@ -282,10 +281,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "start", });
             }
             this.setState({ focussedArgument: pos });
-            this._input.current.placeholder = this.state.suggestedArguments[pos]?.value || PlaceholderText;
-            if (!this._input.current.placeholder.startsWith(event.target.value)) {
-                this._input.current.placeholder = "";
-            }
         }
         else if ((event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
@@ -325,12 +320,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 suggestedArguments: suggestedArguments,
                 focussedArgument: suggestArgIndex,
             })
-            if (suggestArgIndex >= 0) {
-                this._input.current.placeholder = suggestedArguments[suggestArgIndex]?.value;
-            }
-            if (!this._input.current.placeholder.startsWith(event.target.value)) {
-                this._input.current.placeholder = "";
-            }
         }
     }
 
