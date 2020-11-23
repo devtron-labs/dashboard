@@ -8,6 +8,9 @@ import { URLS, getNextStageURL } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
 import './appDetails/appDetails.scss';
+import { Command } from '../../command/Command';
+import { COMMAND } from '../../command/command.util';
+
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'));
@@ -17,7 +20,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 
 export default function AppDetailsPage() {
     const { url, path } = useRouteMatch()
-    const { appId } = useParams()
+    const { appId } = useParams<{appId}>()
     return (
         <div className="app-details-page">
             <AppHeader />
@@ -46,26 +49,26 @@ export default function AppDetailsPage() {
 }
 
 export function AppHeader() {
-    const { appId } = useParams();
-    const { url, path } = useRouteMatch();
-    const { push } = useHistory();
+    const { appId } = useParams<{appId}>();
+    const match = useRouteMatch();
+    const history = useHistory();
     const [configStatusLoading, setConfigStatusLoading] = useState(false);
-    const { pathname } = useLocation()
+    const location = useLocation()
     const currentPathname = useRef("")
     useEffect(() => {
-        currentPathname.current = pathname
-    }, [pathname])
+        currentPathname.current = location.pathname
+    }, [location.pathname])
 
     const handleAppChange = useCallback(({ label, value }) => {
-        const tab = currentPathname.current.replace(url, "").split("/")[1]
-        const newUrl = generatePath(path, { appId: value })
-        push(`${newUrl}/${tab}`)
+        const tab = currentPathname.current.replace(match.url, "").split("/")[1]
+        const newUrl = generatePath(match.path, { appId: value })
+        history.push(`${newUrl}/${tab}`)
         ReactGA.event({
             category: 'App Selector',
             action: 'App Selection Changed',
             label: tab,
         });
-    }, [pathname])
+    }, [location.pathname])
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -100,28 +103,37 @@ export function AppHeader() {
             return;
         }
         const newUrl = getNextStageURL(result.result, appId);
-        push(newUrl);
+        history.push(newUrl);
     }
     return (
         <div className="page-header page-header--tabs">
             <h1 className="page-header__title flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs} />
             </h1>
+            <Command location={location}
+                    match={match}
+                    history={history}
+                    isTabMode={true}
+                    defaultArguments={[
+                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
+                        { value: "/", data: { isValid: true, isClearable: false } }
+                    ]}
+                />
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
-                    <NavLink activeClassName="active" to={`${url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">
+                    <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">
                         App Details
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
-                    <NavLink activeClassName="active" to={`${url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link">
+                    <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link">
                         Trigger
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
-                        to={`${url}/${URLS.APP_CI_DETAILS}`}
+                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                     >
                         Build History
@@ -130,7 +142,7 @@ export function AppHeader() {
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
-                        to={`${url}/${URLS.APP_CD_DETAILS}`}
+                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                     >
                         Deployment History
@@ -139,7 +151,7 @@ export function AppHeader() {
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
-                        to={`${url}/${URLS.APP_DEPLOYMENT_METRICS}`}
+                        to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
                     >
                         Deployment Metrics

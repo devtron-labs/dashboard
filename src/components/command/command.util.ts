@@ -44,7 +44,7 @@ function getAppArguments(args): Promise<any> {
                         value: a.id,
                         kind: 'appId',
                         isValid: true,
-                        url: `app/${a.id}/details`,
+                        url: `/app/${a.id}/details`,
                         isClearable: true,
                     }
                 }
@@ -63,7 +63,7 @@ function getAppArguments(args): Promise<any> {
                         value: a.environmentId,
                         kind: 'envId',
                         isValid: true,
-                        url: `app/${args[1].data.value}/details/${a.environmentId}/Pod`,
+                        url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
                         isClearable: true,
                     }
                 }
@@ -74,7 +74,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     isValid: true,
-                    url: `app/${args[1].data.value}/edit/workflow`,
+                    url: `/app/${args[1].data.value}/edit/workflow`,
                     isClearable: true,
                 }
             })
@@ -88,7 +88,7 @@ function getAppArguments(args): Promise<any> {
                     value: 'git-material',
                     focussable: true,
                     data: {
-                        url: `app/${args[1].data.value}/edit/materials`,
+                        url: `/app/${args[1].data.value}/edit/materials`,
                         isValid: true,
                         isClearable: true,
                     },
@@ -97,7 +97,7 @@ function getAppArguments(args): Promise<any> {
                     value: 'docker-config',
                     focussable: true,
                     data: {
-                        url: `app/${args[1].data.value}/edit/docker-build-config`,
+                        url: `/app/${args[1].data.value}/edit/docker-build-config`,
                         isClearable: true,
                         isValid: true,
                     }
@@ -106,7 +106,7 @@ function getAppArguments(args): Promise<any> {
                     value: 'deployment-template',
                     focussable: true,
                     data: {
-                        url: `app/${args[1].data.value}/edit/deployment-template`,
+                        url: `/app/${args[1].data.value}/edit/deployment-template`,
                         isClearable: true,
                         isValid: true,
                     }
@@ -115,7 +115,25 @@ function getAppArguments(args): Promise<any> {
                     value: 'workflow-editor',
                     focussable: true,
                     data: {
-                        url: `app/${args[1].data.value}/edit/workflow`,
+                        url: `/app/${args[1].data.value}/edit/workflow`,
+                        isClearable: true,
+                        isValid: true,
+                    }
+                },
+                {
+                    value: 'configmap',
+                    focussable: true,
+                    data: {
+                        url: `/app/${args[1].data.value}/edit/configmap`,
+                        isClearable: true,
+                        isValid: true,
+                    }
+                },
+                {
+                    value: 'secrets',
+                    focussable: true,
+                    data: {
+                        url: `/app/${args[1].data.value}/edit/secrets`,
                         isClearable: true,
                         isValid: true,
                     }
@@ -140,7 +158,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-prglm',
-                    url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
                     isClearable: true,
                 }
@@ -150,7 +168,7 @@ function getAppArguments(args): Promise<any> {
                 focussable: true,
                 data: {
                     id: 'blobs-dev1-fdfc6b54-pvphj',
-                    url: `app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                     isValid: true,
                     isClearable: true,
                 }

@@ -145,6 +145,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     runCommand() {
         let currentSuggestion = this.state.suggestedArguments[this.state.focussedArgument];
         let newArg = this.state.suggestedArguments.find(a => (a.value === currentSuggestion.value && currentSuggestion.focussable));
+
         if (newArg) {
             this.setState({ arguments: [...this.state.arguments, newArg, { value: '/' }] }, () => {
                 let last = this.state.arguments[this.state.arguments.length - 2];
