@@ -20,7 +20,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 
 export default function AppDetailsPage() {
     const { url, path } = useRouteMatch()
-    const { appId } = useParams<{appId}>()
+    const { appId } = useParams<{ appId }>()
     return (
         <div className="app-details-page">
             <AppHeader />
@@ -49,12 +49,14 @@ export default function AppDetailsPage() {
 }
 
 export function AppHeader() {
-    const { appId } = useParams<{appId}>();
+    const { appId } = useParams<{ appId }>();
     const match = useRouteMatch();
     const history = useHistory();
     const [configStatusLoading, setConfigStatusLoading] = useState(false);
     const location = useLocation()
     const currentPathname = useRef("")
+    const [showCommandBar, toggleCommandBar] = useState(false)
+
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
@@ -105,20 +107,38 @@ export function AppHeader() {
         const newUrl = getNextStageURL(result.result, appId);
         history.push(newUrl);
     }
+
+    function handleKeyDown(event) {
+        if (event.metaKey && event.key === '/') {
+            toggleCommandBar(true);
+        }
+        else if (event.key === "Escape") {
+            toggleCommandBar(false);
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, []);
+
     return (
         <div className="page-header page-header--tabs">
             <h1 className="page-header__title flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs} />
             </h1>
-            <Command location={location}
-                    match={match}
-                    history={history}
-                    isTabMode={true}
-                    defaultArguments={[
-                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
-                        { value: "/", data: { isValid: true, isClearable: false } }
-                    ]}
-                />
+            {showCommandBar ? <Command location={location}
+                match={match}
+                history={history}
+                isTabMode={true}
+                toggleCommandBar={(e) => toggleCommandBar(false)}
+                defaultArguments={[
+                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
+                    { value: "/", data: { isValid: true, isClearable: false } }
+                ]}
+            /> : null}
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">

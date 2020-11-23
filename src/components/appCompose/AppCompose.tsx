@@ -34,11 +34,29 @@ export default function AppCompose() {
         appName: '',
         maximumAllowedUrl: '',
     })
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
     const [loading, result, error, reload] = useAsync(() => Promise.all([fetchAppConfigStatus(), getSourceConfig(appId)]), [appId])
+    const [showCommandBar, toggleCommandBar] = useState(false)
+
+    function handleKeyDown(event) {
+        if (event.metaKey && event.key === '/') {
+            toggleCommandBar(true);
+        }
+        else if (event.key === "Escape") {
+            toggleCommandBar(false);
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, []);
+
     useEffect(() => {
         if (loading) return
         if (error) {
@@ -48,6 +66,7 @@ export default function AppCompose() {
         setState(state => ({ ...state, appName: result ? result[1]?.result?.appName : '' }))
 
     }, [loading, result, error])
+
 
     const canDeleteApp: boolean = useMemo(() => {
         if (loading) return false
@@ -122,15 +141,16 @@ export default function AppCompose() {
     return <>
         <div className="app-compose" >
             <Header />
-            <Command location={location}
+            {showCommandBar ? <Command location={location}
                 match={match}
                 history={history}
                 isTabMode={true}
+                toggleCommandBar={(e) => toggleCommandBar(false)}
                 defaultArguments={[
                     { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
                     { value: "/", data: { isValid: true, isClearable: false } }
                 ]}
-            />
+            /> : null}
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
@@ -152,7 +172,8 @@ export default function AppCompose() {
 
 const NextButton: React.FC<{ configStatus: any; isCiPipeline: boolean; stage: APP_COMPOSE_STAGE; stageNo: number }> = ({ configStatus, isCiPipeline, stage, stageNo }) => {
     const { push } = useHistory()
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
+
     if (!isCiPipeline)
         return (
             <div className="app-compose__next-section">
@@ -299,7 +320,7 @@ function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWor
 }
 
 function Header() {
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
     const { url, path } = useRouteMatch()
     const currentPathname = useRef('');
     const { push } = useHistory()

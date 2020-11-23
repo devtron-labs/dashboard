@@ -8,6 +8,7 @@ import { Progressing } from '../common';
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
     isTabMode: boolean;
+    toggleCommandBar: (flag: boolean) => void;
 }
 export interface ArgumentType {
     value: string;
@@ -75,7 +76,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.isInViewport = this.isInViewport.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
         this.disableTab = this.disableTab.bind(this);
-        this.toggleCommandBar = this.toggleCommandBar.bind(this);
+        // this.toggleCommandBar = this.toggleCommandBar.bind(this);
     }
 
     componentDidMount() {
@@ -113,9 +114,9 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    toggleCommandBar(flag) {
-        this.setState({ showCommandBar: flag });
-    }
+    // toggleCommandBar(flag) {
+    //     this.setState({ showCommandBar: flag });
+    // }
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
@@ -210,13 +211,13 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     handleKeyPress(event) {
-        if (event.metaKey && event.key === '/') {
-            this.toggleCommandBar(true)
-        }
-        else if (event.key === "Escape") {
-            this.toggleCommandBar(false)
-        }
-        else if (event.key === "Enter") {
+        // if (event.metaKey && event.key === '/') {
+        //     this.toggleCommandBar(true)
+        // }
+        // else if (event.key === "Escape") {
+        //     this.toggleCommandBar(false)
+        // }
+        if (event.key === "Enter") {
             this.runCommand();
         }
         else if (event.key === "Tab") {
@@ -348,7 +349,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                     <span className="ff-monospace command__control"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                        <span className="fs-16">&nbsp;&rarr;&nbsp;</span>to accept</span>
+                                        <span className="fs-16" style={{ lineHeight: "1.3" }}>&nbsp;&rarr;&nbsp;</span>to accept</span>
                                 </div>
                         })}
                     </div>
@@ -383,41 +384,38 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     render() {
-        if (this.state.showCommandBar) {
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.toggleCommandBar(false)}>
-                <div className="command" onClick={(event) => event.stopPropagation()}>
-                    {this.props.isTabMode ? <div className="command-tab">
-                        <div className="">
-                            <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />Applications
+        return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
+            <div className="command" onClick={(event) => event.stopPropagation()}>
+                {this.props.isTabMode ? <div className="command-tab">
+                    <div className="">
+                        <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
+                            <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />Applications
                             </label>
-                            <label className={this.state.tab === "jump-to" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
+                        <label className={this.state.tab === "jump-to" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
+                            <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
                             </label>
-                        </div>
-                        <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
-                    </div> : null}
-                    <div className="flexbox mb-20" style={{ backgroundColor: "var(--window-bg)" }}>
-                        <div className="command-arg flex top w-100">
-                            <div className="flex-1 flex left flex-wrap">
-                                {this.state.arguments.map((arg, index) => {
-                                    return <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
-                                })}
-                                <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
-                                    <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
-                                    <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
-                                        onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
-                                </div>
-                            </div>
-                            {this.state.arguments.find(a => a?.data?.url) &&
-                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}> &crarr;</span>
-                            }
-                        </div>
                     </div>
-                    {this.renderTabContent()}
+                    <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
+                </div> : null}
+                <div className="flexbox mb-20" style={{ backgroundColor: "var(--window-bg)" }}>
+                    <div className="command-arg flex top w-100">
+                        <div className="flex-1 flex left flex-wrap">
+                            {this.state.arguments.map((arg, index) => {
+                                return <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
+                            })}
+                            <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
+                                <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
+                                    onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
+                            </div>
+                        </div>
+                        {this.state.arguments.find(a => a?.data?.url) &&
+                            <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}> &crarr;</span>
+                        }
+                    </div>
                 </div>
+                {this.renderTabContent()}
             </div>
-        }
-        return null;
+        </div>
     }
 }

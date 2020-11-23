@@ -35,9 +35,27 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
+    toggleCommandBar: (boolean) => void;
 }
 
 export class AppListView extends Component<AppListViewProps>{
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+
+    handleKeyDown = (event) => {
+        if (event.metaKey && event.key === '/') {
+            this.props.toggleCommandBar(true);
+        }
+        else if (event.key === "Escape") {
+            this.props.toggleCommandBar(false);
+        }
+    }
 
     openCreateModal = (event: React.MouseEvent): void => {
         let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${this.props.location.search}`
@@ -270,15 +288,16 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                <Command location={this.props.location}
+                {this.props.showCommandBar ? <Command location={this.props.location}
                     match={this.props.match}
                     history={this.props.history}
                     isTabMode={true}
+                    toggleCommandBar={this.props.toggleCommandBar}
                     defaultArguments={[
                         { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
                         { value: "/", data: { isValid: true, isClearable: false } }
                     ]}
-                />
+                /> : null}
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

@@ -32,6 +32,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 key: SortBy.APP_NAME,
                 order: OrderBy.ASC
             },
+            showCommandBar: false,
             offset: 0,
             pageSize: 20,
             expandedRow: false,
@@ -337,6 +338,12 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.props.history.push(`${url}`);
     }
 
+    toggleCommandBar = (flag: boolean): void => {
+        console.log(flag)
+
+        this.setState({ showCommandBar: flag });
+    }
+
     render() {
         return <AppListView
             {...this.state}
@@ -359,6 +366,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             changePageSize={this.changePageSize}
             closeModal={this.closeModal}
             openTriggerInfoModal={this.openTriggerInfoModal}
+            toggleCommandBar={this.toggleCommandBar}
         />
     }
 }
