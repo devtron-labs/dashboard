@@ -205,11 +205,13 @@ export class Command extends Component<CommandProps, CommandState>  {
             this._input.current.placeholder = PlaceholderText;
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
-                let start = this.state.arguments.length - 2;
-                allArgs.splice(start, 2);
-                this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
-                    this.callGetArgumentSuggestions(this.state.arguments);
-                });
+                if (allArgs[allArgs.length - 2]?.data?.isClearable) {
+                    let start = this.state.arguments.length - 2;
+                    allArgs.splice(start, 2);
+                    this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
+                        this.callGetArgumentSuggestions(this.state.arguments);
+                    });
+                }
             }
         }
         else if (event.key === "ArrowRight") {
@@ -285,12 +287,12 @@ export class Command extends Component<CommandProps, CommandState>  {
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             let allArgs = [];
             if (!newArg) {
-                newArg = { 
-                    value: this.state.argumentInput, focussable: true, ref: undefined, 
-                    data: { 
+                newArg = {
+                    value: this.state.argumentInput, focussable: true, ref: undefined,
+                    data: {
                         isValid: false,
                         isClearable: true,
-                    } 
+                    }
                 };
             }
             allArgs = [...this.state.arguments, newArg, { value: '/' }];
@@ -366,7 +368,6 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
         else {
             return <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
-
             </div>
         }
     }

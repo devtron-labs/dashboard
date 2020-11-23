@@ -274,7 +274,10 @@ export class AppListView extends Component<AppListViewProps>{
                     match={this.props.match}
                     history={this.props.history}
                     isTabMode={true}
-                        defaultArguments={[{ value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true,  } }, { value: "/" }]}
+                    defaultArguments={[
+                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
+                        { value: "/", data: { isValid: true, isClearable: false } }
+                    ]}
                 />
                 {this.renderPageHeader()}
                 {this.renderRouter()}
