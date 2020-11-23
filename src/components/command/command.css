@@ -13,6 +13,12 @@
 
 .command__press-tab {
     font-family: monospace;
+    color: var(--N700);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N700);
 }
 
 .command-tab {
@@ -98,6 +104,12 @@
     cursor: default;
 }
 
+.command__suggested-args-container {
+    height: 350px;
+    overflow: auto;
+    /* border-top: solid 1px var(--N200); */
+}
+
 .suggested-arguments {
     background-color: white;
     border-bottom: solid 1px var(--N100);
@@ -131,4 +143,12 @@
 
 .command__input:focus, .command__input:hover {
     outline: none;
+}
+.command__control {
+    background-color: var(--B100);
+    color: var(--B500);
+    border-radius: 2px;
+    padding: 2px 4px;
+    border: solid 1px var(--B200);
+    font-weight: 500;
 }

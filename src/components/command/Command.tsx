@@ -72,6 +72,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.isInViewport = this.isInViewport.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
         this.disableTab = this.disableTab.bind(this);
+        this.toggleCommandBar = this.toggleCommandBar.bind(this);
     }
 
     componentDidMount() {
@@ -89,7 +90,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput)) {
+        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.state.showCommandBar)) {
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
                 this._input.current.placeholder = "";
@@ -109,6 +110,10 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
+    toggleCommandBar() {
+        this.setState({ showCommandBar: !this.state.showCommandBar });
+    }
+    
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
@@ -199,10 +204,10 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
-            this.setState({ showCommandBar: true });
+            this.toggleCommandBar()
         }
         else if (event.key === "Escape") {
-            this.setState({ showCommandBar: false });
+            this.toggleCommandBar()
         }
         else if (event.key === "Enter") {
             this.runCommand();
@@ -325,7 +330,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     renderTabContent() {
         if (this.state.tab === 'this-app') {
-            return <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
+            return <div ref={node => this._menu = node} className="command__suggested-args-container">
                 {this.state.arguments.length ?
                     <div className="suggested-arguments" tabIndex={0}>
                         {this.state.suggestedArguments.map((a, index) => {
@@ -361,14 +366,15 @@ export class Command extends Component<CommandProps, CommandState>  {
             </div>
         }
         else {
-            return <div ref={node => this._menu = node} style={{ height: '350px', overflow: 'auto' }}>
+            return <div ref={node => this._menu = node} className="command__suggested-args-container">
+
             </div>
         }
     }
 
     render() {
         if (this.state.showCommandBar) {
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.setState({ showCommandBar: false })}>
+            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={this.toggleCommandBar}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">
@@ -379,7 +385,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
                             </label>
                         </div>
-                        <span className="command__press-tab">Press tab to switch</span>
+                        <span className="command__press-tab ff-monospace">Press <span className="command__control">Tab</span> to switch</span>
                     </div> : null}
                     <div className="command-arg" tabIndex={0}>
                         {this.state.arguments.map((arg, index) => {
