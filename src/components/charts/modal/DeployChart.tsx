@@ -16,6 +16,7 @@ import './DeployChart.scss';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
+import { TIMEOUT } from 'dns';
 
 
 function mapById(arr) {
@@ -54,6 +55,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [repoChartSearchTimerId, setRepoChartSearchTimerId] = useState(null)
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<{
@@ -301,6 +303,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
         // Make API call here
         console.log(inputValue);
         callback(filterRepoOptions(inputValue));
+        const timeOutId = setTimeout(() => {
+            console.log("called");
+        }, 2000);
+        if (repoChartSearchTimerId === null) {
+            // console.log(timeOutId);
+            setRepoChartSearchTimerId(timeOutId);
+        }
+        else {
+            clearTimeout(repoChartSearchTimerId);
+            setRepoChartSearchTimerId(timeOutId);
+        }
     }
 
     function handlerepoChartInputChange(inputValue: string) {
@@ -399,7 +412,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     formatOptionLabel={repoChartSelectOptionLabel}
                                     value={repoChartValue}
                                     loadOptions={repoChartLoadOptions}
-                                    onInputChange={handlerepoChartInputChange}
+                                    // onInputChange={handlerepoChartInputChange}
                                     onFocus={handlerepoChartFocus}
                                     onChange={handleRepoChartValueChange}
                                     // menuIsOpen={true}

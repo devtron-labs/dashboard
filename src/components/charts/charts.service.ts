@@ -198,3 +198,8 @@ interface AppNameValidated extends RootObject {
 export function validateAppNames(payload: appName[]): Promise<AppNameValidated> {
     return post(`app-store/application/exists`, payload)
 }
+
+export function getChartsByKeyword(input: string) {
+    // TODO enter API
+    return 'r';
+}
