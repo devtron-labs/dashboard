@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { toast } from 'react-toastify';
 import './command.css';
+import { Progressing } from '../common';
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
     isTabMode: boolean;
@@ -27,6 +28,7 @@ interface CommandState {
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
     suggestedArguments: SuggestedArgumentType[];
+    isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
     showCommandBar: boolean;
@@ -56,6 +58,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 { label: 'Global Configuration', argument: COMMAND.GLOBAL_CONFIG },
             ],
             tab: 'this-app',
+            isLoading: false,
             suggestedCommands: [],
             suggestedArguments: [],
             focussedArgument: 0,
@@ -169,6 +172,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             });
         }
         else {
+            this.setState({ isLoading: true })
             getArgumentSuggestions(args).then((response) => {
                 response = response.map((a) => {
                     return {
@@ -180,9 +184,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.setState({
                     suggestedArguments: response,
                     focussedArgument: suggestArgIndex,
+                    isLoading: false
                 });
             }).catch((error) => {
-                console.error(error)
+                this.setState({ isLoading: false })
+                console.error(error);
             })
         }
     }
@@ -345,6 +351,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     >&rarr; to accept</span>
                                 </div>
                         })}
+                        {this.state.isLoading ? <Progressing /> : null}
                     </div> : <div className="pl-20 pr-20">
                         <p className="mb-8">I'm looking for...</p>
                         <p className="command-options mb-0">
@@ -401,7 +408,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             </div>
                         </div>
                         {this.state.arguments.find(a => a?.data?.url) &&
-                        <span className="ff-monospace command__control command__control--nav mt-4 mb-4"> &crarr; to navigate</span>}
+                            <span className="ff-monospace command__control command__control--nav mt-4 mb-4"> &crarr; to navigate</span>}
                     </div>
                     {this.renderTabContent()}
                 </div>
