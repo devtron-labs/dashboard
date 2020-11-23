@@ -27,7 +27,7 @@ interface CommandState {
     command: { label: string; argument: string }[];
     suggestedCommands: any[];
     suggestedArguments: SuggestedArgumentType[];
-    focussedArgument: number; //index
+    focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
     showCommandBar: boolean;
     inputPosition: {
@@ -334,11 +334,14 @@ export class Command extends Component<CommandProps, CommandState>  {
                 {this.state.arguments.length ?
                     <div className="suggested-arguments" tabIndex={0}>
                         {this.state.suggestedArguments.map((a, index) => {
-                            if (a.focussable) 
+                            if (a.focussable)
                                 return <div ref={node => a['ref'] = node} key={a.value}
-                                    className="pl-20 pr-20 pt-10 pb-10"
+                                    className="pl-20 pr-20 pt-10 pb-10 flexbox flex-justify"
                                     style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
                                     <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                    <span className="ff-monospace command__control"
+                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}
+                                    >&rarr; to accept</span>
                                 </div>
                         })}
                     </div> : <div className="pl-20 pr-20">
@@ -349,7 +352,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             })}
                         </p>
                     </div>}
-                <div className="pl-20 pr-20">
+                {/* <div className="pl-20 pr-20">
                     <p className="mt-18 mb-8">Jump to</p>
                     {this.state.suggestedCommands.map((s) => {
                         return <article className="suggested-command pt-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
@@ -360,7 +363,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             </div>
                         </article>
                     })}
-                </div>
+                </div> */}
             </div>
         }
         else {
@@ -383,7 +386,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
                             </label>
                         </div>
-                        <span className="command__press-tab ff-monospace">Press <span className="command__control">Tab</span> to switch</span>
+                        <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
                     </div> : null}
                     <div className="command-arg" tabIndex={0}>
                         {this.state.arguments.map((arg, index) => {

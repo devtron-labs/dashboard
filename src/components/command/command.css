@@ -116,9 +116,6 @@
 
 .suggested-arguments button {
     cursor: pointer;
-    display: block;
-    width: 100%;
-    text-align: left;
     margin: 0px;
     background-color: inherit;
     border: solid 1px transparent;
@@ -139,11 +136,19 @@
 .command__input:focus, .command__input:hover {
     outline: none;
 }
+
 .command__control {
-    background-color: var(--B100);
-    color: var(--B500);
+    font-weight: 500;
     border-radius: 2px;
     padding: 2px 4px;
+    border-radius: 2px;
+    border: solid 1px var(--N200);
+    background-color: var(--N000);
+    color: var(--N700);
+}
+
+.command__control--tab {
     border: solid 1px var(--B200);
-    font-weight: 500;
+    background-color: var(--B100);
+    color: var(--B500);
 }
