@@ -77,6 +77,13 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>
+                <Select.OptGroup label="EXISTING" key={"EXISTING"}>
+                    {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
+                        return <Select.Option key={chartValue.id} value={chartValue}>
+                            {chartValue.name} ({chartValue.chartVersion})
+                    </Select.Option>
+                    }) : this.renderNoResultsOption()}
+                </Select.OptGroup>
                 <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>
                     <Add className="icon-dim-20 mr-5" />
                     Create Custom

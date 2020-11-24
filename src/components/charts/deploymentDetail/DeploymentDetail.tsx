@@ -112,7 +112,7 @@ export default function AppDetail() {
             render={(props) => {
                 return (
                     <OpaqueModal onHide={closeModal}>
-                        {installedConfig && installedConfig.valuesOverride ? (
+                        {installedConfig && installedConfig.valuesOverrideYaml ? (
                             <DeployChart
                                 versions={mapById([
                                     {
@@ -121,10 +121,9 @@ export default function AppDetail() {
                                     },
                                 ])}
                                 {...installedConfig}
-                                valuesYaml={JSON.stringify(installedConfig.valuesOverride)}
+                                valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
                                 rawValues={
-                                    installedConfig.valuesOverrideYaml ||
-                                    yamlJsParser.stringify(installedConfig.valuesOverride, 50, 2)
+                                    installedConfig.valuesOverrideYaml
                                 }
                                 appName={installedConfig.appName}
                                 installedAppVersion={installedConfig.id}
@@ -132,9 +131,12 @@ export default function AppDetail() {
                                     id: appDetails.appStoreInstalledAppVersionId,
                                     kind: 'DEPLOYED',
                                 }}
+                                deprecated={installedConfig.deprecated}
+                                appStoreId={installedConfig.appStoreId}
                                 chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                 chartName={appDetails.appStoreChartName}
                                 name={appDetails.appStoreAppName}
+                                installedAppVersionId={installedConfig.id}
                                 onHide={closeModal}
                             />
                         ) : (

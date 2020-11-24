@@ -8,7 +8,7 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import { useHistory, useParams } from 'react-router'
 import { URLS } from '../../../config'
 import deleteIcon from '../../../assets/icons/ic-delete.svg'
-import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin } from '../charts.service'
+import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
 import AsyncSelect from 'react-select/async';
@@ -26,6 +26,15 @@ function mapById(arr) {
     return arr.reduce((agg, curr) => agg.set(curr.id || curr.Id, curr), new Map())
 }
 
+interface chartRepoOtions {
+    appStoreApplicationVersionId: number,
+    chartRepoName: string,
+    chartId: number,
+    chartName: string,
+    version: string,
+    deprecated: boolean,
+}
+
 const DeployChart: React.FC<DeployChartProps> = ({
     installedAppId,
     installedAppVersion,
@@ -40,7 +49,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
     chartName = "",
     name = "",
     readme = "",
+    deprecated = false,
+    appStoreId = 0,
     chartIdFromDeploymentDetail = 0,
+    installedAppVersionId = 0,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: "" },
     ...rest }) => {
     const [teams, setTeams] = useState(new Map())
@@ -58,41 +70,24 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [repoChartSearchTimerId, setRepoChartSearchTimerId] = useState(null)
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
-    const [repoChartOptions, setRepoChartOptions] = useState<{
-        appStoreApplicationVersionId: number,
-        chartRepoName: string,
-        chartRepoId: number,
-        chartId: number,
-        chartName: string,
-        version: string,
-        deprecated: boolean,
-    }[]>([{
-        appStoreApplicationVersionId: 12,
-        chartRepoName: chartName,
-        chartRepoId: 12,
-        chartId: 12,
-        chartName: name,
-        version: versions.get(selectedVersion).version,
-        deprecated: true,
-    },
-    {
-        appStoreApplicationVersionId: 13,
-        chartRepoName: chartName + 'p',
-        chartRepoId: 13,
-        chartId: 13,
-        chartName: name + 'p',
-        version: versions.get(selectedVersion).version,
-        deprecated: false,
-    }]);
-    const [repoChartValue, setRepoChartValue] = useState(
+    const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
         {
-            appStoreApplicationVersionId: 12,
+            appStoreApplicationVersionId: appStoreVersion,
             chartRepoName: chartName,
-            chartRepoId: 12,
-            chartId: 12,
+            chartId: appStoreId,
             chartName: name,
             version: versions.get(selectedVersion).version,
-            deprecated: true,
+            deprecated: deprecated,
+        }
+    ]);
+    const [repoChartValue, setRepoChartValue] = useState<chartRepoOtions>(
+        {
+            appStoreApplicationVersionId: appStoreVersion,
+            chartRepoName: chartName,
+            chartId: appStoreId,
+            chartName: name,
+            version: versions.get(selectedVersion).version,
+            deprecated: deprecated,
         },
     );
     const [obj, json, yaml, error] = useJsonYaml(textRef, 4, 'yaml', true)
@@ -125,11 +120,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    async function getChartValuesList() {
+    async function getChartValuesList(id:number, installedAppVersionId=null) {
         setLoading(true)
         try {
-            const { result } = await getChartValuesCategorizedListParsed(chartId);
+            const { result } = await getChartValuesCategorizedListParsed(id, installedAppVersionId);
             setChartValuesList(result);
+            if(installedAppVersionId) {
+                setChartValues({
+                    id: chartValues.id,
+                    kind: "EXISTING",
+                })
+            }
         }
         catch (err) { }
         finally {
@@ -152,12 +153,16 @@ const DeployChart: React.FC<DeployChartProps> = ({
         try {
             setLoading(true)
             if (installedAppVersion) {
+                const hasChartChanged = appStoreId !== repoChartValue.chartId;
                 let request = {
-                    id: installedAppVersion,
+                    // if chart has changed send 0
+                    id: hasChartChanged ? 0 : installedAppVersion,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
-                    valuesOverride: obj,
+                    // valuesOverride: obj,
                     valuesOverrideYaml: textRef,
+                    installedAppId: installedAppId,
+                    appStoreVersion: repoChartValue.appStoreApplicationVersionId,
                 }
                 await updateChart(request)
                 toast.success('Deployment initiated')
@@ -171,7 +176,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     referenceValueKind: chartValues.kind,
                     environmentId: selectedEnvironment,
                     appStoreVersion: selectedVersion,
-                    valuesOverride: obj,
+                    // valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     appName
                 };
@@ -187,22 +192,22 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setLoading(false)
         }
     }
-
-    useEffect(() => {
-        // scroll to the editor view with animation for only update-chart
-        if (envId) {
-            setTimeout(() => {
-                deployChartForm.current.scrollTo({
-                    top: deployChartEditor.current.offsetTop,
-                    behavior: 'smooth',
-                });
-            }, 1000);
-        }
-    }, []);
+    // console.log(appStoreVersion, installedAppId);
+    // useEffect(() => {
+    //     // scroll to the editor view with animation for only update-chart
+    //     if (envId) {
+    //         setTimeout(() => {
+    //             deployChartForm.current.scrollTo({
+    //                 top: deployChartEditor.current.offsetTop,
+    //                 behavior: 'smooth',
+    //             });
+    //         }, 1000);
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (chartId) {
-            getChartValuesList();
+            getChartValuesList(chartId);
         }
         document.addEventListener("keydown", closeMe);
         if (versions) {
@@ -273,12 +278,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
         push(url);
     }
 
-    async function fetchChartVersionsData() {
-        setLoading(true)
+    async function fetchChartVersionsData(id:number, valueUpdateRequired=false) {
         try {
-            const { result } = await getChartVersionsMin(chartIdFromDeploymentDetail);
-            // console.log(result);
+            setLoading(true)
+            const { result } = await getChartVersionsMin(id);
             setChartVersionsData(result);
+            if (valueUpdateRequired) {
+                setSelectedVersionUpdatePage(result[0])
+            }
         }
         catch (err) {
             showError(err)
@@ -288,44 +295,40 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    function handlerepoChartFocus() {
+    async function handlerepoChartFocus() {
         if (!repoChartAPIMade) {
             setRepoChartAPIMade(true)
-            console.log("called");
+            const matchedCharts = (await getChartsByKeyword(name)).result;
+            filterMatchedCharts(matchedCharts);
         }
     }
 
-    function filterRepoOptions(inputValue: string) {
-        return repoChartOptions.filter(currentOption => currentOption.chartName.includes(inputValue));
+    function filterMatchedCharts(matchedCharts) {
+        if (repoChartOptions !== null) {
+            const deprecatedCharts = [];
+            const nonDeprecatedCharts = [];
+            for (let i = 0; i < matchedCharts.length; i++) {
+                if (matchedCharts[i].deprecated) {
+                    deprecatedCharts.push(matchedCharts[i]);
+                }
+                else {
+                    nonDeprecatedCharts.push(matchedCharts[i])
+                }
+            }
+            setRepoChartOptions(nonDeprecatedCharts.concat(deprecatedCharts))
+            return nonDeprecatedCharts.concat(deprecatedCharts)
+        }
+        return [];
     }
 
-    function repoChartLoadOptions(inputValue: string, callback) {
-        // Make API call here
-        console.log(inputValue);
-        callback(filterRepoOptions(inputValue));
-        const timeOutId = setTimeout(() => {
-            console.log("called");
-        }, 2000);
-        if (repoChartSearchTimerId === null) {
-            // console.log(timeOutId);
-            setRepoChartSearchTimerId(timeOutId);
-        }
-        else {
-            clearTimeout(repoChartSearchTimerId);
-            setRepoChartSearchTimerId(timeOutId);
-        }
-    }
-
-    function handlerepoChartInputChange(inputValue: string) {
-        
+    async function repoChartLoadOptions(inputValue: string, callback) {
+        const matchedCharts = (await getChartsByKeyword(inputValue)).result;
+        callback(filterMatchedCharts(matchedCharts));
     }
 
     function repoChartOptionLabel(props) {
-        console.log(props);
         const { innerProps, innerRef } = props;
         const isCurrentlySelected = props.data.chartId === repoChartValue.chartId;
-        // console.log(repoChartValue);
-        // {repoChartValue.chartId === chartId && <img src={checkIcon} className="select__check-icon" />}
         return (
             <div ref={innerRef} {...innerProps} className="repochart-dropdown-wrap">
                 <div className="flex left">
@@ -346,6 +349,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
     function handleRepoChartValueChange(event) {
         // console.log(event);
         setRepoChartValue(event);
+        fetchChartVersionsData(event.chartId, true);
+        getChartValuesList(event.chartId, installedAppVersionId);
     }
 
     let isUpdate = environmentId && teamId;
@@ -353,12 +358,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
     let teamObj = teams.get(selectedTeam);
     let envObj = environments.get(selectedEnvironment);
     let chartVersionObj = versions.get(selectedVersion);
-    // console.log(chartVersionObj);
-    // console.log(isUpdate);
     // fetch chart versions for update route
     useEffect(() => {
         if (isUpdate !== null) {
-            fetchChartVersionsData()
+            fetchChartVersionsData(chartIdFromDeploymentDetail)
         }
     }, []);
     return (<>
@@ -390,7 +393,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                             </Select>
                         </div>
                         {/* to-do replace with incoming prop */}
-                        {   repoChartValue.deprecated && 
+                        {   isUpdate && deprecated && 
                             <div className="info__container--update-chart">
                                 <div className="flex left"> 
                                     <AlertTriangle className="icon-dim-24 update-chart"/>
