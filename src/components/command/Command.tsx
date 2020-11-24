@@ -350,7 +350,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
                                 <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                <span className="ff-monospace command__control"
+                                <span className="ff-monospace command__control ml-20"
                                     style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
                                     <ArrowRight className="icon-dim-16 vertical-align-middle" /><span>select</span>
                                 </span>
@@ -411,7 +411,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         {!arg.data?.isEOC ? <span className="m-4">/</span> : null}
                                     </>
                                 })}
-                                {console.log(this.state.arguments)}
                                 {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                                     <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""

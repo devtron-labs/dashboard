@@ -169,7 +169,30 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             ])
         })
         else return new Promise((resolve, reject) => {
-            resolve([{
+            resolve([
+            //     {
+            //     value: 'app-details',
+            //     focussable: true,
+            //     ref: undefined,
+            //     data: {
+            //         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+            //         isValid: true,
+            //         isClearable: true,
+            //         isEOC: false
+            //     }
+            // },
+            {
+                value: 'trigger',
+                focussable: true,
+                ref: undefined,
+                data: {
+                    url: `/app/${args[1].data.value}/trigger`,
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: true
+                }
+            },
+            {
                 value: 'build-history',
                 focussable: true,
                 ref: undefined,
