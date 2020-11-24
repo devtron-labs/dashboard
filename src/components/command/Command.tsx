@@ -217,15 +217,15 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (event.key === "Escape") {
             this.toggleActive(false)
         }
-        else if (event.key === "Enter") {
+        else if (this.state.isActive && event.key === "Enter") {
             this.runCommand();
         }
-        else if (event.key === "Tab") {
+        else if (this.state.isActive && event.key === "Tab") {
             this.setState({
                 tab: this.state.tab === 'this-app' ? 'jump-to' : 'this-app',
             })
         }
-        else if (event.key === 'Backspace') {
+        else if (this.state.isActive && event.key === 'Backspace') {
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 if (allArgs[allArgs.length - 2]?.data?.isClearable) {
@@ -237,7 +237,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
             }
         }
-        else if (event.key === "ArrowRight") {
+        else if (this.state.isActive && event.key === "ArrowRight") {
             let newArg = this.state.suggestedArguments[this.state.focussedArgument];
             if (!newArg) return;
 
@@ -250,7 +250,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             });
 
         }
-        else if (event.key === "ArrowDown") {
+        else if (this.state.isActive && event.key === "ArrowDown") {
             let pos = -1;
             let focussedArgument = this.state.focussedArgument < 0 ? 0 : this.state.focussedArgument;
             for (let i = focussedArgument + 1; i < this.state.suggestedArguments.length; i++) {
@@ -273,7 +273,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({ focussedArgument: pos });
 
         }
-        else if (event.key === "ArrowUp") {
+        else if (this.state.isActive && event.key === "ArrowUp") {
             let pos = -1;
             let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
@@ -295,7 +295,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
             this.setState({ focussedArgument: pos });
         }
-        else if ((event.key === '/') && this.state.argumentInput.length) {
+        else if (this.state.isActive && (event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             let allArgs = [];
