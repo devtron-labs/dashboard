@@ -55,7 +55,6 @@ export function AppHeader() {
     const [configStatusLoading, setConfigStatusLoading] = useState(false);
     const location = useLocation()
     const currentPathname = useRef("")
-    const [showCommandBar, toggleCommandBar] = useState(false)
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -108,37 +107,21 @@ export function AppHeader() {
         history.push(newUrl);
     }
 
-    function handleKeyDown(event) {
-        if (event.metaKey && event.key === '/') {
-            toggleCommandBar(true);
-        }
-        else if (event.key === "Escape") {
-            toggleCommandBar(false);
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, []);
-
     return (
         <div className="page-header page-header--tabs">
             <h1 className="page-header__title flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs} />
             </h1>
-            {showCommandBar ? <Command location={location}
+            <Command location={location}
                 match={match}
                 history={history}
                 isTabMode={true}
-                toggleCommandBar={(e) => toggleCommandBar(false)}
+                toggleCommandBar={(e) => { }}
                 defaultArguments={[
-                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
-                    { value: "/", data: { isValid: true, isClearable: false } }
+                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, } },
+                    { value: "/", data: { isValid: true, isClearable: true } }
                 ]}
-            /> : null}
+            />
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">

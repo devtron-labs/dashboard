@@ -35,27 +35,9 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
-    toggleCommandBar: (boolean) => void;
 }
 
 export class AppListView extends Component<AppListViewProps>{
-
-    componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-
-    handleKeyDown = (event) => {
-        if (event.metaKey && event.key === '/') {
-            this.props.toggleCommandBar(true);
-        }
-        else if (event.key === "Escape") {
-            this.props.toggleCommandBar(false);
-        }
-    }
 
     openCreateModal = (event: React.MouseEvent): void => {
         let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${this.props.location.search}`
@@ -288,16 +270,16 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {this.props.showCommandBar ? <Command location={this.props.location}
+                <Command location={this.props.location}
                     match={this.props.match}
                     history={this.props.history}
                     isTabMode={true}
-                    toggleCommandBar={this.props.toggleCommandBar}
+                    toggleCommandBar={() => { }}
                     defaultArguments={[
-                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
-                        { value: "/", data: { isValid: true, isClearable: false } }
+                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, } },
+                        { value: "/", data: { isValid: true, isClearable: true } }
                     ]}
-                /> : null}
+                />
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

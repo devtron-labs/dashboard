@@ -39,23 +39,6 @@ export default function AppCompose() {
     const location = useLocation()
     const history = useHistory()
     const [loading, result, error, reload] = useAsync(() => Promise.all([fetchAppConfigStatus(), getSourceConfig(appId)]), [appId])
-    const [showCommandBar, toggleCommandBar] = useState(false)
-
-    function handleKeyDown(event) {
-        if (event.metaKey && event.key === '/') {
-            toggleCommandBar(true);
-        }
-        else if (event.key === "Escape") {
-            toggleCommandBar(false);
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, []);
 
     useEffect(() => {
         if (loading) return
@@ -141,16 +124,16 @@ export default function AppCompose() {
     return <>
         <div className="app-compose" >
             <Header />
-            {showCommandBar ? <Command location={location}
+            <Command location={location}
                 match={match}
                 history={history}
                 isTabMode={true}
-                toggleCommandBar={(e) => toggleCommandBar(false)}
+                toggleCommandBar={(e) => { }}
                 defaultArguments={[
-                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: false, } },
-                    { value: "/", data: { isValid: true, isClearable: false } }
+                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, } },
+                    { value: "/", data: { isValid: true, isClearable: true } }
                 ]}
-            /> : null}
+            />
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>

@@ -137,6 +137,15 @@ function getAppArguments(args): Promise<any> {
                         isClearable: true,
                         isValid: true,
                     }
+                },
+                {
+                    value: 'env-override',
+                    focussable: true,
+                    data: {
+                        url: `/app/${args[1].data.value}/edit/env-override`,
+                        isClearable: true,
+                        isValid: true,
+                    }
                 }
             ])
         })
