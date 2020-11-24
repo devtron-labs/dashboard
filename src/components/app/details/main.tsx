@@ -118,8 +118,7 @@ export function AppHeader() {
                 isTabMode={true}
                 toggleCommandBar={(e) => { }}
                 defaultArguments={[
-                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, } },
-                    { value: "/", data: { isValid: true, isClearable: true } }
+                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, isEOC: false } }
                 ]}
             />
             <ul role="tablist" className="tab-list">

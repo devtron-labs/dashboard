@@ -276,8 +276,7 @@ export class AppListView extends Component<AppListViewProps>{
                     isTabMode={true}
                     toggleCommandBar={() => { }}
                     defaultArguments={[
-                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, } },
-                        { value: "/", data: { isValid: true, isClearable: true } }
+                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, isEOC: false } },
                     ]}
                 />
                 {this.renderPageHeader()}

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { COMMAND, getArgumentSuggestions } from './command.util';
 import { RouteComponentProps } from 'react-router-dom';
-import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { toast } from 'react-toastify';
-import './command.css';
 import { Progressing } from '../common';
+import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
+import './command.css';
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
     isTabMode: boolean;
@@ -12,17 +12,18 @@ interface CommandProps extends RouteComponentProps<{}> {
 }
 export interface ArgumentType {
     value: string;
-    data?: {
-        readonly kind?: string;
+    data: {
         readonly value?: string | number;
+        readonly kind?: string;
+        readonly id?: number | string;
         readonly url?: string;
         readonly isClearable: boolean;
         readonly isValid: boolean;
-        // readonly isEOC: boolean;
+        readonly isEOC: boolean;
     }
 }
 
-type SuggestedArgumentType = ArgumentType & { focussable: boolean; ref: any; };
+export type SuggestedArgumentType = ArgumentType & { focussable: boolean; ref: any; };
 interface CommandState {
     argumentInput: string;
     arguments: ArgumentType[];
@@ -51,12 +52,12 @@ export class Command extends Component<CommandProps, CommandState>  {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
             command: [
-                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true } } },
-                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isClearable: true } } },
-                { label: 'Documentation', argument: { value: COMMAND.DOCUMENTATION, data: { isValid: true, isClearable: true } } },
-                { label: 'Deployment Group', argument: { value: COMMAND.DEPLOYMENT_GROUP, data: { isValid: true, isClearable: true } } },
-                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isClearable: true } } },
-                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isClearable: true } } },
+                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Documentation', argument: { value: COMMAND.DOCUMENTATION, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Deployment Group', argument: { value: COMMAND.DEPLOYMENT_GROUP, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isClearable: true, isEOC: false } } },
             ],
             tab: 'this-app',
             isLoading: false,
@@ -124,7 +125,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     selectArgument(arg: ArgumentType): void {
         this.setState({
-            arguments: [...this.state.arguments, arg, { value: '/' }],
+            arguments: [...this.state.arguments, arg],
             argumentInput: '',
             suggestedArguments: []
         }, () => {
@@ -134,7 +135,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     selectFirstArgument(arg: ArgumentType): void {
         this.setState({
-            arguments: [arg, { value: '/' }],
+            arguments: [arg],
             argumentInput: '',
             suggestedArguments: []
         }, () => {
@@ -151,27 +152,29 @@ export class Command extends Component<CommandProps, CommandState>  {
         let newArg = this.state.suggestedArguments.find(a => (a.value === currentSuggestion.value && currentSuggestion.focussable));
 
         if (newArg) {
-            this.setState({ arguments: [...this.state.arguments, newArg, { value: '/' }] }, () => {
-                let last = this.state.arguments[this.state.arguments.length - 2];
+            this.setState({ arguments: [...this.state.arguments, newArg], isActive: false }, () => {
+                let allArgs = this.state.arguments;
+                let last = allArgs[allArgs.length - 1];
                 this.props.history.push(last.data.url);
             })
         }
         else {
-            let last = this.state.arguments[this.state.arguments.length - 2];
+            let allArgs = this.state.arguments;
+            let last = allArgs[allArgs.length - 1];
+            this.setState({ isActive: false });
             this.props.history.push(last.data.url);
         }
     }
 
     callGetArgumentSuggestions(args): void {
-        let invalidArgs = args.filter((a) => {
-            if (a.value !== "/" && !a.data.isValid) return true;
-        })
+        let invalidArgs = args.filter(a => !a.data.isValid);
         if (invalidArgs.length) {
             toast.error("You have at least one Invalid Argument");
             this.setState({
                 suggestedArguments: [],
             });
         }
+
         else {
             this.setState({ isLoading: true });
             getArgumentSuggestions(args).then((response) => {
@@ -228,29 +231,29 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.state.isActive && event.key === 'Backspace') {
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
-                if (allArgs[allArgs.length - 2]?.data?.isClearable) {
-                    let start = this.state.arguments.length - 2;
-                    allArgs.splice(start, 2);
+                if (allArgs[allArgs.length - 1]?.data?.isClearable) {
+                    let start = this.state.arguments.length - 1;
+                    allArgs.splice(start, 1);
                     this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                         this.callGetArgumentSuggestions(this.state.arguments);
                     });
                 }
             }
         }
-        else if (this.state.isActive && event.key === "ArrowRight") {
+        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowRight") {
             let newArg = this.state.suggestedArguments[this.state.focussedArgument];
             if (!newArg) return;
 
             this.setState({
                 argumentInput: '',
-                arguments: [...this.state.arguments, newArg, { value: "/" }],
+                arguments: [...this.state.arguments, newArg],
                 suggestedArguments: [],
             }, () => {
                 this.callGetArgumentSuggestions(this.state.arguments)
             });
 
         }
-        else if (this.state.isActive && event.key === "ArrowDown") {
+        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowDown") {
             let pos = -1;
             let focussedArgument = this.state.focussedArgument < 0 ? 0 : this.state.focussedArgument;
             for (let i = focussedArgument + 1; i < this.state.suggestedArguments.length; i++) {
@@ -273,7 +276,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({ focussedArgument: pos });
 
         }
-        else if (this.state.isActive && event.key === "ArrowUp") {
+        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowUp") {
             let pos = -1;
             let focussedArgument = this.state.focussedArgument <= 0 ? this.state.suggestedArguments.length : this.state.focussedArgument;
             for (let i = focussedArgument - 1; i >= 0; i--) {
@@ -305,10 +308,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                     data: {
                         isValid: false,
                         isClearable: true,
+                        isEOC: false
                     }
                 };
             }
-            allArgs = [...this.state.arguments, newArg, { value: '/' }];
+            allArgs = [...this.state.arguments, newArg];
             this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                 this.callGetArgumentSuggestions(this.state.arguments);
             });
@@ -316,7 +320,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     handleArgumentInputChange(event) {
-        if (event.target.value === "/") {
+        if (event.target.value === '/') {
             this.setState({ argumentInput: '', focussedArgument: 0 });
         }
         else {
@@ -340,16 +344,16 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.state.tab === 'this-app') {
             return <div ref={node => this._menu = node} className="command__suggested-args-container">
                 <div className="suggested-arguments">
-
                     {this.state.suggestedArguments.map((a, index) => {
                         if (a.focussable)
                             return <div ref={node => a['ref'] = node} key={a.value}
-                                className="pl-20 pr-20 pt-10 pb-10 flexbox flex-justify"
+                                className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
                                 <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                 <span className="ff-monospace command__control"
                                     style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                    <span className="fs-16" style={{ lineHeight: "1.3" }}>&nbsp;&rarr;&nbsp;</span>to select</span>
+                                    <ArrowRight className="icon-dim-16 vertical-align-middle" /><span>select</span>
+                                </span>
                             </div>
                     })}
                 </div>
@@ -402,13 +406,17 @@ export class Command extends Component<CommandProps, CommandState>  {
                         <div className="command-arg flex top w-100">
                             <div className="flex-1 flex left flex-wrap">
                                 {this.state.arguments.map((arg, index) => {
-                                    return <span key={`${index}-${arg.value}`} className={arg.value == "/" ? "m-4" : "command-arg__arg m-4"}>{arg.value}</span>
+                                    return <>
+                                        <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
+                                        {!arg.data?.isEOC ? <span className="m-4">/</span> : null}
+                                    </>
                                 })}
-                                <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                {console.log(this.state.arguments)}
+                                {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                                     <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
                                         onKeyDown={this.noopOnArgumentInput} onClick={(event) => { this.handleArgumentInputClick() }} onChange={this.handleArgumentInputChange} />
-                                </div>
+                                </div>}
                             </div>
                             {this.state.arguments.find(a => a?.data?.url) &&
                                 <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}> &crarr;</span>
