@@ -224,6 +224,12 @@ export const Details: React.FC<{
         // return appDetails?.resourceTree?.status?.toLowerCase() === 'progressing' ? 10000 : 30000;
     }, [appDetails]);
 
+    function clearPollingInterval() {
+        if (pollingIntervalID) {
+            clearInterval(pollingIntervalID);
+        }
+    }
+
     // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
@@ -231,17 +237,14 @@ export const Details: React.FC<{
             const intervalID = setInterval(polling, interval);
             setPollingIntervalID(intervalID);
         }
+        else {
+            clearPollingInterval();
+        }
     }, [isPollingRequired])
-
-    function clearPollingInterval() {
-        clearInterval(pollingIntervalID);
-    }
 
     useEffect(() => {
         return () => {
-            if (pollingIntervalID) {
-                clearPollingInterval()
-            }
+            clearPollingInterval()
         }
     }, [pollingIntervalID])
 
