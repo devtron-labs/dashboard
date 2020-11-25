@@ -231,19 +231,19 @@ export const Details: React.FC<{
             const intervalID = setInterval(polling, interval);
             setPollingIntervalID(intervalID);
         }
-        else {
+    }, [isPollingRequired])
+
+    function clearPollingInterval() {
+        clearInterval(pollingIntervalID);
+    }
+
+    useEffect(() => {
+        return () => {
             if (pollingIntervalID) {
-                clearInterval(pollingIntervalID)
+                clearPollingInterval()
             }
         }
-    }, [isPollingRequired])
-    
-    // called when component unmounts
-    useEffect(() => () => {
-        if (pollingIntervalID) {
-            clearInterval(pollingIntervalID);
-        }
-    },[]);
+    }, [pollingIntervalID])
 
     function describeNode(name: string, containerName: string) {
         setDetailedNode({ name, containerName });
