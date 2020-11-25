@@ -136,7 +136,8 @@ export const Details: React.FC<{
     setAppDetails?: (appDetails) => void;
     isAppDeployment?: boolean;
     environments: any;
-}> = ({ appDetailsAPI, setAppDetails, environment, isAppDeployment = false, environments }) => {
+    isPollingRequired?: boolean;
+}> = ({ appDetailsAPI, setAppDetails, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -151,7 +152,7 @@ export const Details: React.FC<{
     const [appDetailsLoading, setAppDetailsLoading] = useState(true);
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
-
+    const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         //@ts-ignore
@@ -183,10 +184,6 @@ export const Details: React.FC<{
         } catch (error) {
         }
     }
-    
-    useEffect(() => {
-        callAppDetailsAPI();
-    }, []);
 
     useEffect(() => {
         if (appDetailsError) {
@@ -227,7 +224,27 @@ export const Details: React.FC<{
         // return appDetails?.resourceTree?.status?.toLowerCase() === 'progressing' ? 10000 : 30000;
     }, [appDetails]);
 
-    useInterval(polling, interval);
+    // useInterval(polling, interval);
+    useEffect(() => {
+        if (isPollingRequired) {
+            callAppDetailsAPI();
+            const intervalID = setInterval(polling, interval);
+            setPollingIntervalID(intervalID);
+        }
+        else {
+            if (pollingIntervalID) {
+                clearInterval(pollingIntervalID)
+            }
+        }
+    }, [isPollingRequired])
+    
+    // called when component unmounts
+    useEffect(() => () => {
+        if (pollingIntervalID) {
+            clearInterval(pollingIntervalID);
+        }
+    },[]);
+
     function describeNode(name: string, containerName: string) {
         setDetailedNode({ name, containerName });
     }
