@@ -116,6 +116,7 @@
 .suggested-arguments button {
     cursor: pointer;
     margin: 0px;
+    padding-left: 0px;
     background-color: inherit;
     border: solid 1px transparent;
 }

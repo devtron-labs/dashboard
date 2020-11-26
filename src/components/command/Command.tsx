@@ -183,8 +183,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
                 response.sort((a, b) => {
                     if (!a.data?.group || !b.data?.group) return -1;
-                    if (a.data.group > b.data.group) { return -1; }
-                    if (a.data.group < b.data.group) { return 1; }
+                    return 0;
                 })
                 this.setState({
                     suggestedArguments: response,
@@ -310,8 +309,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
             suggestedArguments.sort((a, b) => {
                 if (!a.data?.group || !b.data?.group) return -1;
-                if (a.data.group > b.data.group) { return -1; }
-                if (a.data.group < b.data.group) { return 1; }
+                return 0
             })
             this.setState({
                 argumentInput: event.target.value,
@@ -328,7 +326,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 <div className="suggested-arguments">
                     {this.state.suggestedArguments.map((a, index) => {
                         return <>
-                            {index === argIndex ? <h6 className="suggested-arguments__heading m-0 pl-20 pr-20 pt-10 pb-0">{a.data.group}</h6> : ""}
+                            {index === argIndex ? <h6 className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
                             <div ref={node => a['ref'] = node} key={a.value}
                                 className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
