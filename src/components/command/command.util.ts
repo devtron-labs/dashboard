@@ -12,6 +12,7 @@ export const COMMAND_REV = {
     app: 'Applications',
     chart: 'Charts',
     security: 'Security',
+    env: 'environments',
     'global-config': 'Global Config',
 }
 
@@ -49,7 +50,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         kind: 'appId',
                         isValid: true,
                         url: `/app/${a.id}/details`,
-
+                        group: COMMAND_REV.app,
                         isEOC: false,
                     }
                 }
@@ -69,7 +70,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         kind: 'envId',
                         isValid: true,
                         url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
-
+                        group: COMMAND_REV.env,
                         isEOC: false,
                     }
                 }
@@ -81,7 +82,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     isValid: true,
                     url: `/app/${args[1].data.value}/edit/workflow`,
-
                     isEOC: false
                 }
             })
@@ -97,7 +97,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/edit/materials`,
                         isValid: true,
-
                         isEOC: true
                     },
                 },
@@ -106,7 +105,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/docker-build-config`,
-
                         isValid: true,
                         isEOC: true
                     }
@@ -116,7 +114,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/deployment-template`,
-
                         isValid: true,
                         isEOC: true
                     }
@@ -126,7 +123,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/workflow`,
-
                         isValid: true,
                         isEOC: true
                     }
@@ -136,7 +132,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/configmap`,
-
                         isValid: true,
                         isEOC: true
                     }
@@ -146,7 +141,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/secrets`,
-
                         isValid: true,
                         isEOC: true
                     }
@@ -156,7 +150,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/env-override`,
-
                         isValid: true,
                         isEOC: false
                     }
@@ -171,7 +164,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                         isValid: true,
-
                         isEOC: true
                     }
                 },
@@ -181,7 +173,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/trigger`,
                         isValid: true,
-
                         isEOC: true
                     }
                 },
@@ -191,7 +182,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/ci-details`,
                         isValid: true,
-
                         isEOC: false
                     }
                 },
@@ -201,7 +191,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/cd-details`,
                         isValid: true,
-
                         isEOC: false
                     }
                 },
@@ -211,7 +200,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/deployment-metrics`,
                         isValid: true,
-
                         isEOC: false
                     }
                 },
@@ -231,6 +219,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         isValid: true,
                         url: `/app/${args[1].data.value}/edit/env-override/${a.environmentId}`,
                         isEOC: true,
+                        group: COMMAND_REV.env
                     }
                 }
             });
@@ -280,10 +269,10 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                             isValid: true,
                             url: `/chart-store/discover/chart/${chart.id}`,
                             isEOC: true,
+                            group: COMMAND_REV.chart
                         }
                     }
                 })
-                console.log(list)
                 return list;
             })
         }

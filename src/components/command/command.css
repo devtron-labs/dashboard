@@ -120,6 +120,15 @@
     border: solid 1px transparent;
 }
 
+.suggested-arguments__heading {
+    font-weight: 600;
+    line-height: 1.67;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
 .command__input {
     border: none;
     position: absolute;
