@@ -12,12 +12,12 @@ export const COMMAND = {
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve([{ value: COMMAND.APPLICATIONS, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.CHART, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.DOCUMENTATION, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.DEPLOYMENT_GROUP, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.SECURITY, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.GLOBAL_CONFIG, focussable: true, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } }])
+        resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
+        { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
+        { value: COMMAND.DOCUMENTATION, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
+        { value: COMMAND.DEPLOYMENT_GROUP, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
+        { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
+        { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } }])
     });
 
     let arg = args[0];
@@ -38,7 +38,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             let list = response.result.map((a) => {
                 return {
                     value: a.name,
-                    focussable: true,
                     ref: undefined,
                     data: {
                         value: a.id,
@@ -59,7 +58,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
-                    focussable: true,
                     ref: undefined,
                     data: {
                         value: a.environmentId,
@@ -74,7 +72,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             if (!list) list = [];
             list.push({
                 value: 'config',
-                focussable: true,
                 ref: undefined,
                 data: {
                     isValid: true,
@@ -91,7 +88,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             resolve([
                 {
                     value: 'git-material',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/materials`,
@@ -102,7 +98,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'docker-config',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/docker-build-config`,
@@ -113,7 +108,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'deployment-template',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/deployment-template`,
@@ -124,7 +118,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'workflow-editor',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/workflow`,
@@ -135,7 +128,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'configmap',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/configmap`,
@@ -146,7 +138,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'secrets',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/secrets`,
@@ -157,7 +148,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 },
                 {
                     value: 'env-override',
-                    focussable: true,
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/env-override`,
@@ -170,72 +160,67 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
         })
         else return new Promise((resolve, reject) => {
             resolve([
-            //     {
-            //     value: 'app-details',
-            //     focussable: true,
-            //     ref: undefined,
-            //     data: {
-            //         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
-            //         isValid: true,
-            //         isClearable: true,
-            //         isEOC: false
-            //     }
-            // },
-            {
-                value: 'trigger',
-                focussable: true,
-                ref: undefined,
-                data: {
-                    url: `/app/${args[1].data.value}/trigger`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: true
-                }
-            },
-            {
-                value: 'build-history',
-                focussable: true,
-                ref: undefined,
-                data: {
-                    url: `/app/${args[1].data.value}/ci-details`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: false
-                }
-            },
-            {
-                value: 'deployment-history',
-                focussable: true,
-                ref: undefined,
-                data: {
-                    url: `/app/${args[1].data.value}/cd-details`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: false
-                }
-            },
-            {
-                value: 'deployment-metrics',
-                focussable: true,
-                ref: undefined,
-                data: {
-                    url: `/app/${args[1].data.value}/deployment-metrics`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: false
-                }
-            },
-            {
-                value: 'test-report',
-                focussable: true,
-                ref: undefined,
-                data: {
-                    url: `/app/${args[1].data.value}/test`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: false
-                }
-            },
+                //     {
+                //     value: 'app-details',
+                //      
+                //     ref: undefined,
+                //     data: {
+                //         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                //         isValid: true,
+                //         isClearable: true,
+                //         isEOC: false
+                //     }
+                // },
+                {
+                    value: 'trigger',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/trigger`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true
+                    }
+                },
+                {
+                    value: 'build-history',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/ci-details`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: 'deployment-history',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/cd-details`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: 'deployment-metrics',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/deployment-metrics`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: 'test-report',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/test`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: false
+                    }
+                },
             ])
         })
     }
@@ -243,7 +228,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
         if (args[3].value === 'pod') return new Promise((resolve, reject) => {
             resolve([{
                 value: 'blobs-dev1-fdfc6b54-prglm',
-                focussable: true,
                 ref: undefined,
                 data: {
                     value: 'blobs-dev1-fdfc6b54-prglm',
@@ -255,7 +239,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             },
             {
                 value: 'blobs-dev1-fdfc6b54-pvphj',
-                focussable: true,
                 ref: undefined,
                 data: {
                     value: 'blobs-dev1-fdfc6b54-pvphj',
@@ -281,7 +264,6 @@ function getChartArguments(args): Promise<any> {
             resolve([
                 {
                     value: 'discover',
-                    focussable: true,
                     data: {
                         isValid: true,
                         isClearable: true,
@@ -290,7 +272,6 @@ function getChartArguments(args): Promise<any> {
                 },
                 {
                     value: 'deployed',
-                    focussable: true,
                     data: {
                         isValid: true,
                         isClearable: true,
