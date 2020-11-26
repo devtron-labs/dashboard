@@ -162,7 +162,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     // valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     installedAppId: installedAppId,
-                    appStoreVersion: repoChartValue.appStoreApplicationVersionId,
+                    appStoreVersion: selectedVersionUpdatePage.id,
                 }
                 await updateChart(request)
                 toast.success('Deployment initiated')
