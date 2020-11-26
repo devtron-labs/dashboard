@@ -92,6 +92,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     );
     const [obj, json, yaml, error] = useJsonYaml(textRef, 4, 'yaml', true)
     const [chartValuesList, setChartValuesList] = useState([])
+    const initialChartValuesFromParent = chartValuesFromParent;
     const [chartValues, setChartValues] = useState(chartValuesFromParent);
     const { push } = useHistory()
     const { chartId, envId } = useParams()
@@ -127,7 +128,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setChartValuesList(result);
             if(installedAppVersionId) {
                 setChartValues({
-                    id: chartValues.id,
+                    id: initialChartValuesFromParent.id,
                     kind: "EXISTING",
                 })
             }
