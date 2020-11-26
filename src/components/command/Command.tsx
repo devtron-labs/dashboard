@@ -13,10 +13,10 @@ interface CommandProps extends RouteComponentProps<{}> {
 }
 export interface ArgumentType {
     value: string;
-    data: {
+    readonly data: {
         readonly value?: string | number;
         readonly kind?: string;
-        readonly id?: number | string;
+        // readonly id?: number | string;
         readonly url?: string;
         readonly isClearable: boolean;
         readonly isValid: boolean;
@@ -178,6 +178,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         else {
             this.setState({ isLoading: true });
             getArgumentSuggestions(args).then((response) => {
+                this._flexsearchIndex.clear();
                 for (let i = 0; i < response.length; i++) {
                     this._flexsearchIndex.add(response[i].value, response[i].value)
                 }

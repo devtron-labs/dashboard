@@ -248,6 +248,25 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             },
             ])
         })
+        else if (args[3].value === "env-override") return getAppOtherEnvironment(args[1].data.value).then((response) => {
+            let list;
+            list = response?.result?.map((a) => {
+                return {
+                    value: a.environmentName,
+                    ref: undefined,
+                    data: {
+                        value: a.environmentId,
+                        kind: 'envId',
+                        isValid: true,
+                        url: `/app/${args[1].data.value}/edit/env-override/${a.environmentId}`,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                }
+            });
+            if (!list) list = [];
+            return list;
+        })
     }
     return new Promise((resolve, reject) => {
         resolve([])
@@ -279,6 +298,12 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                 },
             ])
         });
+    }
+    else if (args.length === 2) {
+        if (args[0].value === "discover") {
+
+
+        }
     }
     return new Promise((resolve, reject) => {
         resolve([])
