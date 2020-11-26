@@ -9,7 +9,7 @@ export const COMMAND = {
 }
 
 export const COMMAND_REV = {
-    app: 'Applcations',
+    app: 'Applications',
     chart: 'Charts',
     security: 'Security',
     'global-config': 'Global Config',
