@@ -6,15 +6,6 @@ import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import './command.css';
 const FlexSearch = require("flexsearch");
-let index = new FlexSearch({
-    encode: "balance",
-    tokenize: "full",
-    threshold: 0,
-    async: false,
-    worker: false,
-    cache: false,
-})
-
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
     isTabMode: boolean;
@@ -40,7 +31,6 @@ interface CommandState {
     command: { label: string; argument: ArgumentType; }[];
     suggestedArguments: SuggestedArgumentType[];
     readonly allSuggestedArguments: SuggestedArgumentType[];
-    // suggestedArguments: SuggestedArgumentType[];
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
@@ -51,22 +41,29 @@ interface CommandState {
     }
 }
 
-const PlaceholderText = "Search in applications across devtron";
+const PlaceholderText = "Search";
 export class Command extends Component<CommandProps, CommandState>  {
     _input;
     _menu;
+    _flexsearchIndex;
 
     constructor(props) {
         super(props);
         this._input = React.createRef();
+        this._flexsearchIndex = new FlexSearch({
+            encode: "balance",
+            tokenize: "full",
+            threshold: 0,
+            async: false,
+            worker: false,
+            cache: false,
+        });
         this.state = {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
             command: [
                 { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, isEOC: false } } },
                 { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isClearable: true, isEOC: false } } },
-                { label: 'Documentation', argument: { value: COMMAND.DOCUMENTATION, data: { isValid: true, isClearable: true, isEOC: false } } },
-                { label: 'Deployment Group', argument: { value: COMMAND.DEPLOYMENT_GROUP, data: { isValid: true, isClearable: true, isEOC: false } } },
                 { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isClearable: true, isEOC: false } } },
                 { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isClearable: true, isEOC: false } } },
             ],
@@ -178,12 +175,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                 suggestedArguments: [],
             });
         }
-
         else {
             this.setState({ isLoading: true });
             getArgumentSuggestions(args).then((response) => {
                 for (let i = 0; i < response.length; i++) {
-                    index.add(response[i].value, response[i].value)
+                    this._flexsearchIndex.add(response[i].value, response[i].value)
                 }
                 this.setState({
                     suggestedArguments: response,
@@ -302,7 +298,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 return argumentsMap;
             }, {})
             let suggestedArguments = [];
-            let results = index.search(event.target.value);
+            let results = this._flexsearchIndex.search(event.target.value);
             suggestedArguments = results.map((a) => {
                 return {
                     value: a,
@@ -334,18 +330,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     })}
                 </div>
                 {this.state.isLoading ? <Progressing /> : null}
-                {/* <div className="pl-20 pr-20">
-                    <p className="mt-18 mb-8">Jump to</p>
-                    {this.state.suggestedCommands.map((s) => {
-                        return <article className="suggested-command pt-8" key={s.title} onClick={(event) => this.selectFirstArgument(s.argument)}>
-                            <Arrow className="scn-4" />
-                            <div>
-                                <p className="m-0">{s.title}</p>
-                                <p className="m-0">{s.desc}</p>
-                            </div>
-                        </article>
-                    })}
-                </div> */}
             </div>
         }
         else {

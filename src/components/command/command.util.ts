@@ -1,11 +1,9 @@
 import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
-import { ArgumentType, SuggestedArgumentType } from './Command';
+import { SuggestedArgumentType } from './Command';
 
 export const COMMAND = {
     APPLICATIONS: 'app',
     CHART: 'chart',
-    DOCUMENTATION: 'docs',
-    DEPLOYMENT_GROUP: 'deployment-group',
     SECURITY: 'security',
     GLOBAL_CONFIG: 'global-config'
 }
@@ -14,8 +12,6 @@ export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
         { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.DOCUMENTATION, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.DEPLOYMENT_GROUP, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
         { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
         { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } }])
     });
@@ -24,12 +20,14 @@ export function getArgumentSuggestions(args): Promise<any> {
     switch (arg.value) {
         case 'app': return getAppArguments(args);
         case 'chart': return getChartArguments(args);
-
+        case 'security': return getSecurityArguments(args);
+        case 'global-config': return getGlobalConfigArguments(args);
         default: return new Promise((resolve, reject) => {
             resolve([])
         });
     }
 }
+
 
 function getAppArguments(args): Promise<SuggestedArgumentType[]> {
     //["app", "appName", "envName", "pod", "podname"]
@@ -257,13 +255,13 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
 }
 
 
-function getChartArguments(args): Promise<any> {
-    args = args.filter(arg => arg.value !== "/");
+function getChartArguments(args): Promise<SuggestedArgumentType[]> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
             resolve([
                 {
                     value: 'discover',
+                    ref: null,
                     data: {
                         isValid: true,
                         isClearable: true,
@@ -272,6 +270,7 @@ function getChartArguments(args): Promise<any> {
                 },
                 {
                     value: 'deployed',
+                    ref: null,
                     data: {
                         isValid: true,
                         isClearable: true,
@@ -280,6 +279,150 @@ function getChartArguments(args): Promise<any> {
                 },
             ])
         });
+    }
+    return new Promise((resolve, reject) => {
+        resolve([])
+    });
+}
+
+
+function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
+    if (args.length === 1) {
+        return new Promise((resolve, reject) => {
+            resolve([])
+        });
+    }
+    return new Promise((resolve, reject) => {
+        resolve([])
+    });
+}
+
+
+function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
+    if (args.length === 1) {
+        return new Promise((resolve, reject) => {
+            resolve([{
+                value: 'git-account',
+                ref: null,
+                data: {
+                    url: '/global-config/git',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: true,
+                }
+            }, {
+                value: 'cluster-and-environments',
+                ref: null,
+                data: {
+                    url: '/global-config/cluster-env',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: true,
+                }
+            },
+            {
+                value: 'docker-registeries',
+                ref: null,
+                data: {
+                    url: '/global-config/docker',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: true,
+                }
+            },
+            {
+                value: 'projects',
+                ref: null,
+                data: {
+                    url: '/global-config/projects',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: true,
+                }
+            },
+            {
+                value: 'user-access',
+                ref: null,
+                data: {
+                    url: '/global-config/auth/users',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: false,
+                }
+            },
+            {
+                value: 'notification',
+                ref: null,
+                data: {
+                    url: '/global-config/notifier/channels',
+                    isValid: true,
+                    isClearable: true,
+                    isEOC: false,
+                }
+            }])
+        });
+    }
+    else if (args.length === 2) {
+        if (args[1].value === "user-access") {
+            return new Promise((resolve, reject) => {
+                resolve([{
+                    value: 'users',
+                    ref: null,
+                    data: {
+                        url: '/global-config/auth/users',
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'groups',
+                    ref: null,
+                    data: {
+                        url: '/global-config/auth/groups',
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                }])
+            });
+        }
+        else if (args[1].value === "notification") {
+            return new Promise((resolve, reject) => {
+                resolve([{
+                    value: 'add-new',
+                    ref: null,
+                    data: {
+                        url: '/global-config/notifier/edit',
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'list',
+                    ref: null,
+                    data: {
+                        url: '/global-config/notifier/channels',
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'configuration',
+                    ref: null,
+                    data: {
+                        url: '/global-config/notifier/configurations',
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true,
+                    }
+                }
+                ])
+            });
+        }
+
     }
     return new Promise((resolve, reject) => {
         resolve([])
