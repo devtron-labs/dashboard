@@ -164,7 +164,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                         isValid: true,
-                        isEOC: true
+                        isEOC: true,
                     }
                 },
                 {
@@ -182,7 +182,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/ci-details`,
                         isValid: true,
-                        isEOC: false
+                        isEOC: true,
                     }
                 },
                 {
@@ -191,7 +191,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/cd-details`,
                         isValid: true,
-                        isEOC: false
+                        isEOC: true,
                     }
                 },
                 {
@@ -200,7 +200,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/deployment-metrics`,
                         isValid: true,
-                        isEOC: false
+                        isEOC: true,
                     }
                 },
             ])

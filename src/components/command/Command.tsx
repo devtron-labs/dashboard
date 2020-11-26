@@ -182,11 +182,10 @@ export class Command extends Component<CommandProps, CommandState>  {
                     this._flexsearchIndex.add(response[i].value, response[i].value)
                 }
                 response.sort((a, b) => {
-                    if (!a.data?.group || !b.data?.group) return 0;
-                    if (a.data.group < b.data.group) { return 1; }
+                    if (!a.data?.group || !b.data?.group) return -1;
                     if (a.data.group > b.data.group) { return -1; }
+                    if (a.data.group < b.data.group) { return 1; }
                 })
-
                 this.setState({
                     suggestedArguments: response,
                     allSuggestedArguments: response,
@@ -310,9 +309,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
             })
             suggestedArguments.sort((a, b) => {
-                if (!a.data?.group || !b.data?.group) return 0;
-                if (a.data.group < b.data.group) { return 1; }
+                if (!a.data?.group || !b.data?.group) return -1;
                 if (a.data.group > b.data.group) { return -1; }
+                if (a.data.group < b.data.group) { return 1; }
             })
             this.setState({
                 argumentInput: event.target.value,
