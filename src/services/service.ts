@@ -3,6 +3,7 @@ import { Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType } from './service.types';
+import { Chart } from '../components/charts/charts.types';
 
 export function getAppConfigStatus(appId: number): Promise<any> {
     const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
@@ -80,6 +81,15 @@ export function getAppListMin(teamId = null): Promise<AppListMin> {
 
 export function getProjectFilteredApps(projectIds: number[] | string[]): Promise<ProjectFilteredApps> {
     return get(`app/min?teamIds=${projectIds.join(",")}`)
+}
+
+export function getAvailableCharts(): Promise<{ code: number, result: Chart[] }> {
+    return get(`${Routes.CHART_AVAILABLE}/`).then((response) => {
+        return {
+            ...response,
+            result: response.result || [],
+        }
+    })
 }
 
 export function getEnvironmentListMin(isNamespaceReq = false): Promise<any> {

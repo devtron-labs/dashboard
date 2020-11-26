@@ -1,4 +1,4 @@
-import { getAppListMin, getAppOtherEnvironment } from '../../services/service';
+import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
 import { SuggestedArgumentType } from './Command';
 
 export const COMMAND = {
@@ -165,17 +165,16 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
         })
         else return new Promise((resolve, reject) => {
             resolve([
-                //     {
-                //     value: 'app-details',
-                //      
-                //     ref: undefined,
-                //     data: {
-                //         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
-                //         isValid: true,
-                //         isClearable: true,
-                //         isEOC: false
-                //     }
-                // },
+                {
+                    value: 'app-details',
+                    ref: undefined,
+                    data: {
+                        url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
+                        isValid: true,
+                        isClearable: true,
+                        isEOC: true
+                    }
+                },
                 {
                     value: 'trigger',
                     ref: undefined,
@@ -211,16 +210,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/deployment-metrics`,
-                        isValid: true,
-                        isClearable: true,
-                        isEOC: false
-                    }
-                },
-                {
-                    value: 'test-report',
-                    ref: undefined,
-                    data: {
-                        url: `/app/${args[1].data.value}/test`,
                         isValid: true,
                         isClearable: true,
                         isEOC: false
@@ -307,9 +296,26 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
         });
     }
     else if (args.length === 2) {
-        if (args[0].value === "discover") {
-            
+        if (args[1].value === "discover") {
+            return getAvailableCharts().then((response) => {
+                let list = response?.result?.map((chart) => {
+                    return {
+                        value: `${chart.chart_name}/${chart.name}`,
+                        ref: undefined,
+                        data: {
+                            value: chart.id,
+                            kind: 'chartId',
+                            isValid: true,
+                            url: `/chart-store/discover/chart/${chart.id}`,
+                            isClearable: true,
+                            isEOC: true,
+                        }
+                    }
+                })
+                console.log(list)
 
+                return list;
+            })
         }
     }
     return new Promise((resolve, reject) => {

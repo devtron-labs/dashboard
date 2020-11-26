@@ -184,7 +184,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.setState({
                     suggestedArguments: response,
                     allSuggestedArguments: response,
-                    focussedArgument: 0,
+                    focussedArgument: -1,
                     isLoading: false
                 });
             }).catch((error) => {
