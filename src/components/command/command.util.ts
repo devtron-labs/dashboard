@@ -8,6 +8,13 @@ export const COMMAND = {
     GLOBAL_CONFIG: 'global-config'
 }
 
+export const COMMAND_REV = {
+    app: 'Applcations',
+    chart: 'Charts',
+    security: 'Security',
+    'global-config': 'Global Config',
+}
+
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
@@ -293,7 +300,7 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         isValid: true,
                         isClearable: true,
-                        isEOC: false,
+                        isEOC: true,
                     }
                 },
             ])
@@ -301,7 +308,7 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
     }
     else if (args.length === 2) {
         if (args[0].value === "discover") {
-
+            
 
         }
     }

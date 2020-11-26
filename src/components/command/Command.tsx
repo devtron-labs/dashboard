@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { COMMAND, getArgumentSuggestions } from './command.util';
+import { COMMAND, COMMAND_REV, getArgumentSuggestions } from './command.util';
 import { RouteComponentProps } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Progressing } from '../common';
@@ -16,7 +16,6 @@ export interface ArgumentType {
     readonly data: {
         readonly value?: string | number;
         readonly kind?: string;
-        // readonly id?: number | string;
         readonly url?: string;
         readonly isClearable: boolean;
         readonly isValid: boolean;
@@ -325,7 +324,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                             <span className="ff-monospace command__control ml-20"
                                 style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                <ArrowRight className="icon-dim-16 vertical-align-middle" /><span>select</span>
+                                <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
                             </span>
                         </div>
                     })}
@@ -354,10 +353,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">
                             <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />Applications
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />
+                                {COMMAND_REV[this.state.arguments[0]?.value] || "Applications"}
                             </label>
                             <label className={this.state.tab === "jump-to" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />Jump To
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />
+                                Jump To
                             </label>
                         </div>
                         <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
