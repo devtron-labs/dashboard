@@ -17,10 +17,10 @@ export const COMMAND_REV = {
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } },
-        { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isClearable: true, isEOC: false } }])
+        resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isEOC: false } },
+        { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isEOC: false } },
+        { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isEOC: false } },
+        { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isEOC: false } }])
     });
 
     let arg = args[0];
@@ -49,7 +49,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         kind: 'appId',
                         isValid: true,
                         url: `/app/${a.id}/details`,
-                        isClearable: true,
+
                         isEOC: false,
                     }
                 }
@@ -69,7 +69,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         kind: 'envId',
                         isValid: true,
                         url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
-                        isClearable: true,
+
                         isEOC: false,
                     }
                 }
@@ -81,7 +81,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     isValid: true,
                     url: `/app/${args[1].data.value}/edit/workflow`,
-                    isClearable: true,
+
                     isEOC: false
                 }
             })
@@ -97,7 +97,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/edit/materials`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true
                     },
                 },
@@ -106,7 +106,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/docker-build-config`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: true
                     }
@@ -116,7 +116,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/deployment-template`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: true
                     }
@@ -126,7 +126,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/workflow`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: true
                     }
@@ -136,7 +136,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/configmap`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: true
                     }
@@ -146,7 +146,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/secrets`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: true
                     }
@@ -156,7 +156,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: undefined,
                     data: {
                         url: `/app/${args[1].data.value}/edit/env-override`,
-                        isClearable: true,
+
                         isValid: true,
                         isEOC: false
                     }
@@ -171,7 +171,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true
                     }
                 },
@@ -181,7 +181,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/trigger`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true
                     }
                 },
@@ -191,7 +191,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/ci-details`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: false
                     }
                 },
@@ -201,7 +201,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/cd-details`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: false
                     }
                 },
@@ -211,7 +211,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: `/app/${args[1].data.value}/deployment-metrics`,
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: false
                     }
                 },
@@ -219,32 +219,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
         })
     }
     else if (args[3] && args.length === 4) { // args[3] --> pod
-        if (args[3].value === 'pod') return new Promise((resolve, reject) => {
-            resolve([{
-                value: 'blobs-dev1-fdfc6b54-prglm',
-                ref: undefined,
-                data: {
-                    value: 'blobs-dev1-fdfc6b54-prglm',
-                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod/EVENTS?kind=Pod`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: true
-                }
-            },
-            {
-                value: 'blobs-dev1-fdfc6b54-pvphj',
-                ref: undefined,
-                data: {
-                    value: 'blobs-dev1-fdfc6b54-pvphj',
-                    url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod/EVENTS?kind=Pod`,
-                    isValid: true,
-                    isClearable: true,
-                    isEOC: true,
-                }
-            },
-            ])
-        })
-        else if (args[3].value === "env-override") return getAppOtherEnvironment(args[1].data.value).then((response) => {
+        if (args[3].value === "env-override") return getAppOtherEnvironment(args[1].data.value).then((response) => {
             let list;
             list = response?.result?.map((a) => {
                 return {
@@ -255,7 +230,6 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         kind: 'envId',
                         isValid: true,
                         url: `/app/${args[1].data.value}/edit/env-override/${a.environmentId}`,
-                        isClearable: true,
                         isEOC: true,
                     }
                 }
@@ -279,7 +253,6 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: null,
                     data: {
                         isValid: true,
-                        isClearable: true,
                         isEOC: false,
                     }
                 },
@@ -288,7 +261,6 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                     ref: null,
                     data: {
                         isValid: true,
-                        isClearable: true,
                         isEOC: true,
                     }
                 },
@@ -307,13 +279,11 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                             kind: 'chartId',
                             isValid: true,
                             url: `/chart-store/discover/chart/${chart.id}`,
-                            isClearable: true,
                             isEOC: true,
                         }
                     }
                 })
                 console.log(list)
-
                 return list;
             })
         }
@@ -345,7 +315,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/git',
                     isValid: true,
-                    isClearable: true,
                     isEOC: true,
                 }
             }, {
@@ -354,7 +323,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/cluster-env',
                     isValid: true,
-                    isClearable: true,
                     isEOC: true,
                 }
             },
@@ -364,7 +332,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/docker',
                     isValid: true,
-                    isClearable: true,
                     isEOC: true,
                 }
             },
@@ -374,7 +341,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/projects',
                     isValid: true,
-                    isClearable: true,
                     isEOC: true,
                 }
             },
@@ -384,7 +350,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/auth/users',
                     isValid: true,
-                    isClearable: true,
                     isEOC: false,
                 }
             },
@@ -394,7 +359,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                 data: {
                     url: '/global-config/notifier/channels',
                     isValid: true,
-                    isClearable: true,
                     isEOC: false,
                 }
             }])
@@ -409,7 +373,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/auth/users',
                         isValid: true,
-                        isClearable: true,
                         isEOC: true,
                     }
                 },
@@ -419,7 +382,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/auth/groups',
                         isValid: true,
-                        isClearable: true,
                         isEOC: true,
                     }
                 }])
@@ -433,7 +395,7 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/notifier/edit',
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true,
                     }
                 },
@@ -443,7 +405,7 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/notifier/channels',
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true,
                     }
                 },
@@ -453,7 +415,7 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/notifier/configurations',
                         isValid: true,
-                        isClearable: true,
+
                         isEOC: true,
                     }
                 }

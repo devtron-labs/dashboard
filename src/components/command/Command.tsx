@@ -17,7 +17,7 @@ export interface ArgumentType {
         readonly value?: string | number;
         readonly kind?: string;
         readonly url?: string;
-        readonly isClearable: boolean;
+        readonly group?: string;
         readonly isValid: boolean;
         readonly isEOC: boolean;
     }
@@ -61,10 +61,10 @@ export class Command extends Component<CommandProps, CommandState>  {
             argumentInput: '',
             arguments: this.props.defaultArguments || [],
             command: [
-                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isClearable: true, isEOC: false } } },
-                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isClearable: true, isEOC: false } } },
-                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isClearable: true, isEOC: false } } },
-                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isClearable: true, isEOC: false } } },
+                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } } },
+                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isEOC: false } } },
+                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isEOC: false } } },
+                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } } },
             ],
             tab: 'this-app',
             isLoading: false,
@@ -224,13 +224,11 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.state.isActive && event.key === 'Backspace') {
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
-                if (allArgs[allArgs.length - 1]?.data?.isClearable) {
-                    let start = this.state.arguments.length - 1;
-                    allArgs.splice(start, 1);
-                    this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
-                        this.callGetArgumentSuggestions(this.state.arguments);
-                    });
-                }
+                let start = this.state.arguments.length - 1;
+                allArgs.splice(start, 1);
+                this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
+                    this.callGetArgumentSuggestions(this.state.arguments);
+                });
             }
         }
         else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowRight") {
@@ -269,7 +267,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: this.state.argumentInput, ref: undefined,
                     data: {
                         isValid: false,
-                        isClearable: true,
+                        group: undefined,
                         isEOC: false
                     }
                 };
