@@ -94,7 +94,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<p className="logout-card__name ellipsis-right">{email}</p>
 						<p className="logout-card__email ellipsis-right">{email}</p>
 					</div>
-					<p className="logout-card__initial mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
+					<p className="logout-card__initial icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
 				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
 			</div>
@@ -117,7 +117,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			<nav>
 				<aside className="short-nav main-nav">
 					<NavLink to={URLS.APP} className="flex">
-						<svg className="short-nav-icon logo" viewBox="0 0 40 40">
+						<svg className="logo" viewBox="0 0 40 40">
 							<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 						</svg>
 					</NavLink>
@@ -140,14 +140,18 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</NavLink>
 					}
 					)}
-					<div className="flex bottom column bottom-nav">
-						<a rel="noreferrer noopener" className="flex icon-dim-40 mb-16 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /></a>
-						<div className="logout-card__initial logout-card__initial--nav mb-16" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
+					<div></div>
+
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /></a>
+					<div className="icon-dim-40">
+						<div className="logout-card__initial icon-dim-32 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 							{email[0]}
 						</div>
-						{this.state.showLogoutCard ? this.renderLogout() : null}
-						<div className="hubspot-placeholder"></div>
 					</div>
+					{this.state.showLogoutCard ? this.renderLogout() : null}
+					<div className="hubspot-placeholder"></div>
+					{/* <div className="bottom-nav">
+					</div> */}
 				</aside>
 				<aside className="expanded-nav main-nav">
 					<NavLink to={URLS.APP} className="flex left">
@@ -168,11 +172,10 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</NavLink>
 					}
 					)}
-					<div className="flex left bottom column bottom-nav">
-						<a rel="noreferrer noopener" className="flex left icon-dim-40 mb-16 title-container" href="https://docs.devtron.ai/" target="_blank">Documentation</a>
-						<button type="button" className="transparent mb-16 ellipsis-right title-container" onClick={this.toggleLogoutCard}>{email}</button>
-						<div className="hubspot-placeholder"></div>
-					</div>
+					<div></div>
+					<a rel="noreferrer noopener" className="flex left icon-dim-40 title-container" href="https://docs.devtron.ai/" target="_blank">Documentation</a>
+					<button type="button" className="transparent ellipsis-right title-container" onClick={this.toggleLogoutCard}>{email}</button>
+					<div className="hubspot-placeholder"></div>
 				</aside>
 			</nav>
 		</>

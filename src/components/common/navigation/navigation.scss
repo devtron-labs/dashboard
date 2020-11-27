@@ -2,7 +2,7 @@
     width: 100%;
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 72px 1fr;
+    grid-template-columns: 64px 1fr;
     overflow-y: hidden;
 }
 
@@ -16,7 +16,7 @@
     position: fixed;
     top: 0;
     bottom: 0;
-    left: 72px;
+    left: 64px;
     width: 0px;
     transition: width 300ms ease-out 0s;
     background: var(--B500);
@@ -27,7 +27,7 @@
         color: white;
         font-size: 14px;
         font-weight: 600;
-        width: 172px;
+        width: 100%;
         height: 40px;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -48,17 +48,17 @@
         display: flex;
         overflow: visible;
         z-index: var(--navigation-index);
-
         .main-nav {
             display: grid;
-            grid-template-rows: 84px repeat(auto-fit, 64px);
+            grid-template-rows: 84px 84px repeat(5, 50px) auto repeat(2, 50px) 96px;
             align-items: center;
 
             .bottom-nav {
                 grid-row: -1 / auto;
                 height: 100%;
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-rows: 50px 50px 96px;
+                place-items: center;
 
                 a,
                 button {
@@ -75,8 +75,8 @@
         }
 
         .short-nav {
-            flex-basis: 72px;
-            padding: 0 16px;
+            width: 100%;
+            padding: 0 10px;
 
             .svg-container {
                 height: 40px;
@@ -91,11 +91,13 @@
                     fill: white;
                     opacity: 0.5;
 
-                    &.logo {
-                        width: 40px;
-                        height: 40px;
-                        opacity: 1;
-                    }
+                }
+
+                .logo {
+                    width: 40px;
+                    height: 40px;
+                    opacity: 1;
+                    fill: #ffffff;
                 }
 
                 &.active-nav,
@@ -150,14 +152,15 @@
     font-weight: 500;
     text-transform: uppercase;
     font-size: 16px;
-    line-height: 36px;
-    width: 38px;
-    height: 38px;
+    line-height: 1.9;
+    // width: 38px;
+    // height: 38px;
     text-align: center;
     border-radius: 50%;
     color: var(--N000);
     user-select: none;
     cursor: pointer;
+    margin: auto;
     border: solid 1px transparent;
 }
 
@@ -199,4 +202,5 @@
 
 .logout-card__initial--nav {
     border-color: var(--N000);
+    margin-top: 3px;
 }
