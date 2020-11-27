@@ -34,7 +34,6 @@ interface CommandState {
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
-    // isActive: boolean;
     inputPosition: {
         top: string;
         left: string;
@@ -72,7 +71,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             allSuggestedArguments: [],
             suggestedArguments: [],
             focussedArgument: 0,
-            // isActive: false,
             inputPosition: {
                 top: '0px',
                 left: '0px'
@@ -85,7 +83,6 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.isInViewport = this.isInViewport.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
         this.disableTab = this.disableTab.bind(this);
-        // this.toggleActive = this.toggleActive.bind(this);
     }
 
     componentDidMount() {
@@ -116,12 +113,15 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    // toggleActive(flag): void {
-    //     this.setState({ isActive: flag });
-    // }
-
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
+    }
+
+    getDefaultArgs() {
+        if (this.props.location.pathname.includes("app/")) return []
+        else if (this.props.location.pathname.includes("chart-store/")) return []
+        else if (this.props.location.pathname.includes("global-config/")) return []
+
     }
 
     selectArgument(arg: ArgumentType): void {
@@ -154,7 +154,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
         if (newArg) {
             this.setState({ arguments: [...this.state.arguments, newArg] }, () => {
-                let allArgs = this.state.arguments;
+                let allArgs = [...this.state.arguments, newArg];
                 let last = allArgs[allArgs.length - 1];
                 this.props.history.push(last.data.url);
             })
