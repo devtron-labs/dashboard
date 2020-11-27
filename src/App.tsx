@@ -19,7 +19,7 @@ import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload'
 
-const NavigationWrapper = lazy(() => import('./components/common/navigationWrapper'));
+const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
 const DevtronLogin = lazy(() => import('./components/devtron/DevtronLogin'));
 
@@ -201,7 +201,7 @@ export default function App() {
 									<Switch>
 										<Route path={`${URLS.LOGIN}`} component={Login} />
 										<Route path={`${URLS.DEVTRON_LOGIN}`} component={DevtronLogin} />
-										<Route path="/" render={() => <NavigationWrapper />} />
+										<Route path="/" render={() => <NavigationRoutes />} />
 										<Redirect to={`${URLS.LOGIN}${search}`} />
 									</Switch>
 									<div id="full-screen-modal"></div>

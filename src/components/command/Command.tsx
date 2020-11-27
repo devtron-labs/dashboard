@@ -9,6 +9,7 @@ const FlexSearch = require("flexsearch");
 interface CommandProps extends RouteComponentProps<{}> {
     defaultArguments: ArgumentType[];
     isTabMode: boolean;
+    isCommandBarActive: boolean;
     toggleCommandBar: (flag: boolean) => void;
 }
 export interface ArgumentType {
@@ -33,7 +34,7 @@ interface CommandState {
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
-    isActive: boolean;
+    // isActive: boolean;
     inputPosition: {
         top: string;
         left: string;
@@ -71,7 +72,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             allSuggestedArguments: [],
             suggestedArguments: [],
             focussedArgument: 0,
-            isActive: false,
+            // isActive: false,
             inputPosition: {
                 top: '0px',
                 left: '0px'
@@ -84,7 +85,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.isInViewport = this.isInViewport.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
         this.disableTab = this.disableTab.bind(this);
-        this.toggleActive = this.toggleActive.bind(this);
+        // this.toggleActive = this.toggleActive.bind(this);
     }
 
     componentDidMount() {
@@ -95,7 +96,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.state.isActive)) {
+        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
                 this._input.current.placeholder = "";
@@ -115,9 +116,9 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    toggleActive(flag): void {
-        this.setState({ isActive: flag });
-    }
+    // toggleActive(flag): void {
+    //     this.setState({ isActive: flag });
+    // }
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
@@ -152,7 +153,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         let newArg = this.state.suggestedArguments.find(a => (a.value === currentSuggestion.value));
 
         if (newArg) {
-            this.setState({ arguments: [...this.state.arguments, newArg], isActive: false }, () => {
+            this.setState({ arguments: [...this.state.arguments, newArg] }, () => {
                 let allArgs = this.state.arguments;
                 let last = allArgs[allArgs.length - 1];
                 this.props.history.push(last.data.url);
@@ -161,7 +162,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         else {
             let allArgs = this.state.arguments;
             let last = allArgs[allArgs.length - 1];
-            this.setState({ isActive: false });
+            this.props.toggleCommandBar(false)
             this.props.history.push(last.data.url);
         }
     }
@@ -182,7 +183,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     this._flexsearchIndex.add(response[i].value, response[i].value)
                 }
                 response.sort((a, b) => {
-                    if (!a.data?.group || !b.data?.group) return 1;
+                    if (!a.data?.group || !b.data?.group) return -1;
                     return 0;
                 })
                 this.setState({
@@ -212,20 +213,20 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
-            this.toggleActive(true)
+            this.props.toggleCommandBar(true)
         }
         else if (event.key === "Escape") {
-            this.toggleActive(false)
+            this.props.toggleCommandBar(false)
         }
-        else if (this.state.isActive && event.key === "Enter") {
+        else if (this.props.isCommandBarActive && event.key === "Enter") {
             this.runCommand();
         }
-        else if (this.state.isActive && event.key === "Tab") {
+        else if (this.props.isCommandBarActive && event.key === "Tab") {
             this.setState({
                 tab: this.state.tab === 'this-app' ? 'jump-to' : 'this-app',
             })
         }
-        else if (this.state.isActive && event.key === 'Backspace') {
+        else if (this.props.isCommandBarActive && event.key === 'Backspace') {
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 1;
@@ -235,7 +236,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 });
             }
         }
-        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowRight") {
+        else if (this.props.isCommandBarActive && this.state.suggestedArguments.length && event.key === "ArrowRight") {
             let newArg = this.state.suggestedArguments[this.state.focussedArgument];
             if (!newArg) return;
 
@@ -248,21 +249,21 @@ export class Command extends Component<CommandProps, CommandState>  {
             });
 
         }
-        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowDown") {
+        else if (this.props.isCommandBarActive && this.state.suggestedArguments.length && event.key === "ArrowDown") {
             let pos = (this.state.focussedArgument + 1) % this.state.suggestedArguments.length;
             if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "end", });
             }
             this.setState({ focussedArgument: pos });
         }
-        else if (this.state.isActive && this.state.suggestedArguments.length && event.key === "ArrowUp") {
+        else if (this.props.isCommandBarActive && this.state.suggestedArguments.length && event.key === "ArrowUp") {
             let pos = (this.state.focussedArgument - 1) < 0 ? this.state.suggestedArguments.length - 1 : this.state.focussedArgument - 1;
             if (!this.isInViewport(this.state.suggestedArguments[pos]?.ref)) {
                 this.state.suggestedArguments[pos]?.ref.scrollIntoView({ behaviour: "smooth", block: "start" });
             }
             this.setState({ focussedArgument: pos });
         }
-        else if (this.state.isActive && (event.key === '/') && this.state.argumentInput.length) {
+        else if (this.props.isCommandBarActive && (event.key === '/') && this.state.argumentInput.length) {
             let argInput = this.state.argumentInput.trim();
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             let allArgs = [];
@@ -308,7 +309,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
             })
             suggestedArguments.sort((a, b) => {
-                if (!a.data?.group || !b.data?.group) return 1;
+                if (!a.data?.group || !b.data?.group) return -1;
                 return 0;
             })
             this.setState({
@@ -357,8 +358,8 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     render() {
-        if (this.state.isActive)
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.toggleActive(false)}>
+        if (this.props.isCommandBarActive)
+            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">

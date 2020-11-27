@@ -270,7 +270,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                <Command location={this.props.location}
+                {/* <Command location={this.props.location}
                     match={this.props.match}
                     history={this.props.history}
                     isTabMode={true}
@@ -278,7 +278,7 @@ export class AppListView extends Component<AppListViewProps>{
                     defaultArguments={[
                         { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } },
                     ]}
-                />
+                /> */}
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
