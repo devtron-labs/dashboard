@@ -16,8 +16,6 @@ import './DeployChart.scss';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
-import { TIMEOUT } from 'dns';
-
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -67,7 +65,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [repoChartSearchTimerId, setRepoChartSearchTimerId] = useState(null)
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
@@ -177,7 +174,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     referenceValueKind: chartValues.kind,
                     environmentId: selectedEnvironment,
                     appStoreVersion: selectedVersion,
-                    // valuesOverride: obj,
+                    valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     appName
                 };
@@ -193,7 +190,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setLoading(false)
         }
     }
-    // console.log(appStoreVersion, installedAppId);
     useEffect(() => {
         // scroll to the editor view with animation for only update-chart
         if (envId) {
@@ -348,7 +344,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     function handleRepoChartValueChange(event) {
-        // console.log(event);
         setRepoChartValue(event);
         fetchChartVersionsData(event.chartId, true);
         getChartValuesList(event.chartId, installedAppVersionId);
@@ -393,7 +388,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 {environments && Array.from(environments).map(([envId, envData], idx) => <Select.Option key={envId} value={envId}>{envData.environment_name}</Select.Option>)}
                             </Select>
                         </div>
-                        {/* to-do replace with incoming prop */}
                         {   isUpdate && deprecated && 
                             <div className="info__container--update-chart">
                                 <div className="flex left"> 
@@ -416,10 +410,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     formatOptionLabel={repoChartSelectOptionLabel}
                                     value={repoChartValue}
                                     loadOptions={repoChartLoadOptions}
-                                    // onInputChange={handlerepoChartInputChange}
                                     onFocus={handlerepoChartFocus}
                                     onChange={handleRepoChartValueChange}
-                                    // menuIsOpen={true}
                                     components={{
                                         IndicatorSeparator: () => null,
                                         Option: repoChartOptionLabel
