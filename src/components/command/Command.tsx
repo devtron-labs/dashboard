@@ -121,7 +121,6 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     getDefaultArgs() {
-        console.log(this.props.location.pathname)
         if (this.props.location.pathname.includes("/app")) return [{ value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{ value: COMMAND.CHART, data: { isValid: true, isEOC: false } }];
         else if (this.props.location.pathname.includes("/global-config")) return [{ value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } }];
@@ -167,7 +166,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         })
     }
 
-    callGetArgumentSuggestions(args): void {
+    async callGetArgumentSuggestions(args) {
         let invalidArgs = args?.filter(a => !a.data.isValid);
         if (invalidArgs.length) {
             toast.error("You have at least one Invalid Argument");
@@ -177,7 +176,8 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
         else {
             this.setState({ isLoading: true });
-            getArgumentSuggestions(args).then((response) => {
+            try {
+                let response = await getArgumentSuggestions(args)
                 this._flexsearchIndex.clear();
                 for (let i = 0; i < response.length; i++) {
                     this._flexsearchIndex.add(response[i].value, response[i].value)
@@ -192,10 +192,10 @@ export class Command extends Component<CommandProps, CommandState>  {
                     focussedArgument: -1,
                     isLoading: false
                 });
-            }).catch((error) => {
+            } catch (error) {
                 this.setState({ isLoading: false });
                 console.error(error);
-            })
+            }
         }
     }
 

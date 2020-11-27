@@ -278,7 +278,9 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
         }
     }
     return new Promise((resolve, reject) => {
-        resolve([])
+        return new Promise((resolve, reject) => {
+            resolve([])
+        });
     });
 }
 
@@ -286,8 +288,78 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
 function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
-            resolve([])
+            resolve([{
+                value: 'scans',
+                ref: undefined,
+                data: {
+                    isValid: true,
+                    url: `/security/scans`,
+                    isEOC: true,
+                    group: COMMAND_REV["global-config"]
+                }
+            }, {
+                value: 'policies',
+                ref: undefined,
+                data: {
+                    isValid: true,
+                    url: `security/policies/global`,
+                    isEOC: false,
+                    group: COMMAND_REV["global-config"]
+                }
+            }
+            ])
         });
+    }
+    else if (args.length === 2) {
+        if (args[1].value === 'policies') {
+            return new Promise((resolve, reject) => {
+                resolve([{
+                    value: 'global',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/global`,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'cluster',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/cluster`,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'environment',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/environments`,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'applications',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/apps`,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'cve',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/vulnerability`,
+                        isEOC: true,
+                    }
+                }])
+            });
+        }
     }
     return new Promise((resolve, reject) => {
         resolve([])
