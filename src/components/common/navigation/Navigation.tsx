@@ -110,9 +110,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				isTabMode={true}
 				isCommandBarActive={this.state.isCommandBarActive}
 				toggleCommandBar={this.toggleCommandBar}
-				defaultArguments={[
-					{ value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } },
-				]}
+				defaultArguments={[]}
 			/>
 			<nav>
 				<aside className="short-nav main-nav">
@@ -122,7 +120,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</svg>
 					</NavLink>
 					{navigationList.map((item, index) => {
-						if (item.type === "button") return <button type="button"
+						if (item.type === "button") return <button type="button" key={index}
 							className={this.state.isCommandBarActive ? "transparent active-nav" : "transparent"}
 							onClick={(e) => this.toggleCommandBar(!this.state.isCommandBarActive)}>
 							<div className="svg-container flex">
@@ -155,7 +153,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<img src={TextLogo} alt="devtron" className="text-logo" />
 					</NavLink>
 					{navigationList.map((item, index) => {
-						if (item.type === "button") return <button type="button"
+						if (item.type === "button") return <button type="button" key={index}
 							className="transparent"
 							onClick={(e) => this.toggleCommandBar(!this.state.isCommandBarActive)}>
 							<div className="title-container flex left">
@@ -167,8 +165,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 								{item.title}
 							</div>
 						</NavLink>
-					}
-					)}
+					})}
 					<div></div>
 					<a rel="noreferrer noopener" className="flex left icon-dim-40 title-container" href="https://docs.devtron.ai/" target="_blank">Documentation</a>
 					<button type="button" className="transparent ellipsis-right title-container" onClick={this.toggleLogoutCard}>{email}</button>

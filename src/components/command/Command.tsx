@@ -59,7 +59,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         });
         this.state = {
             argumentInput: '',
-            arguments: this.props.defaultArguments || [],
+            arguments: this.getDefaultArgs(),
             command: [
                 { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } } },
                 { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isEOC: false } } },
@@ -87,12 +87,15 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyPress);
-        if (this.state.arguments.length) {
-            this.callGetArgumentSuggestions(this.state.arguments);
-        }
+        this.callGetArgumentSuggestions(this.state.arguments);
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if (prevProps.location.pathname !== this.props.location.pathname) {
+            let defaultArguments = this.getDefaultArgs();
+            this.setState({ arguments: defaultArguments });
+            this.callGetArgumentSuggestions(defaultArguments);
+        }
         if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
@@ -118,10 +121,12 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     getDefaultArgs() {
-        if (this.props.location.pathname.includes("app/")) return []
-        else if (this.props.location.pathname.includes("chart-store/")) return []
-        else if (this.props.location.pathname.includes("global-config/")) return []
-
+        console.log(this.props.location.pathname)
+        if (this.props.location.pathname.includes("/app")) return [{ value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } }];
+        else if (this.props.location.pathname.includes("/chart-store")) return [{ value: COMMAND.CHART, data: { isValid: true, isEOC: false } }];
+        else if (this.props.location.pathname.includes("/global-config")) return [{ value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } }];
+        else if (this.props.location.pathname.includes("/security")) return [{ value: COMMAND.SECURITY, data: { isValid: true, isEOC: false } }];
+        return [{ value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } }];
     }
 
     selectArgument(arg: ArgumentType): void {
@@ -151,24 +156,19 @@ export class Command extends Component<CommandProps, CommandState>  {
     runCommand() {
         let currentSuggestion = this.state.suggestedArguments[this.state.focussedArgument];
         let newArg = this.state.suggestedArguments.find(a => (a.value === currentSuggestion.value));
-
+        let allArgs = this.state.arguments;
         if (newArg) {
-            this.setState({ arguments: [...this.state.arguments, newArg] }, () => {
-                let allArgs = [...this.state.arguments, newArg];
-                let last = allArgs[allArgs.length - 1];
-                this.props.history.push(last.data.url);
-            })
+            allArgs = [...this.state.arguments, newArg];
         }
-        else {
-            let allArgs = this.state.arguments;
+        this.setState({ arguments: allArgs }, () => {
             let last = allArgs[allArgs.length - 1];
-            this.props.toggleCommandBar(false)
             this.props.history.push(last.data.url);
-        }
+            this.props.toggleCommandBar(false);
+        })
     }
 
     callGetArgumentSuggestions(args): void {
-        let invalidArgs = args.filter(a => !a.data.isValid);
+        let invalidArgs = args?.filter(a => !a.data.isValid);
         if (invalidArgs.length) {
             toast.error("You have at least one Invalid Argument");
             this.setState({
@@ -231,7 +231,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 1;
                 allArgs.splice(start, 1);
-                console.log(allArgs)
                 this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                     this.callGetArgumentSuggestions(this.state.arguments);
                 });
@@ -328,7 +327,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 <div className="suggested-arguments">
                     {this.state.suggestedArguments.map((a, index) => {
                         return <>
-                            {index === argIndex ? <h6 className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
+                            {index === argIndex ? <h6 key={`${index}-heading`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
                             <div ref={node => a['ref'] = node} key={a.value}
                                 className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
