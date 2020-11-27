@@ -302,7 +302,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    async function handleChartValueChange(index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE', valuesId: number) {
+    async function handleChartValueChange(index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE' | 'EXISTING', valuesId: number) {
         const tempCharts = [...state.charts]
         tempCharts[index].loading = true;
         tempCharts[index].isUnsaved = true;
