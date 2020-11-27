@@ -194,17 +194,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
     // console.log(appStoreVersion, installedAppId);
-    // useEffect(() => {
-    //     // scroll to the editor view with animation for only update-chart
-    //     if (envId) {
-    //         setTimeout(() => {
-    //             deployChartForm.current.scrollTo({
-    //                 top: deployChartEditor.current.offsetTop,
-    //                 behavior: 'smooth',
-    //             });
-    //         }, 1000);
-    //     }
-    // }, []);
+    useEffect(() => {
+        // scroll to the editor view with animation for only update-chart
+        if (envId) {
+            setTimeout(() => {
+                deployChartForm.current.scrollTo({
+                    top: deployChartEditor.current.offsetTop,
+                    behavior: 'smooth',
+                });
+            }, 1000);
+        }
+    }, []);
 
     useEffect(() => {
         if (chartId) {
