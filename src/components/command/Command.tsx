@@ -1,46 +1,11 @@
 import React, { Component } from 'react'
-import { COMMAND, COMMAND_REV, getArgumentSuggestions } from './command.util';
-import { RouteComponentProps } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
+import { getArgumentSuggestions } from './command.util';
+import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
 import './command.css';
 const FlexSearch = require("flexsearch");
-interface CommandProps extends RouteComponentProps<{}> {
-    defaultArguments: ArgumentType[];
-    isTabMode: boolean;
-    isCommandBarActive: boolean;
-    toggleCommandBar: (flag: boolean) => void;
-}
-export interface ArgumentType {
-    value: string;
-    readonly data: {
-        readonly value?: string | number;
-        readonly kind?: string;
-        readonly url?: string;
-        readonly group?: string;
-        readonly isValid: boolean;
-        readonly isEOC: boolean;
-    }
-}
-
-export type SuggestedArgumentType = ArgumentType & { ref: any; };
-interface CommandState {
-    argumentInput: string;
-    arguments: ArgumentType[];
-    command: { label: string; argument: ArgumentType; }[];
-    suggestedArguments: SuggestedArgumentType[];
-    readonly allSuggestedArguments: SuggestedArgumentType[];
-    isLoading: boolean;
-    focussedArgument: number; //index of the higlighted argument
-    tab: 'jump-to' | 'this-app';
-    inputPosition: {
-        top: string;
-        left: string;
-    }
-}
-
-const PlaceholderText = "Search";
 export class Command extends Component<CommandProps, CommandState>  {
     _input;
     _menu;

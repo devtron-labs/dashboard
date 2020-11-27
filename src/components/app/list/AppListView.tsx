@@ -11,8 +11,6 @@ import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { TriggerInfoModal } from './TriggerInfo';
-import { Command } from '../../command/Command';
-import { COMMAND } from '../../command/command.util';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',

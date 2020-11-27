@@ -1,20 +1,6 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
-import { SuggestedArgumentType } from './Command';
-
-export const COMMAND = {
-    APPLICATIONS: 'app',
-    CHART: 'chart',
-    SECURITY: 'security',
-    GLOBAL_CONFIG: 'global-config'
-}
-
-export const COMMAND_REV = {
-    app: 'Applications',
-    chart: 'Charts',
-    security: 'Security',
-    env: 'environments',
-    'global-config': 'Global Config',
-}
+import { SuggestedArgumentType } from './command.types';
+import { COMMAND, COMMAND_REV } from './command.types'
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {

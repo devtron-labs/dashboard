@@ -8,8 +8,7 @@ import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import TagManager from 'react-gtm-module';
 import ReactDOM from 'react-dom';
-import { Command } from '../../command/Command';
-import { COMMAND } from '../../command/command.util';
+import { Command } from '../../command';
 import './navigation.scss';
 
 const navigationList = [
@@ -110,7 +109,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				isTabMode={true}
 				isCommandBarActive={this.state.isCommandBarActive}
 				toggleCommandBar={this.toggleCommandBar}
-				defaultArguments={[]}
 			/>
 			<nav>
 				<aside className="short-nav main-nav">
