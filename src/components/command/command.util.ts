@@ -1,6 +1,5 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
-import { SuggestedArgumentType } from './command.types';
-import { COMMAND, COMMAND_REV } from './command.types'
+import { SuggestedArgumentType, COMMAND, COMMAND_REV } from './command.types';
 
 export function getArgumentSuggestions(args): Promise<any> {
     if (args.length === 0) return new Promise((resolve, reject) => {
@@ -281,7 +280,6 @@ function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
                     isValid: true,
                     url: `/security/scans`,
                     isEOC: true,
-                    group: COMMAND_REV["global-config"]
                 }
             }, {
                 value: 'policies',
@@ -290,7 +288,6 @@ function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
                     isValid: true,
                     url: `security/policies/global`,
                     isEOC: false,
-                    group: COMMAND_REV["global-config"]
                 }
             }
             ])
