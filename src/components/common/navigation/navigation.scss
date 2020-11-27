@@ -48,28 +48,29 @@
         display: flex;
         overflow: visible;
         z-index: var(--navigation-index);
+
         .main-nav {
             display: grid;
-            grid-template-rows: 84px 84px repeat(5, 50px) auto repeat(2, 50px) 96px;
+            grid-template-rows: 84px 84px repeat(5, 50px) auto repeat(2, 50px) 90px;
             align-items: center;
 
-            .bottom-nav {
-                grid-row: -1 / auto;
-                height: 100%;
-                display: grid;
-                grid-template-rows: 50px 50px 96px;
-                place-items: center;
+            // .bottom-nav {
+            //     grid-row: -1 / auto;
+            //     height: 100%;
+            //     display: grid;
+            //     grid-template-rows: 50px 50px 96px;
+            //     place-items: center;
+            // }
 
-                a,
-                button {
-                    &:hover {
-                        text-decoration: none;
-                    }
+            a,
+            button {
+                &:hover {
+                    text-decoration: none;
+                }
 
-                    &:focus {
-                        outline: none;
-                        border: solid 1px var(--N000)
-                    }
+                &:focus {
+                    outline: none;
+                    border: none;
                 }
             }
         }
@@ -202,5 +203,4 @@
 
 .logout-card__initial--nav {
     border-color: var(--N000);
-    margin-top: 3px;
 }

@@ -141,17 +141,14 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					}
 					)}
 					<div></div>
-
 					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /></a>
-					<div className="icon-dim-40">
+					<div className="icon-dim-40 flex">
 						<div className="logout-card__initial icon-dim-32 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 							{email[0]}
 						</div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
 					<div className="hubspot-placeholder"></div>
-					{/* <div className="bottom-nav">
-					</div> */}
 				</aside>
 				<aside className="expanded-nav main-nav">
 					<NavLink to={URLS.APP} className="flex left">

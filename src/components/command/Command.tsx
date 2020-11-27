@@ -231,6 +231,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let allArgs = this.state.arguments;
                 let start = this.state.arguments.length - 1;
                 allArgs.splice(start, 1);
+                console.log(allArgs)
                 this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                     this.callGetArgumentSuggestions(this.state.arguments);
                 });
