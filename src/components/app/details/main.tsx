@@ -8,8 +8,6 @@ import { URLS, getNextStageURL } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
 import './appDetails/appDetails.scss';
-import { Command } from '../../command/Command';
-import { COMMAND } from '../../command/command.util';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -112,7 +110,7 @@ export function AppHeader() {
             <h1 className="page-header__title flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs} />
             </h1>
-            <Command location={location}
+            {/* <Command location={location}
                 match={match}
                 history={history}
                 isTabMode={true}
@@ -120,7 +118,7 @@ export function AppHeader() {
                 defaultArguments={[
                     { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } }
                 ]}
-            />
+            /> */}
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">

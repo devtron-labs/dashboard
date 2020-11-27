@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { COMMAND, COMMAND_REV, getArgumentSuggestions } from './command.util';
 import { RouteComponentProps } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Progressing, sortCallback } from '../common';
+import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import './command.css';
 const FlexSearch = require("flexsearch");
@@ -182,7 +182,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     this._flexsearchIndex.add(response[i].value, response[i].value)
                 }
                 response.sort((a, b) => {
-                    if (!a.data?.group || !b.data?.group) return -1;
+                    if (!a.data?.group || !b.data?.group) return 1;
                     return 0;
                 })
                 this.setState({
@@ -308,8 +308,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
             })
             suggestedArguments.sort((a, b) => {
-                if (!a.data?.group || !b.data?.group) return -1;
-                return 0
+                if (!a.data?.group || !b.data?.group) return 1;
+                return 0;
             })
             this.setState({
                 argumentInput: event.target.value,

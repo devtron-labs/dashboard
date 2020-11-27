@@ -12,8 +12,8 @@ import arrowIcon from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { toast } from 'react-toastify';
 import './appCompose.scss';
 import AppSelector from '../AppSelector'
-import { Command } from '../command/Command';
-import { COMMAND } from '../command/command.util';
+// import { Command } from '../command/Command';
+// import { COMMAND } from '../command/command.util';
 
 const Artifacts = lazy(() => import('../artifacts/Artifacts'));
 const CIConfig = lazy(() => import('../ciConfig/CIConfig'));
@@ -124,7 +124,7 @@ export default function AppCompose() {
     return <>
         <div className="app-compose" >
             <Header />
-            <Command location={location}
+            {/* <Command location={location}
                 match={match}
                 history={history}
                 isTabMode={true}
@@ -132,7 +132,7 @@ export default function AppCompose() {
                 defaultArguments={[
                     { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } },
                 ]}
-            />
+            /> */}
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
