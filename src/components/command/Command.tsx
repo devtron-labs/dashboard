@@ -151,11 +151,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                         return 0;
                     })
                     this.setState({
+                        argumentInput: '',
                         arguments: args,
                         suggestedArguments: response,
                         allSuggestedArguments: response,
                         focussedArgument: -1,
-                        isLoading: false
+                        isLoading: false,
                     });
                 } catch (error) {
                     this.setState({ isLoading: false });
@@ -289,25 +290,25 @@ export class Command extends Component<CommandProps, CommandState>  {
     renderTabContent() {
         if (this.state.tab === 'this-app') {
             let argIndex = this.state.suggestedArguments.findIndex(a => a.data.group);
-            return <div ref={node => this._menu = node} className="command__suggested-args-container">
-                <div className="suggested-arguments">
-                    {this.state.suggestedArguments.map((a, index) => {
-                        return <>
-                            {index === argIndex ? <h6 key={`${index}-heading`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
-                            <div ref={node => a['ref'] = node} key={a.value}
-                                className="pl-20 pr-20 pt-10 pb-10 flexbox"
-                                style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
-                                <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                <span className="ff-monospace command__control ml-20"
-                                    style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                    <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
-                                </span>
-                            </div>
-                        </>
-                    })}
+            return this.state.isLoading ? <div className="command__suggested-args-container"><Progressing /></div>
+                : <div ref={node => this._menu = node} className="command__suggested-args-container">
+                    <div className="suggested-arguments">
+                        {this.state.suggestedArguments.map((a, index) => {
+                            return <>
+                                {index === argIndex ? <h6 key={`${index}-heading`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
+                                <div ref={node => a['ref'] = node} key={a.value}
+                                    className="pl-20 pr-20 pt-10 pb-10 flexbox"
+                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
+                                    <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                    <span className="ff-monospace command__control ml-20"
+                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
+                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
+                                    </span>
+                                </div>
+                            </>
+                        })}
+                    </div>
                 </div>
-                {this.state.isLoading ? <Progressing /> : null}
-            </div>
         }
         else {
             return <div ref={node => this._menu = node} className="command__suggested-args-container">
