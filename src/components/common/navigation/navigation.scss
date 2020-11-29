@@ -33,11 +33,6 @@
         white-space: nowrap;
         text-align-last: left;
     }
-
-    .text-logo {
-        width: 76px;
-        height: 16px;
-    }
 }
 
 #root>main {
@@ -49,10 +44,10 @@
         overflow: visible;
         z-index: var(--navigation-index);
 
-        .main-nav {
+        .nav-grid {
             display: grid;
             grid-template-rows: 84px 84px repeat(5, 50px) auto repeat(2, 50px) 90px;
-            place-items: center;
+            align-items: center;
 
             a,
             button {
@@ -65,6 +60,10 @@
                     border: none;
                 }
             }
+        }
+
+        .nav-grid--collapsed {
+            justify-items: center;
         }
 
         .short-nav {
@@ -86,12 +85,7 @@
 
                 }
 
-                .logo {
-                    width: 40px;
-                    height: 40px;
-                    opacity: 1;
-                    fill: #ffffff;
-                }
+
 
                 &.active-nav,
                 &:hover {
@@ -123,6 +117,18 @@
         }
     }
 
+    .devtron-logo {
+        width: 40px;
+        height: 40px;
+        opacity: 1;
+        fill: #ffffff;
+    }
+
+    .devtron-logo--text {
+        width: 76px;
+        height: 16px;
+    }
+
     .hubspot-placeholder {
         height: 80px;
         width: 100%;
@@ -146,8 +152,6 @@
     text-transform: uppercase;
     font-size: 16px;
     line-height: 1.9;
-    // width: 38px;
-    // height: 38px;
     text-align: center;
     border-radius: 50%;
     color: var(--N000);

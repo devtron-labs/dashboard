@@ -111,15 +111,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				toggleCommandBar={this.toggleCommandBar}
 			/>
 			<nav>
-				<aside className="short-nav main-nav">
+				<aside className="short-nav nav-grid nav-grid--collapsed">
 					<NavLink to={URLS.APP} className="flex">
-						<svg className="logo" viewBox="0 0 40 40">
+						<svg className="devtron-logo" viewBox="0 0 40 40">
 							<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 						</svg>
 					</NavLink>
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}
-							className={this.state.isCommandBarActive ? "transparent active-nav" : "transparent"}
+							className="transparent"
 							onClick={(e) => this.toggleCommandBar(!this.state.isCommandBarActive)}>
 							<div className="svg-container flex">
 								<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
@@ -146,9 +146,9 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					{this.state.showLogoutCard ? this.renderLogout() : null}
 					<div className="hubspot-placeholder"></div>
 				</aside>
-				<aside className="expanded-nav main-nav">
+				<aside className="expanded-nav nav-grid">
 					<NavLink to={URLS.APP} className="flex left">
-						<img src={TextLogo} alt="devtron" className="text-logo" />
+						<img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
 					</NavLink>
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}

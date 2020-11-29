@@ -117,7 +117,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.setState({ tab: event.target.value });
     }
 
-    runCommand() {
+    runCommand(): void {
         let currentSuggestion = this.state.suggestedArguments[this.state.focussedArgument];
         let newArg = this.state.suggestedArguments.find(a => (a.value === currentSuggestion.value));
         let allArgs = this.state.arguments;
@@ -131,7 +131,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         })
     }
 
-    async callGetArgumentSuggestions(args) {
+    callGetArgumentSuggestions(args) {
         let invalidArgs = args?.filter(a => !a.data.isValid);
         if (invalidArgs.length) {
             toast.error("You have at least one Invalid Argument");
@@ -140,27 +140,30 @@ export class Command extends Component<CommandProps, CommandState>  {
             });
         }
         else {
-            this.setState({ isLoading: true });
-            try {
-                let response = await getArgumentSuggestions(args)
-                this._flexsearchIndex.clear();
-                for (let i = 0; i < response.length; i++) {
-                    this._flexsearchIndex.add(response[i].value, response[i].value)
+            this.setState({ isLoading: true }, async () => {
+                try {
+                    let response = await getArgumentSuggestions(args)
+                    this._flexsearchIndex.clear();
+                    for (let i = 0; i < response.length; i++) {
+                        this._flexsearchIndex.add(response[i].value, response[i].value)
+                    }
+                    response.sort((a, b) => {
+                        if (!a.data?.group || !b.data?.group) return -1;
+                        return 0;
+                    })
+                    this.setState({
+                        suggestedArguments: response,
+                        allSuggestedArguments: response,
+                        focussedArgument: -1,
+                        isLoading: false
+                    });
+                } catch (error) {
+                    this.setState({ isLoading: false });
+                    console.error(error);
+
+
                 }
-                response.sort((a, b) => {
-                    if (!a.data?.group || !b.data?.group) return -1;
-                    return 0;
-                })
-                this.setState({
-                    suggestedArguments: response,
-                    allSuggestedArguments: response,
-                    focussedArgument: -1,
-                    isLoading: false
-                });
-            } catch (error) {
-                this.setState({ isLoading: false });
-                console.error(error);
-            }
+            });
         }
     }
 

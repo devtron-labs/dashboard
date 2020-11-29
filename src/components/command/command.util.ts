@@ -62,7 +62,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
             });
             if (!list) list = [];
             list.push({
-                value: 'config',
+                value: 'configure',
                 ref: undefined,
                 data: {
                     isValid: true,
@@ -74,7 +74,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
         })
     }
     else if (args[2] && args.length === 3) { // args[2] --> envName/config
-        if (args[2].value === 'config') return new Promise((resolve, reject) => {
+        if (args[2].value === 'configure') return new Promise((resolve, reject) => {
             resolve([
                 {
                     value: 'git-material',
@@ -193,8 +193,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
     }
     else if (args[3] && args.length === 4) { // args[3] --> pod
         if (args[3].value === "env-override") return getAppOtherEnvironment(args[1].data.value).then((response) => {
-            let list;
-            list = response?.result?.map((a) => {
+            let list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
                     ref: undefined,
@@ -242,7 +241,7 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
         });
     }
     else if (args.length === 2) {
-        if (args[1].value === "discover") {
+        if (args[1].value === 'discover') {
             return getAvailableCharts().then((response) => {
                 let list = response?.result?.map((chart) => {
                     return {
@@ -254,18 +253,16 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                             isValid: true,
                             url: `/chart-store/discover/chart/${chart.id}`,
                             isEOC: true,
-                            group: COMMAND_REV.chart
                         }
                     }
                 })
+                if (!list) list = [];
                 return list;
             })
         }
     }
     return new Promise((resolve, reject) => {
-        return new Promise((resolve, reject) => {
-            resolve([])
-        });
+        resolve([])
     });
 }
 
@@ -333,7 +330,7 @@ function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
                     }
                 },
                 {
-                    value: 'cve',
+                    value: 'cve policy',
                     ref: undefined,
                     data: {
                         isValid: true,
@@ -459,7 +456,6 @@ function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
                     data: {
                         url: '/global-config/notifier/configurations',
                         isValid: true,
-
                         isEOC: true,
                     }
                 }
