@@ -52,15 +52,7 @@
         .main-nav {
             display: grid;
             grid-template-rows: 84px 84px repeat(5, 50px) auto repeat(2, 50px) 90px;
-            align-items: center;
-
-            // .bottom-nav {
-            //     grid-row: -1 / auto;
-            //     height: 100%;
-            //     display: grid;
-            //     grid-template-rows: 50px 50px 96px;
-            //     place-items: center;
-            // }
+            place-items: center;
 
             a,
             button {
