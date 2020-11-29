@@ -252,6 +252,9 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     handleArgumentInputChange(event) {
+        let last = this.state.arguments[this.state.arguments.length - 1];
+        if (!last.data.isValid) return;
+
         if (event.target.value === '/') {
             this.setState({ argumentInput: '', focussedArgument: 0 });
         }
@@ -334,6 +337,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     render() {
+        let lastArg = this.state.arguments[this.state.arguments.length - 1];
         if (this.props.isCommandBarActive)
             return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
@@ -350,19 +354,19 @@ export class Command extends Component<CommandProps, CommandState>  {
                         </div>
                         <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
                     </div> : null}
-                    <div className="flexbox mb-20" style={{ backgroundColor: "var(--window-bg)" }}>
+                    <div className="flex column pl-20 pr-20" style={{ backgroundColor: "var(--window-bg)" }}>
                         <div className="command-arg flex top w-100">
                             <div className="flex-1 flex left flex-wrap">
                                 {this.state.arguments.map((arg, index) => {
                                     return <>
                                         <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
-                                        {!arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
+                                        {arg.data?.isValid && !arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
                                     </>
                                 })}
                                 {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
-                                    <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input" placeholder=""
-                                        onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
+                                    <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
+                                        placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
                                 </div>}
                             </div>
                             {this.state.arguments.find(a => a?.data?.url) &&
@@ -370,6 +374,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             }
                         </div>
                     </div>
+                    {lastArg.data.isValid ? null : <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p>}
                     {this.renderTabContent()}
                 </div>
             </div>

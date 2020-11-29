@@ -166,3 +166,11 @@
     text-align: center;
     color: #404040;
 }
+.command-empty-state__error {
+    background-color: var(--R100);
+    font-size: 12px;
+  font-weight: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: #f32e2e;
+}
