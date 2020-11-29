@@ -22,25 +22,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             worker: false,
             cache: false,
         });
-        this.state = {
-            argumentInput: '',
-            arguments: this.getDefaultArgs(),
-            command: [
-                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } } },
-                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isEOC: false } } },
-                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isEOC: false } } },
-                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } } },
-            ],
-            tab: 'this-app',
-            isLoading: false,
-            allSuggestedArguments: [],
-            suggestedArguments: [],
-            focussedArgument: 0,
-            inputPosition: {
-                top: '0px',
-                left: '0px'
-            }
-        }
+        this.state = this.getDefaultState();
         this.selectTab = this.selectTab.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.runCommand = this.runCommand.bind(this);
@@ -56,16 +38,37 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.location.pathname !== this.props.location.pathname) {
-            let defaultArguments = this.getDefaultArgs();
-            this.setState({ arguments: defaultArguments });
-            this.callGetArgumentSuggestions(defaultArguments);
+        if (prevProps.match.url !== this.props.match.url || prevProps.location.pathname !== this.props.location.pathname) {
+            let args = this.getDefaultArgs();
+            this.callGetArgumentSuggestions(args);
         }
         if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
                 this._input.current.placeholder = "";
             }
+        }
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyPress);
+    }
+
+    getDefaultState(): CommandState {
+        return {
+            argumentInput: '',
+            arguments: this.getDefaultArgs(),
+            command: [
+                { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } } },
+                { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isEOC: false } } },
+                { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isEOC: false } } },
+                { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } } },
+            ],
+            tab: 'this-app',
+            isLoading: false,
+            allSuggestedArguments: [],
+            suggestedArguments: [],
+            focussedArgument: 0,
         }
     }
 
@@ -79,10 +82,6 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (event.key === "Tab") {
             event.preventDefault();
         }
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyPress);
     }
 
     getDefaultArgs() {
@@ -152,6 +151,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                         return 0;
                     })
                     this.setState({
+                        arguments: args,
                         suggestedArguments: response,
                         allSuggestedArguments: response,
                         focussedArgument: -1,
@@ -160,8 +160,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 } catch (error) {
                     this.setState({ isLoading: false });
                     console.error(error);
-
-
                 }
             });
         }

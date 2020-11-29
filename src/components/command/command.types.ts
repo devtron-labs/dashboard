@@ -45,10 +45,6 @@ export interface CommandState {
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
-    inputPosition: {
-        top: string;
-        left: string;
-    }
 }
 
 export const PlaceholderText = "Search";

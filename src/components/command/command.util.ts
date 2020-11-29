@@ -233,6 +233,7 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                     value: 'deployed',
                     ref: null,
                     data: {
+                        url: `/chart-store/deployed`,
                         isValid: true,
                         isEOC: true,
                     }
