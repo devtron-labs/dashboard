@@ -203,6 +203,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             setLoading(not)
         }
     }
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return(
         <>
         <form className="deployment-template-override-form" style={{marginBottom:'16px'}} onSubmit={handleSubmit}>
@@ -247,7 +248,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
                 <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing />  : 'Save'}</button>
             </div>
         </form>
-        <OptApplicationMetrics
+        {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
             currentVersion={state.charts.get(state.selectedChartRefId).version}
             minimumSupportedVersion={"3.7.0"}
             onChange={handleAppMetrics}
@@ -255,7 +256,8 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             opted={!!state.data.appMetrics}
             loading={state.appMetricsLoading}
             disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
-            />
+        />}
+        
         {state.dialog && <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warningIcon} />
             <ConfirmationDialog.Body title="This action will cause permanent removal." subtitle="This action will cause all overrides to erase and app level configuration will be applied" />

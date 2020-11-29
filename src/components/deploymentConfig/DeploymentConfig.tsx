@@ -162,6 +162,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             toggleConfirmation(false)
         }
     }
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
@@ -219,7 +220,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart &&
+            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled && 
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
                     minimumSupportedVersion={"3.7.0"}
