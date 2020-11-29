@@ -157,3 +157,12 @@
     background-color: var(--B100);
     color: var(--B500);
 }
+
+.command-empty-state__subtitle {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: center;
+    color: #404040;
+}
