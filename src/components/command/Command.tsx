@@ -367,7 +367,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             }
                         </div>
                     </div>
-                    {lastArg && lastArg?.data.isValid ? null : <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p>}
+                    {lastArg && !lastArg?.data.isValid ? <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p> : null}
                     {this.renderTabContent()}
                 </div>
             </div>
