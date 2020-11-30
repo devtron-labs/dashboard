@@ -65,7 +65,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [repoChartOptionsInputValue, setRepoChartOptionsInputValue] = useState<string>('');
     const [textRef, setTextRef] = useState(rawValues)
+    const [areRepoChartOptionsLoading, setAreRepoChartOptionsLoading] = useState<boolean>(false);
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
         {
@@ -294,9 +296,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     async function handlerepoChartFocus() {
         if (!repoChartAPIMade) {
+            setAreRepoChartOptionsLoading(true);
             setRepoChartAPIMade(true)
+            setRepoChartOptionsInputValue(name);
             const matchedCharts = (await getChartsByKeyword(name)).result;
             filterMatchedCharts(matchedCharts);
+            setAreRepoChartOptionsLoading(false);
         }
     }
 
@@ -343,10 +348,22 @@ const DeployChart: React.FC<DeployChartProps> = ({
         return <div>{chartRepoName}/{chartName}</div>
     }
 
+    function handleRepoChartValueInputChange(value: string) {
+        setRepoChartOptionsInputValue(value);
+    }
+
     function handleRepoChartValueChange(event) {
         setRepoChartValue(event);
         fetchChartVersionsData(event.chartId, true);
         getChartValuesList(event.chartId, installedAppVersionId);
+    }
+
+    async function handleRepoChartOptionMenuOpen() {
+        setAreRepoChartOptionsLoading(true);
+        setRepoChartOptionsInputValue(repoChartValue.chartName);
+        const matchedCharts = (await getChartsByKeyword(repoChartValue.chartName)).result;
+        filterMatchedCharts(matchedCharts);
+        setAreRepoChartOptionsLoading(false);
     }
 
     let isUpdate = environmentId && teamId;
@@ -407,11 +424,15 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <AsyncSelect
                                     cacheOptions
                                     defaultOptions={repoChartOptions}
+                                    onMenuOpen={handleRepoChartOptionMenuOpen}
+                                    inputValue={repoChartOptionsInputValue}
                                     formatOptionLabel={repoChartSelectOptionLabel}
                                     value={repoChartValue}
+                                    isLoading={areRepoChartOptionsLoading}
                                     loadOptions={repoChartLoadOptions}
                                     onFocus={handlerepoChartFocus}
                                     onChange={handleRepoChartValueChange}
+                                    onInputChange={handleRepoChartValueInputChange}
                                     components={{
                                         IndicatorSeparator: () => null,
                                         Option: repoChartOptionLabel
