@@ -5,10 +5,51 @@ import { CommandSuggestionType, SuggestedArgumentType, COMMAND, COMMAND_REV } fr
 export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve({
-            allSuggestionArguments: [{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isEOC: false } },
-            { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isEOC: false } },
-            { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isEOC: false } },
-            { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isEOC: false } }],
+            allSuggestionArguments: [
+                {
+                    value: COMMAND.APPLICATIONS,
+                    ref: undefined,
+                    data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
+                        isValid: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: COMMAND.CHART,
+                    ref: undefined,
+                    data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
+                        isValid: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: COMMAND.SECURITY,
+                    ref: undefined,
+                    data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
+                        isValid: true,
+                        isEOC: false
+                    }
+                },
+                {
+                    value: COMMAND.GLOBAL_CONFIG,
+                    ref: undefined,
+                    data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
+                        isValid: true,
+                        isEOC: false
+                    }
+                }],
             groups: [],
         })
     });
@@ -38,11 +79,13 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: a.name,
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.app,
+                        groupStart: false,
+                        groupEnd: false,
                         value: a.id,
                         kind: 'appId',
                         isValid: true,
                         url: `/app/${a.id}/details`,
-                        group: COMMAND_REV.app,
                         isEOC: false,
                     }
                 }
@@ -66,6 +109,8 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         isValid: true,
                         url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
                         group: COMMAND_REV.env,
+                        groupStart: false,
+                        groupEnd: false,
                         isEOC: false,
                     }
                 }
@@ -75,6 +120,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                 value: 'configure',
                 ref: undefined,
                 data: {
+                    group: COMMAND_REV.misc,
+                    groupStart: false,
+                    groupEnd: false,
                     isValid: true,
                     url: `/app/${args[1].data.value}/edit/workflow`,
                     isEOC: false
@@ -93,6 +141,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'git-material',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/materials`,
                         isValid: true,
                         isEOC: true
@@ -102,6 +153,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'docker-config',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/docker-build-config`,
                         isValid: true,
                         isEOC: true
@@ -111,6 +165,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'deployment-template',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/deployment-template`,
                         isValid: true,
                         isEOC: true
@@ -120,6 +177,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'workflow-editor',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/workflow`,
                         isValid: true,
                         isEOC: true
@@ -129,6 +189,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'configmap',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/configmap`,
                         isValid: true,
                         isEOC: true
@@ -138,6 +201,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'secrets',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/secrets`,
                         isValid: true,
                         isEOC: true
@@ -147,6 +213,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'env-override',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/edit/env-override`,
                         isValid: true,
                         isEOC: false
@@ -161,6 +230,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'app-details',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/details/${args[2].data.value}/Pod`,
                         isValid: true,
                         isEOC: true,
@@ -170,6 +242,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'trigger',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/trigger`,
                         isValid: true,
                         isEOC: true
@@ -179,6 +254,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'build-history',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/ci-details`,
                         isValid: true,
                         isEOC: true,
@@ -188,6 +266,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'deployment-history',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/cd-details`,
                         isValid: true,
                         isEOC: true,
@@ -197,6 +278,9 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: 'deployment-metrics',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/app/${args[1].data.value}/deployment-metrics/${args[2].data.value}`,
                         isValid: true,
                         isEOC: true,
@@ -213,12 +297,14 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     value: a.environmentName,
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.env,
+                        groupStart: false,
+                        groupEnd: false,
                         value: a.environmentId,
                         kind: 'envId',
                         isValid: true,
                         url: `/app/${args[1].data.value}/edit/env-override/${a.environmentId}`,
                         isEOC: true,
-                        group: COMMAND_REV.env
                     }
                 }
             });
@@ -246,6 +332,9 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                     value: 'discover',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         isValid: true,
                         isEOC: false,
                     }
@@ -254,6 +343,9 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                     value: 'deployed',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: `/chart-store/deployed`,
                         isValid: true,
                         isEOC: true,
@@ -271,6 +363,9 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                         value: `${chart.chart_name}/${chart.name}`,
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.chart,
+                            groupStart: false,
+                            groupEnd: false,
                             value: chart.id,
                             kind: 'chartId',
                             isValid: true,
@@ -304,6 +399,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                     value: 'scans',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         isValid: true,
                         url: `/security/scans`,
                         isEOC: true,
@@ -312,6 +410,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                     value: 'policies',
                     ref: undefined,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         isValid: true,
                         url: `security/policies/global`,
                         isEOC: false,
@@ -330,6 +431,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         value: 'global',
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             isValid: true,
                             url: `security/policies/global`,
                             isEOC: true,
@@ -339,6 +443,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         value: 'cluster',
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             isValid: true,
                             url: `security/policies/cluster`,
                             isEOC: true,
@@ -348,6 +455,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         value: 'environment',
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             isValid: true,
                             url: `security/policies/environments`,
                             isEOC: true,
@@ -357,6 +467,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         value: 'applications',
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             isValid: true,
                             url: `security/policies/apps`,
                             isEOC: true,
@@ -366,6 +479,9 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         value: 'cve policy',
                         ref: undefined,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             isValid: true,
                             url: `security/policies/vulnerability`,
                             isEOC: true,
@@ -393,6 +509,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'git-account',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/git',
                         isValid: true,
                         isEOC: true,
@@ -401,6 +520,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'cluster-and-environments',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/cluster-env',
                         isValid: true,
                         isEOC: true,
@@ -410,6 +532,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'docker-registeries',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/docker',
                         isValid: true,
                         isEOC: true,
@@ -419,6 +544,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'projects',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/projects',
                         isValid: true,
                         isEOC: true,
@@ -428,6 +556,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'user-access',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/auth/users',
                         isValid: true,
                         isEOC: false,
@@ -437,6 +568,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     value: 'notification',
                     ref: null,
                     data: {
+                        group: COMMAND_REV.none,
+                        groupStart: false,
+                        groupEnd: false,
                         url: '/global-config/notifier/channels',
                         isValid: true,
                         isEOC: false,
@@ -454,6 +588,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         value: 'users',
                         ref: null,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             url: '/global-config/auth/users',
                             isValid: true,
                             isEOC: true,
@@ -463,6 +600,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         value: 'groups',
                         ref: null,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             url: '/global-config/auth/groups',
                             isValid: true,
                             isEOC: true,
@@ -479,9 +619,11 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         value: 'add-new',
                         ref: null,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             url: '/global-config/notifier/edit',
                             isValid: true,
-
                             isEOC: true,
                         }
                     },
@@ -489,9 +631,11 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         value: 'list',
                         ref: null,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             url: '/global-config/notifier/channels',
                             isValid: true,
-
                             isEOC: true,
                         }
                     },
@@ -499,6 +643,9 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         value: 'configuration',
                         ref: null,
                         data: {
+                            group: COMMAND_REV.none,
+                            groupStart: false,
+                            groupEnd: false,
                             url: '/global-config/notifier/configurations',
                             isValid: true,
                             isEOC: true,

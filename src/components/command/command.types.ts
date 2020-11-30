@@ -12,6 +12,8 @@ export const COMMAND_REV = {
     chart: 'Charts',
     security: 'Security',
     env: 'environments',
+    misc: 'misc',
+    none: 'none',
     'global-config': 'Global Config',
 }
 
@@ -28,7 +30,9 @@ export interface ArgumentType {
         readonly value?: string | number;
         readonly kind?: string;
         readonly url?: string;
-        readonly group?: string;
+        readonly group: string;
+        groupStart: boolean;
+        groupEnd: boolean;
         readonly isValid: boolean;
         readonly isEOC: boolean;
     }
@@ -50,4 +54,4 @@ export interface CommandState {
 
 export const PlaceholderText = "Search";
 
-export type CommandSuggestionType = { allSuggestionArguments: SuggestedArgumentType[], groups: any[]}
+export type CommandSuggestionType = { allSuggestionArguments: SuggestedArgumentType[], groups: any[] }

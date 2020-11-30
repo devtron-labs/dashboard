@@ -4,16 +4,14 @@ import { NavLink, Link, Route, Redirect, Switch } from 'react-router-dom';
 import { AppConfigStatus, URLS, getAppComposeURL, APP_COMPOSE_STAGE, getNextStageURL, getNavItems, isCIPipelineCreated } from '../../config';
 import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, BreadCrumb, useBreadcrumb, useAppContext } from '../common';
 import { deleteApp } from './service';
-import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment, getWorkflowList, getAppListMin } from '../../services/service';
+import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment, getAppListMin } from '../../services/service';
 import { ReactComponent as Next } from '../../assets/icons/ic-arrow-forward.svg';
 import warn from '../../assets/icons/ic-warning.svg';
 import lockIcon from '../../assets/icons/ic-locked.svg'
 import arrowIcon from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { toast } from 'react-toastify';
+import AppSelector from '../AppSelector';
 import './appCompose.scss';
-import AppSelector from '../AppSelector'
-// import { Command } from '../command/Command';
-// import { COMMAND } from '../command/command.util';
 
 const Artifacts = lazy(() => import('../artifacts/Artifacts'));
 const CIConfig = lazy(() => import('../ciConfig/CIConfig'));
@@ -124,15 +122,6 @@ export default function AppCompose() {
     return <>
         <div className="app-compose" >
             <Header />
-            {/* <Command location={location}
-                match={match}
-                history={history}
-                isTabMode={true}
-                toggleCommandBar={(e) => { }}
-                defaultArguments={[
-                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } },
-                ]}
-            /> */}
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
