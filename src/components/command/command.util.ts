@@ -184,7 +184,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     value: 'deployment-metrics',
                     ref: undefined,
                     data: {
-                        url: `/app/${args[1].data.value}/deployment-metrics`,
+                        url: `/app/${args[1].data.value}/deployment-metrics/${args[2].data.value}`,
                         isValid: true,
                         isEOC: true,
                     }
