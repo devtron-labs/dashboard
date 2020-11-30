@@ -136,6 +136,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
+    function hasChartChanged(): boolean {
+        return appStoreId !== repoChartValue.chartId;
+    }
+
     const deploy = async (e) => {
         if (!(selectedTeam && selectedEnvironment)) {
             return
@@ -151,10 +155,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
         try {
             setLoading(true)
             if (installedAppVersion) {
-                const hasChartChanged = appStoreId !== repoChartValue.chartId;
                 let request = {
                     // if chart has changed send 0
-                    id: hasChartChanged ? 0 : installedAppVersion,
+                    id: hasChartChanged() ? 0 : installedAppVersion,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     // valuesOverride: obj,
@@ -477,6 +480,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <CodeEditor.Header>
                                     <span className="bold">values.yaml</span>
                                 </CodeEditor.Header>
+                                {hasChartChanged() && 
+                                <CodeEditor.Information 
+                                    text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}/>}
                             </CodeEditor>
                         </div>
                     </div>
