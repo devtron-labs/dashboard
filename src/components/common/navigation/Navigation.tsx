@@ -103,13 +103,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	render() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
 		return <>
-			<Command location={this.props.location}
-				match={this.props.match}
-				history={this.props.history}
-				isTabMode={true}
-				isCommandBarActive={this.state.isCommandBarActive}
-				toggleCommandBar={this.toggleCommandBar}
-			/>
 			<nav>
 				<aside className="short-nav nav-grid nav-grid--collapsed">
 					<NavLink to={URLS.APP} className="flex">
@@ -170,6 +163,13 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					<div className="hubspot-placeholder"></div>
 				</aside>
 			</nav>
+			<Command location={this.props.location}
+				match={this.props.match}
+				history={this.props.history}
+				isTabMode={true}
+				isCommandBarActive={this.state.isCommandBarActive}
+				toggleCommandBar={this.toggleCommandBar}
+			/>
 		</>
 	}
 }
