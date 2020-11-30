@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import { getArgumentSuggestions } from './command.util';
-import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
+import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText, SuggestedArgumentType } from './command.types';
 import './command.css';
 const FlexSearch = require("flexsearch");
 export class Command extends Component<CommandProps, CommandState>  {
@@ -39,7 +39,9 @@ export class Command extends Component<CommandProps, CommandState>  {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.match.url !== this.props.match.url || prevProps.location.pathname !== this.props.location.pathname) {
             let args = this.getDefaultArgs();
-            this.callGetArgumentSuggestions(args);
+            this.setState({ argumentInput: '' }, ()=>{
+                this.callGetArgumentSuggestions(args);
+            });
         }
         if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
@@ -233,24 +235,22 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    callGetArgumentSuggestions(args) {
+    callGetArgumentSuggestions(args): void {
+        let arg = this.state.arguments.find(a => !a.data?.isValid);
+        if (arg) return;
+
         this.setState({ isLoading: true }, async () => {
             try {
                 let response = await getArgumentSuggestions(args);
                 this._flexsearchIndex.clear();
                 for (let i = 0; i < response.allSuggestionArguments.length; i++) {
-                    this._flexsearchIndex.add(response.allSuggestionArguments[i].value, response.allSuggestionArguments[i].value)
+                    this._flexsearchIndex.add(response.allSuggestionArguments[i].value, response.allSuggestionArguments[i].value);
                 }
-                response.allSuggestionArguments.sort((a, b) => {
-                    if (a.data.group < b.data.group) return -1;
-                    else return 0;
-                })
-                let groupStartIndex = response.allSuggestionArguments.findIndex(a => a.data.group !== "none");
-                let groupEndIndex = response.allSuggestionArguments.findIndex(a => a.data.group === "none");
+
+                let suggestedArguments = this.applyQueryOnSuggestions(response.allSuggestionArguments, this.state.argumentInput);
                 this.setState({
-                    argumentInput: '',
                     arguments: args,
-                    suggestedArguments: response.allSuggestionArguments,
+                    suggestedArguments: suggestedArguments,
                     allSuggestedArguments: response.allSuggestionArguments,
                     focussedArgument: -1,
                     isLoading: false,
@@ -353,7 +353,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (last && !last.data.isValid) return;
 
         if (event.target.value === '/') {
-            // this.setState({ argumentInput: '', focussedArgument: 0 });
+            this.setState({ argumentInput: '', focussedArgument: 0 });
         }
         else if (!event.target.value?.length) {
             this.setState({
@@ -363,23 +363,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             })
         }
         else {
-            let argumentsMap = this.state.allSuggestedArguments.reduce((argumentsMap, arg) => {
-                argumentsMap[arg.value] = arg.data;
-                return argumentsMap;
-            }, {})
-            let suggestedArguments = [];
-            let results = this._flexsearchIndex.search(event.target.value);
-            suggestedArguments = results.map((a) => {
-                return {
-                    value: a,
-                    data: argumentsMap[a]
-                }
-            })
-            suggestedArguments.sort((a, b) => {
-                if (a.data.group < b.data.group) return -1;
-                else return 0;
-
-            })
+            let suggestedArguments = this.applyQueryOnSuggestions(this.state.allSuggestedArguments, event.target.value);
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
@@ -388,14 +372,37 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
+    applyQueryOnSuggestions(allSuggestedArguments, searchString: string): SuggestedArgumentType[] {
+        if (!searchString) return allSuggestedArguments;
+
+        let argumentsMap = this.state.allSuggestedArguments.reduce((argumentsMap, arg) => {
+            argumentsMap[arg.value] = arg.data;
+            return argumentsMap;
+        }, {});
+
+        let suggestedArguments = [];
+        let results = this._flexsearchIndex.search(searchString);
+        suggestedArguments = results.map((a) => {
+            return {
+                value: a,
+                data: argumentsMap[a]
+            }
+        })
+        suggestedArguments.sort((a, b) => {
+            if (a.data?.group < b.data?.group) return -1;
+            else return 0;
+        })
+
+        return suggestedArguments;
+    }
+
     renderTabContent() {
         if (this.state.isLoading) {
             return <div className="command__suggested-args-container"><Progressing /></div>
         }
         else if (this.state.tab === 'this-app') {
-            let groupStartIndex = this.state.suggestedArguments.findIndex(a => a.data.group !== "none");
-            let groupEndIndex = this.state.suggestedArguments.findIndex(a => a.data.group === "none");
-            let groupStartArg = this.state.suggestedArguments[groupStartIndex];
+            let groupStartIndex = this.state.suggestedArguments.findIndex(a => a?.data?.group !== "none");
+            let groupEndIndex = this.state.suggestedArguments.findIndex(a => a?.data?.group === "none");
 
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
@@ -408,7 +415,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 <div className="suggested-arguments">
                     {this.state.suggestedArguments.map((a, index) => {
                         return <>
-                            {index === groupStartIndex ? <h6 key={`${index}-start`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
+                            {index === groupStartIndex ? <h6 key={`${index}-start`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a?.data?.group}</h6> : ""}
                             {index === groupEndIndex ? <>
                                 <hr className="m-0"></hr>
                                 <h6 key={`${index}-end`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{this.state.arguments[1]?.value}</h6>
