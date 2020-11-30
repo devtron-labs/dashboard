@@ -1,12 +1,16 @@
+import { group } from 'console';
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
-import { SuggestedArgumentType, COMMAND, COMMAND_REV } from './command.types';
+import { CommandSuggestionType, SuggestedArgumentType, COMMAND, COMMAND_REV } from './command.types';
 
-export function getArgumentSuggestions(args): Promise<any> {
+export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
     if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve([{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isEOC: false } },
-        { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isEOC: false } },
-        { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isEOC: false } },
-        { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isEOC: false } }])
+        resolve({
+            allSuggestionArguments: [{ value: COMMAND.APPLICATIONS, ref: undefined, data: { isValid: true, isEOC: false } },
+            { value: COMMAND.CHART, ref: undefined, data: { isValid: true, isEOC: false } },
+            { value: COMMAND.SECURITY, ref: undefined, data: { isValid: true, isEOC: false } },
+            { value: COMMAND.GLOBAL_CONFIG, ref: undefined, data: { isValid: true, isEOC: false } }],
+            groups: [],
+        })
     });
 
     let arg = args[0];
@@ -16,13 +20,16 @@ export function getArgumentSuggestions(args): Promise<any> {
         case 'security': return getSecurityArguments(args);
         case 'global-config': return getGlobalConfigArguments(args);
         default: return new Promise((resolve, reject) => {
-            resolve([])
+            resolve({
+                allSuggestionArguments: [],
+                groups: [],
+            })
         });
     }
 }
 
 
-function getAppArguments(args): Promise<SuggestedArgumentType[]> {
+function getAppArguments(args): Promise<CommandSuggestionType> {
     //["app", "appName", "envName", "pod", "podname"]
     if (args.length === 1) {
         return getAppListMin().then((response) => {
@@ -40,13 +47,15 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     }
                 }
             })
-            return list;
+            return {
+                allSuggestionArguments: list || [],
+                groups: []
+            }
         })
     }
     else if (args[1] && args.length === 2) { // args[1] --> appName
         return getAppOtherEnvironment(args[1].data.value).then((response) => {
             let list;
-            console.log(args)
             list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,
@@ -71,13 +80,16 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                     isEOC: false
                 }
             })
-            return list;
+            return {
+                allSuggestionArguments: list,
+                groups: []
+            }
         })
     }
     else if (args[2] && args.length === 3) { // args[2] --> envName/config
         if (args[2].value === 'configure') return new Promise((resolve, reject) => {
-            resolve([
-                {
+            resolve({
+                allSuggestionArguments: [{
                     value: 'git-material',
                     ref: undefined,
                     data: {
@@ -139,12 +151,13 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         isValid: true,
                         isEOC: false
                     }
-                }
-            ])
+                }],
+                groups: [],
+            })
         })
         else return new Promise((resolve, reject) => {
-            resolve([
-                {
+            resolve({
+                allSuggestionArguments: [{
                     value: 'app-details',
                     ref: undefined,
                     data: {
@@ -188,8 +201,9 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                         isValid: true,
                         isEOC: true,
                     }
-                },
-            ])
+                }],
+                groups: [],
+            })
         })
     }
     else if (args[3] && args.length === 4) { // args[3] --> pod
@@ -209,20 +223,26 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
                 }
             });
             if (!list) list = [];
-            return list;
+            return {
+                allSuggestionArguments: list,
+                groups: []
+            }
         })
     }
     return new Promise((resolve, reject) => {
-        resolve([])
+        resolve({
+            allSuggestionArguments: [],
+            groups: []
+        })
     })
 }
 
 
-function getChartArguments(args): Promise<SuggestedArgumentType[]> {
+function getChartArguments(args): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
-            resolve([
-                {
+            resolve({
+                allSuggestionArguments: [{
                     value: 'discover',
                     ref: null,
                     data: {
@@ -238,8 +258,9 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                         isValid: true,
                         isEOC: true,
                     }
-                },
-            ])
+                }],
+                groups: []
+            })
         });
     }
     else if (args.length === 2) {
@@ -259,214 +280,241 @@ function getChartArguments(args): Promise<SuggestedArgumentType[]> {
                     }
                 })
                 if (!list) list = [];
-                return list;
+                return {
+                    allSuggestionArguments: list,
+                    groups: []
+                }
             })
         }
     }
     return new Promise((resolve, reject) => {
-        resolve([])
+        resolve({
+            allSuggestionArguments: [],
+            groups: []
+        })
     });
 }
 
 
-function getSecurityArguments(args): Promise<SuggestedArgumentType[]> {
+function getSecurityArguments(args): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
-            resolve([{
-                value: 'scans',
-                ref: undefined,
-                data: {
-                    isValid: true,
-                    url: `/security/scans`,
-                    isEOC: true,
+            resolve({
+                allSuggestionArguments: [{
+                    value: 'scans',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `/security/scans`,
+                        isEOC: true,
+                    }
+                }, {
+                    value: 'policies',
+                    ref: undefined,
+                    data: {
+                        isValid: true,
+                        url: `security/policies/global`,
+                        isEOC: false,
+                    }
                 }
-            }, {
-                value: 'policies',
-                ref: undefined,
-                data: {
-                    isValid: true,
-                    url: `security/policies/global`,
-                    isEOC: false,
-                }
-            }
-            ])
+                ],
+                groups: []
+            })
         });
     }
     else if (args.length === 2) {
         if (args[1].value === 'policies') {
             return new Promise((resolve, reject) => {
-                resolve([{
-                    value: 'global',
-                    ref: undefined,
-                    data: {
-                        isValid: true,
-                        url: `security/policies/global`,
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'cluster',
-                    ref: undefined,
-                    data: {
-                        isValid: true,
-                        url: `security/policies/cluster`,
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'environment',
-                    ref: undefined,
-                    data: {
-                        isValid: true,
-                        url: `security/policies/environments`,
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'applications',
-                    ref: undefined,
-                    data: {
-                        isValid: true,
-                        url: `security/policies/apps`,
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'cve policy',
-                    ref: undefined,
-                    data: {
-                        isValid: true,
-                        url: `security/policies/vulnerability`,
-                        isEOC: true,
-                    }
-                }])
+                resolve({
+                    allSuggestionArguments: [{
+                        value: 'global',
+                        ref: undefined,
+                        data: {
+                            isValid: true,
+                            url: `security/policies/global`,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'cluster',
+                        ref: undefined,
+                        data: {
+                            isValid: true,
+                            url: `security/policies/cluster`,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'environment',
+                        ref: undefined,
+                        data: {
+                            isValid: true,
+                            url: `security/policies/environments`,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'applications',
+                        ref: undefined,
+                        data: {
+                            isValid: true,
+                            url: `security/policies/apps`,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'cve policy',
+                        ref: undefined,
+                        data: {
+                            isValid: true,
+                            url: `security/policies/vulnerability`,
+                            isEOC: true,
+                        }
+                    }],
+                    groups: []
+                })
             });
         }
     }
     return new Promise((resolve, reject) => {
-        resolve([])
+        resolve({
+            allSuggestionArguments: [],
+            groups: [],
+        })
     });
 }
 
 
-function getGlobalConfigArguments(args): Promise<SuggestedArgumentType[]> {
+function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
-            resolve([{
-                value: 'git-account',
-                ref: null,
-                data: {
-                    url: '/global-config/git',
-                    isValid: true,
-                    isEOC: true,
-                }
-            }, {
-                value: 'cluster-and-environments',
-                ref: null,
-                data: {
-                    url: '/global-config/cluster-env',
-                    isValid: true,
-                    isEOC: true,
-                }
-            },
-            {
-                value: 'docker-registeries',
-                ref: null,
-                data: {
-                    url: '/global-config/docker',
-                    isValid: true,
-                    isEOC: true,
-                }
-            },
-            {
-                value: 'projects',
-                ref: null,
-                data: {
-                    url: '/global-config/projects',
-                    isValid: true,
-                    isEOC: true,
-                }
-            },
-            {
-                value: 'user-access',
-                ref: null,
-                data: {
-                    url: '/global-config/auth/users',
-                    isValid: true,
-                    isEOC: false,
-                }
-            },
-            {
-                value: 'notification',
-                ref: null,
-                data: {
-                    url: '/global-config/notifier/channels',
-                    isValid: true,
-                    isEOC: false,
-                }
-            }])
+            resolve({
+                allSuggestionArguments: [{
+                    value: 'git-account',
+                    ref: null,
+                    data: {
+                        url: '/global-config/git',
+                        isValid: true,
+                        isEOC: true,
+                    }
+                }, {
+                    value: 'cluster-and-environments',
+                    ref: null,
+                    data: {
+                        url: '/global-config/cluster-env',
+                        isValid: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'docker-registeries',
+                    ref: null,
+                    data: {
+                        url: '/global-config/docker',
+                        isValid: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'projects',
+                    ref: null,
+                    data: {
+                        url: '/global-config/projects',
+                        isValid: true,
+                        isEOC: true,
+                    }
+                },
+                {
+                    value: 'user-access',
+                    ref: null,
+                    data: {
+                        url: '/global-config/auth/users',
+                        isValid: true,
+                        isEOC: false,
+                    }
+                },
+                {
+                    value: 'notification',
+                    ref: null,
+                    data: {
+                        url: '/global-config/notifier/channels',
+                        isValid: true,
+                        isEOC: false,
+                    }
+                }],
+                groups: []
+            })
         });
     }
     else if (args.length === 2) {
         if (args[1].value === "user-access") {
             return new Promise((resolve, reject) => {
-                resolve([{
-                    value: 'users',
-                    ref: null,
-                    data: {
-                        url: '/global-config/auth/users',
-                        isValid: true,
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'groups',
-                    ref: null,
-                    data: {
-                        url: '/global-config/auth/groups',
-                        isValid: true,
-                        isEOC: true,
-                    }
-                }])
+                resolve({
+                    allSuggestionArguments: [{
+                        value: 'users',
+                        ref: null,
+                        data: {
+                            url: '/global-config/auth/users',
+                            isValid: true,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'groups',
+                        ref: null,
+                        data: {
+                            url: '/global-config/auth/groups',
+                            isValid: true,
+                            isEOC: true,
+                        }
+                    }],
+                    groups: [],
+                })
             });
         }
         else if (args[1].value === "notification") {
             return new Promise((resolve, reject) => {
-                resolve([{
-                    value: 'add-new',
-                    ref: null,
-                    data: {
-                        url: '/global-config/notifier/edit',
-                        isValid: true,
+                resolve({
+                    allSuggestionArguments: [{
+                        value: 'add-new',
+                        ref: null,
+                        data: {
+                            url: '/global-config/notifier/edit',
+                            isValid: true,
 
-                        isEOC: true,
-                    }
-                },
-                {
-                    value: 'list',
-                    ref: null,
-                    data: {
-                        url: '/global-config/notifier/channels',
-                        isValid: true,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'list',
+                        ref: null,
+                        data: {
+                            url: '/global-config/notifier/channels',
+                            isValid: true,
 
-                        isEOC: true,
+                            isEOC: true,
+                        }
+                    },
+                    {
+                        value: 'configuration',
+                        ref: null,
+                        data: {
+                            url: '/global-config/notifier/configurations',
+                            isValid: true,
+                            isEOC: true,
+                        }
                     }
-                },
-                {
-                    value: 'configuration',
-                    ref: null,
-                    data: {
-                        url: '/global-config/notifier/configurations',
-                        isValid: true,
-                        isEOC: true,
-                    }
-                }
-                ])
+                    ],
+                    groups: []
+                })
             });
         }
-
     }
+
     return new Promise((resolve, reject) => {
-        resolve([])
+        resolve({
+            allSuggestionArguments: [],
+            groups: [],
+        })
     });
 }

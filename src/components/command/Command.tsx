@@ -56,19 +56,20 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     getDefaultState(): CommandState {
         return {
+            isLoading: false,
+            focussedArgument: 0,
             argumentInput: '',
             arguments: this.getDefaultArgs(),
+            tab: 'this-app',
             command: [
                 { label: 'Applications', argument: { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } } },
                 { label: 'Helm Charts', argument: { value: COMMAND.CHART, data: { isValid: true, isEOC: false } } },
                 { label: 'Security', argument: { value: COMMAND.SECURITY, data: { isValid: true, isEOC: false } } },
                 { label: 'Global Configuration', argument: { value: COMMAND.GLOBAL_CONFIG, data: { isValid: true, isEOC: false } } },
             ],
-            tab: 'this-app',
-            isLoading: false,
             allSuggestedArguments: [],
             suggestedArguments: [],
-            focussedArgument: 0,
+            groups: [{ name: '' }],
         }
     }
 
@@ -133,42 +134,41 @@ export class Command extends Component<CommandProps, CommandState>  {
     callGetArgumentSuggestions(args) {
         this.setState({ isLoading: true }, async () => {
             try {
-                let response = await getArgumentSuggestions(args)
+                let response = await getArgumentSuggestions(args);
                 this._flexsearchIndex.clear();
-                for (let i = 0; i < response.length; i++) {
-                    this._flexsearchIndex.add(response[i].value, response[i].value)
+                for (let i = 0; i < response.allSuggestionArguments.length; i++) {
+                    this._flexsearchIndex.add(response.allSuggestionArguments[i].value, response.allSuggestionArguments[i].value)
                 }
-                response.sort((a, b) => {
+                response.allSuggestionArguments.sort((a, b) => {
                     if (!a.data?.group || !b.data?.group) return 1;
                     return 0;
                 })
                 this.setState({
                     argumentInput: '',
                     arguments: args,
-                    suggestedArguments: response,
-                    allSuggestedArguments: response,
+                    suggestedArguments: response.allSuggestionArguments,
+                    allSuggestedArguments: response.allSuggestionArguments,
                     focussedArgument: -1,
                     isLoading: false,
                 }, () => {
-                    console.log(this.state.argumentInput);
+                    console.log(this.state.allSuggestedArguments);
                 });
             } catch (error) {
                 this.setState({ isLoading: false });
                 console.error(error);
             }
         });
-
     }
 
     isInViewport(element): boolean {
         if (!element) return true;
 
-        var container = this._menu;
-        var cTop = container.scrollTop;
-        var cBottom = cTop + container.clientHeight;
-        var eTop = element.offsetTop - 128;
-        var eBottom = eTop + element.clientHeight;
-        var isTotal = (eTop >= cTop && eBottom <= cBottom);
+        let container = this._menu;
+        let cTop = container.scrollTop;
+        let cBottom = cTop + container.clientHeight;
+        let eTop = element.offsetTop - 128;
+        let eBottom = eTop + element.clientHeight;
+        let isTotal = (eTop >= cTop && eBottom <= cBottom);
         return (isTotal);
     }
 
@@ -288,7 +288,9 @@ export class Command extends Component<CommandProps, CommandState>  {
             return <div className="command__suggested-args-container"><Progressing /></div>
         }
         else if (this.state.tab === 'this-app') {
-            let argIndex = this.state.suggestedArguments.findIndex(a => a.data.group);
+            let groupStartIndex = this.state.suggestedArguments.findIndex(a => a.data.group);
+            let groupEndIndex = this.state.suggestedArguments.findIndex(a => !a.data.group);
+
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container flex column">
@@ -300,7 +302,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                 <div className="suggested-arguments">
                     {this.state.suggestedArguments.map((a, index) => {
                         return <>
-                            {index === argIndex ? <h6 key={`${index}-heading`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
+                            {index === groupStartIndex ? <h6 key={`${index}-start`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
+                            {index === groupEndIndex ? <>
+                                <hr></hr>
+                                <h6 key={`${index}-end`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">More In {this.state.arguments[1]?.value}</h6>
+                            </>
+                                : ""}
                             <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
                                 className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>

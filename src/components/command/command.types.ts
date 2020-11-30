@@ -45,6 +45,9 @@ export interface CommandState {
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
+    groups: { name: string; }[]
 }
 
 export const PlaceholderText = "Search";
+
+export type CommandSuggestionType = { allSuggestionArguments: SuggestedArgumentType[], groups: any[]}
