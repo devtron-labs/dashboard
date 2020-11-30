@@ -2,12 +2,15 @@ import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClipboard } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
 import {editor} from 'monaco-editor';
 
 interface WarningProps { text: string }
+
+interface InformationProps { text: string }
 
 interface CodeEditorInterface {
     value?: string;
@@ -39,6 +42,7 @@ interface CodeEditorComposition {
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
     Warning?: React.FC<{ text: string }>;
+    Information?: React.FC<InformationProps>
 }
 interface CodeEditorHeaderComposition {
     LanguageChanger?: React.FC<any>;
@@ -311,6 +315,13 @@ const Warning: React.FC<WarningProps> = function (props) {
     return <div className="code-editor__warning">{props.text}</div>
 }
 
+const Information: React.FC<InformationProps> = function (props) {
+    return <div className="code-editor__information">
+        <Info className="code-editor__information-info-icon"/>
+        {props.text}
+    </div>
+}
+
 function Clipboard() {
     const { state } = useCodeEditorContext()
     return <button type="button" className="clipboard" onClick={e => copyToClipboard(state.code)}><ClipboardIcon /></button>
@@ -349,5 +360,6 @@ CodeEditor.ValidationError = ValidationError
 CodeEditor.Clipboard = Clipboard
 CodeEditor.Header = Header
 CodeEditor.Warning = Warning;
+CodeEditor.Information = Information;
 
 export default CodeEditor
