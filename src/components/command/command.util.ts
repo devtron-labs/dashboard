@@ -46,6 +46,7 @@ function getAppArguments(args): Promise<SuggestedArgumentType[]> {
     else if (args[1] && args.length === 2) { // args[1] --> appName
         return getAppOtherEnvironment(args[1].data.value).then((response) => {
             let list;
+            console.log(args)
             list = response?.result?.map((a) => {
                 return {
                     value: a.environmentName,

@@ -131,39 +131,33 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     callGetArgumentSuggestions(args) {
-        let invalidArgs = args?.filter(a => !a.data.isValid);
-        if (invalidArgs.length) {
-            toast.error("You have at least one Invalid Argument");
-            this.setState({
-                suggestedArguments: [],
-            });
-        }
-        else {
-            this.setState({ isLoading: true }, async () => {
-                try {
-                    let response = await getArgumentSuggestions(args)
-                    this._flexsearchIndex.clear();
-                    for (let i = 0; i < response.length; i++) {
-                        this._flexsearchIndex.add(response[i].value, response[i].value)
-                    }
-                    response.sort((a, b) => {
-                        if (!a.data?.group || !b.data?.group) return -1;
-                        return 0;
-                    })
-                    this.setState({
-                        argumentInput: '',
-                        arguments: args,
-                        suggestedArguments: response,
-                        allSuggestedArguments: response,
-                        focussedArgument: -1,
-                        isLoading: false,
-                    });
-                } catch (error) {
-                    this.setState({ isLoading: false });
-                    console.error(error);
+        this.setState({ isLoading: true }, async () => {
+            try {
+                let response = await getArgumentSuggestions(args)
+                this._flexsearchIndex.clear();
+                for (let i = 0; i < response.length; i++) {
+                    this._flexsearchIndex.add(response[i].value, response[i].value)
                 }
-            });
-        }
+                response.sort((a, b) => {
+                    if (!a.data?.group || !b.data?.group) return 1;
+                    return 0;
+                })
+                this.setState({
+                    argumentInput: '',
+                    arguments: args,
+                    suggestedArguments: response,
+                    allSuggestedArguments: response,
+                    focussedArgument: -1,
+                    isLoading: false,
+                }, () => {
+                    console.log(this.state.argumentInput);
+                });
+            } catch (error) {
+                this.setState({ isLoading: false });
+                console.error(error);
+            }
+        });
+
     }
 
     isInViewport(element): boolean {
@@ -196,8 +190,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.props.isCommandBarActive && event.key === 'Backspace') {
             if (!this.state.argumentInput?.length) {
                 let allArgs = this.state.arguments;
-                let start = this.state.arguments.length - 1;
-                allArgs.splice(start, 1);
+                allArgs.pop();
                 this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
                     this.callGetArgumentSuggestions(this.state.arguments);
                 });
@@ -253,7 +246,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     handleArgumentInputChange(event) {
         let last = this.state.arguments[this.state.arguments.length - 1];
-        if (!last.data.isValid) return;
+        if (last && !last.data.isValid) return;
 
         if (event.target.value === '/') {
             this.setState({ argumentInput: '', focussedArgument: 0 });
@@ -279,7 +272,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 }
             })
             suggestedArguments.sort((a, b) => {
-                if (!a.data?.group || !b.data?.group) return -1;
+                if (!a.data?.group || !b.data?.group) return 1;
                 return 0;
             })
             this.setState({
@@ -297,7 +290,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.state.tab === 'this-app') {
             let argIndex = this.state.suggestedArguments.findIndex(a => a.data.group);
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
-            if (lastArg.data.isEOC) {
+            if (lastArg && lastArg.data.isEOC) {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container flex column">
                     <h4 className="ff-monospace command__control command__control--tab">&crarr; Enter</h4>
                     <p className="command-empty-state__subtitle">Hit enter to navigate</p>
@@ -308,7 +301,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     {this.state.suggestedArguments.map((a, index) => {
                         return <>
                             {index === argIndex ? <h6 key={`${index}-heading`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a.data.group}</h6> : ""}
-                            <div ref={node => a['ref'] = node} key={a.value}
+                            <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
                                 className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                 style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
                                 <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
@@ -338,7 +331,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         let lastArg = this.state.arguments[this.state.arguments.length - 1];
-        if (this.props.isCommandBarActive)
+        if (this.props.isCommandBarActive) {
             return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     {this.props.isTabMode ? <div className="command-tab">
@@ -369,15 +362,16 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
                                 </div>}
                             </div>
-                            {this.state.arguments.find(a => a?.data?.url) &&
-                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}> &crarr;</span>
+                            {this.state.arguments?.find(a => a?.data?.url) &&
+                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}>&crarr;</span>
                             }
                         </div>
                     </div>
-                    {lastArg.data.isValid ? null : <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p>}
+                    {lastArg && lastArg?.data.isValid ? null : <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p>}
                     {this.renderTabContent()}
                 </div>
             </div>
+        }
         else return null;
     }
 }
