@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ReactComponent as Documentation } from '../../../assets/icons/ic-document.svg'
-import { ErrorBoundary, getLoginInfo } from '../index';
+import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import TagManager from 'react-gtm-module';
 import ReactDOM from 'react-dom';
-import { Command } from '../../command';
+import { Command, CommandErrorBoundary } from '../../command';
 import './navigation.scss';
 
 const navigationList = [
@@ -163,7 +163,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					<div className="hubspot-placeholder"></div>
 				</aside>
 			</nav>
-			<ErrorBoundary>
+			<CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
 				<Command location={this.props.location}
 					match={this.props.match}
 					history={this.props.history}
@@ -171,7 +171,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					isCommandBarActive={this.state.isCommandBarActive}
 					toggleCommandBar={this.toggleCommandBar}
 				/>
-			</ErrorBoundary>
+			</CommandErrorBoundary>
 		</>
 	}
 }
