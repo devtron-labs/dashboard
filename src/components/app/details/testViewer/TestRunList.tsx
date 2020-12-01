@@ -6,6 +6,7 @@ import Select, {components} from 'react-select';
 import {getTriggerList, getFilters} from './service'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {ReactComponent as EmptyTests} from '../../../../assets/img/ic-empty-tests.svg';
+import noreports from '../../../../assets/img/app-not-deployed.png';
 import {SelectedNames} from './Test.types'
 import './TestRunDetails.scss'
 import { TestRunDetails } from './TestRunDetails'
@@ -24,7 +25,8 @@ export default function TestRunList(){
     if(ciPipelinesLoading) return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>
     if(!ciPipelinesLoading && (!ciPipelinesResult?.result || ciPipelinesResult?.result?.length === 0)){
         return (
-            <TestsPlaceholder subtitle="Reports for executed test cases will be available here"/>
+            <TestsPlaceholder 
+                subtitle="Reports for executed test cases will be available here"/>
         );
     }
 
@@ -98,10 +100,14 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
     );
 }
 
-function TestsPlaceholder({title="Test Reports", subtitle=""}){
+function NoReports() {
+    return <img src={noreports} className="no-reports-img"/>
+}
+
+function TestsPlaceholder({title="Test Reports", subtitle="", img=<EmptyTests/>}){
     return(
         <div className="w-100 flex column" style={{ height: '100%' }}>
-            <EmptyTests />
+            {img}
             <div className="fs-16 fw-6 cn-9">{title}</div>
             <p className="fs-12 cn-7" style={{width:'250px', textAlign:'center'}}>{subtitle}</p>
         </div>
@@ -164,6 +170,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                 <TestsPlaceholder
                     title="No reports available"
                     subtitle="No tests have been executed for this pipeline."
+                    img={NoReports()}
                 />
             </div>
         );
