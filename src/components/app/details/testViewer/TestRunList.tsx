@@ -77,20 +77,24 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
     const {url, path} = useRouteMatch()
     
     return (
-        <div style={{ width: '250px' }} className="mb-16">
-            <Select
-                value={params.pipelineId ? { value: +params.pipelineId, label: ciPipelineName } : null}
-                styles={multiSelectStyles}
-                placeholder="Select pipeline"
-                options={pipelines?.map((pipeline) => ({
-                    value: pipeline.id,
-                    label: pipeline.name,
-                }))}
-                onChange={(selected) => {
-                    history.push(generatePath(path, { ...params, pipelineId: (selected as any).value }));
-                }}
-            />
+        <div className="flexbox">
+            <div className="pipeline-text">CI Pipeline</div>
+            <div style={{ width: '150px' }} className="mb-16">
+                <Select
+                    value={params.pipelineId ? { value: +params.pipelineId, label: ciPipelineName } : null}
+                    styles={multiSelectStyles}
+                    placeholder="Select pipeline"
+                    options={pipelines?.map((pipeline) => ({
+                        value: pipeline.id,
+                        label: pipeline.name,
+                    }))}
+                    onChange={(selected) => {
+                        history.push(generatePath(path, { ...params, pipelineId: (selected as any).value }));
+                    }}
+                />
+            </div>
         </div>
+        
     );
 }
 

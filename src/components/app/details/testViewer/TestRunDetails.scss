@@ -338,3 +338,12 @@ li.suite-meta{
         stroke: var(--N500);
     }
 }
+
+.pipeline-text {
+    height: 36px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 2.25;
+    color: var(--N900);
+    margin: 0 16px 0 0;
+}
