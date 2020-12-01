@@ -2,7 +2,7 @@ import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../..
 import { APIOptions } from '../../services/service.types';
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types';
 
-export function getArgumentSuggestions(args, options:APIOptions): Promise<CommandSuggestionType> {
+export function getArgumentSuggestions(args, options: APIOptions): Promise<CommandSuggestionType> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve({
             allSuggestionArguments: [
@@ -108,68 +108,41 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                 }
             },
             {
-                value: 'git-material',
+                value: 'trigger',
                 ref: undefined,
                 data: {
                     group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/materials`,
+                    url: `/app/${args[1].data.value}/trigger`,
+                    isEOC: true
+                }
+            },
+            {
+                value: 'build-history',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/ci-details`,
                     isEOC: true,
-                },
+                }
             },
             {
-                value: 'docker-config',
+                value: 'deployment-history',
                 ref: undefined,
                 data: {
                     group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/docker-build-config`,
+                    url: `/app/${args[1].data.value}/cd-details`,
                     isEOC: true,
                 }
             },
             {
-                value: 'deployment-template',
+                value: 'deployment-metrics',
                 ref: undefined,
                 data: {
                     group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/deployment-template`,
-                    isEOC: true
+                    url: `/app/${args[1].data.value}/deployment-metrics`,
+                    isEOC: true,
                 }
-            },
-            {
-                value: 'workflow-editor',
-                ref: undefined,
-                data: {
-                    group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/workflow`,
-                    isEOC: true
-                }
-            },
-            {
-                value: 'configmap',
-                ref: undefined,
-                data: {
-                    group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/configmap`,
-                    isEOC: true
-                }
-            },
-            {
-                value: 'secrets',
-                ref: undefined,
-                data: {
-                    group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/secrets`,
-                    isEOC: true
-                }
-            },
-            {
-                value: 'env-override',
-                ref: undefined,
-                data: {
-                    group: COMMAND_REV.misc,
-                    url: `/app/${args[1].data.value}/edit/env-override`,
-                    isEOC: false
-                }
-            }]
+            }];
 
             list = list.concat(l);
             return {
@@ -180,46 +153,76 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
     }
     else if (args[2] && args.length === 3) { // args[2] --> envName
         return new Promise((resolve, reject) => {
-            resolve({
-                allSuggestionArguments: [
-                    {
-                        value: 'trigger',
-                        ref: undefined,
-                        data: {
-                            group: undefined,
-                            url: `/app/${args[1].data.value}/trigger`,
-                            isEOC: true
-                        }
-                    },
-                    {
-                        value: 'build-history',
-                        ref: undefined,
-                        data: {
-                            group: undefined,
-                            url: `/app/${args[1].data.value}/ci-details`,
-                            isEOC: true,
-                        }
-                    },
-                    {
-                        value: 'deployment-history',
-                        ref: undefined,
-                        data: {
-                            group: undefined,
-                            url: `/app/${args[1].data.value}/cd-details`,
-                            isEOC: true,
-                        }
-                    },
-                    {
-                        value: 'deployment-metrics',
-                        ref: undefined,
-                        data: {
-                            group: undefined,
-                            url: `/app/${args[1].data.value}/deployment-metrics/${args[2].data.value}`,
-                            isEOC: true,
-                        }
-                    }],
-                groups: [],
-            })
+            if (args[2].value === 'configure') {
+                resolve({
+                    allSuggestionArguments: [
+                        {
+                            value: 'git-material',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/materials`,
+                                isEOC: true,
+                            },
+                        },
+                        {
+                            value: 'docker-config',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/docker-build-config`,
+                                isEOC: true,
+                            }
+                        },
+                        {
+                            value: 'deployment-template',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/deployment-template`,
+                                isEOC: true
+                            }
+                        },
+                        {
+                            value: 'workflow-editor',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/workflow`,
+                                isEOC: true
+                            }
+                        },
+                        {
+                            value: 'configmap',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/configmap`,
+                                isEOC: true
+                            }
+                        },
+                        {
+                            value: 'secrets',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/secrets`,
+                                isEOC: true
+                            }
+                        },
+                        {
+                            value: 'env-override',
+                            ref: undefined,
+                            data: {
+                                group: undefined,
+                                url: `/app/${args[1].data.value}/edit/env-override`,
+                                isEOC: false
+                            }
+                        }],
+                    groups: [],
+
+                })
+            }
         })
     }
     else if (args[3] && args.length === 4) { // args[3] --> pod
