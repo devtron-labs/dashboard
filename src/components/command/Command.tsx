@@ -229,6 +229,9 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.state.isSuggestionError) {
             return;
         }
+        let last = this.state.arguments[this.state.arguments.length - 1];
+        if(last && last.data.isEOC) return;
+        
         this.setState({ isLoading: true }, async () => {
             try {
                 if (this.controller) {
