@@ -189,10 +189,6 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     runCommand(): void {
-        let last = this.state.arguments[this.state.arguments.length - 1];
-        if(last && last.data.isEOC) return;
-
-        
         let focussedArg = this.state.suggestedArguments[this.state.focussedArgument];
         let allArgs = this.state.arguments;
         let candidateArg = this.state.suggestedArguments.find(a => a.value === this.state.argumentInput);
