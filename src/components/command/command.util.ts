@@ -97,7 +97,7 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                 }
             });
             if (!list) list = [];
-            list.push({
+            let l = [{
                 value: 'configure',
                 ref: undefined,
                 data: {
@@ -105,83 +105,80 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     url: `/app/${args[1].data.value}/edit/workflow`,
                     isEOC: false
                 }
-            })
+            },
+            {
+                value: 'git-material',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/materials`,
+                    isEOC: true,
+                },
+            },
+            {
+                value: 'docker-config',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/docker-build-config`,
+                    isEOC: true,
+                }
+            },
+            {
+                value: 'deployment-template',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/deployment-template`,
+                    isEOC: true
+                }
+            },
+            {
+                value: 'workflow-editor',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/workflow`,
+                    isEOC: true
+                }
+            },
+            {
+                value: 'configmap',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/configmap`,
+                    isEOC: true
+                }
+            },
+            {
+                value: 'secrets',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/secrets`,
+                    isEOC: true
+                }
+            },
+            {
+                value: 'env-override',
+                ref: undefined,
+                data: {
+                    group: COMMAND_REV.misc,
+                    url: `/app/${args[1].data.value}/edit/env-override`,
+                    isEOC: false
+                }
+            }]
+
+            list = list.concat(l);
             return {
                 allSuggestionArguments: list,
                 groups: [COMMAND_REV.env]
             }
         })
     }
-    else if (args[2] && args.length === 3) { // args[2] --> envName/config
-        if (args[2].value === 'configure') return new Promise((resolve, reject) => {
-            resolve({
-                allSuggestionArguments: [{
-                    value: 'git-material',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/materials`,
-                        isEOC: true
-                    },
-                },
-                {
-                    value: 'docker-config',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/docker-build-config`,
-                        isEOC: true
-                    }
-                },
-                {
-                    value: 'deployment-template',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/deployment-template`,
-                        isEOC: true
-                    }
-                },
-                {
-                    value: 'workflow-editor',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/workflow`,
-                        isEOC: true
-                    }
-                },
-                {
-                    value: 'configmap',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/configmap`,
-                        isEOC: true
-                    }
-                },
-                {
-                    value: 'secrets',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/secrets`,
-                        isEOC: true
-                    }
-                },
-                {
-                    value: 'env-override',
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: `/app/${args[1].data.value}/edit/env-override`,
-                        isEOC: false
-                    }
-                }],
-                groups: [],
-            })
-        })
-        else return new Promise((resolve, reject) => {
+    else if (args[2] && args.length === 3) { // args[2] --> envName
+        return new Promise((resolve, reject) => {
             resolve({
                 allSuggestionArguments: [
                     {
