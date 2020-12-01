@@ -9,6 +9,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     _input;
     _menu;
     _flexsearchIndex;
+    controller: AbortController;
 
     constructor(props) {
         super(props);
@@ -50,7 +51,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
         }
 
-        if(prevProps.isCommandBarActive !== this.props.isCommandBarActive && this.props.isCommandBarActive) {
+        if (prevProps.isCommandBarActive !== this.props.isCommandBarActive && this.props.isCommandBarActive) {
             this.setState({ argumentInput: '', suggestedArguments: this.state.allSuggestedArguments });
         }
     }
@@ -72,8 +73,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.APPLICATIONS,
                     data: {
                         group: undefined,
-
-
                         isEOC: false
                     }
                 }
@@ -83,7 +82,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.CHART,
                     data: {
                         group: undefined,
-
                         isEOC: false
                     }
                 }
@@ -93,7 +91,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.SECURITY,
                     data: {
                         group: undefined,
-
                         isEOC: false
                     }
                 }
@@ -103,7 +100,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
                         group: undefined,
-
                         isEOC: false
                     }
                 }
@@ -233,10 +229,18 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.state.isSuggestionError) {
             return;
         }
-
         this.setState({ isLoading: true }, async () => {
             try {
-                let response = await getArgumentSuggestions(args);
+                if (this.controller) {
+                    this.controller.abort();
+                }
+
+                this.controller = new AbortController();
+                let options = {
+                    signal: this.controller.signal
+                }
+
+                let response = await getArgumentSuggestions(args, options);
                 this._flexsearchIndex.clear();
                 for (let i = 0; i < response.allSuggestionArguments.length; i++) {
                     this._flexsearchIndex.add(response.allSuggestionArguments[i].value, response.allSuggestionArguments[i].value);
@@ -302,6 +306,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 argumentInput: '',
                 arguments: [...this.state.arguments, newArg],
                 suggestedArguments: [],
+                isSuggestionError: false
             }, () => {
                 this.callGetArgumentSuggestions(this.state.arguments)
             });

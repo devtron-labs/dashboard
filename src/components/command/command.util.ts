@@ -1,7 +1,8 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
+import { APIOptions } from '../../services/service.types';
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types';
 
-export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
+export function getArgumentSuggestions(args, options:APIOptions): Promise<CommandSuggestionType> {
     if (args.length === 0) return new Promise((resolve, reject) => {
         resolve({
             allSuggestionArguments: [
@@ -43,10 +44,10 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
 
     let arg = args[0];
     switch (arg.value) {
-        case 'app': return getAppArguments(args);
-        case 'chart': return getChartArguments(args);
-        case 'security': return getSecurityArguments(args);
-        case 'global-config': return getGlobalConfigArguments(args);
+        case 'app': return getAppArguments(args, options);
+        case 'chart': return getChartArguments(args, options);
+        case 'security': return getSecurityArguments(args, options);
+        case 'global-config': return getGlobalConfigArguments(args, options);
         default: return new Promise((resolve, reject) => {
             resolve({
                 allSuggestionArguments: [],
@@ -57,10 +58,10 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
 }
 
 
-function getAppArguments(args): Promise<CommandSuggestionType> {
+function getAppArguments(args, options): Promise<CommandSuggestionType> {
     //["app", "appName", "envName", "pod", "podname"]
     if (args.length === 1) {
-        return getAppListMin().then((response) => {
+        return getAppListMin(null, options).then((response) => {
             let list = response.result.map((a) => {
                 return {
                     value: a.name,
@@ -252,7 +253,7 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
 }
 
 
-function getChartArguments(args): Promise<CommandSuggestionType> {
+function getChartArguments(args, options): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
             resolve({
@@ -280,7 +281,7 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
     }
     else if (args.length === 2) {
         if (args[1].value === 'discover') {
-            return getAvailableCharts().then((response) => {
+            return getAvailableCharts(options).then((response) => {
                 let list = response?.result?.map((chart) => {
                     return {
                         value: `${chart.chart_name}/${chart.name}`,
@@ -311,7 +312,7 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
 }
 
 
-function getSecurityArguments(args): Promise<CommandSuggestionType> {
+function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
             resolve({
@@ -400,7 +401,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
 }
 
 
-function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
+function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType> {
     if (args.length === 1) {
         return new Promise((resolve, reject) => {
             resolve({

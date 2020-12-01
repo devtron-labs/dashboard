@@ -2,7 +2,7 @@ import { get, post } from './api';
 import { Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -63,14 +63,15 @@ export const getUserTeams = (): Promise<any> => {
     return get(URL);
 }
 
-export function getAppListMin(teamId = null): Promise<AppListMin> {
+export function getAppListMin(teamId = null, options?): Promise<AppListMin> {
     let URL = `${Routes.APP_LIST_MIN}`;
     if (teamId) URL = `${URL}?teamId=${teamId}`
-    return get(URL).then(response => {
+    return get(URL, options).then(response => {
         let list = response?.result || []
         list = list.sort((a, b) => {
             return sortCallback('name', a, b);
         });
+
         return {
             ...response,
             code: response.code,
@@ -83,7 +84,7 @@ export function getProjectFilteredApps(projectIds: number[] | string[]): Promise
     return get(`app/min?teamIds=${projectIds.join(",")}`)
 }
 
-export function getAvailableCharts(): Promise<{ code: number, result: Chart[] }> {
+export function getAvailableCharts(options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
     return get(`${Routes.CHART_AVAILABLE}/`).then((response) => {
         return {
             ...response,
