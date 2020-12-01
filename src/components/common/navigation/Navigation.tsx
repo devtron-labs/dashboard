@@ -13,7 +13,7 @@ import './navigation.scss';
 
 const navigationList = [
 	{
-		title: 'Search',
+		title: 'Search (⌘+/)',
 		type: 'button',
 		iconClass: 'nav-short-search',
 		href: URLS.APP,
