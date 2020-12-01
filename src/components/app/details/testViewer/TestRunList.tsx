@@ -354,6 +354,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         <>
             {/* TODO remove this when no reports are available */}
             <Select
+                placeholder={"Filter by test suite, packages, classname and methods"}
                 options={options}
                 components={{
                     Menu: (props) => (
