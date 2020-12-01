@@ -46,6 +46,7 @@ export default function TestRunList(){
                 <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')}`}>
                     <div className="flex" style={{ justifyContent: 'space-between' }}>
                         <CISelector pipelines={ciPipelinesResult?.result || []} />
+                        {/* TODO Remove this when no reports are available */}
                         <DatePicker
                             startDate={dates.startDate}
                             endDate={dates.endDate}
@@ -54,8 +55,14 @@ export default function TestRunList(){
                             handleFocusChange={(focused)=>setFocusedDate(focused)}
                         />
                     </div>
-
-                    <TestsFilter component={(props)=><TriggerList {...props} startDate={dates.startDate} endDate={dates.endDate}/>} />
+                    <TestsFilter 
+                        component={(props)=>
+                        <TriggerList 
+                            {...props} 
+                            startDate={dates.startDate} 
+                            endDate={dates.endDate}
+                        />} 
+                    />
                 </Route>
                 <Route>
                     <>
@@ -96,7 +103,6 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
                 />
             </div>
         </div>
-        
     );
 }
 
@@ -346,6 +352,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
 
     return (
         <>
+            {/* TODO remove this when no reports are available */}
             <Select
                 options={options}
                 components={{
