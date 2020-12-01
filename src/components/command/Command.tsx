@@ -401,7 +401,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let groupEnd = this.state.suggestedArguments.findIndex(s => s.data?.group === "misc");
                 return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8">
                     <div className="suggested-arguments">
-                        {this.state.groupName && (groupStart < 0) ? <>
+                        {this.state.suggestedArguments.length && this.state.groupName && (groupStart < 0) ? <>
                             <h6 className="pl-20 pr-20 suggested-arguments__heading text-uppercase mb-0">{this.state.groupName}</h6>
                             <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">No Environments Configured</div>
                         </> : null}
@@ -410,7 +410,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
                                 {this.state.groupName && groupEnd === index ? <>
                                     <hr className="m-0"></hr>
-                                    <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading"> <span className="text-uppercase">More in </span>  "{this.state.arguments[1].value}"</h6>
+                                    <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading">
+                                        <span className="text-uppercase">More in </span> "{this.state.arguments[1].value}"
+                                    </h6>
                                 </> : null}
                                 <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
                                     className="pl-20 pr-20 pt-10 pb-10 flexbox"
