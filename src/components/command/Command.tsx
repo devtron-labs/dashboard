@@ -69,7 +69,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     data: {
                         group: undefined,
 
-                         
+
                         isEOC: false
                     }
                 }
@@ -79,7 +79,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.CHART,
                     data: {
                         group: undefined,
-                         
+
                         isEOC: false
                     }
                 }
@@ -89,7 +89,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.SECURITY,
                     data: {
                         group: undefined,
-                         
+
                         isEOC: false
                     }
                 }
@@ -99,7 +99,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
                         group: undefined,
-                         
+
                         isEOC: false
                     }
                 }
@@ -117,6 +117,12 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
+    disableArrowKeys(event): void {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+        }
+    }
+
     disableTab(event): void {
         if (event.key === "Tab") {
             event.preventDefault();
@@ -127,14 +133,14 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.props.location.pathname.includes("/app")) return [{
             value: COMMAND.APPLICATIONS, data: {
                 group: undefined,
-                 
+
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
             value: COMMAND.CHART, data: {
                 group: undefined,
-                 
+
                 isEOC: false
             }
         }];
@@ -142,7 +148,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.GLOBAL_CONFIG,
             data: {
                 group: undefined,
-                 
+
                 isEOC: false
             }
         }];
@@ -150,7 +156,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.SECURITY,
             data: {
                 group: undefined,
-                 
+
                 isEOC: false
             }
         }];
@@ -440,11 +446,11 @@ export class Command extends Component<CommandProps, CommandState>  {
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">
                             <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onChange={this.selectTab} />
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onKeyDown={this.disableArrowKeys} onChange={this.selectTab} />
                                 {COMMAND_REV[this.state.arguments[0]?.value] || "Applications"}
                             </label>
                             <label className={this.state.tab === "jump-to" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
-                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onChange={this.selectTab} />
+                                <input type="radio" name="command-tab" checked={this.state.tab === 'jump-to'} value="jump-to" onKeyDown={this.disableArrowKeys} onChange={this.selectTab} />
                                 Jump To
                             </label>
                         </div>
