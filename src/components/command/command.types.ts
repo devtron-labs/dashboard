@@ -29,7 +29,6 @@ export interface ArgumentType {
         readonly kind?: string;
         readonly url?: string;
         readonly group?: string;
-        readonly isValid: boolean;
         readonly isEOC: boolean;
     }
 }

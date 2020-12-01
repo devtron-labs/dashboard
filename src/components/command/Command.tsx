@@ -69,7 +69,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     data: {
                         group: undefined,
 
-                        isValid: true,
+                         
                         isEOC: false
                     }
                 }
@@ -79,7 +79,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.CHART,
                     data: {
                         group: undefined,
-                        isValid: true,
+                         
                         isEOC: false
                     }
                 }
@@ -89,7 +89,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.SECURITY,
                     data: {
                         group: undefined,
-                        isValid: true,
+                         
                         isEOC: false
                     }
                 }
@@ -99,7 +99,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
                         group: undefined,
-                        isValid: true,
+                         
                         isEOC: false
                     }
                 }
@@ -127,14 +127,14 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.props.location.pathname.includes("/app")) return [{
             value: COMMAND.APPLICATIONS, data: {
                 group: undefined,
-                isValid: true,
+                 
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
             value: COMMAND.CHART, data: {
                 group: undefined,
-                isValid: true,
+                 
                 isEOC: false
             }
         }];
@@ -142,7 +142,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.GLOBAL_CONFIG,
             data: {
                 group: undefined,
-                isValid: true,
+                 
                 isEOC: false
             }
         }];
@@ -150,18 +150,11 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.SECURITY,
             data: {
                 group: undefined,
-                isValid: true,
+                 
                 isEOC: false
             }
         }];
-        return [{
-            value: COMMAND.APPLICATIONS,
-            data: {
-                group: undefined,
-                isValid: true,
-                isEOC: false
-            }
-        }];
+        return [];
     }
 
     selectArgument(arg: ArgumentType): void {
@@ -463,7 +456,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 {this.state.arguments.map((arg, index) => {
                                     return <>
                                         <span key={`${index}-${arg.value}`} className="command-arg__arg m-4">{arg.value}</span>
-                                        {arg.data?.isValid && !arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
+                                        {!arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
                                     </>
                                 })}
                                 {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
