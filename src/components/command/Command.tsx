@@ -385,12 +385,12 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     renderTabContent() {
         if (this.state.isLoading) {
-            return <div className="command__suggested-args-container"><Progressing /></div>
+            return <div className="command__suggested-args-container mt-8"><Progressing /></div>
         }
         else if (this.state.tab === 'this-app') {
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
-                return <div ref={node => this._menu = node} className="command__suggested-args-container flex column">
+                return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8 flex column">
                     <h4 className="ff-monospace command__control command__control--tab">&crarr; Enter</h4>
                     <p className="command-empty-state__subtitle">Hit enter to navigate</p>
                 </div>
@@ -398,7 +398,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             else {
                 let groupStart = this.state.suggestedArguments.findIndex(s => s.data?.group !== "misc");
                 let groupEnd = this.state.suggestedArguments.findIndex(s => s.data?.group === "misc");
-                return <div ref={node => this._menu = node} className="command__suggested-args-container">
+                return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8">
                     <div className="suggested-arguments">
                         {this.state.groupName && (groupStart < 0) ? <>
                             <h6 className="pl-20 pr-20 suggested-arguments__heading text-uppercase mb-0">{this.state.groupName}</h6>
@@ -428,7 +428,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
         }
         else {
-            return <div ref={node => this._menu = node} className="command__suggested-args-container">
+            return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8">
                 <div className="pl-20 pr-20">
                     <p className="mb-8">I'm looking for...</p>
                     <p className="command-options mb-0">

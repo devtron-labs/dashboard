@@ -57,7 +57,7 @@
     align-items: center;
     position: relative;
     background-color: white;
-    margin: 20px;
+    margin: 16px 20px;
     border: solid 1px var(--B500);
     box-shadow: 0 3px 0 0 rgba(0, 102, 204, 0.2);
 }
@@ -107,6 +107,8 @@
 .command__suggested-args-container {
     height: 350px;
     overflow: auto;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
 }
 
 .suggested-arguments {
