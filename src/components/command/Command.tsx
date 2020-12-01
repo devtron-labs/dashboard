@@ -49,6 +49,10 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this._input.current.placeholder = "";
             }
         }
+
+        if(prevProps.isCommandBarActive !== this.props.isCommandBarActive && this.props.isCommandBarActive) {
+            this.setState({ argumentInput: '', suggestedArguments: this.state.allSuggestedArguments });
+        }
     }
 
     componentWillUnmount() {
@@ -198,7 +202,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let last = allArgs[allArgs.length - 1];
                 this.props.history.push(last.data.url);
                 this.props.toggleCommandBar(false);
-                this.setState({ argumentInput: '' })
             })
         }
         else {
@@ -208,7 +211,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                     let last = allArgs[allArgs.length - 1];
                     this.props.history.push(last.data.url);
                     this.props.toggleCommandBar(false);
-                    this.setState({ argumentInput: '' })
 
                 })
             }
@@ -270,10 +272,10 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
-            this.props.toggleCommandBar(true)
+            this.props.toggleCommandBar(true);
         }
         else if (event.key === "Escape") {
-            this.props.toggleCommandBar(false)
+            this.props.toggleCommandBar(false);
         }
         else if (this.props.isCommandBarActive && event.key === "Enter") {
             this.runCommand();
@@ -441,7 +443,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         if (this.props.isCommandBarActive) {
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
+            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => { this.props.toggleCommandBar(false); }}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     {this.props.isTabMode ? <div className="command-tab">
                         <div className="">
