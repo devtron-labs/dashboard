@@ -29,7 +29,6 @@ export interface ArgumentType {
         readonly kind?: string;
         readonly url?: string;
         readonly group?: string;
-        groupStart: boolean;
         readonly isValid: boolean;
         readonly isEOC: boolean;
     }
@@ -44,6 +43,7 @@ export interface CommandState {
     suggestedArguments: SuggestedArgumentType[];
     readonly allSuggestedArguments: SuggestedArgumentType[];
     isLoading: boolean;
+    isSuggestionError: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
     groupName: string | undefined;

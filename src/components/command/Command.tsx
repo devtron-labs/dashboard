@@ -60,6 +60,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             isLoading: false,
             focussedArgument: 0,
             argumentInput: '',
+            isSuggestionError: false,
             arguments: this.getDefaultArgs(),
             tab: 'this-app',
             command: [{
@@ -67,8 +68,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.APPLICATIONS,
                     data: {
                         group: undefined,
-                        groupStart: false,
-                        isValid: true, isEOC: false
+
+                        isValid: true,
+                        isEOC: false
                     }
                 }
             },
@@ -77,8 +79,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.CHART,
                     data: {
                         group: undefined,
-                        groupStart: false,
-                        isValid: true, isEOC: false
+                        isValid: true,
+                        isEOC: false
                     }
                 }
             },
@@ -87,8 +89,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.SECURITY,
                     data: {
                         group: undefined,
-                        groupStart: false,
-                        isValid: true, isEOC: false
+                        isValid: true,
+                        isEOC: false
                     }
                 }
             },
@@ -97,8 +99,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
                         group: undefined,
-                        groupStart: false,
-                        isValid: true, isEOC: false
+                        isValid: true,
+                        isEOC: false
                     }
                 }
             },
@@ -125,23 +127,21 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.props.location.pathname.includes("/app")) return [{
             value: COMMAND.APPLICATIONS, data: {
                 group: undefined,
-                groupStart: false,
-                isValid: true, isEOC: false
+                isValid: true,
+                isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
             value: COMMAND.CHART, data: {
                 group: undefined,
-                groupStart: false,
-                isValid: true, isEOC: false
+                isValid: true,
+                isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/global-config")) return [{
             value: COMMAND.GLOBAL_CONFIG,
             data: {
                 group: undefined,
-                groupStart: false,
-
                 isValid: true,
                 isEOC: false
             }
@@ -150,8 +150,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.SECURITY,
             data: {
                 group: undefined,
-                groupStart: false,
-
                 isValid: true,
                 isEOC: false
             }
@@ -160,8 +158,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.APPLICATIONS,
             data: {
                 group: undefined,
-                groupStart: false,
-
                 isValid: true,
                 isEOC: false
             }
@@ -203,6 +199,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 let last = allArgs[allArgs.length - 1];
                 this.props.history.push(last.data.url);
                 this.props.toggleCommandBar(false);
+                this.setState({ argumentInput: '' })
             })
         }
         else {
@@ -212,19 +209,16 @@ export class Command extends Component<CommandProps, CommandState>  {
                     let last = allArgs[allArgs.length - 1];
                     this.props.history.push(last.data.url);
                     this.props.toggleCommandBar(false);
+                    this.setState({ argumentInput: '' })
+
                 })
             }
             else if (this.state.argumentInput) {
-                allArgs = [...this.state.arguments, {
-                    value: this.state.argumentInput,
-                    data: {
-                        isValid: false,
-                        isEOC: false,
-                        group: undefined,
-                        groupStart: false
-                    }
-                }];
-                this.setState({ arguments: allArgs, argumentInput: '' })
+                this.setState({
+                    suggestedArguments: this.state.allSuggestedArguments,
+                    argumentInput: '',
+                    isSuggestionError: true
+                })
             }
             else {
                 let last = allArgs[allArgs.length - 1];
@@ -235,8 +229,9 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     callGetArgumentSuggestions(args): void {
-        let arg = this.state.arguments.find(a => !a.data?.isValid);
-        if (arg) return;
+        if (this.state.isSuggestionError) {
+            return;
+        }
 
         this.setState({ isLoading: true }, async () => {
             try {
@@ -330,30 +325,20 @@ export class Command extends Component<CommandProps, CommandState>  {
             let newArg = this.state.suggestedArguments.find(a => a.value === argInput);
             let allArgs = [];
             if (!newArg) {
-                newArg = {
-                    value: this.state.argumentInput, ref: undefined,
-                    data: {
-                        group: undefined,
-                        groupStart: false,
-
-                        isValid: false,
-                        isEOC: false
-                    }
-                };
+                this.setState({ isSuggestionError: true, argumentInput: '', suggestedArguments: this.state.allSuggestedArguments });
             }
-            allArgs = [...this.state.arguments, newArg];
-            this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
-                this.callGetArgumentSuggestions(this.state.arguments);
-            });
+            else {
+                allArgs = [...this.state.arguments, newArg];
+                this.setState({ arguments: allArgs, argumentInput: '', suggestedArguments: [] }, () => {
+                    this.callGetArgumentSuggestions(this.state.arguments);
+                });
+            }
         }
     }
 
     handleArgumentInputChange(event) {
-        let last = this.state.arguments[this.state.arguments.length - 1];
-        if (last && !last.data.isValid) return;
-
         if (event.target.value === '/') {
-            this.setState({ argumentInput: '', focussedArgument: 0 });
+            this.setState({ argumentInput: '' });
         }
         else if (!event.target.value?.length) {
             this.setState({
@@ -368,6 +353,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
                 focussedArgument: 0,
+                isSuggestionError: false
             })
         }
     }
@@ -411,15 +397,12 @@ export class Command extends Component<CommandProps, CommandState>  {
             else {
                 let groupStart = this.state.suggestedArguments.findIndex(s => s.data?.group !== "misc");
                 let groupEnd = this.state.suggestedArguments.findIndex(s => s.data?.group === "misc");
-                let groupName = this.state.groupName;
-
                 return <div ref={node => this._menu = node} className="command__suggested-args-container">
                     <div className="suggested-arguments">
                         {this.state.groupName && (groupStart < 0) ? <>
                             <h6 className="pl-20 pr-20 suggested-arguments__heading text-uppercase mb-0">{this.state.groupName}</h6>
                             <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">No Environments Configured</div>
-                        </>
-                            : null}
+                        </> : null}
                         {this.state.suggestedArguments.map((a, index) => {
                             return <>
                                 {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
@@ -458,7 +441,6 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     render() {
-        let lastArg = this.state.arguments[this.state.arguments.length - 1];
         if (this.props.isCommandBarActive) {
             return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => this.props.toggleCommandBar(false)}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
@@ -495,7 +477,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             }
                         </div>
                     </div>
-                    {lastArg && !lastArg?.data.isValid ? <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p> : null}
+                    {this.state.isSuggestionError ? <p className="command-empty-state__error pl-20 pr-20 pt-4 pb-4 mb-12">Err! We couldn’t find anything by that name. Try one of the suggestions instead?</p> : null}
                     {this.renderTabContent()}
                 </div>
             </div>

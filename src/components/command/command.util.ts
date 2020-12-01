@@ -10,7 +10,7 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
                         isValid: true,
                         isEOC: false
                     }
@@ -20,7 +20,7 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
                         isValid: true,
                         isEOC: false
                     }
@@ -30,7 +30,7 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
                         isValid: true,
                         isEOC: false
                     }
@@ -40,7 +40,7 @@ export function getArgumentSuggestions(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
                         isValid: true,
                         isEOC: false
                     }
@@ -75,7 +75,7 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: COMMAND_REV.app,
-                        groupStart: false,
+
                         value: a.id,
                         kind: 'appId',
                         isValid: true,
@@ -103,7 +103,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         isValid: true,
                         url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
                         group: COMMAND_REV.env,
-                        groupStart: false,
                         isEOC: false,
                     }
                 }
@@ -114,7 +113,7 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                 ref: undefined,
                 data: {
                     group: COMMAND_REV.misc,
-                    groupStart: false,
+
                     isValid: true,
                     url: `/app/${args[1].data.value}/edit/workflow`,
                     isEOC: false
@@ -134,8 +133,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/materials`,
                         isValid: true,
                         isEOC: true
@@ -146,8 +143,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/docker-build-config`,
                         isValid: true,
                         isEOC: true
@@ -158,8 +153,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/deployment-template`,
                         isValid: true,
                         isEOC: true
@@ -170,8 +163,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/workflow`,
                         isValid: true,
                         isEOC: true
@@ -182,8 +173,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/configmap`,
                         isValid: true,
                         isEOC: true
@@ -194,8 +183,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/secrets`,
                         isValid: true,
                         isEOC: true
@@ -206,8 +193,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/app/${args[1].data.value}/edit/env-override`,
                         isValid: true,
                         isEOC: false
@@ -224,8 +209,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
-
                             url: `/app/${args[1].data.value}/trigger`,
                             isValid: true,
                             isEOC: true
@@ -236,8 +219,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
-
                             url: `/app/${args[1].data.value}/ci-details`,
                             isValid: true,
                             isEOC: true,
@@ -248,8 +229,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
-
                             url: `/app/${args[1].data.value}/cd-details`,
                             isValid: true,
                             isEOC: true,
@@ -260,8 +239,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
-
                             url: `/app/${args[1].data.value}/deployment-metrics/${args[2].data.value}`,
                             isValid: true,
                             isEOC: true,
@@ -279,8 +256,6 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: COMMAND_REV.env,
-                        groupStart: false,
-
                         value: a.environmentId,
                         kind: 'envId',
                         isValid: true,
@@ -292,7 +267,7 @@ function getAppArguments(args): Promise<CommandSuggestionType> {
             if (!list) list = [];
             return {
                 allSuggestionArguments: list,
-                groups: []
+                groups: [COMMAND_REV.env]
             }
         })
     }
@@ -314,8 +289,6 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         isValid: true,
                         isEOC: false,
                     }
@@ -325,8 +298,6 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
-
                         url: `/chart-store/deployed`,
                         isValid: true,
                         isEOC: true,
@@ -345,8 +316,6 @@ function getChartArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
-
                             value: chart.id,
                             kind: 'chartId',
                             isValid: true,
@@ -381,7 +350,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         isValid: true,
                         url: `/security/scans`,
@@ -392,7 +361,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                     ref: undefined,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         isValid: true,
                         url: `security/policies/global`,
@@ -413,7 +382,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             isValid: true,
                             url: `security/policies/global`,
@@ -425,7 +394,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             isValid: true,
                             url: `security/policies/cluster`,
@@ -437,7 +406,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             isValid: true,
                             url: `security/policies/environments`,
@@ -449,7 +418,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             isValid: true,
                             url: `security/policies/apps`,
@@ -461,7 +430,7 @@ function getSecurityArguments(args): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             isValid: true,
                             url: `security/policies/vulnerability`,
@@ -491,7 +460,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/git',
                         isValid: true,
@@ -502,7 +471,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/cluster-env',
                         isValid: true,
@@ -514,7 +483,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/docker',
                         isValid: true,
@@ -526,7 +495,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/projects',
                         isValid: true,
@@ -538,7 +507,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/auth/users',
                         isValid: true,
@@ -550,7 +519,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                     ref: null,
                     data: {
                         group: undefined,
-                        groupStart: false,
+
 
                         url: '/global-config/notifier/channels',
                         isValid: true,
@@ -570,7 +539,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         ref: null,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             url: '/global-config/auth/users',
                             isValid: true,
@@ -582,7 +551,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         ref: null,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             url: '/global-config/auth/groups',
                             isValid: true,
@@ -601,7 +570,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         ref: null,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             url: '/global-config/notifier/edit',
                             isValid: true,
@@ -613,7 +582,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         ref: null,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             url: '/global-config/notifier/channels',
                             isValid: true,
@@ -625,7 +594,7 @@ function getGlobalConfigArguments(args): Promise<CommandSuggestionType> {
                         ref: null,
                         data: {
                             group: undefined,
-                            groupStart: false,
+
 
                             url: '/global-config/notifier/configurations',
                             isValid: true,
