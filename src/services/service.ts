@@ -85,7 +85,7 @@ export function getProjectFilteredApps(projectIds: number[] | string[]): Promise
 }
 
 export function getAvailableCharts(options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
-    return get(`${Routes.CHART_AVAILABLE}/`).then((response) => {
+    return get(`${Routes.CHART_AVAILABLE}/`, options).then((response) => {
         return {
             ...response,
             result: response.result || [],

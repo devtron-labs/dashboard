@@ -11,6 +11,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
                     ref: undefined,
                     data: {
                         group: undefined,
+                        url: '/app',
                         isEOC: false
                     }
                 },
@@ -19,6 +20,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
                     ref: undefined,
                     data: {
                         group: undefined,
+                        url: '/chart-store',
                         isEOC: false
                     }
                 },
@@ -27,6 +29,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
                     ref: undefined,
                     data: {
                         group: undefined,
+                        url: '/security',
                         isEOC: false
                     }
                 },
@@ -34,6 +37,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
                     value: COMMAND.GLOBAL_CONFIG,
                     ref: undefined,
                     data: {
+                        url: '/global-config',
                         group: undefined,
                         isEOC: false
                     }
@@ -350,7 +354,7 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            url: `security/policies/global`,
+                            url: `/security/policies/global`,
                             isEOC: true,
                         }
                     },
@@ -359,7 +363,7 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            url: `security/policies/cluster`,
+                            url: `/security/policies/cluster`,
                             isEOC: true,
                         }
                     },
@@ -368,7 +372,7 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            url: `security/policies/environments`,
+                            url: `/security/policies/environments`,
                             isEOC: true,
                         }
                     },
@@ -377,7 +381,7 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            url: `security/policies/apps`,
+                            url: `/security/policies/apps`,
                             isEOC: true,
                         }
                     },
@@ -386,7 +390,7 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                         ref: undefined,
                         data: {
                             group: undefined,
-                            url: `security/policies/vulnerability`,
+                            url: `/security/policies/vulnerability`,
                             isEOC: true,
                         }
                     }],

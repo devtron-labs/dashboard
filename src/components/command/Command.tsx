@@ -38,9 +38,10 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.match.url !== this.props.match.url || prevProps.location.pathname !== this.props.location.pathname) {
+        if (prevProps.match.url !== this.props.match.url || prevProps.location.pathname !== this.props.location.pathname ||
+            (this.props.isCommandBarActive && prevProps.isCommandBarActive !== this.props.isCommandBarActive)) {
             let args = this.getDefaultArgs();
-            this.setState({ argumentInput: '' }, () => {
+            this.setState({ argumentInput: '', arguments: args, suggestedArguments: [] }, () => {
                 this.callGetArgumentSuggestions(args);
             });
         }
@@ -52,10 +53,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
                 this._input.current.placeholder = "";
             }
-        }
-
-        if (prevProps.isCommandBarActive !== this.props.isCommandBarActive && this.props.isCommandBarActive) {
-            this.setState({ argumentInput: '', suggestedArguments: this.state.allSuggestedArguments });
         }
     }
 
@@ -72,42 +69,49 @@ export class Command extends Component<CommandProps, CommandState>  {
             arguments: this.getDefaultArgs(),
             tab: 'this-app',
             command: [{
-                label: 'Applications', argument: {
+                label: 'Applications', 
+                    argument: {
                     value: COMMAND.APPLICATIONS,
                     data: {
+                        url: '/app',
                         group: undefined,
                         isEOC: false
                     }
                 }
             },
             {
-                label: 'Helm Charts', argument: {
+                label: 'Helm Charts',
+                argument: {
                     value: COMMAND.CHART,
                     data: {
+                        url: '/chart-store',
                         group: undefined,
                         isEOC: false
                     }
                 }
             },
             {
-                label: 'Security', argument: {
+                label: 'Security',
+                argument: {
                     value: COMMAND.SECURITY,
                     data: {
+                    url: `/security`,
                         group: undefined,
                         isEOC: false
                     }
                 }
             },
             {
-                label: 'Global Configuration', argument: {
+                label: 'Global Configuration',
+                argument: {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
+                        url: '/global-config',
                         group: undefined,
                         isEOC: false
                     }
                 }
-            },
-            ],
+            }],
             allSuggestedArguments: [],
             suggestedArguments: [],
             groupName: undefined,
@@ -135,28 +139,36 @@ export class Command extends Component<CommandProps, CommandState>  {
     getDefaultArgs() {
         if (this.props.location.pathname.includes("/app")) return [{
             value: COMMAND.APPLICATIONS,
+            ref: undefined,
             data: {
                 group: undefined,
+                url: '/app',
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
             value: COMMAND.CHART,
+            ref: undefined,
             data: {
                 group: undefined,
+                url: '/chart-store',
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/global-config")) return [{
             value: COMMAND.GLOBAL_CONFIG,
+            ref: undefined,
             data: {
                 group: undefined,
+                url: '/global-config',
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/security")) return [{
             value: COMMAND.SECURITY,
+            ref: undefined,
             data: {
+                url: '/security',
                 group: undefined,
                 isEOC: false
             }
@@ -420,7 +432,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                     <span className="ff-monospace command__control ml-20"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
+                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>expand</span>
                                     </span>
                                 </div>
                             </>
