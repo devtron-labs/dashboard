@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ReactComponent as Documentation } from '../../../assets/icons/ic-document.svg'
-import { getLoginInfo } from '../index';
+import { ErrorBoundary, getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
@@ -163,13 +163,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					<div className="hubspot-placeholder"></div>
 				</aside>
 			</nav>
-			<Command location={this.props.location}
-				match={this.props.match}
-				history={this.props.history}
-				isTabMode={true}
-				isCommandBarActive={this.state.isCommandBarActive}
-				toggleCommandBar={this.toggleCommandBar}
-			/>
+			<ErrorBoundary>
+				<Command location={this.props.location}
+					match={this.props.match}
+					history={this.props.history}
+					isTabMode={true}
+					isCommandBarActive={this.state.isCommandBarActive}
+					toggleCommandBar={this.toggleCommandBar}
+				/>
+			</ErrorBoundary>
 		</>
 	}
 }

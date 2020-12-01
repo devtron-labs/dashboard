@@ -1,6 +1,6 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
-import { APIOptions } from '../../services/service.types';
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types';
+import { APIOptions } from '../../services/service.types';
 
 export function getArgumentSuggestions(args, options: APIOptions): Promise<CommandSuggestionType> {
     if (args.length === 0) return new Promise((resolve, reject) => {

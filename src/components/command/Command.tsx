@@ -44,7 +44,10 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.callGetArgumentSuggestions(args);
             });
         }
-        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument || this.state.suggestedArguments.length !== prevState.suggestedArguments.length || this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
+        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument ||
+            this.state.suggestedArguments.length !== prevState.suggestedArguments.length ||
+            this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
+            //Placeholder text handling
             this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
             if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
                 this._input.current.placeholder = "";
@@ -131,16 +134,16 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     getDefaultArgs() {
         if (this.props.location.pathname.includes("/app")) return [{
-            value: COMMAND.APPLICATIONS, data: {
+            value: COMMAND.APPLICATIONS,
+            data: {
                 group: undefined,
-
                 isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
-            value: COMMAND.CHART, data: {
+            value: COMMAND.CHART,
+            data: {
                 group: undefined,
-
                 isEOC: false
             }
         }];
@@ -148,7 +151,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.GLOBAL_CONFIG,
             data: {
                 group: undefined,
-
                 isEOC: false
             }
         }];
@@ -156,7 +158,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             value: COMMAND.SECURITY,
             data: {
                 group: undefined,
-
                 isEOC: false
             }
         }];
@@ -207,14 +208,12 @@ export class Command extends Component<CommandProps, CommandState>  {
                     let last = allArgs[allArgs.length - 1];
                     this.props.history.push(last.data.url);
                     this.props.toggleCommandBar(false);
-
                 })
             }
             else if (this.state.argumentInput) {
                 this.setState({
                     suggestedArguments: this.state.allSuggestedArguments,
                     argumentInput: '',
-                    isSuggestionError: true
                 })
             }
             else {
@@ -230,8 +229,8 @@ export class Command extends Component<CommandProps, CommandState>  {
             return;
         }
         let last = this.state.arguments[this.state.arguments.length - 1];
-        if(last && last.data.isEOC) return;
-        
+        if (last && last.data.isEOC) return;
+
         this.setState({ isLoading: true }, async () => {
             try {
                 if (this.controller) {
@@ -309,7 +308,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 argumentInput: '',
                 arguments: [...this.state.arguments, newArg],
                 suggestedArguments: [],
-                isSuggestionError: false
             }, () => {
                 this.callGetArgumentSuggestions(this.state.arguments)
             });
@@ -353,7 +351,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: this.state.allSuggestedArguments,
-                focussedArgument: 0,
             })
         }
         else {
@@ -361,8 +358,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
-                focussedArgument: 0,
-                isSuggestionError: false
             })
         }
     }
@@ -419,7 +414,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     <hr className="m-0"></hr>
                                     <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading"> <span className="text-uppercase">More in </span>  "{this.state.arguments[1].value}"</h6>
                                 </> : null}
-
                                 <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
                                     className="pl-20 pr-20 pt-10 pb-10 flexbox"
                                     style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
