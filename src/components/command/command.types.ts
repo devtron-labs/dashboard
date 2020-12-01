@@ -9,8 +9,6 @@ export const COMMAND = {
 
 export const COMMAND_REV = {
     app: 'Applications',
-    chart: 'Charts',
-    security: 'Security',
     env: 'environments',
     misc: 'misc',
     none: 'none',
@@ -30,9 +28,8 @@ export interface ArgumentType {
         readonly value?: string | number;
         readonly kind?: string;
         readonly url?: string;
-        readonly group: string;
+        readonly group?: string;
         groupStart: boolean;
-        groupEnd: boolean;
         readonly isValid: boolean;
         readonly isEOC: boolean;
     }
@@ -49,7 +46,7 @@ export interface CommandState {
     isLoading: boolean;
     focussedArgument: number; //index of the higlighted argument
     tab: 'jump-to' | 'this-app';
-    groups: { name: string; }[]
+    groupName: string | undefined;
 }
 
 export const PlaceholderText = "Search";

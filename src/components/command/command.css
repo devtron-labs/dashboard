@@ -124,10 +124,17 @@
 .suggested-arguments__heading {
     font-weight: 600;
     line-height: 1.67;
-    text-transform: uppercase;
     font-size: 12px;
     letter-spacing: normal;
     color: var(--N900);
+}
+
+.suggested-arguments__desc {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N500);
 }
 
 .command__input {
@@ -166,11 +173,12 @@
     text-align: center;
     color: #404040;
 }
+
 .command-empty-state__error {
     background-color: var(--R100);
     font-size: 12px;
-  font-weight: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: #f32e2e;
+    font-weight: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: #f32e2e;
 }

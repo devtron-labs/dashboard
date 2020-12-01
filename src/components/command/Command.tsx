@@ -39,7 +39,7 @@ export class Command extends Component<CommandProps, CommandState>  {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.match.url !== this.props.match.url || prevProps.location.pathname !== this.props.location.pathname) {
             let args = this.getDefaultArgs();
-            this.setState({ argumentInput: '' }, ()=>{
+            this.setState({ argumentInput: '' }, () => {
                 this.callGetArgumentSuggestions(args);
             });
         }
@@ -66,9 +66,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                 label: 'Applications', argument: {
                     value: COMMAND.APPLICATIONS,
                     data: {
-                        group: COMMAND_REV.none,
+                        group: undefined,
                         groupStart: false,
-                        groupEnd: false, isValid: true, isEOC: false
+                        isValid: true, isEOC: false
                     }
                 }
             },
@@ -76,9 +76,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                 label: 'Helm Charts', argument: {
                     value: COMMAND.CHART,
                     data: {
-                        group: COMMAND_REV.none,
+                        group: undefined,
                         groupStart: false,
-                        groupEnd: false, isValid: true, isEOC: false
+                        isValid: true, isEOC: false
                     }
                 }
             },
@@ -86,9 +86,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                 label: 'Security', argument: {
                     value: COMMAND.SECURITY,
                     data: {
-                        group: COMMAND_REV.none,
+                        group: undefined,
                         groupStart: false,
-                        groupEnd: false, isValid: true, isEOC: false
+                        isValid: true, isEOC: false
                     }
                 }
             },
@@ -96,16 +96,16 @@ export class Command extends Component<CommandProps, CommandState>  {
                 label: 'Global Configuration', argument: {
                     value: COMMAND.GLOBAL_CONFIG,
                     data: {
-                        group: COMMAND_REV.none,
+                        group: undefined,
                         groupStart: false,
-                        groupEnd: false, isValid: true, isEOC: false
+                        isValid: true, isEOC: false
                     }
                 }
             },
             ],
             allSuggestedArguments: [],
             suggestedArguments: [],
-            groups: [{ name: '' }],
+            groupName: undefined,
         }
     }
 
@@ -124,24 +124,24 @@ export class Command extends Component<CommandProps, CommandState>  {
     getDefaultArgs() {
         if (this.props.location.pathname.includes("/app")) return [{
             value: COMMAND.APPLICATIONS, data: {
-                group: COMMAND_REV.none,
+                group: undefined,
                 groupStart: false,
-                groupEnd: false, isValid: true, isEOC: false
+                isValid: true, isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/chart-store")) return [{
             value: COMMAND.CHART, data: {
-                group: COMMAND_REV.none,
+                group: undefined,
                 groupStart: false,
-                groupEnd: false, isValid: true, isEOC: false
+                isValid: true, isEOC: false
             }
         }];
         else if (this.props.location.pathname.includes("/global-config")) return [{
             value: COMMAND.GLOBAL_CONFIG,
             data: {
-                group: COMMAND_REV.none,
+                group: undefined,
                 groupStart: false,
-                groupEnd: false,
+
                 isValid: true,
                 isEOC: false
             }
@@ -149,9 +149,9 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.props.location.pathname.includes("/security")) return [{
             value: COMMAND.SECURITY,
             data: {
-                group: COMMAND_REV.none,
+                group: undefined,
                 groupStart: false,
-                groupEnd: false,
+
                 isValid: true,
                 isEOC: false
             }
@@ -159,9 +159,9 @@ export class Command extends Component<CommandProps, CommandState>  {
         return [{
             value: COMMAND.APPLICATIONS,
             data: {
-                group: COMMAND_REV.none,
+                group: undefined,
                 groupStart: false,
-                groupEnd: false,
+
                 isValid: true,
                 isEOC: false
             }
@@ -220,8 +220,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     data: {
                         isValid: false,
                         isEOC: false,
-                        group: 'none',
-                        groupEnd: false,
+                        group: undefined,
                         groupStart: false
                     }
                 }];
@@ -254,6 +253,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     allSuggestedArguments: response.allSuggestionArguments,
                     focussedArgument: -1,
                     isLoading: false,
+                    groupName: response.groups[0],
                 });
             } catch (error) {
                 this.setState({ isLoading: false });
@@ -333,9 +333,9 @@ export class Command extends Component<CommandProps, CommandState>  {
                 newArg = {
                     value: this.state.argumentInput, ref: undefined,
                     data: {
-                        group: COMMAND_REV.none,
+                        group: undefined,
                         groupStart: false,
-                        groupEnd: false,
+
                         isValid: false,
                         isEOC: false
                     }
@@ -401,9 +401,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             return <div className="command__suggested-args-container"><Progressing /></div>
         }
         else if (this.state.tab === 'this-app') {
-            let groupStartIndex = this.state.suggestedArguments.findIndex(a => a?.data?.group !== "none");
-            let groupEndIndex = this.state.suggestedArguments.findIndex(a => a?.data?.group === "none");
-
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container flex column">
@@ -411,28 +408,40 @@ export class Command extends Component<CommandProps, CommandState>  {
                     <p className="command-empty-state__subtitle">Hit enter to navigate</p>
                 </div>
             }
-            else return <div ref={node => this._menu = node} className="command__suggested-args-container">
-                <div className="suggested-arguments">
-                    {this.state.suggestedArguments.map((a, index) => {
-                        return <>
-                            {index === groupStartIndex ? <h6 key={`${index}-start`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{a?.data?.group}</h6> : ""}
-                            {index === groupEndIndex ? <>
-                                <hr className="m-0"></hr>
-                                <h6 key={`${index}-end`} className="suggested-arguments__heading m-0 pl-20 pr-20 pt-5 pb-5">{this.state.arguments[1]?.value}</h6>
-                            </> : ""}
-                            <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
-                                className="pl-20 pr-20 pt-10 pb-10 flexbox"
-                                style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
-                                <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
-                                <span className="ff-monospace command__control ml-20"
-                                    style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                    <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
-                                </span>
-                            </div>
+            else {
+                let groupStart = this.state.suggestedArguments.findIndex(s => s.data?.group !== "misc");
+                let groupEnd = this.state.suggestedArguments.findIndex(s => s.data?.group === "misc");
+                let groupName = this.state.groupName;
+
+                return <div ref={node => this._menu = node} className="command__suggested-args-container">
+                    <div className="suggested-arguments">
+                        {this.state.groupName && (groupStart < 0) ? <>
+                            <h6 className="pl-20 pr-20 suggested-arguments__heading text-uppercase mb-0">{this.state.groupName}</h6>
+                            <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">No Environments Configured</div>
                         </>
-                    })}
+                            : null}
+                        {this.state.suggestedArguments.map((a, index) => {
+                            return <>
+                                {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
+                                {this.state.groupName && groupEnd === index ? <>
+                                    <hr className="m-0"></hr>
+                                    <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading"> <span className="text-uppercase">More in </span>  "{this.state.arguments[1].value}"</h6>
+                                </> : null}
+
+                                <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
+                                    className="pl-20 pr-20 pt-10 pb-10 flexbox"
+                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
+                                    <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                    <span className="ff-monospace command__control ml-20"
+                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
+                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>select</span>
+                                    </span>
+                                </div>
+                            </>
+                        })}
+                    </div>
                 </div>
-            </div>
+            }
         }
         else {
             return <div ref={node => this._menu = node} className="command__suggested-args-container">
