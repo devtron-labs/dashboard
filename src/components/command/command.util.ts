@@ -93,7 +93,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                         kind: 'envId',
                         url: `/app/${args[1].data.value}/details/${a.environmentId}/Pod`,
                         group: COMMAND_REV.env,
-                        isEOC: false,
+                        isEOC: true,
                     }
                 }
             });
