@@ -44,7 +44,7 @@ export default function TestRunList(){
                     <TestsFilter component={TestRunDetails} />
                 </Route>
                 <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')}`}>
-                    <div className="flex" style={{ justifyContent: 'space-between' }}>
+                    <div className="flex mb-16" style={{ justifyContent: 'space-between' }}>
                         <CISelector pipelines={ciPipelinesResult?.result || []} />
                         {/* TODO Remove this when no reports are available */}
                         <DatePicker
@@ -88,7 +88,7 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
     return (
         <div className="flexbox">
             <div className="pipeline-text">CI Pipeline</div>
-            <div style={{ width: '150px' }} className="mb-16">
+            <div style={{ width: '150px' }}>
                 <Select
                     value={params.pipelineId ? { value: +params.pipelineId, label: ciPipelineName } : null}
                     styles={multiSelectStyles}
