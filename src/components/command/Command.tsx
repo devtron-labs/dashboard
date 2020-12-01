@@ -225,9 +225,6 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     callGetArgumentSuggestions(args): void {
-        if (this.state.isSuggestionError) {
-            return;
-        }
         let last = this.state.arguments[this.state.arguments.length - 1];
         if (last && last.data.isEOC) return;
 
@@ -358,6 +355,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({
                 argumentInput: event.target.value,
                 suggestedArguments: suggestedArguments,
+                isSuggestionError: false,
             })
         }
     }
