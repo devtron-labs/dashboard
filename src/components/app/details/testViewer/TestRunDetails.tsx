@@ -26,12 +26,10 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
         testcaseId?: number;
         tab: 'properties' | 'system-output' | 'system-error' | 'testcase' | '';
     }>({ testSuitesId: 0, testSuiteId: 0, tab: '' });
-    const [loading, result, error, reload] = useAsync(() => getTestSuites(params.pipelineId, params.triggerId, selectedNames), [
+
+    const [loading, result, error, reload] = useAsync(() => getTestSuites(params.appId, params.pipelineId, params.triggerId, selectedNames), [
         params,
     ]);
-    // const [loading, result, error, reload] = useAsync(() => getTestSuites(params.appId, params.pipelineId, params.triggerId, selectedNames), [
-    //     params,
-    // ]);
 
     useDebouncedEffect(reload, 2000, [selectedNames])
 

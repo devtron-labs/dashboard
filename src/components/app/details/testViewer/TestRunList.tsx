@@ -126,6 +126,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
     const [triggerListLoading, triggerList, error, reload] = useAsync(
         () =>
             getTriggerList(
+                params.appId,
                 params.pipelineId,
                 selectedNames,
                 startDate.format('YYYY-MM-DD'),
@@ -133,17 +134,6 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
             ),
         [params.pipelineId, selectedNames, startDate, endDate],
     );
-    // const [triggerListLoading, triggerList, error, reload] = useAsync(
-    //     () =>
-    //         getTriggerList(
-    //             params.appId,
-    //             params.pipelineId,
-    //             selectedNames,
-    //             startDate.format('YYYY-MM-DD'),
-    //             endDate.format('YYYY-MM-DD'),
-    //         ),
-    //     [params.pipelineId, selectedNames, startDate, endDate],
-    // );
     const data = (triggerList?.result?.result || []).slice(0, 30).map((triggerDetail) => {
         const {
             skippedCount,
@@ -284,8 +274,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         }
     )
     const params = useParams<{appId: string, pipelineId?: string}>()
-    // const [loading, result, error, reload] = useAsync(()=>getFilters(params.appId, params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
-    const [loading, result, error, reload] = useAsync(()=>getFilters(params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
+    const [loading, result, error, reload] = useAsync(()=>getFilters(params.appId, params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
     const typeOptions = [
         { label: 'Test Suite:', value: 'testsuite'},
         { label: 'Package:', value: 'package'},
