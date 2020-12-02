@@ -18,6 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import {SelectedNames} from './Test.types'
 import { getBinWiseArrayData } from "./testRunDetails.util";
 
+
 export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedNames})=>{
     const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>();
     const [testSuiteIds, setTestSuiteIds] = useState<{
@@ -96,10 +97,10 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             </div>
             {!!testSuiteIds.testSuitesId && !!testSuiteIds.testSuiteId && (
                 <Drawer position="right" width="800px" onClose={hideDrawer}>
-                    {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'testcase' &&  <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} />}
+                    {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'testcase' &&  <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId} />}
                 </Drawer>
             )}
         </>
@@ -281,8 +282,8 @@ const TestSuite: React.FC<{
         </List>
     );
 };
-function Properties({testSuiteId, testSuitesId, hideDrawer}) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function Properties({testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
 
@@ -326,8 +327,8 @@ function Properties({testSuiteId, testSuitesId, hideDrawer}) {
     );
 }
 
-function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function SystemOutput({ testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
     function handleClose(e) {
@@ -350,8 +351,8 @@ function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
     );
 }
 
-function SystemError({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function SystemError({ testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
     function handleClose(e) {
@@ -418,9 +419,9 @@ function TestStats({ testCount, disabledCount, errorCount, failureCount, skipped
     );
 }
 
-function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer }) {
+function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer, appId }) {
     const [testCaseDetail, setTestCaseDetail] = useState(null);
-    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(testcaseId)), [testcaseId]);
+    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(appId), Number(testcaseId)), [testcaseId]);
     function handleClose(e) {
         hideDrawer()
     }

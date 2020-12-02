@@ -10,12 +10,12 @@ export async function getTestSuites(appId: number | string, pipelineId: number |
     return get(`test-report/triggers/${appId}/${pipelineId}/${triggerId}${generateQueryParams(selectedNames)}`)
 }
 
-export async function getTestCase(testCaseId: number) {
-    return get(`test/cases/${testCaseId}`);
+export async function getTestCase(appId:number, testCaseId: number) {
+    return get(`test-report/testcase/${appId}/${testCaseId}`);
 }
 
-export async function getSuiteDetail(testSuitesId: number, testSuiteId: number) {
-    return get(`test/suites/${testSuiteId}`);
+export async function getSuiteDetail(appId:number, testSuitesId: number, testSuiteId: number) {
+    return get(`test-report/testcase/${appId}/${testSuiteId}`);
 }
 
 export async function getTriggerList(appId, pipelineId, selectedNames: SelectedNames, startDate, endDate){
