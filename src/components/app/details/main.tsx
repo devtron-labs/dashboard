@@ -110,15 +110,6 @@ export function AppHeader() {
             <h1 className="page-header__title flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs} />
             </h1>
-            {/* <Command location={location}
-                match={match}
-                history={history}
-                isTabMode={true}
-                toggleCommandBar={(e) => { }}
-                defaultArguments={[
-                    { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } }
-                ]}
-            /> */}
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">

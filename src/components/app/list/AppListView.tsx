@@ -268,15 +268,6 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {/* <Command location={this.props.location}
-                    match={this.props.match}
-                    history={this.props.history}
-                    isTabMode={true}
-                    toggleCommandBar={() => { }}
-                    defaultArguments={[
-                        { value: COMMAND.APPLICATIONS, data: { isValid: true, isEOC: false } },
-                    ]}
-                /> */}
                 {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
