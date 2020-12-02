@@ -29,6 +29,9 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
     const [loading, result, error, reload] = useAsync(() => getTestSuites(params.pipelineId, params.triggerId, selectedNames), [
         params,
     ]);
+    // const [loading, result, error, reload] = useAsync(() => getTestSuites(params.appId, params.pipelineId, params.triggerId, selectedNames), [
+    //     params,
+    // ]);
 
     useDebouncedEffect(reload, 2000, [selectedNames])
 

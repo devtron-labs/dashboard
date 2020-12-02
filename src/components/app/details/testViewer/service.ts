@@ -10,6 +10,10 @@ export async function getTestSuites(pipelineId: number | string, triggerId: numb
     return post(`test/suites/proxy`, { link: `triggers/${pipelineId}/${triggerId}${generateQueryParams(selectedNames)}` })
 }
 
+// export async function getTestSuites(appId: number | string, pipelineId: number | string, triggerId: number | string, selectedNames) {
+//     return get(`test-report/triggers/${appId}/${pipelineId}/${triggerId}${generateQueryParams(selectedNames)}`)
+// }
+
 export async function getTestCase(testCaseId: number) {
     return get(`test/cases/${testCaseId}`);
 }
