@@ -133,6 +133,17 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
             ),
         [params.pipelineId, selectedNames, startDate, endDate],
     );
+    // const [triggerListLoading, triggerList, error, reload] = useAsync(
+    //     () =>
+    //         getTriggerList(
+    //             params.appId,
+    //             params.pipelineId,
+    //             selectedNames,
+    //             startDate.format('YYYY-MM-DD'),
+    //             endDate.format('YYYY-MM-DD'),
+    //         ),
+    //     [params.pipelineId, selectedNames, startDate, endDate],
+    // );
     const data = (triggerList?.result?.result || []).slice(0, 30).map((triggerDetail) => {
         const {
             skippedCount,

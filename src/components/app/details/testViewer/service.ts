@@ -26,6 +26,10 @@ export async function getTriggerList(pipelineId, selectedNames: SelectedNames, s
     return post(`test/suites/proxy`, {link: `triggers/${pipelineId}${generateQueryParams(selectedNames)}&startDate=${startDate}&endDate=${endDate}`})
 }
 
+// export async function getTriggerList(appId, pipelineId, selectedNames: SelectedNames, startDate, endDate){
+//     return get(`test-report/triggers/${appId}/${pipelineId}${generateQueryParams(selectedNames)}&startDate=${startDate}&endDate=${endDate}`)
+// }
+
 export async function getFilters(pipelineId: number | string, triggerId?:number | string){
     return post(`test/suites/proxy`, {link: `filters/${pipelineId}${triggerId ? '/'+triggerId : ''}`})
 }
