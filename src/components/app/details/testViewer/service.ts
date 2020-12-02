@@ -29,6 +29,11 @@ export async function getTriggerList(pipelineId, selectedNames: SelectedNames, s
 export async function getFilters(pipelineId: number | string, triggerId?:number | string){
     return post(`test/suites/proxy`, {link: `filters/${pipelineId}${triggerId ? '/'+triggerId : ''}`})
 }
+// export async function getFilters(appId: number | string, pipelineId: number | string, triggerId?:number | string){
+//     return get(`test-report/filters/${appId}/${pipelineId}${triggerId ? '/'+triggerId : ''}`)
+// }
+
+
 // "test/suites/list"
 // "test/suites/list/details"
 // "test/suites/{id}"

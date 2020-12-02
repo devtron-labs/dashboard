@@ -273,6 +273,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         }
     )
     const params = useParams<{appId: string, pipelineId?: string}>()
+    // const [loading, result, error, reload] = useAsync(()=>getFilters(params.appId, params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
     const [loading, result, error, reload] = useAsync(()=>getFilters(params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
     const typeOptions = [
         { label: 'Test Suite:', value: 'testsuite'},
