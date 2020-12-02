@@ -97,7 +97,7 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
                 ))}
             </div>
             {!!testSuiteIds.testSuitesId && !!testSuiteIds.testSuiteId && (
-                <Drawer position="right" width="800px">
+                <Drawer position="right" width="800px" onClose={hideDrawer}>
                     {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} />}
                     {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} />}
                     {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} />}
@@ -160,9 +160,14 @@ const TestSuites: React.FC<{
             <span>{time ? `${time / 1000}s` : null}</span>
             <List.Detail>
                 <div className="test--detail">
-                    {testsuite?.map((testsuiteData) => (
-                        <TestSuite showDrawer={showDrawer} testsuitesId={testsuitesId} key={testsuiteData.id} data={testsuiteData} />
-                    ))}
+                    {testsuite?.map((testsuiteData) => 
+                        (<TestSuite 
+                            showDrawer={showDrawer} 
+                            testsuitesId={testsuitesId} 
+                            key={testsuiteData.id} 
+                            data={testsuiteData} 
+                        />))
+                    }
                 </div>
             </List.Detail>
         </List>
