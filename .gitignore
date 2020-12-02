@@ -19,7 +19,6 @@
 .env.test.local
 .env.production.local
 .vscode/
-src/setupProxy.js
 
 npm-debug.log
 npm-error.log

@@ -31,6 +31,7 @@ export class SecurityVulnerabilitites extends Component<SecurityVulnerabilitites
                         {low ? `${low} low` : ``}
                     </span>
                 </div>
+                <div className="cb-5">Details</div>
             </div>
         }
         else return <span></span>

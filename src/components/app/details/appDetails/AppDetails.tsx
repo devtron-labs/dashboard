@@ -192,7 +192,9 @@ export const Details: React.FC<{
         }
         if (appDetailsResult && setAppDetails) {
             setAppDetails(appDetailsResult?.result);
-            callLastExecutionMinAPI(appDetailsResult?.result?.appId, params.envId)
+            if (!lastExecutionDetail.imageScanDeployInfoId) {
+                callLastExecutionMinAPI(appDetailsResult?.result?.appId, params.envId)
+            }
         }
     }, [appDetailsResult, appDetailsError]);
 
@@ -804,9 +806,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                 marginLeft: '0',
                                 marginRight: '0',
                                 direction: 'rtl',
-                                color: 'var(--N0)',
+                                color: 'var(--N000)',
                             }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
+                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
                             option: (base, state) => ({
                                 ...base,
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
@@ -847,9 +849,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                     singleValue: (base, state) => ({
                                         ...base,
                                         direction: 'rtl',
-                                        color: 'var(--N0)',
+                                        color: 'var(--N000)',
                                     }),
-                                    input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
+                                    input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
                                     option: (base, state) => ({
                                         ...base,
                                         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
