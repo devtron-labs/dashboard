@@ -8,14 +8,16 @@ import './command.css';
 
 const FlexSearch = require("flexsearch");
 export class Command extends Component<CommandProps, CommandState>  {
-    _input;
+    _inputText;
+    _inputPlaceholder;
     _menu;
     _flexsearchIndex;
     controller: AbortController;
 
     constructor(props) {
         super(props);
-        this._input = React.createRef();
+        this._inputText = React.createRef();
+        this._inputPlaceholder = React.createRef();
         this._flexsearchIndex = new FlexSearch({
             encode: "balance",
             tokenize: "full",
@@ -47,13 +49,13 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.callGetArgumentSuggestions(args);
             });
         }
-        if (this._input.current && (prevState.focussedArgument !== this.state.focussedArgument ||
+        if (this._inputPlaceholder.current && (prevState.focussedArgument !== this.state.focussedArgument ||
             this.state.suggestedArguments.length !== prevState.suggestedArguments.length ||
             this.state.argumentInput !== prevState.argumentInput || this.props.isCommandBarActive)) {
             //Placeholder text handling
-            this._input.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
-            if (!this._input.current.placeholder.startsWith(this.state.argumentInput)) {
-                this._input.current.placeholder = "";
+            this._inputPlaceholder.current.placeholder = this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText;
+            if (!this._inputPlaceholder.current.placeholder.startsWith(this.state.argumentInput)) {
+                this._inputPlaceholder.current.placeholder = "";
             }
         }
     }
@@ -298,9 +300,15 @@ export class Command extends Component<CommandProps, CommandState>  {
                     isLoading: false,
                     groupName: response.groups[0],
                 });
+                this._inputText.current.focus();
             } catch (error) {
                 this.setState({ isLoading: false });
                 console.error(error);
+                ReactGA.event({
+                    category: 'Command Bar',
+                    action: 'Error',
+                    label: '',
+                });
             }
         });
     }
@@ -464,14 +472,14 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         <span className="text-uppercase">More in </span> "{this.state.arguments[1].value}"
                                     </h6>
                                 </> : null}
-                                <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
-                                    className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg cursor"}>
-                                    <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
+                                <button ref={node => a['ref'] = node} key={`${index}-${a.value}`} onClick={(event) => this.selectArgument(a)}
+                                    className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-0 cursor"}>
+                                    <span>{a.value}</span>
                                     <span className="ff-monospace command__control ml-20"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
                                         <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>expand</span>
                                     </span>
-                                </div>
+                                </button>
                             </>
                         })}
                     </div>
@@ -519,8 +527,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     </>
                                 })}
                                 {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
-                                    <input ref={this._input} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
-                                    <input type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
+                                    <input ref={this._inputPlaceholder} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
+                                    <input ref={this._inputText} type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
                                         placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
                                 </div>}
                             </div>

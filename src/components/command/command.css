@@ -115,16 +115,18 @@
     background-color: white;
 }
 
-.suggested-arguments__arg:hover {
-    background-color: var(--N100);
-}
-
-.suggested-arguments button {
+.suggested-arguments__arg {
     cursor: pointer;
     margin: 0px;
-    padding-left: 0px;
-    background-color: inherit;
+    width: 100%;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
     border: solid 1px transparent;
+}
+
+.suggested-arguments__arg:hover {
+    background-color: var(--N100);
 }
 
 .suggested-arguments__heading {
