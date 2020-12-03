@@ -300,7 +300,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                     isLoading: false,
                     groupName: response.groups[0],
                 });
-                this._inputText.current.focus();
+                this._inputText?.current?.focus();
             } catch (error) {
                 this.setState({ isLoading: false });
                 console.error(error);
