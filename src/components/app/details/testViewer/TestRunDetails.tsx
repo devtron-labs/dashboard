@@ -486,7 +486,7 @@ function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer, a
 function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
     return (
         <section>
-            <b>{nodeType}</b>
+            <span className="node-type-heading">{nodeType}</span>
             {type && (
                 <>
                     <label htmlFor="" className="light">
