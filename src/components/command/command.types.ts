@@ -9,6 +9,8 @@ export const COMMAND = {
 
 export const COMMAND_REV = {
     app: 'Applications',
+    chart: 'Charts',
+    security: 'Security',
     env: 'environments',
     misc: 'misc',
     none: 'none',

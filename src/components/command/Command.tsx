@@ -113,42 +113,10 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     getDefaultArgs() {
-        if (this.props.location.pathname.includes("/app")) return [{
-            value: COMMAND.APPLICATIONS,
-            ref: undefined,
-            data: {
-                group: undefined,
-                url: '/app',
-                isEOC: false
-            }
-        }];
-        else if (this.props.location.pathname.includes("/chart-store")) return [{
-            value: COMMAND.CHART,
-            ref: undefined,
-            data: {
-                group: undefined,
-                url: '/chart-store',
-                isEOC: false
-            }
-        }];
-        else if (this.props.location.pathname.includes("/global-config")) return [{
-            value: COMMAND.GLOBAL_CONFIG,
-            ref: undefined,
-            data: {
-                group: undefined,
-                url: '/global-config',
-                isEOC: false
-            }
-        }];
-        else if (this.props.location.pathname.includes("/security")) return [{
-            value: COMMAND.SECURITY,
-            ref: undefined,
-            data: {
-                url: '/security',
-                group: undefined,
-                isEOC: false
-            }
-        }];
+        if (this.props.location.pathname.includes("/app")) return [AllSuggestedArguments[0]];
+        else if (this.props.location.pathname.includes("/chart-store")) return [AllSuggestedArguments[1]];
+        else if (this.props.location.pathname.includes("/security")) return [AllSuggestedArguments[2]];
+        else if (this.props.location.pathname.includes("/global-config")) return [AllSuggestedArguments[3]];
         return [];
     }
 
