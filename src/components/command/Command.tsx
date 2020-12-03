@@ -3,7 +3,9 @@ import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import { getArgumentSuggestions } from './command.util';
 import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText, SuggestedArgumentType } from './command.types';
+import ReactGA from 'react-ga';
 import './command.css';
+
 const FlexSearch = require("flexsearch");
 export class Command extends Component<CommandProps, CommandState>  {
     _input;
@@ -69,8 +71,8 @@ export class Command extends Component<CommandProps, CommandState>  {
             arguments: this.getDefaultArgs(),
             tab: 'this-app',
             command: [{
-                label: 'Applications', 
-                    argument: {
+                label: 'Applications',
+                argument: {
                     value: COMMAND.APPLICATIONS,
                     data: {
                         url: '/app',
@@ -95,7 +97,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 argument: {
                     value: COMMAND.SECURITY,
                     data: {
-                    url: `/security`,
+                        url: `/security`,
                         group: undefined,
                         isEOC: false
                     }
@@ -209,6 +211,17 @@ export class Command extends Component<CommandProps, CommandState>  {
             allArgs = [...this.state.arguments, focussedArg];
             this.setState({ arguments: allArgs }, () => {
                 let last = allArgs[allArgs.length - 1];
+                let args = this.state.arguments.reduce((acc, current) => {
+                    acc = `${acc}/${current}`;
+                    return acc;
+
+                }, "");
+                console.log(args);
+                ReactGA.event({
+                    category: 'Command Bar',
+                    action: 'Enter',
+                    label: args,
+                });
                 this.props.history.push(last.data.url);
                 this.props.toggleCommandBar(false);
             })
@@ -218,6 +231,16 @@ export class Command extends Component<CommandProps, CommandState>  {
                 allArgs = [...this.state.arguments, candidateArg];
                 this.setState({ arguments: allArgs }, () => {
                     let last = allArgs[allArgs.length - 1];
+                    let args = this.state.arguments.reduce((acc, current) => {
+                        acc = `${acc}/${current}`;
+                        return acc;
+
+                    }, "");
+                    ReactGA.event({
+                        category: 'Command Bar',
+                        action: 'Enter',
+                        label: args,
+                    });
                     this.props.history.push(last.data.url);
                     this.props.toggleCommandBar(false);
                 })
@@ -230,6 +253,17 @@ export class Command extends Component<CommandProps, CommandState>  {
             }
             else {
                 let last = allArgs[allArgs.length - 1];
+                let args = this.state.arguments.reduce((acc, current) => {
+                    acc = `${acc}/${current}`;
+                    return acc;
+
+                }, "");
+                console.log(args);
+                ReactGA.event({
+                    category: 'Command Bar',
+                    action: 'Enter',
+                    label: args,
+                });
                 this.props.history.push(last.data.url);
                 this.props.toggleCommandBar(false);
             }
@@ -288,6 +322,12 @@ export class Command extends Component<CommandProps, CommandState>  {
     handleKeyPress(event) {
         if (event.metaKey && event.key === '/') {
             this.props.toggleCommandBar(true);
+            ReactGA.event({
+                category: 'Command Bar',
+                action: 'Open (⌘+/)',
+                label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+            });
+            console.log(this.props.location.pathname.replace(/\d+/g, ''))
         }
         else if (event.key === "Escape") {
             this.props.toggleCommandBar(false);

@@ -9,6 +9,7 @@ import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import TagManager from 'react-gtm-module';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
+import ReactGA from 'react-ga';
 import './navigation.scss';
 
 const navigationList = [
@@ -77,6 +78,13 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 
 	toggleCommandBar(flag: boolean): void {
 		this.setState({ isCommandBarActive: flag });
+		if (!flag) { //Commandbar Closed
+			ReactGA.event({
+				category: 'Command Bar',
+				action: 'Close',
+				label: '',
+			});
+		}
 	}
 
 	deleteCookie(): void {
@@ -113,7 +121,16 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}
 							className="transparent"
-							onClick={(e) => this.toggleCommandBar(!this.state.isCommandBarActive)}>
+							onClick={(e) => {
+								if (!this.state.isCommandBarActive) {
+									ReactGA.event({
+										category: 'Command Bar',
+										action: 'Open (Click)',
+										label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+									});
+								}
+								this.toggleCommandBar(!this.state.isCommandBarActive);
+							}}>
 							<div className="svg-container flex">
 								<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
 									<use href={`${NavSprite}#${item.iconClass}`}></use>
