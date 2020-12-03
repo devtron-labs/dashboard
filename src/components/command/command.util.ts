@@ -2,63 +2,73 @@ import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../..
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types';
 import { APIOptions } from '../../services/service.types';
 
-export function getArgumentSuggestions(args, options: APIOptions): Promise<CommandSuggestionType> {
-    if (args.length === 0) return new Promise((resolve, reject) => {
-        resolve({
-            allSuggestionArguments: [
-                {
-                    value: COMMAND.APPLICATIONS,
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: '/app',
-                        isEOC: false
-                    }
-                },
-                {
-                    value: COMMAND.CHART,
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: '/chart-store',
-                        isEOC: false
-                    }
-                },
-                {
-                    value: COMMAND.SECURITY,
-                    ref: undefined,
-                    data: {
-                        group: undefined,
-                        url: '/security',
-                        isEOC: false
-                    }
-                },
-                {
-                    value: COMMAND.GLOBAL_CONFIG,
-                    ref: undefined,
-                    data: {
-                        url: '/global-config',
-                        group: undefined,
-                        isEOC: false
-                    }
-                }],
-            groups: [],
-        })
-    });
+export const AllSuggestedArguments = [
+    {
+        value: COMMAND.APPLICATIONS,
+        ref: undefined,
+        data: {
+            group: undefined,
+            url: '/app',
+            isEOC: false
+        }
+    },
+    {
+        value: COMMAND.CHART,
+        ref: undefined,
+        data: {
+            group: undefined,
+            url: '/chart-store',
+            isEOC: false
+        }
+    },
+    {
+        value: COMMAND.SECURITY,
+        ref: undefined,
+        data: {
+            group: undefined,
+            url: '/security',
+            isEOC: false
+        }
+    },
+    {
+        value: COMMAND.GLOBAL_CONFIG,
+        ref: undefined,
+        data: {
+            url: '/global-config',
+            group: undefined,
+            isEOC: false
+        }
+    }];
 
-    let arg = args[0];
-    switch (arg.value) {
-        case 'app': return getAppArguments(args, options);
-        case 'chart': return getChartArguments(args, options);
-        case 'security': return getSecurityArguments(args, options);
-        case 'global-config': return getGlobalConfigArguments(args, options);
-        default: return new Promise((resolve, reject) => {
+export function getArgumentSuggestions(args, options: APIOptions): Promise<CommandSuggestionType> {
+    if (args.length === 0) {
+        return new Promise((resolve, reject) => {
             resolve({
-                allSuggestionArguments: [],
+                allSuggestionArguments: AllSuggestedArguments,
                 groups: [],
             })
         });
     }
+
+    let arg = args[0];
+
+    let obj = {
+        app: getAppArguments,
+        chart: getChartArguments,
+        security: getSecurityArguments,
+        ['global-config']: getGlobalConfigArguments,
+    };
+
+
+    if (obj[arg.value]) {
+        return obj[arg.value](args, options);
+    }
+    else return new Promise((resolve, reject) => {
+        resolve({
+            allSuggestionArguments: [],
+            groups: [],
+        })
+    });
 }
 
 

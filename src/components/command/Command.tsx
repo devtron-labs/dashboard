@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
-import { getArgumentSuggestions } from './command.util';
-import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText, SuggestedArgumentType } from './command.types';
+import { getArgumentSuggestions, AllSuggestedArguments } from './command.util';
+import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
 import ReactGA from 'react-ga';
 import './command.css';
 
@@ -74,47 +74,19 @@ export class Command extends Component<CommandProps, CommandState>  {
             tab: 'this-app',
             command: [{
                 label: 'Applications',
-                argument: {
-                    value: COMMAND.APPLICATIONS,
-                    data: {
-                        url: '/app',
-                        group: undefined,
-                        isEOC: false
-                    }
-                }
+                argument: AllSuggestedArguments[0],
             },
             {
                 label: 'Helm Charts',
-                argument: {
-                    value: COMMAND.CHART,
-                    data: {
-                        url: '/chart-store',
-                        group: undefined,
-                        isEOC: false
-                    }
-                }
+                argument: AllSuggestedArguments[1],
             },
             {
                 label: 'Security',
-                argument: {
-                    value: COMMAND.SECURITY,
-                    data: {
-                        url: `/security`,
-                        group: undefined,
-                        isEOC: false
-                    }
-                }
+                argument: AllSuggestedArguments[2],
             },
             {
                 label: 'Global Configuration',
-                argument: {
-                    value: COMMAND.GLOBAL_CONFIG,
-                    data: {
-                        url: '/global-config',
-                        group: undefined,
-                        isEOC: false
-                    }
-                }
+                argument: AllSuggestedArguments[3],
             }],
             allSuggestedArguments: [],
             suggestedArguments: [],
@@ -333,7 +305,6 @@ export class Command extends Component<CommandProps, CommandState>  {
                 action: 'Open (⌘+/)',
                 label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
             });
-            console.log(this.props.location.pathname.replace(/\d+/g, ''))
         }
         else if (event.key === "Escape") {
             this.props.toggleCommandBar(false);
@@ -418,7 +389,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
     }
 
-    applyQueryOnSuggestions(allSuggestedArguments, searchString: string): SuggestedArgumentType[] {
+    applyQueryOnSuggestions(allSuggestedArguments, searchString: string): ArgumentType[] {
         if (!searchString) return allSuggestedArguments;
 
         let argumentsMap = this.state.allSuggestedArguments.reduce((argumentsMap, arg) => {

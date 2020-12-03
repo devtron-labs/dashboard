@@ -24,6 +24,7 @@ export interface CommandProps extends RouteComponentProps<{}> {
 
 export interface ArgumentType {
     value: string;
+    ref: any;
     readonly data: {
         readonly value?: string | number;
         readonly kind?: string;
@@ -33,14 +34,12 @@ export interface ArgumentType {
     }
 }
 
-export type SuggestedArgumentType = ArgumentType & { ref: any; };
-
 export interface CommandState {
     argumentInput: string;
-    arguments: ArgumentType[];
     command: { label: string; argument: ArgumentType; }[];
-    suggestedArguments: SuggestedArgumentType[];
-    readonly allSuggestedArguments: SuggestedArgumentType[];
+    arguments: ArgumentType[];
+    readonly allSuggestedArguments: ArgumentType[];
+    suggestedArguments: ArgumentType[];
     isLoading: boolean;
     isSuggestionError: boolean;
     focussedArgument: number; //index of the higlighted argument
@@ -50,4 +49,4 @@ export interface CommandState {
 
 export const PlaceholderText = "Search";
 
-export type CommandSuggestionType = { allSuggestionArguments: SuggestedArgumentType[], groups: any[] }
+export type CommandSuggestionType = { allSuggestionArguments: ArgumentType[], groups: any[] }
