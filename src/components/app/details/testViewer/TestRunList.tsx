@@ -198,7 +198,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                             <Tooltip />
                             <Legend />
                             {Object.entries(colorMap).map(([dataKey, fill]) => (
-                                <Bar key={dataKey} radius={8} dataKey={dataKey} fill={fill} stackId="a" />
+                                <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
                             ))}
                         </BarChart>
                     </ResponsiveContainer>
