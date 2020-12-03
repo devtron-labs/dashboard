@@ -212,11 +212,10 @@ export class Command extends Component<CommandProps, CommandState>  {
             this.setState({ arguments: allArgs }, () => {
                 let last = allArgs[allArgs.length - 1];
                 let args = this.state.arguments.reduce((acc, current) => {
-                    acc = `${acc}/${current}`;
+                    acc = `${acc}/${current.value}`;
                     return acc;
 
                 }, "");
-                console.log(args);
                 ReactGA.event({
                     category: 'Command Bar',
                     action: 'Enter',
@@ -232,7 +231,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                 this.setState({ arguments: allArgs }, () => {
                     let last = allArgs[allArgs.length - 1];
                     let args = this.state.arguments.reduce((acc, current) => {
-                        acc = `${acc}/${current}`;
+                        acc = `${acc}/${current.value}`;
                         return acc;
 
                     }, "");
@@ -254,11 +253,10 @@ export class Command extends Component<CommandProps, CommandState>  {
             else {
                 let last = allArgs[allArgs.length - 1];
                 let args = this.state.arguments.reduce((acc, current) => {
-                    acc = `${acc}/${current}`;
+                    acc = `${acc}/${current.value}`;
                     return acc;
 
                 }, "");
-                console.log(args);
                 ReactGA.event({
                     category: 'Command Bar',
                     action: 'Enter',
