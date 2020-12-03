@@ -6,6 +6,7 @@ import Select, {components} from 'react-select';
 import {getTriggerList, getFilters} from './service'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {ReactComponent as EmptyTests} from '../../../../assets/img/ic-empty-tests.svg';
+import filterIcon from '../../../../assets/icons/ic-filter.svg';
 import noreports from '../../../../assets/img/app-not-deployed.png';
 import {SelectedNames} from './Test.types'
 import './TestRunDetails.scss'
@@ -309,6 +310,15 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         return {testsuite, package: packageName, classname, method}
 
     }, [result])
+
+    function getPlaceholder() {
+        return (
+            <div className="flex left">
+                <img src={filterIcon} className="icon-dim-16 mr-8"/>
+                <span className="placeholder-text-filter">Filter by test suite, packages, classname and methods</span>
+            </div>
+        )
+    }
     
 
     function handleChange(selected, change){
@@ -355,7 +365,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         <>
             {/* TODO remove this when no reports are available */}
             <Select
-                placeholder={"Filter by test suite, packages, classname and methods"}
+                placeholder={getPlaceholder()}
                 options={options}
                 components={{
                     Menu: (props) => (
