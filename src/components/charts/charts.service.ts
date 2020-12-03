@@ -1,7 +1,7 @@
 import { get, post, put, trash } from '../../services/api';
 import { Routes } from '../../config';
 import { handleUTCTime, sortCallback } from '../common';
-import { ChartValuesType, ChartGroup, Chart } from './charts.types';
+import { ChartValuesType, ChartGroup } from './charts.types';
 
 interface RootObject {
     code: number;
@@ -30,15 +30,6 @@ export function installChart(request) {
 
 export function updateChart(request) {
     return put(`app-store/application/update`, request)
-}
-
-export function getAvailableCharts(): Promise<{ code: number, result: Chart[] }> {
-    return get(`${Routes.CHART_AVAILABLE}/`).then((response) => {
-        return {
-            ...response,
-            result: response.result || [],
-        }
-    })
 }
 
 export function deleteInstalledChart(installedAppId) {
