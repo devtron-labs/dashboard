@@ -20,11 +20,11 @@ export default function AppDetailsPage() {
     const { appId } = useParams()
     return (
         <div className="app-details-page">
-            <AppHeader />
+           
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={() => <AppDetails />} />
+                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={() =><> <AppHeader /> <AppDetails /></>} />
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={() => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
                             <CIDetails key={appId} />
