@@ -119,7 +119,7 @@
     cursor: pointer;
     margin: 0px;
     width: 100%;
-    min-height: 46px;
+    min-height: 36px;
     display: flex;
     align-items: center;
     border: solid 1px transparent;
@@ -160,7 +160,7 @@
 .command__control {
     font-weight: 500;
     border-radius: 2px;
-    padding: 1px 6px;
+    padding: 0px 6px;
     border-radius: 2px;
     border: solid 1px var(--N200);
     background-color: var(--N000);

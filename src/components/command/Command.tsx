@@ -444,7 +444,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     </h6>
                                 </> : null}
                                 <button ref={node => a['ref'] = node} key={`${index}-${a.value}`} onMouseOver={(e) => this.setState({ focussedArgument: index })} onClick={(event) => this.selectArgument(a)}
-                                    className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-0 cursor"}>
+                                    className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor"}>
                                     <span>{a.value}</span>
                                     <span className="ff-monospace command__control ml-20"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
