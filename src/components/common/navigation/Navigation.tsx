@@ -46,7 +46,7 @@ const navigationList = [
 	{
 		title: 'Global Configurations',
 		type: 'link',
-		href: `${URLS.GLOBAL_CONFIG}`,
+		href: URLS.GLOBAL_CONFIG,
 		iconClass: 'nav-short-global'
 	},
 ];

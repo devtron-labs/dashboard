@@ -30,6 +30,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         this.selectTab = this.selectTab.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.runCommand = this.runCommand.bind(this);
+        this.navigate = this.navigate.bind(this);
         this.handleArgumentInputChange = this.handleArgumentInputChange.bind(this);
         this.isSuggestionInView = this.isSuggestionInView.bind(this);
         this.noopOnArgumentInput = this.noopOnArgumentInput.bind(this);
@@ -152,38 +153,14 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (focussedArg) {
             allArgs = [...this.state.arguments, focussedArg];
             this.setState({ arguments: allArgs }, () => {
-                let last = allArgs[allArgs.length - 1];
-                let args = this.state.arguments.reduce((acc, current) => {
-                    acc = `${acc}/${current.value}`;
-                    return acc;
-
-                }, "");
-                ReactGA.event({
-                    category: 'Command Bar',
-                    action: 'Enter',
-                    label: args,
-                });
-                this.props.history.push(last.data.url);
-                this.props.toggleCommandBar(false);
+                this.navigate();
             })
         }
         else {
             if (this.state.argumentInput && candidateArg) {
                 allArgs = [...this.state.arguments, candidateArg];
                 this.setState({ arguments: allArgs }, () => {
-                    let last = allArgs[allArgs.length - 1];
-                    let args = this.state.arguments.reduce((acc, current) => {
-                        acc = `${acc}/${current.value}`;
-                        return acc;
-
-                    }, "");
-                    ReactGA.event({
-                        category: 'Command Bar',
-                        action: 'Enter',
-                        label: args,
-                    });
-                    this.props.history.push(last.data.url);
-                    this.props.toggleCommandBar(false);
+                    this.navigate();
                 })
             }
             else if (this.state.argumentInput) {
@@ -193,21 +170,24 @@ export class Command extends Component<CommandProps, CommandState>  {
                 })
             }
             else {
-                let last = allArgs[allArgs.length - 1];
-                let args = this.state.arguments.reduce((acc, current) => {
-                    acc = `${acc}/${current.value}`;
-                    return acc;
-
-                }, "");
-                ReactGA.event({
-                    category: 'Command Bar',
-                    action: 'Enter',
-                    label: args,
-                });
-                this.props.history.push(last.data.url);
-                this.props.toggleCommandBar(false);
+                this.navigate();
             }
         }
+    }
+
+    navigate() {
+        let last = this.state.arguments[this.state.arguments.length - 1];
+        let args = this.state.arguments.reduce((acc, current) => {
+            acc = `${acc}/${current.value}`;
+            return acc;
+        }, "");
+        ReactGA.event({
+            category: 'Command Bar',
+            action: 'Enter',
+            label: args,
+        });
+        this.props.history.push(last.data.url);
+        this.props.toggleCommandBar(false);
     }
 
     callGetArgumentSuggestions(args): void {
