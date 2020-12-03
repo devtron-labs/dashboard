@@ -115,6 +115,10 @@
     background-color: white;
 }
 
+.suggested-arguments__arg:hover {
+    background-color: var(--N100);
+}
+
 .suggested-arguments button {
     cursor: pointer;
     margin: 0px;

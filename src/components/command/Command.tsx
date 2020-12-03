@@ -442,7 +442,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8 flex column">
-                    <h4 className="ff-monospace command__control command__control--tab">&crarr; Enter</h4>
+                    <h4 className="ff-monospace command__control command__control--tab cursor" onClick={this.runCommand}>&crarr; Enter</h4>
                     <p className="command-empty-state__subtitle">Hit enter to navigate</p>
                 </div>
             }
@@ -465,8 +465,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     </h6>
                                 </> : null}
                                 <div ref={node => a['ref'] = node} key={`${index}-${a.value}`}
-                                    className="pl-20 pr-20 pt-10 pb-10 flexbox"
-                                    style={{ backgroundColor: this.state.focussedArgument === index ? `var(--N100)` : `var(--N00)` }}>
+                                    className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-10 pb-10 flexbox suggested-arguments__arg cursor"}>
                                     <button type="button" onClick={(event) => this.selectArgument(a)}>{a.value}</button>
                                     <span className="ff-monospace command__control ml-20"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
@@ -526,7 +525,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 </div>}
                             </div>
                             {this.state.arguments?.find(a => a?.data?.url) &&
-                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }}>&crarr;</span>
+                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4 cursor" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }} onClick={this.runCommand} >&crarr;</span>
                             }
                         </div>
                     </div>
