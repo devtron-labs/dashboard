@@ -39,6 +39,7 @@ interface GraphModalState {
     status4xx: string;
     status5xx: string;
     statusCode: string;
+    mainChartUrl: string;
     focusedInput: 'startDate' | 'endDate';
     calendarValue: string;
     calendar: {
@@ -67,6 +68,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             statusCode: 'Throughput',
             focusedInput: 'startDate',
             calendarValue: '',
+            mainChartUrl:'',
             calendar: { ...this.props.calendar },
             calendarInputs: { ...this.props.calendarInputs },
             mainChartName: this.props.chartName,
@@ -78,9 +80,9 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     componentDidMount() {
-        let { cpu, ram, throughput, latency, status2xx, status4xx, status5xx } = this.getNewGraphs(this.state.tab);
+        let { cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
         let str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate);
-        this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, calendarValue: str });
+        this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl, calendarValue: str });
     }
 
     getNewGraphs(tab: AppMetricsTabType) {
@@ -92,7 +94,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         let status5xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, '5xx');
         let status = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, 'Throughput');
         let throughput = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, 'Throughput');
-        return { cpu, ram, throughput, status2xx, status4xx, status5xx, status, latency };
+        let mainChartUrl = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, this.state.mainChartName, this.props.newPodHash, this.state.calendarInputs, tab, true, this.state.statusCode);
+        return { cpu, ram, throughput, status2xx, status4xx, status5xx, status, latency, mainChartUrl };
     }
 
     handleDatesChange = ({ startDate, endDate }) => {
@@ -155,10 +158,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                 startDate: startStr,
                 endDate: 'now',
             },
-            calendarValue: str
+            calendarValue: str,
         }, () => {
-            let { cpu, ram, throughput, status2xx, status4xx, status5xx } = this.getNewGraphs(this.state.tab);
-            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx });
+            let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
+            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
         });
     }
 
@@ -180,7 +183,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
     render() {
         let iframeClasses = "app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12";
-        let mainChartUrl = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, this.state.mainChartName, this.props.newPodHash, this.state.calendarInputs, this.state.tab, true, this.state.statusCode);
+        let mainChartUrl = this.state.mainChartUrl;
+
         return <VisibleModal className="" close={this.props.close}>
             <div className="modal__body modal__body--full-screen" onClick={e => e.stopPropagation()}>
                 <div className="modal__header p-24 m-0">
