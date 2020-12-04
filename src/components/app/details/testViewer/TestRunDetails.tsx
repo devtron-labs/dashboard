@@ -16,8 +16,8 @@ import { getTestSuites, getTestCase, getSuiteDetail } from './service';
 import { PieChart, Pie, Cell } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {SelectedNames} from './Test.types'
+import { getBinWiseArrayData } from "./testRunDetails.util";
 
-const computeHistogram = require('compute-histogram');
 
 export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedNames})=>{
     const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>();
@@ -27,7 +27,8 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
         testcaseId?: number;
         tab: 'properties' | 'system-output' | 'system-error' | 'testcase' | '';
     }>({ testSuitesId: 0, testSuiteId: 0, tab: '' });
-    const [loading, result, error, reload] = useAsync(() => getTestSuites(params.pipelineId, params.triggerId, selectedNames), [
+
+    const [loading, result, error, reload] = useAsync(() => getTestSuites(params.appId, params.pipelineId, params.triggerId, selectedNames), [
         params,
     ]);
 
@@ -43,7 +44,6 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
                 }, []),
             ];
         }, []);
-
         const initStatusAggregation = {
             testCount: 0,
             disabledCount: 0,
@@ -52,7 +52,6 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             skippedCount: 0,
             unknownCount: 0,
         };
-
         const timeAggregation = testcases?.reduce((agg, testcase) => {
             const { time } = testcase;
             if (time) {
@@ -64,7 +63,6 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             }
             return agg;
         }, {});
-
         const statusAggregation = result?.result?.result?.testsuites?.reduce((agg, curr) => {
             const { testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount } = curr;
             agg['testCount'] += testCount || 0;
@@ -98,11 +96,11 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
                 ))}
             </div>
             {!!testSuiteIds.testSuitesId && !!testSuiteIds.testSuiteId && (
-                <Drawer position="right" width="800px">
-                    {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'testcase' &&  <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} />}
+                <Drawer position="right" width="800px" onClose={hideDrawer}>
+                    {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId}/>}
+                    {testSuiteIds.tab === 'testcase' &&  <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} appId={params.appId} />}
                 </Drawer>
             )}
         </>
@@ -161,9 +159,14 @@ const TestSuites: React.FC<{
             <span>{time ? `${time / 1000}s` : null}</span>
             <List.Detail>
                 <div className="test--detail">
-                    {testsuite?.map((testsuiteData) => (
-                        <TestSuite showDrawer={showDrawer} testsuitesId={testsuitesId} key={testsuiteData.id} data={testsuiteData} />
-                    ))}
+                    {testsuite?.map((testsuiteData) => 
+                        (<TestSuite 
+                            showDrawer={showDrawer} 
+                            testsuitesId={testsuitesId} 
+                            key={testsuiteData.id} 
+                            data={testsuiteData} 
+                        />))
+                    }
                 </div>
             </List.Detail>
         </List>
@@ -279,8 +282,8 @@ const TestSuite: React.FC<{
         </List>
     );
 };
-function Properties({testSuiteId, testSuitesId, hideDrawer}) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function Properties({testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
 
@@ -324,8 +327,8 @@ function Properties({testSuiteId, testSuitesId, hideDrawer}) {
     );
 }
 
-function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function SystemOutput({ testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
     function handleClose(e) {
@@ -348,8 +351,8 @@ function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
     );
 }
 
-function SystemError({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
+function SystemError({ testSuiteId, testSuitesId, hideDrawer, appId}) {
+    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(appId), Number(testSuitesId), Number(testSuiteId)), [
         testSuiteId,
     ]);
     function handleClose(e) {
@@ -416,9 +419,9 @@ function TestStats({ testCount, disabledCount, errorCount, failureCount, skipped
     );
 }
 
-function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer }) {
+function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer, appId }) {
     const [testCaseDetail, setTestCaseDetail] = useState(null);
-    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(testcaseId)), [testcaseId]);
+    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(appId), Number(testcaseId)), [testcaseId]);
     function handleClose(e) {
         hideDrawer()
     }
@@ -483,7 +486,7 @@ function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer })
 function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
     return (
         <section>
-            <b>{nodeType}</b>
+            <span className="node-type-heading">{nodeType}</span>
             {type && (
                 <>
                     <label htmlFor="" className="light">
@@ -578,27 +581,37 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
 }
 
 const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) => {
-
     function calculateHistogram(dist, numOfBins=10){
-        const arr = Object.keys(dist).map(Number).sort((a,b)=>a-b)
-        const histogram = computeHistogram(arr, numOfBins).map(arr=>arr.reduce((a,b)=>a+b, 0))
-        return histogram
-
+        let testTimeData = [];
+        const uniqueTimeKeys = Object.keys(dist);
+        for (let i = 0; i < uniqueTimeKeys.length; i++) {
+            // create an array with values filled equal to the times the key is repeated
+            const dataToConcat = Array(dist[uniqueTimeKeys[i]]).fill(uniqueTimeKeys[i]);
+            testTimeData = testTimeData.concat(dataToConcat);
+        }
+        testTimeData.sort((a,b) => a - b);
+        const binWidth = testTimeData[testTimeData.length - 1] / 10;
+        const binWiseArrayData = getBinWiseArrayData(testTimeData, numOfBins, binWidth);
+        const chartData = [];
+        for (let i = 0; i < binWiseArrayData.length; i++) {
+            chartData.push({
+                'number of tests':  binWiseArrayData[i],
+                'time spent': `${Number((i * binWidth).toFixed(2))} - ${Number(((i + 1) * binWidth).toFixed(2))}`
+            })
+        }
+        return chartData;
     }
     const hist = useMemo(()=>calculateHistogram(timeAggregation), [timeAggregation]);
-    const data = Object.entries(hist).map(([timeSpent, freq]) => ({
-        'time spent': timeSpent,
-        'number of tests': freq,
-    }));
+
     return (
         <div className="w-100 bcn-0 br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
             <ResponsiveContainer>
-                <BarChart data={data}>
+                <BarChart data={hist}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <YAxis />
-                    <XAxis dataKey="time spent" unit={'ms'} scale={'linear'} />
-                    <Tooltip />
-                    <Bar radius={8} dataKey={'number of tests'} fill={'var(--B500)'} />
+                    <YAxis allowDecimals={false}/>
+                    <XAxis dataKey="time spent" unit={'ms'}/>
+                    <Tooltip cursor={{fill: 'transparent'}}/>
+                    <Bar radius={[4, 4, 0, 0]} dataKey={'number of tests'} fill={'var(--B500)'} />
                 </BarChart>
             </ResponsiveContainer>
         </div>

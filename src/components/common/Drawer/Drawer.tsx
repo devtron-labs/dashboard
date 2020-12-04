@@ -11,7 +11,11 @@ interface drawerInterface{
     height?: string;
 }
 
-const Drawer:React.FC<drawerInterface> = ({children, position, height, width})=>{
+const Drawer:React.FC<drawerInterface> = ({children, position, height, width, onClose})=>{
+    function preventPropagation(e: React.MouseEvent<HTMLElement>) {
+        e.stopPropagation();
+    }
+
     const drawerRef = useRef(null)
     useEffect(()=>{
         setTimeout(()=>drawerRef.current?.classList?.add('show'), 1)
@@ -25,8 +29,10 @@ const Drawer:React.FC<drawerInterface> = ({children, position, height, width})=>
         style['--height'] = height
     }
     return (
-        <VisibleModal className="drawer--container">
-            <aside  style={style} ref={drawerRef} className={`drawer ${position}`}>
+        <VisibleModal 
+            className="drawer--container"
+            close={onClose}>
+            <aside  style={style} ref={drawerRef} className={`drawer ${position}`} onClick={preventPropagation}>
                 {children}
             </aside>
         </VisibleModal>

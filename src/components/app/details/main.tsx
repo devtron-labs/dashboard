@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
-import { ErrorBoundary, Progressing, showError, asyncWrap, BreadCrumb, useBreadcrumb } from '../../common';
+import { ErrorBoundary, Progressing, showError, asyncWrap } from '../../common';
 import { getAppConfigStatus, getAppListMin } from '../../../services/service';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
@@ -132,7 +132,7 @@ export function AppHeader() {
             <span className="cn-5 fs-18 lowercase" onClick={() => {
                 push('/app');
             }}>apps</span>
-             <span className="cn-9 fs-18">/</span>
+            <span className="cn-9 fs-18">/</span>
             <AppSelector
                 primaryKey="appId"
                 primaryValue="name"

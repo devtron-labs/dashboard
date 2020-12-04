@@ -134,6 +134,7 @@ ul.test--detail{
             margin: unset;
             line-height: unset;
             font-weight: 600;
+            font-size: 20px;
         }
 
         .status{
@@ -337,4 +338,33 @@ li.suite-meta{
     svg path:nth-child(2){
         stroke: var(--N500);
     }
+}
+
+.pipeline-text {
+    height: 36px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 2.25;
+    color: var(--N900);
+    margin: 0 16px 0 0;
+}
+
+.no-reports-img {
+    width: 250px;
+    height: 200px;
+    margin: 0 0 12px;
+    padding: 11px 15px 14px 12px;
+}
+
+.placeholder-text-filter {
+    font-size: 14px;
+    line-height: 1.43;
+    color: var(--N400);
+}
+
+.node-type-heading {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    color: var(--N900);
 }
