@@ -935,8 +935,8 @@ table.pod__table td:last-child {
 .events-logs {
     position: fixed;
     bottom: 0;
-    left: 72px;
-    width: calc(100vw - 72px);
+    left: 64px;
+    width: calc(100vw - 64px);
     background: #0b0f22;
     display: grid;
     grid-template-rows: 36px 40px 1fr;
