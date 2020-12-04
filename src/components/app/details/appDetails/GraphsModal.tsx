@@ -206,7 +206,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                                 <iframe src={this.state.ram} title="ram" className={iframeClasses} />
                             </div>
                         </div>}
-                        {this.props.infraMetrics && <div className={`app-details-graph pt-4 cursor  ${this.state.mainChartName?.toLowerCase() === 'status' && (this.state.statusCode === "Throughput") ? 'app-details-graph__iframe--selected' : ''}`} onClick={(e) => this.handleChartChange('status', 'Throughput')}>
+                        {this.props.appMetrics && <div className={`app-details-graph pt-4 cursor  ${this.state.mainChartName?.toLowerCase() === 'status' && (this.state.statusCode === "Throughput") ? 'app-details-graph__iframe--selected' : ''}`} onClick={(e) => this.handleChartChange('status', 'Throughput')}>
                             <h3 className="app-details-graph__title pl-16">Throughput</h3>
                             <div className="app-details-graph__iframe-container" >
                                 <div className="app-details-graph__transparent-div"></div>

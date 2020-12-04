@@ -171,14 +171,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             <Progressing pageLoader />
         </div>
     </div>
-    // if (!datasource.isConfigured) {
-    //     return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
-    // }
-    // else if (!datasource.isHealthy) {
-    //     return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
-    // }
-    // else
-    return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
+    if (!datasource.isConfigured) {
+        return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
+    }
+    else if (!datasource.isHealthy) {
+        return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
+    }
+    else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
         {(appMetrics || infraMetrics) && (
             <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
