@@ -109,7 +109,7 @@ function DiscoverListing() {
             <div className="chart-group__header">
                 <div className="flexbox">
                     <h2 className="chart-grid__title">Chart Groups</h2>
-                    <button type="button" className="cta small cancel no-focus"
+                    <button type="button" className="chart-group__view-all"
                         onClick={e => push(url + '/group')}>View All
                      </button>
                 </div>

@@ -165,7 +165,7 @@
 .chart-grid--chart-group-snapshot {
     min-height: 232px;
 }
-/* 
+
 .chart-group__view-all {
     padding: 5px 12px;
     border-radius: 4px;
@@ -176,7 +176,8 @@
     letter-spacing: normal;
     text-align: center;
     color: var(--N700);
-} */
+    background-color: var(--N000);
+}
 
 .deploy-selected-chart-hr {
     width: 100%;

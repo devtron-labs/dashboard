@@ -92,7 +92,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         try {
             let datasourceConfiguredRes, datasourceHealthyRes;
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
-            console.log(datasourceConfiguredRes);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
             setDatasource({
                 isLoading: false,
