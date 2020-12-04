@@ -24,7 +24,6 @@ import {
     FragmentHOC,
     useSearchString,
     multiSelectStyles,
-    useInterval,
     useAsync,
     SingleSelectOption as Option,
     ScanDetailsModal,
@@ -49,8 +48,7 @@ import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-d
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
-import Select, { components } from 'react-select'
-import { aggregateNodes } from './utils'
+import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {
     AppStreamData,
@@ -62,7 +60,7 @@ import {
     NodeDetailTabsType,
     AppDetails,
 } from '../../types';
-import { SecurityVulnerabilitites } from './appDetails.util';
+import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 
 export default function AppDetail() {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getIframeSrc, ThroughputSelect } from './appDetails.util';
+import { getIframeSrc, ThroughputSelect } from './utils';
 import { ChartTypes } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
@@ -72,21 +72,27 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleApply(): void {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate);
         setCalendarValue(str);
+    }
+
+    function getCalendarValue(startDate: string, endDate: string): string {
+        const startDateString = startDate;
+        const endDateString = endDate;
+        let str: string = `${startDateString} - ${endDateString}`;
+        if (endDate === 'now' && startDate.includes('now')) {
+            let range = DayPickerRangeControllerPresets.find(d => d.endStr === startDate);
+            if (range) str = range.text;
+            else str = `${startDate} - ${endDate}`;
+        }
+        return str;
     }
 
     async function checkDatasource() {
         try {
             let datasourceConfiguredRes, datasourceHealthyRes;
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
+            console.log(datasourceConfiguredRes);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
             setDatasource({
                 isLoading: false,
@@ -102,15 +108,18 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
     }
 
-    function handlePredefinedRange(start: Moment, end: Moment, endStr: string): void {
+    function handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
         setDateRange({
             startDate: start,
             endDate: end,
         });
         setCalendarInput({
-            startDate: endStr,
+            startDate: startStr,
             endDate: 'now',
         });
+        let str = getCalendarValue(startStr, 'now');
+        setCalendarValue(str);
+
     }
 
     function handleStatusChange(selected): void {
@@ -119,7 +128,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setGraphs({
             ...graphs,
             throughput: throughput,
-        })
+        });
     }
 
     function getNewGraphs(): void {
@@ -162,13 +171,14 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             <Progressing pageLoader />
         </div>
     </div>
-    if (!datasource.isConfigured) {
-        return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
-    }
-    else if (!datasource.isHealthy) {
-        return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
-    }
-    else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
+    // if (!datasource.isConfigured) {
+    //     return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
+    // }
+    // else if (!datasource.isHealthy) {
+    //     return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
+    // }
+    // else
+    return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
         {(appMetrics || infraMetrics) && (
             <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>

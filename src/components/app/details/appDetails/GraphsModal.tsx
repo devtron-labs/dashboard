@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { VisibleModal, DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets } from '../../../common';
-import { getIframeSrc } from './appDetails.util';
 import { AppMetricsTabType, ChartTypes } from './appDetails.type';
-import { ThroughputSelect } from './appDetails.util';
+import { getIframeSrc, ThroughputSelect } from './utils';
 import { Moment } from 'moment';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 
