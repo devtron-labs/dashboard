@@ -68,7 +68,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             statusCode: 'Throughput',
             focusedInput: 'startDate',
             calendarValue: '',
-            mainChartUrl:'',
+            mainChartUrl: '',
             calendar: { ...this.props.calendar },
             calendarInputs: { ...this.props.calendarInputs },
             mainChartName: this.props.chartName,
@@ -133,17 +133,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleApply = (): void => {
-        const startDateString = this.state.calendarInputs.startDate;
-        const endDateString = this.state.calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (this.state.calendarInputs.endDate === 'now' && this.state.calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === this.state.calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${this.state.calendarInputs.startDate} - ${this.state.calendarInputs.endDate}`;
-        }
+        let str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate);
         this.setState({ calendarValue: str }, () => {
-            let { cpu, ram, throughput, status2xx, status4xx, status5xx } = this.getNewGraphs(this.state.tab);
-            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx });
+            let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
+            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
         });
     }
 
@@ -183,7 +176,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
     render() {
         let iframeClasses = "app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12";
-        let mainChartUrl = this.state.mainChartUrl;
 
         return <VisibleModal className="" close={this.props.close}>
             <div className="modal__body modal__body--full-screen" onClick={e => e.stopPropagation()}>
@@ -278,7 +270,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                             </div>
                         </div>
                         <div className="w-100 flex-1">
-                            <iframe src={mainChartUrl} title={this.state.mainChartName} className="graph-modal__main-chart" />
+                            <iframe src={this.state.mainChartUrl} title={this.state.mainChartName} className="graph-modal__main-chart" />
                         </div>
                     </div>
                 </section>
