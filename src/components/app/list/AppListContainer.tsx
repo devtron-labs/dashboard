@@ -32,6 +32,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 key: SortBy.APP_NAME,
                 order: OrderBy.ASC
             },
+            showCommandBar: false,
             offset: 0,
             pageSize: 20,
             expandedRow: false,

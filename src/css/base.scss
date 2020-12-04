@@ -13,7 +13,7 @@
     --filter-menu-index: 7;
     --transparent-div-index: 6;
     --app-list-header-index: 3;
-    --navigation-index: 6;
+    --navigation-index: 5;
     --tooltip-index: 7;
     --events-logs: 5;
     --index-next-section: 3;
@@ -28,139 +28,6 @@ html {
     width: 100vw;
     overflow-x: hidden;
     max-width: 100%;
-}
-
-#root>main {
-    width: 100%;
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 72px 1fr;
-    overflow-y: hidden;
-
-    &>nav {
-        background: var(--B500);
-        position: sticky;
-        top: 0;
-        display: flex;
-        overflow: visible;
-        z-index: var(--navigation-index);
-
-        aside.main-nav {
-            display: grid;
-            grid-template-rows: 84px repeat(auto-fit, 64px);
-            align-items: center;
-
-            .bottom-nav {
-                grid-row: -1 / auto;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-
-                .hubspot-placeholder {
-                    height: 80px;
-                    width: 100%;
-                }
-
-                a,
-                button {
-                    &:hover {
-                        text-decoration: none;
-                    }
-
-                    &:focus {
-                        outline: none;
-                        border: solid 1px var(--N000)
-                    }
-                }
-            }
-        }
-
-        aside.short-nav {
-            flex-basis: 72px;
-            padding: 0 16px;
-
-            .svg-container {
-                height: 40px;
-                width: 40px;
-                border-radius: 8px;
-            }
-
-            a {
-                svg.short-nav-icon {
-                    width: 24px;
-                    height: 24px;
-                    fill: white;
-                    opacity: 0.5;
-
-                    &.logo {
-                        width: 40px;
-                        height: 40px;
-                        opacity: 1;
-                    }
-                }
-
-                &.active-nav,
-                &:hover {
-                    svg.short-nav-icon {
-                        opacity: 1;
-                    }
-                }
-
-                &:not(.active-nav):focus {
-                    border: 1px solid white;
-                    border-radius: 8px;
-                }
-
-                &.active-nav {
-                    .svg-container {
-                        background: #0000007d;
-                    }
-                }
-            }
-        }
-
-        .expanded-nav {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 72px;
-            width: 0px;
-            transition: width 300ms ease-out 0s;
-            background: var(--B500);
-            align-items: left;
-            overflow: hidden;
-
-            .title-container {
-                color: white;
-                font-size: 14px;
-                font-weight: 600;
-                width: 172px;
-                height: 40px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                text-align-last: left;
-            }
-
-            .text-logo {
-                width: 76px;
-                height: 16px;
-            }
-        }
-
-        &:hover {
-            aside.expanded-nav {
-                transition: width 300ms ease-out 700ms;
-                width: 188px;
-                height: 100vh;
-            }
-        }
-    }
-
-    &>div.main {
-        height: 100vh;
-        width: 100%;
-        overflow-y: auto;
-    }
 }
 
 .info__container {
@@ -303,6 +170,15 @@ a:focus {
     text-transform: lowercase;
 }
 
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.ff-monospace {
+    font-family: monospace;
+}
+
 @mixin tab-container($bgColor,
     $color) {
     .tab {
@@ -395,6 +271,14 @@ a:focus {
 
 .flex-justify {
     justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-nowrap {
+    flex-wrap: nowrap;
 }
 
 .loading-wrapper {
