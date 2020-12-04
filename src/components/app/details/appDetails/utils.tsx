@@ -214,7 +214,7 @@ export function ThroughputSelect(props) {
 
 export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: MetricsType, isLegendRequired: boolean, statusCode?: string) {
     let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    rootUrl = 'http://demo.devtron.info:32080';
+    // rootUrl = 'http://demo.devtron.info:32080';
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
     let url = ``;
