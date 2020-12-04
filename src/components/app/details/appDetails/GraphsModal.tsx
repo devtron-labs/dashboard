@@ -144,16 +144,21 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         });
     }
 
-    handlePredefinedRange(start: Moment, end: Moment, endStr: string): void {
+    handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
+        let str: string = getCalendarValue(startStr, 'now');
         this.setState({
             calendar: {
                 startDate: start,
                 endDate: end,
             },
             calendarInputs: {
-                startDate: endStr,
+                startDate: startStr,
                 endDate: 'now',
             },
+            calendarValue: str
+        }, () => {
+            let { cpu, ram, throughput, status2xx, status4xx, status5xx } = this.getNewGraphs(this.state.tab);
+            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx });
         });
     }
 
