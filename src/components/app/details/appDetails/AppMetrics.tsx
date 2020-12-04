@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getIframeSrc, ThroughputSelect } from './utils';
+import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
 import { ChartTypes } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets, Progressing } from '../../../common';
+import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
@@ -76,18 +76,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setCalendarValue(str);
     }
 
-    function getCalendarValue(startDate: string, endDate: string): string {
-        const startDateString = startDate;
-        const endDateString = endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (endDate === 'now' && startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === startDate);
-            if (range) str = range.text;
-            else str = `${startDate} - ${endDate}`;
-        }
-        return str;
-    }
-
     async function checkDatasource() {
         try {
             let datasourceConfiguredRes, datasourceHealthyRes;
@@ -145,14 +133,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
 
     useEffect(() => {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
         getNewGraphs();
         checkDatasource();

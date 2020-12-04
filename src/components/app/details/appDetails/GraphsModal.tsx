@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { VisibleModal, DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets } from '../../../common';
 import { AppMetricsTabType, ChartTypes } from './appDetails.type';
-import { getIframeSrc, ThroughputSelect } from './utils';
+import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
 import { Moment } from 'moment';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 
@@ -79,14 +79,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
     componentDidMount() {
         let { cpu, ram, throughput, latency, status2xx, status4xx, status5xx } = this.getNewGraphs(this.state.tab);
-        const startDateString = this.state.calendarInputs.startDate;
-        const endDateString = this.state.calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (this.state.calendarInputs.endDate === 'now' && this.state.calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === this.state.calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${this.state.calendarInputs.startDate} - ${this.state.calendarInputs.endDate}`;
-        }
+        let str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate);
         this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, calendarValue: str });
     }
 

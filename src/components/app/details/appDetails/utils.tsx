@@ -1,4 +1,3 @@
-
 import {
     Nodes,
     NodeType,
@@ -13,6 +12,8 @@ import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
 import { ChartTypes, MetricsType } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
+import { DayPickerRangeControllerPresets } from '../../../common';
+
 interface SecurityVulnerabilititesProps {
     imageScanDeployInfoId: number;
     severityCount: {
@@ -210,6 +211,16 @@ export function ThroughputSelect(props) {
             DropdownIndicator: DropdownIndicator,
         }}
     />
+}
+
+export function getCalendarValue(startDateStr: string, endDateStr: string): string {
+    let str: string = `${startDateStr} - ${endDateStr}`;
+    if (endDateStr === 'now' && startDateStr.includes('now')) {
+        let range = DayPickerRangeControllerPresets.find(d => d.endStr === startDateStr);
+        if (range) str = range.text;
+        else str = `${startDateStr} - ${endDateStr}`;
+    }
+    return str;
 }
 
 export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: MetricsType, isLegendRequired: boolean, statusCode?: string) {
