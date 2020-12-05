@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import { getArgumentSuggestions, AllSuggestedArguments } from './command.util';
-import { COMMAND, COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
+import { COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
 import ReactGA from 'react-ga';
 import './command.css';
 

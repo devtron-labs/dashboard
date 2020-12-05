@@ -157,7 +157,7 @@ export function ListComponent({ title, name = "", subtitle = "", onClick, classN
             <div className="configuration-list__title">{title}</div>
             {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
         </div>
-        {collapsible && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
+        {collapsible && <img className="configuration-list__arrow pointer" alt="" src={arrowTriangle} />}
     </article>
 }
 

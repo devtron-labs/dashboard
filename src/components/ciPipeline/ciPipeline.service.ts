@@ -43,7 +43,6 @@ export function getSourceConfigParsed(appId): Promise<any> {
 }
 
 export function getCIPipelineParsed(appId: string, ciPipelineId: string): Promise<any> {
-    const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
     return Promise.all([getSourceConfig(appId), getCIPipeline(appId, ciPipelineId)]).then(([sourceConfigRes, ciPipelineRes]) => {
         let ciPipeline = ciPipelineRes?.result;
         let gitMaterials = sourceConfigRes?.result?.material || [];

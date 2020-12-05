@@ -56,7 +56,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
         app: getAppArguments,
         chart: getChartArguments,
         security: getSecurityArguments,
-        ['global-config']: getGlobalConfigArguments,
+        'global-config': getGlobalConfigArguments,
     };
 
 
