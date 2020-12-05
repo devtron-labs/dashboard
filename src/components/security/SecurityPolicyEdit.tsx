@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
 import { styles, portalStyles, DropdownIndicator } from './security.util';
-import { VulnerabilityUIMetaData, GetVulnerabilityPolicyResponse, FetchPolicyQueryParams, SeverityPolicy, CvePolicy, VulnerabilityPermission, VulnerabilityAction, Severity, ResourceLevel, VulnerabilityPolicy } from './security.types';
+import { VulnerabilityUIMetaData, GetVulnerabilityPolicyResponse, FetchPolicyQueryParams, SeverityPolicy, CvePolicy, VulnerabilityAction, Severity, ResourceLevel, VulnerabilityPolicy } from './security.types';
 import { AddCveModal } from './AddCveModal';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -267,7 +267,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 <div>
                     <h1 className="security-policy-card__title">CVE Policies</h1>
                     <p className="security-policy-card__subtitle">Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
-                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} target="_blank">Search CVE List</a></p>
+                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} rel="noopener noreferrer" target="_blank">Search CVE List</a></p>
                 </div>
                 <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
                     <Add className="icon-dim-16 mr-5" />Add CVE Policy
@@ -289,7 +289,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                             //inherited is created at parent level
                             return <tr key={cve.name} className="security-policy__table-row">
                                 <td className="security-policy__data-cell security-policy__cve-cell cve-cell">
-                                    <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} target="_blank">
+                                    <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} rel="noopener noreferrer" target="_blank">
                                         {cve.name}
                                     </a>
                                 </td>

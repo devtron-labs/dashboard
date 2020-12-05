@@ -1,5 +1,5 @@
 import {get, post, put, trash} from '../../services/api'
-import {URLS, Routes} from '../../config'
+import { Routes} from '../../config'
 
 export function overRideConfigMap(id, appId, environmentId, configData){
     return post(`${ Routes.APP_CREATE_ENV_CONFIG_MAP }`, {

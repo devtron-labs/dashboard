@@ -1,4 +1,3 @@
-import { time, timeStamp } from 'console';
 import { fetchAPI } from '../../../../services/hostGrafana';
 
 export function isDatasourceConfigured(envName: string) {
