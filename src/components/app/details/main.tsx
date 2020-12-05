@@ -148,7 +148,7 @@ export function AppHeader() {
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
-                    <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
+                    <NavLink activeClassName="active" to={`${match.url}/tests`} className="tab-list__tab-link">
                         Tests
                     </NavLink>
                 </li>
