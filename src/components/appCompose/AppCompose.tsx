@@ -2,16 +2,16 @@ import React, { useState, useEffect, lazy, Suspense, useMemo, useRef, useCallbac
 import { useParams, useLocation, useRouteMatch, useHistory, generatePath } from 'react-router';
 import { NavLink, Link, Route, Redirect, Switch } from 'react-router-dom';
 import { AppConfigStatus, URLS, getAppComposeURL, APP_COMPOSE_STAGE, getNextStageURL, getNavItems, isCIPipelineCreated } from '../../config';
-import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog,  useAsync, BreadCrumb, useBreadcrumb, useAppContext } from '../common';
+import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, BreadCrumb, useBreadcrumb, useAppContext } from '../common';
 import { deleteApp } from './service';
-import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment, getWorkflowList, getAppListMin } from '../../services/service';
+import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment, getAppListMin } from '../../services/service';
 import { ReactComponent as Next } from '../../assets/icons/ic-arrow-forward.svg';
 import warn from '../../assets/icons/ic-warning.svg';
 import lockIcon from '../../assets/icons/ic-locked.svg'
 import arrowIcon from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { toast } from 'react-toastify';
+import AppSelector from '../AppSelector';
 import './appCompose.scss';
-import AppSelector from '../AppSelector'
 
 const Artifacts = lazy(() => import('../artifacts/Artifacts'));
 const CIConfig = lazy(() => import('../ciConfig/CIConfig'));
@@ -22,8 +22,8 @@ const WorkflowEdit = lazy(() => import('../workflowEditor/workflowEditor'));
 const EnvironmentOverride = lazy(() => import('../EnvironmentOverride/EnvironmentOverride'));
 
 
-export default function AppCompose(){
-    const[state, setState] = useState({
+export default function AppCompose() {
+    const [state, setState] = useState({
         configStatus: AppConfigStatus.APP,
         appId: null,
         navItems: [],
@@ -32,43 +32,45 @@ export default function AppCompose(){
         appName: '',
         maximumAllowedUrl: '',
     })
-    const {appId} = useParams()
-    const {url, path}= useRouteMatch()
-    const {pathname} = useLocation()
-    const {push} = useHistory()
-    const [loading, result, error, reload] = useAsync(()=>Promise.all([fetchAppConfigStatus(), getSourceConfig(appId)]), [appId])
-    useEffect(()=>{
-        if(loading) return
-        if(error){
+    const { appId } = useParams<{ appId }>()
+    const match = useRouteMatch()
+    const location = useLocation()
+    const history = useHistory()
+    const [loading, result, error, reload] = useAsync(() => Promise.all([fetchAppConfigStatus(), getSourceConfig(appId)]), [appId])
+
+    useEffect(() => {
+        if (loading) return
+        if (error) {
             showError(error)
             return
         }
-        setState(state=>({...state, appName: result ? result[1]?.result?.appName : ''}))
+        setState(state => ({ ...state, appName: result ? result[1]?.result?.appName : '' }))
 
-    },[loading, result, error])
+    }, [loading, result, error])
 
-    const canDeleteApp: boolean = useMemo(()=>{
-        if(loading) return false
-        if(result && result[1]?.result?.workflows?.length > 0 ) return false
+
+    const canDeleteApp: boolean = useMemo(() => {
+        if (loading) return false
+        if (result && result[1]?.result?.workflows?.length > 0) return false
         return true
-    },[loading, result])
+    }, [loading, result])
 
-    async function fetchAppConfigStatus(){
+    async function fetchAppConfigStatus() {
         getAppConfigStatus(+appId).then((response) => {
             let nextUrl = getNextStageURL(response.result, appId);
             let { configStatus, navItems } = getNavItems(response.result, appId);
             let isCiPipeline = isCIPipelineCreated(response.result);
-            setState(state=>({ ...state, isCiPipeline, configStatus, navItems, maximumAllowedUrl: nextUrl, appId: +appId }));
-            if(pathname === url){
+            setState(state => ({ ...state, isCiPipeline, configStatus, navItems, maximumAllowedUrl: nextUrl, appId: +appId }));
+            if (location.pathname === match.url) {
                 //tab is not specified
-                push(nextUrl)
+                history.push(nextUrl)
             }
         }).catch((errors) => {
             showError(errors);
         })
     }
 
-    function redirectToWorkflowEditor(){
+    function redirectToWorkflowEditor() {
         return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
     }
 
@@ -76,27 +78,27 @@ export default function AppCompose(){
         deleteApp(appId).then((response) => {
             if (response.code === 200) {
                 toast.success("Application Deleted!!!");
-                push(`${URLS.APP}`);
+                history.push(`${URLS.APP}`);
             }
         }).catch((error) => {
             showError(error);
         })
     }
 
-    function respondOnSuccess(){
+    function respondOnSuccess() {
         fetchAppConfigStatus();
     }
 
-    function showDeleteConfirmation(e){
+    function showDeleteConfirmation(e) {
         setState((state) => ({ ...state, showDeleteConfirm: true }));
     }
 
-    function DeleteDialogContainer(){
+    function DeleteDialogContainer() {
         if (state.showDeleteConfirm) {
             if (canDeleteApp)
                 return <DeleteDialog title={`${state.appName}`}
                     description={"This will delete all resources associated with this application. Deleted applications cannot be restored."}
-                    closeDelete={() => { setState(state=>({...state, showDeleteConfirm: false })) }}
+                    closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}
                     delete={deleteAppHandler}
                 />
             else {
@@ -105,8 +107,8 @@ export default function AppCompose(){
                     <ConfirmationDialog.Body title="Cannot Delete application" />
                     <p className="modal__description">Delete all pipelines and workflows before deleting this application.</p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={e => { setState(state=>({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
-                        <Link onClick={e => setState(state=>({...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12">
+                        <button type="button" className="cta cancel" onClick={e => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
+                        <Link onClick={e => setState(state => ({ ...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12">
                             View Workflows
                         </Link>
                     </ConfirmationDialog.ButtonGroup>
@@ -115,39 +117,40 @@ export default function AppCompose(){
         }
         return null
     }
-    if(+appId !== state.appId) return <Progressing pageLoader/>
+    if (+appId !== state.appId) return <Progressing pageLoader />
 
     return <>
         <div className="app-compose" >
-            <Header/>
+            <Header />
             <div className="app-compose__nav flex column left top position-rel">
-                <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems}/>
+                <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
             <div className="app-compose__main">
-                {loading 
-                ? <Progressing pageLoader /> 
-                : <AppComposeRouter 
-                    configStatus={state.configStatus} 
-                    respondOnSuccess={respondOnSuccess} 
-                    isCiPipeline={state.isCiPipeline}
-                    getWorkflows={reload}
-                    maxAllowedUrl={state.maximumAllowedUrl}
-                />}
+                {loading
+                    ? <Progressing pageLoader />
+                    : <AppComposeRouter
+                        configStatus={state.configStatus}
+                        respondOnSuccess={respondOnSuccess}
+                        isCiPipeline={state.isCiPipeline}
+                        getWorkflows={reload}
+                        maxAllowedUrl={state.maximumAllowedUrl}
+                    />}
             </div>
         </div>
-        <DeleteDialogContainer/>
+        <DeleteDialogContainer />
     </>
 }
 
 const NextButton: React.FC<{ configStatus: any; isCiPipeline: boolean; stage: APP_COMPOSE_STAGE; stageNo: number }> = ({ configStatus, isCiPipeline, stage, stageNo }) => {
-    const {push} = useHistory()
-    const {appId} = useParams()
+    const { push } = useHistory()
+    const { appId } = useParams<{ appId }>()
+
     if (!isCiPipeline)
         return (
             <div className="app-compose__next-section">
                 <button
                     type="button"
-                    disabled={configStatus  <= stageNo}
+                    disabled={configStatus <= stageNo}
                     className="cta align-right flex"
                     onClick={(event) => {
                         let url = getAppComposeURL(appId, stage);
@@ -163,7 +166,7 @@ const NextButton: React.FC<{ configStatus: any; isCiPipeline: boolean; stage: AP
 };
 
 
-function Navigation({navItems, deleteApp}) {
+function Navigation({ navItems, deleteApp }) {
     return (
         <>
             {navItems.map((item) => {
@@ -195,8 +198,8 @@ function Navigation({navItems, deleteApp}) {
                             {item.isLocked && <img src={lockIcon} alt="locked" className="app-compose__nav-icon" />}
                         </NavLink>
                     ) : (
-                        <EnvironmentOverrideRouter key={item.title} />
-                    );
+                            <EnvironmentOverrideRouter key={item.title} />
+                        );
                 }
             })}
             <button
@@ -210,8 +213,8 @@ function Navigation({navItems, deleteApp}) {
     );
 }
 
-function AppComposeRouter({configStatus, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl}) {
-    const {path} = useRouteMatch()
+function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl }) {
+    const { path } = useRouteMatch()
     return (
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
@@ -243,14 +246,14 @@ function AppComposeRouter({configStatus, respondOnSuccess, isCiPipeline, getWork
                     {configStatus > AppConfigStatus.TEMPLATE && (
                         <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                             <>
-                                        <DeploymentConfig respondOnSuccess={respondOnSuccess} />
-                                        <NextButton
-                                            stage={APP_COMPOSE_STAGE.WORKFLOW_EDITOR}
-                                            stageNo={AppConfigStatus.CHARTS}
-                                            isCiPipeline={isCiPipeline}
-                                            configStatus={configStatus}
-                                        />
-                                    </>
+                                <DeploymentConfig respondOnSuccess={respondOnSuccess} />
+                                <NextButton
+                                    stage={APP_COMPOSE_STAGE.WORKFLOW_EDITOR}
+                                    stageNo={AppConfigStatus.CHARTS}
+                                    isCiPipeline={isCiPipeline}
+                                    configStatus={configStatus}
+                                />
+                            </>
                         </Route>
                     )}
                     {configStatus > AppConfigStatus.CHARTS && (
@@ -287,13 +290,13 @@ function AppComposeRouter({configStatus, respondOnSuccess, isCiPipeline, getWork
     );
 }
 
-function Header(){
-    const {appId}=useParams()
-    const {url, path} = useRouteMatch()
+function Header() {
+    const { appId } = useParams<{ appId }>()
+    const { url, path } = useRouteMatch()
     const currentPathname = useRef('');
-    const {push} = useHistory()
-    const {pathname} = useLocation()
-        
+    const { push } = useHistory()
+    const { pathname } = useLocation()
+
     useEffect(() => {
         currentPathname.current = pathname;
     }, [pathname]);
@@ -331,10 +334,10 @@ function Header(){
         },
         [appId],
     );
-    return(
+    return (
         <div className="page-header">
             <div className="flex left cn-9 fs-18 page-header__title">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(0,breadcrumbs.length - 1)} />
+                <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 1)} />
             </div>
             <div className="flex page-header__cta-container">
                 <Link className="cta ghosted no-decor" to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`}>
@@ -347,11 +350,11 @@ function Header(){
 
 function EnvironmentOverrideRouter() {
     const { pathname } = useLocation()
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
     const [collapsed, toggleCollapsed] = useState(false)
     const previousPathName = usePrevious(pathname)
-    const {url, path} = useRouteMatch()
-    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(()=>getAppOtherEnvironment(appId), [appId], !!appId)
+    const { url, path } = useRouteMatch()
+    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
 
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {

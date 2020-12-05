@@ -419,7 +419,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 <div className="form__row">
                     <label className="form__label">Volume mount path</label>
                     <div className="flex left">
-                        <input type="text" className="form__input half" value={defaultMountPath} disabled />
+                        <input type="text" autoComplete="off" className="form__input half" value={defaultMountPath} disabled />
                         <span style={{ width: '16px' }} />
                         {state.duplicate && <input type="text" className="form__input half" value={state.mountPath} onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />}
                     </div>
@@ -427,6 +427,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             {isHashiOrAWS ? <div className="form__row form__row--flex">
                 <div className="w-50">
                     <CustomInput value={roleARN}
+                        autoComplete="off"
                         label={"Role ARN"}
                         disabled={state.locked}
                         placeholder={"Enter Role ARN"}

@@ -81,7 +81,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             onSave={this.saveChartGroup}>
             <label className="form__row">
                 <span className="form__label">Name*</span>
-                <input className="form__input" type="text" name="name" value={this.state.name.value}
+                <input className="form__input" autoComplete="off" type="text" name="name" value={this.state.name.value}
                     placeholder="e.g. elastic-stack" autoFocus={true} tabIndex={1} onChange={this.handleNameChange} required />
                 <span className="form__error">
                     {this.state.name.error && <><Error className="form__icon form__icon--error" />{this.state.name.error}</>}

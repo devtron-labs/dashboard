@@ -8,7 +8,7 @@ import { DropdownIndicator, styles, ValueContainer, Option } from './security.ut
 import { ScanDetailsModal, Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen } from '../common'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
-import ReactSelect from 'react-select';
+import ReactSelect, { OptionsType } from 'react-select';
 import EmptyState from '../EmptyState/EmptyState';
 import AppNotDeployed from '../../assets/img/app-not-deployed.png';
 import NoResults from '../../assets/img/empty-noresult@2x.png';
@@ -63,7 +63,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         view: ViewType.FORM,
       });
     }).catch((error) => {
-      this.setState({ view: ViewType.ERROR });
+      this.setState({ responseCode: error.code, view: ViewType.ERROR });
     })
   }
 
@@ -78,7 +78,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
       });
     }).catch((error) => {
       showError(error);
-      this.setState({ view: ViewType.ERROR });
+      this.setState({ responseCode: error.code, view: ViewType.ERROR });
     })
   }
 
@@ -112,7 +112,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     this.setState({ searchObjectValue: event.target.value });
   }
 
-  handleFilterChange(filterType, selections: ReactSelectOptionType[]) {
+  handleFilterChange(filterType, selections: OptionsType<any>[]) {
     let filtersApplied = {
       ...this.state.filtersApplied,
       [filterType]: selections || [],
@@ -267,7 +267,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 }),
               }} />
             <Search className="icon-dim-20 ml-7" />
-            <input type="text" className="search-with-dropdown__search"
+            <input autoComplete="off" type="text" className="search-with-dropdown__search"
               tabIndex={1}
               value={this.state.searchObjectValue}
               placeholder={`Search ${this.state.searchObject.label}`}

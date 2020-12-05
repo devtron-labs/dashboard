@@ -9,7 +9,8 @@ import DeployChart from '../modal/DeployChart';
 import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
-import AppSelector from '../../AppSelector'
+import AppSelector from '../../AppSelector';
+import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -25,6 +26,7 @@ export default function AppDetail() {
     const history = useHistory()
     const [installedConfig, setInstalledConfig] = useState(null)
     const [appDetails, setAppDetails] = useState(null)
+    const [isPollingRequired, setPollingRequired] = useState<boolean>(true);
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -51,6 +53,7 @@ export default function AppDetail() {
     const closeModal = (isReload) => {
         const url = `${URLS.CHARTS}/deployments/${params.appId}/env/${params.envId}`;
         history.push(url);
+        setPollingRequired(true);
     }
 
     function handleBreadcrumbChartChange(selected){
@@ -63,6 +66,7 @@ export default function AppDetail() {
             setLoading(true);
             const { result } = await getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId);
             setInstalledConfig(result);
+            setPollingRequired(false);
             history.push(`${url}/update-chart`);
         } catch (err) {
             if (Array.isArray(err.errors)) {
@@ -83,6 +87,13 @@ export default function AppDetail() {
                     <div className="flex left page-header__title">{appDetails?.appName}</div>
                 </div>
                 <div className="page-header__cta-container flex">
+                    {
+                        appDetails?.deprecated &&
+                        <div className="mr-20">
+                            <UpdateWarn/>
+                        </div>
+                    }
+                    
                     <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
                         {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
                         configure
@@ -95,8 +106,13 @@ export default function AppDetail() {
                         environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}
                     />
                 </div> */}
-                <Details key={params.appId} appDetailsAPI={getInstalledAppDetail} setAppDetails={setAppDetails}
-                    environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}/>
+                <Details 
+                    key={params.appId} 
+                    appDetailsAPI={getInstalledAppDetail} 
+                    setAppDetails={setAppDetails}
+                    isPollingRequired={isPollingRequired}
+                    environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}
+                />
             </div>
         </div>
         <Route
@@ -104,7 +120,7 @@ export default function AppDetail() {
             render={(props) => {
                 return (
                     <OpaqueModal onHide={closeModal}>
-                        {installedConfig && installedConfig.valuesOverride ? (
+                        {installedConfig && installedConfig.valuesOverrideYaml ? (
                             <DeployChart
                                 versions={mapById([
                                     {
@@ -113,10 +129,9 @@ export default function AppDetail() {
                                     },
                                 ])}
                                 {...installedConfig}
-                                valuesYaml={JSON.stringify(installedConfig.valuesOverride)}
+                                valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
                                 rawValues={
-                                    installedConfig.valuesOverrideYaml ||
-                                    yamlJsParser.stringify(installedConfig.valuesOverride, 50, 2)
+                                    installedConfig.valuesOverrideYaml
                                 }
                                 appName={installedConfig.appName}
                                 installedAppVersion={installedConfig.id}
@@ -124,9 +139,12 @@ export default function AppDetail() {
                                     id: appDetails.appStoreInstalledAppVersionId,
                                     kind: 'DEPLOYED',
                                 }}
+                                deprecated={installedConfig.deprecated}
+                                appStoreId={installedConfig.appStoreId}
                                 chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                 chartName={appDetails.appStoreChartName}
                                 name={appDetails.appStoreAppName}
+                                installedAppVersionId={installedConfig.id}
                                 onHide={closeModal}
                             />
                         ) : (

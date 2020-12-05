@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router';
 
 export interface ChartValuesType {
-    kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | null;
+    kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null;
     chartVersion?: string;
     name?: string;
     id: number;
@@ -17,7 +17,7 @@ export interface ChartValuesNativeType {
 }
 
 export interface ChartValues {
-    kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED';
+    kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING';
     values: ChartValuesNativeType[];
 }
 
@@ -73,6 +73,7 @@ export interface Chart {
     availableChartValues?: ChartValues[];
     valuesYaml?: string;
     appStoreApplicationVersionId?: number;
+    deprecated: boolean;
 }
 
 export interface ProjectType {
@@ -139,7 +140,7 @@ export interface ChartGroupEntry {
     id?: number;
     installedId?: number; // already saved details
     appStoreValuesVersionId: number;
-    kind?: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED';
+    kind?: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING';
     appStoreApplicationVersion: string;
     appStoreApplicationVersionId?: number;
     appStoreValuesVersionName?: string;
@@ -257,7 +258,7 @@ export interface AdvancedConfigHelpers extends CommonHelpers {
 
 interface CommonHelpers {
     getChartVersionsAndValues: (chartId: number, index: number) => Promise<void>;
-    handleChartValueChange?: (index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE', valuesId: number) => void;
+    handleChartValueChange?: (index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE' | 'EXISTING', valuesId: number) => void;
     handleChartVersionChange?: (index: number, versionId: number) => void;
 }
 

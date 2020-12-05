@@ -97,11 +97,12 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off" }) {
     return <div className="flex column left top">
         <label className="form__label">{label}</label>
         <input type={type}
             name={name}
+            autoComplete="off"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}

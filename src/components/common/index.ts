@@ -1,7 +1,6 @@
 export * from './errorScreens/error';
 export * from './errorScreens/error';
 export { default as ErrorBoundary } from './errorBoundary';
-export { default as NavigationWrapper } from './navigationWrapper';
 export { default as RectangularEdge } from './edge/rectangularEdge';
 export { default as PopupMenu } from './PopupMenu/PopupMenu';
 export { default as Select } from './Select/Select';
@@ -47,5 +46,3 @@ export * from './security/ScanVulnerabilitiesTable';
 export * from './security/ScanDetailsModal';
 export * from './DatePickers/Calender';
 export * from './DatePickers/DayPickerRangeController';
-
-

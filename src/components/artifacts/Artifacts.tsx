@@ -340,7 +340,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
 
                 <label className="form__row">
                     <span className="form__label">Git Repo URL*</span>
-                    <input className="form__input" placeholder="e.g. https://gitlab.com/abc/xyz.git" type="text" value={material.url}
+                    <input autoComplete="off" className="form__input" placeholder="e.g. https://gitlab.com/abc/xyz.git" type="text" value={material.url}
                         tabIndex={index + 2} onChange={(event) => { this.handleChange(event, material.id, 'url') }} />
                     <span className="form__error">
                         {showError && !errorObject[1].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[1].message}
@@ -349,7 +349,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
 
                 <label className="form__row">
                     <label className="form__label">Checkout Path(*Required If you’re using multiple Git Materials)</label>
-                    <input className="form__input" placeholder="e.g. /abc" tabIndex={index + 3} type="text" value={material.checkoutPath}
+                    <input autoComplete="off" className="form__input" placeholder="e.g. /abc" tabIndex={index + 3} type="text" value={material.checkoutPath}
                         onChange={(event) => { this.handleChange(event, material.id, 'checkoutPath') }} />
                     <span className="form__error">
                         {showError && !errorObject[2].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[2].message}

@@ -203,6 +203,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             setLoading(not)
         }
     }
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return(
         <>
         <form className="deployment-template-override-form" style={{marginBottom:'16px'}} onSubmit={handleSubmit}>
@@ -215,7 +216,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gridColumnGap:'16px', marginBottom:'16px'}}>
                 <div className="flex left column">
                     <label htmlFor="" className="form__label">Template version {state.duplicate ? '(app default)' : ''}</label>
-                    <input value={state.charts.get(state.data.globalChartRefId).version} className="form__input" disabled />
+                    <input autoComplete="off" value={state.charts.get(state.data.globalChartRefId).version} className="form__input" disabled />
                 </div>
                 {state.duplicate && <div className="flex left column">
                         <label htmlFor="" className="form__label">Template version (environment override)</label>
@@ -247,7 +248,7 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
                 <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing />  : 'Save'}</button>
             </div>
         </form>
-        <OptApplicationMetrics
+        {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
             currentVersion={state.charts.get(state.selectedChartRefId).version}
             minimumSupportedVersion={"3.7.0"}
             onChange={handleAppMetrics}
@@ -255,7 +256,8 @@ function DeploymentTemplateOverrideForm({state, handleOverride, dispatch, initia
             opted={!!state.data.appMetrics}
             loading={state.appMetricsLoading}
             disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
-            />
+        />}
+        
         {state.dialog && <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warningIcon} />
             <ConfirmationDialog.Body title="This action will cause permanent removal." subtitle="This action will cause all overrides to erase and app level configuration will be applied" />
@@ -296,7 +298,7 @@ function NameSpace({ originalNamespace="", chartRefId, id }) {
         <form className="namespace" onSubmit={handleSubmit}>
             <label htmlFor="" className="form__label">Namespace</label>
             <div className="flex">
-                <input type="text" className="form__input" disabled={!!originalNamespace} onChange={e=>setNamespace(e.target.value)} value={namespace}/>
+                <input type="text" autoComplete="off" className="form__input" disabled={!!originalNamespace} onChange={e=>setNamespace(e.target.value)} value={namespace}/>
                 {!originalNamespace && <button className="cta" type="submit" style={{ marginLeft: '16px' }}>{loading ? <Progressing /> : 'Save'}</button>}
             </div>
             {!originalNamespace && <div className="flex left">

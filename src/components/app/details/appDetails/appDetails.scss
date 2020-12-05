@@ -21,14 +21,17 @@
     height: 100%;
     min-width: 250px;
     border-top: 2px solid transparent;
+
     &.active {
         color: var(--B500);
         border-top: 2px solid var(--B500);
         border-bottom: 1px solid white;
+
         &:last-child {
             border-right: 1px solid var(--N200);
         }
     }
+
     &:nth-child(2) {
         border-left: 1px solid var(--N200);
     }
@@ -42,6 +45,7 @@
     align-items: flex-start;
     border: 1px solid var(--N200);
     justify-content: space-between;
+
     .material-sync-card--message {
         background-color: var(--window-bg);
         padding: 12px;
@@ -222,6 +226,7 @@ table.pod__table td:last-child {
     width: 100%;
     height: 100%;
     flex-direction: column;
+
     .no-pod__container-icon {
         height: 34px;
         width: 48px;
@@ -230,11 +235,13 @@ table.pod__table td:last-child {
         grid-row-gap: 4px;
         grid-column-gap: 4px;
         margin-bottom: 16px;
+
         .no-pod__container-sub-icon {
             background: var(--N400);
             height: 100%;
         }
     }
+
     p {
         color: var(--N400);
     }
@@ -255,10 +262,12 @@ table.pod__table td:last-child {
     height: 24px;
     width: 24px;
     margin: 0 6px 0 16px;
+
     &:hover,
     &:focus {
         border: unset;
     }
+
     &:after {
         content: '';
         display: block;
@@ -270,6 +279,7 @@ table.pod__table td:last-child {
         background: radial-gradient(circle, var(--B500) 0%, var(--B500) 50%, var(--B300) 51%, var(--B300) 100%);
         border-radius: 100%;
     }
+
     svg {
         height: 18px;
         width: 18px;
@@ -279,6 +289,7 @@ table.pod__table td:last-child {
 .pods-container {
     display: flex;
     margin: 20px;
+
     .pods-services-ingress-container.white-card {
         padding: 0;
         overflow: hidden;
@@ -297,6 +308,7 @@ table.pod__table td:last-child {
     display: flex;
     align-items: center;
     padding: 0 9px;
+
     &.header {
         font-weight: 600;
         border-bottom: 1px solid var(--N100);
@@ -304,20 +316,25 @@ table.pod__table td:last-child {
         top: 0;
         background: white;
         ;
+
         &:hover {
             background: white;
         }
     }
+
     &:hover {
         background: var(--B100);
     }
+
     &.header {
         height: 36px;
     }
+
     .hover-only {
         display: none;
         margin-left: 6px;
     }
+
     &:hover {
         .hover-only {
             display: block;
@@ -331,15 +348,18 @@ table.pod__table td:last-child {
             path[fill="black"] {
                 fill: --N500;
             }
+
             &:hover {
                 path[fill="black"] {
                     fill: var(--N900);
                 }
             }
         }
+
         &>div {
             flex: 0 0 50%;
             justify-content: flex-start;
+
             input {
                 opacity: 0;
                 height: 3px;
@@ -352,24 +372,30 @@ table.pod__table td:last-child {
 
 .generic-info-container {
     display: flex;
+
     .services-info {
         flex-basis: 100%;
     }
+
     .status-info {
         flex-basis: 0px;
         overflow: hidden;
     }
+
     .services-info,
     .status-info {
         transition: all 0.3s;
     }
+
     &.detailed {
+
         .services-info,
         .status-info {
             flex-basis: 50%;
             overflow-y: auto;
         }
     }
+
     .generic-info-header {
         height: 60px;
         box-shadow: inset 0 -1px 0 0 var(--N100);
@@ -384,14 +410,17 @@ table.pod__table td:last-child {
     grid-template-columns: 1fr;
     grid-template-rows: 36px 1fr;
     height: 100%;
+
     .node-status__header {
         width: 100%;
         background-color: #2c3354;
         padding: 0 12px;
     }
+
     .CodeMirror {
         height: 420px;
     }
+
     .code-editor {
         border: 1px solid transparent;
         border-left: 1px solid #2c3354;
@@ -402,15 +431,18 @@ table.pod__table td:last-child {
 .pod-info__popup-container {
     padding: 8px 0px;
     width: 160px;
+
     .pod-info__popup-row {
         justify-content: flex-start;
         height: 36px;
         cursor: pointer;
         padding: 0 12px;
+
         &:hover {
             background: #f5f5f5;
         }
     }
+
     .pod-info__popup-row--red {
         justify-content: space-between;
         color: red;
@@ -420,9 +452,11 @@ table.pod__table td:last-child {
 .pod-info {
     height: 100%;
     background: white;
+
     &:nth-child(2) {
         border-left: 1px solid var(--N200);
     }
+
     .pod-info__dots {
         display: block;
         margin-left: auto;
@@ -430,6 +464,7 @@ table.pod__table td:last-child {
         height: 20px;
         cursor: pointer;
     }
+
     .pod-info__header {
         display: flex;
         height: 64px;
@@ -438,10 +473,12 @@ table.pod__table td:last-child {
         padding: 12px 20px;
         justify-content: space-between;
         border-bottom: 1px solid var(--N100);
+
         .pod-info__stats {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+
             .pod-info__title {
                 font-size: 14px;
                 font-weight: 600;
@@ -449,12 +486,15 @@ table.pod__table td:last-child {
                 display: flex;
                 align-items: center;
             }
+
             .pod-info__run-status {
                 margin-bottom: 0;
                 padding-inline-start: 0;
+
                 li {
                     list-style: none;
                     display: inline;
+
                     &:not(:last-child):after {
                         content: "•";
                         padding: 0 4px;
@@ -462,17 +502,21 @@ table.pod__table td:last-child {
                 }
             }
         }
+
         .pod-info__pc-status-container {
             display: flex;
             width: 300px;
             justify-content: space-around;
+
             .pod-info__pc-status {
                 display: flex;
                 align-items: center;
+
                 img {
                     height: 24px;
                     margin-right: 8px;
                 }
+
                 span {
                     font-size: 18px;
                     color: var(--N900);
@@ -481,11 +525,13 @@ table.pod__table td:last-child {
             }
         }
     }
+
     .pod-info__table-container {
         height: 386px;
         overflow-y: auto;
         overflow-x: visible;
         width: 100%;
+
         .pod-info__table {
             .pod-info__row {
                 display: grid;
@@ -496,14 +542,18 @@ table.pod__table td:last-child {
                 padding: 0 20px;
                 align-items: center;
                 width: 100%;
+
                 &:hover {
                     background: var(--B100);
+
                     .pod-info__hidden-cta {
                         display: flex;
                         align-items: center;
+
                         svg {
                             padding-left: 4px;
                         }
+
                         .pod-info__open-events {
                             color: var(--B500);
                             font-size: 10px;
@@ -516,6 +566,7 @@ table.pod__table td:last-child {
                     }
                 }
             }
+
             .pod-info__row--header {
                 font-weight: 600;
                 position: sticky;
@@ -523,17 +574,21 @@ table.pod__table td:last-child {
                 background: white;
                 border-bottom: 1px solid var(--N100);
                 grid-template-rows: 36px;
+
                 &:hover {
                     background: white;
                 }
+
                 .select-button {
                     text-transform: capitalize;
                 }
+
                 .select-option {
                     text-transform: capitalize;
                 }
             }
         }
+
         .header-column:nth-child(-n+5) {
             position: sticky;
             top: 0;
@@ -542,37 +597,45 @@ table.pod__table td:last-child {
             line-height: 48px;
             background: white;
         }
+
         .pod-info__cpu-usage,
         .pod-info__memory-usage {
             text-align: right;
         }
     }
+
     .pod-info__pod-name-column {
         display: flex;
         flex-direction: column;
         justify-content: center;
+
         input {
             opacity: 0;
         }
+
         .pod-info__pod-status-container {
             display: flex;
             justify-content: space-between;
             height: 20px;
         }
     }
+
     .pod-info__pod-name-container {
         display: flex;
         justify-content: flex-start;
         padding-right: 8px;
         max-width: 80%;
+
         input {
             opacity: 0;
         }
+
         .pod-info__pod-name {
             display: flex;
             justify-content: flex-start;
             flex: 0 1 auto;
             min-width: 0;
+
             .pod-info__ellipsis {
                 display: inline-block;
                 text-overflow: ellipsis;
@@ -582,6 +645,7 @@ table.pod__table td:last-child {
                 white-space: nowrap;
                 overflow: hidden;
             }
+
             .pod-info__indent {
                 text-overflow: ellipsis;
                 display: inline-block;
@@ -590,6 +654,7 @@ table.pod__table td:last-child {
                 flex-basis: content;
             }
         }
+
         .pod-info__hidden-cta {
             display: none;
             flex: 1 0 min-content;
@@ -602,6 +667,7 @@ table.pod__table td:last-child {
         height: 68px;
         justify-content: space-between;
     }
+
     .app-summary__env-container {
         width: 33%;
         display: flex;
@@ -609,6 +675,7 @@ table.pod__table td:last-child {
         padding-right: 3px;
         align-items: center;
     }
+
     .app-summary__status-container {
         width: 55%;
         display: grid;
@@ -616,30 +683,37 @@ table.pod__table td:last-child {
         align-items: center;
         grid-template-columns: repeat(3, minmax(min-content, max-content));
         grid-column-gap: 40px;
+
         .stat {
             display: flex;
+
             .key,
             .value {
                 font-size: 12px;
                 color: var(--N700);
                 margin-right: 10px;
             }
+
             .value {
                 font-weight: 600;
             }
         }
     }
+
     .app-summary__env-selector {
         display: flex;
         align-items: center;
+
         svg {
             width: 24px;
             height: 24px;
         }
+
         .popup-button .select-button {
             background: white;
         }
     }
+
     .app-summary__env-name {
         background: var(--B500);
         padding: 4px 8px;
@@ -650,33 +724,41 @@ table.pod__table td:last-child {
         align-items: center;
         color: white;
     }
+
     .app-summary__status-name {
         font-weight: 600;
         font-size: 12px;
     }
+
     .app-summary__status-name {
+
         &.f-healthy,
         &.f-scalingreplicasetdown {
             color: var(--green);
         }
+
         &.f-suspended,
         &.f-switchedtoactiveservice {
             color: var(--orange);
         }
+
         &.f-degraded {
             color: var(--red);
         }
+
         &.f-progressing,
         &.f-inprogress,
         &.f-unknown,
         &.initiated {
             color: var(--yellow);
         }
+
         .tooltip-button {
             display: flex;
             align-items: center;
         }
     }
+
     .time-range {
         .select-button {
             border: 1px solid transparent;
@@ -684,38 +766,46 @@ table.pod__table td:last-child {
             padding: 4px 0px 4px 8px;
             width: 155px;
         }
+
         .select-popup {
             width: 155px;
         }
     }
+
     .chart-containers {
         width: 100%;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         grid-auto-rows: 192px;
         grid-gap: 16px;
+
         .upgrade-chart-container {
             background: white;
             border: 1px solid #d6dbdf;
             border-radius: 8px;
             grid-column: 2 / span 2;
+
             .upgrade-chart-main {
                 display: grid;
                 grid-template-columns: 200px 1fr;
                 grid-column-gap: 20px;
                 padding: 30px;
+
                 .upgrade-chart-text {
                     a {
                         text-decoration: unset;
                     }
+
                     * {
                         margin-bottom: 8px;
                     }
+
                     b {
                         font-size: 16px;
                         font-weight: 600px;
                         color: var(--N900);
                     }
+
                     span {
                         font-size: 12px;
                         color: var(--N700);
@@ -723,8 +813,10 @@ table.pod__table td:last-child {
                 }
             }
         }
+
         .chart {
             background: white;
+
             // .chart-header {
             //     font-size: 12px;
             //     font-weight: 600;
@@ -755,52 +847,63 @@ table.pod__table td:last-child {
                 grid-template-rows: 1fr 53px;
                 padding: 0;
                 overflow: hidden;
+
                 .material__summary {
                     padding: 16px;
                     display: grid;
                     grid-template-columns: 1fr;
                     justify-items: left;
                 }
+
                 .fa {
                     margin-left: 6px;
                     font-weight: 600;
                     cursor: pointer;
                     font-size: 18px;
                 }
+
                 .b-healthy,
                 .b-scalingreplicasetdown {
                     background-color: #ebfff6;
                 }
+
                 .b-suspended,
                 .b-switchedtoactiveservice {
                     background-color: #FFF0CF;
                 }
+
                 .b-degraded {
                     background-color: #FFEBEB;
                 }
+
                 .b-progressing,
                 .b-inprogress,
                 .b-unknown,
                 .initiated {
                     background-color: #FFF0CF;
                 }
+
                 b,
                 span {
                     margin-bottom: 4px;
                 }
+
                 .anchor {
                     color: var(--B500);
                     cursor: pointer;
                 }
+
                 span {
                     font-size: 12px;
                 }
+
                 .app-summary__icon {
                     width: 32px;
                     height: 32px;
                     background-size: cover;
                     position: unset;
                 }
+
                 .deployment-summary {
                     height: 53px;
                     background: var(--window-bg);
@@ -810,12 +913,15 @@ table.pod__table td:last-child {
                     grid-column-gap: 8px;
                     align-items: center;
                 }
+
                 .flex.hibernate {
                     width: 100%;
                     justify-content: space-between;
                 }
+
                 .cta.hibernate {
                     width: auto;
+
                     svg {
                         width: 18px;
                         height: 18px;
@@ -830,17 +936,19 @@ table.pod__table td:last-child {
     position: fixed;
     bottom: 0;
     left: 72px;
-    width: calc( 100vw - 72px);
+    width: calc(100vw - 72px);
     background: #0b0f22;
     display: grid;
     grid-template-rows: 36px 40px 1fr;
     grid-template-columns: 1fr 1fr;
     box-shadow: inset 0 -1px 8px 0 var(--N900);
     z-index: var(--events-logs);
+
     .event-logs__logs {
         color: white;
         padding-left: 20px;
     }
+
     .events-logs__dropdown-container {
         display: flex;
         flex-direction: row;
@@ -848,11 +956,13 @@ table.pod__table td:last-child {
         align-items: center;
         padding: 0 20px;
         border-bottom: 1px solid #2c3354;
+
         .tab-container {
             padding-left: 16px;
             border-left: 1px solid #2c3354;
         }
     }
+
     .events-logs__event,
     .events-logs__log {
         color: white;
@@ -860,9 +970,11 @@ table.pod__table td:last-child {
         font-size: 12px;
         margin-bottom: 0px;
     }
+
     .events-logs__events-table {
         width: 100%;
         padding: 0 20px;
+
         .events-logs__events-table-row {
             display: grid;
             grid-template-columns: 180px auto 50px 140px;
@@ -870,6 +982,7 @@ table.pod__table td:last-child {
             grid-auto-rows: minmax(56px, max-content);
             justify-items: start;
             align-items: center;
+
             // margin: 12px 0;
             &.header {
                 font-weight: 600;
@@ -880,6 +993,7 @@ table.pod__table td:last-child {
             }
         }
     }
+
     .events-logs__title-container {
         display: flex;
         justify-content: space-between;
@@ -889,26 +1003,31 @@ table.pod__table td:last-child {
         padding: 0 20px;
         background: #2c3354;
     }
+
     .events-logs__title-container--resize {
         cursor: row-resize;
     }
+
     .events-logs__toggle-btn {
         cursor: pointer;
         display: flex;
         align-items: center;
         height: 100%;
     }
+
     .events-logs__label {
         margin-right: 10px;
         color: white;
         opacity: 0.6;
     }
+
     .events-logs__dropdown-selector {
         display: flex;
         align-items: center;
         padding: 0 20px;
         border-left: 1px solid #2c3354;
-        height: calc( 100% - 16px);
+        height: calc(100% - 16px);
+
         .pod-selector-button,
         .container-selector-button {
             width: 200px;
@@ -916,6 +1035,7 @@ table.pod__table td:last-child {
             border: 1px solid transparent;
             justify-content: space-between;
             border-radius: 4px;
+
             span.ellipsis-left {
                 border-radius: 4px;
                 padding: 8px 10px 8px 12px;
@@ -924,30 +1044,37 @@ table.pod__table td:last-child {
                 text-align: left;
             }
         }
+
         .popup-button {
             border: unset;
         }
     }
+
     .log-viewer-container {
         height: 100%;
         width: 100%;
         align-items: flex-start;
         position: relative;
+
         &:focus {
             outline: none;
         }
+
         .log-viewer {
             height: 100%;
             width: 100%;
             padding: 0 0 0 20px;
             overflow: hidden;
+
             &:focus {
                 outline: none;
             }
+
             .xterm {
                 height: 100%;
             }
         }
+
         .pod-readyState {
             position: absolute;
             left: 0;
@@ -960,27 +1087,34 @@ table.pod__table td:last-child {
             overflow: hidden;
             z-index: 4;
             padding-left: 16px;
+
             &:focus {
                 outline: none;
             }
+
             &.pod-readyState--top {
                 top: 0;
                 background: var(--R700);
             }
+
             &.pod-readyState--bottom {
                 bottom: 0;
                 background: #0b0f22;
                 right: 24px;
             }
+
             &.pod-readyState--show {
                 height: 24px;
                 transition: height 200ms;
             }
         }
+
         .logs {
             font-family: monospace;
+
             .log {
                 grid-template-columns: 100%;
+
                 .content {
                     padding-right: 16px;
                 }
@@ -995,16 +1129,19 @@ table.pod__table td:last-child {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc( 100vh - 110px);
+    height: calc(100vh - 110px);
+
     img {
         width: 250px;
         height: 200px;
         margin-bottom: 12px;
     }
+
     p {
         font-size: 16px;
         margin-bottom: 20px;
     }
+
     button {
         padding: 8px 16px;
         color: var(--B500);
@@ -1018,10 +1155,11 @@ table.pod__table td:last-child {
 .env-not-configured {
     padding: 0 20px;
     display: flex;
-    height: calc( 100vh - 152px);
+    height: calc(100vh - 152px);
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+
     .env-selector-wrapper {
         height: 68px;
         padding: 0 20px;
@@ -1032,13 +1170,16 @@ table.pod__table td:last-child {
         border-radius: 4px;
         margin-top: 20px;
         width: 100%;
+
         .app-summary__env-selector {
             display: flex;
             align-items: center;
+
             svg {
                 width: 24px;
                 height: 24px;
             }
+
             .app-summary__env-name {
                 background: var(--B500);
                 padding: 4px 8px;
@@ -1051,11 +1192,13 @@ table.pod__table td:last-child {
             }
         }
     }
+
     .env-not-configured__instructions {
-        height: calc( 100% - 68px - 20px);
+        height: calc(100% - 68px - 20px);
         display: flex;
         flex-direction: column;
         justify-content: center;
+
         img.no-configuration {
             display: flex;
             justify-content: center;
@@ -1063,11 +1206,13 @@ table.pod__table td:last-child {
             height: 200px;
             margin: 0 auto 12px auto;
         }
+
         p {
             font-size: 16px;
             text-align: center;
             width: 250px;
         }
+
         button {
             padding: 8px 16px;
             color: var(--B500);
@@ -1089,6 +1234,7 @@ table.pod__table td:last-child {
         margin-top: 80px;
         overflow: hidden;
         position: relative;
+
         .app-summary__source-row {
             display: grid;
             grid-template-columns: 13% auto 20% 10% 18%;
@@ -1096,46 +1242,56 @@ table.pod__table td:last-child {
             grid-auto-rows: minmax(48px, max-content);
             align-items: center;
             justify-items: start;
+
             &>span:first-child {
                 padding-left: 20px;
             }
+
             &>span:last-child {
                 padding-right: 20px;
             }
+
             &:nth-child(even) {
                 background: #f5f5f5;
             }
+
             &.app-summary__source-row--header {
                 font-weight: 600;
                 border-bottom: 1px solid var(--N200);
             }
+
             .tag-container {
-                max-width: calc( 100% - 20px);
+                max-width: calc(100% - 20px);
                 color: var(--B500);
                 background: var(--B100);
                 border-radius: 4px;
                 padding: 5px 7px;
                 font-size: 12px;
                 margin-right: 20px;
+
                 svg {
                     flex-shrink: 0;
                 }
+
                 .tag {
-                    max-width: calc( 100% - 12px);
+                    max-width: calc(100% - 12px);
                     ;
                     font-family: monospace;
                 }
             }
         }
+
         .fa.fa-close {
             position: absolute;
             right: 16px;
             top: 16px;
         }
+
         .app-summary__commit-url-container {
             width: 100%;
+
             .app-summary__commit-url {
-                max-width: calc( 100% - 12px);
+                max-width: calc(100% - 12px);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -1145,15 +1301,18 @@ table.pod__table td:last-child {
             }
         }
     }
+
     .app-summary__toggle-source {
         width: 100%;
         height: 36px;
         cursor: pointer;
+
         .app-summary__toggle-source-text {
             color: var(--B500);
             font-weight: 600;
         }
     }
+
     &.detailed {
         .app-summary__toggle-source {
             border-top: 1px solid var(--N200);
@@ -1165,6 +1324,7 @@ table.pod__table td:last-child {
     min-width: 900px;
     border-radius: 8px;
     overflow: hidden;
+
     .modal-content {
         border: unset;
     }
@@ -1184,10 +1344,12 @@ table.pod__table td:last-child {
 .env-selector-button {
     border: unset;
     min-width: 200px;
+
     &:hover,
     &:focus {
         border: unset;
     }
+
     .select-button {
         height: 40px;
         font-weight: 600;
@@ -1216,58 +1378,71 @@ table.pod__table td:last-child {
         min-width: 800px;
         padding: 24px;
         border-radius: 8px;
-        height: calc( 100% - 200px);
+        height: calc(100% - 200px);
         min-height: 300px;
         display: grid;
         grid-template-rows: 45px auto 1fr;
+
         .title {
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 8px;
         }
+
         &>div {
             overflow: auto;
             position: relative;
         }
+
         .kind-name {
             width: 100%;
             display: grid;
             grid-template-columns: auto 1fr;
             grid-template-rows: 1fr;
+
             .ellipsis-left {
                 text-align: left;
             }
         }
+
         table {
             width: 100%;
             table-layout: fixed;
+
             thead {
                 height: 44px;
+
                 th {
                     background: white;
                     position: sticky;
                     top: 0;
                 }
             }
+
             border-collapse: separate;
             border-spacing: 15px;
+
             tr,
             th {
                 height: 44px;
             }
+
             th:nth-child(1),
             td:nth-child(1) {
                 width: 20%;
             }
+
             th:nth-child(2),
             td:nth-child(2) {
                 width: 15%;
             }
+
             th:nth-child(3),
             td:nth-child(3) {
                 width: 65%;
             }
         }
+
         .fa.fa-close {
             margin-left: auto;
             cursor: pointer;
@@ -1289,6 +1464,7 @@ table.pod__table td:last-child {
 table.trigger-history {
     width: 100%;
     margin: unset;
+
     thead {
         tr {
             th {
@@ -1298,23 +1474,28 @@ table.trigger-history {
             }
         }
     }
+
     tr {
         &:nth-child(2n+2) {
             background: #f5f5f5;
         }
     }
+
     th:first-child,
     td:first-child {
         padding-left: 20px;
     }
+
     th,
     td {
         padding: 12px 0;
     }
+
     td.trigger-history__cell.trigger-history__cell--artifact span {
         background-color: #f2f2f2;
         border-radius: 2px;
         padding: 2px 4px;
+
         img {
             width: 12px;
             margin-right: 4px;
@@ -1327,8 +1508,9 @@ form.log-search-form {
     width: 100%;
     margin-right: 20px;
     border-radius: 4px;
+
     input {
-        width: calc( 100% - 24px);
+        width: calc(100% - 24px);
         border: unset;
         padding: 0 8px;
     }
@@ -1343,11 +1525,13 @@ form.log-search-form {
     background: transparent;
     border: unset;
     cursor: pointer;
+
     svg {
         height: 24px;
         width: 24px;
         overflow: visible;
     }
+
     .stop-btn {
         background: var(--R500);
         height: 14px;
@@ -1366,49 +1550,59 @@ form.log-search-form {
 }
 
 table.resource-tree {
-    width: calc( 100%);
+    width: calc(100%);
     height: 1px;
+
     thead {
         border-bottom: 1px solid #eee;
     }
+
     th {
         height: 36px;
         color: var(--N700);
         font-weight: 600;
         text-transform: uppercase;
+
         &:first-child {
             width: 24px;
         }
     }
+
     tr.data-row {
         td {
             height: 56px;
         }
+
         &:hover {
             td {
                 background: var(--N100);
             }
         }
     }
+
     th,
     td {
         padding: 0;
     }
+
     td.indent-line {
         width: 24px;
         padding: 0;
         height: 1px;
-        background-image: linear-gradient(to right, transparent calc( 50% - 1px), var(--N200) 1px, transparent 50%);
+        background-image: linear-gradient(to right, transparent calc(50% - 1px), var(--N200) 1px, transparent 50%);
         background-repeat: no-repeat;
     }
+
     .hover-trigger {
         .hover-only {
             visibility: hidden;
             margin-left: 6px;
+
             &:hover {
                 text-decoration: underline;
             }
         }
+
         &:hover {
             .hover-only {
                 visibility: visible;
@@ -1492,6 +1686,20 @@ table.resource-tree {
     height: 170px;
 }
 
+.app-metrics-graph__empty-state-wrapper {
+    background-color: #fff;
+    padding: 24px;
+    width: 100%;
+    border-bottom: solid 1px var(--N200);
+}
+
+.app-metrics-graph__empty-state {
+    display: grid;
+    grid-template-columns: 150px 500px;
+    gap: 32px;
+    margin: 42px 0 20px 0;
+}
+
 .app-metrics-graph__title {
     margin: 0px;
     font-size: 12px;
@@ -1501,6 +1709,23 @@ table.resource-tree {
     color: var(--N700);
     height: 28px;
     align-items: center;
+}
+
+.app-metrics-graph__empty-state-title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.app-metrics-graph__empty-state-subtitle {
+    font-weight: 400;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: var(--N700);
 }
 
 .app-details-graph {
