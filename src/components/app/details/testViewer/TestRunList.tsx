@@ -41,8 +41,10 @@ export default function TestRunList(){
                     path={`${path
                         .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
                         .replace(':triggerId(\\d+)?', ':triggerId(\\d+)')}`}
-                >
-                    <TestsFilter component={TestRunDetails} />
+                >   
+                    {/* Dirty fix for now. Unnecessarily passing startDate and endDate here */}
+                    <TestsFilter 
+                        component={TestRunDetails}/>
                 </Route>
                 <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')}`}>
                     <div className="flex mb-16" style={{ justifyContent: 'space-between' }}>
@@ -57,12 +59,9 @@ export default function TestRunList(){
                         />
                     </div>
                     <TestsFilter 
-                        component={(props)=>
-                        <TriggerList 
-                            {...props} 
-                            startDate={dates.startDate} 
-                            endDate={dates.endDate}
-                        />} 
+                        component={TriggerList}
+                        startDate={dates.startDate} 
+                        endDate={dates.endDate}
                     />
                 </Route>
                 <Route>
@@ -121,7 +120,7 @@ function TestsPlaceholder({title="Test Reports", subtitle="", img=<EmptyTests/>}
     )
 }
 
-const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }> = ({ selectedNames, startDate, endDate }) => {
+const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> = ({ selectedNames, startDate, endDate }) => {
     const params = useParams<{ appId: string; pipelineId: string }>();
     const { url, path } = useRouteMatch();
     const [triggerListLoading, triggerList, error, reload] = useAsync(
@@ -263,7 +262,7 @@ interface TestsFilterOptions{
     method: {id: number, name: string}[]
 }
 
-const TestsFilter:React.FC<{component}>=({component:Component})=>{
+const TestsFilter:React.FC<{component, startDate?, endDate?}>=({component:Component, startDate, endDate})=>{
     const [selectionState, setSelectionState] = useState<'type' | 'name'>('type')
     const [selectedType, setSelectedType] = useState<'testsuite' | 'package' | 'classname' | 'method'>(null)
     const [selectedNames, setSelectedNames] = useState<SelectedNames>(
@@ -392,7 +391,10 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
                     }),
                 }}
             />
-            <Component selectedNames={selectedNames} />
+            <Component 
+                selectedNames={selectedNames}
+                startDate={startDate ? startDate : undefined} 
+                endDate={endDate ? endDate: undefined}/>
         </>
     );
 }
