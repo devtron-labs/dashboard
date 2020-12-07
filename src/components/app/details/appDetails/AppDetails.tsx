@@ -110,8 +110,7 @@ export default function AppDetail() {
                     </div>
                 )}
                 <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
-                    <Details
-                        key={params.appId + "-" + params.envId}
+                    <Details key={params.appId + "-" + params.envId}
                         appDetailsAPI={fetchAppDetailsInTime}
                         isAppDeployment
                         environment={otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)}
@@ -131,11 +130,11 @@ export default function AppDetail() {
 export const Details: React.FC<{
     environment?: any;
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
-    setAppDetails?: (appDetails) => void;
+    setAppDetailResultInParent?: (appDetails) => void;
     isAppDeployment?: boolean;
     environments: any;
     isPollingRequired?: boolean;
-}> = ({ appDetailsAPI, setAppDetails, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
+}> = ({ appDetailsAPI, setAppDetailResultInParent, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -160,6 +159,7 @@ export const Details: React.FC<{
         //@ts-ignore
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
+    const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
         `${prefix}${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -168,38 +168,25 @@ export const Details: React.FC<{
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
+    const aggregatedNodes: AggregatedNodes = useMemo(() => {
+        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
+    }, [appDetails]);
+
     async function callAppDetailsAPI() {
         try {
             let response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response);
             setAppDetailsLoading(false);
         } catch (error) {
-            setAppDetailsError(error)
+            if (!appDetailsResult) {
+                setAppDetailsError(error);
+            }
         }
     }
 
-    async function polling() {
-        try {
-            let response = await appDetailsAPI(params.appId, params.envId, 25000);
-            setAppDetailsResult(response);
-            setAppDetailsLoading(false);
-        } catch (error) {
-        }
+    function describeNode(name: string, containerName: string) {
+        setDetailedNode({ name, containerName });
     }
-
-    useEffect(() => {
-        if (appDetailsError) {
-            showError(appDetailsError)
-            return
-        }
-        if (appDetailsResult && setAppDetails) {
-            setAppDetails(appDetailsResult?.result);
-        }
-
-        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
-            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
-        }
-    }, [appDetailsResult, appDetailsError]);
 
     async function callLastExecutionMinAPI(appId, envId) {
         if (!appId || !envId) return;
@@ -220,27 +207,32 @@ export const Details: React.FC<{
         }
     }
 
-    const aggregatedNodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
-    }, [appDetails]);
-
-    const interval: number = useMemo(() => {
-        return 30000;
-        // if (!appDetails?.resourceTree?.status) return 30000;
-        // return appDetails?.resourceTree?.status?.toLowerCase() === 'progressing' ? 10000 : 30000;
-    }, [appDetails]);
-
     function clearPollingInterval() {
         if (pollingIntervalID) {
             clearInterval(pollingIntervalID);
         }
     }
 
+    useEffect(() => {
+        if (appDetailsError) {
+            showError(appDetailsError)
+            return
+        }
+        if (appDetailsResult && setAppDetailResultInParent) {
+            setAppDetailResultInParent(appDetailsResult?.result);
+        }
+
+        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
+            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
+        }
+    }, [appDetailsResult, appDetailsError]);
+
+
     // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI();
-            const intervalID = setInterval(polling, interval);
+            const intervalID = setInterval(callAppDetailsAPI, interval);
             setPollingIntervalID(intervalID);
         }
         else {
@@ -254,16 +246,10 @@ export const Details: React.FC<{
         }
     }, [pollingIntervalID])
 
-    function describeNode(name: string, containerName: string) {
-        setDetailedNode({ name, containerName });
-    }
-
     if (appDetailsLoading && !appDetails) {
-        return (
-            <div className="w-100 flex" style={{ height: '100%' }}>
-                <Progressing pageLoader />
-            </div>
-        );
+        return <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
+            <Progressing pageLoader />
+        </div>
     }
 
     let message = null;
