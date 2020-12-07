@@ -165,6 +165,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                                 label: 'Predefined',
                             });
                             this.props.handlePredefinedRange(startDate, endDate, endStr);
+                            this.setState({ showCalendar: false });
                         }}>
                         {text}
                     </button>
