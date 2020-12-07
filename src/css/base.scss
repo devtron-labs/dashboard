@@ -17,13 +17,6 @@
     --tooltip-index: 7;
     --events-logs: 5;
     --index-next-section: 3;
-    --yellow: #FF8300;
-    --red: rgba(240, 96, 96, 1);
-    --green: rgba(23, 170, 86, 1);
-    --orange: rgba(252, 173, 38, 1);
-    --gray: rgba(128, 128, 128, 1);
-    --window-bg: #f2f4f7;
-    --white: #fff;
 }
 
 body {
@@ -911,6 +904,7 @@ button.anchor {
     }
 }
 
+
 .element-scroller {
     width: 40px;
     height: 80px;
@@ -1093,7 +1087,7 @@ button.anchor {
 
     .info {
         line-height: 1.43;
-        color: var(--N0);
+        color: var(--N000);
         font-size: 13px;
     }
 

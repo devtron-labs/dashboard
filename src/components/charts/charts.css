@@ -176,6 +176,7 @@
     letter-spacing: normal;
     text-align: center;
     color: var(--N700);
+    background-color: var(--N000);
 }
 
 .deploy-selected-chart-hr {

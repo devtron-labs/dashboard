@@ -4,7 +4,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../charts.service';
 import { Details, EnvSelector } from '../../app/details/appDetails/AppDetails';
 import { toast } from 'react-toastify';
-import { useParams, useHistory, useRouteMatch, Route, generatePath} from 'react-router'
+import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
 import DeployChart from '../modal/DeployChart';
 import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
@@ -56,7 +56,7 @@ export default function AppDetail() {
         setPollingRequired(true);
     }
 
-    function handleBreadcrumbChartChange(selected){
+    function handleBreadcrumbChartChange(selected) {
         const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId });
         history.push(newUrl)
     }
@@ -78,82 +78,81 @@ export default function AppDetail() {
     }
     return (
         <>
-        <div className="deployment-page">
-            <div className="page-header" style={{ height: '80px' }}>
-                <div className="flex left column">
-                    <div className="flex left fs-12 cn-7">
-                        <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
-                    </div>
-                    <div className="flex left page-header__title">{appDetails?.appName}</div>
-                </div>
-                <div className="page-header__cta-container flex">
-                    {
-                        appDetails?.deprecated &&
-                        <div className="mr-20">
-                            <UpdateWarn/>
+            <div className="deployment-page">
+                <div className="page-header" style={{ height: '80px' }}>
+                    <div className="flex left column">
+                        <div className="flex left fs-12 cn-7">
+                            <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
                         </div>
-                    }
-                    
-                    <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
-                        {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
+                        <div className="flex left page-header__title">{appDetails?.appName}</div>
+                    </div>
+                    <div className="page-header__cta-container flex">
+                        {
+                            appDetails?.deprecated &&
+                            <div className="mr-20">
+                                <UpdateWarn />
+                            </div>
+                        }
+
+                        <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
+                            {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
                         configure
                     </button>
+                    </div>
                 </div>
-            </div>
-            <div className="deployment-page__body">
-                {/* <div className="flex left w-100 p-16">
+                <div className="deployment-page__body">
+                    {/* <div className="flex left w-100 p-16">
                     <EnvSelector
                         environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}
                     />
                 </div> */}
-                <Details 
-                    key={params.appId} 
-                    appDetailsAPI={getInstalledAppDetail} 
-                    setAppDetails={setAppDetails}
-                    isPollingRequired={isPollingRequired}
-                    environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}
-                />
+                    <Details key={params.appId}
+                        appDetailsAPI={getInstalledAppDetail}
+                        setAppDetailResultInParent={setAppDetails}
+                        isPollingRequired={isPollingRequired}
+                        environments={[{ environmentId: params.envId, environmentName: appDetails?.environmentName }]}
+                    />
+                </div>
             </div>
-        </div>
-        <Route
-            path={`${path}/update-chart`}
-            render={(props) => {
-                return (
-                    <OpaqueModal onHide={closeModal}>
-                        {installedConfig && installedConfig.valuesOverrideYaml ? (
-                            <DeployChart
-                                versions={mapById([
-                                    {
-                                        id: installedConfig.appStoreVersion,
-                                        version: appDetails.appStoreAppVersion,
-                                    },
-                                ])}
-                                {...installedConfig}
-                                valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
-                                rawValues={
-                                    installedConfig.valuesOverrideYaml
-                                }
-                                appName={installedConfig.appName}
-                                installedAppVersion={installedConfig.id}
-                                chartValuesFromParent={{
-                                    id: appDetails.appStoreInstalledAppVersionId,
-                                    kind: 'DEPLOYED',
-                                }}
-                                deprecated={installedConfig.deprecated}
-                                appStoreId={installedConfig.appStoreId}
-                                chartIdFromDeploymentDetail={appDetails.appStoreChartId}
-                                chartName={appDetails.appStoreChartName}
-                                name={appDetails.appStoreAppName}
-                                installedAppVersionId={installedConfig.id}
-                                onHide={closeModal}
-                            />
-                        ) : (
-                            <Progressing pageLoader />
-                        )}
-                    </OpaqueModal>
-                );
-            }}
-        />
+            <Route
+                path={`${path}/update-chart`}
+                render={(props) => {
+                    return (
+                        <OpaqueModal onHide={closeModal}>
+                            {installedConfig && installedConfig.valuesOverrideYaml ? (
+                                <DeployChart
+                                    versions={mapById([
+                                        {
+                                            id: installedConfig.appStoreVersion,
+                                            version: appDetails.appStoreAppVersion,
+                                        },
+                                    ])}
+                                    {...installedConfig}
+                                    valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
+                                    rawValues={
+                                        installedConfig.valuesOverrideYaml
+                                    }
+                                    appName={installedConfig.appName}
+                                    installedAppVersion={installedConfig.id}
+                                    chartValuesFromParent={{
+                                        id: appDetails.appStoreInstalledAppVersionId,
+                                        kind: 'DEPLOYED',
+                                    }}
+                                    deprecated={installedConfig.deprecated}
+                                    appStoreId={installedConfig.appStoreId}
+                                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
+                                    chartName={appDetails.appStoreChartName}
+                                    name={appDetails.appStoreAppName}
+                                    installedAppVersionId={installedConfig.id}
+                                    onHide={closeModal}
+                                />
+                            ) : (
+                                    <Progressing pageLoader />
+                                )}
+                        </OpaqueModal>
+                    );
+                }}
+            />
         </>
     );
 }
