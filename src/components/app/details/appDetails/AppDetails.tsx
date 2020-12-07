@@ -146,7 +146,11 @@ export const Details: React.FC<{
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
-    const [lastExecutionDetail, setLastExecutionDetail] = useState({ imageScanDeployInfoId: 0, severityCount: { critical: 0, moderate: 0, low: 0 } })
+    const [lastExecutionDetail, setLastExecutionDetail] = useState({
+        imageScanDeployInfoId: 0,
+        severityCount: { critical: 0, moderate: 0, low: 0 },
+        isError: false,
+    })
     const [appDetailsLoading, setAppDetailsLoading] = useState(true);
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
@@ -190,15 +194,12 @@ export const Details: React.FC<{
         }
         if (appDetailsResult && setAppDetails) {
             setAppDetails(appDetailsResult?.result);
-            if (!lastExecutionDetail.imageScanDeployInfoId) {
-                callLastExecutionMinAPI(appDetailsResult?.result?.appId, params.envId)
-            }
+        }
+
+        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
+            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
         }
     }, [appDetailsResult, appDetailsError]);
-
-    useEffect(() => {
-        if (isAppDeployment) callLastExecutionMinAPI(params.appId, params.envId);
-    }, []);
 
     async function callLastExecutionMinAPI(appId, envId) {
         if (!appId || !envId) return;
@@ -207,10 +208,15 @@ export const Details: React.FC<{
             const { result } = await getLastExecutionMinByAppAndEnv(appId, envId);;
             setLastExecutionDetail({
                 imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: result.severityCount
+                severityCount: result.severityCount,
+                isError: false,
             });
         } catch (error) {
-            // showError(error);
+            setLastExecutionDetail({
+                imageScanDeployInfoId: 0,
+                severityCount: { critical: 0, moderate: 0, low: 0 },
+                isError: true,
+            });
         }
     }
 
