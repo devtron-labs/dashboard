@@ -1,5 +1,5 @@
 import React, {useState, useMemo} from 'react'
-import {useAsync, Progressing, multiSelectStyles, mapByKey, Td, DropdownIcon, Option, noop, DatePicker} from '../../../common'
+import {useAsync, Progressing, multiSelectStyles, mapByKey, Td, DropdownIcon, Option, noop, DatePicker, RadioGroup} from '../../../common'
 import {useParams, useRouteMatch, generatePath, useHistory, Route, Switch} from 'react-router'
 import {getCIPipelines } from '../../service'
 import Select, {components} from 'react-select';
@@ -122,6 +122,11 @@ function TestsPlaceholder({title="Test Reports", subtitle="", img=<EmptyTests/>}
 
 const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> = ({ selectedNames, startDate, endDate }) => {
     const params = useParams<{ appId: string; pipelineId: string }>();
+    const chartTypeConstants = {
+        relativeChart: "relativeChart",
+        absoluteChart: "absoluteChart"
+    }
+    const [chartType, setChartType] = useState<string>(chartTypeConstants.absoluteChart);
     const { url, path } = useRouteMatch();
     const [triggerListLoading, triggerList, error, reload] = useAsync(
         () =>
@@ -134,7 +139,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
             ),
         [params.pipelineId, selectedNames, startDate, endDate],
     );
-    const data = (triggerList?.result?.result || []).slice(0, 30).map((triggerDetail) => {
+    const absoluteChartData = (triggerList?.result?.result || []).map((triggerDetail) => {
         const {
             skippedCount,
             errorCount,
@@ -154,6 +159,48 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
             successCount: testCount - (skippedCount + errorCount + failureCount + disabledCount + unknownCount),
         };
     });
+
+    const relativeChartData = [];
+    function getRelativeCountValues (individualCountValue: number, Total: number) {
+        return `${((individualCountValue/Total) * 100).toFixed(2)}`
+    }
+    function getTotalPercentageExceptSuccess(testsCountData) {
+        const keys = Object.keys(testsCountData);
+        let totalPercentage = 0;
+        for (let i = 0; i < keys.length; i++) {
+            totalPercentage += Number(testsCountData[keys[i]]);
+        }
+        console.log(totalPercentage)
+        return totalPercentage;
+    }
+    if (triggerList && triggerList.result && triggerList.result.result) {
+        for (let i = 0; i < triggerList.result.result.length; i++) {
+            console.log(triggerList.result.result[i])
+            const testsCountData = {
+                skippedCount: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
+                errorCount: getRelativeCountValues(triggerList.result.result[i].errorCount, triggerList.result.result[i].testCount),
+                failureCount: getRelativeCountValues(triggerList.result.result[i].failureCount, triggerList.result.result[i].testCount),
+                disabledCount: getRelativeCountValues(triggerList.result.result[i].disabledCount, triggerList.result.result[i].testCount),
+                unknownCount: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
+                successCount: "0",
+            }
+            const totalPercentageExceptSuccess = getTotalPercentageExceptSuccess(testsCountData)
+            testsCountData.successCount = (100 - totalPercentageExceptSuccess).toFixed(2);
+            relativeChartData.push(testsCountData)
+        }
+    }
+    console.log(relativeChartData);
+    function changeChartType(e: React.ChangeEvent<HTMLInputElement>) {
+        setChartType(e.target.value);
+    }
+    function CustomTickRelativeChart(props) {
+        console.log(props)
+        return (
+            <g transform={`translate(${props.x},${props.y})`}>
+                <text textAnchor="end" fontSize={12}>{props.payload.value}%</text>
+            </g>
+        )
+    }
 
     const colorMap = {
         skippedCount: '#d0d4d9',
@@ -185,22 +232,48 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
     return (
         <>
             <div className="mt-24 w-100 flex left column pt-16 pl-24 pb-16 pr-24 bcn-0 br-8 en-2 bw-1">
-                <div className="flex left mb-24">
+                <div className="flexbox flex-justify mb-24" style={{width: "100%"}}>
                     <span className="fs-14 cn-9 fw-6">Last 30 executions</span>
+                    <RadioGroup 
+                        name="yaml-mode" 
+                        initialTab={chartTypeConstants.absoluteChart} 
+                        disabled={false} 
+                        className="gui-yaml-switch"
+                        onChange={changeChartType}>
+                        <RadioGroup.Radio value={chartTypeConstants.absoluteChart}>Absolute</RadioGroup.Radio>
+                        <RadioGroup.Radio value={chartTypeConstants.relativeChart}>Relative</RadioGroup.Radio>
+                    </RadioGroup>
                 </div>
                 <div className="w-100" style={{ height: '300px' }}>
-                    <ResponsiveContainer>
-                        <BarChart data={data} barSize={10}>
-                            {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                            <YAxis />
-                            {/* <XAxis dataKey="date" /> */}
-                            <Tooltip />
-                            <Legend />
-                            {Object.entries(colorMap).map(([dataKey, fill]) => (
-                                <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
-                            ))}
-                        </BarChart>
-                    </ResponsiveContainer>
+                    {chartType === chartTypeConstants.absoluteChart ? 
+                        <ResponsiveContainer>
+                            <BarChart data={absoluteChartData} barSize={10}>
+                                {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                                <YAxis />
+                                {/* <XAxis dataKey="date" /> */}
+                                <Tooltip />
+                                <Legend />
+                                {Object.entries(colorMap).map(([dataKey, fill]) => (
+                                    <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
+                                ))}
+                            </BarChart>
+                        </ResponsiveContainer>
+                    : 
+                        <ResponsiveContainer>
+                            <BarChart data={relativeChartData} barSize={10}>
+                                <YAxis 
+                                    domain={[0,100]} 
+                                    tickCount={6} 
+                                    tick={<CustomTickRelativeChart/>}/>
+                                <Tooltip />
+                                <Legend />
+                                {Object.entries(colorMap).map(([dataKey, fill]) => (
+                                    <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
+                                ))}
+                            </BarChart>
+                        </ResponsiveContainer> 
+                    }
+                    
                 </div>
             </div>
             <div className="trigger-table-container mt-16">
