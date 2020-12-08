@@ -84,7 +84,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
                 <input autoComplete="off" ref={node => { if (node) node.focus(); this._inputName = node }} className="form__input" type="text" name="workflow-name" value={this.state.name}
                     placeholder="e.g. production workflow" autoFocus={true} tabIndex={1} onChange={this.handleWorkflowName} required />
                 {this.state.showError && !isValid ? <span className="form__error">
-                    <img src={error} className="form__icon" /> This is required Field
+                    <img src={error} alt="" className="form__icon" /> This is required Field
                             </span>
                     : null}
             </label>

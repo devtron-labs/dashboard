@@ -51,7 +51,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                 <a
                     href={createGitCommitUrl(ciMaterial?.url, gitTrigger?.Commit)}
                     target="_blank"
-                    rel="noopener noreferer"
+                    rel="noopener noreferrer"
                     className="commit-hash mono fs-14"
                     onClick={(e) => e.stopPropagation()}
                 >

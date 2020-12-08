@@ -220,7 +220,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				<Command location={this.props.location}
 					match={this.props.match}
 					history={this.props.history}
-					isTabMode={true}
 					isCommandBarActive={this.state.isCommandBarActive}
 					toggleCommandBar={this.toggleCommandBar}
 				/>

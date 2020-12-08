@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Progressing, useBreadcrumb, BreadCrumb, OpaqueModal } from '../../common';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../charts.service';
-import { Details, EnvSelector } from '../../app/details/appDetails/AppDetails';
+import { Details } from '../../app/details/appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
 import DeployChart from '../modal/DeployChart';
-import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
 import AppSelector from '../../AppSelector';
