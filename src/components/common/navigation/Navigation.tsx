@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ReactComponent as Documentation } from '../../../assets/icons/ic-document.svg'
+import { ReactComponent as Discord} from '../../../assets/icons/ic-discord.svg'
+import { ReactComponent as Github} from '../../../assets/icons/git/github.svg'
+import { ReactComponent as MoreOption} from '../../../assets/icons/ic-more-option.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
@@ -51,29 +54,34 @@ const navigationList = [
 	},
 ];
 
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; isCommandBarActive: boolean; }> {
+export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard:boolean; isCommandBarActive: boolean; }> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			loginInfo: getLoginInfo(),
 			showLogoutCard: false,
+			showMoreOptionCard: false,
 			isCommandBarActive: false,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
+		this.toggleMoreOptionCard= this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
 
-	componentDidMount() {
+	/*componentDidMount() {
 		const tagManagerArgs = {
 			gtmId: 'GTM-59Q5GDK'
 		}
 		TagManager.initialize(tagManagerArgs)
-	}
+	}*/
 
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
+	}
+	toggleMoreOptionCard(){
+		this.setState({showMoreOptionCard: !this.state.showMoreOptionCard})
 	}
 
 	toggleCommandBar(flag: boolean): void {
@@ -104,6 +112,25 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					<p className="logout-card__initial icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
 				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
+			</div>
+		</div>, document.getElementById('root'))
+	}
+	renderMoreOption(){
+		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
+			<div className="more-option-card ">
+					<a rel="noreferrer noopener" className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank">
+						<div className="more-option-card__rect ">Devtron Blog</div>
+					</a>
+					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank">
+						<div className="more-option-card__rect ">Create an issue</div>
+					</a>
+					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron" target="_blank">
+						<div className="more-option-card__rect ">Star GitHub repo</div>
+					</a>
+					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank">
+						<div className="more-option-card__rect ">Become a contributor</div>
+					</a>
+					
 			</div>
 		</div>, document.getElementById('root'))
 	}
@@ -147,14 +174,20 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					}
 					)}
 					<div></div>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /></a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-20 fcn-0 cursor" /></a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://github.com/devtron-labs/devtron" target="_blank"><Github className="icon-dim-20 fcn-0 cursor" /></a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://discord.gg/72JDKy4" target="_blank"><Discord className="icon-dim-20 fcn-0 cursor" /></a>
 					<div className="icon-dim-40 flex">
-						<div className="logout-card__initial icon-dim-32 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
+						<div className="logout-card__initial icon-dim-24 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 							{email[0]}
 						</div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
-					<div className="hubspot-placeholder"></div>
+					<div className="icon-dim-40 flex" onClick={this.toggleMoreOptionCard} >
+							<MoreOption className="icon-dim-24 fcn-0 cursor"/>
+						
+					</div>
+					{this.state.showMoreOptionCard ? this.renderMoreOption() : null}
 				</aside>
 				<aside className="expanded-nav nav-grid">
 					<NavLink to={URLS.APP} className="flex left">
@@ -176,8 +209,11 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					})}
 					<div></div>
 					<a rel="noreferrer noopener" className="flex left icon-dim-40 title-container" href="https://docs.devtron.ai/" target="_blank">Documentation</a>
+					<a rel="noreferrer noopener" className="flex left icon-dim-40 title-container" href="https://github.com/devtron-labs/devtron" target="_blank">View on GitHub</a>
+					<a rel="noreferrer noopener" className="flex left icon-dim-40 title-container" href="https://discord.com/invite/72JDKy4" target="_blank">Discord Community</a>
 					<button type="button" className="transparent ellipsis-right title-container" onClick={this.toggleLogoutCard}>{email}</button>
-					<div className="hubspot-placeholder"></div>
+					<button type="button" className="flex left transparent title-container" onClick={this.toggleMoreOptionCard}>More Option</button>
+
 				</aside>
 			</nav>
 			<CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
