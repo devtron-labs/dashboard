@@ -170,12 +170,10 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
         for (let i = 0; i < keys.length; i++) {
             totalPercentage += Number(testsCountData[keys[i]]);
         }
-        console.log(totalPercentage)
         return totalPercentage;
     }
     if (triggerList && triggerList.result && triggerList.result.result) {
         for (let i = 0; i < triggerList.result.result.length; i++) {
-            console.log(triggerList.result.result[i])
             const testsCountData = {
                 skippedCount: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
                 errorCount: getRelativeCountValues(triggerList.result.result[i].errorCount, triggerList.result.result[i].testCount),
@@ -189,12 +187,10 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
             relativeChartData.push(testsCountData)
         }
     }
-    console.log(relativeChartData);
     function changeChartType(e: React.ChangeEvent<HTMLInputElement>) {
         setChartType(e.target.value);
     }
     function CustomTickRelativeChart(props) {
-        console.log(props)
         return (
             <g transform={`translate(${props.x},${props.y})`}>
                 <text textAnchor="end" fontSize={12}>{props.payload.value}%</text>

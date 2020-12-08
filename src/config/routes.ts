@@ -12,6 +12,7 @@ export const URLS = {
     APP: '/app',
     APP_DETAILS: 'details', //
     APP_TRIGGER: 'trigger',
+    APP_TESTS: 'tests',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',
