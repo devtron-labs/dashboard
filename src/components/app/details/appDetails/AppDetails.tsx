@@ -24,7 +24,6 @@ import {
     FragmentHOC,
     useSearchString,
     multiSelectStyles,
-    useInterval,
     useAsync,
     SingleSelectOption as Option,
     ScanDetailsModal,
@@ -49,8 +48,7 @@ import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-d
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
-import Select, { components } from 'react-select'
-import { aggregateNodes } from './utils'
+import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {
     AppStreamData,
@@ -62,7 +60,7 @@ import {
     NodeDetailTabsType,
     AppDetails,
 } from '../../types';
-import { SecurityVulnerabilitites } from './appDetails.util';
+import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 
 export default function AppDetail() {
@@ -112,8 +110,7 @@ export default function AppDetail() {
                     </div>
                 )}
                 <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
-                    <Details
-                        key={params.appId + "-" + params.envId}
+                    <Details key={params.appId + "-" + params.envId}
                         appDetailsAPI={fetchAppDetailsInTime}
                         isAppDeployment
                         environment={otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)}
@@ -133,10 +130,11 @@ export default function AppDetail() {
 export const Details: React.FC<{
     environment?: any;
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
-    setAppDetails?: (appDetails) => void;
+    setAppDetailResultInParent?: (appDetails) => void;
     isAppDeployment?: boolean;
     environments: any;
-}> = ({ appDetailsAPI, setAppDetails, environment, isAppDeployment = false, environments }) => {
+    isPollingRequired?: boolean;
+}> = ({ appDetailsAPI, setAppDetailResultInParent, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -147,16 +145,21 @@ export const Details: React.FC<{
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
-    const [lastExecutionDetail, setLastExecutionDetail] = useState({ imageScanDeployInfoId: 0, severityCount: { critical: 0, moderate: 0, low: 0 } })
+    const [lastExecutionDetail, setLastExecutionDetail] = useState({
+        imageScanDeployInfoId: 0,
+        severityCount: { critical: 0, moderate: 0, low: 0 },
+        isError: false,
+    })
     const [appDetailsLoading, setAppDetailsLoading] = useState(true);
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
-
+    const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         //@ts-ignore
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
+    const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
         `${prefix}${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -165,43 +168,25 @@ export const Details: React.FC<{
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
+    const aggregatedNodes: AggregatedNodes = useMemo(() => {
+        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
+    }, [appDetails]);
+
     async function callAppDetailsAPI() {
         try {
             let response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response);
             setAppDetailsLoading(false);
         } catch (error) {
-            setAppDetailsError(error)
+            if (!appDetailsResult) {
+                setAppDetailsError(error);
+            }
         }
     }
 
-    async function polling() {
-        try {
-            let response = await appDetailsAPI(params.appId, params.envId, 25000);
-            setAppDetailsResult(response);
-            setAppDetailsLoading(false);
-        } catch (error) {
-        }
+    function describeNode(name: string, containerName: string) {
+        setDetailedNode({ name, containerName });
     }
-    
-    useEffect(() => {
-        callAppDetailsAPI();
-    }, []);
-
-    useEffect(() => {
-        if (appDetailsError) {
-            showError(appDetailsError)
-            return
-        }
-        if (appDetailsResult && setAppDetails) {
-            setAppDetails(appDetailsResult?.result);
-            callLastExecutionMinAPI(appDetailsResult?.result?.appId, params.envId)
-        }
-    }, [appDetailsResult, appDetailsError]);
-
-    useEffect(() => {
-        if (isAppDeployment) callLastExecutionMinAPI(params.appId, params.envId);
-    }, []);
 
     async function callLastExecutionMinAPI(appId, envId) {
         if (!appId || !envId) return;
@@ -210,34 +195,61 @@ export const Details: React.FC<{
             const { result } = await getLastExecutionMinByAppAndEnv(appId, envId);;
             setLastExecutionDetail({
                 imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: result.severityCount
+                severityCount: result.severityCount,
+                isError: false,
             });
         } catch (error) {
-            // showError(error);
+            setLastExecutionDetail({
+                imageScanDeployInfoId: 0,
+                severityCount: { critical: 0, moderate: 0, low: 0 },
+                isError: true,
+            });
         }
     }
 
-    const aggregatedNodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
-    }, [appDetails]);
-
-    const interval: number = useMemo(() => {
-        return 30000;
-        // if (!appDetails?.resourceTree?.status) return 30000;
-        // return appDetails?.resourceTree?.status?.toLowerCase() === 'progressing' ? 10000 : 30000;
-    }, [appDetails]);
-
-    useInterval(polling, interval);
-    function describeNode(name: string, containerName: string) {
-        setDetailedNode({ name, containerName });
+    function clearPollingInterval() {
+        if (pollingIntervalID) {
+            clearInterval(pollingIntervalID);
+        }
     }
 
+    useEffect(() => {
+        if (appDetailsError) {
+            showError(appDetailsError)
+            return
+        }
+        if (appDetailsResult && setAppDetailResultInParent) {
+            setAppDetailResultInParent(appDetailsResult?.result);
+        }
+
+        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
+            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
+        }
+    }, [appDetailsResult, appDetailsError]);
+
+
+    // useInterval(polling, interval);
+    useEffect(() => {
+        if (isPollingRequired) {
+            callAppDetailsAPI();
+            const intervalID = setInterval(callAppDetailsAPI, interval);
+            setPollingIntervalID(intervalID);
+        }
+        else {
+            clearPollingInterval();
+        }
+    }, [isPollingRequired])
+
+    useEffect(() => {
+        return () => {
+            clearPollingInterval()
+        }
+    }, [pollingIntervalID])
+
     if (appDetailsLoading && !appDetails) {
-        return (
-            <div className="w-100 flex" style={{ height: '100%' }}>
-                <Progressing pageLoader />
-            </div>
-        );
+        return <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
+            <Progressing pageLoader />
+        </div>
     }
 
     let message = null;
@@ -784,9 +796,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                 marginLeft: '0',
                                 marginRight: '0',
                                 direction: 'rtl',
-                                color: 'var(--N0)',
+                                color: 'var(--N000)',
                             }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
+                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
                             option: (base, state) => ({
                                 ...base,
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
@@ -827,9 +839,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                     singleValue: (base, state) => ({
                                         ...base,
                                         direction: 'rtl',
-                                        color: 'var(--N0)',
+                                        color: 'var(--N000)',
                                     }),
-                                    input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
+                                    input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
                                     option: (base, state) => ({
                                         ...base,
                                         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',

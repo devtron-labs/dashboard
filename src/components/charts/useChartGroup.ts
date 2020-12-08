@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry } from './charts.types';
-import { getAvailableCharts, getChartVersionsMin, validateAppNames, getChartValuesCategorizedList, getChartValues, getChartGroupDetail, createChartValues as createChartValuesService } from './charts.service'
-import { getTeamList, getEnvironmentListMin } from '../../services/service'
+import { getChartVersionsMin, validateAppNames, getChartValuesCategorizedList, getChartValues, getChartGroupDetail, createChartValues as createChartValuesService } from './charts.service';
+import { getAvailableCharts, getTeamList, getEnvironmentListMin } from '../../services/service'
 import { mapByKey, showError } from '../common';
 import { toast } from 'react-toastify';
 
@@ -302,7 +302,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    async function handleChartValueChange(index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE', valuesId: number) {
+    async function handleChartValueChange(index: number, kind: 'DEPLOYED' | 'DEFAULT' | 'TEMPLATE' | 'EXISTING', valuesId: number) {
         const tempCharts = [...state.charts]
         tempCharts[index].loading = true;
         tempCharts[index].isUnsaved = true;

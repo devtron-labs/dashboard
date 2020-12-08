@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getIframeSrc, ThroughputSelect } from './appDetails.util';
+import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
 import { ChartTypes } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets, Progressing } from '../../../common';
+import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
@@ -72,14 +72,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleApply(): void {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate);
         setCalendarValue(str);
     }
 
@@ -102,15 +95,18 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
     }
 
-    function handlePredefinedRange(start: Moment, end: Moment, endStr: string): void {
+    function handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
         setDateRange({
             startDate: start,
             endDate: end,
         });
         setCalendarInput({
-            startDate: endStr,
+            startDate: startStr,
             endDate: 'now',
         });
+        let str = getCalendarValue(startStr, 'now');
+        setCalendarValue(str);
+
     }
 
     function handleStatusChange(selected): void {
@@ -119,7 +115,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setGraphs({
             ...graphs,
             throughput: throughput,
-        })
+        });
     }
 
     function getNewGraphs(): void {
@@ -137,14 +133,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
 
     useEffect(() => {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
         getNewGraphs();
         checkDatasource();
