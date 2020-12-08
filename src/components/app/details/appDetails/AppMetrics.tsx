@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
-import { ChartTypes } from './appDetails.type';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
@@ -30,7 +30,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         isHealthy: false,
     });
     const [focusedInput, setFocusedInput] = useState('startDate')
-    const [tab, setTab] = useState<'pod' | 'aggregate'>('aggregate');
+    const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate);
     const [chartName, setChartName] = useState<ChartTypes>(null);
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
@@ -168,11 +168,11 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 <div className="flex">
                     <div className="mr-16">
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={tab === 'aggregate'} value={'aggregate'} onChange={handleTabChange} />
+                            <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
                             <span className="tertiary-tab">Aggregate</span>
                         </label>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={tab === 'pod'} value={'pod'} onChange={handleTabChange} />
+                            <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
                             <span className="tertiary-tab">Per Pod</span>
                         </label>
                         {chartName ? <GraphModal appId={appId}
@@ -208,7 +208,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('cpu') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('cpu') }} />
                         </Tippy>
                     </div>
                     <iframe title={'cpu'} src={graphs.cpu} className="app-metrics-graph__iframe" />
@@ -219,7 +219,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('ram') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('ram') }} />
                         </Tippy>
                     </div>
                     <iframe title={'ram'} src={graphs.ram} className="app-metrics-graph__iframe" />
@@ -235,7 +235,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('status') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('status') }} />
                         </Tippy>
                     </div>
                     <iframe title={'throughput'} src={graphs.throughput} className="app-metrics-graph__iframe" />
@@ -246,7 +246,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('latency') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('latency') }} />
                         </Tippy>
                     </div>
                     <iframe title={'latency'} src={graphs.latency} className="app-metrics-graph__iframe" />

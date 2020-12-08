@@ -423,7 +423,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         if (this.props.isCommandBarActive) {
             return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => { this.props.toggleCommandBar(false); }}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
-                    {this.props.isTabMode ? <div className="command-tab">
+                    <div className="command-tab">
                         <div className="">
                             <label className={this.state.tab === "this-app" ? "command-tab__tab command-tab__tab-selected" : "command-tab__tab"}>
                                 <input type="radio" name="command-tab" checked={this.state.tab === 'this-app'} value="this-app" onKeyDown={this.disableArrowKeys} onChange={this.selectTab} />
@@ -435,7 +435,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                             </label>
                         </div>
                         <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
-                    </div> : null}
+                    </div>
                     <div className="flex column pl-20 pr-20" style={{ backgroundColor: "var(--window-bg)" }}>
                         <div className="command-arg flex top w-100">
                             <div className="flex-1 flex left flex-wrap">
