@@ -223,7 +223,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: MetricsType, isLegendRequired: boolean, statusCode?: string) {
+export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: MetricsType, isLegendRequired: boolean, statusCode?: string):string {
     let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
     // rootUrl = 'http://demo.devtron.info:32080';
     let startTime: string = calendarInputs.startDate;
