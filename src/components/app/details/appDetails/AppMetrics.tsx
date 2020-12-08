@@ -46,7 +46,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     function handleTabChange(event): void {
         setTab(event.target.value);
-        if (event.target.value === "pod") setChartName('cpu');
     }
 
     function handleDatesChange({ startDate, endDate }): void {
