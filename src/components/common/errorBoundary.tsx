@@ -35,7 +35,7 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState>{
         if (this.state.hasError) {
             return (
             <div className="flex column" style={{width:'100%', height:'100%'}}>
-                <img src={bugFixing} style={{height:'300px', width:'auto', marginBottom:'20px'}}/>
+                <img src={bugFixing} alt="" style={{height:'300px', width:'auto', marginBottom:'20px'}}/>
                 <h2 style={{ marginBottom: '20px'}}>We encountered an error.</h2>
                 <button type="button" className="cta" onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}>Report feedback</button>
             </div>

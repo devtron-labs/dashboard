@@ -18,17 +18,16 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
-    const loginInfo = getLoginInfo()
     const match = useRouteMatch()
+    
     useEffect(() => {
+        const loginInfo = getLoginInfo()
         if (!loginInfo) return
         if (process.env.NODE_ENV !== 'production' || !window._env_ || (window._env_ && !window._env_.SENTRY_ENABLED)) return
         Sentry.configureScope(function (scope) {
             scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] });
         });
-    }, [])
 
-    useEffect(() => {
         if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.GA_ENABLED) {
             let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
             let path = location.pathname;

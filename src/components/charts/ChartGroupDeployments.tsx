@@ -91,7 +91,7 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
             {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
                 return <Link to={`/chart-store/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row">
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
-                        <img className="icon-dim-40 mr-16" onError={handleImageError} src={chart.icon || ""} />
+                        <img className="icon-dim-40 mr-16" onError={handleImageError} alt="chart" src={chart.icon || ""} />
                         <p className="chart-group-deployment-cell__chart-name ellipsis-right m-0">{chart.chartName}</p>
                     </div>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--child-2">
