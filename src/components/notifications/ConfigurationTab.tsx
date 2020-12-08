@@ -57,7 +57,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         return <div key="slack-config" className="white-card white-card--configuration-tab mb-16">
             <div className="configuration-tab__header">
                 <p className="configuration-tab__title">
-                    <img src={slack} className="icon-dim-24 mr-10" />
+                    <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
                     Slack Configurations
                 </p>
                 <button type="button" className="cta flex small" onClick={(event) => { this.setState({ showSlackConfigModal: true, slackConfigId: 0 }) }}>

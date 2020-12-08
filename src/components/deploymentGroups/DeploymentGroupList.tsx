@@ -7,7 +7,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Deploy } from '../../assets/icons/ic-deploy.svg';
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg';
-// import { ReactComponent as Pause } from '../../assets/icons/ic-pause.svg';
 import { CDMaterial } from '../app/details/triggerView/cdMaterial';
 import { CDMaterialType } from '../app/details/triggerView/types';
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png';
@@ -15,7 +14,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
-import { NoDeployments } from '../charts/discoverChartDetail/ChartDeploymentList';
 
 export interface BulkActionListProps extends RouteComponentProps<{}> {
 

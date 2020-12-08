@@ -53,7 +53,7 @@ export default class Edge extends Component<EdgeProps>{
         if (lineStartX > lineEndX) {
             return `M${lineStartX} ${lineStartY} H ${lineStartX + 15} V ${midPointY} H${lineEndX - 15} V ${lineEndY} H ${lineEndX}`;
             // this.props.deleteEdge();
-            return ``;
+            // return ``;
         }
         else if (lineStartY != lineEndY) {
             return `M${lineStartX} ${lineStartY} H ${midPointX} V ${lineEndY} H ${lineEndX}`;
