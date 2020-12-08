@@ -3,7 +3,7 @@ import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ReactComponent as Documentation } from '../../../assets/icons/ic-document.svg'
 import { ReactComponent as Discord} from '../../../assets/icons/ic-discord.svg'
-import { ReactComponent as Github} from '../../../assets/icons/ic-github.svg'
+import { ReactComponent as Github} from '../../../assets/icons/git/github.svg'
 import { ReactComponent as MoreOption} from '../../../assets/icons/ic-more-option.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
