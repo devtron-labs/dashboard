@@ -6,7 +6,7 @@
     "dependencies": {
         "@sentry/browser": "^5.29.0",
         "@sentry/integrations": "^5.29.0",
-        "@tippyjs/react": "^4.0.2",
+        "@tippyjs/react": "^4.2.0",
         "@types/react-select": "^3.0.11",
         "@uiw/react-monacoeditor": "^2.0.2",
         "ansi_up": "^4.0.4",
@@ -27,7 +27,6 @@
         "react-dates": "^21.8.0",
         "react-dom": "^16.11.0",
         "react-ga": "^3.3.0",
-        "react-gtm-module": "^2.0.8",
         "react-monaco-editor": "^0.33.0",
         "react-router-dom": "^5.1.2",
         "react-select": "^3.1.1",
