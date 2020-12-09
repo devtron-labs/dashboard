@@ -596,20 +596,26 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
         for (let i = 0; i < binWiseArrayData.length; i++) {
             chartData.push({
                 'number of tests':  binWiseArrayData[i],
-                'time spent': `${Number((i * binWidth).toFixed(2))} - ${Number(((i + 1) * binWidth).toFixed(2))}`
+                'time spent': `${Number((i * binWidth).toFixed(2))}ms - ${Number(((i + 1) * binWidth).toFixed(2))}ms`
             })
         }
-        return chartData;
+        return {
+            chartData,
+            testCases: uniqueTimeKeys.length,
+        };
     }
     const hist = useMemo(()=>calculateHistogram(timeAggregation), [timeAggregation]);
 
     return (
         <div className="w-100 bcn-0 br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
+            <div className="execution-details-header">
+                Execution duration for {hist.testCases} test cases
+            </div>
             <ResponsiveContainer>
-                <BarChart data={hist}>
+                <BarChart data={hist.chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis allowDecimals={false}/>
-                    <XAxis dataKey="time spent" unit={'ms'}/>
+                    <XAxis dataKey="time spent"/>
                     <Tooltip cursor={{fill: 'transparent'}}/>
                     <Bar radius={[4, 4, 0, 0]} dataKey={'number of tests'} fill={'var(--B500)'} />
                 </BarChart>
