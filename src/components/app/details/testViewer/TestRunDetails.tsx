@@ -621,7 +621,6 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
     }
     const CustomTooltip = (props?) => {
         if (props?.payload.length > 0) {
-            console.log(props?.payload)
             if (props.active) {
                 return <div className="custom-tooltip-chart" style={{'width': 'auto'}}>
                     <div className="custom-tooltip-chart-main" style={{'display': 'block'}}>
