@@ -168,7 +168,10 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
         const keys = Object.keys(testsCountData);
         let totalPercentage = 0;
         for (let i = 0; i < keys.length; i++) {
-            totalPercentage += Number(testsCountData[keys[i]]);
+            if (keys[i] !== 'date') {
+                totalPercentage += Number(testsCountData[keys[i]]);
+            }
+            
         }
         return totalPercentage;
     }
@@ -181,6 +184,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                 Disabled: getRelativeCountValues(triggerList.result.result[i].disabledCount, triggerList.result.result[i].testCount),
                 Unknown: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
                 Success: "0",
+                date: triggerList.result.result[i].createdOn,
             }
             const totalPercentageExceptSuccess = getTotalPercentageExceptSuccess(testsCountData)
             testsCountData.Success = (100 - totalPercentageExceptSuccess).toFixed(2);
@@ -206,7 +210,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
         Unknown: '#ff9800',
         Success: '#00be61',
     };
-    const CustomTooltip = (props?) => {
+    const CustomTooltipAbsolute = (props?) => {
         if (props?.payload.length > 0) {
             const executionDate = props.payload[0].payload.date;
             delete props.payload[0].payload.date;
@@ -221,6 +225,30 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                         <div className="custom-tooltip-chart-main">
                             <div>{testType}</div>
                             <div>{props.payload[0].payload[testType]}</div>
+                        </div>
+                    )}
+                </div>
+                );
+            }
+        }
+        return null;
+    };
+
+    const CustomTooltipRelative = (props?) => {
+        if (props?.payload.length > 0) {
+            const executionDate = props.payload[0].payload.date;
+            delete props.payload[0].payload.date;
+            if (props.active) {
+            return (
+                <div className="custom-tooltip-chart">
+                    <div className="custom-tooltip-chart-date">
+                        {moment(executionDate).format('ddd, DD MMM YYYY, HH:mma')}
+                    </div>
+                    <div className="custom-tooltip-chart-line"></div>
+                    {Object.keys(props.payload[0].payload).map(testType => 
+                        <div className="custom-tooltip-chart-main">
+                            <div>{testType}</div>
+                            <div>{props.payload[0].payload[testType]}%</div>
                         </div>
                     )}
                 </div>
@@ -271,7 +299,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
                                 <YAxis />
                                 {/* <XAxis dataKey="date" /> */}
-                                <Tooltip content={<CustomTooltip />} />
+                                <Tooltip content={<CustomTooltipAbsolute />} />
                                 <Legend />
                                 {Object.entries(colorMap).map(([dataKey, fill]) => (
                                     <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
@@ -285,7 +313,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                                     domain={[0,100]} 
                                     tickCount={6} 
                                     tick={<CustomTickRelativeChart/>}/>
-                                <Tooltip />
+                                <Tooltip content={<CustomTooltipRelative />}/>
                                 <Legend />
                                 {Object.entries(colorMap).map(([dataKey, fill]) => (
                                     <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
