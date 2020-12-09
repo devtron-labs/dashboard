@@ -91,6 +91,7 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
                     <TestsChart {...statusAggregation} />
                     {timeAggregation && <TestsDuration timeAggregation={timeAggregation} />}
                 </div>
+                <div className="executed-tests">Executed test cases ({result?.result?.result?.testCount})</div>
                 {result?.result?.result?.testsuites?.map((testSuitesData) => (
                     <TestSuites key={testSuitesData.id} {...testSuitesData} showDrawer={showDrawer} />
                 ))}

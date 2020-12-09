@@ -412,3 +412,11 @@ li.suite-meta{
     opacity: 0.2;
     background-color: var(--N0);
 }
+
+.executed-tests {
+    margin: 24px 0 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--N900);
+}
