@@ -91,6 +91,13 @@ a:focus {
     bottom: -10px !important
 }
 
+.trigger-header-time {
+    line-height: 1.4;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--N900);
+}
+
 .page-header {
     all: unset;
     margin: unset;
