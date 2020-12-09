@@ -530,6 +530,20 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
     };
 
     const passPercentage = passedCount * 100 / testCount
+
+    const CustomTooltip = (props?) => {
+        if (props?.payload.length > 0) {
+            if (props.active) {
+                return <div className="custom-tooltip-chart" style={{'width': 'auto'}}>
+                    <div className="custom-tooltip-chart-main">
+                        {((props.payload[0].payload.value / testCount) * 100).toFixed(2)} % {props.payload[0].payload.payload.label}
+                    </div>
+                </div>
+            }
+        }
+        return null;
+    }
+
     return (
         <div className="bcn-0 br-8 en-2 bw-1 p-20 flex left top">
             <div className="flex left column top" style={{ width: '200px', height: '250px' }}>
@@ -575,7 +589,7 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
                         <Cell key={`cell-${index}`} fill={colorMap[entry.label]} />
                     ))}
                 </Pie>
-                <Tooltip/>
+                    <Tooltip content={<CustomTooltip />} />
             </PieChart>
         </div>
     );
