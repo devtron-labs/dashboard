@@ -150,13 +150,13 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
             createdOn,
         } = triggerDetail;
         return {
-            skippedCount,
-            errorCount,
-            failureCount,
-            disabledCount,
-            unknownCount,
+            Skipped: skippedCount,
+            Error: errorCount,
+            Failure: failureCount,
+            Disabled: disabledCount,
+            Unknown: unknownCount,
             date: createdOn,
-            successCount: testCount - (skippedCount + errorCount + failureCount + disabledCount + unknownCount),
+            Success: testCount - (skippedCount + errorCount + failureCount + disabledCount + unknownCount),
         };
     });
 
@@ -175,15 +175,15 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
     if (triggerList && triggerList.result && triggerList.result.result) {
         for (let i = 0; i < triggerList.result.result.length; i++) {
             const testsCountData = {
-                skippedCount: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
-                errorCount: getRelativeCountValues(triggerList.result.result[i].errorCount, triggerList.result.result[i].testCount),
-                failureCount: getRelativeCountValues(triggerList.result.result[i].failureCount, triggerList.result.result[i].testCount),
-                disabledCount: getRelativeCountValues(triggerList.result.result[i].disabledCount, triggerList.result.result[i].testCount),
-                unknownCount: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
-                successCount: "0",
+                Skipped: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
+                Error: getRelativeCountValues(triggerList.result.result[i].errorCount, triggerList.result.result[i].testCount),
+                Failure: getRelativeCountValues(triggerList.result.result[i].failureCount, triggerList.result.result[i].testCount),
+                Disabled: getRelativeCountValues(triggerList.result.result[i].disabledCount, triggerList.result.result[i].testCount),
+                Unknown: getRelativeCountValues(triggerList.result.result[i].skippedCount, triggerList.result.result[i].testCount),
+                Success: "0",
             }
             const totalPercentageExceptSuccess = getTotalPercentageExceptSuccess(testsCountData)
-            testsCountData.successCount = (100 - totalPercentageExceptSuccess).toFixed(2);
+            testsCountData.Success = (100 - totalPercentageExceptSuccess).toFixed(2);
             relativeChartData.push(testsCountData)
         }
     }
@@ -199,13 +199,37 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
     }
 
     const colorMap = {
-        skippedCount: '#d0d4d9',
-        errorCount: '#f6573b',
-        failureCount: '#ff9800',
-        disabledCount: '#58508d',
-        unknownCount: '#ff9800',
-        successCount: '#00be61',
+        Skipped: '#d0d4d9',
+        Error: '#f6573b',
+        Failure: '#ff9800',
+        Disabled: '#58508d',
+        Unknown: '#ff9800',
+        Success: '#00be61',
     };
+    const CustomTooltip = (props?) => {
+        if (props?.payload.length > 0) {
+            const executionDate = props.payload[0].payload.date;
+            delete props.payload[0].payload.date;
+            if (props.active) {
+            return (
+                <div className="custom-tooltip-chart">
+                    <div className="custom-tooltip-chart-date">
+                        {moment(executionDate).format('ddd, DD MMM YYYY, HH:mma')}
+                    </div>
+                    <div className="custom-tooltip-chart-line"></div>
+                    {Object.keys(props.payload[0].payload).map(testType => 
+                        <div className="custom-tooltip-chart-main">
+                            <div>{testType}</div>
+                            <div>{props.payload[0].payload[testType]}</div>
+                        </div>
+                    )}
+                </div>
+                );
+            }
+        }
+        return null;
+    };
+
     if (triggerListLoading) {
         return (
             <div className="w-100 flex" style={{ height: '100%' }}>
@@ -247,7 +271,7 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
                                 <YAxis />
                                 {/* <XAxis dataKey="date" /> */}
-                                <Tooltip />
+                                <Tooltip content={<CustomTooltip />} />
                                 <Legend />
                                 {Object.entries(colorMap).map(([dataKey, fill]) => (
                                     <Bar key={dataKey} dataKey={dataKey} fill={fill} stackId="a" />
@@ -304,13 +328,13 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                                         'successCount',
                                     ].map((count) => (
                                         <span className={`count ${count}`} key={count}>
-                                            {count === 'successCount'
+                                            {count === 'Success'
                                                 ? triggerDetails.testCount -
-                                                  (triggerDetails.skippedCount +
-                                                      triggerDetails.errorCount +
-                                                      triggerDetails.failureCount +
-                                                      triggerDetails.disabledCount +
-                                                      triggerDetails.unknownCount)
+                                                  (triggerDetails.Skipped +
+                                                      triggerDetails.Error +
+                                                      triggerDetails.Failure +
+                                                      triggerDetails.Disabled +
+                                                      triggerDetails.Unknown)
                                                 : triggerDetails[count] || 0}
                                         </span>
                                     ))}
