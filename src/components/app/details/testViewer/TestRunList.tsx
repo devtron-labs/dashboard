@@ -360,13 +360,13 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                                         'successCount',
                                     ].map((count) => (
                                         <span className={`count ${count}`} key={count}>
-                                            {count === 'Success'
+                                            {count === 'successCount'
                                                 ? triggerDetails.testCount -
-                                                  (triggerDetails.Skipped +
-                                                      triggerDetails.Error +
-                                                      triggerDetails.Failure +
-                                                      triggerDetails.Disabled +
-                                                      triggerDetails.Unknown)
+                                                  (triggerDetails.skippedCount +
+                                                      triggerDetails.errorCount +
+                                                      triggerDetails.failureCount +
+                                                      triggerDetails.disabledCount +
+                                                      triggerDetails.unknownCount)
                                                 : triggerDetails[count] || 0}
                                         </span>
                                     ))}

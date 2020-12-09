@@ -619,6 +619,20 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
             testCases: uniqueTimeKeys.length,
         };
     }
+    const CustomTooltip = (props?) => {
+        if (props?.payload.length > 0) {
+            console.log(props?.payload)
+            if (props.active) {
+                return <div className="custom-tooltip-chart" style={{'width': 'auto'}}>
+                    <div className="custom-tooltip-chart-main" style={{'display': 'block'}}>
+                        <div>{props?.payload[0].payload["time spent"]}</div>
+                        <div>{props?.payload[0].payload["number of tests"]} test cases</div>
+                    </div>
+                </div>
+            }
+        }
+        return null;
+    }
     const hist = useMemo(()=>calculateHistogram(timeAggregation), [timeAggregation]);
 
     return (
@@ -631,7 +645,7 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis allowDecimals={false}/>
                     <XAxis dataKey="time spent"/>
-                    <Tooltip cursor={{fill: 'transparent'}}/>
+                    <Tooltip cursor={{fill: 'transparent'}} content={<CustomTooltip />}/>
                     <Bar radius={[4, 4, 0, 0]} dataKey={'number of tests'} fill={'var(--B500)'} />
                 </BarChart>
             </ResponsiveContainer>
