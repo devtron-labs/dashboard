@@ -213,7 +213,6 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
     const CustomTooltipAbsolute = (props?) => {
         if (props?.payload.length > 0) {
             const executionDate = props.payload[0].payload.date;
-            delete props.payload[0].payload.date;
             if (props.active) {
             return (
                 <div className="custom-tooltip-chart">
@@ -222,10 +221,13 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                     </div>
                     <div className="custom-tooltip-chart-line"></div>
                     {Object.keys(props.payload[0].payload).map(testType => 
-                        <div className="custom-tooltip-chart-main">
-                            <div>{testType}</div>
-                            <div>{props.payload[0].payload[testType]}</div>
-                        </div>
+                        ( testType !== 'date' ?
+                            <div className="custom-tooltip-chart-main">
+                                <div>{testType}</div>
+                                <div>{props.payload[0].payload[testType]}</div>
+                            </div>
+                            : null
+                        )
                     )}
                 </div>
                 );
@@ -237,7 +239,6 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
     const CustomTooltipRelative = (props?) => {
         if (props?.payload.length > 0) {
             const executionDate = props.payload[0].payload.date;
-            delete props.payload[0].payload.date;
             if (props.active) {
             return (
                 <div className="custom-tooltip-chart">
@@ -246,10 +247,13 @@ const TriggerList: React.FC<{selectedNames: SelectedNames, startDate, endDate}> 
                     </div>
                     <div className="custom-tooltip-chart-line"></div>
                     {Object.keys(props.payload[0].payload).map(testType => 
+                        ( testType !== 'date' ?
                         <div className="custom-tooltip-chart-main">
                             <div>{testType}</div>
                             <div>{props.payload[0].payload[testType]}%</div>
                         </div>
+                        : null
+                    )
                     )}
                 </div>
                 );
