@@ -219,7 +219,6 @@ export function AppHeaderTestsTrigger() {
         fetchTestSuitesData();
         async function fetchSourceConfig() {
             const response = await getSourceConfig(appId);
-            console.log(response.result)
             setConfigSourceData(response.result)
         }
         fetchSourceConfig();
