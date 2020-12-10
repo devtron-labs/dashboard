@@ -26,6 +26,7 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
         }
         this.validationRules = new LoginValidation();
         this.autoFillLogin = this.autoFillLogin.bind(this);
+       
     }
 
     componentDidMount() {
@@ -38,7 +39,7 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
             this.autoFillLogin()
         }
     }
-
+    
     autoFillLogin(){
         this.setState({form: {username: 'admin', password: process.env.REACT_APP_PASSWORD}})
     }
@@ -46,6 +47,7 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
     handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         e.persist();
         this.setState(state => ({ ...state, form: { ...state.form, [e.target.name]: e.target.value } }));
+        
     }
 
 

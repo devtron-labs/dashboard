@@ -95,6 +95,12 @@
     margin-right: 13px;
 }
 
+.login__know-password{
+    margin-top: 8px;
+    margin-left: 180px;
+    
+}
+
 @media(min-width: 1024px) {}
 
 @media(min-width: 1440px) {

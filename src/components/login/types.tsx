@@ -4,8 +4,13 @@ import { ServerError } from '../../modals/commonTypes';
 
 export interface LoginFormState {
     code: number;
+    continueUrl: string;
     errors: ServerError[];
+    form: {
+        username: string;
+        password: string;
+    };
+    loading: boolean;
 }
 
-export interface LoginProps extends RouteComponentProps<{}> {
-}
+export interface LoginProps extends RouteComponentProps<{}> {}
