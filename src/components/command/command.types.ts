@@ -19,7 +19,6 @@ export const COMMAND_REV = {
 
 
 export interface CommandProps extends RouteComponentProps<{}> {
-    isTabMode: boolean;
     isCommandBarActive: boolean;
     toggleCommandBar: (flag: boolean) => void;
 }

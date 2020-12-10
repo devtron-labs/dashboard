@@ -65,7 +65,7 @@ function Body({ ...props }) {
 
 function Logo({ src = "", style = {}, className = "", children = null }) {
     return <>
-        {src && <img src={src} className={`list__logo ${className}`} style={style} />}
+        {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
         {children}
     </>
 }
@@ -83,7 +83,7 @@ function ListToggle({ onSelect, enabled = false, ...props }) {
 
 function DropDown({ className = "", style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} className={`list__arrow ${className}`} style={style} />
+    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
 List.Logo = Logo

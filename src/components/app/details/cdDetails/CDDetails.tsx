@@ -198,7 +198,7 @@ const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
 
                 </div>
                 <div className="flex column left ellipsis-right">
-                    <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, HH:mm A")}</div>
+                    <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, hh:mm A")}</div>
                     <div className="flex left cn-7 fs-12">
                         <div className="capitalize">{['pre', 'post'].includes(triggerDetails.stage.toLowerCase()) ? `${triggerDetails.stage}-deploy` : triggerDetails.stage}</div>
                         <span className="bullet bullet--d2 ml-4 mr-4"></span>

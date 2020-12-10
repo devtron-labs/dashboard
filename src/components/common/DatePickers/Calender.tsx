@@ -3,7 +3,7 @@ import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import CustomizableCalendarDay from "react-dates/lib/components/CustomizableCalendarDay.js";
 import ReactGA from 'react-ga';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import { DateRangePicker } from 'react-dates';
 import './calendar.css';
@@ -81,8 +81,6 @@ const styless = {
     },
 
 }
-
-const DayPicker_calendarInfo__horizontal = { width: "381px" };
 
 export class DatePicker extends Component<DatePickerProps> {
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getIframeSrc, ThroughputSelect } from './appDetails.util';
-import { ChartTypes } from './appDetails.type';
+import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets, Progressing } from '../../../common';
+import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
@@ -30,7 +30,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         isHealthy: false,
     });
     const [focusedInput, setFocusedInput] = useState('startDate')
-    const [tab, setTab] = useState<'pod' | 'aggregate'>('aggregate');
+    const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate);
     const [chartName, setChartName] = useState<ChartTypes>(null);
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
@@ -45,8 +45,9 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     let newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash'];
 
     function handleTabChange(event): void {
-        setTab(event.target.value);
-        if (event.target.value === "pod") setChartName('cpu');
+        let tab = event.target.value;
+        setTab(tab);
+        getNewGraphs(tab);
     }
 
     function handleDatesChange({ startDate, endDate }): void {
@@ -72,14 +73,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleApply(): void {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate);
         setCalendarValue(str);
     }
 
@@ -102,15 +96,18 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
     }
 
-    function handlePredefinedRange(start: Moment, end: Moment, endStr: string): void {
+    function handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
         setDateRange({
             startDate: start,
             endDate: end,
         });
         setCalendarInput({
-            startDate: endStr,
+            startDate: startStr,
             endDate: 'now',
         });
+        let str = getCalendarValue(startStr, 'now');
+        setCalendarValue(str);
+
     }
 
     function handleStatusChange(selected): void {
@@ -119,14 +116,14 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setGraphs({
             ...graphs,
             throughput: throughput,
-        })
+        });
     }
 
-    function getNewGraphs(): void {
-        let cpu = getIframeSrc(appId, envId, environmentName, 'cpu', newPodHash, calendarInputs, tab, true);
-        let ram = getIframeSrc(appId, envId, environmentName, 'ram', newPodHash, calendarInputs, tab, true);
-        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, tab, true, 'Throughput');
-        let latency = getIframeSrc(appId, envId, environmentName, 'latency', newPodHash, calendarInputs, tab, true);
+    function getNewGraphs(newTab): void {
+        let cpu = getIframeSrc(appId, envId, environmentName, 'cpu', newPodHash, calendarInputs, newTab, true);
+        let ram = getIframeSrc(appId, envId, environmentName, 'ram', newPodHash, calendarInputs, newTab, true);
+        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, newTab, true, 'Throughput');
+        let latency = getIframeSrc(appId, envId, environmentName, 'latency', newPodHash, calendarInputs, newTab, true);
         setGraphs({
             cpu,
             ram,
@@ -137,21 +134,14 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
 
     useEffect(() => {
-        const startDateString = calendarInputs.startDate;
-        const endDateString = calendarInputs.endDate;
-        let str: string = `${startDateString} - ${endDateString}`;
-        if (calendarInputs.endDate === 'now' && calendarInputs.startDate.includes('now')) {
-            let range = DayPickerRangeControllerPresets.find(d => d.endStr === calendarInputs.startDate);
-            if (range) str = range.text;
-            else str = `${calendarInputs.startDate} - ${calendarInputs.endDate}`;
-        }
+        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
-        getNewGraphs();
+        getNewGraphs(tab);
         checkDatasource();
     }, [])
 
     useEffect(() => {
-        getNewGraphs();
+        getNewGraphs(tab);
     }, [calendarValue])
 
     if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper">
@@ -178,11 +168,11 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 <div className="flex">
                     <div className="mr-16">
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={true} value={'aggregate'} onChange={handleTabChange} />
+                            <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
                             <span className="tertiary-tab">Aggregate</span>
                         </label>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={false} value={'pod'} onChange={handleTabChange} />
+                            <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
                             <span className="tertiary-tab">Per Pod</span>
                         </label>
                         {chartName ? <GraphModal appId={appId}
@@ -218,7 +208,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="expand-icon icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('cpu') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('cpu') }} />
                         </Tippy>
                     </div>
                     <iframe title={'cpu'} src={graphs.cpu} className="app-metrics-graph__iframe" />
@@ -229,7 +219,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="expand-icon icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('ram') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('ram') }} />
                         </Tippy>
                     </div>
                     <iframe title={'ram'} src={graphs.ram} className="app-metrics-graph__iframe" />
@@ -245,7 +235,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="expand-icon icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('status') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('status') }} />
                         </Tippy>
                     </div>
                     <iframe title={'throughput'} src={graphs.throughput} className="app-metrics-graph__iframe" />
@@ -256,7 +246,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="expand-icon icon-dim-16 cursor fcn-5" onClick={(e) => { setTab('aggregate'); setChartName('latency') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('latency') }} />
                         </Tippy>
                     </div>
                     <iframe title={'latency'} src={graphs.latency} className="app-metrics-graph__iframe" />

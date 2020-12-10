@@ -112,7 +112,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     this.setState({ searchObjectValue: event.target.value });
   }
 
-  handleFilterChange(filterType, selections: OptionsType<any>[]) {
+  handleFilterChange(filterType, selections:any): void {
     let filtersApplied = {
       ...this.state.filtersApplied,
       [filterType]: selections || [],

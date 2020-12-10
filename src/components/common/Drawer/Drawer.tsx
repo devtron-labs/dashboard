@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState,useLayoutEffect} from 'react'
+import React, {useRef, useEffect} from 'react'
 import {VisibleModal} from '../modals/VisibleModal'
 import './Drawer.scss'
 

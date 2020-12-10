@@ -4,7 +4,6 @@ import moment from 'moment';
 import { get } from '../../../services/api';
 import { Routes, URLS, ViewType } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
-import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
@@ -93,7 +92,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 <Td>
                     <PopupMenu autoClose>
                         <PopupMenu.Button isKebab>
-                            <img src={dots} />
+                            <img src={dots} alt=""/>
                         </PopupMenu.Button>
                         <PopupMenu.Body rootClassName="deployment-table-row__delete">
                             <div className="flex left" onClick={e => toggleConfirmation(true)}><img src={deleteIcon} alt="delete" />Delete</div>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { PipelineSelectProps } from '../types'
-// import error from '../../../assets/icons/misc/errorInfo.svg';
 import ci from '../../../assets/img/ic-pipeline-ci@2x.png';
 import pipelineDeploy from '../../../assets/img/ic-pipeline-deploy@2x.png';
 import linkedPipeline from '../../../assets/icons/ic-pipeline-linked.svg';
@@ -28,10 +27,6 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
                 <div>
                     <h4 className="pipeline-webhook__title">Continuous Integration</h4>
                     <p className="pipeline-webhook__text">Build docker image from a source code repository.</p>
-                    {/* <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        <span>Requires docker build config.</span>
-                    </span> */}
                 </div>
             </div>
             <div className="pipeline-webhook__item"
@@ -87,7 +82,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
         else return <Modal onClick={this.props.toggleMenu} style={{ top: `${this.props.top}px`, left: `${this.props.left}px`, borderRadius: `8px` }} >
             <WorkflowEditorContext.Consumer>
                 {(context) => {
-                    return this.props.type == PipelineType.CI ? this.renderCIMenu(context) : this.renderCDMenu(context)
+                    return this.props.type === PipelineType.CI ? this.renderCIMenu(context) : this.renderCDMenu(context)
                 }}
             </WorkflowEditorContext.Consumer>
         </Modal>
