@@ -109,7 +109,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<p className="logout-card__name ellipsis-right">{email}</p>
 						<p className="logout-card__email ellipsis-right">{email}</p>
 					</div>
-					<p className="logout-card__initial icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
+					<p className="logout-card__initial icon-dim-32 mb-0 font-16" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
 				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
 			</div>
@@ -118,19 +118,18 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	renderMoreOption(){
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
 			<div className="more-option-card ">
-					<a rel="noreferrer noopener" className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank">
-						<div className="more-option-card__rect ">Devtron Blog</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank">
-						<div className="more-option-card__rect ">Create an issue</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron" target="_blank">
-						<div className="more-option-card__rect ">Star GitHub repo</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank">
-						<div className="more-option-card__rect ">Become a contributor</div>
-					</a>
-					
+					<div className="more-option-card__title  ">
+						   <a className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank" rel="noreferre noopener"><div className="more-option-card__rect " >Devtron Blog</div></a>
+					</div>
+					<div className="more-option-card__title">
+					       <a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferre noopener"><div className="more-option-card__rect ">Create an issue</div></a>
+					</div>
+					<div className="more-option-card__title">
+						   <a className="more-option-card__link" href=" https://github.com/devtron-labs/devtron" target="_blank" rel="noreferre noopener"><div className="more-option-card__rect ">Star GitHub repo</div></a>
+					</div>
+					<div className="more-option-card__title">
+						   <a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferre noopener"><div className="more-option-card__rect ">Become a contributor</div></a>
+					</div>
 			</div>
 		</div>, document.getElementById('root'))
 	}
@@ -140,10 +139,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		return <>
 			<nav>
 				<aside className="short-nav nav-grid nav-grid--collapsed">
-					<NavLink to={URLS.APP} className="flex">
-						<svg className="devtron-logo" viewBox="0 0 40 40">
-							<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
-						</svg>
+					<NavLink to={URLS.APP} >
+						<div className="short-nav--flex">
+							<svg className="devtron-logo" viewBox="0 0 40 40">
+							   <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
+						    </svg>
+							<div className="expandable-logo">
+						         <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
+							</div>
+						</div>
 					</NavLink>
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}
@@ -158,52 +162,66 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 								}
 								this.toggleCommandBar(!this.state.isCommandBarActive);
 							}}>
-							<div className="svg-container flex">
+							<div className="short-nav--flex">
+										<div className="svg-container flex ">
+											<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
+												<use href={`${NavSprite}#${item.iconClass}`}></use>
+											</svg>
+										</div>
+										<div className="expandable-nav">
+												<div className="title-container flex left">
+													{item.title}
+												</div>
+										</div>
+							 </div>
+						</button>
+						else return <NavLink to={item.href} key={index} className="" activeClassName="active-nav">
+							
+							<div className="short-nav--flex">
+								<div className="svg-container flex icon-dim-40">
 								<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
 									<use href={`${NavSprite}#${item.iconClass}`}></use>
 								</svg>
-							</div>
-						</button>
-						else return <NavLink to={item.href} key={index} className="flex" activeClassName="active-nav">
-							<div className="svg-container flex">
-								<svg className="short-nav-icon" viewBox="0 0 24 24">
-									<use href={`${NavSprite}#${item.iconClass}`}></use>
-								</svg>
+							  </div>
+							  <div className="expandable-active-nav title-container">
+											{item.title}	
+										</div>
+							
 							</div>
 						</NavLink>
 					}
 					)}
 					<div></div>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-20 fcn-0 cursor" /></a>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://github.com/devtron-labs/devtron" target="_blank"><Github className="icon-dim-20 fcn-0 cursor" /></a>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://discord.gg/72JDKy4" target="_blank"><Discord className="icon-dim-20 fcn-0 cursor" /></a>
+				    <a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /> </a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://github.com/devtron-labs/devtron" target="_blank"><Github className="icon-dim-24 fcn-0 cursor" /></a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://discord.com/invite/72JDKy4" target="_blank"><Discord className="icon-dim-24 fcn-0 cursor" /></a>
 					<div className="icon-dim-40 flex">
 						<div className="logout-card__initial icon-dim-24 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 							{email[0]}
 						</div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
-					<div className="icon-dim-40 flex" onClick={this.toggleMoreOptionCard} >
+					<div className="icon-dim-40 flex ">
+						<div className="icon-dim-32 ml-5 mt-5" onClick={this.toggleMoreOptionCard} >
 							<MoreOption className="icon-dim-24 fcn-0 cursor"/>
-						
+						</div>
 					</div>
 					{this.state.showMoreOptionCard ? this.renderMoreOption() : null}
 				</aside>
 				<aside className="expanded-nav nav-grid">
 					<NavLink to={URLS.APP} className="flex left">
-						<img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
 					</NavLink>
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}
 							className="transparent"
 							onClick={(e) => this.toggleCommandBar(!this.state.isCommandBarActive)}>
 							<div className="title-container flex left">
-								{item.title}
+							
 							</div>
 						</button>
 						else return <NavLink to={item.href} key={index} className="flex left" activeClassName="active-nav">
 							<div className="title-container flex left">
-								{item.title}
+								
 							</div>
 						</NavLink>
 					})}

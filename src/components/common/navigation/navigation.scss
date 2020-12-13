@@ -25,14 +25,32 @@
 
     .title-container {
         color: white;
+        opacity: 1;
         font-size: 14px;
-        font-weight: 600;
         width: 100%;
         height: 40px;
         text-overflow: ellipsis;
         white-space: nowrap;
         text-align-last: left;
     }
+   
+}
+
+.title-container {
+    color: white;
+    opacity: 1;
+    font-size: 14px;
+    width: 100%;
+    height: 40px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align-last: left;
+}
+.title-container:hover{
+    svg.short-nav-icon {
+        opacity: 1;
+    }
+
 }
 
 #root>main {
@@ -60,10 +78,6 @@
                     border: none;
                 }
             }
-        }
-
-        .nav-grid--collapsed {
-            justify-items: center;
         }
 
         .short-nav {
@@ -95,8 +109,10 @@
                 }
 
                 &:not(.active-nav):focus {
-                    border: 1px solid white;
-                    border-radius: 8px;
+                    .svg-container{
+                            border: 1px solid white;
+                            border-radius: 8px;
+                    }
                 }
 
             }
@@ -106,6 +122,8 @@
             .svg-container {
                 background: #0000007d;
             }
+            
+            
         }
 
         &:hover {
@@ -113,6 +131,10 @@
                 transition: width 300ms ease-out 700ms;
                 width: 188px;
                 height: 100vh;
+            }
+            .expandable-active-nav,.expandable-nav,.expandable-logo{
+                width:252px;
+                transition: width 300ms ease-out 700ms;
             }
         }
     }
@@ -160,7 +182,9 @@
     margin: auto;
     border: solid 1px transparent;
 }
-
+.font-16{
+    font-size:16px;
+}
 .logout-card__name {
     margin: 0px 0 0 0px;
     height: 20px;
@@ -197,13 +221,13 @@
     background-color: var(--N100);
 }
 
+
 .logout-card__initial--nav {
     border-color: var(--N000);
 }
 
 .more-option-card{
     width: 216px;
-    padding: 8px;
     border-radius: 4px;
     background-color: white;
     position: fixed;
@@ -216,8 +240,53 @@
 .more-option-card__rect{
     font-size: 14px;
     color: var(--N900);
-    padding: 10px 8px;
+    padding: 10px 16px;
 }
 .more-option-card__link{
     text-decoration: none !important;
+}
+
+.more-option-card__title:hover{
+    background-color: var(--N100)
+}
+
+.ml-5{
+    margin-left: 5px;
+}
+
+.short-nav--flex{
+    display: flex;
+}
+
+.expandable-logo{
+    margin: 10px 0 0 14px;
+    z-index: 100;
+    transition: width 300ms ease-out 0s;
+    overflow: hidden;
+    width: 0;
+}
+.expandable-nav{
+    padding: 1px 0 0 14px;
+    z-index: 100;
+    width: 0px;
+    transition: width 300ms ease-out 0s;
+    overflow: hidden;
+
+}
+
+.expandable-active-nav{
+    padding: 10px 0 0 20px;
+    z-index: 100;
+    overflow: hidden;
+    width: 0px;
+    transition: width 300ms ease-out 0s;
+  
+}
+
+.ml-15{
+    margin-left: 15px;
+}
+
+.mt-5{
+    margin-top: 5px;
 }
