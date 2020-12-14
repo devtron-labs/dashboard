@@ -10,19 +10,9 @@ import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ChartTypes, MetricsType } from './appDetails.type';
+import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
-
-interface SecurityVulnerabilititesProps {
-    imageScanDeployInfoId: number;
-    severityCount: {
-        critical: number;
-        moderate: number;
-        low: number;
-    };
-    onClick: () => void;
-}
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -223,7 +213,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: MetricsType, isLegendRequired: boolean, statusCode?: string) {
+export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string):string {
     let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
     // rootUrl = 'http://demo.devtron.info:32080';
     let startTime: string = calendarInputs.startDate;

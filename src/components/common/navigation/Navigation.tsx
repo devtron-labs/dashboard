@@ -9,7 +9,6 @@ import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
-import TagManager from 'react-gtm-module';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
@@ -69,13 +68,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		this.toggleMoreOptionCard= this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
-
-	/*componentDidMount() {
-		const tagManagerArgs = {
-			gtmId: 'GTM-59Q5GDK'
-		}
-		TagManager.initialize(tagManagerArgs)
-	}*/
 
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
@@ -238,7 +230,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				<Command location={this.props.location}
 					match={this.props.match}
 					history={this.props.history}
-					isTabMode={true}
 					isCommandBarActive={this.state.isCommandBarActive}
 					toggleCommandBar={this.toggleCommandBar}
 				/>

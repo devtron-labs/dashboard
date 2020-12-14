@@ -30,7 +30,7 @@ function Detailed({ appVersion = "", created = "", digest = "", home = "", sourc
                 <div className="chart-store-card__text digest">{digest}</div>
                 {chartYaml && <>
                     <span className="chart-store-card__subtitle">Source</span>
-                    {Array.isArray(chartYaml.sources) && chartYaml.sources.map(source => <a className="chart-store-card__text anchor" href={source} target="_blank">{source}</a>)}
+                    {Array.isArray(chartYaml.sources) && chartYaml.sources.map(source => <a className="chart-store-card__text anchor" href={source} rel="noopener noreferrer"  target="_blank">{source}</a>)}
                 </>}
             </>}
             <div className="chart-store-card__text chart-store-card__text--see-more pointer anchor flex" onClick={e => toggleDetailed(d => !d)}><span>{detailed ? 'Read less' : 'Read more'}</span><DropdownIcon className="rotate" style={{ ['--rotateBy' as any]: `${Number(detailed) * 180}deg` }} /></div>
