@@ -22,6 +22,7 @@ import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-ca
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalWrapper } from '../terminal';
+
 const commandLineParser = require('command-line-parser')
 
 

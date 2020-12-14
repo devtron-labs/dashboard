@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import { Terminal } from 'xterm';
+import { Scroller } from '../app/details/cIDetails/CIDetails'
 import SockJS from 'sockjs-client';
 import './terminal.css';
-
 export class TerminalWrapper extends Component<{}, { sessionId: any; }>{
+    _terminal;
 
     constructor(props) {
         super(props);
+        this._terminal = React.createRef();
         this.state = {
             sessionId: undefined,
         }
         this.init = this.init.bind(this);
+        this.scrollToTop = this.scrollToTop.bind(this);
+        this.scrollToBottom = this.scrollToBottom.bind(this);
     }
 
     componentDidMount() {
@@ -39,6 +43,15 @@ export class TerminalWrapper extends Component<{}, { sessionId: any; }>{
             });
         })
     }
+
+    scrollToTop(e) {
+        this._terminal.current.scrollToTop();
+    }
+
+    scrollToBottom(e) {
+        this._terminal.current.scrollToBottom();
+    }
+
 
     init(sessionId) {
         var term = new Terminal({
@@ -73,8 +86,13 @@ export class TerminalWrapper extends Component<{}, { sessionId: any; }>{
     }
 
     render() {
-        return <div id="terminal">
-
-        </div>
+        return <>
+            <div ref={this._terminal} id="terminal"></div>
+            <Scroller
+                scrollToBottom={this.scrollToBottom}
+                scrollToTop={this.scrollToTop}
+                style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '3' }}
+            />
+        </>
     }
 }
