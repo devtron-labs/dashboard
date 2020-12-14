@@ -132,8 +132,8 @@
                 width: 188px;
                 height: 100vh;
             }
-            .expandable-active-nav,.expandable-nav,.expandable-logo{
-                width:252px;
+            .expandable-active-nav{
+                width:188px;
                 transition: width 300ms ease-out 700ms;
             }
         }
@@ -258,22 +258,6 @@
     display: flex;
 }
 
-.expandable-logo{
-    margin: 10px 0 0 14px;
-    z-index: 100;
-    transition: width 300ms ease-out 0s;
-    overflow: hidden;
-    width: 0;
-}
-.expandable-nav{
-    padding: 1px 0 0 14px;
-    z-index: 100;
-    width: 0px;
-    transition: width 300ms ease-out 0s;
-    overflow: hidden;
-
-}
-
 .expandable-active-nav{
     padding: 10px 0 0 20px;
     z-index: 100;
@@ -281,6 +265,9 @@
     width: 0px;
     transition: width 300ms ease-out 0s;
   
+}
+.expandable-active-nav--no-padding{
+    padding-top: 0px;
 }
 
 .ml-15{

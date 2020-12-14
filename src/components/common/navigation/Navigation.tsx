@@ -144,7 +144,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 							<svg className="devtron-logo" viewBox="0 0 40 40">
 							   <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 						    </svg>
-							<div className="expandable-logo">
+							<div className="expandable-active-nav">
 						         <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
 							</div>
 						</div>
@@ -164,11 +164,11 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 							}}>
 							<div className="short-nav--flex">
 										<div className="svg-container flex ">
-											<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
+											<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
 												<use href={`${NavSprite}#${item.iconClass}`}></use>
 											</svg>
 										</div>
-										<div className="expandable-nav">
+										<div className="expandable-active-nav expandable-active-nav--no-padding">
 												<div className="title-container flex left">
 													{item.title}
 												</div>
@@ -179,7 +179,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 							
 							<div className="short-nav--flex">
 								<div className="svg-container flex icon-dim-40">
-								<svg className="short-nav-icon icon-dim-24" viewBox="0 0 24 24">
+								<svg className="short-nav-icon " viewBox="0 0 24 24">
 									<use href={`${NavSprite}#${item.iconClass}`}></use>
 								</svg>
 							  </div>
@@ -192,9 +192,9 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					}
 					)}
 					<div></div>
-				    <a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-24 fcn-0 cursor" /> </a>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://github.com/devtron-labs/devtron" target="_blank"><Github className="icon-dim-24 fcn-0 cursor" /></a>
-					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://discord.com/invite/72JDKy4" target="_blank"><Discord className="icon-dim-24 fcn-0 cursor" /></a>
+				    <a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-20 fcn-0 cursor" /> </a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://github.com/devtron-labs/devtron" target="_blank"><Github className="icon-dim-20 fcn-0 cursor" /></a>
+					<a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://discord.com/invite/72JDKy4" target="_blank"><Discord className="icon-dim-20 fcn-0 cursor" /></a>
 					<div className="icon-dim-40 flex">
 						<div className="logout-card__initial icon-dim-24 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 							{email[0]}
