@@ -471,7 +471,6 @@ const NodeDetails: React.FC<{
                 appName={appName}
                 environmentName={environmentName}
             />
-
             <ResponsiveDrawer
                 className="events-logs"
                 isDetailedView={!!params.tab}
@@ -488,7 +487,6 @@ const NodeDetails: React.FC<{
                         nodeName={selectedNode}
                         selectNode={selectNode}
                         selectContainer={selectContainer}
-
                     ></NodeSelectors>
                     <EventsLogs
                         nodeName={selectedNode}
@@ -663,21 +661,17 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
         >
             <div className={`pl-20 flex left tab-container ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
                 {[
-                    // NodeDetailTabs.DESCRIBE,
                     NodeDetailTabs.MANIFEST,
                     NodeDetailTabs.EVENTS,
-                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS] : []),
+                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
-                    <div
-                        className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''
-                            }`}
+                    <div key={idx}
+                        className={`tab lowercase ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             history.push(generatePath(path, { ...params, tab: title }) + location.search);
                         }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        key={idx}
-                    >
+                        onMouseDown={(e) => e.stopPropagation()}>
                         {title}
                     </div>
                 ))}

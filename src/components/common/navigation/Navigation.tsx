@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ReactComponent as Documentation } from '../../../assets/icons/ic-document.svg'
-import { ReactComponent as Discord} from '../../../assets/icons/ic-discord.svg'
-import { ReactComponent as Github} from '../../../assets/icons/git/github.svg'
-import { ReactComponent as MoreOption} from '../../../assets/icons/ic-more-option.svg'
+import { ReactComponent as Discord } from '../../../assets/icons/ic-discord.svg'
+import { ReactComponent as Github } from '../../../assets/icons/git/github.svg'
+import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
@@ -13,6 +13,7 @@ import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
 import './navigation.scss';
+import { TerminalWrapper } from '../../terminal';
 
 const navigationList = [
 	{
@@ -53,7 +54,7 @@ const navigationList = [
 	},
 ];
 
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard:boolean; isCommandBarActive: boolean; }> {
+export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
 
 	constructor(props) {
 		super(props);
@@ -65,15 +66,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
-		this.toggleMoreOptionCard= this.toggleMoreOptionCard.bind(this);
+		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
 
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
 	}
-	toggleMoreOptionCard(){
-		this.setState({showMoreOptionCard: !this.state.showMoreOptionCard})
+	toggleMoreOptionCard() {
+		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
 	}
 
 	toggleCommandBar(flag: boolean): void {
@@ -107,22 +108,22 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			</div>
 		</div>, document.getElementById('root'))
 	}
-	renderMoreOption(){
+	renderMoreOption() {
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
 			<div className="more-option-card ">
-					<a rel="noreferrer noopener" className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank">
-						<div className="more-option-card__rect ">Devtron Blog</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank">
-						<div className="more-option-card__rect ">Create an issue</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron" target="_blank">
-						<div className="more-option-card__rect ">Star GitHub repo</div>
-					</a>
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank">
-						<div className="more-option-card__rect ">Become a contributor</div>
-					</a>
-					
+				<a rel="noreferrer noopener" className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank">
+					<div className="more-option-card__rect ">Devtron Blog</div>
+				</a>
+				<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank">
+					<div className="more-option-card__rect ">Create an issue</div>
+				</a>
+				<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron" target="_blank">
+					<div className="more-option-card__rect ">Star GitHub repo</div>
+				</a>
+				<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank">
+					<div className="more-option-card__rect ">Become a contributor</div>
+				</a>
+
 			</div>
 		</div>, document.getElementById('root'))
 	}
@@ -176,8 +177,8 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
 					<div className="icon-dim-40 flex" onClick={this.toggleMoreOptionCard} >
-							<MoreOption className="icon-dim-24 fcn-0 cursor"/>
-						
+						<MoreOption className="icon-dim-24 fcn-0 cursor" />
+
 					</div>
 					{this.state.showMoreOptionCard ? this.renderMoreOption() : null}
 				</aside>
@@ -216,6 +217,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					toggleCommandBar={this.toggleCommandBar}
 				/>
 			</CommandErrorBoundary>
+			
 		</>
 	}
 }

@@ -21,6 +21,7 @@ import {AppDetails} from '../app/types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg';
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
+import { TerminalWrapper } from '../terminal';
 const commandLineParser = require('command-line-parser')
 
 
@@ -86,6 +87,12 @@ const EventsLogs: React.FC<EventsLogsInterface> = React.memo(function EventsLogs
                         appName={appDetails.appName}
                         environmentName={appDetails.environmentName}
                     />
+                </>
+            )}
+            {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
+                <>
+                    <span style={{ background: '#2c3354' }} />
+                    <TerminalWrapper />
                 </>
             )}
         </>
