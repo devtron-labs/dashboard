@@ -210,6 +210,14 @@
     display: flex;
 }
 
+.login__link{
+    margin: 20px 0 40px 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    color: var(--B500);
+    text-decoration: none !important;
+}
 @media(min-width: 1024px) {}
 
 @media(min-width: 1440px) {

@@ -105,8 +105,10 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
                     <form className="login-dt__form" onSubmit={this.login}>
                     <input type="text" className="text-input text-input--username" placeholder="Username" value={this.state.form.username} name="username" onChange={this.handleChange} />
                     <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'} className="text-input text-input--pwd" placeholder="Password" value={this.state.form.password} name="password" onChange={this.handleChange} />
-                    <div className="login__know-password"><a target="_blank" rel="noreferrer noopener" href="">What is my admin password?</a></div>
+                    <div className="login__know-password"><a className="login__know-password--link"  rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a></div>
                     <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
+                    <a className="login__link" href={`${window.location.origin}/login?continue=/`}>Login using SSO service</a>
+                    
                 </form>
                 </div>
             </div>

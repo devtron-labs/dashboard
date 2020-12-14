@@ -77,12 +77,7 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
         continueUrl: encodeURI(`${process.env.PUBLIC_URL}${cont}`)})
     }
     
-    
-
-
-    
-
-    
+   
 
     render() {
         return (
@@ -96,15 +91,13 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
                     {loginList.map((item,index)=>{
                        if(item.isidShown=true){
                              return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
-                                            
                                                     <div className="google-icon"><svg className="icon-dim-24"  viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.iconClass}`}></use></svg></div>
                                                     <div>{item.label}</div>
-                                            
                                      </a> 
                        }
+                                            
                     })}
-                    
-                  
+                    <a className="login__link" href={`${window.location.origin}/login?continue=/`}>Login as administrator</a>
                 </div>
             </div>
         </div>

@@ -67,40 +67,26 @@
     background-color: var(--B500);
 }
 
-.login__google {
-    display: block;
-    width: 300px;
-    height: 48px;
-    text-align: center;
-    border-radius: 4px;
-    background-color: var(--white);
-    font-size: 14px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 3.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    user-select: none;
-    margin: auto;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
-}
-
-.login__google:hover {
-    text-decoration: none;
-    color: var(--N900);
-}
-
-.google-icon {
-    margin-right: 13px;
-}
 
 .login__know-password{
     margin-top: 8px;
-    margin-left: 180px;
-    
+    color: var(--B500);
+    display: flex;
+    justify-content: flex-end;
+}
+.login__know-password--link{
+    text-decoration: none !important;
+    line-height: 1.67;
 }
 
+.login__link{
+    margin: 20px 0 40px 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    color: var(--B500);
+    text-decoration: none !important;
+}
 @media(min-width: 1024px) {}
 
 @media(min-width: 1440px) {
