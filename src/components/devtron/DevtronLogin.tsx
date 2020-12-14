@@ -8,6 +8,47 @@ import dt from '../../assets/icons/logo/logo-dt.svg';
 import { toast } from 'react-toastify'
 import './login-dt.css';
 import { Progressing, showError } from '../common'
+import google from 'patternfly/dist/img/google-logo.svg';
+import LoginIcons from '../../assets/icons/logoicons.svg'
+
+const loginList=[
+    {
+        id: "gmail",
+        label: "Login with Google",
+        iconClass: "login-google",
+        isidShown: false,
+    },
+    {
+        id: "github",
+        label: "Login with Github",
+        iconClass: "login-github",
+        isidShown: false,
+    },
+    {
+        id: "microsoft",
+        label: "Login with Microsoft",
+        iconClass: "login-microsoft",
+        isidShown: false,
+    } ,
+    {
+         id: "openid",
+         label: "Login with OpenId Connect",
+         iconClass: "login-openid-connect",
+         isidShown: false,
+    },
+    {
+        id: "openshift",
+        label: "Login with OpenShift",
+        iconClass: "login-openshift",
+        isidShown: false,
+   },
+   {
+        id: "ldap",
+        label: "Login with LDAP",
+        iconClass: "login-openshift",
+        isidShown: false,
+},
+]
 
 export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLoginState> {
     validationRules;
@@ -16,82 +57,57 @@ export default class DevtronLogin extends Component<DevtronLoginProps, DevtronLo
         super(props);
 
         this.state = {
-            code: 0,
-            errors: [],
-            loading: false,
-            form: {
-                username: "",
-                password: ""
-            },
+            continueUrl: ""
+            
         }
         this.validationRules = new LoginValidation();
-        this.autoFillLogin = this.autoFillLogin.bind(this);
        
     }
 
     componentDidMount() {
-        let arr = this.props.location.search.split("=");
-        if (arr.length && arr[0].indexOf("continue") != -1) {
-            toast.error('Please login again.');
+       
+        const currentPath = window.location.href
+        let cont = ""
+        if (currentPath.includes('-dt')) {
+            cont = currentPath.split('-dt')[1]
+            toast.error('Please login again');
         }
 
-        if(process.env.NODE_ENV === 'development'){
-            this.autoFillLogin()
-        }
+       this.setState({
+        continueUrl: encodeURI(`${process.env.PUBLIC_URL}${cont}`)})
     }
     
-    autoFillLogin(){
-        this.setState({form: {username: 'admin', password: process.env.REACT_APP_PASSWORD}})
-    }
-
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        e.persist();
-        this.setState(state => ({ ...state, form: { ...state.form, [e.target.name]: e.target.value } }));
-        
-    }
+    
 
 
-    isFormNotValid = () => {
-        let isValid = true;
-        let keys = ['username', 'password'];
-        keys.map((key) => {
-            if (key === 'password') {
-                isValid = isValid && this.state.form[key]?.length >= 6;
-            }
-            else {
-                isValid = isValid && this.state.form[key]?.length;
-            }
-        })
-        return !isValid;
-    }
+    
 
-    login = async (e) => {
-        e.preventDefault();
-        let data = this.state.form;
-        this.setState({ loading: true })
-        post(FullRoutes.LOGIN, data).then((response) => {
-            if (response.result.token) {
-                this.setState({ code: response.code, loading: false });
-                let queryString = this.props.location.search.split("continue=")[1];
-                let url = (queryString) ? `${queryString}` : URLS.APP;
-                this.props.history.push(`${url}`);
-            }
-        }).catch((errors: ServerErrors) => {
-            showError(errors);
-            this.setState({ code: errors.code, errors: errors.errors, loading: false })
-        })
-    }
+    
 
     render() {
         return (
-            <div className="login-dt">
-                <form className="login-dt__form" onSubmit={this.login}>
-                    <img src={dt} className="login__dt-logo" width="170px" height="120px" />
-                    <input type="text" className="text-input text-input--username" placeholder="Username" value={this.state.form.username} name="username" onChange={this.handleChange} />
-                    <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'} className="text-input text-input--pwd" placeholder="Password" value={this.state.form.password} name="password" onChange={this.handleChange} />
-                    <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                </form>
+            <div className="login">
+            <div className="login__bg"><div className="login__image" /></div>
+            <div className="login__section">
+                <div className="login__control">
+                    <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
+                    <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
+
+                    {loginList.map((item,index)=>{
+                       if(item.isidShown=true){
+                             return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
+                                            
+                                                    <div className="google-icon"><svg className="icon-dim-24"  viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.iconClass}`}></use></svg></div>
+                                                    <div>{item.label}</div>
+                                            
+                                     </a> 
+                       }
+                    })}
+                    
+                  
+                </div>
             </div>
+        </div>
         )
     }
 
