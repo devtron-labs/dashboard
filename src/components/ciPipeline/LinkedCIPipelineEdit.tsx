@@ -146,7 +146,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 })()}
             </Typeahead>
             {(this.state.showError && !this.state.isValid.parentCIPipelineId) ? <span className="form__error">
-                <img src={error} className="form__icon" />
+                <img src={error} alt="" className="form__icon" />
                 This is a required Field
         </span> : null}
         </div>
@@ -172,7 +172,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             })}
                         </Typeahead>
                         {(this.state.showError && !this.state.isValid.parentAppId) ? <span className="form__error">
-                            <img src={error} className="form__icon" />
+                            <img src={error} alt="" className="form__icon" />
                             This is a required Field
                         </span> : null}
                     </div>
@@ -182,7 +182,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             <span className="form__label">Name*</span>
                             <input className="form__input" placeholder="Enter pipeline name" type="text" value={this.state.form.name} onChange={this.handleName} />
                             {(!this.state.isValid.name) ? <span className="form__error">
-                                <img src={error} className="form__icon" />
+                                <img src={error} alt="" className="form__icon" />
                                 You cannot use same name for pipeline within an app.
                         </span> : null}
                         </label>

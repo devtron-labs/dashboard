@@ -224,7 +224,8 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
 
                     </div>
                     <div className="flex column left ellipsis-right">
-                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, HH:mm A")}</div>
+                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, hh:mm A")}
+                       </div>
                         <div className="cn-7 fs-12">{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                     </div>
                 </div>
@@ -239,7 +240,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
             <span className="fw-6 fs-16 mb-4" style={{ color: colorMap[triggerDetails.status.toLowerCase()] }}>{triggerDetails.status.toLowerCase() === 'cancelled' ? 'Aborted' : triggerDetails.status}</span>
             <div className="flex column left ">
                 <div className="flex left fs-12 cn-7">
-                    <div>{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, HH:mm A")}</div>
+                    <div>{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, hh:mm A")}</div>
                     <div className="bullet ml-6 mr-6"></div>
                     <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                 </div>
@@ -379,7 +380,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                     <div className="flex left">
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(
-                                'ddd, DD MMM YYYY, HH:mm a',
+                                'ddd, DD MMM YYYY, hh:mm a',
                             )}
                         </time>
                         <div className="bullet mr-6 ml-6"></div>
