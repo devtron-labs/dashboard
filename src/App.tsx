@@ -21,7 +21,7 @@ import Reload from './components/Reload/Reload'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
-const DevtronLogin = lazy(() => import('./components/devtron/DevtronLogin'));
+//const DevtronLogin = lazy(() => import('./components/devtron/DevtronLogin'));
 
 toast.configure({
 	autoClose: 3000,
@@ -76,9 +76,9 @@ export default function App() {
 		async function validation() {
 			try {
 				await validateToken();
-				// check if continue then direct to continue otherwise router will redirect to app list
-				if (search && search.includes("?continue=")) {
-					const newLocation = search.replace("?continue=", "")
+				// check if admin then direct to admin otherwise router will redirect to app list
+				if (search && search.includes("/admin")) {
+					const newLocation = search.replace("/admin", "")
 					push(newLocation)
 				}
 			}
@@ -86,7 +86,7 @@ export default function App() {
 				// push to login without breaking search
 				if (err?.code === 401) {
 					const loginPath = pathname.includes(URLS.DEVTRON_LOGIN) ? URLS.DEVTRON_LOGIN : URLS.LOGIN
-					const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `?continue=${pathname}`
+					const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `/admin${pathname}`
 					push(`${loginPath}${newSearch}`)
 				} else {
 					setErrorPage(true)
@@ -199,10 +199,9 @@ export default function App() {
 						) : (
 								<BreadcrumbStore>
 									<Switch>
-										<Route path={`${URLS.LOGIN}`} component={Login} />
-										<Route path={`${URLS.DEVTRON_LOGIN}`} component={DevtronLogin} />
+										<Route path={`${URLS.LOGIN}/:type?`} component={Login} />
 										<Route path="/" render={() => <NavigationRoutes />} />
-										<Redirect to={`${URLS.LOGIN}${search}`} />
+									{/*	<Redirect to={`${URLS.LOGIN}${search}`} */}
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>
