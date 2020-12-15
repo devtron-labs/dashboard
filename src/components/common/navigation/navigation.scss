@@ -32,6 +32,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         text-align-last: left;
+      
     }
    
 }
@@ -59,7 +60,7 @@
         position: sticky;
         top: 0;
         display: flex;
-        overflow: visible;
+        overflow: hidden;
         z-index: var(--navigation-index);
 
         .nav-grid {
@@ -70,7 +71,8 @@
             a,
             button {
                 &:hover {
-                    text-decoration: none;
+                    text-decoration: none !important;
+                    color: white;
                 }
 
                 &:focus {
@@ -80,10 +82,12 @@
             }
         }
 
+        
+
         .short-nav {
             width: 100%;
             padding: 0 10px;
-
+            
             .svg-container {
                 height: 40px;
                 width: 40px;
@@ -122,20 +126,13 @@
             .svg-container {
                 background: #0000007d;
             }
-            
-            
         }
 
         &:hover {
-            .expanded-nav {
-                transition: width 300ms ease-out 700ms;
-                width: 188px;
+                width: 252px;
                 height: 100vh;
-            }
-            .expandable-active-nav{
-                width:188px;
                 transition: width 300ms ease-out 700ms;
-            }
+           
         }
     }
 
@@ -256,18 +253,19 @@
 
 .short-nav--flex{
     display: flex;
+    
+}
+.center{
+    justify-content: center;
+    align-items: center;
 }
 
 .expandable-active-nav{
-    padding: 10px 0 0 20px;
-    z-index: 100;
-    overflow: hidden;
-    width: 0px;
-    transition: width 300ms ease-out 0s;
+    padding: 0px 0 0 25px;
   
 }
-.expandable-active-nav--no-padding{
-    padding-top: 0px;
+.pt-10{
+    padding-top: 10px;
 }
 
 .ml-15{
