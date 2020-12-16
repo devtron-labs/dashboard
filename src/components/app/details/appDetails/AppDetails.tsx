@@ -42,6 +42,10 @@ import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
 import restoreIcon from '../../../../assets/icons/ic-restore.svg';
 import warningIcon from '../../../../assets/icons/ic-warning.svg';
 import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
+import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg';
+import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg';
+import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
+import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
@@ -315,8 +319,8 @@ export const Details: React.FC<{
             {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
-                    appName={appDetails?.appName}
-                    environmentName={appDetails?.environmentName}
+                    // appName={appDetails?.appName}
+                    // environmentName={appDetails?.environmentName}
                     nodes={aggregatedNodes}
                     describeNode={describeNode}
                     appDetails={appDetails}
@@ -397,20 +401,24 @@ export const Details: React.FC<{
 };
 
 const NodeDetails: React.FC<{
-    appName: string;
-    environmentName: string;
+    // appName: string;
+    // environmentName: string;
     nodes: AggregatedNodes;
     nodeName?: string;
     containerName?: string;
     appDetails: AppDetails;
     isAppDeployment: boolean;
+
     describeNode: (name: string, containerName?: string) => void;
-}> = ({ appName, environmentName, nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
-    const { url, path } = useRouteMatch();
+}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
     const [selectedNode, selectNode] = useState<string>(null);
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
+    const [terminalConnected, toggleTerminalConnected] = useState(true);
+    const [terminalCleared, setTerminalCleared] = useState(false);
+
+    const { url, path } = useRouteMatch();
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 
     useEffect(() => {
@@ -468,8 +476,8 @@ const NodeDetails: React.FC<{
                 nodes={nodes}
                 describeNode={describeNode}
                 isAppDeployment={isAppDeployment}
-                appName={appName}
-                environmentName={environmentName}
+                appName={appDetails?.appName}
+                environmentName={appDetails?.environmentName}
             />
             <ResponsiveDrawer
                 className="events-logs"
@@ -478,22 +486,27 @@ const NodeDetails: React.FC<{
                 anchor={params.kind ? <EventsLogsTabSelector /> : null}
             >
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
-                    <NodeSelectors
-                        showOldOrNewSuffix={isAppDeployment}
-                        handleLogsPause={handleLogsPause}
+                    <NodeSelectors showOldOrNewSuffix={isAppDeployment}
                         logsPaused={logsPaused}
+                        terminalConnected={terminalConnected}
                         containerName={selectedContainer}
-                        nodes={nodes}
                         nodeName={selectedNode}
+                        nodes={nodes}
+                        toggleTerminalConnected={toggleTerminalConnected}
+                        setTerminalCleared={setTerminalCleared}
+                        handleLogsPause={handleLogsPause}
                         selectNode={selectNode}
                         selectContainer={selectContainer}
-                    ></NodeSelectors>
-                    <EventsLogs
-                        nodeName={selectedNode}
+                    />
+                    <EventsLogs nodeName={selectedNode}
                         nodes={nodes}
                         appDetails={appDetails}
                         containerName={selectedContainer}
                         logsPaused={logsPaused}
+                        terminalConnected={terminalConnected}
+                        terminalCleared={terminalCleared}
+                        setTerminalCleared={setTerminalCleared}
+                        toggleTerminalConnected={toggleTerminalConnected}
                         handleLogPause={handleLogsPause}
                     />
                 </Route>
@@ -703,25 +716,31 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
 
 interface NodeSelectors {
     logsPaused: boolean;
-    handleLogsPause: (e: any) => void;
+    terminalConnected: boolean;
     nodeName?: string;
-    selectNode: (nodeName: string) => void;
     containerName?: string;
-    selectContainer: (containerName: string) => void;
     showOldOrNewSuffix?: boolean;
-    children?: any;
     nodes: AggregatedNodes;
+    setTerminalCleared: (flag: boolean) => void;
+    handleLogsPause: (e: any) => void;
+    selectNode: (nodeName: string) => void;
+    selectContainer: (containerName: string) => void;
+    toggleTerminalConnected: (boolean) => void;
+    children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
     logsPaused = false,
-    handleLogsPause = null,
+    terminalConnected = true,
     nodeName,
     nodes,
     containerName,
     showOldOrNewSuffix = false,
+    setTerminalCleared,
+    handleLogsPause = null,
+    toggleTerminalConnected,
     selectNode,
-    children = null,
     selectContainer,
+    children = null,
 }) => {
     const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs, showOldOrNewSuffix }>();
     const { queryParams, searchParams } = useSearchString();
@@ -746,8 +765,27 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         const pod = nodesMap.get(nodeName)
         return pod.isNew ? '(new)' : '(old)'
     }
+
     return (
         <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
+            {params.tab === NodeDetailTabs.TERMINAL && <>
+                <div className={`flex mr-12`}>
+                    <Tippy className="default-tt"
+                        arrow={false}
+                        placement="bottom"
+                        content={terminalConnected ? 'Disconnect' : 'Connect'} >
+                        {terminalConnected ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { }} />}
+                    </Tippy>
+
+                    <Tippy className="default-tt"
+                        arrow={false}
+                        placement="bottom"
+                        content={'Clear'} >
+                        <Abort className="icon-dim-20 mr-5" onClick={(e) => { console.log(true); setTerminalCleared(true); }} />
+                    </Tippy>
+                </div>
+                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+            </>}
             {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
                 <>
                     <Tippy
@@ -760,7 +798,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
                             onClick={(e) => handleLogsPause(!logsPaused)}
                         >
-                            {logsPaused ? <PlayButton /> : <span className="stop-btn"></span>}
+                            {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
                         </div>
                     </Tippy>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -811,7 +849,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 </div>
             </div>
 
-            {Array.isArray(containers) && params.tab === NodeDetailTabs.LOGS && (
+            {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
                 <>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                     <div className="events-logs__dropdown-selector">

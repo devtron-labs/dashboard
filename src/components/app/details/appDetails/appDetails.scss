@@ -817,31 +817,6 @@ table.pod__table td:last-child {
         .chart {
             background: white;
 
-            // .chart-header {
-            //     font-size: 12px;
-            //     font-weight: 600;
-            //     color: var(--N700);
-            // }
-            // iframe {
-            //     width: 100%;
-            //     height: 170px;
-            //     border-width: 0;
-            // }
-            // &.status-code {
-            //     .popup-button {
-            //         &:focus,
-            //         &:active {
-            //             outline: none;
-            //         }
-            //     }
-            //     .select-button {
-            //         border: 1px solid transparent;
-            //         width: 100px;
-            //     }
-            //     .select-popup {
-            //         width: 100px;
-            //     }
-            // }
             &.material {
                 display: grid;
                 grid-template-rows: 1fr 53px;
@@ -1075,40 +1050,6 @@ table.pod__table td:last-child {
             }
         }
 
-        .pod-readyState {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 0;
-            transition: height 200ms;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            overflow: hidden;
-            z-index: 4;
-            padding-left: 16px;
-
-            &:focus {
-                outline: none;
-            }
-
-            &.pod-readyState--top {
-                top: 0;
-                background: var(--R700);
-            }
-
-            &.pod-readyState--bottom {
-                bottom: 0;
-                background: #0b0f22;
-                right: 24px;
-            }
-
-            &.pod-readyState--show {
-                height: 24px;
-                transition: height 200ms;
-            }
-        }
-
         .logs {
             font-family: monospace;
 
@@ -1120,6 +1061,41 @@ table.pod__table td:last-child {
                 }
             }
         }
+    }
+}
+
+.pod-readyState {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 0;
+    transition: height 200ms;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    z-index: 4;
+    padding-left: 16px;
+
+    &:focus {
+        outline: none;
+    }
+
+    &.pod-readyState--top {
+        top: 0;
+        background: var(--R700);
+    }
+
+    &.pod-readyState--bottom {
+        bottom: 0;
+        background: #0b0f22;
+        right: 24px;
+    }
+
+    &.pod-readyState--show {
+        height: 24px;
+        transition: height 200ms;
     }
 }
 

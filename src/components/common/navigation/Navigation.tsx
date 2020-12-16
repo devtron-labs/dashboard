@@ -13,7 +13,6 @@ import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
 import './navigation.scss';
-import { TerminalWrapper } from '../../terminal';
 
 const navigationList = [
 	{
