@@ -1,33 +1,27 @@
 import React, { Component } from 'react';
 import { Terminal } from 'xterm';
 import { Scroller } from '../app/details/cIDetails/CIDetails'
+import { get } from '../../services/api';
+import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import './terminal.css';
 
 interface TerminalViewProps {
-    appName: string;
-    environmentName: string;
+    appDetails: AppDetails;
     nodeName: string;
+    shell: any;
     containerName: string;
     terminalConnected: string;
-    nodes;
     terminalCleared: boolean;
     setTerminalCleared: (flag: boolean) => void;
     toggleTerminalConnected: (flag: boolean) => void;
 }
 export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: any; }>{
-    _terminalRef;
     _terminal;
     _socket;
 
     constructor(props) {
         super(props);
-        this._terminalRef = React.createRef();
-        this._terminal = new Terminal({
-            cursorBlink: true,
-            screenReaderMode: true,
-        });
-        this._socket = new SockJS('http://localhost:8080/api/sockjs/');
         this.state = {
             sessionId: undefined,
         }
@@ -42,47 +36,43 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             //@ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
-        ///api/v1/pod/{namespaceName}/{podname}/{shell}/{container}     appNmae/appId, envId
-        let url = "http://localhost:8080/api/v1/pod/namespace/pod/shell/container"
-        // var xhttp = new XMLHttpRequest();
-        // xhttp.open("GET",url, false);
-        // xhttp.send();
-        // var response = JSON.parse(xhttp.responseText);
-        // var sessionId = response.SessionID;
-        let options = {
-            method: 'GET',
-            body: undefined,
-        };
-        fetch(url, options).then((response) => {
-            return response.json();
-        }).then((response) => {
-            let sessionId = response?.SessionID;
-            this.setState({ sessionId: sessionId }, () => {
-                this.init(sessionId);
-            });
-        })
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
-            if (this.props.terminalConnected) { //was connected
+            if (this.props.terminalConnected) { //connected
+                this.connect();
+            }
+            else {
                 this.disconnect();
-                this.props.toggleTerminalConnected(!this.props.terminalConnected);
             }
         }
-        if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName) {
-
+        if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value ) {
+            this._terminal?.dispose();
+            this.getNewSession();
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
-            this._terminal.clear();
+            this._terminal?.clear();
             this.props.setTerminalCleared(false);
         }
-
     }
 
     componentWillUnmount() {
-        this._socket.close();
+        this._socket?.close();
+    }
+
+    getNewSession() {
+        console.log("p")
+        let url = "api/v1/applications/pod/exec/session/26/39/default/curl-577cf84444-wg5k8/sh/curl";
+        get(url).then((response: any) => {
+            let sessionId = response?.result.SessionID;
+            this.setState({ sessionId: sessionId }, () => {
+                this.init(sessionId);
+            });
+        }).catch((error) => {
+
+        })
     }
 
     scrollToTop(e) {
@@ -94,6 +84,14 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     init(sessionId) {
+        this._terminal = new Terminal({
+            cursorBlink: true,
+            screenReaderMode: true,
+        });
+        let socketURL = `http://demo.devtron.info:32080/orchestrator/api/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
+        this._socket = new SockJS(socketURL);
+        // this._socket = new SockJS(`http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`);
+
         let sock = this._socket;
         let terminal = this._terminal;
 
@@ -115,11 +113,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
 
         sock.onclose = function (evt) {
             terminal.write("Session terminated");
-            terminal.dispose()
+            // terminal.dispose()
         }
 
         sock.onerror = function (evt) {
-            console.log(evt)
+            console.error(evt)
         }
     }
 
@@ -128,17 +126,16 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     connect() {
-        this.init(this.state.sessionId);
+        this.getNewSession();
     }
 
     render() {
         return <div className="terminal-view">
-
-            <div ref={this._terminalRef} id="terminal"></div>
+            <div id="terminal"></div>
             <p className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
                 Disconnected. &nbsp;
-                <span onClick={(e) => this.props.toggleTerminalConnected(false)}
-                    className="pointer"
+                <span onClick={(e) => { console.log(this.props.toggleTerminalConnected);this.props.toggleTerminalConnected(false) }}
+                    className="cursor inline-block"
                     style={{ textDecoration: 'underline' }}>Resume
                 </span>
             </p>

@@ -25,6 +25,7 @@ export interface AddNewAppState {
 }
 
 export interface AppDetails {
+    appId: number;
     appName: string;
     environmentId: number;
     environmentName: string;

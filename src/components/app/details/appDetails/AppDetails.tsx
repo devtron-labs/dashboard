@@ -401,8 +401,6 @@ export const Details: React.FC<{
 };
 
 const NodeDetails: React.FC<{
-    // appName: string;
-    // environmentName: string;
     nodes: AggregatedNodes;
     nodeName?: string;
     containerName?: string;
@@ -417,6 +415,7 @@ const NodeDetails: React.FC<{
     const [logsPaused, toggleLogStream] = useState(false);
     const [terminalConnected, toggleTerminalConnected] = useState(true);
     const [terminalCleared, setTerminalCleared] = useState(false);
+    const [shell, selectShell] = useState({ label: "bash", value: "bash" });
 
     const { url, path } = useRouteMatch();
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
@@ -492,6 +491,8 @@ const NodeDetails: React.FC<{
                         containerName={selectedContainer}
                         nodeName={selectedNode}
                         nodes={nodes}
+                        shell={shell}
+                        selectShell={selectShell}
                         toggleTerminalConnected={toggleTerminalConnected}
                         setTerminalCleared={setTerminalCleared}
                         handleLogsPause={handleLogsPause}
@@ -505,6 +506,8 @@ const NodeDetails: React.FC<{
                         logsPaused={logsPaused}
                         terminalConnected={terminalConnected}
                         terminalCleared={terminalCleared}
+                        shell={shell}
+                        selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         toggleTerminalConnected={toggleTerminalConnected}
                         handleLogPause={handleLogsPause}
@@ -721,6 +724,8 @@ interface NodeSelectors {
     containerName?: string;
     showOldOrNewSuffix?: boolean;
     nodes: AggregatedNodes;
+    shell: { label: string; value: string };
+    selectShell: (shell: { label: string; value: string }) => void;
     setTerminalCleared: (flag: boolean) => void;
     handleLogsPause: (e: any) => void;
     selectNode: (nodeName: string) => void;
@@ -735,6 +740,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     nodes,
     containerName,
     showOldOrNewSuffix = false,
+    shell,
+    selectShell,
     setTerminalCleared,
     handleLogsPause = null,
     toggleTerminalConnected,
@@ -766,136 +773,171 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         return pod.isNew ? '(new)' : '(old)'
     }
 
-    return (
-        <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
-            {params.tab === NodeDetailTabs.TERMINAL && <>
-                <div className={`flex mr-12`}>
-                    <Tippy className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={terminalConnected ? 'Disconnect' : 'Connect'} >
-                        {terminalConnected ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { }} />}
-                    </Tippy>
+    return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
+        {params.tab === NodeDetailTabs.TERMINAL && <>
+            <div className={`flex mr-12`}>
+                <Tippy className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={terminalConnected ? 'Disconnect' : 'Connect'} >
+                    {terminalConnected ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { toggleTerminalConnected(false) }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { toggleTerminalConnected(true) }} />}
+                </Tippy>
 
-                    <Tippy className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={'Clear'} >
-                        <Abort className="icon-dim-20 mr-5" onClick={(e) => { console.log(true); setTerminalCleared(true); }} />
-                    </Tippy>
-                </div>
-                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-            </>}
-            {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
-                <>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
-                    >
-                        <div
-                            className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
-                            onClick={(e) => handleLogsPause(!logsPaused)}
-                        >
-                            {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
-                        </div>
-                    </Tippy>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            <div className="events-logs__dropdown-selector pods">
-                <span className="events-logs__label">{kind}</span>
-                <div style={{ width: '175px' }}>
-                    <Select
-                        placeholder={`Select ${kind}`}
-                        options={Array.from(nodesMap).map(([name, data]) => ({
-                            label: name + getPodNameSuffix(name),
-                            value: name,
-                        }))}
-                        value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                        onChange={(selected) => selectNode((selected as any).value)}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 10 }),
-                            control: (base, state) => ({
-                                ...base,
-                                backgroundColor: 'transparent',
-                                borderColor: 'transparent',
-                            }),
-                            singleValue: (base, state) => ({
-                                ...base,
-                                marginLeft: '0',
-                                marginRight: '0',
-                                direction: 'rtl',
-                                color: 'var(--N000)',
-                            }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                direction: 'rtl',
-                            }),
-                        }}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                    />
-                </div>
+                <Tippy className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={'Clear'} >
+                    <Abort className="icon-dim-20 mr-5" onClick={(e) => { setTerminalCleared(true); }} />
+                </Tippy>
             </div>
-
-            {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
-                <>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div className="events-logs__dropdown-selector">
-                        <span className="events-logs__label">Container</span>
-                        <div style={{ width: '175px' }}>
-                            <Select
-                                placeholder="Select Container"
-                                options={containers.map((container) => ({ label: container, value: container }))}
-                                value={containerName ? { label: containerName, value: containerName } : null}
-                                onChange={(selected) => selectContainer((selected as any).value)}
-                                styles={{
-                                    ...multiSelectStyles,
-                                    menu: (base) => ({ ...base, zIndex: 10 }),
-                                    control: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: 'transparent',
-                                        borderColor: 'transparent',
-                                    }),
-                                    singleValue: (base, state) => ({
-                                        ...base,
-                                        direction: 'rtl',
-                                        color: 'var(--N000)',
-                                    }),
-                                    input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                                    option: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                        color: 'var(--N900)',
-                                        textOverflow: 'ellipsis',
-                                        overflow: 'hidden',
-                                        whiteSpace: 'nowrap',
-                                        direction: 'rtl',
-                                    }),
-                                }}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
-                                }}
-                            />
-                        </div>
+            <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+        </>}
+        {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
+            <>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
+                >
+                    <div
+                        className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
+                        onClick={(e) => handleLogsPause(!logsPaused)}
+                    >
+                        {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
                     </div>
-                </>
-            )}
-            {children}
+                </Tippy>
+                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+            </>
+        )}
+        {params.tab === NodeDetailTabs.TERMINAL && <>
+            <div style={{ width: '100px' }}>
+                <Select placeholder="Select shell"
+                    options={[{ label: "bash", value: "bash" }, { label: "zsh", value: "zsh" }]}
+                    value={shell}
+                    onChange={(selected) => { selectShell(selected) }}
+                    styles={{
+                        ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 10 }),
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'transparent',
+                            borderColor: 'transparent',
+                        }),
+                        singleValue: (base, state) => ({
+                            ...base,
+                            direction: 'rtl',
+                            color: 'var(--N000)',
+                        }),
+                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                            color: 'var(--N900)',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            direction: 'rtl',
+                        })
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                />
+            </div>
+        </>}
+        <div className="events-logs__dropdown-selector pods">
+            <span className="events-logs__label">{kind}</span>
+            <div style={{ width: '175px' }}>
+                <Select
+                    placeholder={`Select ${kind}`}
+                    options={Array.from(nodesMap).map(([name, data]) => ({
+                        label: name + getPodNameSuffix(name),
+                        value: name,
+                    }))}
+                    value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
+                    onChange={(selected) => selectNode((selected as any).value)}
+                    styles={{
+                        ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 10 }),
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'transparent',
+                            borderColor: 'transparent',
+                        }),
+                        singleValue: (base, state) => ({
+                            ...base,
+                            marginLeft: '0',
+                            marginRight: '0',
+                            direction: 'rtl',
+                            color: 'var(--N000)',
+                        }),
+                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                            color: 'var(--N900)',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            direction: 'rtl',
+                        }),
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                />
+            </div>
         </div>
-    );
+
+        {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
+            <>
+                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+                <div className="events-logs__dropdown-selector">
+                    <span className="events-logs__label">Containers</span>
+                    <div style={{ width: '175px' }}>
+                        <Select placeholder="Select Container"
+                            options={containers.map((container) => ({ label: container, value: container }))}
+                            value={containerName ? { label: containerName, value: containerName } : null}
+                            onChange={(selected) => { selectContainer((selected as any).value) }}
+                            styles={{
+                                ...multiSelectStyles,
+                                menu: (base) => ({ ...base, zIndex: 10 }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: 'transparent',
+                                    borderColor: 'transparent',
+                                }),
+                                singleValue: (base, state) => ({
+                                    ...base,
+                                    direction: 'rtl',
+                                    color: 'var(--N000)',
+                                }),
+                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    color: 'var(--N900)',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    direction: 'rtl',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                            }}
+                        />
+                    </div>
+                </div>
+            </>
+        )}
+
+        {children}
+    </div>
 };
 
 export function AppNotConfigured({ text = 'You have not finished configuring this app' }) {

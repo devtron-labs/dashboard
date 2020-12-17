@@ -28,7 +28,7 @@ const commandLineParser = require('command-line-parser')
 
 const subject: Subject<string> = new Subject()
 
-interface EventsLogsInterface {
+interface EventsLogsProps {
     nodeName: string;
     containerName: any;
     nodes: AggregatedNodes;
@@ -37,6 +37,8 @@ interface EventsLogsInterface {
     subject?: Subject<string>;
     terminalConnected: boolean;
     terminalCleared: boolean;
+    shell: { label; value; }
+    selectShell: (shell: { label; value; }) => void;
     setTerminalCleared: (flag: boolean) => void;
     toggleTerminalConnected: (flag: boolean) => void;
     handleLogPause: (paused: boolean) => void;
@@ -63,7 +65,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsInterface> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, terminalConnected, terminalCleared, setTerminalCleared, toggleTerminalConnected, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, terminalConnected, terminalCleared, shell, selectShell, setTerminalCleared, toggleTerminalConnected, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -97,13 +99,13 @@ const EventsLogs: React.FC<EventsLogsInterface> = React.memo(function EventsLogs
             {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
                 <>
                     <span style={{ background: '#2c3354' }} />
-                    <TerminalWrapper
-                        appName={appDetails.appName}
-                        environmentName={appDetails.environmentName}
+                    <TerminalWrapper appDetails={appDetails}
                         nodeName={nodeName}
                         containerName={containerName}
                         terminalConnected={terminalConnected}
                         terminalCleared={terminalCleared}
+                        shell={shell}
+                        selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         toggleTerminalConnected={toggleTerminalConnected}
                     />
