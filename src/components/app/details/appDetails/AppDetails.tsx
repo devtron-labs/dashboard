@@ -447,14 +447,13 @@ const NodeDetails: React.FC<{
         const kind: Nodes = searchParams.kind as Nodes || params.kind as Nodes
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
         if (node && node.length && node[1].name) {
-            selectNode(node[1].name)
+            selectNode(node[1].name);
         }
-
     }, [params.tab])
 
     useEffect(() => {
         if (!selectedNode) return
-        if (params.tab === NodeDetailTabs.LOGS && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if ((params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
@@ -813,7 +812,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         {params.tab === NodeDetailTabs.TERMINAL && <>
             <div style={{ width: '100px' }}>
                 <Select placeholder="Select shell"
-                    options={[{ label: "bash", value: "bash" }, { label: "zsh", value: "zsh" }]}
+                    options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
                     value={shell}
                     onChange={(selected) => { selectShell(selected) }}
                     styles={{

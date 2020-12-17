@@ -63,8 +63,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     getNewSession() {
-        console.log("p")
-        let url = "api/v1/applications/pod/exec/session/26/39/default/curl-577cf84444-wg5k8/sh/curl";
+        let url = `api/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
+        // console.log(url);
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
             this.setState({ sessionId: sessionId }, () => {
@@ -88,9 +88,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             cursorBlink: true,
             screenReaderMode: true,
         });
-        let socketURL = `http://demo.devtron.info:32080/orchestrator/api/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
+        let socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
-        // this._socket = new SockJS(`http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`);
 
         let sock = this._socket;
         let terminal = this._terminal;
