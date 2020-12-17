@@ -136,7 +136,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 							<svg className="devtron-logo" viewBox="0 0 40 40">
 								<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 							</svg>
-							<div className="expandable-active-nav pt-10">
+							<div className="pl-12 pt-10">
 								<img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
 							</div>
 						</div>
