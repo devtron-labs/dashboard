@@ -809,43 +809,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
             </>
         )}
-        {params.tab === NodeDetailTabs.TERMINAL && <>
-            <div style={{ width: '100px' }}>
-                <Select placeholder="Select shell"
-                    options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
-                    value={shell}
-                    onChange={(selected) => { selectShell(selected) }}
-                    styles={{
-                        ...multiSelectStyles,
-                        menu: (base) => ({ ...base, zIndex: 10 }),
-                        control: (base, state) => ({
-                            ...base,
-                            backgroundColor: 'transparent',
-                            borderColor: 'transparent',
-                        }),
-                        singleValue: (base, state) => ({
-                            ...base,
-                            direction: 'rtl',
-                            color: 'var(--N000)',
-                        }),
-                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                        option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            color: 'var(--N900)',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            direction: 'rtl',
-                        })
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                    }}
-                />
-            </div>
-        </>}
         <div className="events-logs__dropdown-selector pods">
             <span className="events-logs__label">{kind}</span>
             <div style={{ width: '175px' }}>
@@ -890,7 +853,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 />
             </div>
         </div>
-
         {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
             <>
                 <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -934,7 +896,36 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 </div>
             </>
         )}
-
+        {params.tab === NodeDetailTabs.TERMINAL && <>
+            <div style={{ width: '130px' }}>
+                <Select placeholder="Select shell"
+                    options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
+                    value={shell}
+                    onChange={(selected) => { selectShell(selected) }}
+                    styles={{
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'transparent',
+                            borderColor: 'transparent',
+                        }),
+                        singleValue: (base, state) => ({
+                            ...base,
+                            color: 'var(--N000)',
+                        }),
+                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
+                            color: 'var(--N900)',
+                        })
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                />
+            </div>
+        </>}
         {children}
     </div>
 };
