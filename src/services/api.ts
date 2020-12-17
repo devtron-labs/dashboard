@@ -75,7 +75,7 @@ const responseMessages = {
 
 function handleLogout() {
     let cont = `${window.location.pathname.replace(process.env.PUBLIC_URL, '')}${window.location.search}`;
-    const loginUrl = process.env.NODE_ENV === 'development' ? URLS.DEVTRON_LOGIN : URLS.LOGIN
+    const loginUrl =  `${URLS.LOGIN}/admin`
     window.location.href = `${window.location.origin}${process.env.PUBLIC_URL}${loginUrl}?continue=${cont}`;
 }
 

@@ -13,7 +13,7 @@ import { Progressing, showError } from '../common'
 import LoginIcons from '../../assets/icons/logoicons.svg'
 import {Route} from 'react-router' ;
 import {  Switch, Redirect } from 'react-router-dom';
-//import {getLoginList} from './service'
+import getLoginList from './service'
 
 const loginList=[
     {
@@ -34,6 +34,7 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
             continueUrl : "",
             code: 0,
             errors: [],
+            loginList:[],
             loading: false,
             form: {
                 username: "",
@@ -62,7 +63,7 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
             if(process.env.NODE_ENV === 'development'){
                 this.autoFillLogin()
         }
-        ///getLoginList()
+        
         }
 
 
@@ -157,10 +158,9 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
                 <div className="login__section">
      
                  <Switch>
-                 <Route exact path="/" render={(props) => {return this.renderAdminLoginPage()}}/>
                     <Route exact path={`${this.props.match.path}/sso`} render={(props)=>( this.renderSSOLoginPage())}/>
                     <Route exact path={`${this.props.match.path}/admin`} render={(props) => {return this.renderAdminLoginPage()}}/> 
-                    <Redirect to={`${this.props.match.path}/sso`}/>
+                   { /*<Redirect to={`${this.props.match.path}/sso`}/>*/}
                 </Switch>
                      </div>
                    

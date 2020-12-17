@@ -1,4 +1,4 @@
-export default function getLoginList(): Promise<{
+export default function getLoginList(id): Promise<{
       id: number;
       name: string;
       label: string;

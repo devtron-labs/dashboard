@@ -201,7 +201,7 @@ export default function App() {
 									<Switch>
 										<Route path={`${URLS.LOGIN}/:type?`} component={Login} />
 										<Route path="/" render={() => <NavigationRoutes />} />
-									{/*	<Redirect to={`${URLS.LOGIN}${search}`} */}
+									<Redirect to={`${URLS.LOGIN}${search}`}/>
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>
