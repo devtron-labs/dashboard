@@ -54,7 +54,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
             this._terminal?.clear();
             this._terminal.focus();
-            this._socket.send("/n");
             this.props.setTerminalCleared(false);
         }
     }
@@ -93,7 +92,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             screenReaderMode: true,
         });
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
+        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;  
+        // socketURL = `http://localhost:8080/api/sockjs/`;
         this._socket = new SockJS(socketURL);
 
         let sock = this._socket;
@@ -114,7 +114,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         };
 
         sock.onmessage = function (evt) {
-            console.log(JSON.parse(evt.data).Data)
+            console.log(evt.data)
             terminal.write(JSON.parse(evt.data).Data);
         }
 
@@ -133,9 +133,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     render() {
         return <div className="terminal-view">
             <div id="terminal"></div>
-            <p className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
+            <p style={{zIndex:90}} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
                 Disconnected. &nbsp;
-                <button type="button" onClick={(e) => { console.log(this.props.toggleTerminalConnected); this.props.toggleTerminalConnected(false) }}
+                <button type="button" onClick={(e) => { this.props.toggleTerminalConnected(true) }}
                     className="cursor transparent inline-block"
                     style={{ textDecoration: 'underline' }}>Resume
                 </button>
