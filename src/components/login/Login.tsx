@@ -13,7 +13,7 @@ import { Progressing, showError } from '../common'
 import LoginIcons from '../../assets/icons/logoicons.svg'
 import {Route} from 'react-router' ;
 import {  Switch, Redirect } from 'react-router-dom';
-
+//import {getLoginList} from './service'
 
 const loginList=[
     {
@@ -23,41 +23,7 @@ const loginList=[
         iconClass: "login-google",
         isidShown: false,
     },
-    {
-        id: 2,
-        name: "github",
-        label: "Login with Github",
-        iconClass: "login-github",
-        isidShown: false,
-    },
-    {
-        id: 3,
-        name: "microsoft",
-        label: "Login with Microsoft",
-        iconClass: "login-microsoft",
-        isidShown: false,
-    } ,
-    {
-         id: 4,
-         name: "openid",
-         label: "Login with OpenId Connect",
-         iconClass: "login-openid-connect",
-         isidShown: false,
-    },
-    {
-        id: 5,
-        name: "openshift",
-        label: "Login with OpenShift",
-        iconClass: "login-openshift",
-        isidShown: false,
-   },
-   {
-        id: 6,
-        name: "ldap",
-        label: "Login with LDAP",
-        iconClass: "login-openshift",
-        isidShown: false,
-},
+    
 ]
 
 export default class Login extends  Component<LoginProps, LoginFormState>{
@@ -96,6 +62,7 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
             if(process.env.NODE_ENV === 'development'){
                 this.autoFillLogin()
         }
+        ///getLoginList()
         }
 
 
@@ -193,7 +160,7 @@ export default class Login extends  Component<LoginProps, LoginFormState>{
                  <Route exact path="/" render={(props) => {return this.renderAdminLoginPage()}}/>
                     <Route exact path={`${this.props.match.path}/sso`} render={(props)=>( this.renderSSOLoginPage())}/>
                     <Route exact path={`${this.props.match.path}/admin`} render={(props) => {return this.renderAdminLoginPage()}}/> 
-                    <Redirect to={`${this.props.match.path}/admin`}/>
+                    <Redirect to={`${this.props.match.path}/sso`}/>
                 </Switch>
                      </div>
                    
