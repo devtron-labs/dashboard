@@ -21,7 +21,6 @@ import Reload from './components/Reload/Reload'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
-//const DevtronLogin = lazy(() => import('./components/devtron/DevtronLogin'));
 
 toast.configure({
 	autoClose: 3000,
@@ -42,8 +41,8 @@ export default function App() {
 	const refreshing = useRef(false)
 	const [bgUpdated, setBGUpdated] = useState(false)
 	const [validating, setValidating] = useState(true)
-	const {pathname, search} = useLocation()
-	const {push} = useHistory()
+	const { pathname, search } = useLocation()
+	const { push } = useHistory()
 	const didMountRef = useRef(false);
 
 	function onlineToast(toastBody: JSX.Element, options) {
@@ -59,17 +58,17 @@ export default function App() {
 		if (didMountRef.current) {
 			if (!isOnline) {
 				const toastBody = <ToastBody title="You are offline!" subtitle="You are not seeing real-time data and any changes you make will not be saved." />
-				onlineToast(toastBody, {type: toast.TYPE.ERROR, autoClose: false, closeButton: false});
+				onlineToast(toastBody, { type: toast.TYPE.ERROR, autoClose: false, closeButton: false });
 			}
 			else {
 				const toastBody = <ToastBody title="Connected!" subtitle="You're back online." />;
-				onlineToast(toastBody, {type: toast.TYPE.SUCCESS, autoClose: 3000, closeButton: true})
+				onlineToast(toastBody, { type: toast.TYPE.SUCCESS, autoClose: 3000, closeButton: true })
 			}
 		}
 		else {
 			didMountRef.current = true;
 		}
-		
+
 	}, [isOnline])
 
 	useEffect(() => {
@@ -85,9 +84,9 @@ export default function App() {
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
-					const loginPath = pathname.includes(URLS.DEVTRON_LOGIN) ? URLS.DEVTRON_LOGIN : URLS.LOGIN
-					const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `/admin${pathname}`
-					push(`${loginPath}${newSearch}`)
+					// const loginPath = pathname.includes(URLS.DEVTRON_LOGIN) ? URLS.DEVTRON_LOGIN : URLS.LOGIN
+					// const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `/admin${pathname}`
+					// push(`${URLS.LOGIN}${search}`)
 				} else {
 					setErrorPage(true)
 					showError(err)
@@ -201,7 +200,7 @@ export default function App() {
 									<Switch>
 										<Route path={`${URLS.LOGIN}/:type?`} component={Login} />
 										<Route path="/" render={() => <NavigationRoutes />} />
-									<Redirect to={`${URLS.LOGIN}${search}`}/>
+										<Redirect to={`${URLS.LOGIN}${search}`} />
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>

@@ -29,7 +29,7 @@ export const URLS = {
     APP_LINKED_CI_CONFIG: 'linked-ci',
     // APP_COMPOSE: '/app/edit', //
     LOGIN: '/login', //
-    DEVTRON_LOGIN: '/login-dt',
+    // DEVTRON_LOGIN: '/login-dt',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_GIT: '/global-config/git',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
