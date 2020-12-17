@@ -729,7 +729,7 @@ interface NodeSelectors {
     handleLogsPause: (e: any) => void;
     selectNode: (nodeName: string) => void;
     selectContainer: (containerName: string) => void;
-    toggleTerminalConnected: (boolean) => void;
+    toggleTerminalConnected: (flag:boolean) => void;
     children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
@@ -812,7 +812,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         <div className="events-logs__dropdown-selector pods">
             <span className="events-logs__label">{kind}</span>
             <div style={{ width: '175px' }}>
-                <Select
+                <Select 
                     placeholder={`Select ${kind}`}
                     options={Array.from(nodesMap).map(([name, data]) => ({
                         label: name + getPodNameSuffix(name),
@@ -822,7 +822,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     onChange={(selected) => selectNode((selected as any).value)}
                     styles={{
                         ...multiSelectStyles,
-                        menu: (base) => ({ ...base, zIndex: 10 }),
+                        menu: (base) => ({ ...base, zIndex: 12 }),
                         control: (base, state) => ({
                             ...base,
                             backgroundColor: 'transparent',
@@ -865,7 +865,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             onChange={(selected) => { selectContainer((selected as any).value) }}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 10 }),
+                                menu: (base) => ({ ...base, zIndex: 12 }),
                                 control: (base, state) => ({
                                     ...base,
                                     backgroundColor: 'transparent',
@@ -903,6 +903,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     value={shell}
                     onChange={(selected) => { selectShell(selected) }}
                     styles={{
+                        menu: (base) => ({ ...base, zIndex: 12 }),
                         control: (base, state) => ({
                             ...base,
                             backgroundColor: 'transparent',

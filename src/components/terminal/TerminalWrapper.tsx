@@ -32,7 +32,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
 
     componentDidMount() {
         if (!window.location.origin) { // Some browsers (mainly IE) do not have this property, so we need to build it manually...
-            //@ts-ignore
+            // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
     }
@@ -40,8 +40,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
-                this.connect(this.state.sessionId);
-                // this.getNewSession();
+                this.getNewSession();
             }
             else {
                 //disconnect
@@ -49,20 +48,20 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
-            this._terminal?.dispose();
             this.getNewSession();
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
             this._terminal?.clear();
             this._terminal.focus();
+            this._socket.send("/n");
             this.props.setTerminalCleared(false);
         }
     }
 
     componentWillUnmount() {
         this._socket?.close();
-        this._terminal.dispose();
+        this._terminal?.dispose();
     }
 
     getNewSession() {
@@ -87,6 +86,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     init(sessionId) {
+        if(this._terminal) this._terminal.dispose();
+
         this._terminal = new Terminal({
             cursorBlink: true,
             screenReaderMode: true,
@@ -106,18 +107,20 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         })
 
         sock.onopen = function () {
-            terminal.setOption('disableStdin', false);
+            // terminal.setOption('disableStdin', false);
+            terminal.writeln("NEW CONNECTION");
             const startData = { Op: 'bind', SessionID: sessionId };
             sock.send(JSON.stringify(startData));
         };
 
         sock.onmessage = function (evt) {
+            console.log(JSON.parse(evt.data).Data)
             terminal.write(JSON.parse(evt.data).Data);
         }
 
         sock.onclose = function (evt) {
-            terminal.writeln("Session terminated");
-            terminal.setOption('disableStdin', true);
+            terminal.writeln("Session Terminated");
+            // terminal.setOption('disableStdin', true);
         }
 
         sock.onerror = function (evt) {
@@ -125,38 +128,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
         this._terminal.focus();
 
-    }
-
-    connect(sessionId) {
-        let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
-        this._socket = new SockJS(socketURL);
-
-        let sock = this._socket;
-        let terminal = this._terminal;
-
-        terminal.onData(function (data) {
-            const inData = { Op: 'stdin', SessionID: "", Data: data };
-            sock.send(JSON.stringify(inData));
-        })
-
-        sock.onopen = function () {
-            const startData = { Op: 'bind', SessionID: sessionId };
-            sock.send(JSON.stringify(startData));
-        };
-
-        sock.onmessage = function (evt) {
-            terminal.write(JSON.parse(evt.data).Data);
-        }
-
-        sock.onclose = function (evt) {
-            terminal.write("Session terminated");
-        }
-
-        sock.onerror = function (evt) {
-            console.error(evt)
-        }
-        this._terminal.focus();
     }
 
     render() {
@@ -164,10 +135,10 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             <div id="terminal"></div>
             <p className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
                 Disconnected. &nbsp;
-                <span onClick={(e) => { console.log(this.props.toggleTerminalConnected); this.props.toggleTerminalConnected(false) }}
-                    className="cursor inline-block"
+                <button type="button" onClick={(e) => { console.log(this.props.toggleTerminalConnected); this.props.toggleTerminalConnected(false) }}
+                    className="cursor transparent inline-block"
                     style={{ textDecoration: 'underline' }}>Resume
-                </span>
+                </button>
             </p>
 
             <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '3' }}
