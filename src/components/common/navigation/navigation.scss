@@ -149,7 +149,6 @@
 .logout-card__initial {
     font-weight: 500;
     text-transform: uppercase;
-    font-size: 12px;
     line-height: 1.9;
     text-align: center;
     border-radius: 50%;
@@ -159,9 +158,7 @@
     margin: auto;
     border: solid 1px transparent;
 }
-.font-16{
-    font-size:16px;
-}
+
 .logout-card__name {
     margin: 0px 0 0 0px;
     height: 20px;
@@ -227,10 +224,6 @@
     background-color: var(--N100)
 }
 
-.ml-5{
-    margin-left: 5px;
-}
-
 .short-nav--flex{
     display: flex;
     
@@ -243,15 +236,4 @@
 .expandable-active-nav{
     padding: 0px 0 0 12px;
   
-}
-.pt-10{
-    padding-top: 10px;
-}
-
-.ml-15{
-    margin-left: 15px;
-}
-
-.mt-5{
-    margin-top: 5px;
 }

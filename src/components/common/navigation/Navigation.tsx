@@ -101,7 +101,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<p className="logout-card__name ellipsis-right">{email}</p>
 						<p className="logout-card__email ellipsis-right">{email}</p>
 					</div>
-					<p className="logout-card__initial icon-dim-32 mb-0 font-16" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
+					<p className="logout-card__initial fs-16 icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
 				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
 			</div>
@@ -198,7 +198,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</div>
 					<div className="short-nav--flex">
 						<div className="icon-dim-40 flex">
-							<div className="logout-card__initial icon-dim-24 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
+							<div className="logout-card__initial icon-dim-24 fs-12 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 								{email[0]}
 							</div>
 						</div>
