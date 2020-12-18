@@ -120,7 +120,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         sock.onclose = function (evt) {
+            terminal.writeln("");
             terminal.writeln("DISCONNECTED");
+
         }
 
         sock.onerror = function (evt) {
@@ -146,8 +148,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToTop={this.scrollToTop}
             />
             {this.props.terminalConnected ? <p style={{position:'absolute', bottom: 0}}
-                className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
-                Connected...
+                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
+                Connected&nbsp;.&nbsp;.&nbsp;.&nbsp;
             </p> : null}
         </div>
     }
