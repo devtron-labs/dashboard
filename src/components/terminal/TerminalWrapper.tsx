@@ -145,8 +145,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
-            {this.props.terminalConnected ? <p className={`bcr-7 cn-0 m-0 w-100 pod-readyState`} >
-                Connected ...
+            {this.props.terminalConnected ? <p style={{position:'absolute', bottom: 0}}
+                className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
+                Connected...
             </p> : null}
         </div>
     }
