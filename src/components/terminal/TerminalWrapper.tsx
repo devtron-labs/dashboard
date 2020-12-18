@@ -135,7 +135,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     render() {
         return <div className="terminal-view">
             <div id="terminal"></div>
-            <p style={{ zIndex: 90 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
+            <p style={{ zIndex: 10 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
                 Disconnected. &nbsp;
                 <button type="button" onClick={(e) => { this.props.toggleTerminalConnected(true) }}
                     className="cursor transparent inline-block"
@@ -143,7 +143,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 </button>
             </p>
 
-            <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '3' }}
+            <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
