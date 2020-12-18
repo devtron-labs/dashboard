@@ -40,7 +40,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
-                this.getNewSession();
+                this.getNewSession(true);
             }
             else {
                 //disconnect
@@ -48,7 +48,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
-            this.getNewSession();
+            this.getNewSession(true);
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
@@ -63,13 +63,14 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         this._terminal?.dispose();
     }
 
-    getNewSession() {
+    getNewSession(newTerminal = false) {
         if (!this.props.nodeName || !this.props.containerName || !this.props.shell.value || !this.props.appDetails) return;
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
+
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
             this.setState({ sessionId: sessionId }, () => {
-                this.init(sessionId);
+                this.init(sessionId, newTerminal);
             });
         }).catch((error) => {
 
@@ -84,16 +85,18 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         this._terminal.scrollToBottom();
     }
 
-    init(sessionId) {
-        if(this._terminal) this._terminal.dispose();
+    init(sessionId, newTerminal) {
 
-        this._terminal = new Terminal({
-            cursorBlink: true,
-            screenReaderMode: true,
-        });
+        if (newTerminal || !this._terminal) {
+            this._terminal?.dispose();
+            this._terminal = new Terminal({
+                cursorBlink: true,
+                screenReaderMode: true,
+            });
+        }
+
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;  
-        // socketURL = `http://localhost:8080/api/sockjs/`;
+        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
         let sock = this._socket;
@@ -107,20 +110,16 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         })
 
         sock.onopen = function () {
-            // terminal.setOption('disableStdin', false);
-            terminal.writeln("NEW CONNECTION");
             const startData = { Op: 'bind', SessionID: sessionId };
             sock.send(JSON.stringify(startData));
         };
 
         sock.onmessage = function (evt) {
-            console.log(evt.data)
             terminal.write(JSON.parse(evt.data).Data);
         }
 
         sock.onclose = function (evt) {
-            terminal.writeln("Session Terminated");
-            // terminal.setOption('disableStdin', true);
+            terminal.writeln("DISCONNECTED");
         }
 
         sock.onerror = function (evt) {
@@ -133,7 +132,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     render() {
         return <div className="terminal-view">
             <div id="terminal"></div>
-            <p style={{zIndex:90}} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
+            <p style={{ zIndex: 90 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
                 Disconnected. &nbsp;
                 <button type="button" onClick={(e) => { this.props.toggleTerminalConnected(true) }}
                     className="cursor transparent inline-block"
