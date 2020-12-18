@@ -41,7 +41,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
-                this.getNewSession(true);
+                this.getNewSession(false);
             }
             else {
                 //disconnect
@@ -94,6 +94,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 cursorBlink: true,
                 screenReaderMode: true,
             });
+            this._terminal.open(document.getElementById('terminal'));
         }
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
@@ -103,7 +104,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         let sock = this._socket;
         let terminal = this._terminal;
 
-        terminal.open(document.getElementById('terminal'));
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -124,7 +124,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         sock.onerror = function (evt) {
-            console.error(evt)
+            console.error(evt);
         }
         this._terminal.focus();
 
