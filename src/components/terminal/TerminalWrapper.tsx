@@ -28,6 +28,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         this.init = this.init.bind(this);
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.search = this.search.bind(this);
     }
 
     componentDidMount() {
@@ -86,9 +87,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     search(event): void {
-        if(event.metaKey && event.key === "f" || event.key === "F") {
-            console.log("search")
-
+        if (event.metaKey && event.key === "k" || event.key === "K") {
+            this._terminal?.clear();
         }
     }
 
