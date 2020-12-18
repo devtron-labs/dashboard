@@ -87,7 +87,10 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     search(event): void {
+        if(event.metaKey && event.key === "f" || event.key === "F") {
+            console.log("search")
 
+        }
     }
 
     init(sessionId, newTerminal): void {
@@ -104,10 +107,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
-
+        let toggleTerminalConnected = this.props.toggleTerminalConnected;
         let sock = this._socket;
         let terminal = this._terminal;
-        let toggleTerminalConnected = this.props.toggleTerminalConnected;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -118,6 +120,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             const startData = { Op: 'bind', SessionID: sessionId };
             sock.send(JSON.stringify(startData));
             terminal.writeln("New Connection");
+            toggleTerminalConnected(true);
         };
 
         sock.onmessage = function (evt) {
@@ -125,13 +128,12 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         sock.onclose = function (evt) {
-            
             toggleTerminalConnected(false)
         }
 
         sock.onerror = function (evt) {
             console.error(evt);
-            toggleTerminalConnected(false)
+            toggleTerminalConnected(false);
         }
         this._terminal.focus();
     }
@@ -151,8 +153,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToTop={this.scrollToTop}
             />
             {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
-                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
-                Connected&nbsp;.&nbsp;.&nbsp;.&nbsp;
+                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100 loading-dots`} >
+                Connected
             </p> : null}
         </div>
     }
