@@ -35,7 +35,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
-        this.getNewSession(true)
+        this.getNewSession(true);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -86,8 +86,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         this._terminal.scrollToBottom();
     }
 
-    init(sessionId, newTerminal) {
+    search(event): void {
 
+    }
+
+    init(sessionId, newTerminal): void {
         if (newTerminal || !this._terminal) {
             this._terminal?.dispose();
             this._terminal = new Terminal({
@@ -95,6 +98,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 screenReaderMode: true,
             });
             this._terminal.open(document.getElementById('terminal'));
+            this._terminal.attachCustomKeyEventHandler(this.search);
         }
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
@@ -103,7 +107,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
 
         let sock = this._socket;
         let terminal = this._terminal;
-
+        let toggleTerminalConnected = this.props.toggleTerminalConnected;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -113,6 +117,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         sock.onopen = function () {
             const startData = { Op: 'bind', SessionID: sessionId };
             sock.send(JSON.stringify(startData));
+            terminal.writeln("New Connection");
         };
 
         sock.onmessage = function (evt) {
@@ -120,16 +125,15 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         sock.onclose = function (evt) {
-            terminal.writeln("");
-            terminal.writeln("DISCONNECTED");
-
+            
+            toggleTerminalConnected(false)
         }
 
         sock.onerror = function (evt) {
             console.error(evt);
+            toggleTerminalConnected(false)
         }
         this._terminal.focus();
-
     }
 
     render() {
@@ -142,12 +146,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                     style={{ textDecoration: 'underline' }}>Resume
                 </button>
             </p>
-
             <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
-            {this.props.terminalConnected ? <p style={{position:'absolute', bottom: 0}}
+            {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
                 className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
                 Connected&nbsp;.&nbsp;.&nbsp;.&nbsp;
             </p> : null}
