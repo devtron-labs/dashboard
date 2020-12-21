@@ -62,11 +62,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
             this._socket?.close();
-            // this.props.toggleTerminalConnected(true);
-            // this.getNewSession(true);
-            // setTimeout(() => {
-            //     this.props.toggleTerminalConnected(true);
-            // }, 200)
             this.setState({
                 connection: 'CONNECTING'
             })
@@ -90,6 +85,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
+            console.log(sessionId)
             this.setState({ sessionId: sessionId }, () => {
                 this.initialize(sessionId, newTerminal);
             });
@@ -118,7 +114,17 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
             this._terminal = new Terminal({
                 cursorBlink: true,
                 screenReaderMode: true,
+                scrollback: 99999,
+                fontSize: 14,
+                lineHeight: 1.5,
+                fontFamily: 'Inconsolata',
+                // cursorStyle: 'bar',
+                theme: {
+                    background: '#0b0f22',
+                    foreground: '#FFFFFF'
+                }
             });
+            this._terminal.setOption('fontSize', 14);
             this._terminal.open(document.getElementById('terminal'));
             this._terminal.attachCustomKeyEventHandler(this.search);
         }
@@ -142,18 +148,18 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         })
 
         socket.onopen = function () {
+            console.log(sessionId)
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
             toggleTerminalConnected(true);
             terminal.writeln("");
-            terminal.writeln("---------------------------------------");
-            terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
-            terminal.writeln("---------------------------------------");
+            terminal.writeln("----------------------------------------");
+            terminal.writeln(` Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
+            terminal.writeln("----------------------------------------");
             self.setState({ connection: 'CONNECTED' });
         };
 
         socket.onmessage = function (evt) {
-            console.log(evt)
             terminal.write(JSON.parse(evt.data).Data);
         }
 
@@ -161,7 +167,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
 
         socket.onerror = function (evt) {
-            console.error(evt);
             toggleTerminalConnected(false);
         }
         this._terminal.focus();
@@ -170,7 +175,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
     render() {
         return <div className="terminal-view">
             <div id="terminal"></div>
-            <p style={{ zIndex: 10 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--show`} >
+            <p style={{ zIndex: 10 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show`} >
                 Disconnected. &nbsp;
                 <button type="button" onClick={(e) => { this.props.toggleTerminalConnected(true) }}
                     className="cursor transparent inline-block"

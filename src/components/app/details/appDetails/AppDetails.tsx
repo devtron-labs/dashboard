@@ -929,7 +929,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 />
             </div>
         </>}
-        {console.log(terminalConnected)}
         {children}
     </div>
 };
