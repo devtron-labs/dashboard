@@ -78,7 +78,7 @@ export default function App() {
 				// check if admin then direct to admin otherwise router will redirect to app list
 				if (search && search.includes("/admin")) {
 					const newLocation = search.replace("/admin", "")
-					push(newLocation)
+					//push(newLocation)
 				}
 			}
 			catch (err) {

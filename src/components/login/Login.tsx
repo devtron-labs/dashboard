@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import google from 'patternfly/dist/img/google-logo.svg';
 import dt from '../../assets/icons/logo/logo-dt.svg';
 import './login.css';
 import { toast } from 'react-toastify';
@@ -10,21 +9,12 @@ import { ServerErrors } from '../../modals/commonTypes';
 import { FullRoutes, URLS } from '../../config';
 import '../devtron/login-dt.css';
 import { Progressing, showError } from '../common'
-import LoginIcons from '../../assets/icons/logoicons.svg'
+import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Route } from 'react-router';
 import { Switch, Redirect } from 'react-router-dom';
-import getLoginList from './service'
+import {getLoginList} from './service'
 
-const loginList = [
-    {
-        id: 1,
-        name: "gmail",
-        label: "Login with Google",
-        iconClass: "login-google",
-        isidShown: false,
-    },
 
-]
 
 export default class Login extends Component<LoginProps, LoginFormState>{
     validationRules;
@@ -40,6 +30,8 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 username: "",
                 password: ""
             },
+            
+            
         }
         this.validationRules = new LoginValidation();
         this.autoFillLogin = this.autoFillLogin.bind(this);
@@ -64,6 +56,12 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             this.autoFillLogin()
         }
 
+        getLoginList().then((response)=>{
+            let list = response.result;
+            this.setState({
+                loginList: list
+            })       
+         })
     }
 
 
@@ -119,13 +117,13 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
 
-                {loginList.map((item, index) => {
-                    if (item.isidShown = true) {
+                {this.state.loginList.map((item, index) => {
+                    
                         return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
-                            <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.iconClass}`}></use></svg></div>
+                            <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg></div>
                             <div>{item.label}</div>
                         </a>
-                    }
+                  
 
                 })}
                 <a className="login__link" href={`${URLS.LOGIN}/admin`}>Login as administrator</a>
@@ -133,7 +131,10 @@ export default class Login extends Component<LoginProps, LoginFormState>{
 
         )
     }
+    
 
+    
+    
     renderAdminLoginPage() {
         return (<div className="login__control">
             <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
@@ -144,8 +145,8 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'} className="text-input text-input--pwd" placeholder="Password" value={this.state.form.password} name="password" onChange={this.handleChange} />
                 <div className="login__know-password"><a className="login__know-password--link" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a></div>
                 <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                <a className="login__link" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>
-
+               {this.state.loginList.length ?  (<a className="login__link" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) :  ""}
+                
             </form>
         </div>)
     }
@@ -159,7 +160,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                     <Switch>
                         <Route path={`${URLS.LOGIN}/sso`} render={(props) => { return this.renderSSOLoginPage() }} />
                         <Route path={`${URLS.LOGIN}/admin`} render={(props) => { return this.renderAdminLoginPage() }} />
-                        <Redirect to={`${URLS.LOGIN}/sso`} />
+                        <Redirect to={`${URLS.LOGIN}/admin`} />
                     </Switch>
                 </div>
 

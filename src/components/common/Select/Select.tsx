@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import React, { useEffect } from 'react';
 import { Progressing, useEffectAfterMount, PopupMenu } from '../../common'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';
@@ -49,24 +51,19 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     }
 
     if (!children) return null
-//@ts-ignore
+
     let { button, body, optionLength, AsyncComponent } = React.Children.toArray(children).reduce((agg, curr) => {
- //@ts-ignore
         if (curr.type === Button) {
-            //@ts-ignore
-            agg.button = curr  
-        }//@ts-ignore
+            agg.button = curr
+        }
         else if (curr.type === Async) {
-            //@ts-ignore
             agg.AsyncComponent = curr
-        }//@ts-ignore
+        }
         else if (curr.type === Option || curr.type === OptionGroup) {
-            //@ts-ignore
             agg.optionLength += 1
-            //@ts-ignore
             agg.body.push(curr)
         }
-        else {//@ts-ignore
+        else {
             agg.body.push(curr)
         }
         return agg
