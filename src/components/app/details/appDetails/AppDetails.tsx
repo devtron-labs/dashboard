@@ -682,7 +682,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                     ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
                     <div key={idx}
-                        className={`tab lowercase ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}
+                        className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             history.push(generatePath(path, { ...params, tab: title }) + location.search);

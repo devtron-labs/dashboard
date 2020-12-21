@@ -116,15 +116,13 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
                 screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
-                lineHeight: 1.5,
+                // lineHeight: 1.5,
                 fontFamily: 'Inconsolata',
-                // cursorStyle: 'bar',
                 theme: {
                     background: '#0b0f22',
                     foreground: '#FFFFFF'
                 }
             });
-            this._terminal.setOption('fontSize', 14);
             this._terminal.open(document.getElementById('terminal'));
             this._terminal.attachCustomKeyEventHandler(this.search);
         }
