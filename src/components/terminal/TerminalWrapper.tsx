@@ -47,7 +47,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
                 this._socket?.close();
-                this.getNewSession(false);
+                this.getNewSession(true);
                 this.setState({
                     connection: 'CONNECTING'
                 })
