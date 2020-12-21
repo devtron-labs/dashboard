@@ -41,6 +41,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
+                this._socket?.close();
                 this.getNewSession(false);
             }
             else {
@@ -49,6 +50,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
+            this._socket?.close();
             this.getNewSession(true);
         }
 
@@ -67,7 +69,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     getNewSession(newTerminal = false) {
         if (!this.props.nodeName || !this.props.containerName || !this.props.shell.value || !this.props.appDetails) return;
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
-
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
             this.setState({ sessionId: sessionId }, () => {
@@ -107,30 +108,32 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
         let toggleTerminalConnected = this.props.toggleTerminalConnected;
-        let sock = this._socket;
+        let socket = this._socket;
         let terminal = this._terminal;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
-            sock.send(JSON.stringify(inData));
+            socket.send(JSON.stringify(inData));
         })
 
-        sock.onopen = function () {
+        socket.onopen = function () {
             const startData = { Op: 'bind', SessionID: sessionId };
-            sock.send(JSON.stringify(startData));
-            terminal.writeln("New Connection");
+            socket.send(JSON.stringify(startData));
             toggleTerminalConnected(true);
+            terminal.writeln("");
+            terminal.writeln("---------------");
+            terminal.writeln("New Connection");
+            terminal.writeln("---------------");
         };
 
-        sock.onmessage = function (evt) {
+        socket.onmessage = function (evt) {
             terminal.write(JSON.parse(evt.data).Data);
         }
 
-        sock.onclose = function (evt) {
-            toggleTerminalConnected(false)
+        socket.onclose = function (evt) {
         }
 
-        sock.onerror = function (evt) {
+        socket.onerror = function (evt) {
             console.error(evt);
             toggleTerminalConnected(false);
         }
@@ -151,10 +154,10 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
-            {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
+            {/* {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
                 className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100 loading-dots`} >
-                Connected
-            </p> : null}
+                Connecting
+            </p> : null} */}
         </div>
     }
 }
