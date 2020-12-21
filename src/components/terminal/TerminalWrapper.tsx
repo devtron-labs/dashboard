@@ -44,8 +44,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log(this.props.terminalConnected)
-
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
                 this._socket?.close();
@@ -64,7 +62,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
             this._socket?.close();
-            this.getNewSession(true);
+            this.props.toggleTerminalConnected(false);
+            // this.getNewSession(true);
+            setTimeout(() => {
+                this.props.toggleTerminalConnected(true);
+            }, 200)
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {

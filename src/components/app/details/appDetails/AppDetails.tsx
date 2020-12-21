@@ -413,7 +413,7 @@ const NodeDetails: React.FC<{
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
-    const [terminalConnected, toggleTerminalConnected] = useState(true);
+    const [terminalConnected, toggleTerminalConnected] = useState(false);
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [shell, selectShell] = useState({ label: "bash", value: "bash" });
 
@@ -820,7 +820,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         value: name,
                     }))}
                     value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                    onChange={(selected) => { toggleTerminalConnected(false); selectNode((selected as any).value); toggleTerminalConnected(true); }}
+                    onChange={(selected) => { selectNode((selected as any).value); }}
                     styles={{
                         ...multiSelectStyles,
                         menu: (base) => ({ ...base, zIndex: 12 }),
@@ -898,8 +898,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
             </>
         )}
         {params.tab === NodeDetailTabs.TERMINAL && <>
+            <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
             <div style={{ width: '130px' }}>
-                <Select placeholder="Select shell"
+                <Select placeholder="Select shell" className="pl-20" 
                     options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
                     value={shell}
                     onChange={(selected) => { selectShell(selected) }}
