@@ -36,6 +36,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
+        this.getNewSession(true);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -106,6 +107,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
+        console.log("webosocket init")
         this._socket = new SockJS(socketURL);
         let toggleTerminalConnected = this.props.toggleTerminalConnected;
         let socket = this._socket;
