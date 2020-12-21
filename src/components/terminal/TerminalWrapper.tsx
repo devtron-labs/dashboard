@@ -104,10 +104,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             this._terminal.open(document.getElementById('terminal'));
             this._terminal.attachCustomKeyEventHandler(this.search);
         }
-
+        console.log("websocket")
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
-        console.log("webosocket init")
         this._socket = new SockJS(socketURL);
         let toggleTerminalConnected = this.props.toggleTerminalConnected;
         let socket = this._socket;
@@ -119,6 +118,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         })
 
         socket.onopen = function () {
+            console.log("open")
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
             toggleTerminalConnected(true);
@@ -133,6 +133,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         socket.onclose = function (evt) {
+
         }
 
         socket.onerror = function (evt) {
@@ -156,10 +157,10 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
-            {/* {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
-                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100 loading-dots`} >
-                Connecting
-            </p> : null} */}
+            {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
+                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
+                Connected
+            </p> : null}
         </div>
     }
 }
