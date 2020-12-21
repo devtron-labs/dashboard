@@ -148,14 +148,13 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         })
 
         socket.onopen = function () {
-            console.log(sessionId)
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
             toggleTerminalConnected(true);
             terminal.writeln("");
-            terminal.writeln("----------------------------------------");
-            terminal.writeln(` Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
-            terminal.writeln("----------------------------------------");
+            terminal.writeln("---------------------------------------------");
+            terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
+            terminal.writeln("---------------------------------------------");
             self.setState({ connection: 'CONNECTED' });
         };
 
@@ -187,7 +186,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
                 scrollToTop={this.scrollToTop}
             />
             {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
-                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
+                className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
                 {this.state.connection}
             </p> : null}
         </div>
