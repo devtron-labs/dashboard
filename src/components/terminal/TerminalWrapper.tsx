@@ -47,7 +47,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
                 this._socket?.close();
-                this.getNewSession(true);
+                this.getNewSession(false);
                 this.setState({
                     connection: 'CONNECTING'
                 })
@@ -62,11 +62,15 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
             this._socket?.close();
-            this.props.toggleTerminalConnected(false);
+            // this.props.toggleTerminalConnected(true);
             // this.getNewSession(true);
-            setTimeout(() => {
-                this.props.toggleTerminalConnected(true);
-            }, 200)
+            // setTimeout(() => {
+            //     this.props.toggleTerminalConnected(true);
+            // }, 200)
+            this.setState({
+                connection: 'CONNECTING'
+            })
+            this.getNewSession(true);
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
@@ -149,6 +153,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         };
 
         socket.onmessage = function (evt) {
+            console.log(evt)
             terminal.write(JSON.parse(evt.data).Data);
         }
 

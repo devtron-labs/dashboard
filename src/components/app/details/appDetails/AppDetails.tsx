@@ -413,7 +413,7 @@ const NodeDetails: React.FC<{
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
-    const [terminalConnected, toggleTerminalConnected] = useState(false);
+    const [terminalConnected, toggleTerminalConnected] = useState(true);
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [shell, selectShell] = useState({ label: "bash", value: "bash" });
 
@@ -433,7 +433,7 @@ const NodeDetails: React.FC<{
         return () => {
             selectContainer(null);
             selectNode(null);
-            toggleTerminalConnected(false)
+            // toggleTerminalConnected(false)
         };
     }, [])
 
