@@ -433,6 +433,7 @@ const NodeDetails: React.FC<{
         return () => {
             selectContainer(null);
             selectNode(null);
+            toggleTerminalConnected(false)
         };
     }, [])
 
@@ -729,7 +730,7 @@ interface NodeSelectors {
     handleLogsPause: (e: any) => void;
     selectNode: (nodeName: string) => void;
     selectContainer: (containerName: string) => void;
-    toggleTerminalConnected: (flag:boolean) => void;
+    toggleTerminalConnected: (flag: boolean) => void;
     children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
@@ -812,14 +813,14 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         <div className="events-logs__dropdown-selector pods">
             <span className="events-logs__label">{kind}</span>
             <div style={{ width: '175px' }}>
-                <Select 
+                <Select
                     placeholder={`Select ${kind}`}
                     options={Array.from(nodesMap).map(([name, data]) => ({
                         label: name + getPodNameSuffix(name),
                         value: name,
                     }))}
                     value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                    onChange={(selected) => selectNode((selected as any).value)}
+                    onChange={(selected) => { toggleTerminalConnected(false); selectNode((selected as any).value); toggleTerminalConnected(true); }}
                     styles={{
                         ...multiSelectStyles,
                         menu: (base) => ({ ...base, zIndex: 12 }),
@@ -927,6 +928,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 />
             </div>
         </>}
+        {console.log(terminalConnected)}
         {children}
     </div>
 };

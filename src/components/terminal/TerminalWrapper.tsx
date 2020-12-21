@@ -5,7 +5,7 @@ import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import './terminal.css';
-
+import moment from 'moment'
 interface TerminalViewProps {
     appDetails: AppDetails;
     nodeName: string;
@@ -16,7 +16,11 @@ interface TerminalViewProps {
     setTerminalCleared: (flag: boolean) => void;
     toggleTerminalConnected: (flag: boolean) => void;
 }
-export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: any; }>{
+interface TerminalViewState {
+    sessionId: string | undefined;
+    connection: 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
+}
+export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
     _socket;
 
@@ -24,8 +28,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         super(props);
         this.state = {
             sessionId: undefined,
+            connection: this.props.terminalConnected ? 'CONNECTING' : 'DISCONNECTED'
         }
-        this.init = this.init.bind(this);
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.search = this.search.bind(this);
@@ -40,12 +44,20 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
     }
 
     componentDidUpdate(prevProps, prevState) {
+        console.log(this.props.terminalConnected)
+
         if (prevProps.terminalConnected !== this.props.terminalConnected) {
             if (this.props.terminalConnected) { //connected
                 this._socket?.close();
                 this.getNewSession(false);
+                this.setState({
+                    connection: 'CONNECTING'
+                })
             }
             else {
+                this.setState({
+                    connection: 'DISCONNECTED'
+                })
                 //disconnect
                 this._socket?.close();
             }
@@ -73,7 +85,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
             this.setState({ sessionId: sessionId }, () => {
-                this.init(sessionId, newTerminal);
+                this.initialize(sessionId, newTerminal);
             });
         }).catch((error) => {
 
@@ -94,7 +106,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
     }
 
-    init(sessionId, newTerminal): void {
+    createNewTerminal(newTerminal) {
         if (newTerminal || !this._terminal) {
             this._terminal?.dispose();
             this._terminal = new Terminal({
@@ -104,13 +116,19 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
             this._terminal.open(document.getElementById('terminal'));
             this._terminal.attachCustomKeyEventHandler(this.search);
         }
-        console.log("websocket")
+    }
+
+    initialize(sessionId, newTerminal): void {
+        this.createNewTerminal(newTerminal);
+
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
+
         let toggleTerminalConnected = this.props.toggleTerminalConnected;
         let socket = this._socket;
         let terminal = this._terminal;
+        let self = this;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -118,14 +136,14 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         })
 
         socket.onopen = function () {
-            console.log("open")
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
             toggleTerminalConnected(true);
             terminal.writeln("");
-            terminal.writeln("---------------");
-            terminal.writeln("New Connection");
-            terminal.writeln("---------------");
+            terminal.writeln("---------------------------------------");
+            terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
+            terminal.writeln("---------------------------------------");
+            self.setState({ connection: 'CONNECTED' });
         };
 
         socket.onmessage = function (evt) {
@@ -133,7 +151,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
         }
 
         socket.onclose = function (evt) {
-
         }
 
         socket.onerror = function (evt) {
@@ -158,8 +175,8 @@ export class TerminalWrapper extends Component<TerminalViewProps, { sessionId: a
                 scrollToTop={this.scrollToTop}
             />
             {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
-                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100`} >
-                Connected
+                className={`ff-monospace pl-20 cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
+                {this.state.connection}
             </p> : null}
         </div>
     }
