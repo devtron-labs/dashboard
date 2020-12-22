@@ -105,3 +105,51 @@
         margin-top: 32px
     }
 }
+
+.login__sso-wrapper{
+    background-color: var(--N000);
+    border-radius: 8px;
+    border: solid 1px var(--N200);
+    padding-bottom: 22px;
+}
+.login__title{
+    padding: 22px 24px;
+    color: var(--N900);
+    font-weight: 600;
+    font-size: 16px;
+    height: 64px;
+    background-color: var(--N000);
+}
+
+.login__sso-flex{
+    display: flex;
+    margin: 20px 12px 20px 24px;
+
+}
+.sso-icons{
+    padding: 16px 12px;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+
+.login__description{
+    margin: 20px 24px;
+    padding: 16px;
+    border-radius: 4px;
+    border: solid 1px var(--B200);
+    background-color: #f0f7ff;
+    display:flex;
+    justify-content: flex-start;
+    font-size: 14px;
+
+}
+
+.login__codeblock{
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+    background-color: var(--N100);
+    padding-left: 16px;
+    margin: 0 24px 0 24px;
+
+}

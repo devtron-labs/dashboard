@@ -38,6 +38,7 @@ export const URLS = {
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
+    GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     DEPLOYMENT_GROUPS: '/deployment-groups',
     SECURITY: '/security'
 };
