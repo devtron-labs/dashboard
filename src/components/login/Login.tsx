@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import dt from '../../assets/icons/logo/logo-dt.svg';
-import './login.css';
 import { toast } from 'react-toastify';
 import { LoginProps, LoginFormState } from './types';
 import { LoginValidation } from './formValidator';
 import { post } from '../../services/api';
 import { ServerErrors } from '../../modals/commonTypes';
 import { FullRoutes, URLS } from '../../config';
-import './login-dt.css';
 import { Progressing, showError } from '../common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Route } from 'react-router';
 import { Switch, Redirect } from 'react-router-dom';
 import { getLoginList } from './service'
+import './login.css';
 
 export default class Login extends Component<LoginProps, LoginFormState>{
     validationRules;
@@ -110,28 +109,19 @@ export default class Login extends Component<LoginProps, LoginFormState>{
 
     renderSSOLoginPage() {
         return (
-
             <div className="login__control">
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-
                 {this.state.loginList.map((item, index) => {
-
                     return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
                         <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg></div>
                         <div>{item.label}</div>
                     </a>
-
-
                 })}
                 <a className="login__link" href={`${URLS.LOGIN}/admin`}>Login as administrator</a>
             </div>
-
         )
     }
-
-
-
 
     renderAdminLoginPage() {
         return (<div className="login__control">
