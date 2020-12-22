@@ -9,7 +9,7 @@ import { FullRoutes, URLS } from '../../config';
 import { Progressing, showError } from '../common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Route } from 'react-router';
-import { Switch, Redirect } from 'react-router-dom';
+import { Switch, Redirect, NavLink } from 'react-router-dom';
 import { getLoginList } from './service'
 import './login.css';
 
@@ -110,7 +110,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                         <span>{item.label}</span>
                     </a>
                 })}
-                <a className="login__link" href={`${URLS.LOGIN}/admin`}>Login as administrator</a>
+                <NavLink className="login__link" to={`${URLS.LOGIN}/admin`}>Login as administrator</NavLink>
             </div>
         )
     }
@@ -135,7 +135,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                     <a className="login__know-password--link fs-12 cb-5" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a>
                 </div>
                 <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                {this.state.loginList.length ? (<a className="login__link cb-5" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) : ""}
+                {this.state.loginList.length ? (<NavLink className="login__link cb-5" to={`${URLS.LOGIN}/sso`}>Login using SSO service</NavLink>) : ""}
             </form>
         </div>)
     }
