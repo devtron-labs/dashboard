@@ -4,25 +4,27 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
-import './terminal.css';
 import moment from 'moment';
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
+import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
+import './terminal.css';
 
 interface TerminalViewProps {
     appDetails: AppDetails;
     nodeName: string;
     shell: any;
     containerName: string;
-    terminalConnected: string;
+    socketConnection: SocketConnectionType;
     terminalCleared: boolean;
     setTerminalCleared: (flag: boolean) => void;
-    toggleTerminalConnected: (flag: boolean) => void;
+    setSocketConnection: (flag: SocketConnectionType) => void;
 }
 interface TerminalViewState {
     sessionId: string | undefined;
-    connection: 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
 }
+
+
 export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
     _socket;
@@ -31,7 +33,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         super(props);
         this.state = {
             sessionId: undefined,
-            connection: this.props.terminalConnected ? 'CONNECTING' : 'DISCONNECTED'
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
@@ -47,27 +48,17 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.terminalConnected !== this.props.terminalConnected) {
-            if (this.props.terminalConnected) { //connected
+        if (prevProps.socketConnection !== this.props.socketConnection) {
+            if (this.props.socketConnection === 'DISCONNECTING') {
+                this._socket?.close();
+            }
+            if (this.props.socketConnection === 'CONNECTING') {
                 this._socket?.close();
                 this.getNewSession(false);
-                this.setState({
-                    connection: 'CONNECTING'
-                })
-            }
-            else {
-                this.setState({
-                    connection: 'DISCONNECTED'
-                })
-                //disconnect
-                this._socket?.close();
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
             this._socket?.close();
-            this.setState({
-                connection: 'CONNECTING'
-            })
             this.getNewSession(true);
         }
 
@@ -143,13 +134,12 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         this.createNewTerminal(newTerminal);
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        // socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
+        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
-        let toggleTerminalConnected = this.props.toggleTerminalConnected;
+        let setSocketConnection = this.props.setSocketConnection;
         let socket = this._socket;
         let terminal = this._terminal;
-        let self = this;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -159,12 +149,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         socket.onopen = function () {
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
-            toggleTerminalConnected(true);
             terminal.writeln("");
             terminal.writeln("---------------------------------------------");
             terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
             terminal.writeln("---------------------------------------------");
-            self.setState({ connection: 'CONNECTED' });
+            setSocketConnection('CONNECTED');
         };
 
         socket.onmessage = function (evt) {
@@ -172,12 +161,11 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
 
         socket.onclose = function (evt) {
-            self.setState({ connection: "DISCONNECTED" });
-            
+            setSocketConnection('DISCONNECTED');
         }
 
         socket.onerror = function (evt) {
-            toggleTerminalConnected(false);
+            setSocketConnection('DISCONNECTED');
         }
         this._terminal?.focus();
     }
@@ -185,9 +173,9 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
     render() {
         return <div className="terminal-view">
             <div id="terminal"></div>
-            <p style={{ zIndex: 10 }} className={this.props.terminalConnected ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show`} >
+            <p style={{ zIndex: 10 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
                 Disconnected. &nbsp;
-                <button type="button" onClick={(e) => { this.props.toggleTerminalConnected(true) }}
+                <button type="button" onClick={(e) => { this.props.setSocketConnection('DISCONNECTING') }}
                     className="cursor transparent inline-block"
                     style={{ textDecoration: 'underline' }}>Resume
                 </button>
@@ -196,10 +184,10 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
                 scrollToBottom={this.scrollToBottom}
                 scrollToTop={this.scrollToTop}
             />
-            {this.props.terminalConnected ? <p style={{ position: 'absolute', bottom: 0 }}
+            <p style={{ position: 'absolute', bottom: 0 }}
                 className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
-                {this.state.connection}
-            </p> : null}
+                {this.props.socketConnection}
+            </p>
         </div>
     }
 }

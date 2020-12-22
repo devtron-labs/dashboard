@@ -22,6 +22,7 @@ import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-ca
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalWrapper } from '../terminal';
+import { SocketConnectionType } from './details/appDetails/AppDetails';
 
 const commandLineParser = require('command-line-parser')
 
@@ -35,12 +36,12 @@ interface EventsLogsProps {
     logsPaused?: boolean;
     appDetails: AppDetails;
     subject?: Subject<string>;
-    terminalConnected: boolean;
+    socketConnection: SocketConnectionType;
     terminalCleared: boolean;
     shell: { label; value; }
     selectShell: (shell: { label; value; }) => void;
     setTerminalCleared: (flag: boolean) => void;
-    toggleTerminalConnected: (flag: boolean) => void;
+    setSocketConnection: (value: SocketConnectionType) => void;
     handleLogPause: (paused: boolean) => void;
 }
 
@@ -65,7 +66,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, terminalConnected, terminalCleared, shell, selectShell, setTerminalCleared, toggleTerminalConnected, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -102,12 +103,12 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                     <TerminalWrapper appDetails={appDetails}
                         nodeName={nodeName}
                         containerName={containerName}
-                        terminalConnected={terminalConnected}
+                        socketConnection={socketConnection}
                         terminalCleared={terminalCleared}
                         shell={shell}
                         selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
-                        toggleTerminalConnected={toggleTerminalConnected}
+                        setSocketConnection={setSocketConnection}
                     />
                 </>
             )}

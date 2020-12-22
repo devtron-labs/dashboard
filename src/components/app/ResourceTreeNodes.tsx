@@ -554,7 +554,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                     <span data-testid={`${nodeDetails.name}-logs`}
                         className="hover-only fw-6 anchor pointer ml-6"
                         onClick={(e) => showManifest(NodeDetailTabs.TERMINAL)}>
-                        EXEC
+                        TERMINAL
                     </span> : null}
             </div>
         </td>

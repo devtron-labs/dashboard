@@ -66,6 +66,7 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -406,17 +407,15 @@ const NodeDetails: React.FC<{
     containerName?: string;
     appDetails: AppDetails;
     isAppDeployment: boolean;
-
     describeNode: (name: string, containerName?: string) => void;
 }> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
     const [selectedNode, selectNode] = useState<string>(null);
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
-    const [terminalConnected, toggleTerminalConnected] = useState(true);
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("DISCONNECTED");
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [shell, selectShell] = useState({ label: "bash", value: "bash" });
-
     const { url, path } = useRouteMatch();
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 
@@ -433,7 +432,6 @@ const NodeDetails: React.FC<{
         return () => {
             selectContainer(null);
             selectNode(null);
-            // toggleTerminalConnected(false)
         };
     }, [])
 
@@ -487,13 +485,13 @@ const NodeDetails: React.FC<{
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
                     <NodeSelectors showOldOrNewSuffix={isAppDeployment}
                         logsPaused={logsPaused}
-                        terminalConnected={terminalConnected}
+                        socketConnection={socketConnection}
                         containerName={selectedContainer}
                         nodeName={selectedNode}
                         nodes={nodes}
                         shell={shell}
                         selectShell={selectShell}
-                        toggleTerminalConnected={toggleTerminalConnected}
+                        setSocketConnection={setSocketConnection}
                         setTerminalCleared={setTerminalCleared}
                         handleLogsPause={handleLogsPause}
                         selectNode={selectNode}
@@ -504,12 +502,12 @@ const NodeDetails: React.FC<{
                         appDetails={appDetails}
                         containerName={selectedContainer}
                         logsPaused={logsPaused}
-                        terminalConnected={terminalConnected}
+                        socketConnection={socketConnection}
                         terminalCleared={terminalCleared}
                         shell={shell}
                         selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
-                        toggleTerminalConnected={toggleTerminalConnected}
+                        setSocketConnection={setSocketConnection}
                         handleLogPause={handleLogsPause}
                     />
                 </Route>
@@ -719,7 +717,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
 
 interface NodeSelectors {
     logsPaused: boolean;
-    terminalConnected: boolean;
+    socketConnection: SocketConnectionType;
     nodeName?: string;
     containerName?: string;
     showOldOrNewSuffix?: boolean;
@@ -730,12 +728,12 @@ interface NodeSelectors {
     handleLogsPause: (e: any) => void;
     selectNode: (nodeName: string) => void;
     selectContainer: (containerName: string) => void;
-    toggleTerminalConnected: (flag: boolean) => void;
+    setSocketConnection: (value: SocketConnectionType) => void;
     children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
     logsPaused = false,
-    terminalConnected = true,
+    socketConnection = true,
     nodeName,
     nodes,
     containerName,
@@ -744,7 +742,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     selectShell,
     setTerminalCleared,
     handleLogsPause = null,
-    toggleTerminalConnected,
+    setSocketConnection,
     selectNode,
     selectContainer,
     children = null,
@@ -772,15 +770,15 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         const pod = nodesMap.get(nodeName)
         return pod.isNew ? '(new)' : '(old)'
     }
-
+    let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
     return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
         {params.tab === NodeDetailTabs.TERMINAL && <>
             <div className={`flex mr-12`}>
                 <Tippy className="default-tt"
                     arrow={false}
                     placement="bottom"
-                    content={terminalConnected ? 'Disconnect' : 'Connect'} >
-                    {terminalConnected ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { toggleTerminalConnected(false) }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { toggleTerminalConnected(true) }} />}
+                    content={isSocketConnecting ? 'Disconnect' : 'Connect'} >
+                    {isSocketConnecting ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING') }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
                 </Tippy>
 
                 <Tippy className="default-tt"
@@ -900,7 +898,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         {params.tab === NodeDetailTabs.TERMINAL && <>
             <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
             <div style={{ width: '130px' }}>
-                <Select placeholder="Select shell" className="pl-20" 
+                <Select placeholder="Select shell" className="pl-20"
                     options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
                     value={shell}
                     onChange={(selected) => { selectShell(selected) }}
