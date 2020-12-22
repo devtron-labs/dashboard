@@ -134,7 +134,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         this.createNewTerminal(newTerminal);
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
+        // socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
         let setSocketConnection = this.props.setSocketConnection;
