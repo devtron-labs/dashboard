@@ -154,6 +154,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
             terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
             terminal.writeln("---------------------------------------------");
             setSocketConnection('CONNECTED');
+            terminal?.focus();
         };
 
         socket.onmessage = function (evt) {
@@ -167,7 +168,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         socket.onerror = function (evt) {
             setSocketConnection('DISCONNECTED');
         }
-        this._terminal?.focus();
     }
 
     render() {
