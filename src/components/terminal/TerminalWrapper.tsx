@@ -25,7 +25,7 @@ interface TerminalViewState {
 }
 
 
-export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewState>{
+export class TerminalView extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
     _socket;
 
@@ -134,7 +134,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         this.createNewTerminal(newTerminal);
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        // socketURL = `http://demo.devtron.info:32080/orchestrator/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
         let setSocketConnection = this.props.setSocketConnection;
@@ -175,7 +174,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
             <div id="terminal"></div>
             <p style={{ zIndex: 10 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
                 Disconnected. &nbsp;
-                <button type="button" onClick={(e) => { this.props.setSocketConnection('DISCONNECTING') }}
+                <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING') }}
                     className="cursor transparent inline-block"
                     style={{ textDecoration: 'underline' }}>Resume
                 </button>

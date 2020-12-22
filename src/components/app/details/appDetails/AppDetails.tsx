@@ -778,7 +778,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     arrow={false}
                     placement="bottom"
                     content={isSocketConnecting ? 'Disconnect' : 'Connect'} >
-                    {isSocketConnecting ? <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING') }} /> : <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
+                    {isSocketConnecting ? <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING') }} /> : <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
                 </Tippy>
 
                 <Tippy className="default-tt"
