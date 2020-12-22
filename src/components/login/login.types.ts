@@ -1,18 +1,17 @@
 import { RouteComponentProps } from 'react-router';
 import { ServerError } from '../../modals/commonTypes';
 
-export interface SSOInterface{
+export interface SSOConfig {
     id: number;
-    name: "";
-    label: "";
-    active: true
-    }
-
+    name: string;
+    label: string;
+    active: boolean;
+}
 
 export interface LoginFormState {
     code: number;
     continueUrl: string;
-    loginList: SSOInterface[];
+    loginList: SSOConfig[];
     errors: ServerError[];
     form: {
         username: string;
@@ -21,4 +20,4 @@ export interface LoginFormState {
     loading: boolean;
 }
 
-export interface LoginProps extends RouteComponentProps<{}> {}
+export interface LoginProps extends RouteComponentProps<{}> { }

@@ -89,7 +89,6 @@
 }
 
 .login__google {
-    display: block;
     width: 300px;
     height: 48px;
     text-align: center;
@@ -157,28 +156,9 @@
     color: var(--N900);
 }
 
-.google-icon {
-    width: 24px;
-    margin: 15px 8px 0 0;
-    padding: 2px 2px 3px;
-}
-
 .login__know-password {
     margin-top: 8px;
     margin-left: 180px;
-}
-
-.flex {
-    display: flex;
-}
-
-.login__link {
-    margin: 20px 0 40px 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    color: var(--B500);
-    text-decoration: none !important;
 }
 
 @media(min-width: 1440px) {

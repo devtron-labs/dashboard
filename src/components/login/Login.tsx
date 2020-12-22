@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import dt from '../../assets/icons/logo/logo-dt.svg';
-import { toast } from 'react-toastify';
-import { LoginProps, LoginFormState } from './types';
-import { LoginValidation } from './formValidator';
-import { post } from '../../services/api';
-import { ServerErrors } from '../../modals/commonTypes';
-import { FullRoutes, URLS } from '../../config';
-import { Progressing, showError } from '../common'
-import LoginIcons from '../../assets/icons/LoginSprite.svg'
-import { Route } from 'react-router';
+import LoginIcons from '../../assets/icons/LoginSprite.svg';
 import { Switch, Redirect, NavLink } from 'react-router-dom';
-import { getLoginList } from './service'
+import { Route } from 'react-router';
+import { toast } from 'react-toastify';
+import { ServerErrors } from '../../modals/commonTypes';
+import { URLS } from '../../config';
+import { Progressing, showError } from '../common'
+import { LoginValidation } from './formValidator';
+import { LoginProps, LoginFormState } from './login.types';
+import { getLoginList, loginAsAdmin } from './login.service';
 import './login.css';
 
 export default class Login extends Component<LoginProps, LoginFormState>{
@@ -49,7 +48,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         }
 
         getLoginList().then((response) => {
-            let list = response.result;
+            let list = response.result || [];
             this.setState({
                 loginList: list
             })
@@ -85,7 +84,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         e.preventDefault();
         let data = this.state.form;
         this.setState({ loading: true })
-        post(FullRoutes.LOGIN, data).then((response) => {
+        loginAsAdmin(data).then((response) => {
             if (response.result.token) {
                 this.setState({ code: response.code, loading: false });
                 let queryString = this.props.location.search.split("admin")[1];
@@ -105,9 +104,10 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList.map((item, index) => {
+                    console.log(item)
                     return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
                         <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
-                        <span>{item.label}</span>
+                        View on <span className="capitalize"> {item.name}</span>
                     </a>
                 })}
                 <NavLink className="login__link" to={`${URLS.LOGIN}/admin`}>Login as administrator</NavLink>
@@ -134,16 +134,17 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <div className="login__know-password">
                     <a className="login__know-password--link fs-12 cb-5" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a>
                 </div>
-                <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                {this.state.loginList.length ? (<NavLink className="login__link cb-5" to={`${URLS.LOGIN}/sso`}>Login using SSO service</NavLink>) : ""}
+                <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
+                {this.state.loginList.length ? (<NavLink className="login__link cb-5" to={`${URLS.LOGIN}/sso`}>Login using SSO service</NavLink>) : <p className="login__link"></p>}
             </form>
         </div>)
     }
 
-
     render() {
         return <div className="login">
-            <div className="login__bg"><div className="login__image" /></div>
+            <div className="login__bg">
+                <div className="login__image" />
+            </div>
             <div className="login__section">
                 <Switch>
                     <Route path={`${URLS.LOGIN}/sso`} render={(props) => { return this.renderSSOLoginPage() }} />
@@ -153,5 +154,4 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             </div>
         </div>
     }
-
 }

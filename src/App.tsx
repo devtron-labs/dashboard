@@ -78,15 +78,16 @@ export default function App() {
 				// check if admin then direct to admin otherwise router will redirect to app list
 				if (search && search.includes("/admin")) {
 					const newLocation = search.replace("/admin", "")
-					//push(newLocation)
+					push(newLocation)
 				}
 			}
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
-					// const loginPath = pathname.includes(URLS.DEVTRON_LOGIN) ? URLS.DEVTRON_LOGIN : URLS.LOGIN
+					// const loginPath =  URLS.LOGIN
 					// const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `/admin${pathname}`
 					// push(`${URLS.LOGIN}${search}`)
+					push(URLS.LOGIN);
 				} else {
 					setErrorPage(true)
 					showError(err)
