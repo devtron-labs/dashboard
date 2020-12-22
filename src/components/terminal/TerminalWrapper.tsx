@@ -5,7 +5,10 @@ import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import './terminal.css';
-import moment from 'moment'
+import moment from 'moment';
+import { FitAddon } from 'xterm-addon-fit';
+import * as XtermWebfont from 'xterm-webfont';
+
 interface TerminalViewProps {
     appDetails: AppDetails;
     nodeName: string;
@@ -70,7 +73,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
             this._terminal?.clear();
-            this._terminal.focus();
+            this._terminal?.focus();
             this.props.setTerminalCleared(false);
         }
     }
@@ -85,7 +88,6 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
-            console.log(sessionId)
             this.setState({ sessionId: sessionId }, () => {
                 this.initialize(sessionId, newTerminal);
             });
@@ -113,6 +115,7 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
             this._terminal?.dispose();
             this._terminal = new Terminal({
                 cursorBlink: true,
+                letterSpacing: 0,
                 screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
@@ -123,7 +126,15 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
                     foreground: '#FFFFFF'
                 }
             });
-            this._terminal.open(document.getElementById('terminal'));
+
+            let fitAddon = new FitAddon();
+            let webFontAddon = new XtermWebfont()
+            this._terminal.loadAddon(fitAddon);
+            this._terminal.loadAddon(webFontAddon);
+            this._terminal.loadWebfontAndOpen(document.getElementById('terminal'));
+            fitAddon.fit();
+            this._terminal.reset();
+
             this._terminal.attachCustomKeyEventHandler(this.search);
         }
     }
@@ -161,12 +172,14 @@ export class TerminalWrapper extends Component<TerminalViewProps, TerminalViewSt
         }
 
         socket.onclose = function (evt) {
+            self.setState({ connection: "DISCONNECTED" });
+            
         }
 
         socket.onerror = function (evt) {
             toggleTerminalConnected(false);
         }
-        this._terminal.focus();
+        this._terminal?.focus();
     }
 
     render() {
