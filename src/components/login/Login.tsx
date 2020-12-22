@@ -27,8 +27,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 username: "",
                 password: ""
             },
-
-
         }
         this.validationRules = new LoginValidation();
         this.autoFillLogin = this.autoFillLogin.bind(this);
@@ -38,16 +36,13 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         const currentPath = window.location.href
         let cont = ""
         if (currentPath.includes('/admin')) {
-            cont = currentPath.split('/admin')[1]
+            cont = currentPath.split('/admin')[1];
             toast.error('Please login again');
-
         }
 
         this.setState({
             continueUrl: encodeURI(`${process.env.PUBLIC_URL}${cont}`)
         })
-
-
 
         if (process.env.NODE_ENV === 'development') {
             this.autoFillLogin()
@@ -61,11 +56,9 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         })
     }
 
-
     handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         e.persist();
         this.setState(state => ({ ...state, form: { ...state.form, [e.target.name]: e.target.value } }));
-
     }
 
 
@@ -87,7 +80,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         })
         return !isValid;
     }
-
 
     login = async (e) => {
         e.preventDefault();
@@ -114,8 +106,8 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList.map((item, index) => {
                     return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
-                        <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg></div>
-                        <div>{item.label}</div>
+                        <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
+                        <span>{item.label}</span>
                     </a>
                 })}
                 <a className="login__link" href={`${URLS.LOGIN}/admin`}>Login as administrator</a>
@@ -127,33 +119,39 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         return (<div className="login__control">
             <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
             <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-
             <form className="login-dt__form" onSubmit={this.login}>
-                <input type="text" className="text-input text-input--username" placeholder="Username" value={this.state.form.username} name="username" onChange={this.handleChange} />
-                <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'} className="text-input text-input--pwd" placeholder="Password" value={this.state.form.password} name="password" onChange={this.handleChange} />
-                <div className="login__know-password"><a className="login__know-password--link" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a></div>
+                <input type="text" className="form__input fs-14 mb-24"
+                    placeholder="Username"
+                    value={this.state.form.username}
+                    name="username"
+                    onChange={this.handleChange} />
+                <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                    className="form__input fs-14"
+                    placeholder="Password"
+                    value={this.state.form.password}
+                    name="password"
+                    onChange={this.handleChange} />
+                <div className="login__know-password">
+                    <a className="login__know-password--link fs-12 cb-5" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a>
+                </div>
                 <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                {this.state.loginList.length ? (<a className="login__link" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) : ""}
-
+                {this.state.loginList.length ? (<a className="login__link cb-5" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) : ""}
             </form>
         </div>)
     }
 
 
     render() {
-        return (
-            <div className="login">
-                <div className="login__bg"><div className="login__image" /></div>
-                <div className="login__section">
-                    <Switch>
-                        <Route path={`${URLS.LOGIN}/sso`} render={(props) => { return this.renderSSOLoginPage() }} />
-                        <Route path={`${URLS.LOGIN}/admin`} render={(props) => { return this.renderAdminLoginPage() }} />
-                        <Redirect to={`${URLS.LOGIN}/admin`} />
-                    </Switch>
-                </div>
-
+        return <div className="login">
+            <div className="login__bg"><div className="login__image" /></div>
+            <div className="login__section">
+                <Switch>
+                    <Route path={`${URLS.LOGIN}/sso`} render={(props) => { return this.renderSSOLoginPage() }} />
+                    <Route path={`${URLS.LOGIN}/admin`} render={(props) => { return this.renderAdminLoginPage() }} />
+                    <Redirect to={`${URLS.LOGIN}/admin`} />
+                </Switch>
             </div>
-        )
+        </div>
     }
 
 }
