@@ -3,18 +3,16 @@ import dt from '../../assets/icons/logo/logo-dt.svg';
 import './login.css';
 import { toast } from 'react-toastify';
 import { LoginProps, LoginFormState } from './types';
-import { LoginValidation } from '../devtron/formValidator';
+import { LoginValidation } from './formValidator';
 import { post } from '../../services/api';
 import { ServerErrors } from '../../modals/commonTypes';
 import { FullRoutes, URLS } from '../../config';
-import '../devtron/login-dt.css';
+import './login-dt.css';
 import { Progressing, showError } from '../common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Route } from 'react-router';
 import { Switch, Redirect } from 'react-router-dom';
-import {getLoginList} from './service'
-
-
+import { getLoginList } from './service'
 
 export default class Login extends Component<LoginProps, LoginFormState>{
     validationRules;
@@ -30,8 +28,8 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 username: "",
                 password: ""
             },
-            
-            
+
+
         }
         this.validationRules = new LoginValidation();
         this.autoFillLogin = this.autoFillLogin.bind(this);
@@ -56,12 +54,12 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             this.autoFillLogin()
         }
 
-        getLoginList().then((response)=>{
+        getLoginList().then((response) => {
             let list = response.result;
             this.setState({
                 loginList: list
-            })       
-         })
+            })
+        })
     }
 
 
@@ -118,12 +116,12 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
 
                 {this.state.loginList.map((item, index) => {
-                    
-                        return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
-                            <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg></div>
-                            <div>{item.label}</div>
-                        </a>
-                  
+
+                    return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
+                        <div className="google-icon"><svg className="icon-dim-24" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg></div>
+                        <div>{item.label}</div>
+                    </a>
+
 
                 })}
                 <a className="login__link" href={`${URLS.LOGIN}/admin`}>Login as administrator</a>
@@ -131,10 +129,10 @@ export default class Login extends Component<LoginProps, LoginFormState>{
 
         )
     }
-    
 
-    
-    
+
+
+
     renderAdminLoginPage() {
         return (<div className="login__control">
             <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
@@ -145,8 +143,8 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <input type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'} className="text-input text-input--pwd" placeholder="Password" value={this.state.form.password} name="password" onChange={this.handleChange} />
                 <div className="login__know-password"><a className="login__know-password--link" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a></div>
                 <button disabled={this.isFormNotValid()} className="login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-               {this.state.loginList.length ?  (<a className="login__link" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) :  ""}
-                
+                {this.state.loginList.length ? (<a className="login__link" href={`${URLS.LOGIN}/sso`}>Login using SSO service</a>) : ""}
+
             </form>
         </div>)
     }
