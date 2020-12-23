@@ -9,8 +9,8 @@ import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
+import { useThrottledEffect } from '../common'
 import './terminal.css';
-import { useThrottledEffect, copyToClipboard } from '../common'
 
 interface TerminalViewProps {
     appDetails: AppDetails;
@@ -41,9 +41,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
-        this.onResize = this.onResize.bind(this);
         this.search = this.search.bind(this);
-
     }
 
     componentDidMount() {
@@ -108,13 +106,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
     }
 
-    onResize(c, r) {
-        console.log(c, r);
-        let d = this._fitAddon.proposedDimensions();
-        const startData = {Op: 'resize', Cols: d.cols, Rows: d.rows};
-        this._socket.send(JSON.stringify(startData));
-    }
-
     createNewTerminal(newTerminal) {
         if (newTerminal || !this._terminal) {
             this._terminal?.dispose();
@@ -141,13 +132,18 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal.reset();
             this._terminal.attachCustomKeyEventHandler(this.search);
 
-            this._terminal.onResize(this.onResize)
+            let self = this;
+            this._terminal.onResize(function (dim) {
+                const startData = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
+                self?._socket?.send(JSON.stringify(startData));
+            })
         }
     }
 
     initialize(sessionId, newTerminal): void {
         this.createNewTerminal(newTerminal);
 
+        console.log("creating new socket")
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
@@ -177,23 +173,36 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         socket.onclose = function (evt) {
             setSocketConnection('DISCONNECTED');
+            console.log("close")
         }
 
         socket.onerror = function (evt) {
             setSocketConnection('DISCONNECTED');
+            console.log("error")
         }
     }
 
     render() {
         let self = this;
-        return <AutoSizer >
-            {({ height, width }) => <TerminalContent height={height}
-                width={width}
-                fitAddon={self._fitAddon}
-                scrollToTop={self.scrollToTop}
-                scrollToBottom={self.scrollToBottom}
-                socketConnection={self.props.socketConnection}
-                setSocketConnection={self.props.setSocketConnection} />}
+        return <AutoSizer>
+            {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
+                <p style={{ zIndex: 11 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
+                    Disconnected. &nbsp;
+                    <button type="button" onClick={(e) => { console.log('connecting'); this.props.setSocketConnection('CONNECTING'); }}
+                        className="cursor transparent inline-block"
+                        style={{ textDecoration: 'underline' }}>Resume
+                    </button>
+                </p>
+                <TerminalContent height={height} width={width} fitAddon={self._fitAddon} />
+                <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
+                    scrollToBottom={this.scrollToBottom}
+                    scrollToTop={this.scrollToTop}
+                />
+                <p style={{ position: 'absolute', bottom: 0 }}
+                    className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
+                    {this.props.socketConnection}
+                </p>
+            </div>}
         </AutoSizer>
     }
 }
@@ -202,35 +211,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 function TerminalContent(props) {
 
     useThrottledEffect(() => {
-            if (props.fitAddon) {
-               let d = props.fitAddon.proposeDimensions()
-                console.log(d)
-                props.fitAddon.fit();
-            }
-        },
+        if (props.fitAddon) {
+            props.fitAddon.fit();
+        }
+    },
         100,
-        [props.height, props.width],
+        [props.height],
     );
 
-
-    return <div className="terminal-view" style={{overflow: 'auto' }}>
-        <p style={{ zIndex: 13 }} className={props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
-            Disconnected. &nbsp;
-            <button type="button" onClick={(e) => { props.setSocketConnection('CONNECTING') }}
-                className="cursor transparent inline-block"
-                style={{ textDecoration: 'underline' }}>Resume
-            </button>
-        </p>
-        <div id="terminal" style={{ width: props.width, height: props.height - 50 }}></div>
-        <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
-            scrollToBottom={props?.scrollToBottom}
-            scrollToTop={props?.scrollToTop}
-        />
-        <p style={{ position: 'absolute', bottom: 0 }}
-            className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
-            {props.socketConnection}
-        </p>
-    </div>
-
+    return <div id="terminal" style={{ width: props.width, height: props.height - 75 }}></div>
 
 }
