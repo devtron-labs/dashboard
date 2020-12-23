@@ -132,7 +132,11 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
 function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
     useThrottledEffect(
         () => {
-            if (fitAddon.current) fitAddon.current.fit();
+            if (fitAddon.current) {
+            let d = fitAddon.proposeDimensions()
+            console.log(d)
+                fitAddon.current.fit();
+            }
         },
         100,
         [height],
