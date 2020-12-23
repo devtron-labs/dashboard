@@ -45,16 +45,21 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
+        if(this.props.socketConnection === 'CONNECTING') {
+        }
         this.getNewSession(true);
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.socketConnection !== this.props.socketConnection) {
             if (this.props.socketConnection === 'DISCONNECTING') {
-                this._socket?.close();
+                if (this._socket) {
+                    console.log("disconnect")
+                    this._socket.close();
+                    this._socket = undefined;
+                }
             }
             if (this.props.socketConnection === 'CONNECTING') {
-                // this._socket?.close();
                 this.getNewSession(false);
             }
         }
@@ -140,6 +145,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this.createNewTerminal(newTerminal);
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
+        let wasSocket = this._socket;
+
+        this._socket?.close();
         this._socket = new SockJS(socketURL);
 
         let setSocketConnection = this.props.setSocketConnection;
@@ -152,14 +160,20 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         })
 
         socket.onopen = function () {
+            console.log(wasSocket);
+
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
-            terminal.writeln("");
-            terminal.writeln("---------------------------------------------");
-            terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
-            terminal.writeln("---------------------------------------------");
             setSocketConnection('CONNECTED');
+            if (wasSocket) {
+                terminal.writeln("");
+                terminal.writeln("---------------------------------------------");
+                terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
+                terminal.writeln("---------------------------------------------");
+
+            }
             terminal?.focus();
+
         };
 
         socket.onmessage = function (evt) {
@@ -168,12 +182,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         socket.onclose = function (evt) {
             setSocketConnection('DISCONNECTED');
-            console.log("close")
+            // console.log("close")
         }
 
         socket.onerror = function (evt) {
             setSocketConnection('DISCONNECTED');
-            console.log("error")
+            // console.log("error")
         }
     }
 

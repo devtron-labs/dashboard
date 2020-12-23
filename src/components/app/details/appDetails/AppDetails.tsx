@@ -413,7 +413,7 @@ const NodeDetails: React.FC<{
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("DISCONNECTED");
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [shell, selectShell] = useState({ label: "bash", value: "bash" });
     const { url, path } = useRouteMatch();
