@@ -14,7 +14,7 @@ export default function Login() {
             cont = currentPath.split('?continue=')[1]
             toast.error('Please login again');
         }
-        setContinueUrl(encodeURI(`${window.location.origin}/${process.env.PUBLIC_URL}${cont}`));
+        setContinueUrl(encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${cont}`));
     }, [])
 
     return (
