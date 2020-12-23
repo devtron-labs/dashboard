@@ -24,8 +24,6 @@ interface TerminalViewProps {
 }
 interface TerminalViewState {
     sessionId: string | undefined;
-    width: number;
-    height: 0;
 }
 export class TerminalView extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
@@ -36,8 +34,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         super(props);
         this.state = {
             sessionId: undefined,
-            height: 0,
-            width: 0,
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
@@ -58,7 +54,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                 this._socket?.close();
             }
             if (this.props.socketConnection === 'CONNECTING') {
-                this._socket?.close();
+                // this._socket?.close();
                 this.getNewSession(false);
             }
         }
@@ -143,7 +139,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     initialize(sessionId, newTerminal): void {
         this.createNewTerminal(newTerminal);
 
-        console.log("creating new socket")
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
         this._socket = new SockJS(socketURL);
 
@@ -199,7 +194,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     scrollToTop={this.scrollToTop}
                 />
                 <p style={{ position: 'absolute', bottom: 0 }}
-                    className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 w-100 capitalize`} >
+                    className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 capitalize`} >
                     {this.props.socketConnection}
                 </p>
             </div>}
