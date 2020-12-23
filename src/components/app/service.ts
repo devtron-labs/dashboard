@@ -1,4 +1,4 @@
-import { Routes } from '../../config';
+import { Routes, Moment12HourFormat } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
@@ -161,7 +161,7 @@ export const getCIMaterialList = (params) => {
                         changes: history.Changes || [],
                         author: history.Author,
                         message: history.Message,
-                        date: history.Date ? ISTTimeModal(history.Date, false) : "",
+                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : "",
                         commit: history.Commit,
                         isSelected: indx == 0,
                         showChanges: false,
@@ -202,7 +202,7 @@ function cdMaterialListModal(artifacts) {
     let materials = artifacts.map((material, index) => {
         return {
             id: material.id,
-            deployedTime: material.deployed_time ? handleTime(material.deployed_time) : "Not Deployed",
+            deployedTime: material.deployed_time ? moment(material.deployed_time).format(Moment12HourFormat) : "Not Deployed",
             tab: CDModalTab.Changes,
             image: material.image.split(':')[1],
             showChanges: false,
@@ -218,7 +218,7 @@ function cdMaterialListModal(artifacts) {
             vulnerable: material.vulnerable,
             materialInfo: material.material_info ? material.material_info.map((mat) => {
                 return {
-                    modifiedTime: mat.modifiedTime ? ISTTimeModal(mat.modifiedTime) : "",
+                    modifiedTime: mat.modifiedTime ? moment(mat.modifiedTime).format(Moment12HourFormat) : "",
                     commitLink: createGitCommitUrl(mat.url, mat.revision),
                     author: mat.author || "",
                     message: mat.message || "",

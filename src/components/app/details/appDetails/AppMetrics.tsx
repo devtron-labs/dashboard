@@ -208,7 +208,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('cpu') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('cpu') }} />
                         </Tippy>
                     </div>
                     <iframe title={'cpu'} src={graphs.cpu} className="app-metrics-graph__iframe" />
@@ -219,7 +219,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             arrow={false}
                             placement="bottom"
                             content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setTab(AppMetricsTab.Aggregate); setChartName('ram') }} />
+                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('ram') }} />
                         </Tippy>
                     </div>
                     <iframe title={'ram'} src={graphs.ram} className="app-metrics-graph__iframe" />

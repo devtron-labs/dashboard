@@ -4,20 +4,20 @@ import dt from '../../assets/icons/logo/logo-dt.svg';
 import './login.css';
 import { toast } from 'react-toastify';
 
-export default function Login(){
-    const [continueUrl, setContinueUrl]=useState("");
+export default function Login() {
+    const [continueUrl, setContinueUrl] = useState("");
 
-    useEffect(()=>{
+    useEffect(() => {
         const currentPath = window.location.href
         let cont = ""
         if (currentPath.includes('?continue=')) {
             cont = currentPath.split('?continue=')[1]
             toast.error('Please login again');
         }
-        setContinueUrl(encodeURI(`${process.env.PUBLIC_URL}${cont}`))
-    },[])
-    
-    return(
+        setContinueUrl(encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${cont}`));
+    }, [])
+
+    return (
         <div className="login">
             <div className="login__bg"><div className="login__image" /></div>
             <div className="login__section">
