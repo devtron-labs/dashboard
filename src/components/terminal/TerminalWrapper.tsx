@@ -27,6 +27,7 @@ interface TerminalViewProps {
 interface TerminalViewState {
     sessionId: string | undefined;
     showReconnectMessage: boolean;
+    firstMessageReceived: boolean;
 }
 export class TerminalView extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
@@ -38,6 +39,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this.state = {
             sessionId: undefined,
             showReconnectMessage: false,
+            firstMessageReceived: false,
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
@@ -61,10 +63,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                 }
             }
             if (this.props.socketConnection === 'CONNECTING') {
-                this.getNewSession(false);
-            }
-            if (this.props.socketConnection === 'DISCONNECTED') {
-                this.setState({})
+                this.getNewSession();
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
@@ -80,6 +79,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal?.focus();
             this.props.setTerminalCleared(false);
         }
+
+        if (this.state.firstMessageReceived !== prevState.firstMessageReceived && this.state.firstMessageReceived) {
+            this._fitAddon.fit();
+            this._terminal.setOption('cursorBlink', true);
+            this.props.setSocketConnection('CONNECTED');
+
+        }
     }
 
     componentWillUnmount() {
@@ -87,13 +93,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this._terminal?.dispose();
     }
 
-    getNewSession(newTerminal = false) {
+    getNewSession():void {
         if (!this.props.nodeName || !this.props.containerName || !this.props.shell.value || !this.props.appDetails) return;
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
         get(url).then((response: any) => {
             let sessionId = response?.result.SessionID;
             this.setState({ sessionId: sessionId }, () => {
-                this.initialize(sessionId, newTerminal);
+                this.initialize(sessionId);
             });
         }).catch((error) => {
 
@@ -114,11 +120,11 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
     }
 
-    createNewTerminal(newTerminal) {
-        if (newTerminal || !this._terminal) {
+    createNewTerminal() {
+        if (!this._terminal) {
             this._terminal?.dispose();
             this._terminal = new Terminal({
-                cursorBlink: true,
+                cursorBlink: false,
                 letterSpacing: 0,
                 screenReaderMode: true,
                 scrollback: 99999,
@@ -143,18 +149,21 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal.onResize(function (dim) {
                 const startData = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
                 if (self._socket) {
+                    if(self._socket.readyState === WebSocket.OPEN)
                     self._socket.send(JSON.stringify(startData));
                 }
             })
         }
     }
 
-    initialize(sessionId, newTerminal): void {
-        this.createNewTerminal(newTerminal);
+    initialize(sessionId): void {
+        this.createNewTerminal();
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
 
         this._socket?.close();
+        this.setState({firstMessageReceived:false});
+
         this._socket = new SockJS(socketURL);
 
         let setSocketConnection = this.props.setSocketConnection;
@@ -163,10 +172,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         let fitAddon = this._fitAddon;
         let isReconnection = this.props.isReconnection;
         let setIsReconnection = this.props.setIsReconnection;
+        let self = this;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
-            socket.send(JSON.stringify(inData));
+            if(socket.readyState === WebSocket.OPEN) {
+                socket?.send(JSON.stringify(inData));
+            }
         })
 
         socket.onopen = function () {
@@ -175,11 +187,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             socket.send(JSON.stringify(startData));
 
             let dim = fitAddon.proposeDimensions();
-            console.log(dim)
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
             socket.send(JSON.stringify(resize));
 
-            setSocketConnection('CONNECTED');
             if (isReconnection) {
                 terminal.writeln("---------------------------------------------");
                 terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
@@ -191,6 +201,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         socket.onmessage = function (evt) {
             terminal.write(JSON.parse(evt.data).Data);
             terminal?.focus();
+            if (!self.state.firstMessageReceived) {
+                self.setState({ firstMessageReceived: true });
+            }
         }
 
         socket.onclose = function (evt) {
