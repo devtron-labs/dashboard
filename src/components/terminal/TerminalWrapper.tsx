@@ -45,8 +45,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
-        if(this.props.socketConnection === 'CONNECTING') {
-        }
         this.getNewSession(true);
     }
 
@@ -207,7 +205,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     scrollToBottom={this.scrollToBottom}
                     scrollToTop={this.scrollToTop}
                 />
-                <p style={{ position: 'absolute', bottom: 0 }}
+                <p style={{ position: 'relative', bottom: '10px' }}
                     className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 capitalize`} >
                     {this.props.socketConnection}
                 </p>
@@ -228,6 +226,6 @@ function TerminalContent(props) {
         [props.height],
     );
 
-    return <div id="terminal" style={{ width: props.width, height: props.height - 75 }}></div>
+    return <div id="terminal" style={{ width: props.width, height: props.height - 90 }}></div>
 
 }
