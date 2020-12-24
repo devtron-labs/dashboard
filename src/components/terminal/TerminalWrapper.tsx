@@ -93,7 +93,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this._terminal?.dispose();
     }
 
-    getNewSession():void {
+    getNewSession(): void {
         if (!this.props.nodeName || !this.props.containerName || !this.props.shell.value || !this.props.appDetails) return;
         let url = `api/v1/applications/pod/exec/session/${this.props.appDetails.appId}/${this.props.appDetails.environmentId}/${this.props.appDetails.namespace}/${this.props.nodeName}/${this.props.shell.value}/${this.props.containerName}`;
         get(url).then((response: any) => {
@@ -149,8 +149,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal.onResize(function (dim) {
                 const startData = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
                 if (self._socket) {
-                    if(self._socket.readyState === WebSocket.OPEN)
-                    self._socket.send(JSON.stringify(startData));
+                    if (self._socket.readyState === WebSocket.OPEN)
+                        self._socket.send(JSON.stringify(startData));
                 }
             })
         }
@@ -162,7 +162,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
 
         this._socket?.close();
-        this.setState({firstMessageReceived:false});
+        this.setState({ firstMessageReceived: false });
 
         this._socket = new SockJS(socketURL);
 
@@ -176,7 +176,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
-            if(socket.readyState === WebSocket.OPEN) {
+            if (socket.readyState === WebSocket.OPEN) {
                 socket?.send(JSON.stringify(inData));
             }
         })
@@ -217,6 +217,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
     render() {
         let self = this;
+        let isConnection = this.props.socketConnection == "CONNECTING" || this.props.socketConnection == "CONNECTED";
         return <AutoSizer>
             {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
@@ -231,8 +232,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     scrollToBottom={this.scrollToBottom}
                     scrollToTop={this.scrollToTop}
                 />
-                <p style={{ position: 'relative', bottom: '10px' }}
-                    className={`ff-monospace cg-4 pt-2 fs-13 pb-2 m-0 capitalize`} >
+                <p style={{ position: 'relative', bottom: '10px', color: isConnection ? 'var(--G400)' : 'var(--R400)' }}
+                    className={`ff-monospace pt-2 fs-13 pb-2 m-0 capitalize`} >
                     {this.props.socketConnection}
                 </p>
             </div>}
@@ -251,7 +252,5 @@ function TerminalContent(props) {
         100,
         [props.height, props.width],
     );
-
     return <div id="terminal" style={{ width: props.width, height: props.height - 90 }}></div>
-
 }
