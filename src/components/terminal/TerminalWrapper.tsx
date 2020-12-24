@@ -217,7 +217,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
     render() {
         let self = this;
-        let isConnection = this.props.socketConnection == "CONNECTING" || this.props.socketConnection == "CONNECTED";
+        let classes = `ff-monospace pt-2 fs-13 pb-2 m-0 capitalize`;
+        if(this.props.socketConnection == "CONNECTING") {
+            classes = `${classes} loading-dots cg-4`;
+        }
+        else if(this.props.socketConnection == "CONNECTED") {
+            classes = `${classes} cg-4`;
+        }
+        else classes = `${classes} cr-4`;
         return <AutoSizer>
             {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
@@ -232,8 +239,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     scrollToBottom={this.scrollToBottom}
                     scrollToTop={this.scrollToTop}
                 />
-                <p style={{ position: 'relative', bottom: '10px', color: isConnection ? 'var(--G400)' : 'var(--R400)' }}
-                    className={`ff-monospace pt-2 fs-13 pb-2 m-0 capitalize`} >
+
+                <p style={{ position: 'relative', bottom: '10px' }}
+                    className={classes} >
                     {this.props.socketConnection}
                 </p>
             </div>}
