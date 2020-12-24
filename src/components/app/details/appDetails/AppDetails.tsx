@@ -795,7 +795,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     arrow={false}
                     placement="bottom"
                     content={'Clear'} >
-                    <Abort className="icon-dim-20 mr-5" onClick={(e) => { setTerminalCleared(true); }} />
+                    <Abort className="icon-dim-20 mr-8 ml-8" onClick={(e) => { setTerminalCleared(true); }} />
                 </Tippy>
             </div>
             <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />

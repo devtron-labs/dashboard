@@ -163,7 +163,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         let fitAddon = this._fitAddon;
         let isReconnection = this.props.isReconnection;
         let setIsReconnection = this.props.setIsReconnection;
-        
+
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
             socket.send(JSON.stringify(inData));
@@ -175,6 +175,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             socket.send(JSON.stringify(startData));
 
             let dim = fitAddon.proposeDimensions();
+            console.log(dim)
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
             socket.send(JSON.stringify(resize));
 
@@ -207,7 +208,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
                     Disconnected. &nbsp;
-                    <button type="button" onClick={(e) => { console.log('connecting'); this.props.setSocketConnection('CONNECTING'); }}
+                    <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
                         className="cursor transparent inline-block"
                         style={{ textDecoration: 'underline' }}>Resume
                     </button>
