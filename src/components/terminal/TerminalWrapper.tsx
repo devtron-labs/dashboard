@@ -45,14 +45,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
-        this.getNewSession(true);
+        // this.getNewSession(true);
+        this.props.setSocketConnection("CONNECTING");
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.socketConnection !== this.props.socketConnection) {
             if (this.props.socketConnection === 'DISCONNECTING') {
                 if (this._socket) {
-                    console.log("disconnect")
                     this._socket.close();
                     this._socket = undefined;
                 }
@@ -62,8 +62,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
-            this._socket?.close();
-            this.getNewSession(true);
+            // this._socket?.close();
+            // this.getNewSession(true);
+            this.props.setSocketConnection("DISCONNECTING");
+            setTimeout(()=>{
+                this.props.setSocketConnection("CONNECTING");
+
+            },100)
+
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
@@ -114,7 +120,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                 screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
-                // lineHeight: 1.5,
                 fontFamily: 'Inconsolata',
                 theme: {
                     background: '#0b0f22',
@@ -133,6 +138,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             let self = this;
             this._terminal.onResize(function (dim) {
+                // console.log(dim)
+                // console.log(self?._fitAddon.proposeDimensions())
+                // self?._fitAddon.fit();
                 const startData = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
                 self?._socket?.send(JSON.stringify(startData));
             })
@@ -151,6 +159,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         let setSocketConnection = this.props.setSocketConnection;
         let socket = this._socket;
         let terminal = this._terminal;
+        let fitAddon = this._fitAddon;
 
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
@@ -158,24 +167,25 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         })
 
         socket.onopen = function () {
-            console.log(wasSocket);
-
+            terminal.writeln("");
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
+
+            let dim = fitAddon.proposeDimensions();
+            const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
+            // socket.send(JSON.stringify(resize));
+
             setSocketConnection('CONNECTED');
             if (wasSocket) {
-                terminal.writeln("");
                 terminal.writeln("---------------------------------------------");
                 terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
                 terminal.writeln("---------------------------------------------");
-
             }
-            terminal?.focus();
-
         };
 
         socket.onmessage = function (evt) {
             terminal.write(JSON.parse(evt.data).Data);
+            terminal?.focus();
         }
 
         socket.onclose = function (evt) {
@@ -185,7 +195,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         socket.onerror = function (evt) {
             setSocketConnection('DISCONNECTED');
-            // console.log("error")
+            console.log("error")
         }
     }
 
@@ -223,7 +233,7 @@ function TerminalContent(props) {
         }
     },
         100,
-        [props.height],
+        [props.height, props.width],
     );
 
     return <div id="terminal" style={{ width: props.width, height: props.height - 90 }}></div>
