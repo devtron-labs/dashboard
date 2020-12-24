@@ -415,6 +415,8 @@ const NodeDetails: React.FC<{
     const [logsPaused, toggleLogStream] = useState(false);
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
     const [terminalCleared, setTerminalCleared] = useState(false);
+    const [isReconnection, setIsReconnection] = useState(false);
+
     const [shell, selectShell] = useState({ label: "bash", value: "bash" });
     const { url, path } = useRouteMatch();
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
@@ -490,6 +492,8 @@ const NodeDetails: React.FC<{
                         nodeName={selectedNode}
                         nodes={nodes}
                         shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
                         selectShell={selectShell}
                         setSocketConnection={setSocketConnection}
                         setTerminalCleared={setTerminalCleared}
@@ -505,6 +509,8 @@ const NodeDetails: React.FC<{
                         socketConnection={socketConnection}
                         terminalCleared={terminalCleared}
                         shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
                         selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         setSocketConnection={setSocketConnection}
@@ -723,6 +729,8 @@ interface NodeSelectors {
     showOldOrNewSuffix?: boolean;
     nodes: AggregatedNodes;
     shell: { label: string; value: string };
+    isReconnection: boolean;
+    setIsReconnection: (flag) => void;
     selectShell: (shell: { label: string; value: string }) => void;
     setTerminalCleared: (flag: boolean) => void;
     handleLogsPause: (e: any) => void;
@@ -739,6 +747,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     containerName,
     showOldOrNewSuffix = false,
     shell,
+    isReconnection,
+    setIsReconnection,
     selectShell,
     setTerminalCleared,
     handleLogsPause = null,
@@ -778,7 +788,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     arrow={false}
                     placement="bottom"
                     content={isSocketConnecting ? 'Disconnect' : 'Connect'} >
-                    {isSocketConnecting ? <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING') }} /> : <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
+                    {isSocketConnecting ? <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} /> : <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
                 </Tippy>
 
                 <Tippy className="default-tt"

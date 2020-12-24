@@ -19,11 +19,14 @@ interface TerminalViewProps {
     containerName: string;
     socketConnection: SocketConnectionType;
     terminalCleared: boolean;
+    isReconnection: boolean;
+    setIsReconnection: (flag: boolean) => void;
     setTerminalCleared: (flag: boolean) => void;
     setSocketConnection: (flag: SocketConnectionType) => void;
 }
 interface TerminalViewState {
     sessionId: string | undefined;
+    showReconnectMessage: boolean;
 }
 export class TerminalView extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
@@ -34,6 +37,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         super(props);
         this.state = {
             sessionId: undefined,
+            showReconnectMessage: false,
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
@@ -45,7 +49,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
-        // this.getNewSession(true);
         this.props.setSocketConnection("CONNECTING");
     }
 
@@ -60,16 +63,16 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             if (this.props.socketConnection === 'CONNECTING') {
                 this.getNewSession(false);
             }
+            if (this.props.socketConnection === 'DISCONNECTED') {
+                this.setState({})
+            }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
-            // this._socket?.close();
-            // this.getNewSession(true);
+            this._terminal?.clear();
             this.props.setSocketConnection("DISCONNECTING");
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.props.setSocketConnection("CONNECTING");
-
-            },100)
-
+            }, 100)
         }
 
         if (prevProps.terminalCleared !== this.props.terminalCleared && this.props.terminalCleared) {
@@ -138,11 +141,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             let self = this;
             this._terminal.onResize(function (dim) {
-                // console.log(dim)
-                // console.log(self?._fitAddon.proposeDimensions())
-                // self?._fitAddon.fit();
                 const startData = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
-                self?._socket?.send(JSON.stringify(startData));
+                if (self._socket) {
+                    self._socket.send(JSON.stringify(startData));
+                }
             })
         }
     }
@@ -151,7 +153,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this.createNewTerminal(newTerminal);
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
-        let wasSocket = this._socket;
 
         this._socket?.close();
         this._socket = new SockJS(socketURL);
@@ -160,7 +161,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         let socket = this._socket;
         let terminal = this._terminal;
         let fitAddon = this._fitAddon;
-
+        let isReconnection = this.props.isReconnection;
+        let setIsReconnection = this.props.setIsReconnection;
+        
         terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: "", Data: data };
             socket.send(JSON.stringify(inData));
@@ -173,13 +176,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             let dim = fitAddon.proposeDimensions();
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
-            // socket.send(JSON.stringify(resize));
+            socket.send(JSON.stringify(resize));
 
             setSocketConnection('CONNECTED');
-            if (wasSocket) {
+            if (isReconnection) {
                 terminal.writeln("---------------------------------------------");
                 terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
                 terminal.writeln("---------------------------------------------");
+                setIsReconnection(false);
             }
         };
 
@@ -190,12 +194,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         socket.onclose = function (evt) {
             setSocketConnection('DISCONNECTED');
-            // console.log("close")
         }
 
         socket.onerror = function (evt) {
             setSocketConnection('DISCONNECTED');
-            console.log("error")
         }
     }
 

@@ -39,6 +39,8 @@ interface EventsLogsProps {
     socketConnection: SocketConnectionType;
     terminalCleared: boolean;
     shell: { label; value; }
+    isReconnection: boolean;
+    setIsReconnection: (flag) => void;
     selectShell: (shell: { label; value; }) => void;
     setTerminalCleared: (flag: boolean) => void;
     setSocketConnection: (value: SocketConnectionType) => void;
@@ -66,7 +68,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -106,6 +108,8 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                         socketConnection={socketConnection}
                         terminalCleared={terminalCleared}
                         shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
                         selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         setSocketConnection={setSocketConnection}
