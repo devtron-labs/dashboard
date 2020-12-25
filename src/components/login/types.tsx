@@ -9,3 +9,10 @@ export interface LoginFormState {
 
 export interface LoginProps extends RouteComponentProps<{}> {
 }
+
+export interface SSOLoginState{
+    loading: boolean;
+    sso: string;
+    showWarningCard: boolean
+}
+export interface SSOLoginProps extends RouteComponentProps<{}>{}

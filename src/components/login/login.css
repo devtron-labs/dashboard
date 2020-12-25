@@ -185,3 +185,19 @@
     text-decoration: none !important;
     color: var(--B500)
 }
+.sso__warn-title{
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.sso__warn-description{
+    font-size: 14px;
+}
+.sso__warn-button{
+    font-size: 14px;
+    font-weight: 600;
+   
+}
+.sso__warn-button:nth-child()::selection{
+ border-color: 1px solid var(--B500);
+ background-color: var(--B500);
+    }

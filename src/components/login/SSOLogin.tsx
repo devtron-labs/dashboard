@@ -1,27 +1,52 @@
 import React, { useState } from 'react'
 import './login.css'
-import { Progressing, useForm, showError } from '../common'
-import Google from '../../assets/icons/ic-google.svg'
+import { Progressing, useForm, showError, ConfirmationDialog, } from '../common'
+import Google, { ReactComponent } from '../../assets/icons/ic-google.svg'
 import {ReactComponent as Help} from '../../assets/icons/ic-help-outline.svg'
 import {ReactComponent as GitHub} from '../../assets/icons/git/github.svg'
 import Microsoft from '../../assets/icons/ic-microsoft.svg'
 import OIDC from '../../assets/icons/ic-oidc.svg'
 import Openshift from '../../assets/icons/ic-openshift.svg'
+import {SSOLoginProps, SSOLoginState} from './types'
+import warn from '../../assets/icons/ic-warning.svg';
 
-const ssoConfig=[
-    {name : "Google", id: "google"},
-    {name : "GitHub", id: "github"},
-    {name : "Microsoft", id: "microsoft"},
-    {name : "LDAP", id: "google"},
-    {name : "SAML  2.0", id: "google"},
-    {name : "OIDC", id: "google"},
-    {name : "OpenShift", id: "google"},
-]
+import {updateSSOList} from './service'
 
-export default function SSOLogin() {
-    const [loading, setLoading] = useState(false)
+
+const ssoMap=
+    { google: "https://dexidp.io/docs/connectors/google/" ,
+      github : "https://dexidp.io/docs/connectors/github/",
+      microsoft: "https://dexidp.io/docs/connectors/microsoft/",
+      ldap: "https://dexidp.io/docs/connectors/ldap/",
+      saml: "https://dexidp.io/docs/connectors/saml/",
+      oidc: "https://dexidp.io/docs/connectors/oidc/",
+      openshift: "https://dexidp.io/docs/connectors/openshift/",
+    }
+    
+export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginState> {
+    constructor(props){
+        super(props)
+        this.state={
+           loading: false,
+           sso : "Google",
+           showWarningCard: false
+
+        }
+        this.handleSSOClick= this.handleSSOClick.bind(this);
+        this.toggleWarningModal= this.toggleWarningModal.bind(this);
+    }
+
+    handleSSOClick(event){
+        this.setState({
+            sso: event.target.value
+        })
+    }
+
+    toggleWarningModal(): void {
+        this.setState({ showWarningCard: !this.state.showWarningCard })
+    }
    
-
+  render(){
     return (
         <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
@@ -34,7 +59,7 @@ export default function SSOLogin() {
                     <div className="login__sso-flex">
                             <div >
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" id="1" value="1" name="status"  />
+                                        <input type="radio" id="1" value="Google" name="status"  onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={Google}/></aside>  
                                                     <aside className="login__text-alignment"> Google</aside>
@@ -43,7 +68,7 @@ export default function SSOLogin() {
                              </div>
                              <div >
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="Github" onClick={this.handleSSOClick} />
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><a href=""><GitHub/></a></aside>  
                                                     <aside className="login__text-alignment"> GitHub</aside>
@@ -52,7 +77,7 @@ export default function SSOLogin() {
                             </div>
                             <div>
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="Microsoft" onClick={this.handleSSOClick} />
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={Microsoft}/></aside>  
                                                     <aside className="login__text-alignment"> Microsoft</aside>
@@ -61,7 +86,7 @@ export default function SSOLogin() {
                              </div>
                              <div>
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="LDAP" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={Google}/></aside>  
                                                     <aside className="login__text-alignment">LDAP</aside>
@@ -70,7 +95,7 @@ export default function SSOLogin() {
                              </div>
                              <div>
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="SAML 2.0" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={Google}/></aside>  
                                                     <aside className="login__text-alignment"> SAML 2.0</aside>
@@ -79,7 +104,7 @@ export default function SSOLogin() {
                              </div>
                              <div>
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="OIDC" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={OIDC}/></aside>  
                                                     <aside className="login__text-alignment">OIDC</aside>
@@ -88,7 +113,7 @@ export default function SSOLogin() {
                              </div>
                              <div>
                                     <label className="tertiary-tab__radio ">
-                                        <input type="radio" name="status"  />
+                                        <input type="radio" name="status" value="OpenShift" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
                                                     <aside className="login__icon-alignment"><img src={Openshift}/></aside>  
                                                     <aside className="login__text-alignment"> OpenShift</aside>
@@ -99,19 +124,28 @@ export default function SSOLogin() {
                     <div className="login__description">
                         <div className="login__link flex">
                                 <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5"/>
-                                <div>Help: See documentation for <a rel="noreferrer noopener" href="https://dexidp.io/docs/connectors/google/" target="_blank" className="login__auth-link "> Authentication Through 
-                                        {/*{ssoConfig.map((item)=>{
-                                            return  {item}
-                                            })}*/}
+                                <div>Help: See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso} 
+                                      
                                     </a> 
                                 </div>
                         </div>
                     </div>
                     <div className="form__buttons mr-24">
-                    <button tabIndex={5} type="button" className={`cta`}>Save</button>
+                    <button onClick={() => this.toggleWarningModal()} tabIndex={5} type="button" className={`cta`}>Save</button>
                 </div>
                     
              </div>
+             {this.state.showWarningCard?<ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
+                   <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
+                    <ConfirmationDialog.ButtonGroup>
+                        <button type="button" className="cta cancel sso__warn-button" >Cancel</button>
+                        <button type="button" className="cta cancel sso__warn-button" >Confirm</button>
+                    </ConfirmationDialog.ButtonGroup>
+             </ConfirmationDialog>:""}
         </section>
+
     )
+ }
 }
