@@ -59,6 +59,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             if (this.props.socketConnection === 'DISCONNECTING') {
                 if (this._socket) {
                     this._socket.close();
+                    this._terminal.reset();
+                    this._terminal.clear();
                     this._socket = undefined;
                 }
             }
@@ -67,7 +69,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
-            this._terminal?.clear();
             this.props.setSocketConnection("DISCONNECTING");
             setTimeout(() => {
                 this.props.setSocketConnection("CONNECTING");
@@ -125,6 +126,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal?.dispose();
             this._terminal = new Terminal({
                 cursorBlink: false,
+
                 letterSpacing: 0,
                 screenReaderMode: true,
                 scrollback: 99999,
@@ -218,21 +220,27 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     render() {
         let self = this;
         let classes = `ff-monospace pt-2 fs-13 pb-2 m-0 capitalize`;
-        if(this.props.socketConnection == "CONNECTING") {
+        let statusBarClasses = `cn-0 m-0 w-100 pod-readyState pod-readyState--top`;
+        if (this.props.socketConnection === "CONNECTING") {
             classes = `${classes} loading-dots cg-4`;
+            statusBarClasses = `${statusBarClasses} bcg-7 pod-readyState--top pod-readyState--show`;
         }
-        else if(this.props.socketConnection == "CONNECTED") {
+        else if (this.props.socketConnection === "CONNECTED") {
             classes = `${classes} cg-4`;
+            statusBarClasses = `${statusBarClasses} bcg-7 pod-readyState--top`;
         }
-        else classes = `${classes} cr-4`;
+        else {
+            classes = `${classes} cr-4`;
+            statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--top pod-readyState--show`;
+        }
         return <AutoSizer>
             {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
-                <p style={{ zIndex: 11 }} className={this.props.socketConnection === 'DISCONNECTED' ? `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top pod-readyState--show` : `bcr-7 cn-0 m-0 w-100 pod-readyState pod-readyState--top `} >
-                    Disconnected. &nbsp;
-                    <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
+                <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
+                    {this.props.socketConnection.toLowerCase()} &nbsp;
+                    {this.props.socketConnection === 'DISCONNECTED' && <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
                         className="cursor transparent inline-block"
                         style={{ textDecoration: 'underline' }}>Resume
-                    </button>
+                    </button>}
                 </p>
                 <TerminalContent height={height} width={width} fitAddon={self._fitAddon} />
                 <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}

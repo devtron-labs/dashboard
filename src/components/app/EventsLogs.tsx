@@ -370,7 +370,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
                     </div>
                     <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
                         <div
-                            className={`pod-readyState pod-readyState--top ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
+                            className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
                                 }`}
                         >
                             {logsPaused && (
