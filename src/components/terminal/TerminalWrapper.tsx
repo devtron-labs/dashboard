@@ -219,28 +219,23 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
     render() {
         let self = this;
-        let classes = `ff-monospace pt-2 fs-13 pb-2 m-0 capitalize`;
         let statusBarClasses = `cn-0 m-0 w-100 pod-readyState pod-readyState--top`;
-        if (this.props.socketConnection === "CONNECTING") {
-            classes = `${classes} loading-dots cg-4`;
-            statusBarClasses = `${statusBarClasses} bcg-7 pod-readyState--top pod-readyState--show`;
-        }
-        else if (this.props.socketConnection === "CONNECTED") {
-            classes = `${classes} cg-4`;
-            statusBarClasses = `${statusBarClasses} bcg-7 pod-readyState--top`;
-        }
-        else {
-            classes = `${classes} cr-4`;
-            statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--top pod-readyState--show`;
+        if (this.props.socketConnection !== "CONNECTED") {
+            statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--show`;
         }
         return <AutoSizer>
             {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
-                    {this.props.socketConnection.toLowerCase()} &nbsp;
-                    {this.props.socketConnection === 'DISCONNECTED' && <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
-                        className="cursor transparent inline-block"
-                        style={{ textDecoration: 'underline' }}>Resume
-                    </button>}
+                    <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
+                        {this.props.socketConnection.toLowerCase()}
+                    </span>
+                    {this.props.socketConnection === 'DISCONNECTED' && <> 
+                    <span>.&nbsp;</span>
+                        <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
+                            className="cursor transparent inline-block"
+                            style={{ textDecoration: 'underline' }}>Resume
+                    </button>
+                    </>}
                 </p>
                 <TerminalContent height={height} width={width} fitAddon={self._fitAddon} />
                 <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
@@ -248,10 +243,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     scrollToTop={this.scrollToTop}
                 />
 
-                <p style={{ position: 'relative', bottom: '10px' }}
-                    className={classes} >
+                {this.props.socketConnection === 'CONNECTED' && <p style={{ position: 'relative', bottom: '10px' }}
+                    className={`ff-monospace pt-2 fs-13 pb-2 m-0 capitalize cg-4`} >
                     {this.props.socketConnection}
-                </p>
+                </p>}
             </div>}
         </AutoSizer>
     }
