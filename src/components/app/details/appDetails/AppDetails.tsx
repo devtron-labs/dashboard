@@ -184,7 +184,6 @@ export const Details: React.FC<{
             setAppDetailsLoading(false);
         } catch (error) {
             if (!appDetailsResult) {
-                console.log(error);
                 setAppDetailsError(error);
             }
         }
@@ -232,7 +231,6 @@ export const Details: React.FC<{
 
     useEffect(() => {
         if (appDetailsError) {
-            console.log(appDetailsError)
             showError(appDetailsError)
             return
         }
