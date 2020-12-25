@@ -9,8 +9,8 @@ import OIDC from '../../assets/icons/ic-oidc.svg'
 import Openshift from '../../assets/icons/ic-openshift.svg'
 import {SSOLoginProps, SSOLoginState} from './types'
 import warn from '../../assets/icons/ic-warning.svg';
-
-import {updateSSOList} from './service'
+import { toast } from 'react-toastify';
+import {getSSOList} from './service'
 
 
 const ssoMap=
@@ -27,13 +27,21 @@ export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginStat
     constructor(props){
         super(props)
         this.state={
-           loading: false,
            sso : "Google",
-           showWarningCard: false
-
+           showWarningCard: false,
+           loginList: [],
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
+    }
+
+    componentDidMount(){
+        getSSOList().then((response)=>{
+            let list = response.result || [];
+            this.setState({
+                loginList: list
+            })
+        })
     }
 
     handleSSOClick(event){
@@ -45,6 +53,15 @@ export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginStat
     toggleWarningModal(): void {
         this.setState({ showWarningCard: !this.state.showWarningCard })
     }
+
+  
+     async abortRunning(e) {
+       // const [error, result] = await asyncWrap()
+        
+            toast.success('Build cancelled.')
+           
+        }
+    
    
   render(){
     return (
@@ -137,13 +154,13 @@ export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginStat
              </div>
              {this.state.showWarningCard?<ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
-                   <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel sso__warn-button" >Cancel</button>
-                        <button type="button" className="cta cancel sso__warn-button" >Confirm</button>
-                    </ConfirmationDialog.ButtonGroup>
-             </ConfirmationDialog>:""}
+                    <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
+                    <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
+                        <ConfirmationDialog.ButtonGroup>
+                            <button type="button" className="cta cancel sso__warn-button" onClick={this.props.close}>Cancel</button>
+                            <button type="button" className="cta  sso__warn-button" >Confirm</button>
+                        </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>:""}
         </section>
 
     )
