@@ -184,6 +184,7 @@ export const Details: React.FC<{
             setAppDetailsLoading(false);
         } catch (error) {
             if (!appDetailsResult) {
+                console.log(error);
                 setAppDetailsError(error);
             }
         }
@@ -219,10 +220,6 @@ export const Details: React.FC<{
     }
 
     useEffect(() => {
-        if (appDetailsError) {
-            showError(appDetailsError)
-            return
-        }
         if (appDetailsResult && setAppDetailResultInParent) {
             setAppDetailResultInParent(appDetailsResult?.result);
         }
@@ -230,8 +227,16 @@ export const Details: React.FC<{
         if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
             callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
         }
-    }, [appDetailsResult, appDetailsError]);
+    }, [appDetailsResult]);
 
+
+    useEffect(() => {
+        if (appDetailsError) {
+            console.log(appDetailsError)
+            showError(appDetailsError)
+            return
+        }
+    }, [appDetailsError]);
 
     // useInterval(polling, interval);
     useEffect(() => {
