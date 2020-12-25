@@ -699,10 +699,10 @@ export const LogsRenderer: React.FC<{ triggerDetails: History, setFullScreenView
 export function Scroller({ scrollToTop, scrollToBottom, style }) {
     return (
         <div style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }} className="element-scroller">
-            <Tippy className="default-tt" arrow={false} content="Scroll to top"><button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
+            <Tippy className="default-tt" arrow={false} content="Scroll to Top"><button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
                 <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
             </button></Tippy>
-            <Tippy className="default-tt" arrow={false} content="Scroll to bottom"><button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
+            <Tippy className="default-tt" arrow={false} content="Scroll to Bottom"><button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
                 <DropDownIcon className="rotate" />
             </button></Tippy>
         </div>
