@@ -84,10 +84,9 @@ export default function App() {
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
-					// const loginPath =  URLS.LOGIN
-					// const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `/admin${pathname}`
-					// push(`${URLS.LOGIN}${search}`)
-					push(URLS.LOGIN);
+					const loginPath = URLS.LOGIN;
+					const newSearch = pathname.includes(URLS.LOGIN) ? search : `?continue=${pathname}`
+					push(`${loginPath}${newSearch}`)
 				} else {
 					setErrorPage(true)
 					showError(err)

@@ -1,5 +1,4 @@
 import { RouteComponentProps } from 'react-router';
-import { ServerError } from '../../modals/commonTypes';
 
 export interface SSOConfig {
     id: number;
@@ -9,10 +8,8 @@ export interface SSOConfig {
 }
 
 export interface LoginFormState {
-    code: number;
     continueUrl: string;
     loginList: SSOConfig[];
-    errors: ServerError[];
     form: {
         username: string;
         password: string;

@@ -18,8 +18,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         super(props);
         this.state = {
             continueUrl: "",
-            code: 0,
-            errors: [],
             loginList: [],
             loading: false,
             form: {
@@ -29,6 +27,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         }
         this.validationRules = new LoginValidation();
         this.autoFillLogin = this.autoFillLogin.bind(this);
+        this.login = this.login.bind(this);
     }
 
     componentDidMount() {
@@ -80,31 +79,29 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         return !isValid;
     }
 
-    login = async (e) => {
+    login(e) {
         e.preventDefault();
         let data = this.state.form;
         this.setState({ loading: true })
         loginAsAdmin(data).then((response) => {
             if (response.result.token) {
-                this.setState({ code: response.code, loading: false });
+                this.setState({ loading: false });
                 let queryString = this.props.location.search.split("admin")[1];
                 let url = (queryString) ? `${queryString}` : URLS.APP;
                 this.props.history.push(`${url}`);
             }
         }).catch((errors: ServerErrors) => {
             showError(errors);
-            this.setState({ code: errors.code, errors: errors.errors, loading: false })
+            this.setState({ loading: false })
         })
     }
-
 
     renderSSOLoginPage() {
         return (
             <div className="login__control">
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-                {this.state.loginList.map((item, index) => {
-                    console.log(item)
+                {this.state.loginList.map((item) => {
                     return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
                         <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
                         View on <span className="ml-5 capitalize">{item.name}</span>
