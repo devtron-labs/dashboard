@@ -40,7 +40,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         }
 
         this.setState({
-            continueUrl: encodeURI(`${process.env.PUBLIC_URL}${cont}`)
+            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${cont}`)
         })
 
         if (process.env.NODE_ENV === 'development') {
@@ -107,7 +107,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                     console.log(item)
                     return <a href={`/orchestrator/auth/login?return_url=${this.state.continueUrl}`} className="login__google flex">
                         <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
-                        View on <span className="capitalize"> {item.name}</span>
+                        View on <span className="ml-5 capitalize">{item.name}</span>
                     </a>
                 })}
                 <NavLink className="login__link" to={`${URLS.LOGIN}/admin`}>Login as administrator</NavLink>
