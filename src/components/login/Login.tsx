@@ -31,8 +31,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
 
     componentDidMount() {
         const currentPath = window.location.href;
-        console.log(window.location.search)
-        let cont = "";
+        // let cont = "";
         if (currentPath.includes('?continue=')) {
             // cont = currentPath.split('?continue=')[1]
             toast.error('Please login again');
@@ -40,7 +39,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         this.setState({
             continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${window.location.search}`)
         })
-
         getLoginList().then((response) => {
             let list = response.result || [];
             this.setState({
