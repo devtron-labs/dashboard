@@ -41,7 +41,7 @@ export default function App() {
 	const refreshing = useRef(false)
 	const [bgUpdated, setBGUpdated] = useState(false)
 	const [validating, setValidating] = useState(true)
-	const { pathname, search } = useLocation()
+	const location = useLocation()
 	const { push } = useHistory()
 	const didMountRef = useRef(false);
 
@@ -74,20 +74,19 @@ export default function App() {
 	useEffect(() => {
 		async function validation() {
 			try {
-				let response = await validateToken();
+				await validateToken();
 				// check if admin then direct to admin otherwise router will redirect to app list
-				// if (search && search.includes("/admin")) {
-				// 	const newLocation = search.replace("/admin", "")
-				// 	push(newLocation)
-				// }
-				push(search);
+				if (location.search && location.search.includes("?continue=")) {
+					const newLocation = location.search.replace("?continue=", "");
+					push(newLocation);
+				}
 			}
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
 					const loginPath = URLS.LOGIN_SSO;
-					const newSearch = pathname.includes(URLS.LOGIN_SSO) ? search : `?continue=${pathname}`
-					push(`${loginPath}${newSearch}`);
+					const newSearch = location.pathname.includes(URLS.LOGIN_SSO) ? location.search : `?continue=${location.pathname}`
+					push(`${loginPath}${newSearch}`)
 				} else {
 					setErrorPage(true)
 					showError(err)
@@ -201,7 +200,7 @@ export default function App() {
 									<Switch>
 										<Route path={`/login`} component={Login} />
 										<Route path="/" render={() => <NavigationRoutes />} />
-										<Redirect to={`${URLS.LOGIN_SSO}${search}`} />
+										<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>

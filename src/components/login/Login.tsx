@@ -30,15 +30,15 @@ export default class Login extends Component<LoginProps, LoginFormState>{
     }
 
     componentDidMount() {
-        // const currentPath = window.location.href;
-        let cont = ""
-        if (this.props.location.search) {
-            // cont = currentPath.split('/admin')[1];
+        const currentPath = window.location.href;
+        console.log(window.location.search)
+        let cont = "";
+        if (currentPath.includes('?continue=')) {
+            // cont = currentPath.split('?continue=')[1]
             toast.error('Please login again');
         }
-
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${cont}`)
+            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${window.location.search}`)
         })
 
         getLoginList().then((response) => {
@@ -84,7 +84,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         loginAsAdmin(data).then((response) => {
             if (response.result.token) {
                 this.setState({ loading: false });
-                let queryString = this.props.location.search.split("admin")[1];
+                let queryString = this.props.location.search.split("continue=")[1];
                 let url = (queryString) ? `${queryString}` : URLS.APP;
                 this.props.history.push(`${url}`);
             }
@@ -106,7 +106,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                         View on <span className="ml-5 capitalize">{item.name}</span>
                     </a>
                 })}
-                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}?continue=${search}`}>Login as administrator</NavLink>
+                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>Login as administrator</NavLink>
             </div>
     }
 
@@ -133,7 +133,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                     <a className="login__know-password--link fs-12 cb-5" rel="noreferrer noopener" target="_blank" href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard">What is my admin password?</a>
                 </div>
                 <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button">{this.state.loading ? <Progressing /> : 'Login'}</button>
-                {this.state.loginList.length ? <NavLink className="login__link cb-5" to={`${URLS.LOGIN_SSO}?continue=${search}`}>Login using SSO service</NavLink> : <p className="login__link"></p>}
+                {this.state.loginList.length ? <NavLink className="login__link cb-5" to={`${URLS.LOGIN_SSO}${search}`}>Login using SSO service</NavLink> : <p className="login__link"></p>}
             </form>
         </div>
     }

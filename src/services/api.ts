@@ -76,7 +76,7 @@ const responseMessages = {
 function handleLogout() {
     let cont = `${window.location.pathname.replace(process.env.PUBLIC_URL, '')}${window.location.search}`;
     const loginUrl = URLS.LOGIN_SSO;
-    // window.location.href = `${window.location.origin}${process.env.PUBLIC_URL}${loginUrl}?continue=${cont}`;
+    window.location.href = `${window.location.origin}${process.env.PUBLIC_URL}${loginUrl}?continue=${cont}`;
 }
 
 async function handleServerError(contentType, response) {
@@ -112,16 +112,14 @@ async function fetchAPI(url: string, type: string, data: object, signal: AbortSi
     return fetch(`${Host}/${url}`, options).then(
         async response => {
             let contentType = response.headers.get('Content-Type');
-            // if (response.status === 401) {
-            //     if (preventAutoLogout) {
-            //         throw new ServerErrors({ code: 401, errors: [{ code: 401, internalMessage: 'Please login again', userMessage: 'Please login again' }] })
-            //     }
-            //     else {
-            //         handleLogout()
-            //     }
-            // } else 
-            
-            if (response.status >= 300 && response.status <= 599) {
+            if (response.status === 401) {
+                if (preventAutoLogout) {
+                    throw new ServerErrors({ code: 401, errors: [{ code: 401, internalMessage: 'Please login again', userMessage: 'Please login again' }] })
+                }
+                else {
+                    handleLogout()
+                }
+            } else  if (response.status >= 300 && response.status <= 599) {
                 return await handleServerError(contentType, response)
             } else {
                 if (contentType === 'application/json') {
