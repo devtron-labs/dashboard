@@ -32,6 +32,7 @@ const ssoMap={
     }
 
 const configMap={
+    config:{ 
     type: "",
     id: "",
     name: "",
@@ -40,7 +41,7 @@ const configMap={
         clientID: "",
         clientSecret: "",
         redirectURI: "",
-        hostedDomains: []
+        hostedDomains: []}
     }
 }
     
@@ -67,7 +68,6 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 hostedDomains: []
             }
            },
-           searchQuery: "",
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
@@ -82,7 +82,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 })
             })
     }
-
+    
     handleSSOClick(event){
         this.setState({
             sso: event.target.value
@@ -116,17 +116,19 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
        }
     }
 
-    handleStageConfigChange(event,key: 'configuration'| 'switch'){
-        if(key != 'configuration') this.state.configList[key] = event
+    handleStageConfigChange(value: string,key: 'configuration'| 'switch'){
+        if(key != 'configuration') this.state.configList[key] = value
         else{
-            if(this.state.configList.switch === SwitchItemValues.Configuration){ this.state.configList[key] = event}
+            if(this.state.configList.switch === SwitchItemValues.Configuration){ this.state.configList[key] = value}
         }
+        this.setState({ configMap: JSON.stringify(config)})
     }
 
   renderSSOCodeEditor=()=>{
-    let codeEditorBody =  yamlJsParser.stringify(configMap) 
+    let codeEditorBody =  this.state.configList.switch === SwitchItemValues.Configuration? this.state.configMap : yamlJsParser.stringify(configMap, { indent: 2 }) 
 
-       return  <div className="code-editor" >
+       return  <div className="sso__code-editor-wrap">
+       <div className=" code-editor-container " >
             <CodeEditor
                 value= {codeEditorBody}
                 height={300}
@@ -135,13 +137,14 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 onChange={(event)=>{this.handleStageConfigChange(event,'configuration')}} 
                 >
               <CodeEditor.Header >
-                    <Switch value= {this.state.configMap} name={this.state.configMap} onChange={(event)=>{this.handleStageConfigChange(event.target.value,'switch')}}>
+                    <Switch value= {this.state.configList.switch} name={this.state.configList.switch} onChange={(event)=>{this.handleStageConfigChange(event.target.value,'switch')}}>
                         <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
                         <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
                     </Switch>
                     <CodeEditor.ValidationError />
                 </CodeEditor.Header>
             </CodeEditor>
+        </div>
         </div>
   }
 

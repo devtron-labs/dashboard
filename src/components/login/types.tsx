@@ -30,7 +30,6 @@ export interface SSOLoginState{
                     hostedDomains: [];
             }
     };
-    searchQuery: string;
 }
 
 export interface SSOLoginProps{
