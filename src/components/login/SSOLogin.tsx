@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, useForm, showError, ConfirmationDialog, } from '../common'
+import { Progressing, useForm, showError, ConfirmationDialog,DevtronSwitch as Switch,DevtronSwitchItem as SwitchItem, } from '../common'
 import Google, { ReactComponent } from '../../assets/icons/ic-google.svg'
 import {ReactComponent as Help} from '../../assets/icons/ic-help-outline.svg'
 import {ReactComponent as GitHub} from '../../assets/icons/git/github.svg'
@@ -12,7 +12,12 @@ import warn from '../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import * as queryString from 'query-string';
 import {getSSOList,createSSOList,updateSSOList} from './service'
+import CodeEditor from '../CodeEditor/CodeEditor';
 
+export const SwitchItemValues = {
+    Sample: 'sample',
+    Config: 'config',
+};
 
 const ssoMap=
     { google: "https://dexidp.io/docs/connectors/google/" ,
@@ -25,32 +30,33 @@ const ssoMap=
     }
     
 export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
+    preStage;
+    postStage;
     constructor(props){
         super(props)
         this.state={
            sso : "Google",
-           showWarningCard: false,
+           switch: "",
+           showToggling: false,
            loginList: [],
-           configList: [],
+           configList: {
+            type: "",
+            id: "",
+            name: "",
+            config: {
+                issuer: "",
+                clientID: "",
+                clientSecret: "",
+                redirectURI: "",
+                hostedDomains: []
+            }
+           },
            searchQuery: "",
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
     }
-
-    createSSOPayloadFromURL(searchQuery: string){
-        let params = queryString.parse(searchQuery);
-        let name =  "";
-        let url = "";
-        let config= params.config || "";
-        let payload ={
-            name: name,
-            url : url,
-            config: {},
-        }
-        return payload
-    }
-   
+    
     componentDidMount(){
         getSSOList().then((response)=>{
             let list = response.result || [];
@@ -59,7 +65,6 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 })
             })
     }
-    
 
     handleSSOClick(event){
         this.setState({
@@ -68,12 +73,51 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
     }
 
     toggleWarningModal(): void {
-        this.setState({ showWarningCard: !this.state.showWarningCard })
+            this.setState({ showToggling: !this.state.showToggling })
+        }
+        
+    onLoginConfigSave(){
+        if(this.state.configList.id == this.state.sso ){
+            let payload ={
+                name: "",
+                url: "",
+
+            }
+            return this.state.showToggling? createSSOList(payload): null 
+        }
+       else{
+           return(<ConfirmationDialog>
+                    <ConfirmationDialog.Icon src={warn} />
+                        <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
+                        <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
+                            <ConfirmationDialog.ButtonGroup>
+                                <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                                <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                            </ConfirmationDialog.ButtonGroup>
+                 </ConfirmationDialog>)
+
+       }
     }
-    
-  onSave(){
-    let payload ={}
-   return this.state.showWarningCard? createSSOList(payload): null 
+
+    handleStageConfigchange(){
+    }
+
+  renderSSOCodeEditor=(key: 'preStage' | 'postStage')=>{
+       return     <div className="code-editor" >
+            <CodeEditor
+                value= {this.state.configList.id}
+                height={300}
+                mode='yaml'
+                >
+              <CodeEditor.Header >
+                    <Switch value= {this.state.configList[key]} name={`${key}`} onChange={(event)=>{this.handleStageConfigchange()}}>
+                        <SwitchItem value={SwitchItemValues.Config}> Configuration  </SwitchItem>
+                        <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
+                    </Switch>
+                    <CodeEditor.ValidationError />
+                </CodeEditor.Header>
+            </CodeEditor>
+        </div>
   }
 
   render(){
@@ -151,33 +195,20 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                                     </label>
                              </div>
                         </div>
-                    <div className="login__description">
-                        <div className="login__link flex">
-                                <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5"/>
-                                <div>Help: See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso} 
-                                      
-                                    </a> 
-                                </div>
+
+                        <div className="login__description">
+                            <div className="login__link flex">
+                                    <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5"/>
+                                    <div>Help: See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="form__buttons mr-24">
-                    <button onClick={() => this.onSave()} tabIndex={5} type="button" className={`cta`}>Save</button>
+
+                       {this.renderSSOCodeEditor('postStage')}
+
+                        <div className="form__buttons mr-24">
+                             <button onClick={() => this.onLoginConfigSave()} tabIndex={5} type="button" className={`cta`}>Save</button>
+                       </div>
                 </div>
-                    
-             </div>
-             
-
-         {/* {this.state.showWarningCard?<ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                    <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
-                    <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
-                        <ConfirmationDialog.ButtonGroup>
-                            <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                            <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                        </ConfirmationDialog.ButtonGroup>
-         </ConfirmationDialog>:""}*/}
-
-              
         </section>
 
     )

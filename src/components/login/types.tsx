@@ -9,24 +9,26 @@ export interface SSOLogin {
     active: boolean;
 }
 
-export interface SSOConfig{
-    type: string;
-    id: string;
-    name: string;
-    config: {
-        issuer: string;
-        clientID: string;
-        clientSecret: string;
-        redirectURI: string;
-        hostedDomains: [];
-    }
-}
+
 
 export interface SSOLoginState{
+    
     sso: string;
-    showWarningCard: boolean
+    switch: string;
+    showToggling: boolean
     loginList: SSOLogin[];
-    configList: SSOConfig[];
+    configList: {
+                type: string;
+                id: string;
+                name: string;
+                config: {
+                    issuer: string;
+                    clientID: string;
+                    clientSecret: string;
+                    redirectURI: string;
+                    hostedDomains: [];
+            }
+    };
     searchQuery: string;
 }
 
