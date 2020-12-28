@@ -2,7 +2,7 @@
   " config": {  
        "type": "oidc",
         "id": "google",
-        "name": "",
+        "name": "google",
         "config": {
             "issuer": "",
             "clientID": "",

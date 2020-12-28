@@ -33,15 +33,15 @@ const ssoMap={
 
 const configMap={
     config:{ 
-    type: "",
-    id: "",
-    name: "",
-    config: {
-        issuer: "",
-        clientID: "",
-        clientSecret: "",
-        redirectURI: "",
-        hostedDomains: []}
+        type: "",
+        id: "",
+        name: "",
+        config: {
+            issuer: "",
+            clientID: "",
+            clientSecret: "",
+            redirectURI: "",
+            hostedDomains: []}
     }
 }
     
@@ -57,17 +57,21 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
            loginList: [],
            configList: {
             switch: SwitchItemValues.Configuration,
-            type: "",
-            id: "",
             name: "",
-            config: {
-                issuer: "",
-                clientID: "",
-                clientSecret: "",
-                redirectURI: "",
-                hostedDomains: []
-            }
-           },
+            url: "",
+            config:{
+                type: "",
+                id: "",
+                name: "",
+                config: {
+                    issuer: "",
+                    clientID: "",
+                    clientSecret: "",
+                    redirectURI: "",
+                    hostedDomains: []
+                }
+           }
+        },
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
@@ -94,13 +98,19 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
         }
         
     onLoginConfigSave(){
-        if(this.state.configList.id == this.state.sso ){
+        if(this.state.configList.config.id == this.state.sso ){
             let payload ={
-                name: "",
-                url: "",
-
+                name: this.state.configList.name,
+                url: this.state.configList.url,
+                config: this.state.configList.config.toString().split(",").filter(item => item != "")
             }
-            return this.state.showToggling? createSSOList(payload): null 
+                createSSOList(payload).then((response)=>{
+                    let config = response.result || []
+                    this.setState({
+                        configList: config
+                    });
+                })
+            createSSOList(payload) 
         }
        else{
            return(<ConfirmationDialog>
@@ -137,7 +147,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 onChange={(event)=>{this.handleStageConfigChange(event,'configuration')}} 
                 >
               <CodeEditor.Header >
-                    <Switch value= {this.state.configList.switch} name={this.state.configList.switch} onChange={(event)=>{this.handleStageConfigChange(event.target.value,'switch')}}>
+                    <Switch value= {this.state.configList.switch} name={this.state.sso} onChange={(event)=>{this.handleStageConfigChange(event.target.value,'switch')}}>
                         <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
                         <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
                     </Switch>

@@ -19,15 +19,19 @@ export interface SSOLoginState{
     loginList: SSOLogin[];
     configList: {
                 switch: string;
-                type: string;
-                id: string;
                 name: string;
-                config: {
-                    issuer: string;
-                    clientID: string;
-                    clientSecret: string;
-                    redirectURI: string;
-                    hostedDomains: [];
+                url:string;
+                config:{
+                    type: string;
+                    id: string;
+                    name: string;
+                    config: {
+                        issuer: string;
+                        clientID: string;
+                        clientSecret: string;
+                        redirectURI: string;
+                        hostedDomains: [];
+                }
             }
     };
 }
