@@ -427,18 +427,8 @@ const NodeDetails: React.FC<{
     useEffect(() => {
         if (nodeName && nodeName !== selectedNode) {
             selectNode(nodeName);
-            ReactGA.event({
-                category: 'Terminal',
-                action: `Selected Pod`,
-                label: `${nodeName}`,
-            });
             if (containerName && containerName !== selectedContainer) {
                 selectContainer(containerName);
-                ReactGA.event({
-                    category: 'Terminal',
-                    action: `Selected Container`,
-                    label: `${containerName}`,
-                });
             }
         }
     }, [nodeName, containerName]);
@@ -462,11 +452,6 @@ const NodeDetails: React.FC<{
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
         if (node && node.length && node[1].name) {
             selectNode(node[1].name);
-            ReactGA.event({
-                category: 'Terminal',
-                action: `Selected Pod`,
-                label: `${node[1].name}`,
-            });
         }
     }, [params.tab])
 
@@ -477,19 +462,9 @@ const NodeDetails: React.FC<{
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
                 selectContainer(container);
-                ReactGA.event({
-                    category: 'Terminal',
-                    action: `Selected Container`,
-                    label: `${container}`,
-                });
             }
             else if (containers?.length) {
                 selectContainer(containers[0]);
-                ReactGA.event({
-                    category: 'Terminal',
-                    action: `Selected Container`,
-                    label: `${containers[0]}`,
-                });
             }
         }
     }, [selectedNode, params.tab])
@@ -856,13 +831,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         value: name,
                     }))}
                     value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                    onChange={(selected) => { 
-                        selectNode((selected as any).value);             
-                        ReactGA.event({
-                            category: 'Terminal',
-                            action: `Selected Pod`,
-                            label: `${selected?.value}`,
-                        });
+                    onChange={(selected) => {
+                        selectNode((selected as any).value);
                     }}
                     styles={{
                         ...multiSelectStyles,
@@ -906,13 +876,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         <Select placeholder="Select Container"
                             options={containers.map((container) => ({ label: container, value: container }))}
                             value={containerName ? { label: containerName, value: containerName } : null}
-                            onChange={(selected) => { 
-                                selectContainer((selected as any).value) ; 
-                                ReactGA.event({
-                                    category: 'Terminal',
-                                    action: `Selected Container`,
-                                    label: `${selected?.value}`,
-                                });}}
+                            onChange={(selected) => {
+                                selectContainer((selected as any).value);
+                            }}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 12 }),

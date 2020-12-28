@@ -4,7 +4,7 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
@@ -34,6 +34,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     _terminal;
     _socket;
     _fitAddon;
+    _ga_session_duration;
 
     constructor(props) {
         super(props);
@@ -57,6 +58,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             category: 'Terminal',
             action: 'Open',
         });
+        this._ga_session_duration = moment();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -74,6 +76,31 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
+
+            if (prevProps.nodeName !== this.props.nodeName) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Pod`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
+            else if (prevProps.containerName !== this.props.containerName) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Container`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
+            else if (prevProps.shell !== this.props.shell) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Shell`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
             this.props.setSocketConnection("DISCONNECTING");
             setTimeout(() => {
                 this.props.setSocketConnection("CONNECTING");
@@ -90,13 +117,18 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._fitAddon.fit();
             this._terminal.setOption('cursorBlink', true);
             this.props.setSocketConnection('CONNECTED');
-
         }
     }
 
     componentWillUnmount() {
         this._socket?.close();
         this._terminal?.dispose();
+        let duration = moment(this._ga_session_duration).fromNow();
+        ReactGA.event({
+            category: 'Terminal',
+            action: `Closed`,
+            label: `${duration}`,
+        });
     }
 
     getNewSession(): void {
@@ -234,8 +266,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
                         {this.props.socketConnection.toLowerCase()}
                     </span>
-                    {this.props.socketConnection === 'DISCONNECTED' && <> 
-                    <span>.&nbsp;</span>
+                    {this.props.socketConnection === 'DISCONNECTED' && <>
+                        <span>.&nbsp;</span>
                         <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
                             className="cursor transparent inline-block"
                             style={{ textDecoration: 'underline' }}>Resume
