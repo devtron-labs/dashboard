@@ -14,10 +14,11 @@ export interface SSOLogin {
 export interface SSOLoginState{
     
     sso: string;
-    switch: string;
     showToggling: boolean
     loginList: SSOLogin[];
     configList: {
+                switch: string;
+                configItems: string;
                 type: string;
                 id: string;
                 name: string;

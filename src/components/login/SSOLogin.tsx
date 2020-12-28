@@ -13,10 +13,12 @@ import { toast } from 'react-toastify';
 import * as queryString from 'query-string';
 import {getSSOList,createSSOList,updateSSOList} from './service'
 import CodeEditor from '../CodeEditor/CodeEditor';
+import yamlJsParser from 'yaml';
+import config from './sampleConfig.json'
 
 export const SwitchItemValues = {
     Sample: 'sample',
-    Config: 'config',
+    Configuration: 'configuration',
 };
 
 const ssoMap=
@@ -36,10 +38,11 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
         super(props)
         this.state={
            sso : "Google",
-           switch: "",
            showToggling: false,
            loginList: [],
            configList: {
+            switch: SwitchItemValues.Configuration,
+            configItems: "",
             type: "",
             id: "",
             name: "",
@@ -99,19 +102,30 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
        }
     }
 
-    handleStageConfigchange(){
+    handleStageConfigChange(value: string,key: 'configuration'| 'switch'){
+        if(key != 'configuration') this.state.configList[key] = value
+        else{
+            if(this.state.configList.switch === SwitchItemValues.Configuration){ this.state.configList[key] = value}
+        }
+        this.setState({ configList : this.state.configList})
     }
 
-  renderSSOCodeEditor=(key: 'preStage' | 'postStage')=>{
-       return     <div className="code-editor" >
+  renderSSOCodeEditor=(key:'postStage')=>{
+    let codeEditorBody = this.state.configList.switch === SwitchItemValues.Configuration ? this.state.configList.configItems : yamlJsParser.stringify(config, { indent: 2 });
+
+       return  <div className="code-editor" >
             <CodeEditor
-                value= {this.state.configList.id}
+                value= {codeEditorBody}
                 height={300}
                 mode='yaml'
+                readOnly={this.state.configList.switch !== SwitchItemValues.Configuration}
+                onChange={this.state.configList.switch === SwitchItemValues.Configuration ? resp => {
+                    this.handleStageConfigChange(resp,resp.key);
+                } : null}
                 >
               <CodeEditor.Header >
-                    <Switch value= {this.state.configList[key]} name={`${key}`} onChange={(event)=>{this.handleStageConfigchange()}}>
-                        <SwitchItem value={SwitchItemValues.Config}> Configuration  </SwitchItem>
+                    <Switch value= {this.state.configList[key]} name={`${key}`} onChange={(event)=>{this.handleStageConfigChange(event.target.value,event.key)}}>
+                        <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
                         <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
                     </Switch>
                     <CodeEditor.ValidationError />
