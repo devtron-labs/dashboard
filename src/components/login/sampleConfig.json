@@ -1,18 +1,15 @@
 {
-    "preStage": {
-        "version": "0.0.1",
-        "cdPipelineConf": [{
-            "beforeStages": [{
-                    "name": "test-1",
-                    "script": "date > test.report\necho 'hello'\n",
-                    "outputLocation": "./test.report"
-                },
-                {
-                    "name": "test-2",
-                    "script": "date > test2.report\n",
-                    "outputLocation": "./test2.report"
-                }
-            ]
-        }]
+  " config": {  
+       "type": "",
+        "id": "",
+        "name": "",
+        "config": {
+            "issuer": "",
+            "clientID": "",
+        " clientSecret": "",
+            "redirectURI": "",
+        " hostedDomains": []
     }
+} 
+   
 }

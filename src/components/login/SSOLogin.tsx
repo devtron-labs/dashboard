@@ -21,8 +21,8 @@ export const SwitchItemValues = {
     Configuration: 'configuration',
 };
 
-const ssoMap=
-    { google: "https://dexidp.io/docs/connectors/google/" ,
+const ssoMap={ 
+      google: "https://dexidp.io/docs/connectors/google/" ,
       github : "https://dexidp.io/docs/connectors/github/",
       microsoft: "https://dexidp.io/docs/connectors/microsoft/",
       ldap: "https://dexidp.io/docs/connectors/ldap/",
@@ -30,6 +30,19 @@ const ssoMap=
       oidc: "https://dexidp.io/docs/connectors/oidc/",
       openshift: "https://dexidp.io/docs/connectors/openshift/",
     }
+
+const configMap={
+    type: "",
+    id: "",
+    name: "",
+    config: {
+        issuer: "",
+        clientID: "",
+        clientSecret: "",
+        redirectURI: "",
+        hostedDomains: []
+    }
+}
     
 export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
     preStage;
@@ -38,11 +51,11 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
         super(props)
         this.state={
            sso : "Google",
+           configMap: "configuration",
            showToggling: false,
            loginList: [],
            configList: {
             switch: SwitchItemValues.Configuration,
-            configItems: "",
             type: "",
             id: "",
             name: "",
@@ -58,6 +71,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
+        this.handleStageConfigChange = this.handleStageConfigChange.bind(this)
     }
     
     componentDidMount(){
@@ -102,16 +116,15 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
        }
     }
 
-    handleStageConfigChange(value: string,key: 'configuration'| 'switch'){
-        if(key != 'configuration') this.state.configList[key] = value
+    handleStageConfigChange(event,key: 'configuration'| 'switch'){
+        if(key != 'configuration') this.state.configList[key] = event
         else{
-            if(this.state.configList.switch === SwitchItemValues.Configuration){ this.state.configList[key] = value}
+            if(this.state.configList.switch === SwitchItemValues.Configuration){ this.state.configList[key] = event}
         }
-        this.setState({ configList : this.state.configList})
     }
 
-  renderSSOCodeEditor=(key:'postStage')=>{
-    let codeEditorBody = this.state.configList.switch === SwitchItemValues.Configuration ? this.state.configList.configItems : yamlJsParser.stringify(config, { indent: 2 });
+  renderSSOCodeEditor=()=>{
+    let codeEditorBody =  yamlJsParser.stringify(configMap) 
 
        return  <div className="code-editor" >
             <CodeEditor
@@ -119,12 +132,10 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                 height={300}
                 mode='yaml'
                 readOnly={this.state.configList.switch !== SwitchItemValues.Configuration}
-                onChange={this.state.configList.switch === SwitchItemValues.Configuration ? resp => {
-                    this.handleStageConfigChange(resp,resp.key);
-                } : null}
+                onChange={(event)=>{this.handleStageConfigChange(event,'configuration')}} 
                 >
               <CodeEditor.Header >
-                    <Switch value= {this.state.configList[key]} name={`${key}`} onChange={(event)=>{this.handleStageConfigChange(event.target.value,event.key)}}>
+                    <Switch value= {this.state.configMap} name={this.state.configMap} onChange={(event)=>{this.handleStageConfigChange(event.target.value,'switch')}}>
                         <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
                         <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
                     </Switch>
@@ -217,7 +228,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                             </div>
                         </div>
 
-                       {this.renderSSOCodeEditor('postStage')}
+                       {this.renderSSOCodeEditor()}
 
                         <div className="form__buttons mr-24">
                              <button onClick={() => this.onLoginConfigSave()} tabIndex={5} type="button" className={`cta`}>Save</button>
