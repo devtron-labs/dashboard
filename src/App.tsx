@@ -74,19 +74,20 @@ export default function App() {
 	useEffect(() => {
 		async function validation() {
 			try {
-				await validateToken();
+				let response = await validateToken();
 				// check if admin then direct to admin otherwise router will redirect to app list
-				if (search && search.includes("/admin")) {
-					const newLocation = search.replace("/admin", "")
-					push(newLocation)
-				}
+				// if (search && search.includes("/admin")) {
+				// 	const newLocation = search.replace("/admin", "")
+				// 	push(newLocation)
+				// }
+				push(search);
 			}
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
-					const loginPath = URLS.LOGIN;
-					const newSearch = pathname.includes(URLS.LOGIN) ? search : `?continue=${pathname}`
-					push(`${loginPath}${newSearch}`)
+					const loginPath = URLS.LOGIN_SSO;
+					const newSearch = pathname.includes(URLS.LOGIN_SSO) ? search : `?continue=${pathname}`
+					push(`${loginPath}${newSearch}`);
 				} else {
 					setErrorPage(true)
 					showError(err)
@@ -198,9 +199,9 @@ export default function App() {
 						) : (
 								<BreadcrumbStore>
 									<Switch>
-										<Route path={`${URLS.LOGIN}/:type?`} component={Login} />
+										<Route path={`/login`} component={Login} />
 										<Route path="/" render={() => <NavigationRoutes />} />
-										<Redirect to={`${URLS.LOGIN}${search}`} />
+										<Redirect to={`${URLS.LOGIN_SSO}${search}`} />
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>

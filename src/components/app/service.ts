@@ -22,7 +22,6 @@ export const CDModalTab = {
 
 export const getAppList = (request) => {
     const URL = `${Routes.APP_LIST}`;
-    console.log(URL)
     return post(URL, request);
 }
 
