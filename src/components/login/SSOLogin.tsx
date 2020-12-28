@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Component } from 'react'
 import './login.css'
 import { Progressing, useForm, showError, ConfirmationDialog, } from '../common'
 import Google, { ReactComponent } from '../../assets/icons/ic-google.svg'
@@ -10,7 +10,8 @@ import Openshift from '../../assets/icons/ic-openshift.svg'
 import {SSOLoginProps, SSOLoginState} from './types'
 import warn from '../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
-import {getSSOList} from './service'
+import * as queryString from 'query-string';
+import {getSSOList,createSSOList,updateSSOList} from './service'
 
 
 const ssoMap=
@@ -23,26 +24,42 @@ const ssoMap=
       openshift: "https://dexidp.io/docs/connectors/openshift/",
     }
     
-export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginState> {
+export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
     constructor(props){
         super(props)
         this.state={
            sso : "Google",
            showWarningCard: false,
            loginList: [],
+           configList: [],
+           searchQuery: "",
         }
         this.handleSSOClick= this.handleSSOClick.bind(this);
         this.toggleWarningModal= this.toggleWarningModal.bind(this);
     }
 
+    createSSOPayloadFromURL(searchQuery: string){
+        let params = queryString.parse(searchQuery);
+        let name =  "";
+        let url = "";
+        let config= params.config || "";
+        let payload ={
+            name: name,
+            url : url,
+            config: {},
+        }
+        return payload
+    }
+   
     componentDidMount(){
         getSSOList().then((response)=>{
             let list = response.result || [];
             this.setState({
-                loginList: list
+                    loginList: list
+                })
             })
-        })
     }
+    
 
     handleSSOClick(event){
         this.setState({
@@ -53,16 +70,12 @@ export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginStat
     toggleWarningModal(): void {
         this.setState({ showWarningCard: !this.state.showWarningCard })
     }
-
-  
-     async abortRunning(e) {
-       // const [error, result] = await asyncWrap()
-        
-            toast.success('Build cancelled.')
-           
-        }
     
-   
+  onSave(){
+    let payload ={}
+   return this.state.showWarningCard? createSSOList(payload): null 
+  }
+
   render(){
     return (
         <section className="git-page">
@@ -148,19 +161,23 @@ export default class SSOLogin extends React.Component<SSOLoginProps,SSOLoginStat
                         </div>
                     </div>
                     <div className="form__buttons mr-24">
-                    <button onClick={() => this.toggleWarningModal()} tabIndex={5} type="button" className={`cta`}>Save</button>
+                    <button onClick={() => this.onSave()} tabIndex={5} type="button" className={`cta`}>Save</button>
                 </div>
                     
              </div>
-             {this.state.showWarningCard?<ConfirmationDialog>
+             
+
+         {/* {this.state.showWarningCard?<ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
                     <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
                     <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
                         <ConfirmationDialog.ButtonGroup>
-                            <button type="button" className="cta cancel sso__warn-button" onClick={this.props.close}>Cancel</button>
-                            <button type="button" className="cta  sso__warn-button" >Confirm</button>
+                            <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                            <button type="submit" className="cta  sso__warn-button" >Confirm</button>
                         </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>:""}
+         </ConfirmationDialog>:""}*/}
+
+              
         </section>
 
     )
