@@ -9,7 +9,8 @@ import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
-import { useThrottledEffect } from '../common'
+import { useThrottledEffect } from '../common';
+import ReactGA from 'react-ga';
 import './terminal.css';
 
 interface TerminalViewProps {
@@ -52,6 +53,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
         this.props.setSocketConnection("CONNECTING");
+        ReactGA.event({
+            category: 'Terminal',
+            action: 'Open',
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
