@@ -30,6 +30,8 @@ import ReactGA from 'react-ga';
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
 import { getLastExecutionByArtifactId } from "../../../../services/service"
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
+import {Moment12HourFormat} from '../../../../config';
+
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt']);
 let statusSet = new Set(["starting", "running", "pending"]);
 
@@ -224,7 +226,7 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
 
                     </div>
                     <div className="flex column left ellipsis-right">
-                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, hh:mm A")}
+                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}
                        </div>
                         <div className="cn-7 fs-12">{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                     </div>
@@ -240,7 +242,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
             <span className="fw-6 fs-16 mb-4" style={{ color: colorMap[triggerDetails.status.toLowerCase()] }}>{triggerDetails.status.toLowerCase() === 'cancelled' ? 'Aborted' : triggerDetails.status}</span>
             <div className="flex column left ">
                 <div className="flex left fs-12 cn-7">
-                    <div>{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, hh:mm A")}</div>
+                    <div>{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                     <div className="bullet ml-6 mr-6"></div>
                     <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                 </div>
@@ -379,9 +381,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                     <div className="cn-9 fs-14 fw-6">Start</div>
                     <div className="flex left">
                         <time className="cn-7 fs-12">
-                            {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(
-                                'ddd, DD MMM YYYY, hh:mm a',
-                            )}
+                            {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
                         <div className="bullet mr-6 ml-6"></div>
                         <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
@@ -447,7 +447,7 @@ const Finished: React.FC<{ triggerDetails: History, colorClass: string, type: 'C
         <div className="flex column left">
             <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>{triggerDetails.status}</div>
             <div className="flex left">
-                {triggerDetails.finishedOn && <time className="cn-7 fs-12 mr-12">{moment(triggerDetails.finishedOn, "YYYY-MM-DDTHH:mm:ssZ").format("ddd, DD MMM YYYY, HH:mm a")}</time>}
+                {triggerDetails.finishedOn && <time className="cn-7 fs-12 mr-12">{moment(triggerDetails.finishedOn, "YYYY-MM-DDTHH:mm:ssZ").format(Moment12HourFormat)}</time>}
                 {type === 'CI' && triggerDetails.artifact && <div className="app-commit__hash "><img src={docker} className="commit-hash__icon grayscale" />{triggerDetails.artifact.split(":")[1]}</div>}
             </div>
         </div>
@@ -699,10 +699,10 @@ export const LogsRenderer: React.FC<{ triggerDetails: History, setFullScreenView
 export function Scroller({ scrollToTop, scrollToBottom, style }) {
     return (
         <div style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }} className="element-scroller">
-            <Tippy className="default-tt" arrow={false} content="Scroll to top"><button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
+            <Tippy className="default-tt" arrow={false} content="Scroll to Top"><button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
                 <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
             </button></Tippy>
-            <Tippy className="default-tt" arrow={false} content="Scroll to bottom"><button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
+            <Tippy className="default-tt" arrow={false} content="Scroll to Bottom"><button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
                 <DropDownIcon className="rotate" />
             </button></Tippy>
         </div>

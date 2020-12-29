@@ -225,6 +225,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					toggleCommandBar={this.toggleCommandBar}
 				/>
 			</CommandErrorBoundary>
+
 		</>
 	}
 }

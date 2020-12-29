@@ -162,3 +162,6 @@ export const TagOptions = [
     // { label: "Tag Any", value: "SOURCE_TYPE_TAG_ANY" },
     { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX' },
 ];
+
+
+export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";

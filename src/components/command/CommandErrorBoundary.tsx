@@ -12,7 +12,6 @@ export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error("Error");
         toast.error("Some Error Occurred");
         ReactGA.event({
             category: 'Command Bar',
