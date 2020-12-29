@@ -420,7 +420,7 @@ const NodeDetails: React.FC<{
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
 
-    const [shell, selectShell] = useState({ label: "bash", value: "bash" });
+    const [shell, selectShell] = useState({ label: "sh", value: "sh" });
     const { url, path } = useRouteMatch();
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 

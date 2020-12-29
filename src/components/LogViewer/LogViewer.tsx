@@ -78,7 +78,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
         terminal.current = new Terminal({
             scrollback: 99999,
             fontSize: 14,
-            lineHeight: 1.5,
+            lineHeight: 1.4,
             fontFamily: 'Inconsolata',
             // disableStdin: true,
             cursorStyle: 'bar',
