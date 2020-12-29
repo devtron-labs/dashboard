@@ -161,13 +161,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         if (!this._terminal) {
             this._terminal?.dispose();
             this._terminal = new Terminal({
-                cursorBlink: false,
-                lineHeight: 1.4,
-                letterSpacing: 0,
-                screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
+                lineHeight: 1.4,
+                cursorBlink: false,
                 fontFamily: 'Inconsolata',
+                screenReaderMode: true,
                 theme: {
                     background: '#0B0F22',
                     foreground: '#FFFFFF'
