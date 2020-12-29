@@ -4,12 +4,13 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
-import { useThrottledEffect } from '../common'
+import { useThrottledEffect } from '../common';
+import ReactGA from 'react-ga';
 import './terminal.css';
 
 interface TerminalViewProps {
@@ -33,6 +34,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     _terminal;
     _socket;
     _fitAddon;
+    _ga_session_duration;
 
     constructor(props) {
         super(props);
@@ -52,6 +54,11 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
         }
         this.props.setSocketConnection("CONNECTING");
+        ReactGA.event({
+            category: 'Terminal',
+            action: 'Open',
+        });
+        this._ga_session_duration = moment();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -59,8 +66,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             if (this.props.socketConnection === 'DISCONNECTING') {
                 if (this._socket) {
                     this._socket.close();
-                    this._terminal.reset();
-                    this._terminal.clear();
                     this._socket = undefined;
                 }
             }
@@ -69,7 +74,34 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             }
         }
         if (prevProps.nodeName !== this.props.nodeName || prevProps.containerName !== this.props.containerName || prevProps.shell.value !== this.props.shell.value) {
+
+            if (prevProps.nodeName !== this.props.nodeName) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Pod`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
+            else if (prevProps.containerName !== this.props.containerName) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Container`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
+            else if (prevProps.shell !== this.props.shell) {
+                ReactGA.event({
+                    category: 'Terminal',
+                    action: `Selected Shell`,
+                    label: `${this.props.nodeName}/${this.props.containerName}/${this.props.shell.value}`,
+                });
+            }
+
             this.props.setSocketConnection("DISCONNECTING");
+            this._terminal?.reset();
+
             setTimeout(() => {
                 this.props.setSocketConnection("CONNECTING");
             }, 100)
@@ -85,13 +117,18 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._fitAddon.fit();
             this._terminal.setOption('cursorBlink', true);
             this.props.setSocketConnection('CONNECTED');
-
         }
     }
 
     componentWillUnmount() {
         this._socket?.close();
         this._terminal?.dispose();
+        let duration = moment(this._ga_session_duration).fromNow();
+        ReactGA.event({
+            category: 'Terminal',
+            action: `Closed`,
+            label: `${duration}`,
+        });
     }
 
     getNewSession(): void {
@@ -125,15 +162,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         if (!this._terminal) {
             this._terminal?.dispose();
             this._terminal = new Terminal({
-                cursorBlink: false,
-
-                letterSpacing: 0,
-                screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
+                lineHeight: 1.4,
+                cursorBlink: false,
                 fontFamily: 'Inconsolata',
+                screenReaderMode: true,
                 theme: {
-                    background: '#0b0f22',
+                    background: '#0B0F22',
                     foreground: '#FFFFFF'
                 }
             });
@@ -184,7 +220,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         })
 
         socket.onopen = function () {
-            terminal.writeln("");
+
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
 
@@ -193,6 +229,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             socket.send(JSON.stringify(resize));
 
             if (isReconnection) {
+                terminal.writeln("");
                 terminal.writeln("---------------------------------------------");
                 terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
                 terminal.writeln("---------------------------------------------");
@@ -224,13 +261,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--show`;
         }
         return <AutoSizer>
-            {({ height, width }) => <div className="terminal-view" style={{ overflow: 'auto' }}>
+            {({ height, width }) => <div className={"terminal-view pt-24"} style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
                     <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
                         {this.props.socketConnection.toLowerCase()}
                     </span>
-                    {this.props.socketConnection === 'DISCONNECTED' && <> 
-                    <span>.&nbsp;</span>
+                    {this.props.socketConnection === 'DISCONNECTED' && <>
+                        <span>.&nbsp;</span>
                         <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
                             className="cursor transparent inline-block"
                             style={{ textDecoration: 'underline' }}>Resume
@@ -263,5 +300,5 @@ function TerminalContent(props) {
         100,
         [props.height, props.width],
     );
-    return <div id="terminal" style={{ width: props.width, height: props.height - 90 }}></div>
+    return <div id="terminal" style={{ width: props.width, height: props.height - 110 }}></div>
 }
