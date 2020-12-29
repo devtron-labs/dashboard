@@ -238,7 +238,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
 
                         <div className="login__description">
                             <div className="login__link flex">
-                                    <Help className="icon-dim-20 ml-8 vertical-align-middle fcb-5 mr-12"/>
+                                    <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12"/>
                                     <div><span className= "login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                             </div>
                         </div>
