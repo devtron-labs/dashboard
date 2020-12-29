@@ -80,13 +80,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         else {
             return <div className="form__app-compose">
                 {this.renderPageHeader()}
-                <CreateMaterial appId={Number(this.props.match.params.appId)} index={1}
+                <CreateMaterial appId={Number(this.props.match.params.appId)} 
                     isMultiGit={this.state.materials.length > 0}
                     providers={this.state.providers}
                     isCheckoutPathValid={this.isCheckoutPathValid} />
                 {this.state.materials.map((mat, index) => {
                     return <UpdateMaterial appId={Number(this.props.match.params.appId)}
-                        index={index + 2}
                         isMultiGit={this.state.materials.length > 0}
                         providers={this.state.providers}
                         material={mat}

@@ -6,7 +6,7 @@ import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 import { ValidationRules } from './validationRules';
 
-export class CreateMaterial extends Component<{ isMultiGit: boolean; index: number; appId: number; isCheckoutPathValid; providers: any[]; }, CreateMaterialState> {
+export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: number; isCheckoutPathValid; providers: any[]; }, CreateMaterialState> {
 
     rules;
 
@@ -77,7 +77,7 @@ export class CreateMaterial extends Component<{ isMultiGit: boolean; index: numb
     }
 
     render() {
-        return <MaterialView index={this.props.index}
+        return <MaterialView
             isMultiGit={this.props.isMultiGit}
             material={this.state}
             providers={this.props.providers}

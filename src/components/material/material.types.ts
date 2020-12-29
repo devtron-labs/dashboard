@@ -32,7 +32,6 @@ export type CreateMaterialState = {
 export type UpdateMaterialState = GitMaterialType & { isCollapsed: boolean; isLoading: boolean; }
 
 export interface MaterialViewProps {
-    index: number;
     isMultiGit: boolean;
     material: UpdateMaterialState;
     providers: any[];

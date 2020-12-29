@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { showError } from '../common';
 import { MaterialView } from './MaterialView';
 
-export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boolean; index: number; isCheckoutPathValid; material: GitMaterialType; providers: any[]; }, UpdateMaterialState> {
+export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boolean; isCheckoutPathValid; material: GitMaterialType; providers: any[]; }, UpdateMaterialState> {
 
     constructor(props) {
         super(props);
@@ -74,7 +74,7 @@ export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boole
     }
 
     render() {
-        return <MaterialView index={this.props.index}
+        return <MaterialView
             material={this.state}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
