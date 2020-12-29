@@ -162,14 +162,14 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             this._terminal?.dispose();
             this._terminal = new Terminal({
                 cursorBlink: false,
-
+                lineHeight: 1.4,
                 letterSpacing: 0,
                 screenReaderMode: true,
                 scrollback: 99999,
                 fontSize: 14,
                 fontFamily: 'Inconsolata',
                 theme: {
-                    background: '#0b0f22',
+                    background: '#0B0F22',
                     foreground: '#FFFFFF'
                 }
             });
@@ -298,5 +298,5 @@ function TerminalContent(props) {
         100,
         [props.height, props.width],
     );
-    return <div id="terminal" style={{ width: props.width, height: props.height - 90 }}></div>
+    return <div id="terminal" style={{ width: props.width, height: props.height - 110 }}></div>
 }
