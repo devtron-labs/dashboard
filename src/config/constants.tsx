@@ -115,11 +115,6 @@ export const AppConfigStatus = {
     END: 10,
 };
 
-export const FormType = {
-    SAVE: 'SAVE',
-    UPDATE: 'UPDATE',
-};
-
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
 };

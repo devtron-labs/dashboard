@@ -23,6 +23,8 @@ import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
+import MonacoEditor from 'react-monaco-editor';
+import { editor, defineTheme } from 'monaco-editor';
 
 const commandLineParser = require('command-line-parser')
 
@@ -126,6 +128,17 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
     const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
     const [manifest, setManifest] = useState(null)
 
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+
     useEffect(() => {
         if (loadingManifest) return
         if (error) showError(error)
@@ -149,17 +162,49 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
     if (!node) {
         return null
     }
-    return (
-        <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
-            {loadingManifest && !manifest ? <Progressing data-testid="manifest-loader" pageLoader />
-                : <>
-                    { manifest
-                        ? <textarea data-testid="manifest-textarea" className="pod-manifest-status" value={YamljsParser.stringify(manifest, 50, 4)} disabled></textarea>
-                        : <NoEvents title="Manifest not available" />
-                    }
-                </>}
-        </div>
-    )
+
+    else if (loadingManifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
+        <Progressing data-testid="manifest-loader" pageLoader />;
+    </div>
+
+    return <div style={{ gridColumn: '1 / span 2' }}>
+        <MonacoEditor
+            loading={<Progressing data-testid="manifest-loader" pageLoader />}
+            language={'yaml'}
+            value={YamljsParser.stringify(manifest, { indent: 4 })}
+            theme={'vs-dark--dt'}
+            options={{
+                selectOnLineNumbers: true,
+                roundedSelection: false,
+                readOnly: true,
+                automaticLayout: false,
+                scrollBeyondLastLine: false,
+                minimap: {
+                    enabled: false
+                },
+                scrollbar: {
+                    alwaysConsumeMouseWheel: false,
+                    vertical: 'auto'
+                }
+            }}
+            onChange={() => { }}
+            editorDidMount={() => { }}
+            height="100%"
+            width="100%"
+        />
+    </div>
+
+    // return (
+    //     <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
+    //         {loadingManifest && !manifest ? <Progressing data-testid="manifest-loader" pageLoader />
+    //             : <>
+    //                 { manifest
+    //                     ? <textarea data-testid="manifest-textarea" className="pod-manifest-status" value={YamljsParser.stringify(manifest, 50, 4)} disabled></textarea>
+    //                     : <NoEvents title="Manifest not available" />
+    //                 }
+    //             </>}
+    //     </div>
+    // )
 }
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
