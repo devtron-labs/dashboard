@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import AppSelector from '../AppSelector';
 import './appCompose.scss';
 
-const Artifacts = lazy(() => import('../artifacts/Artifacts'));
+const MaterialList = lazy(() => import('../material/MaterialList'));
 const CIConfig = lazy(() => import('../ciConfig/CIConfig'));
 const DeploymentConfig = lazy(() => import('../deploymentConfig/DeploymentConfig'));
 const ConfigMap = lazy(() => import('../configMaps/ConfigMap'));
@@ -221,7 +221,7 @@ function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWor
                 <Switch>
                     <Route path={`${path}/materials`}>
                         <>
-                            <Artifacts respondOnSuccess={respondOnSuccess} configStatus={configStatus} />
+                            <MaterialList respondOnSuccess={respondOnSuccess} configStatus={configStatus} />
                             <NextButton
                                 stage={APP_COMPOSE_STAGE.CI_CONFIG}
                                 stageNo={AppConfigStatus.MATERIAL}

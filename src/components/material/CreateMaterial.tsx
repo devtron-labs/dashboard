@@ -1,0 +1,93 @@
+import React, { Component } from 'react';
+import { createMaterial } from './material.service';
+import { toast } from 'react-toastify';
+import { showError } from '../common';
+import { MaterialView } from './MaterialView';
+import { CreateMaterialState } from './material.types';
+import { ValidationRules } from './validationRules';
+
+export class CreateMaterial extends Component<{ isMultiGit: boolean; index: number; appId: number; isCheckoutPathValid; providers: any[]; }, CreateMaterialState> {
+
+    rules;
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            gitProvider: undefined,
+            url: '',
+            checkoutPath: './',
+            isCollapsed: false,
+            isLoading: false,
+        }
+        this.rules = new ValidationRules();
+
+        this.handleProviderChange = this.handleProviderChange.bind(this);
+        this.handlePathChange = this.handlePathChange.bind(this);
+        this.handleUrlChange = this.handleUrlChange.bind(this);
+        this.toggleCollapse = this.toggleCollapse.bind(this);
+        this.save = this.save.bind(this);
+        this.cancel = this.cancel.bind(this);
+    }
+
+    handleProviderChange(selected) {
+        this.setState({ gitProvider: selected });
+    }
+
+    handlePathChange(event) {
+        this.setState({ checkoutPath: event.target.value });
+    }
+
+    handleUrlChange(event) {
+        this.setState({ url: event.target.value });
+    }
+
+    toggleCollapse(event) {
+        this.setState({
+            gitProvider: undefined,
+            url: '',
+            checkoutPath: '',
+            isCollapsed: !this.state.isCollapsed,
+            isLoading: false,
+        });
+    }
+
+    save(event) {
+        this.setState({ isLoading: true });
+        let payload = {
+            appId: this.props.appId,
+            material: { ...this.state }
+        }
+        createMaterial(payload).then((response) => {
+
+        }).catch((error) => {
+            showError(error);
+        }).finally(() => {
+            this.setState({ isLoading: false })
+        })
+    }
+
+    cancel(event) {
+        this.setState({
+            gitProvider: undefined,
+            url: '',
+            checkoutPath: '',
+            isCollapsed: true,
+            isLoading: false,
+        });
+    }
+
+    render() {
+        return <MaterialView index={this.props.index}
+            isMultiGit={this.props.isMultiGit}
+            material={this.state}
+            providers={this.props.providers}
+            handleProviderChange={this.handleProviderChange}
+            handleUrlChange={this.handleUrlChange}
+            handlePathChange={this.handlePathChange}
+            toggleCollapse={this.toggleCollapse}
+            save={this.save}
+            cancel={this.cancel}
+            isCheckoutPathValid={this.props.isCheckoutPathValid}
+        />
+    }
+}

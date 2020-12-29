@@ -1,18 +1,41 @@
 import React, { Component } from 'react';
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
-import { createMaterial, updateMaterial } from './service';
+import { createMaterial, updateMaterial } from './material.service';
 import { toast } from 'react-toastify';
 import { ErrorScreenManager, Progressing, ButtonWithLoader } from '../common';
 import { AppConfigStatus, ViewType } from '../../config';
 import { ValidationRules } from './validationRules';
-import { ArtifactsProps, Material, ArtifactsState } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { withRouter } from 'react-router';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import down from '../../assets/icons/appstatus/ic-dropdown.svg';
 import error from '../../assets/icons/misc/errorInfo.svg';
 import ReactSelect, { components } from 'react-select';
-import './artifacts.css';
+import './material.css';
+import { RouteComponentProps } from 'react-router';
+
+export interface ArtifactsProps extends RouteComponentProps<{ appId: string }> {
+    configStatus: number;
+    respondOnSuccess: () => void;
+}
+
+export interface Material {
+    id: number;
+    name: string;
+    url: string;
+    gitProviderId: number;
+    checkoutPath: string;
+    providers: any[];
+}
+
+export interface ArtifactsState {
+    configStatus: number;
+    code: number;
+    view: string;
+    materials: Array<Material & { isCollapsed: boolean; }>;
+    materialsFromResponse: Material[];
+    loadingData: boolean;
+}
 
 export const DefaultEmptyMaterial = {
     id: null,
@@ -266,12 +289,10 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
     renderPageHeader() {
         return <>
             <h1 className="form__title form__title--artifacts">Git Materials</h1>
-            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application.&nbsp;
-                 <a rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/git-material" target="_blank" className="">Learn more about Git Material</a>
-            </p>
+            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application.</p>
         </>
     }
-    
+
     renderMaterial(material, index) {
         if (material.isCollapsed) {
             let provider = material.providers.find(prov => prov.active);
@@ -340,7 +361,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
 
                 <label className="form__row">
                     <span className="form__label">Git Repo URL*</span>
-                    <input autoComplete="off" className="form__input" placeholder="e.g. https://gitlab.com/abc/xyz.git" type="text" value={material.url}
+                    <input className="form__input" placeholder="e.g. https://gitlab.com/abc/xyz.git" type="text" value={material.url}
                         tabIndex={index + 2} onChange={(event) => { this.handleChange(event, material.id, 'url') }} />
                     <span className="form__error">
                         {showError && !errorObject[1].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[1].message}
@@ -349,7 +370,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
 
                 <label className="form__row">
                     <label className="form__label">Checkout Path(*Required If you’re using multiple Git Materials)</label>
-                    <input autoComplete="off" className="form__input" placeholder="e.g. /abc" tabIndex={index + 3} type="text" value={material.checkoutPath}
+                    <input className="form__input" placeholder="e.g. /abc" tabIndex={index + 3} type="text" value={material.checkoutPath}
                         onChange={(event) => { this.handleChange(event, material.id, 'checkoutPath') }} />
                     <span className="form__error">
                         {showError && !errorObject[2].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[2].message}
