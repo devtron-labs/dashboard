@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './login.css'
 import { Progressing, useForm, showError, ConfirmationDialog,DevtronSwitch as Switch,DevtronSwitchItem as SwitchItem, } from '../common'
 import Google, { ReactComponent } from '../../assets/icons/ic-google.svg'
-import {ReactComponent as Help} from '../../assets/icons/ic-help-outline.svg'
+import {ReactComponent as Help} from '../../assets/icons/ic-help.svg'
 import {ReactComponent as GitHub} from '../../assets/icons/git/github.svg'
 import Microsoft from '../../assets/icons/ic-microsoft.svg'
 import OIDC from '../../assets/icons/ic-oidc.svg'
@@ -110,7 +110,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                         configList: config
                     });
                 })
-            createSSOList(payload) 
+           return createSSOList(payload) 
         }
        else{
            return(<ConfirmationDialog>
@@ -163,8 +163,8 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
         <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
-            <a href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
-                    Learn more 
+            <a href={``} rel="noopener noreferrer" target="_blank">
+                    
             </a>
             </h5>
               <div className= "login__sso-wrapper">
@@ -236,8 +236,8 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
 
                         <div className="login__description">
                             <div className="login__link flex">
-                                    <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5"/>
-                                    <div>Help: See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                                    <Help className="icon-dim-20 ml-8 vertical-align-middle fcb-5 mr-12"/>
+                                    <div><span className= "login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                             </div>
                         </div>
 
