@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import './login.css'
 import { Progressing, useForm, showError, ConfirmationDialog,DevtronSwitch as Switch,DevtronSwitchItem as SwitchItem, } from '../common'
-import Google, { ReactComponent } from '../../assets/icons/ic-google.svg'
+import Google from '../../assets/icons/ic-google.svg'
 import {ReactComponent as Help} from '../../assets/icons/ic-help.svg'
 import {ReactComponent as GitHub} from '../../assets/icons/git/github.svg'
 import Microsoft from '../../assets/icons/ic-microsoft.svg'
+import LDAP from '../../assets/icons/ic-ldap.svg'
+import SAML from '../../assets/icons/ic-saml.svg'
 import OIDC from '../../assets/icons/ic-oidc.svg'
 import Openshift from '../../assets/icons/ic-openshift.svg'
 import {SSOLoginProps, SSOLoginState} from './types'
 import warn from '../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
-import * as queryString from 'query-string';
 import {getSSOList,createSSOList,updateSSOList} from './service'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import yamlJsParser from 'yaml';
@@ -200,7 +201,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                                     <label className="tertiary-tab__radio ">
                                         <input type="radio" name="status" value="LDAP" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
-                                                    <aside className="login__icon-alignment"><img src={Google}/></aside>  
+                                                    <aside className="login__icon-alignment"><img src={LDAP}/></aside>  
                                                     <aside className="login__text-alignment">LDAP</aside>
                                              </span>
                                     </label>
@@ -209,7 +210,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                                     <label className="tertiary-tab__radio ">
                                         <input type="radio" name="status" value="SAML 2.0" onClick={this.handleSSOClick}/>
                                             <span className="tertiary-tab sso-icons">
-                                                    <aside className="login__icon-alignment"><img src={Google}/></aside>  
+                                                    <aside className="login__icon-alignment"><img src={SAML}/></aside>  
                                                     <aside className="login__text-alignment"> SAML 2.0</aside>
                                              </span>
                                     </label>
