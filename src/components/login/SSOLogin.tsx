@@ -85,6 +85,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
             this.setState({
                     loginList: list
                 })
+            console.log(list)
             })
     }
     
@@ -111,7 +112,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
                         configList: config
                     });
                 })
-           return createSSOList(payload) 
+            createSSOList(payload) 
         }
        else{
            return(<ConfirmationDialog>
@@ -136,7 +137,7 @@ export default class SSOLogin extends Component<SSOLoginProps,SSOLoginState> {
     }
 
   renderSSOCodeEditor=()=>{
-    let codeEditorBody =  this.state.configList.switch === SwitchItemValues.Configuration? this.state.configMap : yamlJsParser.stringify(configMap, { indent: 2 }) 
+    let codeEditorBody =  this.state.configList.switch === SwitchItemValues.Configuration?  yamlJsParser.stringify(this.state.loginList.map((item)=>{return item}), { indent: 2 }): this.state.configMap 
 
        return  <div className="sso__code-editor-wrap">
        <div className=" code-editor-container " >
