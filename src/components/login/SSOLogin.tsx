@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { Component } from 'react'
 import './login.css'
 import { Progressing, useForm, showError, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
@@ -48,13 +47,14 @@ const ssoMap = {
 //         }
 //     }
 // }
-const configSwitch = 'configuration';
-     
+// const configSwitch = 'configuration';
+
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
             sso: "google",
+            isLoading: true,
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
             // loginList: [],
@@ -62,9 +62,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         this.handleSSOClick = this.handleSSOClick.bind(this);
         this.toggleWarningModal = this.toggleWarningModal.bind(this);
-        this.handleStageConfigChange = this.handleStageConfigChange.bind(this)
+        this.handleConfigChange = this.handleConfigChange.bind(this)
     }
-    
+
     componentDidMount() {
         getSSOList().then((response) => {
             let list = response.result || [];
@@ -72,15 +72,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             //     loginList: list
             // })
             //Mock data
-            console.log(response.result)
-
             let res = this.getMockData();
+
             this.setState({
-               // sso: response.result[0].confid.id || "google",
-                configList: response.result.map((ssoConfig) => {
+                isLoading: false,
+                sso: res.result[0]?.config?.id || "google",
+                configList: res.result.map((ssoConfig) => {
                     return {
-                        switch: 'configuration',
                         ...ssoConfig,
+                        config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
                     }
                 }),
             })
@@ -110,7 +110,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
     }
 
-    handleSSOClick(event) {
+    handleSSOClick(event): void {
         this.setState({
             sso: event.target.value
         })
@@ -121,15 +121,23 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onLoginConfigSave() {
+        let configJSON: any = {};
+        try {
+            configJSON = yamlJsParser.parse(this.state.configList[0].config);
+
+        } catch (error) {
+            //Invalid YAML, couldn't be parsed to JSON. Show error toast 
+        }
+
         //Update
         if (this.state.configList[0].config) {
             //Update the same SSO
-            if (this.state.configList[0].config.id == this.state.sso) {
+            if (configJSON.id && configJSON.id == this.state.sso) {
 
                 let payload = {
                     name: this.state.configList[0].name,
                     url: this.state.configList[0].url,
-                    config: this.state.configList[0].config.toString().split(",").filter(item => item != "")
+                    config: configJSON,
                 }
 
                 updateSSOList(payload).then((response) => {
@@ -142,7 +150,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             }
             //update another sso
             else {
-
                 return (<ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
@@ -160,28 +167,35 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
     }
 
-    handleStageConfigChange(value: string, key: 'configuration' | 'switch' ) {
-        if (key != 'configuration') this.state.configList[key] = value
-        else {
-            if (this.state.configMap === SwitchItemValues.Configuration) { this.state.configList[key] = value }
+    handleConfigChange(value: string): void {
+        try {
+            let configList = [{
+                ...this.state.configList[0],
+                config: value
+            }];
+            this.setState({ configList: configList });
+        } catch (error) {
+
         }
-        this.setState({ configMap: JSON.stringify(config) })
+    }
+
+    handleCodeEditorTab(value: string): void {
+        this.setState({ configMap: value })
     }
 
     renderSSOCodeEditor = () => {
-       //  let codeEditorBody = this.state.configList[0].switch === SwitchItemValues.Configuration ? yamlJsParser.stringify(this.state.configList.map((item) => { return item }), { indent: 2 }) : this.state.configMap;
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? yamlJsParser.stringify(this.state.configList[0], { indent: 2 }) : sample[this.state.sso];
-
+        //  let codeEditorBody = this.state.configList[0].switch === SwitchItemValues.Configuration ? yamlJsParser.stringify(this.state.configList.map((item) => { return item }), { indent: 2 }) : this.state.configMap;
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? this.state.configList[0].config : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         return <div className="sso__code-editor-wrap">
-            <div className=" code-editor-container">
+            <div className="code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
                     height={300}
                     mode='yaml'
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    onChange={(event) => { this.handleStageConfigChange(event, 'configuration') }}>
+                    onChange={(event) => { this.handleConfigChange(event) }}>
                     <CodeEditor.Header >
-                        <Switch value={this.state.configMap} name={this.state.sso} onChange={(event) => { this.handleStageConfigChange(event.target.value, key) }}>
+                        <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>
                             <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
                         </Switch>
@@ -193,6 +207,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     render() {
+        if (this.state.isLoading) return <Progressing pageLoader />
         return (
             <section className="git-page">
                 <h2 className="form__title">SSO Login Services</h2>

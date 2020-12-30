@@ -9,28 +9,29 @@ export interface SSOLogin {
 }
 
 export interface SSOLoginState {
+    isLoading:boolean;
     sso: string;
     configMap: string;
     showToggling: boolean
-    // loginList: SSOLogin[];
     configList: SSOConfigType[];
 }
 
 interface SSOConfigType {
     name: string;
     url: string;
-    config: {
-        type: string;
-        id: string;
-        name: string;
-        config: {
-            issuer: string;
-            clientID: string;
-            clientSecret: string;
-            redirectURI: string;
-            hostedDomains: any[];
-        }
-    }
+    config: string;
+    // config: {
+    //     type: string;
+    //     id: string;
+    //     name: string;
+    //     config: {
+    //         issuer: string;
+    //         clientID: string;
+    //         clientSecret: string;
+    //         redirectURI: string;
+    //         hostedDomains: any[];
+    //     }
+    // }
 }
 
 export interface SSOLoginProps {

@@ -1,5 +1,4 @@
 {
-    "sample": {
         "google": {
             "name": "gitlab3",
             "url": "http://gitlab.com",
@@ -141,4 +140,3 @@
             "active": true
         }
     }
-}
