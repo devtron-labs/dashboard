@@ -25,6 +25,7 @@ import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor, defineTheme } from 'monaco-editor';
+import { AutoSizer } from 'react-virtualized'
 
 const commandLineParser = require('command-line-parser')
 
@@ -171,30 +172,36 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
         <NoEvents title="Manifest not available" />
     </div>
 
-    return <div style={{ gridColumn: '1 / span 2' }}>
-        <MonacoEditor language={'yaml'}
-            value={YamljsParser.stringify(manifest, { indent: 4 })}
-            theme={'vs-dark--dt'}
-            options={{
-                selectOnLineNumbers: true,
-                roundedSelection: false,
-                readOnly: true,
-                automaticLayout: false,
-                scrollBeyondLastLine: false,
-                minimap: {
-                    enabled: false
-                },
-                scrollbar: {
-                    alwaysConsumeMouseWheel: false,
-                    vertical: 'auto'
-                }
-            }}
-            onChange={() => { }}
-            editorDidMount={() => { }}
-            height="100%"
-            width="100%"
-        />
-    </div>
+    return <AutoSizer>
+        {({ height, width }) => <div style={{
+            gridColumn: '1 / span 2', height: height,
+            width: width,
+        }}>
+            <MonacoEditor language={'yaml'}
+                value={YamljsParser.stringify(manifest, { indent: 4 })}
+                theme={'vs-dark--dt'}
+                options={{
+
+                    selectOnLineNumbers: true,
+                    roundedSelection: false,
+                    readOnly: true,
+                    automaticLayout: false,
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                        vertical: 'auto'
+                    }
+                }}
+                onChange={() => { }}
+                editorDidMount={() => { }}
+                height={height}
+                width={width}
+            />
+        </div>}
+    </AutoSizer>
 }
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
