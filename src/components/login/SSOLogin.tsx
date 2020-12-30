@@ -84,6 +84,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     }
                 }),
             })
+            console.log(res.result[0]?.config?.id || "google")
         })
     }
 
@@ -220,7 +221,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <div className="login__sso-flex">
                         <div >
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" id="1" value="google" name="status" onClick={this.handleSSOClick} />
+                                <input type="radio" id="1" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={Google} /></aside>
                                     <aside className="login__text-alignment"> Google</aside>
@@ -229,7 +230,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div >
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="github" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
                                     <aside className="login__text-alignment"> GitHub</aside>
@@ -238,7 +239,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div>
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="microsoft" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={Microsoft} /></aside>
                                     <aside className="login__text-alignment"> Microsoft</aside>
@@ -247,7 +248,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div>
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="ldap" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={LDAP} /></aside>
                                     <aside className="login__text-alignment">LDAP</aside>
@@ -256,7 +257,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div>
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="saml" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={SAML} /></aside>
                                     <aside className="login__text-alignment"> SAML 2.0</aside>
@@ -265,7 +266,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div>
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="oidc" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={OIDC} /></aside>
                                     <aside className="login__text-alignment">OIDC</aside>
@@ -274,7 +275,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                         <div>
                             <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="openshift" onClick={this.handleSSOClick} />
+                                <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
                                 <span className="tertiary-tab sso-icons">
                                     <aside className="login__icon-alignment"><img src={Openshift} /></aside>
                                     <aside className="login__text-alignment"> OpenShift</aside>
