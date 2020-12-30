@@ -84,7 +84,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     }
                 }),
             })
-            console.log(res.result[0]?.config?.id || "google")
         })
     }
 
