@@ -10,7 +10,7 @@ import { get } from '../../services/api'
 import { getNodeStatus } from './service'
 import { Routes, Host } from "../../config";
 import { toast } from 'react-toastify';
-import YamljsParser from 'yamljs'
+import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
 import WebWorker from './WebWorker';
 import { useParams } from 'react-router'
@@ -178,7 +178,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
             width: width,
         }}>
             <MonacoEditor language={'yaml'}
-                value={YamljsParser.stringify(manifest, { indent: 4 })}
+                value={YamljsParser.stringify(manifest, { indent: 2 })}
                 theme={'vs-dark--dt'}
                 options={{
 
