@@ -10,7 +10,7 @@ import { get } from '../../services/api'
 import { getNodeStatus } from './service'
 import { Routes, Host } from "../../config";
 import { toast } from 'react-toastify';
-import YamljsParser from 'yamljs'
+import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
 import WebWorker from './WebWorker';
 import { useParams } from 'react-router'
@@ -23,6 +23,9 @@ import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
+import MonacoEditor from 'react-monaco-editor';
+import { editor, defineTheme } from 'monaco-editor';
+import { AutoSizer } from 'react-virtualized'
 
 const commandLineParser = require('command-line-parser')
 
@@ -126,13 +129,24 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
     const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
     const [manifest, setManifest] = useState(null)
 
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+
     useEffect(() => {
         if (loadingManifest) return
         if (error) showError(error)
         if (manifestResult?.result?.manifest) {
             try {
                 const manifest = JSON.parse(manifestResult?.result?.manifest);
-                setManifest(manifest)
+                setManifest(manifest);
             }
             catch (err) {
 
@@ -149,17 +163,45 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
     if (!node) {
         return null
     }
-    return (
-        <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
-            {loadingManifest && !manifest ? <Progressing data-testid="manifest-loader" pageLoader />
-                : <>
-                    { manifest
-                        ? <textarea data-testid="manifest-textarea" className="pod-manifest-status" value={YamljsParser.stringify(manifest, 50, 4)} disabled></textarea>
-                        : <NoEvents title="Manifest not available" />
+
+    else if (loadingManifest && !manifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
+        <Progressing data-testid="manifest-loader" pageLoader />;
+    </div>
+
+    else if (!manifest) return <div style={{ gridColumn: '1 / span 2' }} className="flex">
+        <NoEvents title="Manifest not available" />
+    </div>
+
+    return <AutoSizer>
+        {({ height, width }) => <div style={{
+            gridColumn: '1 / span 2', height: height,
+            width: width,
+        }}>
+            <MonacoEditor language={'yaml'}
+                value={YamljsParser.stringify(manifest, { indent: 2 })}
+                theme={'vs-dark--dt'}
+                options={{
+
+                    selectOnLineNumbers: true,
+                    roundedSelection: false,
+                    readOnly: true,
+                    automaticLayout: false,
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                        vertical: 'auto'
                     }
-                </>}
-        </div>
-    )
+                }}
+                onChange={() => { }}
+                editorDidMount={() => { }}
+                height={height}
+                width={width}
+            />
+        </div>}
+    </AutoSizer>
 }
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {

@@ -78,13 +78,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 
 	toggleCommandBar(flag: boolean): void {
 		this.setState({ isCommandBarActive: flag });
-		if (!flag) { //Commandbar Closed
-			ReactGA.event({
-				category: 'Command Bar',
-				action: 'Close',
-				label: '',
-			});
-		}
 	}
 
 	deleteCookie(): void {
@@ -150,6 +143,13 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 										category: 'Command Bar',
 										action: 'Open (Click)',
 										label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+									});
+								}
+								else {
+									ReactGA.event({
+										category: 'Command Bar',
+										action: 'Close',
+										label: '',
 									});
 								}
 								this.toggleCommandBar(!this.state.isCommandBarActive);
