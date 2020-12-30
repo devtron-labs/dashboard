@@ -256,6 +256,11 @@ export class Command extends Component<CommandProps, CommandState>  {
         }
         else if (event.key === "Escape") {
             this.props.toggleCommandBar(false);
+            ReactGA.event({
+                category: 'Command Bar',
+                action: 'Close',
+                label: '',
+            });
         }
         else if (this.props.isCommandBarActive && event.key === "Enter") {
             this.runCommand();
@@ -421,7 +426,15 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         if (this.props.isCommandBarActive) {
-            return <div className="transparent-div" onKeyDown={this.disableTab} onClick={() => { this.props.toggleCommandBar(false); }}>
+            return <div className="transparent-div" onKeyDown={this.disableTab}
+                onClick={() => {
+                    ReactGA.event({
+                        category: 'Command Bar',
+                        action: 'Close',
+                        label: '',
+                    });
+                    this.props.toggleCommandBar(false);
+                }}>
                 <div className="command" onClick={(event) => event.stopPropagation()}>
                     <div className="command-tab">
                         <div className="">
