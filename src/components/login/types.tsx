@@ -17,7 +17,6 @@ export interface SSOLoginState {
 }
 
 interface SSOConfigType {
-    switch: string;
     name: string;
     url: string;
     config: {
