@@ -224,11 +224,6 @@ export class Command extends Component<CommandProps, CommandState>  {
             } catch (error) {
                 this.setState({ isLoading: false });
                 console.error(error);
-                ReactGA.event({
-                    category: 'Command Bar',
-                    action: 'Error',
-                    label: '',
-                });
             }
         });
     }

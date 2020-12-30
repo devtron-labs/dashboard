@@ -12,7 +12,7 @@ export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
 
     componentDidCatch(error, errorInfo) {
         toast.error("Some Error Occurred");
-        console.log("Error")
+        console.error("Error")
         this.props.toggleCommandBar(false);
     }
 
