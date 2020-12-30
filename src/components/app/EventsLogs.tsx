@@ -145,7 +145,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
         if (manifestResult?.result?.manifest) {
             try {
                 const manifest = JSON.parse(manifestResult?.result?.manifest);
-                // setManifest(manifest)
+                setManifest(manifest);
             }
             catch (err) {
 
