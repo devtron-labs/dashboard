@@ -163,14 +163,12 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
         return null
     }
 
-    else if (loadingManifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
+    else if (loadingManifest && !manifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
         <Progressing data-testid="manifest-loader" pageLoader />;
     </div>
 
     return <div style={{ gridColumn: '1 / span 2' }}>
-        <MonacoEditor
-            loading={<Progressing data-testid="manifest-loader" pageLoader />}
-            language={'yaml'}
+        <MonacoEditor language={'yaml'}
             value={YamljsParser.stringify(manifest, { indent: 4 })}
             theme={'vs-dark--dt'}
             options={{
