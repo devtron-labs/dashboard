@@ -1,7 +1,7 @@
 import { post, put, get } from '../../services/api';
 
 export const getSSOList = () => {
-    const URL = `sso/list`;
+    const URL = `/sso/1`;
     return get(URL);
 }
 export const createSSOList = (request) => {

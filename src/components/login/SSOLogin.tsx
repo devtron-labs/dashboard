@@ -15,8 +15,8 @@ import { toast } from 'react-toastify';
 import { getSSOList, createSSOList, updateSSOList } from './service'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import yamlJsParser from 'yaml';
-import config from './sampleConfig.json'
 import sample from './sampleConfig.json';
+import { request } from 'http'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -67,11 +67,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     componentDidMount() {
         getSSOList().then((response) => {
-            let list = response.result || [];
-            // this.setState({
-            //     loginList: list
-            // })
-            //Mock data
+            let list = response.result[0] || [];
+             this.setState({
+                isLoading: false,
+                sso: response.result[0]?.config?.id || "google",
+                configList: list.map((ssoConfig) => {
+                    return {
+                        ...ssoConfig,
+                        config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
+                    }
+                })
+              
+             })
+           {{/* //Mock data
             let res = this.getMockData();
 
             this.setState({
@@ -83,7 +91,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
                     }
                 }),
-            })
+            })*/}}
         })
     }
 
@@ -123,20 +131,20 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     onLoginConfigSave() {
         let configJSON: any = {};
         try {
-            configJSON = yamlJsParser.parse(this.state.configList[0].config);
+            configJSON = yamlJsParser.parse(this.state.configList[0].result.config.id);
 
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast 
         }
 
         //Update
-        if (this.state.configList[0].config) {
+        if (this.state.configList[0].result.config) {
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
 
                 let payload = {
-                    name: this.state.configList[0].name,
-                    url: this.state.configList[0].url,
+                    name: this.state.configList[0].result.name,
+                    url: this.state.configList[0].result.url,
                     config: configJSON,
                 }
 
@@ -163,7 +171,22 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         //Create SSO
         else {
-
+            
+            let request = {
+                name: this.state.configList[0].result.name,
+                url: this.state.configList[0].result.url,
+                config: configJSON,
+            }
+            createSSOList(request).then((response) => {
+                let config = response.result || [];
+                if(config){
+                    this.setState({
+                        configList: config
+                    });
+                    toast.success('Saved')
+                }
+                
+            })
         }
     }
 
@@ -185,7 +208,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     renderSSOCodeEditor = () => {
         //  let codeEditorBody = this.state.configList[0].switch === SwitchItemValues.Configuration ? yamlJsParser.stringify(this.state.configList.map((item) => { return item }), { indent: 2 }) : this.state.configMap;
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? this.state.configList[0].config : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? this.state.configList[0].result.config.config.clientID
+         : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor
@@ -286,14 +310,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <div className="login__description">
                         <div className="login__link flex">
                             <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                            <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={``} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                            <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                         </div>
                     </div>
 
                     {this.renderSSOCodeEditor()}
 
                     <div className="form__buttons mr-24">
-                        <button onClick={() => this.onLoginConfigSave()} tabIndex={5} type="button" className={`cta`}>Save</button>
+                        <button onClick={(e) =>{e.preventDefault(); this.onLoginConfigSave()}} tabIndex={5} type="button" className={`cta`}>Save</button>
                     </div>
                 </div>
 
