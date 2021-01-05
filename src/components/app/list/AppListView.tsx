@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppListViewType } from '../config';
-import { ErrorScreenManager, Filter, Pagination, FilterOption, Progressing } from '../../common';
+import { ErrorScreenManager, Filter, Pagination, FilterOption, Progressing, isMacOS } from '../../common';
 import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
@@ -102,7 +102,7 @@ export class AppListView extends Component<AppListViewProps>{
             <form style={{ display: "inline" }} onSubmit={this.props.search}>
                 <div className="search">
                     <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                    <input type="text" placeholder="Search apps" className="search__input search__input--app-list"
+                    <input type="text" placeholder={isMacOS() ? 'Search apps (⌘+/)' : 'Search apps (Ctrl+/)'} className="search__input search__input--app-list"
                         value={this.props.searchQuery}
                         onClick={(event) => this.props.toggleCommandBar(true)}
                         onChange={this.props.handleSearchStr} />

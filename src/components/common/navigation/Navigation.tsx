@@ -5,7 +5,7 @@ import { ReactComponent as Documentation } from '../../../assets/icons/ic-docume
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord.svg'
 import { ReactComponent as Github } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
-import { getLoginInfo } from '../index';
+import { getLoginInfo, isMacOS } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
@@ -13,9 +13,14 @@ import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
 import './navigation.scss';
 
+interface NavigationProps extends RouteComponentProps<{}> {
+	isCommandBarActive: boolean;
+	toggleCommandBar: (flag: boolean) => void;
+}
+
 const navigationList = [
 	{
-		title: 'Search (⌘+/)',
+		title: isMacOS() ? 'Search (⌘+/)' : 'Search (Ctrl+/)',
 		type: 'button',
 		iconClass: 'nav-short-search',
 		href: URLS.APP,
@@ -52,7 +57,7 @@ const navigationList = [
 	},
 ];
 
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
+export default class Navigation extends Component<NavigationProps, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; }> {
 
 	constructor(props) {
 		super(props);
@@ -60,23 +65,18 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			loginInfo: getLoginInfo(),
 			showLogoutCard: false,
 			showMoreOptionCard: false,
-			isCommandBarActive: false,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
 		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
-		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
 
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
 	}
+
 	toggleMoreOptionCard() {
 		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
-	}
-
-	toggleCommandBar(flag: boolean): void {
-		this.setState({ isCommandBarActive: flag });
 	}
 
 	deleteCookie(): void {
@@ -99,7 +99,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			</div>
 		</div>, document.getElementById('root'))
 	}
-	
+
 	renderMoreOption() {
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
 			<div className="more-option-card ">
@@ -137,8 +137,8 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					{navigationList.map((item, index) => {
 						if (item.type === "button") return <button type="button" key={index}
 							className="transparent"
-							onClick={(e) => {
-								if (!this.state.isCommandBarActive) {
+							onClick={(event) => {
+								if (!this.props.isCommandBarActive) {
 									ReactGA.event({
 										category: 'Command Bar',
 										action: 'Open (Click)',
@@ -152,7 +152,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 										label: '',
 									});
 								}
-								this.toggleCommandBar(!this.state.isCommandBarActive);
+								this.props.toggleCommandBar(!this.props.isCommandBarActive);
 							}}>
 							<div className="short-nav--flex">
 								<div className="svg-container flex ">

@@ -60,7 +60,9 @@ export default function NavigationRoutes() {
     }, [])
 
     return <main>
-        <Navigation history={history} match={match} location={location} />
+        <Navigation history={history} match={match} location={location}
+            isCommandBarActive={isCommandBarActive}
+            toggleCommandBar={setIsCommandBarActive} />
         <CommandErrorBoundary toggleCommandBar={setIsCommandBarActive}>
             <Command location={location} history={history} match={match}
                 isCommandBarActive={isCommandBarActive}

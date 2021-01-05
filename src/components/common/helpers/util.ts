@@ -42,3 +42,7 @@ export function isArrayEqual(a: any[], b: any[], key: string): boolean {
     return true;
 
 }
+
+export function isMacOS(): boolean {
+    return window.navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+}
