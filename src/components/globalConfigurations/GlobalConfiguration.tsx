@@ -17,6 +17,7 @@ const routes = [
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
+    { name: 'Chart Repository', href: URLS.GLOBAL_CONFIG_CHART, component: ClusterList },
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notification', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
