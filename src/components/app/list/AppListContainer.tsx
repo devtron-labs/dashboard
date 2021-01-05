@@ -344,6 +344,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             match={this.props.match}
             location={this.props.location}
             history={this.props.history}
+            toggleCommandBar={this.props.toggleCommandBar}
             applyFilter={this.applyFilter}
             expandRow={this.expandRow}
             closeExpandedRow={this.closeExpandedRow}

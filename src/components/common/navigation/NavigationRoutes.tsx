@@ -2,11 +2,12 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
-import Navigation from './Navigation';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import * as Sentry from '@sentry/browser';
 import ReactGA from 'react-ga';
+import Navigation from './Navigation';
 import { Security } from '../../security/Security';
+import { Command, CommandErrorBoundary } from '../../command';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppCompose = lazy(() => import('../../appCompose/AppCompose'));
@@ -19,7 +20,9 @@ export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
-    
+    const [isCommandBarActive, setIsCommandBarActive] = useState(false);
+
+    const { path } = { ...match };
     useEffect(() => {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
@@ -56,49 +59,53 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    return (
-        <main>
-            <Navigation history={history} match={match} location={location} />
-            <div className="main">
-                <Suspense fallback={<Progressing pageLoader />}>
-                    <ErrorBoundary>
-                        <Switch>
-                            <Route path={URLS.APP} render={() => <AppRouter />} />
-                            <Route path={URLS.CHARTS} render={() => <Charts />} />
-                            <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
-                            <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
-                            <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
-                            <Route>
-                                <RedirectWithSentry />
-                            </Route>
-                        </Switch>
-                    </ErrorBoundary>
-                </Suspense>
-            </div>
-        </main>
-    )
+    return <main>
+        <Navigation history={history} match={match} location={location} />
+        <CommandErrorBoundary toggleCommandBar={setIsCommandBarActive}>
+            <Command location={location} history={history} match={match}
+                isCommandBarActive={isCommandBarActive}
+                toggleCommandBar={setIsCommandBarActive}
+            />
+        </CommandErrorBoundary>
+        <div className="main">
+            <Suspense fallback={<Progressing pageLoader />}>
+                <ErrorBoundary>
+                    <Switch>
+                        <Route path={URLS.APP} render={(props) => <AppRouter toggleCommandBar={setIsCommandBarActive} />} />
+                        <Route path={URLS.CHARTS} render={(props) => <Charts />} />
+                        <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
+                        <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
+                        <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
+                        <Route>
+                            <RedirectWithSentry />
+                        </Route>
+                    </Switch>
+                </ErrorBoundary>
+            </Suspense>
+        </div>
+    </main>
 }
 
-export function AppRouter() {
-    const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
-    return (
-        <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                <Switch>
-                    <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} />
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
-                    <Route exact path="">
-                        <AppListContainer />
-                    </Route>
-                    <Route>
-                        <RedirectWithSentry />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
-        </ErrorBoundary>
-    );
+export function AppRouter({ toggleCommandBar }) {
+    const match = useRouteMatch()
+    const [environmentId, setEnvironmentId] = useState(null);
+    const { path } = { ...match };
+
+    return <ErrorBoundary>
+        <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+            <Switch>
+                <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} />
+                <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer toggleCommandBar={toggleCommandBar} />} />
+                <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
+                <Route exact path="">
+                    <AppListContainer toggleCommandBar={toggleCommandBar} />
+                </Route>
+                <Route>
+                    <RedirectWithSentry />
+                </Route>
+            </Switch>
+        </AppContext.Provider>
+    </ErrorBoundary>
 }
 
 export function RedirectWithSentry() {

@@ -10,7 +10,6 @@ import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import ReactDOM from 'react-dom';
-import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
 import './navigation.scss';
 
@@ -100,6 +99,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			</div>
 		</div>, document.getElementById('root'))
 	}
+	
 	renderMoreOption() {
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
 			<div className="more-option-card ">
@@ -215,17 +215,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</div>
 					{this.state.showMoreOptionCard ? this.renderMoreOption() : null}
 				</aside>
-
 			</nav>
-			<CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
-				<Command location={this.props.location}
-					match={this.props.match}
-					history={this.props.history}
-					isCommandBarActive={this.state.isCommandBarActive}
-					toggleCommandBar={this.toggleCommandBar}
-				/>
-			</CommandErrorBoundary>
-
 		</>
 	}
 }

@@ -51,7 +51,7 @@ export interface Environment {
 }
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
-
+    toggleCommandBar: (flag: boolean) => void;
 }
 
 export interface AppListResponse {
