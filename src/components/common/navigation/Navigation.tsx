@@ -181,8 +181,7 @@ export default class Navigation extends Component<NavigationProps, { loginInfo: 
 								</div>
 							</div>
 						</NavLink>
-					}
-					)}
+					})}
 					<div></div>
 					<div className="short-nav--flex">
 						<div><a rel="noreferrer noopener" className="flex icon-dim-40 br-8" href="https://docs.devtron.ai/" target="_blank"><Documentation className="icon-dim-20 fcn-0 cursor" /> </a></div>

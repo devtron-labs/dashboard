@@ -383,8 +383,8 @@ export class Command extends Component<CommandProps, CommandState>  {
                             <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">No Environments Configured</div>
                         </> : null}
                         {this.state.suggestedArguments.map((a, index) => {
-                            return <>
-                                {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
+                            return <React.Fragment key={`${a.value}`}>
+                                {this.state.groupName && groupStart === index ? <h6 key={`heading-start-${a.value}`} className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
                                 {this.state.groupName && groupEnd === index ? <>
                                     <hr className="m-0"></hr>
                                     <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading">
@@ -399,7 +399,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>expand</span>
                                     </span>
                                 </button>
-                            </>
+                            </React.Fragment>
                         })}
                     </div>
                 </div>

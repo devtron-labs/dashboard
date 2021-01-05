@@ -11,6 +11,7 @@ import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import ReactGA from 'react-ga';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -104,7 +105,14 @@ export class AppListView extends Component<AppListViewProps>{
                     <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
                     <input type="text" placeholder={isMacOS() ? 'Search apps (⌘+/)' : 'Search apps (Ctrl+/)'} className="search__input search__input--app-list"
                         value={this.props.searchQuery}
-                        onClick={(event) => this.props.toggleCommandBar(true)}
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'Command Bar',
+                                action: 'Open (Click)',
+                                label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+                            });
+                            this.props.toggleCommandBar(true);
+                        }}
                         onChange={this.props.handleSearchStr} />
                     {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
                         <i className="fa fa-times-circle" aria-hidden="true"></i>
