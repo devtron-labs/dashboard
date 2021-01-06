@@ -49,7 +49,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className={`${url.split(".")[0]} list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
-                    <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
+                    <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
                             <span style={{ marginLeft: 'auto' }}>
@@ -64,11 +64,11 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
         </article>
     )
 }
-function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
