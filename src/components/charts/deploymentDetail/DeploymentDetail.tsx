@@ -126,24 +126,28 @@ export default function AppDetail() {
                                             version: appDetails.appStoreAppVersion,
                                         },
                                     ])}
-                                    {...installedConfig}
+                                    // {...installedConfig}
                                     installedAppId={installedConfig.installedAppId}
+                                    appStoreVersion={installedConfig.appStoreVersion}
+                                    appName ={installedConfig.appName}
+                                    environmentId={installedConfig.environmentId}
+                                    teamId={installedConfig.teamId}
+                                    readme={installedConfig.readme}
+                                    deprecated={installedConfig.deprecated}
+                                    appStoreId={installedConfig.appStoreId}
+                                    installedAppVersionId={installedConfig.id}
                                     valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
                                     rawValues={
                                         installedConfig.valuesOverrideYaml
                                     }
-                                    appName={installedConfig.appName}
                                     installedAppVersion={installedConfig.id}
+                                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                     chartValuesFromParent={{
                                         id: appDetails.appStoreInstalledAppVersionId,
                                         kind: 'DEPLOYED',
                                     }}
-                                    deprecated={installedConfig.deprecated}
-                                    appStoreId={installedConfig.appStoreId}
-                                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                     chartName={appDetails.appStoreChartName}
                                     name={appDetails.appStoreAppName}
-                                    installedAppVersionId={installedConfig.id}
                                     onHide={closeModal}
                                 />
                             ) : (
