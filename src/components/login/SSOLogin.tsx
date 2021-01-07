@@ -1,4 +1,4 @@
-//@ts-nocheck
+
 import React, { Component } from 'react'
 import './login.css'
 import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
@@ -53,7 +53,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     componentDidMount() {
         getSSOConfigList().then((res) => {
             let sso = res.result.find(sso => sso.active);
-            console.log(res);
             this.setState({ sso: sso.name, lastActiveSSO: sso.name });
         }).then(() => {
             getSSOConfig(this.state.lastActiveSSO)
@@ -68,7 +67,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                        config:{
                         ...ssoConfig.config,
                           config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
-                       }
+                       },
+                       active: ssoConfig.config.active
                     }
                 }, () => {
                    // console.log(this.state)                   
@@ -82,7 +82,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleSSOClick(event): void {
         getSSOConfig(event.target.value).then((response)=>{
-           console.log(response) 
+            const ssoConfig = response.result
                 this.setState({
                     sso: response.result.config.name,
                     ssoConfig: {
@@ -91,7 +91,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         config:{
                          ...ssoConfig.config,
                          config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                        }
+                        },
+                        active: ssoConfig.config.active
                      }
             })
         })
@@ -132,7 +133,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     config: configJSON,
                 }
             }
-          //  console.log(payload);
+            console.log(payload);
 
             updateSSOList(payload).then((response) => {
                 let config = response.result || [];
@@ -185,16 +186,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config?.config || {};
-        console.log(ssoConfig)
+        let ssoConfig = this.state.ssoConfig.config?.config || yamlJsParser.stringify({}, { indent : 2});
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
             : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangJSON = this.state.ssoConfig?.config || {};
-       // console.log(shebangJSON)
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
 
-        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
+        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' , fontSize:'14px'}} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
