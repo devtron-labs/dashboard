@@ -16,22 +16,22 @@ import { getSSOList, createSSOList, updateSSOList } from './service'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
-import { request } from 'http'
 
 export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',
 };
 
-const ssoMap = {
-    google: "https://dexidp.io/docs/connectors/google/",
-    github: "https://dexidp.io/docs/connectors/github/",
-    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-    ldap: "https://dexidp.io/docs/connectors/ldap/",
-    saml: "https://dexidp.io/docs/connectors/saml/",
-    oidc: "https://dexidp.io/docs/connectors/oidc/",
-    openshift: "https://dexidp.io/docs/connectors/openshift/",
-}
+
+// const ssoMap = {
+//     google: "https://dexidp.io/docs/connectors/google/",
+//     github: "https://dexidp.io/docs/connectors/github/",
+//     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
+//     ldap: "https://dexidp.io/docs/connectors/ldap/",
+//     saml: "https://dexidp.io/docs/connectors/saml/",
+//     oidc: "https://dexidp.io/docs/connectors/oidc/",
+//     openshift: "https://dexidp.io/docs/connectors/openshift/",
+// }
 
 // const configMap = {
 //     config: {
@@ -57,7 +57,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             isLoading: true,
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
-            // loginList: [],
             configList: [],
         }
         this.handleSSOClick = this.handleSSOClick.bind(this);
@@ -66,55 +65,70 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     componentDidMount() {
-        getSSOList().then((response) => {
-            let list = response.result[0] || [];
-             this.setState({
-                isLoading: false,
-                sso: response.result[0]?.config?.id || "google",
-                configList: list.map((ssoConfig) => {
-                    return {
-                        ...ssoConfig,
-                        config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
-                    }
-                })
-              
-             })
-           {{/* //Mock data
-            let res = this.getMockData();
+        // getSSOList().then((response) => {
+        //     this.setState({
+        //         isLoading: false,
+        //         sso: response.result[0]?.config?.id || "google",
+        //         configList: response.result.map((ssoConfig) => {
+        //             return {
+        //                 name: ssoConfig.name,
+        //                 url: ssoConfig.url,
+        //                 config: {
+        //                     ...ssoConfig.config,
+        //                     config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+        //                 },
+        //                 active: ssoConfig.active,
+        //             }
+        //         })
+        //     })
+        // }).catch((error) => {
+        //     this.setState({
+        //         isLoading: false,
+        //     })
+        // })
 
-            this.setState({
-                isLoading: false,
-                sso: res.result[0]?.config?.id || "google",
-                configList: res.result.map((ssoConfig) => {
-                    return {
-                        ...ssoConfig,
-                        config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
-                    }
-                }),
-            })*/}}
+        //Mock data
+        let response = this.getMockData();
+        this.setState({
+            isLoading: false,
+            sso: response.result[0]?.config?.id || "google",
+            configList: response.result.map((ssoConfig) => {
+                return {
+                    name: ssoConfig.name,
+                    url: ssoConfig.url,
+                    config: {
+                        ...ssoConfig.config,
+                        config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                    },
+                    active: ssoConfig.active,
+                }
+            })
         })
+
     }
 
     getMockData() {
+        // return {
+        //     result: [{
+        //         name: "gitlab3",
+        //         url: "http://gitlab.com",
+        //         config: {
+        //             type: "oidc",
+        //             id: "google",
+        //             name: "Google",
+        //             config: {
+        //                 "issuer": "https://accounts.google.com",
+        //                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+        //                 "clientSecret": "tytytyttyttytytytytyty",
+        //                 "redirectURI": "",
+        //                 "hostedDomains": []
+        //             }
+        //         },
+        //         active: true,
+        //     }]
+        // }
         return {
-            result: [{
-                name: "gitlab3",
-                url: "http://gitlab.com",
-                config: {
-                    type: "oidc",
-                    id: "google",
-                    name: "Google",
-                    config: {
-                        "issuer": "https://accounts.google.com",
-                        "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                        "clientSecret": "tytytyttyttytytytytyty",
-                        "redirectURI": "",
-                        "hostedDomains": [
-                        ]
-                    }
-                },
-                active: true,
-            }]
+            result: [],
         }
     }
 
@@ -129,72 +143,75 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onLoginConfigSave() {
+        let ssoMap = sample[this.state.sso]
+
         let configJSON: any = {};
         try {
-            configJSON = yamlJsParser.parse(this.state.configList[0].result.config.id);
-
+            configJSON = yamlJsParser.parse(this.state.configList[0].config.id);
         } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast 
+            //Invalid YAML, couldn't be parsed to JSON. Show error toast
         }
 
         //Update
-        if (this.state.configList[0].result.config) {
+        if (this.state.configList[0]?.config) {
+            let payload = {};
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
-
-                let payload = {
-                    name: this.state.configList[0].result.name,
-                    url: this.state.configList[0].result.url,
+                payload = {
+                    name: this.state.configList[0].name,
+                    url: this.state.configList[0].url,
                     config: configJSON,
                 }
-
-                updateSSOList(payload).then((response) => {
-                    let config = response.result || [];
-                    this.setState({
-                        configList: config
-                    });
-                })
-
             }
             //update another sso
             else {
-                return (<ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
-                    <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>)
+                payload = {
+                    name: this.state.configList[0].name,
+                    url: this.state.configList[0].url,
+                    config: configJSON,
+                }
             }
+            console.log(payload);
+
+            updateSSOList(payload).then((response) => {
+                let config = response.result || [];
+                this.setState({
+                    configList: config
+                });
+            })
         }
         //Create SSO
         else {
-            
-            let request = {
-                name: this.state.configList[0].result.name,
-                url: this.state.configList[0].result.url,
+            let payload = {
+                name: this.state.sso,
+                url: ssoMap[this.state.sso],
                 config: configJSON,
             }
-            createSSOList(request).then((response) => {
+            console.log(payload);
+
+            createSSOList(payload).then((response) => {
                 let config = response.result || [];
-                if(config){
+                if (config) {
                     this.setState({
                         configList: config
                     });
-                    toast.success('Saved')
+                    toast.success('Saved');
                 }
-                
             })
         }
     }
 
     handleConfigChange(value: string): void {
         try {
+            let ssoConfig = this.state.configList[0];
             let configList = [{
-                ...this.state.configList[0],
-                config: value
+                name: ssoConfig.name,
+                url: ssoConfig.url,
+                config: {
+                    ...ssoConfig.config,
+                    config: value,
+                },
+                active: ssoConfig.active,
             }];
             this.setState({ configList: configList });
         } catch (error) {
@@ -206,16 +223,23 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
-    renderSSOCodeEditor = () => {
-        //  let codeEditorBody = this.state.configList[0].switch === SwitchItemValues.Configuration ? yamlJsParser.stringify(this.state.configList.map((item) => { return item }), { indent: 2 }) : this.state.configMap;
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? this.state.configList[0].result.config.config.clientID
-         : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+    renderSSOCodeEditor() {
+        let ssoConfig = this.state.configList[0]?.config?.config || yamlJsParser.stringify({}, { indent: 2 });
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
+            : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+
+        let shebangJSON = this.state.configList[0]?.config || {};
+        delete shebangJSON['config'];
+        shebangJSON['config'] = "";
+
+        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 6 })}> </textarea>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
-                <CodeEditor
-                    value={codeEditorBody}
+                <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'
+                    shebang={shebangHtml}
+                    // shebang={`${yamlJsParser.stringify(shebangJSON, { indent: 2 })}`}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={(event) => { this.handleConfigChange(event) }}>
                     <CodeEditor.Header >
@@ -231,99 +255,105 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     render() {
+        let sso = sample[this.state.sso];
+
         if (this.state.isLoading) return <Progressing pageLoader />
-        return (
-            <section className="git-page">
-                <h2 className="form__title">SSO Login Services</h2>
-                <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
-            <a href={``} rel="noopener noreferrer" target="_blank">
 
-                    </a>
-                </h5>
-                <div className="login__sso-wrapper">
-                    <div className="login__sso-flex">
-                        <div >
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" id="1" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={Google} /></aside>
-                                    <aside className="login__text-alignment"> Google</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div >
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
-                                    <aside className="login__text-alignment"> GitHub</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={Microsoft} /></aside>
-                                    <aside className="login__text-alignment"> Microsoft</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={LDAP} /></aside>
-                                    <aside className="login__text-alignment">LDAP</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={SAML} /></aside>
-                                    <aside className="login__text-alignment"> SAML 2.0</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={OIDC} /></aside>
-                                    <aside className="login__text-alignment">OIDC</aside>
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="tertiary-tab__radio ">
-                                <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
-                                <span className="tertiary-tab sso-icons">
-                                    <aside className="login__icon-alignment"><img src={Openshift} /></aside>
-                                    <aside className="login__text-alignment"> OpenShift</aside>
-                                </span>
-                            </label>
-                        </div>
+        return <section className="git-page">
+            <h2 className="form__title">SSO Login Services</h2>
+            <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
+                    <a href={``} rel="noopener noreferrer" target="_blank">
+                </a>
+            </h5>
+            <div className="login__sso-wrapper">
+                <div className="login__sso-flex">
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" id="1" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={Google} /></aside>
+                                <aside className="login__text-alignment">Google</aside>
+                            </span>
+                        </label>
                     </div>
-
-                    <div className="login__description">
-                        <div className="login__link flex">
-                            <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                            <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
-                        </div>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
+                                <aside className="login__text-alignment"> GitHub</aside>
+                            </span>
+                        </label>
                     </div>
-
-                    {this.renderSSOCodeEditor()}
-
-                    <div className="form__buttons mr-24">
-                        <button onClick={(e) =>{e.preventDefault(); this.onLoginConfigSave()}} tabIndex={5} type="button" className={`cta`}>Save</button>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={Microsoft} /></aside>
+                                <aside className="login__text-alignment"> Microsoft</aside>
+                            </span>
+                        </label>
+                    </div>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={LDAP} /></aside>
+                                <aside className="login__text-alignment">LDAP</aside>
+                            </span>
+                        </label>
+                    </div>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={SAML} /></aside>
+                                <aside className="login__text-alignment"> SAML 2.0</aside>
+                            </span>
+                        </label>
+                    </div>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={OIDC} /></aside>
+                                <aside className="login__text-alignment">OIDC</aside>
+                            </span>
+                        </label>
+                    </div>
+                    <div>
+                        <label className="tertiary-tab__radio ">
+                            <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><img src={Openshift} /></aside>
+                                <aside className="login__text-alignment"> OpenShift</aside>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div className="login__description">
+                    <div className="login__link flex">
+                        <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
+                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${sso.url}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                     </div>
                 </div>
 
+                {this.renderSSOCodeEditor()}
 
-            </section>
+                <div className="form__buttons mr-24">
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="button" className={`cta`}>Save</button>
+                </div>
+            </div>
 
-        )
+            {this.state.showToggling ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
+                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
+                <ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                    <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
+        </section>
     }
 }

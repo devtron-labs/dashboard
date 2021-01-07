@@ -1,142 +1,124 @@
 {
-        "google": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+    "google": {
+        "name": "google",
+        "url": "https://dexidp.io/docs/connectors/google/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
         },
-        "github": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "github": {
+        "name": "github",
+        "url": "https://dexidp.io/docs/connectors/github/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
         },
-        "microsoft": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "microsoft": {
+        "name": "microsoft",
+        "url": "https://dexidp.io/docs/connectors/microsoft/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": [
+                    "delhivery.com",
+                    "devtron.ai"
+                ]
+            }
         },
-        "ldap": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "ldap": {
+        "name": "ldap",
+        "url": "https://dexidp.io/docs/connectors/ldap/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
         },
-        "saml": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "saml": {
+        "name": "gitlab3",
+        "url": "http://gitlab.com",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
         },
-        "oidc": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "oidc": {
+        "name": "oidc",
+        "url": "https://dexidp.io/docs/connectors/saml/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
         },
-        "openshift": {
-            "name": "gitlab3",
-            "url": "http://gitlab.com",
+        "active": true
+    },
+    "openshift": {
+        "name": "openshift",
+        "url": "https://dexidp.io/docs/connectors/openshift/",
+        "config": {
+            "type": "oidc",
+            "id": "google",
+            "name": "Google",
             "config": {
-                "type": "oidc",
-                "id": "google",
-                "name": "Google",
-                "config": {
-                    "issuer": "https://accounts.google.com",
-                    "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                    "clientSecret": "g7FUXqTs8Vdsfdsfsdf4CxFv94",
-                    "redirectURI": "https://cd.delhivery.com/api/dex/callback",
-                    "hostedDomains": [
-                        "delhivery.com",
-                        "devtron.ai"
-                    ]
-                }
-            },
-            "active": true
-        }
+                "issuer": "https://accounts.google.com",
+                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
+                "clientSecret": "sassasasasaaqqqqqq",
+                "redirectURI": "https://google.com/api/dex/callback",
+                "hostedDomains": []
+            }
+        },
+        "active": true
     }
+}

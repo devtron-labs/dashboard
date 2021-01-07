@@ -9,35 +9,23 @@ export interface SSOLogin {
 }
 
 export interface SSOLoginState {
-    isLoading:boolean;
+    isLoading: boolean;
     sso: string;
     configMap: string;
-    showToggling: boolean
+    showToggling: boolean;
     configList: SSOConfigType[];
 }
 
 interface SSOConfigType {
-    code: number;
-    status: string;
-    result: {
-            id: number;
-            name: string;
-            label: string;
-            url: string;
-            config: {
-                type: string;
-                id: string;
-                name: string;
-                config: {
-                issuer: string;
-                clientID: string;
-                clientSecret: string;
-                redirectURI: string;
-                hostedDomains: string[]
-                }
-        },
+    name: string;
+    url: string;
+    config: {
+        type: string;
+        id: string;
+        name: string;
+        config: string; //YAML string
+    },
     active: boolean;
-}
 }
 
 export interface SSOLoginProps {
