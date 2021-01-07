@@ -193,11 +193,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
 
-        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' , fontSize:'14px'}} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
+        let shebangHtml = <textarea style={{ resize: 'none', height: '90px', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' , fontSize:'14px' , fontFamily: 'Consolas, "Courier New", monospace'}} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
-                    height={300}
+                    height={200}
                     mode='yaml'
                     shebang={shebangHtml}
                     // shebang={`${yamlJsParser.stringify(shebangJSON, { indent: 2 })}`}
@@ -295,7 +295,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="sso__description">
                     <div className=" flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${this.state.sso}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${this.state.sso}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a></div>
                     </div>
                 </div>
 
