@@ -38,6 +38,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         super(props)
         this.state = {
             sso: "",
+            saveLoading:true,
             lastActiveSSO: "",
             isLoading: true,
             configMap: SwitchItemValues.Configuration,
@@ -289,7 +290,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.renderSSOCodeEditor()}
 
                 <div className="form__buttons mr-24">
-                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit"   className={`cta`}>{this.state.isLoading? <Progressing/>:  'Save'}</button>
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading? <Progressing/>: this.state.ssoConfig.name == this.state.lastActiveSSO ?  'Update':'Save'}</button>
                 </div>
             </div>
 

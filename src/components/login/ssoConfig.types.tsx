@@ -7,6 +7,7 @@ export interface SSOLogin {
 
 export interface SSOLoginState {
     isLoading: boolean;
+    saveLoading:boolean;
     sso: string;
     lastActiveSSO: string;
     configMap: string;
