@@ -92,7 +92,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const initialChartValuesFromParent = chartValuesFromParent;
     const [chartValues, setChartValues] = useState(chartValuesFromParent);
     const { push } = useHistory()
-    const { chartId, envId } = useParams()
+    const { chartId, envId } = useParams<{chartId, envId}>()
     const [showCodeEditorError, setCodeEditorError] = useState(false);
     const deployChartForm = useRef(null);
     const deployChartEditor = useRef(null);
@@ -181,9 +181,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverrideYaml: textRef,
                     appName
                 };
-                const { result: { environmentId: newEnvironmentId, installedAppId } } = await installChart(request);
-                toast.success('Deployment initiated')
-                push(`/chart-store/deployments/${installedAppId}/env/${newEnvironmentId}`)
+                const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(request);
+                toast.success('Deployment initiated');
+                push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
             }
         }
         catch (err) {
