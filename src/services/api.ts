@@ -75,7 +75,7 @@ const responseMessages = {
 
 function handleLogout() {
     let cont = `${window.location.pathname.replace(process.env.PUBLIC_URL, '')}${window.location.search}`;
-    const loginUrl = process.env.NODE_ENV === 'development' ? URLS.DEVTRON_LOGIN : URLS.LOGIN
+    const loginUrl = URLS.LOGIN_SSO;
     window.location.href = `${window.location.origin}${process.env.PUBLIC_URL}${loginUrl}?continue=${cont}`;
 }
 
@@ -119,7 +119,7 @@ async function fetchAPI(url: string, type: string, data: object, signal: AbortSi
                 else {
                     handleLogout()
                 }
-            } else if (response.status >= 300 && response.status <= 599) {
+            } else  if (response.status >= 300 && response.status <= 599) {
                 return await handleServerError(contentType, response)
             } else {
                 if (contentType === 'application/json') {

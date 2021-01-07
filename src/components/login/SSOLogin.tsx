@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, useForm, showError, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
+import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -9,10 +9,10 @@ import LDAP from '../../assets/icons/ic-ldap.svg'
 import SAML from '../../assets/icons/ic-saml.svg'
 import OIDC from '../../assets/icons/ic-oidc.svg'
 import Openshift from '../../assets/icons/ic-openshift.svg'
-import { SSOLoginProps, SSOLoginState } from './types'
+import { SSOLoginProps, SSOLoginState } from './ssoConfig.types'
 import warn from '../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
-import { getSSOList, createSSOList, updateSSOList } from './service'
+import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
@@ -22,42 +22,26 @@ export const SwitchItemValues = {
     Configuration: 'configuration',
 };
 
-
-// const ssoMap = {
-//     google: "https://dexidp.io/docs/connectors/google/",
-//     github: "https://dexidp.io/docs/connectors/github/",
-//     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-//     ldap: "https://dexidp.io/docs/connectors/ldap/",
-//     saml: "https://dexidp.io/docs/connectors/saml/",
-//     oidc: "https://dexidp.io/docs/connectors/oidc/",
-//     openshift: "https://dexidp.io/docs/connectors/openshift/",
-// }
-
-// const configMap = {
-//     config: {
-//         type: "",
-//         id: "",
-//         name: "",
-//         config: {
-//             issuer: "",
-//             clientID: "",
-//             clientSecret: "",
-//             redirectURI: "",
-//             hostedDomains: []
-//         }
-//     }
-// }
-// const configSwitch = 'configuration';
+const ssoMap = {
+    google: "https://dexidp.io/docs/connectors/google/",
+    github: "https://dexidp.io/docs/connectors/github/",
+    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
+    ldap: "https://dexidp.io/docs/connectors/ldap/",
+    saml: "https://dexidp.io/docs/connectors/saml/",
+    oidc: "https://dexidp.io/docs/connectors/oidc/",
+    openshift: "https://dexidp.io/docs/connectors/openshift/",
+}
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
-            sso: "google",
+            sso: "",
+            lastActiveSSO: "",
             isLoading: true,
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
-            configList: [],
+            ssoConfig: undefined,
         }
         this.handleSSOClick = this.handleSSOClick.bind(this);
         this.toggleWarningModal = this.toggleWarningModal.bind(this);
@@ -65,71 +49,34 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     componentDidMount() {
-        // getSSOList().then((response) => {
-        //     this.setState({
-        //         isLoading: false,
-        //         sso: response.result[0]?.config?.id || "google",
-        //         configList: response.result.map((ssoConfig) => {
-        //             return {
-        //                 name: ssoConfig.name,
-        //                 url: ssoConfig.url,
-        //                 config: {
-        //                     ...ssoConfig.config,
-        //                     config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-        //                 },
-        //                 active: ssoConfig.active,
-        //             }
-        //         })
-        //     })
-        // }).catch((error) => {
-        //     this.setState({
-        //         isLoading: false,
-        //     })
-        // })
-
-        //Mock data
-        let response = this.getMockData();
-        this.setState({
-            isLoading: false,
-            sso: response.result[0]?.config?.id || "google",
-            configList: response.result.map((ssoConfig) => {
-                return {
-                    name: ssoConfig.name,
-                    url: ssoConfig.url,
-                    config: {
-                        ...ssoConfig.config,
-                        config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                    },
-                    active: ssoConfig.active,
-                }
+        getSSOConfigList().then((res) => {
+            let sso = res.result.find(sso => sso.active);
+            console.log(res);
+            this.setState({ sso: sso, lastActiveSSO: sso });
+        }).then(() => {
+            getSSOConfig(this.state.lastActiveSSO).then((response) => {
+                this.setState({
+                    isLoading: false,
+                    sso: response.result.config.name,
+                    ssoConfig: response.result.map((ssoConfig) => {
+                        return {
+                            name: ssoConfig.name,
+                            url: ssoConfig.url,
+                            config: {
+                                ...ssoConfig.config,
+                                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                            },
+                            active: ssoConfig.active,
+                        }
+                    })
+                }, () => {
+                    console.log(this.state)
+                })
             })
+
+        }).catch((error) => {
+            this.setState({ isLoading: false })
         })
-
-    }
-
-    getMockData() {
-        // return {
-        //     result: [{
-        //         name: "gitlab3",
-        //         url: "http://gitlab.com",
-        //         config: {
-        //             type: "oidc",
-        //             id: "google",
-        //             name: "Google",
-        //             config: {
-        //                 "issuer": "https://accounts.google.com",
-        //                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-        //                 "clientSecret": "tytytyttyttytytytytyty",
-        //                 "redirectURI": "",
-        //                 "hostedDomains": []
-        //             }
-        //         },
-        //         active: true,
-        //     }]
-        // }
-        return {
-            result: [],
-        }
     }
 
     handleSSOClick(event): void {
@@ -143,31 +90,29 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onLoginConfigSave() {
-        let ssoMap = sample[this.state.sso]
-
         let configJSON: any = {};
         try {
-            configJSON = yamlJsParser.parse(this.state.configList[0].config.id);
+            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.id);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
         }
 
         //Update
-        if (this.state.configList[0]?.config) {
+        if (this.state.ssoConfig?.config) {
             let payload = {};
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
                 payload = {
-                    name: this.state.configList[0].name,
-                    url: this.state.configList[0].url,
+                    name: this.state.ssoConfig.name,
+                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
             //update another sso
             else {
                 payload = {
-                    name: this.state.configList[0].name,
-                    url: this.state.configList[0].url,
+                    name: this.state.ssoConfig.name,
+                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
@@ -176,7 +121,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             updateSSOList(payload).then((response) => {
                 let config = response.result || [];
                 this.setState({
-                    configList: config
+                    ssoConfig: config
                 });
             })
         }
@@ -193,7 +138,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 let config = response.result || [];
                 if (config) {
                     this.setState({
-                        configList: config
+                        ssoConfig: config
                     });
                     toast.success('Saved');
                 }
@@ -203,17 +148,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleConfigChange(value: string): void {
         try {
-            let ssoConfig = this.state.configList[0];
-            let configList = [{
-                name: ssoConfig.name,
-                url: ssoConfig.url,
-                config: {
-                    ...ssoConfig.config,
-                    config: value,
-                },
-                active: ssoConfig.active,
-            }];
-            this.setState({ configList: configList });
+            this.setState({
+                ssoConfig: {
+                    ...this.state.ssoConfig,
+                    config: {
+                        ...this.state.ssoConfig.config,
+                        config: value,
+                    },
+                }
+            });
         } catch (error) {
 
         }
@@ -224,11 +167,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.configList[0]?.config?.config || yamlJsParser.stringify({}, { indent: 2 });
+        let ssoConfig = this.state.ssoConfig?.config?.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
             : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
 
-        let shebangJSON = this.state.configList[0]?.config || {};
+        let shebangJSON = this.state.ssoConfig?.config || {};
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
 
@@ -331,10 +274,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                 </div>
-                <div className="login__description">
-                    <div className="login__link flex">
+                <div className="sso__description">
+                    <div className="flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${sso.url}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                     </div>
                 </div>
 
