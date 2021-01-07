@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
+import { Progressing, useForm, showError, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -22,15 +22,16 @@ export const SwitchItemValues = {
     Configuration: 'configuration',
 };
 
-const ssoMap = {
-    google: "https://dexidp.io/docs/connectors/google/",
-    github: "https://dexidp.io/docs/connectors/github/",
-    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-    ldap: "https://dexidp.io/docs/connectors/ldap/",
-    saml: "https://dexidp.io/docs/connectors/saml/",
-    oidc: "https://dexidp.io/docs/connectors/oidc/",
-    openshift: "https://dexidp.io/docs/connectors/openshift/",
-}
+
+ const ssoMap = {
+     google: "https://dexidp.io/docs/connectors/google/",
+     github: "https://dexidp.io/docs/connectors/github/",
+     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
+     ldap: "https://dexidp.io/docs/connectors/ldap/",
+     saml: "https://dexidp.io/docs/connectors/saml/",
+     oidc: "https://dexidp.io/docs/connectors/oidc/",
+     openshift: "https://dexidp.io/docs/connectors/openshift/",
+ }
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
@@ -77,6 +78,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).catch((error) => {
             this.setState({ isLoading: false })
         })
+
+      
+
     }
 
     handleSSOClick(event): void {
@@ -90,6 +94,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onLoginConfigSave() {
+        let ssoMap = sample[this.state.sso]
+
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.id);
@@ -147,19 +153,18 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleConfigChange(value: string): void {
-        try {
-            this.setState({
-                ssoConfig: {
-                    ...this.state.ssoConfig,
-                    config: {
-                        ...this.state.ssoConfig.config,
-                        config: value,
-                    },
-                }
-            });
-        } catch (error) {
-
-        }
+            try {
+                this.setState({
+                    ssoConfig: {
+                        ...this.state.ssoConfig,
+                        config: {
+                            ...this.state.ssoConfig.config,
+                            config: value,
+                        },
+                    }
+                });
+              } catch (error) {
+            }
     }
 
     handleCodeEditorTab(value: string): void {
@@ -274,23 +279,23 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                 </div>
-                <div className="sso__description">
-                    <div className="flex">
+                <div className="login__description">
+                    <div className="login__link flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${sso.url}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                     </div>
                 </div>
 
                 {this.renderSSOCodeEditor()}
 
                 <div className="form__buttons mr-24">
-                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="button" className={`cta`}>Save</button>
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit"   className={`cta`}>{this.state.isLoading? <Progressing/>:  'Save'}</button>
                 </div>
             </div>
 
             {this.state.showToggling ? <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">Use 'Github' instead of 'Google' for login?</div>
+                <div className="modal__title sso__warn-title">Use '{this.state.ssoConfig.name}' instead of '{this.state.lastActiveSSO}' for login?</div>
                 <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
                 <ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
