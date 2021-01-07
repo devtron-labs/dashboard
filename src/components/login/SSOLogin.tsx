@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, useForm, showError, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
+import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -21,7 +21,6 @@ export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',
 };
-
 
  const ssoMap = {
      google: "https://dexidp.io/docs/connectors/google/",
@@ -293,10 +292,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                 </div>
-                <div className="login__description">
-                    <div className="login__link flex">
+                <div className="sso__description">
+                    <div className=" flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${sso.url}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
+                        <div><span className="login__bold">Help: </span>See documentation for <a rel="noreferrer noopener" href={`${this.state.sso}`} target="_blank" className="login__auth-link"> Authentication Through {this.state.sso}</a></div>
                     </div>
                 </div>
 
