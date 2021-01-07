@@ -79,12 +79,27 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).catch((error) => {
             this.setState({ isLoading: false })
         })
-
-      
-
     }
 
     handleSSOClick(event): void {
+        getSSOConfig(this.state.ssoConfig.config.config).then((response)=>{
+           console.log(response) 
+           this.setState({
+                sso: response.result.config.name,
+                ssoConfig: response.result.map((ssoConfig) => {
+                    return {
+                        name: ssoConfig.name,
+                        url: ssoConfig.url,
+                        config: {
+                            ...ssoConfig.config,
+                            config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                        },
+                        active: ssoConfig.active,
+                    }
+                })
+           })
+
+        })
         this.setState({
             sso: event.target.value
         })
@@ -95,8 +110,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onLoginConfigSave() {
-        let ssoMap = sample[this.state.sso]
-
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.id);
