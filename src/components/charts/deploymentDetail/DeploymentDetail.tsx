@@ -127,6 +127,7 @@ export default function AppDetail() {
                                         },
                                     ])}
                                     {...installedConfig}
+                                    installedAppId={installedConfig.installedAppId}
                                     valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
                                     rawValues={
                                         installedConfig.valuesOverrideYaml
