@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { Component } from 'react'
 import './login.css'
 import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
@@ -55,22 +56,20 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             console.log(res);
             this.setState({ sso: sso.name, lastActiveSSO: sso.name });
         }).then(() => {
-            getSSOConfig(this.state.lastActiveSSO).then((response) => {
-                const ssoMap = response.result
+            getSSOConfig(this.state.lastActiveSSO)
+            .then((response) => {
+                var ssoConfig = response.result
                 this.setState({
                     isLoading: false,
-                    sso: response.result.config.name,
-                    ssoConfig: response.result.map((ssoConfig)=>{
-                       return { name: ssoConfig.name,
-                                url: ssoConfig.url,
-                                config: {
-                                    ...ssoConfig.config,
-                                    config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                                },                      }
-
-                    })
-                   
-                    
+                    sso: ssoConfig.name,
+                    ssoConfig: {
+                       name: ssoConfig.config.name,
+                       url: ssoConfig.config.url,
+                       config:{
+                        ...ssoConfig.config,
+                          config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                       }
+                    }
                 }, () => {
                    // console.log(this.state)                   
                 } )
@@ -86,17 +85,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
            console.log(response) 
                 this.setState({
                     sso: response.result.config.name,
-                    ssoConfig: response.result.map((ssoConfig) => {
-                        return {
-                            name: ssoConfig.name,
-                            url: ssoConfig.url,
-                            config: {
-                                ...ssoConfig.config,
-                                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                            },
-                            active: ssoConfig.active,
+                    ssoConfig: {
+                        name: ssoConfig.name,
+                        url: ssoConfig.url,
+                        config:{
+                         ...ssoConfig.config,
+                         config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
                         }
-                    })
+                     }
             })
         })
         this.setState({
@@ -189,15 +185,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig?.config?.config || yamlJsParser.stringify({}, { indent: 2 });
+        let ssoConfig = this.state.ssoConfig.config?.config || {};
+        console.log(ssoConfig)
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
             : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
-
         let shebangJSON = this.state.ssoConfig?.config || {};
+       // console.log(shebangJSON)
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
 
-        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
+        let shebangHtml = <textarea style={{ resize: 'none', height: 'auto', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
@@ -313,8 +310,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             {this.state.showToggling ? <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
                 <div className="modal__title sso__warn-title">Use '{this.state.ssoConfig.name}' instead of '{this.state.lastActiveSSO}' for login?</div>
-                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>
-                <ConfirmationDialog.ButtonGroup>
+                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>                <ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
                     <button type="submit" className="cta  sso__warn-button" >Confirm</button>
                 </ConfirmationDialog.ButtonGroup>
