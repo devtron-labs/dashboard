@@ -81,7 +81,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        createSSOList(event.target.value).then((response)=>{
+        getSSOConfig(event.target.value).then((response)=>{
             const ssoConfig = response.result
                 this.setState({
                     sso: response.result.config.name,
