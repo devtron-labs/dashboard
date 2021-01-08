@@ -81,7 +81,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        getSSOConfig(event.target.value).then((response)=>{
+        createSSOList(event.target.value).then((response)=>{
             const ssoConfig = response.result
                 this.setState({
                     sso: response.result.config.name,
@@ -116,7 +116,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         //Update
         if(this.state.ssoConfig?.config && this.state.sso == this.state.lastActiveSSO){
       
-            let payload = {};
+            let payload = {}
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
                 payload = {
@@ -197,7 +197,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
-                    height={200}
+                    height={300}
                     mode='yaml'
                     shebang={shebangHtml}
                     // shebang={`${yamlJsParser.stringify(shebangJSON, { indent: 2 })}`}
