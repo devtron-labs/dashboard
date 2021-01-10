@@ -3,7 +3,7 @@
         "name": "google",
         "url": "https://dexidp.io/docs/connectors/google/",
         "config": {
-            "type": "oidc",
+            "type": "google",
             "id": "google",
             "name": "Google",
             "config": {
@@ -13,16 +13,15 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     },
     "github": {
         "name": "github",
         "url": "https://dexidp.io/docs/connectors/github/",
         "config": {
-            "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "type": "github",
+            "id": "github",
+            "name": "GitHub",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -30,16 +29,15 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     },
     "microsoft": {
         "name": "microsoft",
         "url": "https://dexidp.io/docs/connectors/microsoft/",
         "config": {
-            "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "type": "microsoft",
+            "id": "microsoft",
+            "name": "Microsoft",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -50,16 +48,15 @@
                     "devtron.ai"
                 ]
             }
-        },
-        "active": true
+        }
     },
     "ldap": {
         "name": "ldap",
         "url": "https://dexidp.io/docs/connectors/ldap/",
         "config": {
-            "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "type": "ldap",
+            "id": "ldap",
+            "name": "LDAP",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -67,16 +64,15 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     },
     "saml": {
         "name": "gitlab3",
         "url": "http://gitlab.com",
         "config": {
-            "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "type": "saml",
+            "id": "saml",
+            "name": "SAML",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -84,16 +80,15 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     },
     "oidc": {
         "name": "oidc",
         "url": "https://dexidp.io/docs/connectors/saml/",
         "config": {
             "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "id": "oidc",
+            "name": "OIDC",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -101,16 +96,15 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     },
     "openshift": {
         "name": "openshift",
         "url": "https://dexidp.io/docs/connectors/openshift/",
         "config": {
-            "type": "oidc",
-            "id": "google",
-            "name": "Google",
+            "type": "openshift",
+            "id": "openshift",
+            "name": "Openshiift",
             "config": {
                 "issuer": "https://accounts.google.com",
                 "clientID": "140226597160-1cd76.apps.googleusercontent.com",
@@ -118,7 +112,6 @@
                 "redirectURI": "https://google.com/api/dex/callback",
                 "hostedDomains": []
             }
-        },
-        "active": true
+        }
     }
 }

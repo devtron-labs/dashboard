@@ -23,23 +23,23 @@ export const SwitchItemValues = {
     Configuration: 'configuration',
 };
 
- const ssoMap = {
-     google: "https://dexidp.io/docs/connectors/google/",
-     github: "https://dexidp.io/docs/connectors/github/",
-     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-     ldap: "https://dexidp.io/docs/connectors/ldap/",
-     saml: "https://dexidp.io/docs/connectors/saml/",
-     oidc: "https://dexidp.io/docs/connectors/oidc/",
-     openshift: "https://dexidp.io/docs/connectors/openshift/",
- }
+const ssoMap = {
+    google: "https://dexidp.io/docs/connectors/google/",
+    github: "https://dexidp.io/docs/connectors/github/",
+    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
+    ldap: "https://dexidp.io/docs/connectors/ldap/",
+    saml: "https://dexidp.io/docs/connectors/saml/",
+    oidc: "https://dexidp.io/docs/connectors/oidc/",
+    openshift: "https://dexidp.io/docs/connectors/openshift/",
+}
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
-            sso: "",
-            saveLoading:false,
-            lastActiveSSO: "",
+            sso: "google",
+            lastActiveSSO: undefined,
+            saveLoading: false,
             isLoading: true,
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
@@ -52,28 +52,39 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     componentDidMount() {
         getSSOConfigList().then((res) => {
-            let sso = res.result.find(sso => sso.active);
-            this.setState({ sso: sso.name, lastActiveSSO: sso.name });
-        }).then(() => {
-            getSSOConfig(this.state.lastActiveSSO)
-            .then((response) => {
-                var ssoConfig = response.result
-                this.setState({
-                    isLoading: false,
-                    sso: ssoConfig.name,
-                    ssoConfig: {
-                       name: ssoConfig.config.name,
-                       url: ssoConfig.config.url,
-                       config:{
-                        ...ssoConfig.config,
-                          config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
-                       },
-                       active: ssoConfig.config.active
-                    }
-                }, () => {
-                   // console.log(this.state)                   
-                } )
-            })
+            let ssoConfig = res.result.find(sso => sso.active);
+            this.setState({ sso: ssoConfig.name, lastActiveSSO: ssoConfig }, () => {
+                if (this.state.lastActiveSSO && this.state.lastActiveSSO.id) {
+                    getSSOConfig(this.state.lastActiveSSO.name.toLowerCase()).then((response) => {
+                        var ssoConfig = response.result
+                        this.setState({
+                            isLoading: false,
+                            ssoConfig: {
+                                name: ssoConfig.config.name,
+                                url: ssoConfig.config.url,
+                                config: {
+                                    ...ssoConfig.config,
+                                    config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                                },
+                                active: ssoConfig.config.active
+                            }
+                        })
+                    })
+                }
+                else {
+                    var ssoConfig = sample[this.state.sso];
+                    this.setState({
+                        isLoading: false,
+                        ssoConfig: {
+                            name: ssoConfig.config.name,
+                            config: {
+                                ...ssoConfig.config,
+                                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                            },
+                        }
+                    })
+                }
+            });
 
         }).catch((error) => {
             this.setState({ isLoading: false })
@@ -81,23 +92,34 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        getSSOConfig(event.target.value).then((response)=>{
-            const ssoConfig = response.result
-                this.setState({
-                    sso: response.result.config.name,
-                    ssoConfig: {
-                        name: ssoConfig.name,
-                        url: ssoConfig.url,
-                        config:{
-                         ...ssoConfig.config,
-                         config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                        },
-                        active: ssoConfig.config.active
-                     }
+        let newsso = event.target.value;
+        getSSOConfig(event.target.value).then((response) => {
+            const ssoConfig = response.result;
+            this.setState({
+                sso: newsso,
+                ssoConfig: {
+                    name: ssoConfig.name,
+                    url: ssoConfig.url,
+                    config: {
+                        ...ssoConfig.config,
+                        config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                    },
+                    active: ssoConfig.config.active
+                }
             })
-        })
-        this.setState({
-            sso: event.target.value
+        }).catch((error) => {
+            const ssoConfig = sample[newsso];
+            this.setState({
+                sso: newsso,
+                ssoConfig: {
+                    name: ssoConfig.name,
+                    url: ssoConfig.url,
+                    config: {
+                        ...ssoConfig.config,
+                        config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                    },
+                }
+            })
         })
     }
 
@@ -114,8 +136,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
 
         //Update
-        if(this.state.ssoConfig?.config && this.state.sso == this.state.lastActiveSSO){
-      
+        if (this.state.lastActiveSSO && this.state.sso == this.state.lastActiveSSO.name) {
+
             let payload = {}
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
@@ -142,7 +164,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     saveLoading: !this.state.isLoading
                 });
             })
-        
+
         }
         //Create SSO
         else {
@@ -167,18 +189,18 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleConfigChange(value: string): void {
-            try {
-                this.setState({
-                    ssoConfig: {
-                        ...this.state.ssoConfig,
-                        config: {
-                            ...this.state.ssoConfig.config,
-                            config: value,
-                        },
-                    }
-                });
-              } catch (error) {
-            }
+        try {
+            this.setState({
+                ssoConfig: {
+                    ...this.state.ssoConfig,
+                    config: {
+                        ...this.state.ssoConfig.config,
+                        config: value,
+                    },
+                }
+            });
+        } catch (error) {
+        }
     }
 
     handleCodeEditorTab(value: string): void {
@@ -186,14 +208,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config?.config || yamlJsParser.stringify({}, { indent : 2});
+        console.log(this.state.ssoConfig)
+        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
             : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangJSON = this.state.ssoConfig?.config || {};
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
 
-        let shebangHtml = <textarea style={{ resize: 'none', height: '90px', border: 'none', padding: `0 60px`, overflow: 'none', color:'#f32e2e' , fontSize:'14px' , fontFamily: 'Consolas, "Courier New", monospace'}} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
+        let shebangHtml = <textarea style={{ resize: 'none', height: '90px', border: 'none', padding: `0 60px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
@@ -216,8 +239,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     render() {
-        let sso = sample[this.state.sso];
-
         if (this.state.isLoading) return <Progressing pageLoader />
 
         return <section className="git-page">
@@ -302,7 +323,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.renderSSOCodeEditor()}
 
                 <div className="form__buttons mr-24">
-                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading? <Progressing/>: this.state.sso == this.state.lastActiveSSO ?  'Update':'Save'}</button>
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading ? <Progressing /> : this.state.lastActiveSSO ? 'Update' : 'Save'}</button>
                 </div>
             </div>
 

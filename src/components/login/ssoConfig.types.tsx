@@ -7,24 +7,24 @@ export interface SSOLogin {
 
 export interface SSOLoginState {
     isLoading: boolean;
-    saveLoading:boolean;
-    sso: string;
-    lastActiveSSO: string;
+    saveLoading: boolean;
+    sso: string; //lowercase
+    lastActiveSSO: undefined | SSOLogin
     configMap: string;
     showToggling: boolean;
     ssoConfig: SSOConfigType;
 }
 
 interface SSOConfigType {
-    name: string;
-    url: string;
+    name?: string;
+    url?: string;
     config: {
         type: string;
         id: string;
         name: string;
         config: string; //YAML string
     },
-    active: boolean;
+    active?: boolean;
 }
 
 export interface SSOLoginProps {
