@@ -53,42 +53,42 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     componentDidMount() {
         getSSOConfigList().then((res) => {
             let ssoConfig = res.result.find(sso => sso.active);
-            this.setState({ sso: ssoConfig.name, lastActiveSSO: ssoConfig }, () => {
-                if (this.state.lastActiveSSO && this.state.lastActiveSSO.id) {
-                    getSSOConfig(this.state.lastActiveSSO.name.toLowerCase()).then((response) => {
-                        var ssoConfig = response.result
-                        this.setState({
-                            isLoading: false,
-                            ssoConfig: {
-                                name: ssoConfig.config.name,
-                                url: ssoConfig.config.url,
-                                config: {
-                                    ...ssoConfig.config,
-                                    config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
-                                },
-                                active: ssoConfig.config.active
-                            }
-                        })
-                    })
-                }
-                else {
-                    var ssoConfig = sample[this.state.sso];
+            this.setState({ sso: ssoConfig.name, lastActiveSSO: ssoConfig });
+        }).then(() => {
+            if (this.state.lastActiveSSO && this.state.lastActiveSSO.id) {
+                getSSOConfig(this.state.lastActiveSSO.name.toLowerCase()).then((response) => {
+                    var ssoConfig = response.result
                     this.setState({
                         isLoading: false,
                         ssoConfig: {
                             name: ssoConfig.config.name,
+                            url: ssoConfig.config.url,
                             config: {
                                 ...ssoConfig.config,
                                 config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
                             },
+                            active: ssoConfig.config.active
                         }
                     })
-                }
-            });
-
-        }).catch((error) => {
-            this.setState({ isLoading: false })
+                })
+            }
+            else {
+                var ssoConfig = sample[this.state.sso];
+                this.setState({
+                    isLoading: false,
+                    ssoConfig: {
+                        name: ssoConfig.config.name,
+                        config: {
+                            ...ssoConfig.config,
+                            config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                        },
+                    }
+                })
+            }
         })
+            .catch((error) => {
+                this.setState({ isLoading: false })
+            })
     }
 
     handleSSOClick(event): void {
@@ -143,7 +143,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (configJSON.id && configJSON.id == this.state.sso) {
                 payload = {
                     name: this.state.ssoConfig.name,
-                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
@@ -151,7 +150,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             else {
                 payload = {
                     name: this.state.ssoConfig.name,
-                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
@@ -163,6 +161,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     ssoConfig: config,
                     saveLoading: !this.state.isLoading
                 });
+            }).catch((error) => {
+                this.setState({ isLoading: false })
             })
 
         }
@@ -170,7 +170,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         else {
             let payload = {
                 name: this.state.sso,
-                url: ssoMap[this.state.sso],
                 config: configJSON,
             }
             console.log(payload);
@@ -184,6 +183,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     });
                     toast.success('Saved');
                 }
+            }).catch((error) => {
+                this.setState({ isLoading: false })
             })
         }
     }
@@ -240,7 +241,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     render() {
         if (this.state.isLoading) return <Progressing pageLoader />
-
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
@@ -327,14 +327,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
             </div>
 
-            {this.state.showToggling ? <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">Use '{this.state.ssoConfig.name}' instead of '{this.state.lastActiveSSO}' for login?</div>
-                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                    <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog> : null}
-        </section>
+            {
+                this.state.showToggling ? <ConfirmationDialog>
+                    <ConfirmationDialog.Icon src={warn} />
+                    <div className="modal__title sso__warn-title">Use '{this.state.ssoConfig.name}' instead of '{this.state.lastActiveSSO}' for login?</div>
+                    <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>                <ConfirmationDialog.ButtonGroup>
+                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog> : null
+            }
+        </section >
     }
 }
