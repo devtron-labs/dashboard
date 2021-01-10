@@ -1,117 +1,137 @@
 {
     "google": {
-        "name": "google",
-        "url": "https://dexidp.io/docs/connectors/google/",
-        "config": {
-            "type": "google",
-            "id": "google",
-            "name": "Google",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
+        "connectors": [
+            {
+              "type": "google",
+              "id": "google",
+              "name": "Google",
+              "config": {
+                "clientID": "$GOOGLE_CLIENT_ID",
+                "clientSecret": "$GOOGLE_CLIENT_SECRET",
+                "redirectURI": "http://127.0.0.1:5556/callback"
+              }
             }
-        }
-    },
+          ]
+        },
+    
     "github": {
-        "name": "github",
-        "url": "https://dexidp.io/docs/connectors/github/",
-        "config": {
-            "type": "github",
-            "id": "github",
-            "name": "GitHub",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
-            }
-        }
+            "connectors": [
+              {
+                "type": "github",
+                "id": "github",
+                "name": "GitHub",
+                "config": {
+                  "clientID": "$GITHUB_CLIENT_ID",
+                  "clientSecret": "$GITHUB_CLIENT_SECRET",
+                  "redirectURI": "http://127.0.0.1:5556/dex/callback"
+                }
+              }
+            ]
+          
     },
     "microsoft": {
-        "name": "microsoft",
-        "url": "https://dexidp.io/docs/connectors/microsoft/",
-        "config": {
-            "type": "microsoft",
-            "id": "microsoft",
-            "name": "Microsoft",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": [
-                    "delhivery.com",
-                    "devtron.ai"
-                ]
-            }
-        }
-    },
+      
+            "connectors": [
+              {
+                "type": "microsoft",
+                "id": "microsoft",
+                "name": "Microsoft",
+                "config": {
+                  "clientID": "$MICROSOFT_APPLICATION_ID",
+                  "clientSecret": "$MICROSOFT_CLIENT_SECRET",
+                  "redirectURI": "http://127.0.0.1:5556/dex/callback"
+                }
+              }
+            ]
+         
+        },
     "ldap": {
-        "name": "ldap",
-        "url": "https://dexidp.io/docs/connectors/ldap/",
-        "config": {
-            "type": "ldap",
-            "id": "ldap",
-            "name": "LDAP",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
-            }
-        }
+            "connectors": [
+              {
+                "type": "ldap",
+                "name": "ActiveDirectory",
+                "id": "ad",
+                "config": {
+                  "host": "ad.example.com:636",
+                  "insecureNoSSL": false,
+                  "insecureSkipVerify": true,
+                  "bindDN": "cn=Administrator,cn=users,dc=example,dc=com",
+                  "bindPW": "admin0!",
+                  "usernamePrompt": "Email Address",
+                  "userSearch": {
+                    "baseDN": "cn=Users,dc=example,dc=com",
+                    "filter": "(objectClass=person)",
+                    "username": "userPrincipalName",
+                    "idAttr": "DN",
+                    "emailAttr": "userPrincipalName",
+                    "nameAttr": "cn"
+                  },
+                  "groupSearch": {
+                    "baseDN": "cn=Users,dc=example,dc=com",
+                    "filter": "(objectClass=group)",
+                    "userMatchers": [
+                      {
+                        "userAttr": "DN",
+                        "groupAttr": "member"
+                      }
+                    ],
+                    "nameAttr": "cn"
+                  }
+                }
+              }
+            ]
+          
     },
     "saml": {
-        "name": "gitlab3",
-        "url": "http://gitlab.com",
-        "config": {
-            "type": "saml",
-            "id": "saml",
-            "name": "SAML",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
+        "connectors": [
+            {
+              "type": "saml",
+              "id": "okta",
+              "name": "Okta",
+              "config": {
+                "ssoURL": "https://dev-111102.oktapreview.com/app/foo/exk91cb99lKkKSYoy0h7/sso/saml",
+                "ca": "/etc/dex/saml-ca.pem",
+                "redirectURI": "http://127.0.0.1:5556/dex/callback",
+                "usernameAttr": "name",
+                "emailAttr": "email",
+                "groupsAttr": "groups"
+              }
             }
-        }
+          ]
     },
     "oidc": {
-        "name": "oidc",
-        "url": "https://dexidp.io/docs/connectors/saml/",
-        "config": {
-            "type": "oidc",
-            "id": "oidc",
-            "name": "OIDC",
-            "config": {
+        "connectors": [
+            {
+              "type": "oidc",
+              "id": "google",
+              "name": "Google",
+              "config": {
                 "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
+                "clientID": "$GOOGLE_CLIENT_ID",
+                "clientSecret": "$GOOGLE_CLIENT_SECRET",
+                "redirectURI": "http://127.0.0.1:5556/callback"
+              }
             }
-        }
+          ]
     },
     "openshift": {
-        "name": "openshift",
-        "url": "https://dexidp.io/docs/connectors/openshift/",
-        "config": {
-            "type": "openshift",
-            "id": "openshift",
-            "name": "Openshiift",
-            "config": {
-                "issuer": "https://accounts.google.com",
-                "clientID": "140226597160-1cd76.apps.googleusercontent.com",
-                "clientSecret": "sassasasasaaqqqqqq",
-                "redirectURI": "https://google.com/api/dex/callback",
-                "hostedDomains": []
+        "connectors": [
+            {
+              "type": "openshift",
+              "id": "openshift",
+              "name": "OpenShift",
+              "config": {
+                "issuer": "https://api.mycluster.example.com:6443",
+                "clientID": "$OPENSHIFT_OAUTH_CLIENT_ID",
+                "clientSecret": "$OPENSHIFT_OAUTH_CLIENT_SECRET",
+                "redirectURI": "http://127.0.0.1:5556/dex/",
+                "insecureCA": false,
+                "rootCA": "/etc/ssl/openshift.pem",
+                "groups": [
+                  "users"
+                ]
+              }
             }
-        }
+          ]
     }
 }
