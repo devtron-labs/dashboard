@@ -37,7 +37,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
-            sso: "",
+            sso: {
+                name:"",
+                id: "",
+            },
             saveLoading:false,
             lastActiveSSO: "",
             isLoading: true,
@@ -53,53 +56,72 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     componentDidMount() {
         getSSOConfigList().then((res) => {
             let sso = res.result.find(sso => sso.active);
+            console.log(sso)
             this.setState({ sso: sso.name, lastActiveSSO: sso.name });
-        }).then(() => {
-            getSSOConfig(this.state.lastActiveSSO)
-            .then((response) => {
-                var ssoConfig = response.result
-                this.setState({
-                    isLoading: false,
-                    sso: ssoConfig.name,
-                    ssoConfig: {
-                       name: ssoConfig.config.name,
-                       url: ssoConfig.config.url,
-                       config:{
-                        ...ssoConfig.config,
-                          config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
-                       },
-                       active: ssoConfig.config.active
-                    }
-                }, () => {
-                   // console.log(this.state)                   
-                } )
-            })
+        }).then(()=>{
+            if(this.state.sso.id){
+                getSSOConfig(this.state.lastActiveSSO)
+                .then((response) => {
+                    var ssoConfig = response.result
+                    this.setState({
+                        isLoading: false,
+                        sso: ssoConfig.name,
+                        ssoConfig: {
+                           name: ssoConfig.config.name,
+                           config:{
+                            ...ssoConfig.config,
+                              config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                           },
+                           active: ssoConfig.config.active
+                        }
+                    }, () => {
+                        console.log(this.state)                   
+                    } )
+                })
 
-        }).catch((error) => {
+            }else{
+                 this.setState({
+                  ssoConfig: {
+                    config :  {
+                        id: sample[this.state.sso.name.toLowerCase()].id,
+                        name: sample[this.state.sso.name.toLowerCase()],
+                        type: sample[this.state.sso.name.toLowerCase()].type,
+                         config :yamlJsParser.stringify(sample[this.state.sso.name], { indent: 2 })}
+                  }
+                 })  
+                
+            }
+        })
+        .catch((error) => {
             this.setState({ isLoading: false })
         })
     }
 
     handleSSOClick(event): void {
-        getSSOConfig(event.target.value).then((response)=>{
-            const ssoConfig = response.result
-                this.setState({
-                    sso: response.result.config.name,
-                    ssoConfig: {
-                        name: ssoConfig.name,
-                        url: ssoConfig.url,
-                        config:{
-                         ...ssoConfig.config,
-                         config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                        },
-                        active: ssoConfig.config.active
-                     }
+       
+            getSSOConfig(event.target.value).then((response)=>{
+                const ssoConfig = response.result
+                if(ssoConfig){}
+                    this.setState({
+                        sso: response.result.config.name,
+                        ssoConfig: {
+                            name: ssoConfig.name,
+                            config:{
+                            ...ssoConfig.config,
+                            config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                            },
+                            active: ssoConfig.config.active
+                        }
+                })
             })
+           
+            .catch(() => {
+                this.setState({ isLoading: false })
+            })
+            this.setState({
+                sso: event.target.value
         })
-        this.setState({
-            sso: event.target.value
-        })
-    }
+     }
 
     toggleWarningModal(): void {
         this.setState({ showToggling: !this.state.showToggling });
@@ -114,14 +136,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
 
         //Update
-        if(this.state.ssoConfig?.config && this.state.sso == this.state.lastActiveSSO){
-      
+        if(this.state.lastActiveSSO ){
+          
             let payload = {}
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
                 payload = {
                     name: this.state.ssoConfig.name,
-                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
@@ -129,7 +150,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             else {
                 payload = {
                     name: this.state.ssoConfig.name,
-                    url: this.state.ssoConfig.url,
                     config: configJSON,
                 }
             }
@@ -141,6 +161,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     ssoConfig: config,
                     saveLoading: !this.state.isLoading
                 });
+            }).catch((error) => {
+                this.setState({ isLoading: false })
             })
         
         }
@@ -148,7 +170,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         else {
             let payload = {
                 name: this.state.sso,
-                url: ssoMap[this.state.sso],
                 config: configJSON,
             }
             console.log(payload);
@@ -162,6 +183,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     });
                     toast.success('Saved');
                 }
+            }).catch((error) => {
+                this.setState({ isLoading: false })
             })
         }
     }
@@ -188,7 +211,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config?.config || yamlJsParser.stringify({}, { indent : 2});
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
-            : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+            : yamlJsParser.stringify(sample[this.state.sso.name], { indent: 2 });
         let shebangJSON = this.state.ssoConfig?.config || {};
         delete shebangJSON['config'];
         shebangJSON['config'] = "";
@@ -216,10 +239,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     render() {
-        let sso = sample[this.state.sso];
-
+        let sso = sample[this.state.sso.name];
+        console.log(sso)
         if (this.state.isLoading) return <Progressing pageLoader />
-
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
@@ -230,7 +252,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" id="1" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
+                            <input type="radio" id="1" value="google" checked={this.state.sso.name === "google"} name="status" onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
                                 <aside className="login__text-alignment">Google</aside>
@@ -239,7 +261,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="github" checked={this.state.sso.name === "github"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
@@ -248,7 +270,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="microsoft" checked={this.state.sso.name === "microsoft"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Microsoft} /></aside>
                                 <aside className="login__text-alignment"> Microsoft</aside>
@@ -257,7 +279,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="ldap" checked={this.state.sso.name === "ldap"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={LDAP} /></aside>
                                 <aside className="login__text-alignment">LDAP</aside>
@@ -266,7 +288,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="saml" checked={this.state.sso.name === "saml"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={SAML} /></aside>
                                 <aside className="login__text-alignment"> SAML 2.0</aside>
@@ -275,7 +297,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="oidc" checked={this.state.sso.name === "oidc"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={OIDC} /></aside>
                                 <aside className="login__text-alignment">OIDC</aside>
@@ -284,7 +306,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
+                            <input type="radio" name="status" value="openshift" checked={this.state.sso.name === "openshift"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Openshift} /></aside>
                                 <aside className="login__text-alignment"> OpenShift</aside>
@@ -302,7 +324,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.renderSSOCodeEditor()}
 
                 <div className="form__buttons mr-24">
-                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading? <Progressing/>: this.state.sso == this.state.lastActiveSSO ?  'Update':'Save'}</button>
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading? <Progressing/>: this.state.sso.name == this.state.lastActiveSSO ?  'Update':'Save'}</button>
                 </div>
             </div>
 
