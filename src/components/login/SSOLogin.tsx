@@ -209,15 +209,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        console.log(this.state.ssoConfig)
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig
-            : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
-        let shebangJSON = this.state.ssoConfig?.config || {};
-        delete shebangJSON['config'];
-        shebangJSON['config'] = "";
-
-        let shebangHtml = <textarea style={{ resize: 'none', height: '90px', border: 'none', padding: `0 60px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100" disabled value={yamlJsParser.stringify(shebangJSON, { indent: 2 })}> </textarea>
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig: yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+        let shebangHtml = <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 60px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100"> 
+            <p className="m-0"> - type: {this.state.ssoConfig.config.type}</p>
+            <p className="m-0">&nbsp;&nbsp;url: {this.state.ssoConfig.url}</p>
+            <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.name}</p>
+            <p className="m-0">&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+            <p className="m-0">&nbsp;&nbsp;config:</p>
+        </div>
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
