@@ -78,15 +78,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     isLoading: false,
                     ssoConfig: {
                         name: ssoConfig.config.name,
+                        url: ssoConfig.config.url,
                         config: {
                             ...ssoConfig.config,
-                            config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                            config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 }),
                         },
                     }
                 })
             }
-        })
-            .catch((error) => {
+        }).catch((error) => {
                 this.setState({ isLoading: false })
             })
     }
@@ -101,11 +101,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     name: ssoConfig.name,
                     url: ssoConfig.url,
                     config: {
-                        ...ssoConfig.config,
+                        name: ssoConfig.config.name,
+                        type: ssoConfig.config.type,
+                        id: ssoConfig.config.id,
                         config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
                     },
                     active: ssoConfig.config.active
                 }
+            }, () => {
+                console.log(this.state.ssoConfig)
+
             })
         }).catch((error) => {
             const ssoConfig = sample[newsso];
@@ -115,10 +120,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     name: ssoConfig.name,
                     url: ssoConfig.url,
                     config: {
-                        ...ssoConfig.config,
-                        config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+                        name: ssoConfig.name,
+                        type: ssoConfig.type,
+                        id: ssoConfig.id,
+                        config: yamlJsParser.stringify(ssoConfig.config, { indent: 2 })
                     },
                 }
+            }, () => {
+                console.log(this.state.ssoConfig)
+
             })
         })
     }
@@ -130,7 +140,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     onLoginConfigSave() {
         let configJSON: any = {};
         try {
-            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.id);
+            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
         }
@@ -190,12 +200,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleConfigChange(value: string): void {
+        if(this.state.configMap !== SwitchItemValues.Configuration ) return;
         try {
             this.setState({
                 ssoConfig: {
                     ...this.state.ssoConfig,
                     config: {
-                        ...this.state.ssoConfig.config,
+                        name: this.state.ssoConfig.config.name,
+                        type: this.state.ssoConfig.config.type,
+                        id: this.state.ssoConfig.config.id,
                         config: value,
                     },
                 }
@@ -210,21 +223,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig: yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
-        let shebangHtml = <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 60px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100"> 
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 60px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
             <p className="m-0"> - type: {this.state.ssoConfig.config.type}</p>
-            <p className="m-0">&nbsp;&nbsp;url: {this.state.ssoConfig.url}</p>
-            <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.name}</p>
+            <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
             <p className="m-0">&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
             <p className="m-0">&nbsp;&nbsp;config:</p>
-        </div>
+        </div> : null;
         return <div className="sso__code-editor-wrap">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'
                     shebang={shebangHtml}
-                    // shebang={`${yamlJsParser.stringify(shebangJSON, { indent: 2 })}`}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={(event) => { this.handleConfigChange(event) }}>
                     <CodeEditor.Header >
@@ -244,7 +255,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
-                    <a href={``} rel="noopener noreferrer" target="_blank">
+                    <a href={ssoMap[this.state.sso]} rel="noopener noreferrer" target="_blank">
                 </a>
             </h5>
             <div className="login__sso-wrapper">
