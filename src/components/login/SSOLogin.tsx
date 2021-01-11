@@ -38,7 +38,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
-            sso: "google",
+            sso: "",
             lastActiveSSO: undefined,
             saveLoading: false,
             isLoading: true,
@@ -310,6 +310,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
                                 <aside className="login__text-alignment">Google</aside>
+                                <label>
+                                    {(this.state.lastActiveSSO.name.toLowerCase() == this.state.sso) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -319,6 +322,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -326,12 +332,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <label className="tertiary-tab__radio ">
                             <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
-                              <div className="login__flex">
-                              <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
-                                <aside className="login__check-icon"><img src={Check} /></aside>
-                             </div> 
-                            <aside className="login__text-alignment"> Microsoft</aside>
+                                <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
+                                <aside className="login__text-alignment"> Microsoft</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
+                           
                         </label>
                     </div>
                     <div>
@@ -340,6 +347,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={LDAP} /></aside>
                                 <aside className="login__text-alignment">LDAP</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -349,6 +359,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={SAML} /></aside>
                                 <aside className="login__text-alignment"> SAML 2.0</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -358,6 +371,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={OIDC} /></aside>
                                 <aside className="login__text-alignment">OIDC</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -367,6 +383,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Openshift} /></aside>
                                 <aside className="login__text-alignment"> OpenShift</aside>
+                                <label>
+                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                </label>
                             </span>
                         </label>
                     </div>

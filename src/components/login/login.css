@@ -200,6 +200,7 @@
     justify-content: center;
 }
 .sso-icons {
+    position: relative;
     border-radius: 4px;
     margin-right: 12px;
     border: solid 1px var(--N200);
@@ -247,7 +248,9 @@
 }
 
 .login__check-icon{
-    margin-top: -8px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
 }
 
 .mr-24 {
