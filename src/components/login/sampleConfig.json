@@ -1,8 +1,8 @@
 {
   "google": {
-    "type": "github",
-    "id": "github",
-    "name": "GitHub",
+    "type": "google",
+    "id": "google",
+    "name": "Google",
     "config": {
       "clientID": "$GITHUB_CLIENT_ID",
       "clientSecret": "$GITHUB_CLIENT_SECRET",

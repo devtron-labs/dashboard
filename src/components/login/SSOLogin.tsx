@@ -137,6 +137,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     saveNewSSO(): void {
+        this.setState({ saveLoading: true });
+
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
@@ -158,23 +160,29 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload);
         promise.then((response) => {
-            let config = response.result || [];
+            let ssoConfig = response.result;
             this.setState({
-                ssoConfig: config,
-                saveLoading: !this.state.isLoading
+                ssoConfig: ssoConfig,
+                showToggling: false,
+                saveLoading: false,
             });
+            toast.success("Saved Successful");
         }).catch((error) => {
             showError(error);
-            this.setState({ isLoading: false });
+            this.setState({ saveLoading: false });
+            ;
         })
     }
 
-    onLoginConfigSave():void {
+    onLoginConfigSave(): void {
+        this.setState({ saveLoading: true });
+
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            this.setState({ saveLoading: false });
         }
 
         //Create SSO
@@ -191,17 +199,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 active: true,
             }
             createSSOList(payload).then((response) => {
-                let config = response.result || [];
-                if (config) {
-                    this.setState({
-                        ssoConfig: config,
-                        saveLoading: !this.state.isLoading
-                    });
-                    toast.success('Saved');
-                }
+                let ssoConfig = response.result;
+                this.setState({
+                    ssoConfig: ssoConfig,
+                    saveLoading: false,
+                });
             }).catch((error) => {
                 showError(error);
-                this.setState({ isLoading: false })
+                this.setState({ saveLoading: false });
             })
         }
         //Update the same SSO
@@ -220,14 +225,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     active: true,
                 }
                 updateSSOList(payload).then((response) => {
-                    let config = response.result || [];
+                    let ssoConfig = response.result;
                     this.setState({
-                        ssoConfig: config,
-                        saveLoading: !this.state.isLoading
+                        ssoConfig: ssoConfig,
+                        saveLoading: false,
                     });
+
                 }).catch((error) => {
                     showError(error);
-                    this.setState({ isLoading: false });
+                    this.setState({ saveLoading: false });
                 })
             }
             else {
@@ -371,7 +377,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.renderSSOCodeEditor()}
 
                 <div className="form__buttons mr-24">
-                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading ? <Progressing /> : this.state.lastActiveSSO.name == this.state.sso ? 'Update' : 'Save'}</button>
+                    <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading ? <Progressing /> : this.state.ssoConfig.id ? 'Update' : 'Save'}</button>
                 </div>
             </div>
 
