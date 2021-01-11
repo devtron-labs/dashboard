@@ -152,15 +152,25 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             //Update the same SSO
             if (configJSON.id && configJSON.id == this.state.sso) {
                 payload = {
-                    name: this.state.ssoConfig.name,
-                    config: configJSON,
+                    
+                    config: {
+                        id: this.state.ssoConfig.config.id,
+                        type: this.state.ssoConfig.config.type,
+                        name: this.state.ssoConfig.config.name,
+                        config: configJSON
+                    }
+                    
                 }
             }
             //update another sso
             else {
                 payload = {
-                    name: this.state.ssoConfig.name,
-                    config: configJSON,
+                    config: {
+                        id: this.state.ssoConfig.config.id,
+                        type: this.state.ssoConfig.config.type,
+                        name: this.state.ssoConfig.config.name,
+                        config: configJSON
+                    }
                 }
             }
             console.log(payload);
@@ -180,7 +190,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         else {
             let payload = {
                 name: this.state.sso,
-                config: configJSON,
+                config: {
+                    id: this.state.ssoConfig.config.id,
+                    type: this.state.ssoConfig.config.type,
+                    name: this.state.ssoConfig.config.name,
+                    config: configJSON
+                }
             }
             console.log(payload);
 
