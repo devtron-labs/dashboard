@@ -96,7 +96,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleSSOClick(event): void {
         let newsso = event.target.value;
-        getSSOConfig(event.target.value).then((response) => {
+        getSSOConfig(newsso).then((response) => {
             const ssoConfig = response.result;
             this.setState({
                 sso: newsso,
@@ -299,14 +299,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
-                    <a href={ssoMap[this.state.sso]} rel="noopener noreferrer" target="_blank">
-                </a>
             </h5>
             <div className="login__sso-wrapper">
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio ">
-                            <input type="radio" id="1" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
+                            <input type="radio" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
                                 <aside className="login__text-alignment">Google</aside>
