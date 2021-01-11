@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, } from '../common'
+import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -47,7 +47,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         this.handleSSOClick = this.handleSSOClick.bind(this);
         this.toggleWarningModal = this.toggleWarningModal.bind(this);
-        this.handleConfigChange = this.handleConfigChange.bind(this)
+        this.handleConfigChange = this.handleConfigChange.bind(this);
+        this.saveNewSSO = this.saveNewSSO.bind(this);
     }
 
     componentDidMount() {
@@ -57,10 +58,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO.id) {
                 getSSOConfig(this.state.lastActiveSSO.name.toLowerCase()).then((response) => {
-                    var ssoConfig = response.result
+                    var ssoConfig = response.result;
                     this.setState({
                         isLoading: false,
                         ssoConfig: {
+                            id: ssoConfig.id,
                             name: ssoConfig.config.name,
                             url: ssoConfig.config.url,
                             config: {
@@ -87,8 +89,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 })
             }
         }).catch((error) => {
-                this.setState({ isLoading: false })
-            })
+            this.setState({ isLoading: false })
+        })
     }
 
     handleSSOClick(event): void {
@@ -108,9 +110,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     },
                     active: ssoConfig.config.active
                 }
-            }, () => {
-                console.log(this.state.ssoConfig)
-
             })
         }).catch((error) => {
             const ssoConfig = sample[newsso];
@@ -137,7 +136,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ showToggling: !this.state.showToggling });
     }
 
-    onLoginConfigSave() {
+    saveNewSSO(): void {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
@@ -145,36 +144,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
         }
 
-        //Update
-        if (this.state.lastActiveSSO && this.state.sso == this.state.lastActiveSSO.name) {
-
-            let payload = {}
-            //Update the same SSO
-            if (configJSON.id && configJSON.id == this.state.sso) {
-                payload = {
-                    
-                    config: {
-                        id: this.state.ssoConfig.config.id,
-                        type: this.state.ssoConfig.config.type,
-                        name: this.state.ssoConfig.config.name,
-                        config: configJSON
-                    }
-                    
-                }
-            }
-            //update another sso
-            else {
-                payload = {
-                    config: {
-                        id: this.state.ssoConfig.config.id,
-                        type: this.state.ssoConfig.config.type,
-                        name: this.state.ssoConfig.config.name,
-                        config: configJSON
-                    }
-                }
-            }
-            console.log(payload);
-
+        let payload = {
+            id: this.state.ssoConfig?.id,
+            name: this.state.sso,
+            url: this.state.ssoConfig.url,
+            config: {
+                type: this.state.ssoConfig.config.type,
+                id: this.state.ssoConfig.config.id,
+                name: this.state.ssoConfig.config.name,
+                config: configJSON
+            },
+            active: true,
+        }
+        if (this.state.ssoConfig.id) {
             updateSSOList(payload).then((response) => {
                 let config = response.result || [];
                 this.setState({
@@ -182,23 +164,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     saveLoading: !this.state.isLoading
                 });
             }).catch((error) => {
-                this.setState({ isLoading: false })
+                showError(error);
+                this.setState({ isLoading: false });
             })
-
         }
-        //Create SSO
-        else {
-            let payload = {
-                name: this.state.sso,
-                config: {
-                    id: this.state.ssoConfig.config.id,
-                    type: this.state.ssoConfig.config.type,
-                    name: this.state.ssoConfig.config.name,
-                    config: configJSON
-                }
-            }
-            console.log(payload);
 
+        else {
             createSSOList(payload).then((response) => {
                 let config = response.result || [];
                 if (config) {
@@ -209,13 +180,81 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     toast.success('Saved');
                 }
             }).catch((error) => {
+                showError(error);
                 this.setState({ isLoading: false })
             })
         }
     }
 
+    onLoginConfigSave() {
+        let configJSON: any = {};
+        try {
+            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
+        } catch (error) {
+            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+        }
+
+        //Create SSO
+        if (!this.state.lastActiveSSO) {
+            let payload = {
+                name: this.state.sso,
+                url: this.state.ssoConfig.url,
+                config: {
+                    type: this.state.ssoConfig.config.type,
+                    id: this.state.ssoConfig.config.id,
+                    name: this.state.ssoConfig.config.name,
+                    config: configJSON
+                },
+                active: true,
+            }
+            createSSOList(payload).then((response) => {
+                let config = response.result || [];
+                if (config) {
+                    this.setState({
+                        ssoConfig: config,
+                        saveLoading: !this.state.isLoading
+                    });
+                    toast.success('Saved');
+                }
+            }).catch((error) => {
+                showError(error);
+                this.setState({ isLoading: false })
+            })
+        }
+        //Update the same SSO
+        else if (this.state.lastActiveSSO) {
+            if (this.state.sso === this.state.lastActiveSSO.name) {
+                let payload = {
+                    id: this.state.ssoConfig.id,
+                    name: this.state.sso,
+                    url: this.state.ssoConfig.url,
+                    config: {
+                        id: this.state.ssoConfig.config.id,
+                        type: this.state.ssoConfig.config.type,
+                        name: this.state.ssoConfig.config.name,
+                        config: configJSON
+                    },
+                    active: true,
+                }
+                updateSSOList(payload).then((response) => {
+                    let config = response.result || [];
+                    this.setState({
+                        ssoConfig: config,
+                        saveLoading: !this.state.isLoading
+                    });
+                }).catch((error) => {
+                    showError(error);
+                    this.setState({ isLoading: false });
+                })
+            }
+            else {
+                this.toggleWarningModal();
+            }
+        }
+    }
+
     handleConfigChange(value: string): void {
-        if(this.state.configMap !== SwitchItemValues.Configuration ) return;
+        if (this.state.configMap !== SwitchItemValues.Configuration) return;
         try {
             this.setState({
                 ssoConfig: {
@@ -353,16 +392,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
             </div>
 
-            {
-                this.state.showToggling ? <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <div className="modal__title sso__warn-title">Use '{this.state.ssoConfig.name}' instead of '{this.state.lastActiveSSO}' for login?</div>
-                    <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p>                <ConfirmationDialog.ButtonGroup>
-                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog> : null
-            }
+            {this.state.showToggling ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">Use '{this.state.sso}' instead of '{this.state.lastActiveSSO.name}' for login?</div>
+                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                    <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>Confirm</button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
         </section >
     }
 }
