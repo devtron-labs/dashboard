@@ -311,8 +311,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
                                 <aside className="login__text-alignment">Google</aside>
                                 <label>
-                                    {(this.state.lastActiveSSO.name.toLowerCase() == this.state.sso) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    { this.state.lastActiveSSO.name == "google" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
+                                
                             </span>
                         </label>
                     </div>
@@ -323,7 +324,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><a href=""><GitHub /></a></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "github" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                         </label>
@@ -335,7 +336,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
                                 <aside className="login__text-alignment"> Microsoft</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "microsoft" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                            
@@ -348,7 +349,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={LDAP} /></aside>
                                 <aside className="login__text-alignment">LDAP</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "ldap" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                         </label>
@@ -360,7 +361,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={SAML} /></aside>
                                 <aside className="login__text-alignment"> SAML 2.0</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "saml" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                         </label>
@@ -372,7 +373,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={OIDC} /></aside>
                                 <aside className="login__text-alignment">OIDC</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "oidc" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                         </label>
@@ -384,7 +385,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={Openshift} /></aside>
                                 <aside className="login__text-alignment"> OpenShift</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name.toLowerCase()? <aside className="login__check-icon"><img src={Check} /></aside>:''}
+                                    {this.state.lastActiveSSO.name == "openshift" ? <aside className="login__check-icon"><img src={Check} /></aside>:''}
                                 </label>
                             </span>
                         </label>
