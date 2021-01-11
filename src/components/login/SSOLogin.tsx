@@ -156,37 +156,20 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             },
             active: true,
         }
-        if (this.state.ssoConfig.id) {
-            updateSSOList(payload).then((response) => {
-                let config = response.result || [];
-                this.setState({
-                    ssoConfig: config,
-                    saveLoading: !this.state.isLoading
-                });
-            }).catch((error) => {
-                showError(error);
-                this.setState({ isLoading: false });
-            })
-        }
-
-        else {
-            createSSOList(payload).then((response) => {
-                let config = response.result || [];
-                if (config) {
-                    this.setState({
-                        ssoConfig: config,
-                        saveLoading: !this.state.isLoading
-                    });
-                    toast.success('Saved');
-                }
-            }).catch((error) => {
-                showError(error);
-                this.setState({ isLoading: false })
-            })
-        }
+        let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload);
+        promise.then((response) => {
+            let config = response.result || [];
+            this.setState({
+                ssoConfig: config,
+                saveLoading: !this.state.isLoading
+            });
+        }).catch((error) => {
+            showError(error);
+            this.setState({ isLoading: false });
+        })
     }
 
-    onLoginConfigSave() {
+    onLoginConfigSave():void {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
