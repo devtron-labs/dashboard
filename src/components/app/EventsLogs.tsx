@@ -174,14 +174,12 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
 
     return <AutoSizer>
         {({ height, width }) => <div style={{
-            gridColumn: '1 / span 2', height: height,
-            width: width,
+            gridColumn: '1 / span 2', 
         }}>
             <MonacoEditor language={'yaml'}
                 value={YamljsParser.stringify(manifest, { indent: 2 })}
                 theme={'vs-dark--dt'}
                 options={{
-
                     selectOnLineNumbers: true,
                     roundedSelection: false,
                     readOnly: true,
@@ -197,7 +195,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
                 }}
                 onChange={() => { }}
                 editorDidMount={() => { }}
-                height={height}
+                height={height - 75}
                 width={width}
             />
         </div>}
