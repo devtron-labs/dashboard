@@ -193,19 +193,23 @@
     margin: 4px 12px 20px 24px;
 }
 
+
+.login__flex{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
 .sso-icons {
-    padding: 16px 12px;
     border-radius: 4px;
     margin-right: 12px;
     border: solid 1px var(--N200);
-    padding: 16px 12px;
-    border-radius: 4px;
     cursor: pointer;
     box-sizing: border-box;
     display: block;
     height: 100%;
     width: 96px;
-    margin-right: 12px;
+    padding: 12px 16px;
+    height: 84px;
 }
 
 .sso__description {
@@ -239,6 +243,11 @@
 
 .login__icon-alignment {
     text-align: center;
+    padding: 2px;
+}
+
+.login__check-icon{
+    margin-top: -8px;
 }
 
 .mr-24 {

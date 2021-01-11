@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import './login.css'
 import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
+import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import Microsoft from '../../assets/icons/ic-microsoft.svg'
@@ -267,7 +268,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
-        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 40px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
+        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
             <p className="m-0"> - type: {this.state.ssoConfig.config.type}</p>
             <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
             <p className="m-0">&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
@@ -325,8 +326,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <label className="tertiary-tab__radio ">
                             <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={Microsoft} /></aside>
-                                <aside className="login__text-alignment"> Microsoft</aside>
+                              <div className="login__flex">
+                              <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
+                                <aside className="login__check-icon"><img src={Check} /></aside>
+                             </div> 
+                            <aside className="login__text-alignment"> Microsoft</aside>
                             </span>
                         </label>
                     </div>
