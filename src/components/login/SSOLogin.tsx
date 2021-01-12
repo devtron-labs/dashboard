@@ -56,10 +56,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     componentDidMount() {
         getSSOConfigList().then((res) => {
             let ssoConfig = res.result.find(sso => sso.active);
-            this.setState({ sso: ssoConfig.name, lastActiveSSO: ssoConfig });
+            if (ssoConfig) {
+                this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig });
+            }
+            else {
+                ssoConfig = sample['google'];
+                this.setState({ sso: ssoConfig?.name, ssoConfig: this.parseResponse(ssoConfig) });
+            }
         }).then(() => {
-            if (this.state.lastActiveSSO && this.state.lastActiveSSO.id) {
-                getSSOConfig(this.state.lastActiveSSO.name.toLowerCase()).then((response) => {
+            if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
+                getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
                     this.setState({
                         isLoading: false,
                         ssoConfig: this.parseResponse(response.result),
@@ -73,7 +79,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 })
             }
         }).catch((error) => {
-            this.setState({ isLoading: false })
+            this.setState({ isLoading: false });
         })
     }
 
@@ -96,7 +102,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ showToggling: !this.state.showToggling });
     }
 
-    parseResponse(ssoConfig):SSOConfigType {
+    parseResponse(ssoConfig): SSOConfigType {
         return {
             id: ssoConfig.id,
             name: ssoConfig.name,
@@ -107,7 +113,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 id: ssoConfig.config.id,
                 config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
             },
-            active: ssoConfig.config.active
+            active: ssoConfig.active
         }
     }
     saveNewSSO(): void {
@@ -133,7 +139,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload);
         promise.then((response) => {
-            let ssoConfig=response.result;
+            let ssoConfig = response.result;
             this.setState({
                 isLoading: false,
                 showToggling: false,
@@ -141,8 +147,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 ssoConfig: this.parseResponse(response.result),
                 lastActiveSSO: {
                     id: ssoConfig.id,
-                    name:ssoConfig.name,
-                    active:ssoConfig.active,
+                    name: ssoConfig.name,
+                    active: ssoConfig.active,
                 }
             });
             toast.success("Saved Successful");
@@ -185,8 +191,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     ssoConfig: this.parseResponse(response.result),
                     lastActiveSSO: {
                         id: ssoConfig.id,
-                        name:ssoConfig.name,
-                        active:ssoConfig.active,
+                        name: ssoConfig.name,
+                        active: ssoConfig.active,
                     }
                 })
                 toast.success("Saved Successful");
@@ -197,7 +203,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         //Update the same SSO
         else if (this.state.lastActiveSSO) {
-            if (this.state.sso === this.state.lastActiveSSO.name) {
+            if (this.state.sso === this.state.lastActiveSSO?.name) {
                 let payload = {
                     id: this.state.ssoConfig.id,
                     name: this.state.sso,
@@ -218,10 +224,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         ssoConfig: this.parseResponse(response.result),
                         lastActiveSSO: {
                             id: ssoConfig.id,
-                            name:ssoConfig.name,
-                            active:ssoConfig.active,
+                            name: ssoConfig.name,
+                            active: ssoConfig.active,
                         }
-                       
                     })
                     toast.success("Saved Successful");
                 }).catch((error) => {
@@ -301,7 +306,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
                                 <aside className="login__text-alignment">Google</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "google" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {this.state.lastActiveSSO?.name == "google" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
@@ -313,7 +318,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>
@@ -325,7 +330,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
                                 <aside className="login__text-alignment"> Microsoft</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "microsoft" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "microsoft" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
 
@@ -338,7 +343,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={LDAP} /></aside>
                                 <aside className="login__text-alignment">LDAP</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "ldap" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "ldap" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>
@@ -350,7 +355,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={SAML} /></aside>
                                 <aside className="login__text-alignment"> SAML 2.0</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "saml" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "saml" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>
@@ -362,7 +367,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={OIDC} /></aside>
                                 <aside className="login__text-alignment">OIDC</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "oidc" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "oidc" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>
@@ -374,7 +379,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__icon-alignment"><img src={Openshift} /></aside>
                                 <aside className="login__text-alignment"> OpenShift</aside>
                                 <label>
-                                    {this.state.lastActiveSSO.name == "openshift" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
+                                    {this.state.lastActiveSSO?.name == "openshift" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>
@@ -383,7 +388,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="sso__description">
                     <div className="flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for 
+                        <div><span className="login__bold">Help: </span>See documentation for
                         <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a></div>
                     </div>
                 </div>
@@ -397,7 +402,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
             {this.state.showToggling ? <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">Use '{this.state.sso}' instead of '{this.state.lastActiveSSO.name}' for login?</div>
+                <div className="modal__title sso__warn-title">Use '{this.state.sso}' instead of '{this.state.lastActiveSSO?.name}' for login?</div>
                 <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
                     <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>Confirm</button>
