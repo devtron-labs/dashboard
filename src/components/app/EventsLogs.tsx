@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import React, { useEffect, useState, useRef } from 'react'
 import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
@@ -13,7 +11,7 @@ import { toast } from 'react-toastify';
 import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
 import WebWorker from './WebWorker';
-import { useParams } from 'react-router'
+import { useParams, useHistory } from 'react-router'
 import moment from 'moment'
 import { Subject } from '../../util/Subject';
 import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from './types';
@@ -24,9 +22,11 @@ import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
-import { editor, defineTheme } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
+import MicroFrontend from '../../MicroFrontend';
 
+const terminalHost = process.env.REACT_APP_TERMINAL_HOST || "http://localhost:3001";
 const commandLineParser = require('command-line-parser')
 
 
@@ -72,6 +72,7 @@ export function getGrepTokens(expression) {
 }
 
 const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+    const history = useHistory();
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -105,7 +106,7 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
             {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
                 <>
                     <span style={{ background: '#2c3354' }} />
-                    <TerminalView appDetails={appDetails}
+                    {/* <TerminalView appDetails={appDetails}
                         nodeName={nodeName}
                         containerName={containerName}
                         socketConnection={socketConnection}
@@ -116,7 +117,8 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                         selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         setSocketConnection={setSocketConnection}
-                    />
+                    /> */}
+                    <MicroFrontend history={history} host={terminalHost} name="Terminal" />
                 </>
             )}
         </>
@@ -133,6 +135,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
         base: 'vs-dark',
         inherit: true,
         rules: [
+            //@ts-ignore
             { background: '#0B0F22' }
         ],
         colors: {
