@@ -3,21 +3,27 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import getGitProviderList from '../gitProvider/GitProvider'
+import { getChartProviderList, saveChartProviderConfig, updateChartProviderConfig} from './service'
 
 export default function ChartRepo() {
-    
+    const [loading, result, error, reload] = useAsync(getChartProviderList)
+    if (loading && !result) return <Progressing pageLoader />
+    console.log(result)
+    if (error) {
+        showError(error)
+        if (!result) return null
+    }
    
         return (
             <section className="git-page">
                 <h2 className="form__title">Chart Repository</h2>
                 <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
                 </h5>
-                {[{ id: null, name: "", active: true, url: "", authMode: null }].sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={false} />)}
+                {[{ id: null,default: true, name: "", active: true, url: "", authMode: null }].sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
             </section>
             );
-   
-}
+        }
+
 function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
@@ -33,8 +39,9 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
             }
             try {
                 setLoading(true);
+                await updateChartProviderConfig(payload, id);
                 await reload();
-                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
+                toast.success(`Repository ${enabled ? 'enabled' : 'disabled'}.`)
             } catch (err) {
                 showError(err);
             } finally {
@@ -116,10 +123,12 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
         }
-       // const api = id ? updateGitProviderConfig : saveGitProviderConfig
+        const api = id ? updateChartProviderConfig : saveChartProviderConfig
+       
         try {
             setLoading(true)
-           // const { result } = await api(payload, id);
+            const { result } = await api(payload, id);
+            
             await reload();
             toast.success('Successfully saved.')
         }
