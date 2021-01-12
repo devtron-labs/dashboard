@@ -10,7 +10,7 @@ import { AddNotification } from '../notifications/AddNotification';
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
-const ChartRepo = lazy(() => import('../chart/ChartRepo'))
+const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'));
 const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
