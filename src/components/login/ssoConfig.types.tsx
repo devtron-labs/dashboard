@@ -1,7 +1,7 @@
 export interface SSOLogin {
     id: number;
     name: string;
-    label: string;
+    // label: string;
     active: boolean;
 }
 
@@ -15,7 +15,7 @@ export interface SSOLoginState {
     ssoConfig: SSOConfigType;
 }
 
-interface SSOConfigType {
+export interface SSOConfigType {
     name?: string;
     id?: number;
     url?: string;

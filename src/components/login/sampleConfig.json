@@ -1,5 +1,6 @@
 {
   "google": {
+    "config":{
     "type": "google",
     "id": "google",
     "name": "Google",
@@ -23,8 +24,12 @@
       "teamNameField": "slug",
       "useLoginAsID": false
     }
+  }
+
   },
   "github": {
+    "config":{
+
     "type": "github",
     "id": "github",
     "name": "GitHub",
@@ -33,8 +38,11 @@
       "clientSecret": "$GITHUB_CLIENT_SECRET",
       "redirectURI": "http://127.0.0.1:5556/dex/callback"
     }
+  }
   },
   "microsoft": {
+    "config":{
+
     "type": "microsoft",
     "id": "microsoft",
     "name": "Microsoft",
@@ -43,8 +51,10 @@
       "clientSecret": "$MICROSOFT_CLIENT_SECRET",
       "redirectURI": "http://127.0.0.1:5556/dex/callback"
     }
+  }
   },
   "ldap": {
+    "config":{
     "type": "ldap",
     "name": "ActiveDirectory",
     "id": "ad",
@@ -75,8 +85,10 @@
         "nameAttr": "cn"
       }
     }
+  }
   },
   "saml": {
+    "config":{
     "type": "saml",
     "id": "okta",
     "name": "Okta",
@@ -88,8 +100,10 @@
       "emailAttr": "email",
       "groupsAttr": "groups"
     }
+  }
   },
   "oidc": {
+    "config":{
     "type": "oidc",
     "id": "google",
     "name": "Google",
@@ -99,8 +113,10 @@
       "clientSecret": "$GOOGLE_CLIENT_SECRET",
       "redirectURI": "http://127.0.0.1:5556/callback"
     }
+  }
   },
   "openshift": {
+    "config":{
     "type": "openshift",
     "id": "openshift",
     "name": "OpenShift",
@@ -115,5 +131,6 @@
         "users"
       ]
     }
+  }
   }
 }
