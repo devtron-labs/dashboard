@@ -13,7 +13,7 @@ export const getChartProviderConfig = (id: number): Promise<any> => {
 
 export const updateChartProviderConfig = (request: any, id: number) => {
     const URL = `app-store/repo/update`;
-    return put(URL, request);
+    return post(URL, request);
 }
 
 export const saveChartProviderConfig = (request: any, id: any) => {

@@ -19,7 +19,7 @@ export default function ChartRepo() {
                 <h2 className="form__title">Chart Repository</h2>
                 <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
                 </h5>
-                {[{ id: null,default: true, name: "", active: true, url: "", authMode: null }].sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+                {[{ id: null,default: true, name: "", active: true, url: "", authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
             </section>
             );
         }
@@ -54,7 +54,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     return (
         <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo>{id ? <div className={`${url.split(".")[0]} list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
+                <List.Logo>{id ? <div className={` list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
