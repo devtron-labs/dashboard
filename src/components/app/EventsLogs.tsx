@@ -24,7 +24,6 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
-import MicroFrontend from '../../MicroFrontend';
 
 const terminalHost = process.env.REACT_APP_TERMINAL_HOST || "http://localhost:3001";
 const commandLineParser = require('command-line-parser')
@@ -106,7 +105,7 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
             {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
                 <>
                     <span style={{ background: '#2c3354' }} />
-                    {/* <TerminalView appDetails={appDetails}
+                    <TerminalView appDetails={appDetails}
                         nodeName={nodeName}
                         containerName={containerName}
                         socketConnection={socketConnection}
@@ -114,11 +113,9 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                         shell={shell}
                         isReconnection={isReconnection}
                         setIsReconnection={setIsReconnection}
-                        selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         setSocketConnection={setSocketConnection}
-                    /> */}
-                    <MicroFrontend history={history} host={terminalHost} name="Terminal" />
+                    />
                 </>
             )}
         </>
@@ -177,7 +174,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
 
     return <AutoSizer>
         {({ height, width }) => <div style={{
-            gridColumn: '1 / span 2', 
+            gridColumn: '1 / span 2',
         }}>
             <MonacoEditor language={'yaml'}
                 value={YamljsParser.stringify(manifest, { indent: 2 })}

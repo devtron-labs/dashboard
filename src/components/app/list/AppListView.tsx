@@ -11,6 +11,9 @@ import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import MicroFrontend from '../../../MicroFrontend';
+
+const terminalHost = process.env.REACT_APP_TERMINAL_HOST || "http://localhost:3001";
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -229,6 +232,7 @@ export class AppListView extends Component<AppListViewProps>{
     }
 
     render() {
+        return <MicroFrontend history={this.props.history} host={terminalHost} name="terminal" />
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
                 {this.renderPageHeader()}
