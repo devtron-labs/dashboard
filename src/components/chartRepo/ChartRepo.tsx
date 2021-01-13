@@ -19,7 +19,7 @@ export default function ChartRepo() {
                 <h2 className="form__title">Chart Repository</h2>
                 <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
                 </h5>
-                {[{ id: null,default: true, url: "", name: "", active: true,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+                {[{ id: null,default: true, url: "", name: "", active: false,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
             </section>
             );
         }
