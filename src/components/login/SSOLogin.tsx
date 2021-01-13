@@ -276,6 +276,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'
+                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 32 : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={(event) => { this.handleConfigChange(event) }}>
