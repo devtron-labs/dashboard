@@ -6,20 +6,25 @@ import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './servic
 import { getSourceConfig, getCIConfig } from '../../services/service';
 import { useParams } from 'react-router'
 import { KeyValueInput } from '../configMaps/ConfigMap'
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
+import { URLS } from '../../config';
+import { NavLink } from 'react-router-dom';
+import ReactSelect, { components } from 'react-select';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import './CIConfig.scss';
 
-export default function CIConfig({respondOnSuccess, ...rest}){
+export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
     const [sourceConfig, setSourceConfig] = useState(null)
     const [ciConfig, setCIConfig] = useState(null)
     const [loading, setLoading] = useState(true)
-    const { appId } = useParams()
-    useEffect(()=>{
+    const { appId } = useParams<{ appId: string; }>()
+    useEffect(() => {
         initialise()
-    },[])
+    }, [])
 
-    async function initialise(){
+    async function initialise() {
         try {
             setLoading(true)
             const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([getDockerRegistryMinAuth(appId), getSourceConfig(appId), getCIConfig(+appId)])
@@ -34,29 +39,29 @@ export default function CIConfig({respondOnSuccess, ...rest}){
         }
     }
 
-    async function reload(){
-        try{
+    async function reload() {
+        try {
             setLoading(true)
-            const {result} = await getCIConfig(+appId)
+            const { result } = await getCIConfig(+appId)
             setCIConfig(result)
             setLoading(false)
             respondOnSuccess()
         }
-        catch(err){
+        catch (err) {
             showError(err)
         }
     }
 
     if (loading) return <Progressing pageLoader />
-    if(!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
-    return <Form dockerRegistries={dockerRegistries} sourceConfig={sourceConfig} ciConfig={ciConfig} reload={reload} appId={appId}/>
-    
+    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
+    return <Form dockerRegistries={dockerRegistries} sourceConfig={sourceConfig} ciConfig={ciConfig} reload={reload} appId={appId} />
+
 }
 
-function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
+function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            repository: { value: ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material=>material.id === ciConfig.dockerBuildConfig.gitMaterialId).checkoutPath : Array.isArray(sourceConfig.material) && sourceConfig.material.length === 1 ? (sourceConfig.material[0].checkoutPath || "./") : "", error: "" },
+            repository: { value: ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId).checkoutPath : Array.isArray(sourceConfig.material) && sourceConfig.material.length === 1 ? (sourceConfig.material[0].checkoutPath || "./") : "", error: "" },
             dockerfile: { value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : "", error: "" },
             registry: { value: ciConfig ? ciConfig.dockerRegistry : (Array.isArray(dockerRegistries) ? dockerRegistries.find(reg => reg.isDefault).id || "" : ""), error: "" },
             repository_name: { value: ciConfig ? ciConfig.dockerRepository : "", error: "" },
@@ -91,17 +96,17 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
     const [args, setArgs] = useState([])
     const [loading, setLoading] = useState(false)
 
-    useEffect(()=>{
+    useEffect(() => {
         let args = []
-        if (ciConfig && ciConfig.dockerBuildConfig.args){
+        if (ciConfig && ciConfig.dockerBuildConfig.args) {
             args = Object.keys(ciConfig.dockerBuildConfig.args).map(arg => ({ k: arg, v: ciConfig.dockerBuildConfig.args[arg], keyError: '', valueError: '' }))
         }
-        if(args.length === 0){
-            args.push({k: '', v:'', keyError:'', valueError:''})
+        if (args.length === 0) {
+            args.push({ k: '', v: '', keyError: '', valueError: '' })
         }
         setArgs(args)
-    },[])
-    
+    }, [])
+
     async function onValidation(state) {
         let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
             if (v && !k) {
@@ -135,8 +140,8 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
                 gitMaterialId: sourceConfig.material.find(material => material.checkoutPath === repository.value).id
             },
             afterDockerBuild: [],
-            appName:'',
-            ...(ciConfig && ciConfig.version ? {version: ciConfig.version} : {})
+            appName: '',
+            ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {})
         }
         setLoading(true)
         try {
@@ -148,13 +153,13 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
         catch (err) {
             showError(err)
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
-    function handleArgsChange(index, k, v){
-        setArgs(arr=>{
-            arr[index]={k:k, v:v, keyError:'', valueError:''}
+    function handleArgsChange(index, k, v) {
+        setArgs(arr => {
+            arr[index] = { k: k, v: v, keyError: '', valueError: '' }
             return Array.from(arr);
         })
     }
@@ -162,7 +167,7 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
     return (
         <div className="form__app-compose">
             <h1 className="form__title">Docker build configuration</h1>
-            <p className="form__subtitle">Required to execute CI pipelines for this application.  
+            <p className="form__subtitle">Required to execute CI pipelines for this application.
             <span><a rel="noreferrer noopener" target="_blank" href="https://docs.devtron.ai/creating-application/docker-build-configuration"> Learn more about Docker Build Config</a> </span></p>
             <div className="white-card white-card__docker-config">
                 <div className="form-row form-row__docker">
@@ -171,6 +176,12 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
                         <Select onChange={handleOnChange} name='repository' value={repository.value} tabIndex={1}>
                             <Select.Button>{repository.value || "Select repository"}</Select.Button>
                             {sourceConfig.material.map(config => <Select.Option key={config.id} value={config.checkoutPath || "./"}>{config.checkoutPath || "./"}</Select.Option>)}
+                            <div className="select__sticky-bottom">
+                                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 block fw-5 anchor cursor no-decor">
+                                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-middle" />
+                                    Add Docker Config
+                                </NavLink>
+                            </div>
                         </Select>
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
@@ -187,7 +198,7 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
                             <Select.Button >{registry.value || 'Select registry'}</Select.Button>
                             {Array.isArray(dockerRegistries) && dockerRegistries.map(reg => <Select.Option value={reg.id} key={reg.id}>{reg.id}</Select.Option>)}
                         </Select>
-                        {registry.error &&  <label className="form__error">{registry.error}</label>}
+                        {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Docker repository</label>
@@ -201,7 +212,7 @@ function Form({dockerRegistries, sourceConfig, ciConfig, reload, appId }){
                         <span className="fa fa-plus"></span>Add parameter
                     </div>
                 </div>
-                {args && args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={handleArgsChange} onDelete={e=> {let argsTemp = [...args]; argsTemp.splice(idx,1); setArgs(argsTemp)}} valueType="text"/>)}
+                {args && args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={handleArgsChange} onDelete={e => { let argsTemp = [...args]; argsTemp.splice(idx, 1); setArgs(argsTemp) }} valueType="text" />)}
                 <div className="form__buttons">
                     <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>{loading ? <Progressing /> : 'Save Configuration'}</button>
                 </div>

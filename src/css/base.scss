@@ -178,7 +178,9 @@ a:focus {
 .ff-monospace {
     font-family: monospace;
 }
-
+.react-select__bottom{
+    border-top: solid 1px var(--N100);
+}
 @mixin tab-container($bgColor,
     $color) {
     .tab {
