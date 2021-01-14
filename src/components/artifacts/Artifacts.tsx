@@ -315,6 +315,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                                 border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
                                 boxShadow: 'none',
                                 fontWeight: 'normal',
+                                height: "40px"
                             }),
                             option: (base, state) => ({
                                 ...base,
