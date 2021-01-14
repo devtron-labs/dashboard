@@ -137,73 +137,71 @@ export class AppListView extends Component<AppListViewProps>{
     renderAppList() {
         if (this.props.apps.length) {
             let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
-            return <>
-                <div className="app-list">
-                    <div className="app-list__header">
-                        <div className="app-list__cell app-list__cell--name">
-                            <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+            return <div className="app-list">
+                <div className="app-list__header">
+                    <div className="app-list__cell app-list__cell--name">
+                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
+                        </button>
+                    </div>
+                    <div className="app-list__cell app-list__cell--status">
+                        <span className="app-list__cell-header">Status</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--env">
+                        <span className="app-list__cell-header">Environment</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--material-info">
+                        <span className="app-list__cell-header">Commit</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--time">
+                        <span className="app-list__cell-header">Last Deployed Time </span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--action"></div>
+                </div>
+                {this.props.apps.map((app) => {
+                    let commits = app.defaultEnv.materialInfo.map(mat => {
+                        return <div key={mat.revision} className="app-commit">
+                            <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
+                                event.preventDefault();
+                                this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, mat.revision);
+                            }}>
+                                <Commit className="icon-dim-16" />{mat.revision.substr(0, 8)}
                             </button>
                         </div>
-                        <div className="app-list__cell app-list__cell--status">
-                            <span className="app-list__cell-header">Status</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--env">
-                            <span className="app-list__cell-header">Environment</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--material-info">
-                            <span className="app-list__cell-header">Commit</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--time">
-                            <span className="app-list__cell-header">Last Deployed Time </span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--action"></div>
-                    </div>
-                    {this.props.apps.map((app) => {
-                        let commits = app.defaultEnv.materialInfo.map(mat => {
-                            return <div key={mat.revision} className="app-commit">
-                                <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
-                                    event.preventDefault();
-                                    this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, mat.revision);
-                                }}>
-                                    <Commit className="icon-dim-16" />{mat.revision.substr(0, 8)}
-                                </button>
-                            </div>
-                        })
-                        return <React.Fragment key={app.id} >
-                            {!(this.props.appData && this.props.appData.id == app.id) ?
-                                <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className="app-list__row">
-                                    <div className="app-list__cell app-list__cell--name">
-                                        <p className="truncate-text m-0">{app.name}</p>
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--status">
-                                        <AppStatus status={app.defaultEnv ? app.defaultEnv.status : "Not Deployed"} />
-                                    </div>
-                                    {this.renderEnvironmentList(app)}
-                                    <div className="app-list__cell app-list__cell--material-info">
-                                        {commits}
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--time">
-                                        <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.lastDeployedTime : ""}</p>
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--action">
-                                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.handleEditApp(app.id) }}>
-                                            <Edit className="button-edit__icon" />
-                                        </button>
-                                    </div>
-                                </Link>
-                                : null}
-                            {(this.props.appData && this.props.appData.id == app.id) ?
-                                <ExpandedRow app={this.props.appData}
-                                    openTriggerInfoModal={this.props.openTriggerInfoModal}
-                                    close={this.props.closeExpandedRow}
-                                    redirect={this.props.redirectToAppDetails}
-                                    handleEdit={(event) => this.props.handleEditApp(app.id)} />
-                                : null}
-                        </React.Fragment>
-                    })}
-                </div>
-            </>
+                    })
+                    return <React.Fragment key={app.id} >
+                        {!(this.props.appData && this.props.appData.id == app.id) ?
+                            <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className="app-list__row">
+                                <div className="app-list__cell app-list__cell--name">
+                                    <p className="truncate-text m-0">{app.name}</p>
+                                </div>
+                                <div className="app-list__cell app-list__cell--status">
+                                    <AppStatus status={app.defaultEnv ? app.defaultEnv.status : "Not Deployed"} />
+                                </div>
+                                {this.renderEnvironmentList(app)}
+                                <div className="app-list__cell app-list__cell--material-info">
+                                    {commits}
+                                </div>
+                                <div className="app-list__cell app-list__cell--time">
+                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.lastDeployedTime : ""}</p>
+                                </div>
+                                <div className="app-list__cell app-list__cell--action">
+                                    <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.handleEditApp(app.id) }}>
+                                        <Edit className="button-edit__icon" />
+                                    </button>
+                                </div>
+                            </Link>
+                            : null}
+                        {(this.props.appData && this.props.appData.id == app.id) ?
+                            <ExpandedRow app={this.props.appData}
+                                openTriggerInfoModal={this.props.openTriggerInfoModal}
+                                close={this.props.closeExpandedRow}
+                                redirect={this.props.redirectToAppDetails}
+                                handleEdit={(event) => this.props.handleEditApp(app.id)} />
+                            : null}
+                    </React.Fragment>
+                })}
+            </div>
         }
     }
 
