@@ -15,9 +15,3 @@ export function updateRegistryConfig(request, id: string): Promise<any> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
     return put(URL, request);
 }
-
-export function getDockerRegistryList(): Promise<any> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
-    return get(URL)
-}
-

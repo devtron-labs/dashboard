@@ -37,6 +37,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
+            isDockerRegistryEmpty: false,
         }
     }
 
