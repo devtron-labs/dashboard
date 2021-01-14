@@ -318,7 +318,14 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         <>
             <div className="chart-group__header">
                 <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+                <h5 className="form__subtitle">Select chart to deploy. &nbsp;</h5>
+                <div className= "search search--container" >
+                    <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
+                    <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
+
+                </div>
             </div>
+            
             <div className="chart-grid">
                 {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                     key={chart.id}
