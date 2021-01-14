@@ -176,12 +176,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <Select onChange={handleOnChange} name='repository' value={repository.value} tabIndex={1}>
                             <Select.Button>{repository.value || "Select repository"}</Select.Button>
                             {sourceConfig.material.map(config => <Select.Option key={config.id} value={config.checkoutPath || "./"}>{config.checkoutPath || "./"}</Select.Option>)}
-                            <div className="select__sticky-bottom">
-                                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 block fw-5 anchor cursor no-decor">
-                                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                    Add Docker Config
-                                </NavLink>
-                            </div>
                         </Select>
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
@@ -197,6 +191,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
                             <Select.Button >{registry.value || 'Select registry'}</Select.Button>
                             {Array.isArray(dockerRegistries) && dockerRegistries.map(reg => <Select.Option value={reg.id} key={reg.id}>{reg.id}</Select.Option>)}
+                            <div className="select__sticky-bottom">
+                                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 block fw-5 anchor cursor no-decor">
+                                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                                    Add Docker Config
+                                </NavLink>
+                            </div>
                         </Select>
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
