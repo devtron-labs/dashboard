@@ -194,7 +194,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             <div className="select__sticky-bottom">
                                 <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 block fw-5 anchor cursor no-decor">
                                     <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                    Add Docker Config
+                                    Add Docker Registry
                                 </NavLink>
                             </div>
                         </Select>
