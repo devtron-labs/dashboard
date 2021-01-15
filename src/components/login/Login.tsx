@@ -96,16 +96,16 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         let search = this.props.location.search;
 
         return <div className="login__control">
-                <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
-                <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-                {this.state.loginList.map((item) => {
-                    return <a href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
-                        <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
+            <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
+            <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
+            {this.state.loginList.filter(sso => sso.active).map((item) => {
+                return <a href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
+                    <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
                         Login with <span className="ml-5 capitalize">{item.name}</span>
-                    </a>
-                })}
-                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>Login as administrator</NavLink>
-            </div>
+                </a>
+            })}
+            <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>Login as administrator</NavLink>
+        </div>
     }
 
     renderAdminLoginPage() {
