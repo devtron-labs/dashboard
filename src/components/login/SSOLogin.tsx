@@ -68,7 +68,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                 getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
-                    let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLocaleUpperCase()]);
+                    let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()]);
                     if (response.result) {
                         newConfig = this.parseResponse(response.result)
                     }
