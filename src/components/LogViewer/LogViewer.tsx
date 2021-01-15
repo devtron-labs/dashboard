@@ -122,8 +122,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
     return (
         <>
         <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>
-            }
+            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>}
         </AutoSizer>
         <Scroller
             scrollToBottom={scrollToBottom}
@@ -140,7 +139,7 @@ function ResizableLogs({fitAddon, height, width, showCopyToast}){
             if (fitAddon.current) fitAddon.current.fit();
         },
         100,
-        [height],
+        [height, width],
     );
 
     return (
