@@ -21,6 +21,8 @@ import { URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
+import ReactSelect from 'react-select';
+
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts.filter(chart => chart.isEnabled).map(chart => {
@@ -319,10 +321,53 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
             <div className="chart-group__header">
                 <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
                 <h5 className="form__subtitle">Select chart to deploy. &nbsp;</h5>
-                <div className= "search search--container" >
-                    <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                    <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
+                <div className="display-flex">
+                    <div className= "search search--container" >
+                            <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
+                            <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
+                    </div>
+                
+                    <ReactSelect 
+                        placeholder={ "All repositories"}
+                        className = "date-align-left"
+                        styles={{
+                            container: (base, state) => {
+                            return ({
+                                ...base,
+                                height: '36px',
+                                width: '200px',
 
+                            })
+                            },
+                            control: (base, state) => ({
+                            ...base,
+                            minHeight: '36px',
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                fontWeight: "normal",
+                                color: 'var(--N900)',
+                                padding: '8px 12px',
+                            }),
+                        }}/>
+                     <ReactSelect 
+                        placeholder={ "Show deprecated"}
+                        className = "date-align-left"
+                        styles={{
+                            container: (base, state) => {
+                            return ({
+                                ...base,
+                                height: '36px',
+                                width: '200px',
+                                marginLeft: '16px'
+                              })
+                            },
+                            control: (base, state) => ({
+                            ...base,
+                            minHeight: '36px',
+                            }),
+                        }}/>
                 </div>
             </div>
             

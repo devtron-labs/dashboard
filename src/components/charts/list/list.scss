@@ -487,3 +487,13 @@
         overflow: auto;
     }
 }
+.display-flex{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.date-align-left{
+    margin: auto;
+    margin-right: 0;
+    color: var(--N900)
+}
