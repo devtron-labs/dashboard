@@ -76,6 +76,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         view: ViewType.FORM,
                         ssoConfig: newConfig,
                     })
+                }).catch((error) => {
+                    this.setState({ view: ViewType.ERROR, statusCode: error.code })
                 })
             }
             else {
