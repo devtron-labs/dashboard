@@ -5,7 +5,7 @@ import { Switch, Redirect, NavLink } from 'react-router-dom';
 import { Route } from 'react-router';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../modals/commonTypes';
-import { URLS } from '../../config';
+import { URLS, Host } from '../../config';
 import { Progressing, showError } from '../common'
 import { LoginProps, LoginFormState } from './login.types';
 import { getSSOConfigList, loginAsAdmin } from './login.service';
@@ -99,7 +99,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList.map((item) => {
-                    return <a href={`/orchestrator/${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
+                    return <a href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
                         <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
                         Login with <span className="ml-5 capitalize">{item.name}</span>
                     </a>
