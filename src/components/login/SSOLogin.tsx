@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import './login.css'
-import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, } from '../common'
+import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common'
 import Google from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -19,6 +19,7 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
 import { SSOConfigType } from './ssoConfig.types'
+import { ViewType } from '../../config'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -39,10 +40,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {
         super(props)
         this.state = {
+            view: ViewType.LOADING,
+            statusCode: 0,
             sso: "",
             lastActiveSSO: undefined,
             saveLoading: false,
-            isLoading: true,
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
             ssoConfig: undefined,
@@ -66,35 +68,43 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                 getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
+                    let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()]);
+                    if (response.result) {
+                        newConfig = this.parseResponse(response.result)
+                    }
                     this.setState({
-                        isLoading: false,
-                        ssoConfig: this.parseResponse(response.result),
+                        view: ViewType.FORM,
+                        ssoConfig: newConfig,
                     })
+                }).catch((error) => {
+                    this.setState({ view: ViewType.ERROR, statusCode: error.code })
                 })
             }
             else {
                 this.setState({
-                    isLoading: false,
+                    view: ViewType.FORM,
                     ssoConfig: this.parseResponse(sample[this.state.sso]),
                 })
             }
         }).catch((error) => {
-            this.setState({ isLoading: false });
+            this.setState({ view: ViewType.ERROR, statusCode: error.code })
         })
     }
 
     handleSSOClick(event): void {
         let newsso = event.target.value;
         getSSOConfig(newsso).then((response) => {
+            let newConfig = this.parseResponse(sample[newsso]);
+            if (response.result) {
+                newConfig = this.parseResponse(response.result)
+            }
             this.setState({
+                view: ViewType.FORM,
                 sso: newsso,
-                ssoConfig: this.parseResponse(response.result),
+                ssoConfig: newConfig,
             })
         }).catch((error) => {
-            this.setState({
-                sso: newsso,
-                ssoConfig: this.parseResponse(sample[newsso]),
-            })
+            this.setState({ view: ViewType.ERROR, statusCode: error.code })
         })
     }
 
@@ -116,6 +126,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             active: ssoConfig.active
         }
     }
+
     saveNewSSO(): void {
         this.setState({ saveLoading: true });
 
@@ -143,7 +154,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         promise.then((response) => {
             let ssoConfig = response.result;
             this.setState({
-                isLoading: false,
+                view: ViewType.FORM,
                 showToggling: false,
                 saveLoading: false,
                 ssoConfig: this.parseResponse(response.result),
@@ -189,7 +200,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             createSSOList(payload).then((response) => {
                 let ssoConfig = response.result;
                 this.setState({
-                    isLoading: false,
+                    view: ViewType.FORM,
                     saveLoading: false,
                     ssoConfig: this.parseResponse(response.result),
                     lastActiveSSO: {
@@ -222,7 +233,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 updateSSOList(payload).then((response) => {
                     let ssoConfig = response.result;
                     this.setState({
-                        isLoading: false,
+                        view: ViewType.FORM,
                         saveLoading: false,
                         ssoConfig: this.parseResponse(response.result),
                         lastActiveSSO: {
@@ -294,7 +305,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     render() {
-        if (this.state.isLoading) return <Progressing pageLoader />
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        else if (this.state.view === ViewType.ERROR) {
+            return <div style={{ height: "calc(100vh - 80px)" }} className="flex">
+                <ErrorScreenManager code={this.state.statusCode} />
+            </div>
+        }
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;

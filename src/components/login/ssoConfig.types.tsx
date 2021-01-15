@@ -6,7 +6,8 @@ export interface SSOLogin {
 }
 
 export interface SSOLoginState {
-    isLoading: boolean;
+    view: string;
+    statusCode: number;
     saveLoading: boolean;
     sso: string; //lowercase
     lastActiveSSO: undefined | SSOLogin
