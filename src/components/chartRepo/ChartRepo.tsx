@@ -4,6 +4,8 @@ import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
 import { getChartProviderList, saveChartProviderConfig, updateChartProviderConfig} from './service'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import {ReactComponent as Helm} from '../../assets/icons/ic-helmchart.svg'
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartProviderList)
@@ -17,9 +19,9 @@ export default function ChartRepo() {
         return (
             <section className="git-page">
                 <h2 className="form__title">Chart Repository</h2>
-                <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+                <h5 className="form__subtitle">Manage your organization’s chart repositories. &nbsp;
                 </h5>
-                {[{ id: null,default: true, url: "", name: "", active: false,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+                {[{ id: null,default: true, url: "", name: "", active: true,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
             </section>
             );
         }
@@ -53,11 +55,11 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }, [enabled])
 
     return (
-        <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list ${id?'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo>{id ? <div className={`${url} list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
+                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
                {console.log(url,id)}
-                <div className="flex left">
+                <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
@@ -121,7 +123,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             name: state.name.value,
             url: state.url.value,
             authMode: state.auth.value,
-            active,
+            active: true,
             ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
         }
