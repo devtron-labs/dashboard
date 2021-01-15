@@ -111,21 +111,17 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     parseResponse(ssoConfig): SSOConfigType {
-        try {
-            return {
-                id: ssoConfig.id,
-                name: ssoConfig.name,
-                url: ssoConfig.url,
-                config: {
-                    name: ssoConfig.config.name,
-                    type: ssoConfig.config.type,
-                    id: ssoConfig.config.id,
-                    config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
-                },
-                active: ssoConfig.active
-            }
-        } catch (error) {
-            return undefined
+        return {
+            id: ssoConfig.id,
+            name: ssoConfig.name,
+            url: ssoConfig.url,
+            config: {
+                name: ssoConfig.config.name,
+                type: ssoConfig.config.type,
+                id: ssoConfig.config.id,
+                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 })
+            },
+            active: ssoConfig.active
         }
     }
 
