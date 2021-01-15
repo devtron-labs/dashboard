@@ -69,7 +69,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                 getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
                     let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()]);
-                    if (response.result.id && response.result.active) {
+                    if (response.result.id) {
                         newConfig = this.parseResponse(response.result)
                     }
                     this.setState({
@@ -93,7 +93,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let newsso = event.target.value;
         getSSOConfig(newsso).then((response) => {
             let newConfig = this.parseResponse(sample[newsso]);
-            if (response.result.id && response.result.active) {
+            if (response.result.id) {
                 newConfig = this.parseResponse(response.result)
             }
             this.setState({
