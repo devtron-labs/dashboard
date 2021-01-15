@@ -124,6 +124,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            toast.error("Invalid Yaml");
+            this.setState({ saveLoading: false });
         }
         let payload = {
             id: this.state.ssoConfig?.id,
@@ -166,6 +168,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            toast.error("Invalid Yaml");
             this.setState({ saveLoading: false });
         }
 
@@ -242,20 +245,18 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleConfigChange(value: string): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return;
-        try {
-            this.setState({
-                ssoConfig: {
-                    ...this.state.ssoConfig,
-                    config: {
-                        name: this.state.ssoConfig.config.name,
-                        type: this.state.ssoConfig.config.type,
-                        id: this.state.ssoConfig.config.id,
-                        config: value,
-                    },
-                }
-            });
-        } catch (error) {
-        }
+
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                config: {
+                    name: this.state.ssoConfig.config.name,
+                    type: this.state.ssoConfig.config.type,
+                    id: this.state.ssoConfig.config.id,
+                    config: value,
+                },
+            }
+        });
     }
 
     handleCodeEditorTab(value: string): void {

@@ -27,6 +27,7 @@ export const URLS = {
     APP_CD_CONFIG: 'cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
+    AUTHENTICATE: '/auth/login',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
