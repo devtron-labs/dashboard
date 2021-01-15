@@ -5,7 +5,15 @@ import { toast } from 'react-toastify';
 import { showError } from '../common';
 import { MaterialView } from './MaterialView';
 
-export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boolean; isCheckoutPathValid; material: GitMaterialType; providers: any[]; }, UpdateMaterialState> {
+interface UpdateMaterialProps {
+    appId: number;
+    isMultiGit: boolean;
+    isCheckoutPathValid;
+    material: GitMaterialType;
+    providers: any[];
+    refreshMaterials: () => void;
+}
+export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
 
     constructor(props) {
         super(props);
@@ -16,6 +24,7 @@ export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boole
             url: this.props.material.url,
             checkoutPath: this.props.material.checkoutPath,
             isCollapsed: true,
+            active: true,
             isLoading: false,
         }
         this.handleProviderChange = this.handleProviderChange.bind(this);
@@ -26,19 +35,34 @@ export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boole
         this.cancel = this.cancel.bind(this);
     }
 
-    handleProviderChange(selected) {
+    componentDidUpdate(prevProps, prevState) {
+        // if (prevProps.material.gitProvider.id != this.props.material.gitProvider.id || prevProps.material.url != this.props.material.url || prevProps.material.checkoutPath != this.props.material.checkoutPath) {
+        //     this.setState({
+        //         id: this.props.material.id,
+        //         name: this.props.material.name,
+        //         gitProvider: this.props.material.gitProvider,
+        //         url: this.props.material.url,
+        //         checkoutPath: this.props.material.checkoutPath,
+        //         isCollapsed: true,
+        //         isLoading: false,
+        //     })
+        // }
+        // console.log("refreshed")
+    }
+
+    handleProviderChange(selected): void {
         this.setState({ gitProvider: selected });
     }
 
-    handlePathChange(event) {
+    handlePathChange(event): void {
         this.setState({ checkoutPath: event.target.value });
     }
 
-    handleUrlChange(event) {
+    handleUrlChange(event): void {
         this.setState({ url: event.target.value });
     }
 
-    toggleCollapse(event) {
+    toggleCollapse(event): void {
         this.setState({
             gitProvider: this.props.material.gitProvider,
             url: this.props.material.url,
@@ -48,14 +72,28 @@ export class UpdateMaterial extends Component<{ appId: number; isMultiGit: boole
         });
     }
 
-    save(event) {
+    save(event): void {
         this.setState({ isLoading: true });
         let payload = {
             appId: this.props.appId,
-            material: { ...this.state }
+            material: {
+                id: this.state.id,
+                gitProvider: this.props.material.gitProvider,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+                gitProviderId: this.state.gitProvider.id,
+            }
         }
         updateMaterial(payload).then((response) => {
-
+            this.props.refreshMaterials();
+            console.log(this.props.material)
+            this.setState({
+                id: response.result.id,
+                name: response.result.name,
+                gitProvider: this.props.providers.find(provider => provider.id === response.result.gitProviderId),
+                url: response.result.url,
+                checkoutPath: response.result.checkoutPath,
+            })
         }).catch((error) => {
             showError(error);
         }).finally(() => {

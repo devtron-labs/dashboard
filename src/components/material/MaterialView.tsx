@@ -39,7 +39,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             <div className="form__row">
                 <span className="form__label">Select Provider*</span>
                 <ReactSelect className=""
-                    tabIndex={`${this.props.index + 0}`}
                     isMulti={false}
                     isClearable={false}
                     value={this.props.material.gitProvider}
@@ -80,10 +79,11 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
 
             <label className="form__row">
                 <span className="form__label">Git Repo URL*</span>
-                <input className="form__input" placeholder="e.g. https://gitlab.com/abc/xyz.git" type="text"
+                <input className="form__input"
+                    type="text"
+                    placeholder="e.g. https://gitlab.com/abc/xyz.git"
                     value={this.props.material.url}
-                    tabIndex={this.props.index + 1}
-                    onChange={this.props.handlePathChange} />
+                    onChange={this.props.handleUrlChange} />
                 <span className="form__error">
                     {/* {showError && !errorObject[1].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[1].message} */}
                 </span>
@@ -91,9 +91,10 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
 
             <label className="form__row">
                 <span className="form__label">Checkout Path(*Required If you’re using multiple Git Materials)</span>
-                <input className="form__input" placeholder="e.g. /abc" type="text"
+                <input className="form__input"
+                    type="text"
+                    placeholder="e.g. /abc"
                     value={this.props.material.checkoutPath}
-                    tabIndex={this.props.index + 2}
                     onChange={this.props.handlePathChange} />
                 <span className="form__error">
                     {!checkoutPathValue?.isValid ? <> <img src={error} className="form__icon" /> {checkoutPathValue?.message}</> : null}
@@ -101,9 +102,9 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?
-                    <button type="button" className="cta cancel mr-16" tabIndex={this.props.index + 3} onClick={this.props.cancel}>Cancel</button>
+                    <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>Cancel</button>
                     : null}
-                <button type="button" className="cta" disabled={this.props.material.isLoading} tabIndex={this.props.index + 4}
+                <button type="button" className="cta" disabled={this.props.material.isLoading}
                     onClick={this.props.save}>
                     {this.props.material.isLoading ? <Progressing /> : "Save"}
                 </button>

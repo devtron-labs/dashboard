@@ -4,11 +4,15 @@ import { toast } from 'react-toastify';
 import { showError } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
-import { ValidationRules } from './validationRules';
+interface CreateMaterialProps {
+    appId: number;
+    isMultiGit: boolean;
+    isCheckoutPathValid;
+    providers: any[];
+    refreshMaterials: () => void;
+}
 
-export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: number; isCheckoutPathValid; providers: any[]; }, CreateMaterialState> {
-
-    rules;
+export class CreateMaterial extends Component<CreateMaterialProps, CreateMaterialState> {
 
     constructor(props) {
         super(props);
@@ -16,10 +20,10 @@ export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: numb
             gitProvider: undefined,
             url: '',
             checkoutPath: './',
-            isCollapsed: false,
+            isCollapsed: true,
             isLoading: false,
+            active: true,
         }
-        this.rules = new ValidationRules();
 
         this.handleProviderChange = this.handleProviderChange.bind(this);
         this.handlePathChange = this.handlePathChange.bind(this);
@@ -43,11 +47,7 @@ export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: numb
 
     toggleCollapse(event) {
         this.setState({
-            gitProvider: undefined,
-            url: '',
-            checkoutPath: '',
             isCollapsed: !this.state.isCollapsed,
-            isLoading: false,
         });
     }
 
@@ -58,7 +58,7 @@ export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: numb
             material: { ...this.state }
         }
         createMaterial(payload).then((response) => {
-
+            this.props.refreshMaterials();
         }).catch((error) => {
             showError(error);
         }).finally(() => {
@@ -70,7 +70,7 @@ export class CreateMaterial extends Component<{ isMultiGit: boolean; appId: numb
         this.setState({
             gitProvider: undefined,
             url: '',
-            checkoutPath: '',
+            checkoutPath: './',
             isCollapsed: true,
             isLoading: false,
         });

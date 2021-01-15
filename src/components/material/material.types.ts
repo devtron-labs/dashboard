@@ -6,12 +6,14 @@ export interface MaterialListProps extends RouteComponentProps<{ appId: string; 
 }
 
 export interface GitMaterialType {
-    id?: number;
-    name?: string;
+    id: number;
+    name: string;
     gitProvider: { id: number; name: string };
     url: string;
     checkoutPath: string;
+    active: boolean;
 }
+
 
 export interface MaterialListState {
     statusCode: number;
@@ -21,19 +23,22 @@ export interface MaterialListState {
     configStatus: number;
 }
 
-export type CreateMaterialState = {
-    gitProvider: { id: number; name: string };
-    url: string;
-    checkoutPath: string;
-    isCollapsed: boolean;
-    isLoading: boolean;
-}
+// export type CreateMaterialState = {
+//     active: boolean;
+//     gitProvider: { id: number; name: string };
+//     url: string;
+//     checkoutPath: string;
+//     isCollapsed: boolean;
+//     isLoading: boolean;
+// }
 
 export type UpdateMaterialState = GitMaterialType & { isCollapsed: boolean; isLoading: boolean; }
 
+export type CreateMaterialState = Omit<UpdateMaterialState, "id" | "name">
+
 export interface MaterialViewProps {
     isMultiGit: boolean;
-    material: UpdateMaterialState;
+    material: CreateMaterialState | UpdateMaterialState;
     providers: any[];
     handleProviderChange: (selected) => void;
     handleUrlChange: (event) => void;

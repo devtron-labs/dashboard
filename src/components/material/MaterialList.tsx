@@ -53,6 +53,20 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         return null;
     }
 
+    refreshMaterials() {
+        getSourceConfig(this.props.match.params.appId).then((response) => {
+            let materials = response.result.materials.map((mat) => {
+                return {
+                    ...mat,
+                    gitProvider: this.state.providers.find(p => mat.gitProviderId === p.id),
+                }
+            })
+            this.setState({
+                materials: materials,
+            });
+        })
+    }
+
     isCheckoutPathValid(checkoutPath: string) {
         if (!checkoutPath.startsWith("./"))
             return { message: "Invalid Path", result: 'error', isValid: false };
@@ -80,13 +94,15 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         else {
             return <div className="form__app-compose">
                 {this.renderPageHeader()}
-                <CreateMaterial appId={Number(this.props.match.params.appId)} 
+                <CreateMaterial appId={Number(this.props.match.params.appId)}
                     isMultiGit={this.state.materials.length > 0}
                     providers={this.state.providers}
+                    refreshMaterials={this.refreshMaterials}
                     isCheckoutPathValid={this.isCheckoutPathValid} />
                 {this.state.materials.map((mat, index) => {
                     return <UpdateMaterial appId={Number(this.props.match.params.appId)}
                         isMultiGit={this.state.materials.length > 0}
+                        refreshMaterials={this.refreshMaterials}
                         providers={this.state.providers}
                         material={mat}
                         isCheckoutPathValid={this.isCheckoutPathValid} />
