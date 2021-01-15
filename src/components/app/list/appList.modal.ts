@@ -1,11 +1,11 @@
-import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
+import { getEnvironmentListMin, getTeamListMin, getDockerRegistryList } from '../../../services/service';
 import { getAppList } from '../service';
 import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
 export const getInitState = (appListPayload): Promise<any> => {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppList(appListPayload)]).then(([teams, environments, appList]) => {
+    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppList(appListPayload), getDockerRegistryList()]).then(([teams, environments, appList, dockerRegistryRes]) => {
         let filterApplied = {
             environments: new Set(appListPayload.environments),
             statuses: new Set(appListPayload.statuses),
@@ -58,6 +58,7 @@ export const getInitState = (appListPayload): Promise<any> => {
             },
             searchQuery: appListPayload.appNameSearch || "",
             searchApplied: !!appListPayload.appNameSearch.length,
+            isDockerRegistryEmpty: !(dockerRegistryRes.result && dockerRegistryRes.result.length),
         }
         return parsedResponse;
     })
