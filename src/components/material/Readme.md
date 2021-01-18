@@ -25,6 +25,3 @@
 ##### MaterialView
 - Stateless component
 - Used by CreateMaterial & UpdateMaterial
-
-Note
-- Separating state for update and create component. For common interactions we will not have to add if condition

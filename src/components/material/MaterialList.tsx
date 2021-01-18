@@ -8,6 +8,7 @@ import { UpdateMaterial } from './UpdateMaterial';
 import { MaterialListProps, MaterialListState } from './material.types';
 import './material.css';
 
+
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     constructor(props) {
@@ -55,11 +56,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     refreshMaterials() {
-        console.log("a")
-        console.log(this)
         getSourceConfig(this.props.match.params.appId).then((response) => {
-            console.log(response.result)
-            let materials = response.result.materials.map((mat) => {
+            let materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
                     gitProvider: this.state.providers.find(p => mat.gitProviderId === p.id),
@@ -72,14 +70,16 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     isCheckoutPathValid(checkoutPath: string) {
-        if (!checkoutPath.startsWith("./"))
+        if (checkoutPath.length && !checkoutPath.startsWith("./")) {
             return { message: "Invalid Path", result: 'error', isValid: false };
-        if (this.state.materials.length > 1) {
+        }
+        if (this.state.materials.length > 1 && !checkoutPath.startsWith("./")) {
             let isValid = this.state.materials.reduce((isValid: boolean, artifact) => {
                 return (isValid && artifact.checkoutPath.length > 0)
             }, true);
             return { isValid, message: isValid ? '' : 'Mandatory for using multi-git' };
         }
+
         return { isValid: true, message: '' };
     }
 
@@ -98,19 +98,20 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         else {
             return <div className="form__app-compose">
                 {this.renderPageHeader()}
-                <CreateMaterial appId={Number(this.props.match.params.appId)}
+                <CreateMaterial key={this.state.materials.length}
+                    appId={Number(this.props.match.params.appId)}
                     isMultiGit={this.state.materials.length > 0}
                     providers={this.state.providers}
                     refreshMaterials={this.refreshMaterials}
                     isCheckoutPathValid={this.isCheckoutPathValid} />
-                {this.state.materials.map((mat, index) => {
-                    return <UpdateMaterial appId={Number(this.props.match.params.appId)}
+                {this.state.materials.map((mat) => {
+                    return <UpdateMaterial key={mat.name}
+                        appId={Number(this.props.match.params.appId)}
                         isMultiGit={this.state.materials.length > 0}
-                        refreshMaterials={this.refreshMaterials}
                         providers={this.state.providers}
                         material={mat}
+                        refreshMaterials={this.refreshMaterials}
                         isCheckoutPathValid={this.isCheckoutPathValid} />
-
                 })}
             </div>
         }

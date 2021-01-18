@@ -4,8 +4,8 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { Progressing } from '../common';
+import { MaterialViewProps } from './material.types';
 import error from '../../assets/icons/misc/errorInfo.svg';
-import { UpdateMaterialState, MaterialViewProps } from './material.types';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
@@ -18,7 +18,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     <div className="git__provider">{(this.props.material).name}</div>
                     <p className="git__url">{this.props.material.url}</p>
                 </div>
-                <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
+                <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(0deg)' }} />
             </div>
         }
         return <div className="white-card white-card--add-new-item mb-16" onClick={this.props.toggleCollapse}>
@@ -71,7 +71,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         }
                     }}
                 />
-                {!this.props.material.gitProvider?.id && <span className="form__error">
+                {this.props.isError.gitProvider && <span className="form__error">
                     <img src={error} className="form__icon" />
                         This is a required field
                     </span>}
@@ -85,7 +85,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={this.props.material.url}
                     onChange={this.props.handleUrlChange} />
                 <span className="form__error">
-                    {!this.props.material.url && <>
+                    {this.props.isError.url && <>
                         <img src={error} className="form__icon" />This is a required field
                     </>}
                 </span>

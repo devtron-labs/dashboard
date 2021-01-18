@@ -35,7 +35,7 @@ export interface CreateMaterialState {
     isError: {
         gitProvider: boolean;
         url: boolean;
-        chekoutPath: boolean;
+        checkoutPath: boolean;
     }
 }
 
@@ -46,7 +46,7 @@ export interface UpdateMaterialState {
     isError: {
         gitProvider: boolean;
         url: boolean;
-        chekoutPath: boolean;
+        checkoutPath: boolean;
     }
 }
 
@@ -59,7 +59,7 @@ export interface MaterialViewProps {
     isError:{
         gitProvider: boolean;
         url: boolean;
-        chekoutPath: boolean;
+        checkoutPath: boolean;
     }
     providers: any[];
     handleProviderChange: (selected) => void;
