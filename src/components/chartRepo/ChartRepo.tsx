@@ -10,7 +10,6 @@ import {ReactComponent as Helm} from '../../assets/icons/ic-helmchart.svg'
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartProviderList)
     if (loading && !result) return <Progressing pageLoader />
-    console.log(reload,result)
     if (error) {
         showError(error)
         if (!result) return null
@@ -27,7 +26,6 @@ export default function ChartRepo() {
         }
 
 function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
-    {console.log(url ,name, id)}
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -58,7 +56,6 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         <article className={`collapsed-list ${id?'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
-               {console.log(url,id)}
                 <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
