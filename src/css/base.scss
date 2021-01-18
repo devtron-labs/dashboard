@@ -178,7 +178,9 @@ a:focus {
 .ff-monospace {
     font-family: monospace;
 }
-
+.react-select__bottom{
+    border-top: solid 1px var(--N100);
+}
 @mixin tab-container($bgColor,
     $color) {
     .tab {
@@ -233,10 +235,6 @@ a:focus {
     margin: auto;
 }
 
-.m-5 {
-    margin: 5px;
-}
-
 .m-tb-20 {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -245,10 +243,6 @@ a:focus {
 .m-lr-0 {
     margin-left: 0px !important;
     margin-right: 0px !important;
-}
-
-.pt-10 {
-    padding-top: 5px;
 }
 
 .p-lr-20 {
@@ -333,6 +327,10 @@ a:focus {
 
 .vertical-align-middle {
     vertical-align: middle;
+}
+
+.vertical-align-bottom {
+    vertical-align: bottom;
 }
 
 //duplicate style use .cursor class
@@ -489,8 +487,10 @@ a:focus {
 
     &:hover {
         text-decoration: none;
+        color: var(--B500);
     }
 }
+
 
 button.anchor {
     outline: none;

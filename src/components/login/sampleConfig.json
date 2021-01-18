@@ -1,0 +1,136 @@
+{
+  "google": {
+    "config":{
+    "type": "google",
+    "id": "google",
+    "name": "Google",
+    "config": {
+      "clientID": "$GITHUB_CLIENT_ID",
+      "clientSecret": "$GITHUB_CLIENT_SECRET",
+      "redirectURI": "http://127.0.0.1:5556/dex/callback",
+      "orgs": [
+        {
+          "name": "my-organization"
+        },
+        {
+          "name": "my-organization-with-teams",
+          "teams": [
+            "red-team",
+            "blue-team"
+          ]
+        }
+      ],
+      "loadAllGroups": false,
+      "teamNameField": "slug",
+      "useLoginAsID": false
+    }
+  }
+
+  },
+  "github": {
+    "config":{
+
+    "type": "github",
+    "id": "github",
+    "name": "GitHub",
+    "config": {
+      "clientID": "$GITHUB_CLIENT_ID",
+      "clientSecret": "$GITHUB_CLIENT_SECRET",
+      "redirectURI": "http://127.0.0.1:5556/dex/callback"
+    }
+  }
+  },
+  "microsoft": {
+    "config":{
+
+    "type": "microsoft",
+    "id": "microsoft",
+    "name": "Microsoft",
+    "config": {
+      "clientID": "$MICROSOFT_APPLICATION_ID",
+      "clientSecret": "$MICROSOFT_CLIENT_SECRET",
+      "redirectURI": "http://127.0.0.1:5556/dex/callback"
+    }
+  }
+  },
+  "ldap": {
+    "config":{
+    "type": "ldap",
+    "name": "ActiveDirectory",
+    "id": "ad",
+    "config": {
+      "host": "ad.example.com:636",
+      "insecureNoSSL": false,
+      "insecureSkipVerify": true,
+      "bindDN": "cn=Administrator,cn=users,dc=example,dc=com",
+      "bindPW": "admin0!",
+      "usernamePrompt": "Email Address",
+      "userSearch": {
+        "baseDN": "cn=Users,dc=example,dc=com",
+        "filter": "(objectClass=person)",
+        "username": "userPrincipalName",
+        "idAttr": "DN",
+        "emailAttr": "userPrincipalName",
+        "nameAttr": "cn"
+      },
+      "groupSearch": {
+        "baseDN": "cn=Users,dc=example,dc=com",
+        "filter": "(objectClass=group)",
+        "userMatchers": [
+          {
+            "userAttr": "DN",
+            "groupAttr": "member"
+          }
+        ],
+        "nameAttr": "cn"
+      }
+    }
+  }
+  },
+  "saml": {
+    "config":{
+    "type": "saml",
+    "id": "okta",
+    "name": "Okta",
+    "config": {
+      "ssoURL": "https://dev-111102.oktapreview.com/app/foo/exk91cb99lKkKSYoy0h7/sso/saml",
+      "ca": "/etc/dex/saml-ca.pem",
+      "redirectURI": "http://127.0.0.1:5556/dex/callback",
+      "usernameAttr": "name",
+      "emailAttr": "email",
+      "groupsAttr": "groups"
+    }
+  }
+  },
+  "oidc": {
+    "config":{
+    "type": "oidc",
+    "id": "google",
+    "name": "Google",
+    "config": {
+      "issuer": "https://accounts.google.com",
+      "clientID": "$GOOGLE_CLIENT_ID",
+      "clientSecret": "$GOOGLE_CLIENT_SECRET",
+      "redirectURI": "http://127.0.0.1:5556/callback"
+    }
+  }
+  },
+  "openshift": {
+    "config":{
+    "type": "openshift",
+    "id": "openshift",
+    "name": "OpenShift",
+    "config": {
+      "issuer": "https://api.mycluster.example.com:6443",
+      "clientID": "$OPENSHIFT_OAUTH_CLIENT_ID",
+      "clientSecret": "$OPENSHIFT_OAUTH_CLIENT_SECRET",
+      "redirectURI": "http://127.0.0.1:5556/dex/",
+      "insecureCA": false,
+      "rootCA": "/etc/ssl/openshift.pem",
+      "groups": [
+        "users"
+      ]
+    }
+  }
+  }
+}
