@@ -562,7 +562,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
             <div className="w-50 inline-block">
                 <p className="graph-legend__primary-label">Deployment Frequency
                     <Tippy className="default-tt" arrow={false} content="How often this app is deployed to production?">
-                        <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5" />
+                        <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5 fcb-5" />
                     </Tippy>
                     <span className="cursor" onClick={this.props.setFrequencyMetric}>{renderCategoryTag(this.props.frequencyBenchmark.name)} </span>
                 </p>
