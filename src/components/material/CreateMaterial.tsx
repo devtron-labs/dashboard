@@ -28,7 +28,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             isError: {
                 gitProvider: false,
                 url: false,
-                checkoutPath: false,
             }
         }
 

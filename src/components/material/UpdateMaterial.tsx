@@ -31,7 +31,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             isError: {
                 gitProvider: false,
                 url: false,
-                checkoutPath: false,
             }
         }
         this.handleProviderChange = this.handleProviderChange.bind(this);
