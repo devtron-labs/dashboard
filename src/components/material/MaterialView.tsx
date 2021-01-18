@@ -5,17 +5,17 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { Progressing } from '../common';
 import error from '../../assets/icons/misc/errorInfo.svg';
-import { MaterialViewProps } from './material.types';
+import { UpdateMaterialState, MaterialViewProps } from './material.types';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
     renderCollapsedView() {
-        if (this.props.material?.id) {
-            return <div key={`${this.props.material?.id}`} className="white-card artifact-collapsed" tabIndex={0}
+        if ((this.props.material).id) {
+            return <div key={`${(this.props.material).id}`} className="white-card artifact-collapsed" tabIndex={0}
                 onClick={this.props.toggleCollapse}>
                 <span className="git__icon"></span>
                 <div className="">
-                    <div className="git__provider">{this.props.material.name}</div>
+                    <div className="git__provider">{(this.props.material).name}</div>
                     <p className="git__url">{this.props.material.url}</p>
                 </div>
                 <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
@@ -29,10 +29,10 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
 
     renderForm() {
         let checkoutPathValue = this.props.isCheckoutPathValid(this.props.material.checkoutPath);
-        return <form key={`${this.props.material.id}`} className="white-card p-24 mb-16">
+        return <form key={`${(this.props.material).id}`} className="white-card p-24 mb-16">
             <div className="white-card__header white-card__header--form">
-                {this.props.material.id ? "Edit Material" : "Add Material"}
-                {this.props.material.id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
+                {(this.props.material).id ? "Edit Material" : "Add Material"}
+                {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
@@ -45,7 +45,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     options={this.props.providers}
                     getOptionLabel={option => `${option.name}`}
                     getOptionValue={option => `${option.id}`}
-                    // onBlur={this.props.onBlur}
                     onChange={this.props.handleProviderChange}
                     styles={{
                         control: (base, state) => ({
@@ -72,9 +71,10 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         }
                     }}
                 />
-                <span className="form__error">
-                    {/* {a.isValid ? <img src={error} className="form__icon" /> : null}  */}
-                </span>
+                {!this.props.material.gitProvider?.id && <span className="form__error">
+                    <img src={error} className="form__icon" />
+                        This is a required field
+                    </span>}
             </div>
 
             <label className="form__row">
@@ -85,7 +85,9 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={this.props.material.url}
                     onChange={this.props.handleUrlChange} />
                 <span className="form__error">
-                    {/* {showError && !errorObject[1].isValid ? <img src={error} className="form__icon" /> : null}{errorObject[1].message} */}
+                    {!this.props.material.url && <>
+                        <img src={error} className="form__icon" />This is a required field
+                    </>}
                 </span>
             </label>
 
@@ -97,23 +99,23 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={this.props.material.checkoutPath}
                     onChange={this.props.handlePathChange} />
                 <span className="form__error">
-                    {!checkoutPathValue?.isValid ? <> <img src={error} className="form__icon" /> {checkoutPathValue?.message}</> : null}
+                    {!checkoutPathValue?.isValid && <> <img src={error} className="form__icon" /> {checkoutPathValue?.message}</>}
                 </span>
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?
                     <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>Cancel</button>
                     : null}
-                <button type="button" className="cta" disabled={this.props.material.isLoading}
+                <button type="button" className="cta" disabled={this.props.isLoading}
                     onClick={this.props.save}>
-                    {this.props.material.isLoading ? <Progressing /> : "Save"}
+                    {this.props.isLoading ? <Progressing /> : "Save"}
                 </button>
             </div>
         </form>
     }
 
     render() {
-        if (this.props.material.isCollapsed) {
+        if (this.props.isCollapsed) {
             return this.renderCollapsedView();
         }
         else {

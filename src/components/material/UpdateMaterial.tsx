@@ -18,14 +18,21 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     constructor(props) {
         super(props);
         this.state = {
-            id: this.props.material.id,
-            name: this.props.material.name,
-            gitProvider: this.props.material.gitProvider,
-            url: this.props.material.url,
-            checkoutPath: this.props.material.checkoutPath,
+            material: {
+                id: this.props.material.id,
+                name: this.props.material.name,
+                gitProvider: this.props.material.gitProvider,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+                active: true,
+            },
             isCollapsed: true,
-            active: true,
             isLoading: false,
+            isError: {
+                gitProvider: false,
+                url: false,
+                chekoutPath: false,
+            }
         }
         this.handleProviderChange = this.handleProviderChange.bind(this);
         this.handlePathChange = this.handlePathChange.bind(this);
@@ -50,23 +57,41 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         // console.log("refreshed")
     }
 
-    handleProviderChange(selected): void {
-        this.setState({ gitProvider: selected });
+    handleProviderChange(selected) {
+        this.setState({
+            material: {
+                ...this.state.material,
+                gitProvider: selected
+            }
+        });
     }
 
-    handlePathChange(event): void {
-        this.setState({ checkoutPath: event.target.value });
+    handlePathChange(event) {
+        this.setState({
+            material: {
+                ...this.state.material,
+                checkoutPath: event.target.value
+            }
+        });
     }
 
-    handleUrlChange(event): void {
-        this.setState({ url: event.target.value });
+    handleUrlChange(event) {
+        this.setState({
+            material: {
+                ...this.state.material,
+                url: event.target.value
+            }
+        });
     }
 
     toggleCollapse(event): void {
         this.setState({
-            gitProvider: this.props.material.gitProvider,
-            url: this.props.material.url,
-            checkoutPath: this.props.material.checkoutPath,
+            material: {
+                ...this.state.material,
+                gitProvider: this.props.material.gitProvider,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+            },
             isCollapsed: !this.state.isCollapsed,
             isLoading: false,
         });
@@ -77,22 +102,23 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         let payload = {
             appId: this.props.appId,
             material: {
-                id: this.state.id,
-                gitProvider: this.props.material.gitProvider,
-                url: this.props.material.url,
-                checkoutPath: this.props.material.checkoutPath,
-                gitProviderId: this.state.gitProvider.id,
+                id: this.state.material.id,
+                url: this.state.material.url,
+                checkoutPath: this.state.material.checkoutPath,
+                gitProviderId: this.state.material.gitProvider.id,
             }
         }
         updateMaterial(payload).then((response) => {
             this.props.refreshMaterials();
-            console.log(this.props.material)
             this.setState({
-                id: response.result.id,
-                name: response.result.name,
-                gitProvider: this.props.providers.find(provider => provider.id === response.result.gitProviderId),
-                url: response.result.url,
-                checkoutPath: response.result.checkoutPath,
+                material: {
+                    id: response.result.material.id,
+                    name: response.result.material.name,
+                    gitProvider: this.props.providers.find(provider => provider.id === response.result.material.gitProviderId),
+                    url: response.result.material.url,
+                    checkoutPath: response.result.material.checkoutPath,
+                    active: response.result.material.active,
+                }
             })
         }).catch((error) => {
             showError(error);
@@ -103,9 +129,12 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
 
     cancel(event) {
         this.setState({
-            gitProvider: this.props.material.gitProvider,
-            url: this.props.material.url,
-            checkoutPath: this.props.material.checkoutPath,
+            material: {
+                ...this.state.material,
+                gitProvider: this.props.material.gitProvider,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+            },
             isCollapsed: true,
             isLoading: false,
         });
@@ -113,7 +142,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
 
     render() {
         return <MaterialView
-            material={this.state}
+            material={this.state.material}
+            isError={this.state.isError}
+            isCollapsed={this.state.isCollapsed}
+            isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
             handleProviderChange={this.handleProviderChange}

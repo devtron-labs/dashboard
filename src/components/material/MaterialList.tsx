@@ -20,6 +20,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             providers: [],
         }
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this);
+        this.refreshMaterials = this.refreshMaterials.bind(this);
     }
 
     componentDidMount() {
@@ -54,7 +55,10 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     refreshMaterials() {
+        console.log("a")
+        console.log(this)
         getSourceConfig(this.props.match.params.appId).then((response) => {
+            console.log(response.result)
             let materials = response.result.materials.map((mat) => {
                 return {
                     ...mat,

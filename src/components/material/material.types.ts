@@ -6,8 +6,8 @@ export interface MaterialListProps extends RouteComponentProps<{ appId: string; 
 }
 
 export interface GitMaterialType {
-    id: number;
-    name: string;
+    id?: number;
+    name?: string;
     gitProvider: { id: number; name: string };
     url: string;
     checkoutPath: string;
@@ -23,22 +23,44 @@ export interface MaterialListState {
     configStatus: number;
 }
 
-// export type CreateMaterialState = {
-//     active: boolean;
-//     gitProvider: { id: number; name: string };
-//     url: string;
-//     checkoutPath: string;
-//     isCollapsed: boolean;
-//     isLoading: boolean;
-// }
+export interface CreateMaterialState {
+    material: {
+        gitProvider: { id: number; name: string };
+        url: string;
+        checkoutPath: string;
+        active: boolean;
+    };
+    isCollapsed: boolean;
+    isLoading: boolean;
+    isError: {
+        gitProvider: boolean;
+        url: boolean;
+        chekoutPath: boolean;
+    }
+}
 
-export type UpdateMaterialState = GitMaterialType & { isCollapsed: boolean; isLoading: boolean; }
+export interface UpdateMaterialState {
+    material: GitMaterialType;
+    isCollapsed: boolean;
+    isLoading: boolean;
+    isError: {
+        gitProvider: boolean;
+        url: boolean;
+        chekoutPath: boolean;
+    }
+}
 
-export type CreateMaterialState = Omit<UpdateMaterialState, "id" | "name">
 
 export interface MaterialViewProps {
     isMultiGit: boolean;
-    material: CreateMaterialState | UpdateMaterialState;
+    material: GitMaterialType;
+    isCollapsed: boolean;
+    isLoading: boolean;
+    isError:{
+        gitProvider: boolean;
+        url: boolean;
+        chekoutPath: boolean;
+    }
     providers: any[];
     handleProviderChange: (selected) => void;
     handleUrlChange: (event) => void;

@@ -17,12 +17,19 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     constructor(props) {
         super(props);
         this.state = {
-            gitProvider: undefined,
-            url: '',
-            checkoutPath: './',
+            material: {
+                gitProvider: undefined,
+                url: '',
+                checkoutPath: './',
+                active: true,
+            },
             isCollapsed: true,
             isLoading: false,
-            active: true,
+            isError: {
+                gitProvider: false,
+                url: false,
+                chekoutPath: false,
+            }
         }
 
         this.handleProviderChange = this.handleProviderChange.bind(this);
@@ -34,15 +41,30 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     }
 
     handleProviderChange(selected) {
-        this.setState({ gitProvider: selected });
+        this.setState({
+            material: {
+                ...this.state.material,
+                gitProvider: selected
+            }
+        });
     }
 
     handlePathChange(event) {
-        this.setState({ checkoutPath: event.target.value });
+        this.setState({
+            material: {
+                ...this.state.material,
+                checkoutPath: event.target.value
+            }
+        });
     }
 
     handleUrlChange(event) {
-        this.setState({ url: event.target.value });
+        this.setState({
+            material: {
+                ...this.state.material,
+                url: event.target.value
+            }
+        });
     }
 
     toggleCollapse(event) {
@@ -55,7 +77,11 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.setState({ isLoading: true });
         let payload = {
             appId: this.props.appId,
-            material: { ...this.state }
+            material: {
+                url: this.state.material.url,
+                checkoutPath: this.state.material.checkoutPath,
+                gitProviderId: this.state.material.gitProvider.id,
+            }
         }
         createMaterial(payload).then((response) => {
             this.props.refreshMaterials();
@@ -68,9 +94,12 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     cancel(event) {
         this.setState({
+            material: {
             gitProvider: undefined,
             url: '',
             checkoutPath: './',
+            active:true
+            },
             isCollapsed: true,
             isLoading: false,
         });
@@ -79,7 +108,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     render() {
         return <MaterialView
             isMultiGit={this.props.isMultiGit}
-            material={this.state}
+            material={this.state.material}
+            isCollapsed={this.state.isCollapsed}
+            isLoading={this.state.isLoading}
+            isError={this.state.isError}
             providers={this.props.providers}
             handleProviderChange={this.handleProviderChange}
             handleUrlChange={this.handleUrlChange}
