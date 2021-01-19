@@ -603,7 +603,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
         <React.Fragment>
             <tr className={`data-row `}>
                 <td>
-                    {(nodeDetails.children || nodeDetails?.containers?.length) && (
+                    {(nodeDetails.children || nodeDetails?.containers?.length) ? (
                         <DropDown
                             data-testid="collapse-icon"
                             className="icon-dim-24 rotate"
@@ -614,7 +614,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                             }}
                             style={{ ['--rotateBy' as any]: collapsed ? '-90deg' : '0deg' }}
                         />
-                    )}
+                    ) : null}
                 </td>
                 {tableColumns.map((column) => {
                     if (column === 'url') return <URL key={column} url={nodeDetails.url} />;

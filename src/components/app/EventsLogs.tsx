@@ -24,7 +24,7 @@ import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
-import { editor, defineTheme } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 
 const commandLineParser = require('command-line-parser')
@@ -174,7 +174,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
 
     return <AutoSizer>
         {({ height, width }) => <div style={{
-            gridColumn: '1 / span 2', 
+            gridColumn: '1 / span 2',
         }}>
             <MonacoEditor language={'yaml'}
                 value={YamljsParser.stringify(manifest, { indent: 2 })}
@@ -350,6 +350,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
 
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
+
     return (
         <>
             {!nodeName && (

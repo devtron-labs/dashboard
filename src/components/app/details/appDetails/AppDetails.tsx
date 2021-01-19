@@ -323,8 +323,6 @@ export const Details: React.FC<{
             {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
-                    // appName={appDetails?.appName}
-                    // environmentName={appDetails?.environmentName}
                     nodes={aggregatedNodes}
                     describeNode={describeNode}
                     appDetails={appDetails}
@@ -419,9 +417,9 @@ const NodeDetails: React.FC<{
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
-
     const [shell, selectShell] = useState({ label: "sh", value: "sh" });
     const { url, path } = useRouteMatch();
+
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 
     useEffect(() => {
@@ -430,6 +428,13 @@ const NodeDetails: React.FC<{
             if (containerName && containerName !== selectedContainer) {
                 selectContainer(containerName);
             }
+            else {
+                selectContainer(null);
+            }
+        }
+        else {
+            selectContainer(null);
+            selectNode(null);
         }
     }, [nodeName, containerName]);
 
@@ -683,10 +688,8 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
             }
         >
             <div className={`pl-20 flex left tab-container ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                {[
-                    NodeDetailTabs.MANIFEST,
-                    NodeDetailTabs.EVENTS,
-                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
+                {[NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
+                ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
                     <div key={idx}
                         className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}
@@ -700,8 +703,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                 ))}
             </div>
             <div className={`flex right pr-20 ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                <div
-                    className="flex pointer"
+                <div className="flex pointer"
                     style={{ height: '36px', width: '36px' }}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -711,8 +713,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                             '?' +
                             queryParams.toString(),
                         );
-                    }}
-                >
+                    }}>
                     <NavigationArrow
                         style={{ ['--rotateBy' as any]: !!params?.tab ? '0deg' : '180deg' }}
                         color="#fff"
@@ -783,6 +784,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         const pod = nodesMap.get(nodeName)
         return pod.isNew ? '(new)' : '(old)'
     }
+
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
     return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
         {params.tab === NodeDetailTabs.TERMINAL && <>
