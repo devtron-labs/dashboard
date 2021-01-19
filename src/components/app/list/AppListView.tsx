@@ -261,7 +261,7 @@ export class AppListView extends Component<AppListViewProps>{
                     <Info className="icon-dim-20 fcb-5 vertical-align-bottom" />
                     &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Configure docker registry </Link>
                     to setup a new application.&nbsp;
-                    <Link to="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" className="cb-5 anchor">Learn how to configure docker registry.</Link>
+                    <a href="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" rel="noreferrer noopener" className="cb-5 anchor">Learn how to configure docker registry.</a>
                 </p>}
                 {this.renderSavedFilters()}
                 {this.renderRouter()}
@@ -285,7 +285,7 @@ export class AppListView extends Component<AppListViewProps>{
                     <Info className="icon-dim-20 fcb-5 vertical-align-bottom" />
                     &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Configure docker registry </Link>
                     to setup a new application.&nbsp;
-                    <Link to="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" className="cb-5 anchor">Learn how to configure docker registry.</Link>
+                    <a href="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" rel="noreferrer noopener" className="cb-5 anchor">Learn how to configure docker registry.</a>
                 </p>}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
