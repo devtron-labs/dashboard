@@ -471,6 +471,9 @@ const NodeDetails: React.FC<{
             else if (containers?.length) {
                 selectContainer(containers[0]);
             }
+            else {
+                selectContainer(null)
+            }
         }
     }, [selectedNode, params.tab])
 
