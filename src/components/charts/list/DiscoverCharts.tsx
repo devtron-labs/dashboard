@@ -23,6 +23,7 @@ import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-tr
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
 import { getChartRepoList } from '../../../services/service'
+import { DropdownIndicator, styles, ValueContainer, Option } from '../../security/security.util';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -358,17 +359,22 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     <ReactSelect
                         placeholder={"All repositories"}
                         value={selectedChartRepo}
-                        isMulti={true}
                         options={chartRepoList}
                         onChange={(selected) => { handleChartRepoList(selected) }}
                         className="date-align-left"
+                        isMulti={true}
+                        hideSelectedOptions={false}
+                        components={{
+                            DropdownIndicator,
+                            ValueContainer,
+                            Option: Option,
+                        }}
                         styles={{
                             container: (base, state) => {
                                 return ({
                                     ...base,
                                     height: '36px',
                                     width: '200px',
-
                                 })
                             },
                             control: (base, state) => ({
@@ -382,11 +388,19 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 color: 'var(--N900)',
                                 padding: '8px 12px',
                             }),
+                            ...styles,
                         }} />
 
                     <ReactSelect
                         placeholder={"Show deprecated"}
                         className="date-align-left"
+                        isMulti={true}
+                        hideSelectedOptions={false}
+                        components={{
+                            DropdownIndicator,
+                            ValueContainer,
+                            Option: Option,
+                        }}
                         styles={{
                             container: (base, state) => {
                                 return ({
@@ -400,6 +414,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 ...base,
                                 minHeight: '36px',
                             }),
+                            ...styles
                         }} />
                 </div>
             </div>
