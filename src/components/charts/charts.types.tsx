@@ -267,5 +267,6 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     discardValuesYamlChanges: (index: number) => void;
     updateChartGroupEntriesFromResponse: () => void;
     reloadState: () => void;
-    setCharts: (charts:ChartGroupEntry[]) => void;
+    applyFilterOnCharts: (qs:string) => Promise<void>;
+    setCharts: (charts: ChartGroupEntry[]) => void;
 }

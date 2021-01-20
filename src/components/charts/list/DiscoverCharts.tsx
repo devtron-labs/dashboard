@@ -10,7 +10,7 @@ import ChartGroupList from '../list/ChartGroup';
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
-import {  ChartDetailNavigator } from '../Charts'
+import { ChartDetailNavigator } from '../Charts'
 import useChartGroup from '../useChartGroup'
 import { getChartGroups, DeployableCharts, deployChartGroup } from '../charts.service'
 import { ChartGroupEntry, Chart } from '../charts.types'
@@ -22,9 +22,7 @@ import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
-import { valueFocusAriaMessage } from 'react-select/src/accessibility';
-import {getChartProviderList} from '../../../services/service'
-import {useSearchString} from '../../common'
+import { getChartRepoList } from '../../../services/service'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -47,12 +45,12 @@ function DiscoverListing() {
     const [project, setProject] = useState({ id: null, error: "" })
     const [installing, setInstalling] = useState(false)
     const { breadcrumbs, setCrumb } = useBreadcrumb({})
-
     const {
         state,
         configureChart, selectChart, validateData, addChart, subtractChart, fetchChartValues, getChartVersionsAndValues, handleChartValueChange, handleChartVersionChange, handleValuesYaml, removeChart, handleEnvironmentChange, handleNameChange,
         handleEnvironmentChangeOfAllCharts, discardValuesYamlChanges,
-        chartListing
+        chartListing,
+        applyFilterOnCharts,
     } = useChartGroup()
     const [chartGroupsLoading, result, error, reload] = useAsync(getChartGroups, [])
     const chartGroups = result?.result?.groups
@@ -87,7 +85,7 @@ function DiscoverListing() {
             setInstalling(true)
             const validated = await validateData()
             if (!validated) {
-                toast.warn('Click on highlighted charts and resolve errors.', {autoClose: 5000})
+                toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 })
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
@@ -103,8 +101,6 @@ function DiscoverListing() {
             setInstalling(false)
         }
     }
-
-
 
     function redirectToConfigure() {
         configureChart(0)
@@ -133,18 +129,18 @@ function DiscoverListing() {
                 <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
                     <ConditionalWrap
                         condition={state.charts.length > 0}
-                        wrap={children=><div className="flex left column">{children}</div>}
+                        wrap={children => <div className="flex left column">{children}</div>}
                     >
                         <>
-                        {state.charts.length > 0 && (
-                            <div className="flex left">
-                                <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+                            {state.charts.length > 0 && (
+                                <div className="flex left">
+                                    <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+                                </div>
+                            )}
+                            <div className="page-header__title flex left">
+                                {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
                             </div>
-                        )}
-                        <div className="page-header__title flex left">
-                            {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                        </div>
-                        {state.charts.length === 0 && <ChartDetailNavigator />}
+                            {state.charts.length === 0 && <ChartDetailNavigator />}
                         </>
                     </ConditionalWrap>
                     <div className="page-header__cta-container flex">
@@ -163,84 +159,106 @@ function DiscoverListing() {
                 {state.loading || chartGroupsLoading ? (
                     <Progressing pageLoader />
                 ) : (
-                    <div className="discover-charts__body">
-                        <div className="discover-charts__body-details">
-                            {typeof state.configureChartIndex === 'number' ? (
-                                <AdvancedConfig
-                                    chart={state.charts[state.configureChartIndex]}
-                                    index={state.configureChartIndex}
-                                    handleValuesYaml={handleValuesYaml}
-                                    getChartVersionsAndValues={getChartVersionsAndValues}
-                                    fetchChartValues={fetchChartValues}
-                                    handleChartValueChange={handleChartValueChange}
-                                    handleChartVersionChange={handleChartVersionChange}
-                                    handleEnvironmentChange={handleEnvironmentChange}
-                                    handleNameChange={handleNameChange}
-                                    discardValuesYamlChanges={discardValuesYamlChanges}
-                                />
-                            ) : (
-                                <>
-                                    {Array.isArray(chartGroups) && chartGroups.length > 0 && <ChartGroupsList />}
-                                    <ChartList
-                                        availableCharts={state.availableCharts}
-                                        charts={state.charts}
-                                        addChart={addChart}
-                                        subtractChart={subtractChart}
-                                        selectChart={selectChart}
-                                        selectedInstances={state.selectedInstances}
-                                        showDeployModal={showDeployModal}
+                        <div className="discover-charts__body">
+                            <div className="discover-charts__body-details">
+                                {typeof state.configureChartIndex === 'number' ? (
+                                    <AdvancedConfig
+                                        chart={state.charts[state.configureChartIndex]}
+                                        index={state.configureChartIndex}
+                                        handleValuesYaml={handleValuesYaml}
+                                        getChartVersionsAndValues={getChartVersionsAndValues}
+                                        fetchChartValues={fetchChartValues}
+                                        handleChartValueChange={handleChartValueChange}
+                                        handleChartVersionChange={handleChartVersionChange}
+                                        handleEnvironmentChange={handleEnvironmentChange}
+                                        handleNameChange={handleNameChange}
+                                        discardValuesYamlChanges={discardValuesYamlChanges}
                                     />
-                                </>
-                            )}
-                        </div>
-                        <aside className={`summary`}>
-                            <MultiChartSummary
-                                charts={state.charts}
-                                configureChartIndex={state.configureChartIndex}
-                                configureChart={configureChart}
-                                chartListing={chartListing}
-                                getChartVersionsAndValues={getChartVersionsAndValues}
-                                handleChartValueChange={
-                                    typeof state.configureChartIndex === 'number' ? null : handleChartValueChange
-                                }
-                                handleChartVersionChange={
-                                    typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange
-                                }
-                                removeChart={removeChart}
-                            />
-                            <div
-                                className={`flex left deployment-buttons ${
-                                    state.advanceVisited ? 'deployment-buttons--advanced' : ''
-                                }`}
-                            >
-                                {state.advanceVisited && (
-                                    <div>
-                                        <label>Project*</label>
-                                        <Select
-                                            rootClassName={`${project.error ? 'popup-button--error' : ''}`}
-                                            value={project.id}
-                                            onChange={(e) => setProject({ id: e.target.value, error: '' })}
+                                ) : (
+                                        <>
+                                            {Array.isArray(chartGroups) && chartGroups.length > 0 && <ChartGroupsList />}
+                                            <ChartList availableCharts={state.availableCharts}
+                                                charts={state.charts}
+                                                selectedInstances={state.selectedInstances}
+                                                showDeployModal={showDeployModal}
+                                                addChart={addChart}
+                                                subtractChart={subtractChart}
+                                                selectChart={selectChart}
+                                                applyFilterOnCharts={applyFilterOnCharts}
+                                            />
+                                        </>
+                                    )}
+                            </div>
+                            <aside className={`summary`}>
+                                <MultiChartSummary
+                                    charts={state.charts}
+                                    configureChartIndex={state.configureChartIndex}
+                                    configureChart={configureChart}
+                                    chartListing={chartListing}
+                                    getChartVersionsAndValues={getChartVersionsAndValues}
+                                    handleChartValueChange={
+                                        typeof state.configureChartIndex === 'number' ? null : handleChartValueChange
+                                    }
+                                    handleChartVersionChange={
+                                        typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange
+                                    }
+                                    removeChart={removeChart}
+                                />
+                                <div
+                                    className={`flex left deployment-buttons ${state.advanceVisited ? 'deployment-buttons--advanced' : ''
+                                        }`}
+                                >
+                                    {state.advanceVisited && (
+                                        <div>
+                                            <label>Project*</label>
+                                            <Select
+                                                rootClassName={`${project.error ? 'popup-button--error' : ''}`}
+                                                value={project.id}
+                                                onChange={(e) => setProject({ id: e.target.value, error: '' })}
+                                            >
+                                                <Select.Button>
+                                                    {project.id && projectsMap.has(project.id)
+                                                        ? projectsMap.get(project.id).name
+                                                        : 'Select project'}
+                                                </Select.Button>
+                                                {state.projects?.map((project) => (
+                                                    <Select.Option key={project.id} value={project.id}>
+                                                        {project.name}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                            {project.error && (
+                                                <span className="form__error flex left ">
+                                                    <WarningIcon className="mr-5" />
+                                                    {project.error}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                    {!state.advanceVisited && (
+                                        <ConditionalWrap
+                                            condition={state.charts.length === 0}
+                                            wrap={(children) => (
+                                                <Tippy
+                                                    className="default-tt"
+                                                    arrow={false}
+                                                    placement="top"
+                                                    content="Add charts to deploy"
+                                                >
+                                                    <div>{children}</div>
+                                                </Tippy>
+                                            )}
                                         >
-                                            <Select.Button>
-                                                {project.id && projectsMap.has(project.id)
-                                                    ? projectsMap.get(project.id).name
-                                                    : 'Select project'}
-                                            </Select.Button>
-                                            {state.projects?.map((project) => (
-                                                <Select.Option key={project.id} value={project.id}>
-                                                    {project.name}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                        {project.error && (
-                                            <span className="form__error flex left ">
-                                                <WarningIcon className="mr-5" />
-                                                {project.error}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                                {!state.advanceVisited && (
+                                            <button
+                                                type="button"
+                                                disabled={state.charts.length === 0}
+                                                onClick={(e) => configureChart(0)}
+                                                className="cta cancel ellipsis-right"
+                                            >
+                                                Advanced Options
+                                        </button>
+                                        </ConditionalWrap>
+                                    )}
                                     <ConditionalWrap
                                         condition={state.charts.length === 0}
                                         wrap={(children) => (
@@ -255,47 +273,24 @@ function DiscoverListing() {
                                         )}
                                     >
                                         <button
-                                            type="button"
                                             disabled={state.charts.length === 0}
-                                            onClick={(e) => configureChart(0)}
-                                            className="cta cancel ellipsis-right"
+                                            type="button"
+                                            onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                            className="cta ellipsis-right"
                                         >
-                                            Advanced Options
+                                            {installing ? (
+                                                <Progressing />
+                                            ) : state.advanceVisited ? (
+                                                'Deploy charts'
+                                            ) : (
+                                                        'Deploy to...'
+                                                    )}
                                         </button>
                                     </ConditionalWrap>
-                                )}
-                                <ConditionalWrap
-                                    condition={state.charts.length === 0}
-                                    wrap={(children) => (
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="Add charts to deploy"
-                                        >
-                                            <div>{children}</div>
-                                        </Tippy>
-                                    )}
-                                >
-                                    <button
-                                        disabled={state.charts.length === 0}
-                                        type="button"
-                                        onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
-                                        className="cta ellipsis-right"
-                                    >
-                                        {installing ? (
-                                            <Progressing />
-                                        ) : state.advanceVisited ? (
-                                            'Deploy charts'
-                                        ) : (
-                                            'Deploy to...'
-                                        )}
-                                    </button>
-                                </ConditionalWrap>
-                            </div>
-                        </aside>
-                    </div>
-                )}
+                                </div>
+                            </aside>
+                        </div>
+                    )}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy
@@ -317,62 +312,68 @@ function DiscoverListing() {
     );
 }
 
-
-
-function ChartList({ availableCharts, selectedInstances, charts, addChart, subtractChart, selectChart, showDeployModal }) {
+function ChartList({ availableCharts, selectedInstances, charts, addChart, subtractChart, selectChart, applyFilterOnCharts, showDeployModal }) {
     const chartList: Chart[] = Array.from(availableCharts.values());
-    const { push } = useHistory()
+    const history = useHistory();
+    const location = useLocation();
     const { url, path } = useRouteMatch()
-    const [chartRepoList,setChartRepoList] = useState([])
-    const [selectedChartRepo, setSelectedChartRepo]= useState()
-    useEffect(()=>{
-          function chartRepo(list){
-                    return {value: list.id,
-                            label: list.name}
-            }
-             getChartProviderList().then((res)=>{
-                 let list= res.result
-                 list= list.map(chartRepo)
-             setChartRepoList(list)
-        })
-    },[chartRepoList])
+    const [chartRepoList, setChartRepoList] = useState([])
+    const [selectedChartRepo, setSelectedChartRepo] = useState()
 
-    function handleChartRepoList(selected){
-       
-        const querystr = '?chartRepoId=2&appStoreName=apm&deprecated=0'
-        const usp = new URLSearchParams(querystr)
-        
+    useEffect(() => {
+        function chartRepo(list) {
+            return {
+                value: list.id,
+                label: list.name
+            }
+        }
+        getChartRepoList().then((res) => {
+            let list = res.result
+            list = list.map(chartRepo)
+            setChartRepoList(list)
+        })
+    }, [])
+
+    useEffect(() => {
+
+        applyFilterOnCharts(location.search);
+
+    }, [location.search])
+
+    function handleChartRepoList(selected) {
+        let qs = `chartRepoId=2`;
+        history.push(`${url}?${qs}`);
     }
-    
+
     return (
         <>
             <div className="chart-group__header">
                 <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
                 <h5 className="form__subtitle">Select chart to deploy. &nbsp;</h5>
                 <div className="display-flex">
-                    <div className= "search search--container" >
-                            <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                            <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
+                    <div className="search search--container" >
+                        <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
+                        <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
                     </div>
-                    <ReactSelect 
-                        placeholder={ "All repositories"}
-                        value= {selectedChartRepo}
-                        options= {chartRepoList}
-                        onChange= {(selected)=>{handleChartRepoList(selected)}}
-                        className = "date-align-left"
-                        isMulti
+                    <ReactSelect
+                        placeholder={"All repositories"}
+                        value={selectedChartRepo}
+                        isMulti={true}
+                        options={chartRepoList}
+                        onChange={(selected) => { handleChartRepoList(selected) }}
+                        className="date-align-left"
                         styles={{
                             container: (base, state) => {
-                            return ({
-                                ...base,
-                                height: '36px',
-                                width: '200px',
+                                return ({
+                                    ...base,
+                                    height: '36px',
+                                    width: '200px',
 
-                            })
+                                })
                             },
                             control: (base, state) => ({
-                            ...base,
-                            minHeight: '36px',
+                                ...base,
+                                minHeight: '36px',
                             }),
                             option: (base, state) => ({
                                 ...base,
@@ -381,28 +382,28 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 color: 'var(--N900)',
                                 padding: '8px 12px',
                             }),
-                        }}/>
-                  
-                     <ReactSelect 
-                        placeholder={ "Show deprecated"}
-                        className = "date-align-left"
+                        }} />
+
+                    <ReactSelect
+                        placeholder={"Show deprecated"}
+                        className="date-align-left"
                         styles={{
                             container: (base, state) => {
-                            return ({
-                                ...base,
-                                height: '36px',
-                                width: '200px',
-                                marginLeft: '16px'
-                              })
+                                return ({
+                                    ...base,
+                                    height: '36px',
+                                    width: '200px',
+                                    marginLeft: '16px'
+                                })
                             },
                             control: (base, state) => ({
-                            ...base,
-                            minHeight: '36px',
+                                ...base,
+                                minHeight: '36px',
                             }),
-                        }}/>
+                        }} />
                 </div>
             </div>
-            
+
             <div className="chart-grid">
                 {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                     key={chart.id}
@@ -411,7 +412,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     showCheckBoxOnHoverOnly={charts.length === 0}
                     addChart={addChart}
                     subtractChart={subtractChart}
-                    onClick={(chartId) => charts.length === 0 ? push(`${url}/chart/${chart.id}`) : selectChart(chartId)}
+                    onClick={(chartId) => charts.length === 0 ? history.push(`${url}/chart/${chart.id}`) : selectChart(chartId)}
                 />
                 )}
             </div>

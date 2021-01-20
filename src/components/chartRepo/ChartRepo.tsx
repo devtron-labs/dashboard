@@ -4,13 +4,13 @@ import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
 import {  saveChartProviderConfig, updateChartProviderConfig} from './service'
-import {getChartProviderList} from '../../services/service'
+import {getChartRepoList} from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import {ReactComponent as Helm} from '../../assets/icons/ic-helmchart.svg'
 
 
 export default function ChartRepo() {
-    const [loading, result, error, reload] = useAsync(getChartProviderList)
+    const [loading, result, error, reload] = useAsync(getChartRepoList)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)

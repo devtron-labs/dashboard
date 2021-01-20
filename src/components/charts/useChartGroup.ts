@@ -33,7 +33,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         async function populateCharts() {
             try {
                 const [{ result: availableCharts }, { result: projects }, { result: environments }] = await Promise.all([getAvailableCharts(), getTeamList(), getEnvironmentListMin()])
-                setState(state => ({ ...state, availableCharts: mapByKey(availableCharts, 'id'), projects, environments }))
+                setState(state => ({ ...state, availableCharts: mapByKey(availableCharts, 'id'), projects, environments }));
             }
             catch (err) {
                 showError(err)
@@ -53,7 +53,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function getChartGroupDetails() {
         try {
-            setState({...initialState, availableCharts: state.availableCharts, projects: state.projects, environments: state.environments})
+            setState({ ...initialState, availableCharts: state.availableCharts, projects: state.projects, environments: state.environments })
             const { result: { name, description, chartGroupEntries } } = await getChartGroupDetail(chartGroupId)
             const tempCharts: ChartGroupEntry[] = chartGroupEntries?.map((chartGroup) => {
                 const { id, appStoreApplicationVersionId, appStoreValuesVersionId, chartMetaData, appStoreValuesVersionName, referenceType, appStoreValuesChartVersion } = chartGroup
@@ -101,6 +101,18 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, selectedInstances: getSelectedInstances(state.charts) }))
     }, [state.charts])
 
+    async function applyFilterOnCharts(queryString: string): Promise<void> {
+        try {
+            const { result: availableCharts } = await getAvailableCharts(queryString);
+            setState(state => ({ ...state, availableCharts: mapByKey(availableCharts, 'id') }));
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setState(state => ({ ...state, loading: false }))
+        }
+    }
 
     async function getChartVersionsAndValues(chartId: number, index: number): Promise<void> {
         try {
@@ -177,7 +189,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    function selectChart(chartId: number) :void{
+    function selectChart(chartId: number): void {
         const tempCharts = [...state.charts]
         if (Array.isArray(state.selectedInstances[chartId]) && state.selectedInstances[chartId].length > 0) {
             subtractChart(chartId)
@@ -192,7 +204,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, charts }))
     }
 
-    function addChart(chartId: number):void {
+    function addChart(chartId: number): void {
         const tempCharts = [...state.charts]
         const chartValue = state.availableCharts.get(chartId)
         const { name: chartName, chart_name: chartRepoName, icon, version, appStoreApplicationVersionId } = chartValue
@@ -223,7 +235,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, charts: tempCharts }))
     }
 
-    function subtractChart(chartId: number):void {
+    function subtractChart(chartId: number): void {
         const tempCharts = [...state.charts]
         if (Array.isArray(state.selectedInstances[chartId]) && state.selectedInstances[chartId].length > 0) {
             // unselect
@@ -245,13 +257,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, charts: tempCharts }))
     }
 
-    function removeChart(index:number):void {
+    function removeChart(index: number): void {
         const tempCharts = [...state.charts]
         tempCharts.splice(index, 1)
         setState(state => ({ ...state, charts: tempCharts, configureChartIndex: state.configureChartIndex === index ? null : state.configureChartIndex, advanceVisited: tempCharts.length === 0 ? false : state.advanceVisited }))
     }
 
-    function toggleChart(index: number) :void{
+    function toggleChart(index: number): void {
         const tempCharts = [...state.charts];
         tempCharts[index].isEnabled = !tempCharts[index].isEnabled;
         //set default values
@@ -319,13 +331,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    function handleEnvironmentChange(index: number, envId: number):void {
+    function handleEnvironmentChange(index: number, envId: number): void {
         const tempCharts = [...state.charts]
         tempCharts[index].environment = { id: envId, error: "" };
         setState(state => ({ ...state, charts: tempCharts }))
     }
 
-    function handleEnvironmentChangeOfAllCharts(envId: number):void{
+    function handleEnvironmentChangeOfAllCharts(envId: number): void {
         const tempCharts = [...state.charts]
         for (let i = 0; i < tempCharts.length; i++) {
             tempCharts[i].environment = { id: envId, error: "" }
@@ -333,7 +345,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, charts: tempCharts }))
     }
 
-    function handleNameChange(index: number, appName: string):void {
+    function handleNameChange(index: number, appName: string): void {
         const tempCharts = [...state.charts]
         tempCharts[index].name = { value: appName, error: "" };
         setState(state => ({ ...state, charts: tempCharts }))
@@ -382,6 +394,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     return {
         state,
         // getChartVersions,
+        applyFilterOnCharts,
         fetchChartValues,
         getChartVersionsAndValues,
         selectChart,
