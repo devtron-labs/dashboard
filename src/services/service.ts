@@ -110,6 +110,10 @@ export function getClusterListMin() {
     return get(URL);
 }
 
+export function getDockerRegistryList(): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
+    return get(URL);
+}
 
 export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
     const URL = `${Routes.APP_OTHER_ENVIRONMENT}?app-id=${appId}`;

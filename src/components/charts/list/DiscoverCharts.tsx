@@ -24,6 +24,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
 import { valueFocusAriaMessage } from 'react-select/src/accessibility';
 import {getChartProviderList} from '../../../services/service'
+import {useSearchString} from '../../common'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -336,8 +337,11 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         })
     },[chartRepoList])
 
-    function handleChartRepoList(){
-
+    function handleChartRepoList(selected){
+       
+        const querystr = '?chartRepoId=2&appStoreName=apm&deprecated=0'
+        const usp = new URLSearchParams(querystr)
+        
     }
     
     return (
@@ -354,7 +358,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         placeholder={ "All repositories"}
                         value= {selectedChartRepo}
                         options= {chartRepoList}
-                        onChange= {handleChartRepoList}
+                        onChange= {(selected)=>{handleChartRepoList(selected)}}
                         className = "date-align-left"
                         styles={{
                             container: (base, state) => {

@@ -6,7 +6,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
-import {editor} from 'monaco-editor';
+import { editor } from 'monaco-editor';
 
 interface WarningProps { text: string }
 
@@ -14,6 +14,7 @@ interface InformationProps { text: string }
 
 interface CodeEditorInterface {
     value?: string;
+    lineDecorationsWidth?: number;
     responseType?: string;
     onChange?: (string) => void;
     children?: any;
@@ -64,12 +65,12 @@ function useCodeEditorContext() {
 }
 
 type ActionTypes = 'changeLanguage' | 'setDiff' | 'setTheme' | 'setCode' | 'setHeight'
-interface Action{
+interface Action {
     type: ActionTypes;
     value: any;
 }
 
-interface CodeEditorState{
+interface CodeEditorState {
     mode: 'json' | 'yaml' | 'shell';
     diffMode: boolean;
     theme: 'vs' | 'vs-dark';
@@ -77,12 +78,12 @@ interface CodeEditorState{
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading }) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading }) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
     const prevHeight = useRef<number>(0)
-    const memoisedReducer = useCallback((state: CodeEditorState, action:Action) => {
+    const memoisedReducer = useCallback((state: CodeEditorState, action: Action) => {
         switch (action.type) {
             case 'changeLanguage':
                 return { ...state, mode: action.value }
@@ -113,7 +114,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco
-        if(inline){
+        if (inline) {
             updateEditorHeight();
             editor.onDidChangeModelDecorations(() => {
                 updateEditorHeight(); // typing
@@ -133,17 +134,17 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         const height: number = editorRef.current.getTopForLineNumber(lineCount + 1) + lineHeight;
 
         if (prevHeight.current !== height) {
-            if(minHeight > height){
-                prevHeight.current=minHeight
+            if (minHeight > height) {
+                prevHeight.current = minHeight
                 dispatch({ type: 'setHeight', value: minHeight });
             }
-            else if(maxHeight < height){
+            else if (maxHeight < height) {
                 prevHeight.current = maxHeight
-                dispatch({type:'setHeight', value: maxHeight})
+                dispatch({ type: 'setHeight', value: maxHeight })
             }
-            else{
+            else {
                 prevHeight.current = height;
-                dispatch({type:'setHeight', value: height})
+                dispatch({ type: 'setHeight', value: height })
             }
         }
     };
@@ -157,7 +158,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         if (!editorRef.current) return
         editorRef.current.layout()
     }, [width, windowHeight])
-    
+
     useEffect(() => {
         if (onChange) onChange(state.code)
     }, [state.code])
@@ -189,12 +190,12 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     }, [value, noParsing])
 
 
-    useEffect(()=>{
-        if(prevHeight.current !== height){
+    useEffect(() => {
+        if (prevHeight.current !== height) {
             prevHeight.current = height;
-            dispatch({type:'setHeight', value: height})
+            dispatch({ type: 'setHeight', value: height })
         }
-    },[height])
+    }, [height])
 
     function handleOnChange(newValue, e) {
         dispatch({ type: 'setCode', value: newValue })
@@ -205,16 +206,17 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         dispatch({ type: 'setCode', value: mode === 'json' ? json : yaml })
     }
 
-    const options:editor.IEditorConstructionOptions={
+    const options: editor.IEditorConstructionOptions = {
         selectOnLineNumbers: true,
         roundedSelection: false,
         readOnly,
+        lineDecorationsWidth: lineDecorationsWidth,
         automaticLayout: false,
         scrollBeyondLastLine: false,
         minimap: {
             enabled: false
         },
-        scrollbar:{
+        scrollbar: {
             alwaysConsumeMouseWheel: false,
             vertical: inline ? 'hidden' : 'auto'
         }
@@ -317,7 +319,7 @@ const Warning: React.FC<WarningProps> = function (props) {
 
 const Information: React.FC<InformationProps> = function (props) {
     return <div className="code-editor__information">
-        <Info className="code-editor__information-info-icon"/>
+        <Info className="code-editor__information-info-icon" />
         {props.text}
     </div>
 }

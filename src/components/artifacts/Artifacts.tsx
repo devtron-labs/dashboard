@@ -3,12 +3,13 @@ import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { createMaterial, updateMaterial } from './service';
 import { toast } from 'react-toastify';
 import { ErrorScreenManager, Progressing, ButtonWithLoader } from '../common';
-import { AppConfigStatus, ViewType } from '../../config';
+import { AppConfigStatus, URLS, ViewType } from '../../config';
 import { ValidationRules } from './validationRules';
 import { ArtifactsProps, Material, ArtifactsState } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { withRouter } from 'react-router';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
+import { withRouter } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import down from '../../assets/icons/appstatus/ic-dropdown.svg';
 import error from '../../assets/icons/misc/errorInfo.svg';
 import ReactSelect, { components } from 'react-select';
@@ -271,7 +272,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
             </p>
         </>
     }
-    
+
     renderMaterial(material, index) {
         if (material.isCollapsed) {
             let provider = material.providers.find(prov => prov.active);
@@ -312,7 +313,8 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                                 ...base,
                                 border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
                                 boxShadow: 'none',
-                                height: '56px'
+                                fontWeight: 'normal',
+                                height: "40px"
                             }),
                             option: (base, state) => ({
                                 ...base,
@@ -329,7 +331,16 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
                                     {props.label}
                                 </components.Option>
-                            }
+                            },
+                            MenuList: (props) => {
+                                return <components.MenuList {...props}>
+                                    {props.children}
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="react-select__bottom p-10 cb-5 block fw-5 anchor cursor no-decor">
+                                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                                        Add Git Provider
+                                    </NavLink>
+                                </components.MenuList>
+                            },
                         }}
                         onChange={(selected) => { this.selectProvider(selected, material.id) }} />
                     <span className="form__error">

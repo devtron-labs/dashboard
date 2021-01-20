@@ -8,7 +8,6 @@ import Tippy from '@tippyjs/react';
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     if (loading && !result) return <Progressing pageLoader />
-    console.log(result)
     if (error) {
         showError(error)
         if (!result) return null
@@ -128,7 +127,6 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
         }
         const api = id ? updateGitProviderConfig : saveGitProviderConfig
-        console.log(saveGitProviderConfig)
         try {
             setLoading(true)
             const { result } = await api(payload, id);

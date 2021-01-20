@@ -464,7 +464,7 @@ const NodeDetails: React.FC<{
                 selectContainer(container);
             }
             else if (containers?.length) {
-                selectContainer(containers[0])
+                selectContainer(containers[0]);
             }
         }
     }, [selectedNode, params.tab])
@@ -831,7 +831,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         value: name,
                     }))}
                     value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                    onChange={(selected) => { selectNode((selected as any).value); }}
+                    onChange={(selected) => {
+                        selectNode((selected as any).value);
+                    }}
                     styles={{
                         ...multiSelectStyles,
                         menu: (base) => ({ ...base, zIndex: 12 }),
@@ -874,7 +876,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         <Select placeholder="Select Container"
                             options={containers.map((container) => ({ label: container, value: container }))}
                             value={containerName ? { label: containerName, value: containerName } : null}
-                            onChange={(selected) => { selectContainer((selected as any).value) }}
+                            onChange={(selected) => {
+                                selectContainer((selected as any).value);
+                            }}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 12 }),
