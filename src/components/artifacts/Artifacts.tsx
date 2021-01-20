@@ -297,7 +297,6 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                         <img src={down} className="collapsed__icon" style={{ transform: 'rotateX(180deg)' }} alt="collapsed" />
                     </button> : null}
                 </div>
-
                 <label className="form__row">
                     <span className="form__label">Select Provider*</span>
                     <ReactSelect className=""
@@ -393,6 +392,7 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                 {this.renderPageHeader()}
                 {this.renderAddArtifact()}
                 {materials.map((material, index) => {
+                    console.log(this.state.materials[index])
                     return this.renderMaterial(this.state.materials[index], index);
                 })}
             </div>

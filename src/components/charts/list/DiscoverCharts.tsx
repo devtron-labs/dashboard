@@ -22,6 +22,8 @@ import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
+import { valueFocusAriaMessage } from 'react-select/src/accessibility';
+import {getChartProviderList} from '../../../services/service'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -100,6 +102,8 @@ function DiscoverListing() {
             setInstalling(false)
         }
     }
+
+
 
     function redirectToConfigure() {
         configureChart(0)
@@ -312,10 +316,27 @@ function DiscoverListing() {
     );
 }
 
+
+
 function ChartList({ availableCharts, selectedInstances, charts, addChart, subtractChart, selectChart, showDeployModal }) {
+    const [chartRepoList,setChartRepoList] = useState([])
+    let provider = chartRepoList.map(chartRepo)
     const chartList: Chart[] = Array.from(availableCharts.values());
     const { push } = useHistory()
     const { url, path } = useRouteMatch()
+
+   function chartRepo(list){
+         return {value: list.id,
+                 label: list.name}
+   } 
+    useEffect(()=>{
+             getChartProviderList().then((res)=>{
+                console.log(res.result)
+                setChartRepoList(res.result)
+        })
+        
+    },[chartRepoList])
+
     return (
         <>
             <div className="chart-group__header">
@@ -326,9 +347,10 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
                             <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
                     </div>
-                
                     <ReactSelect 
                         placeholder={ "All repositories"}
+                        value= {provider}
+                        //options= {}
                         className = "date-align-left"
                         styles={{
                             container: (base, state) => {
@@ -351,6 +373,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 padding: '8px 12px',
                             }),
                         }}/>
+                  
                      <ReactSelect 
                         placeholder={ "Show deprecated"}
                         className = "date-align-left"

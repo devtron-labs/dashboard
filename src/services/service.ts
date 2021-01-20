@@ -243,4 +243,9 @@ export function getLastExecutionMinByAppAndEnv(appId: number | string, envId: nu
     })
 }
 
+export const getChartProviderList = () => {
+    const URL = `${Routes.CHART_LIST}`;
+    return get(URL);
+}
+
 
