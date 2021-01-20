@@ -319,24 +319,24 @@ function DiscoverListing() {
 
 
 function ChartList({ availableCharts, selectedInstances, charts, addChart, subtractChart, selectChart, showDeployModal }) {
-    const [chartRepoList,setChartRepoList] = useState([])
-    let provider = chartRepoList.map(chartRepo)
     const chartList: Chart[] = Array.from(availableCharts.values());
     const { push } = useHistory()
     const { url, path } = useRouteMatch()
-
-   function chartRepo(list){
-         return {value: list.id,
-                 label: list.name}
-   } 
+    const [chartRepoList,setChartRepoList] = useState([])
+    const [selectedChartRepo, setSelectedChartRepo]= useState()
     useEffect(()=>{
+          function chartRepo(list){
+                    return {value: list.id,
+                            label: list.name}
+            }
              getChartProviderList().then((res)=>{
-                console.log(res.result)
-                setChartRepoList(res.result)
+                 let list= res.result
+                 list= list.map(chartRepo)
+             setChartRepoList(list)
         })
-        
     },[chartRepoList])
 
+    
     return (
         <>
             <div className="chart-group__header">
@@ -349,8 +349,9 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     </div>
                     <ReactSelect 
                         placeholder={ "All repositories"}
-                        value= {provider}
-                        //options= {}
+                        value= {selectedChartRepo}
+                        options= {chartRepoList}
+                        //onChange= {handleChartRepoList}
                         className = "date-align-left"
                         styles={{
                             container: (base, state) => {
