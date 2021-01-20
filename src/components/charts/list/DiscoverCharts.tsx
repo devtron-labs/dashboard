@@ -336,6 +336,9 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         })
     },[chartRepoList])
 
+    function handleChartRepoList(){
+
+    }
     
     return (
         <>
@@ -351,7 +354,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         placeholder={ "All repositories"}
                         value= {selectedChartRepo}
                         options= {chartRepoList}
-                        //onChange= {handleChartRepoList}
+                        onChange= {handleChartRepoList}
                         className = "date-align-left"
                         styles={{
                             container: (base, state) => {
