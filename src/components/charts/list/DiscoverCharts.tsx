@@ -25,6 +25,7 @@ import ReactSelect from 'react-select';
 import { valueFocusAriaMessage } from 'react-select/src/accessibility';
 import {getChartProviderList} from '../../../services/service'
 import {useSearchString} from '../../common'
+import { DropdownIndicator, styles, ValueContainer, Option } from '../../security/security.util';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -360,14 +361,19 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         options= {chartRepoList}
                         onChange= {(selected)=>{handleChartRepoList(selected)}}
                         className = "date-align-left"
-                        isMulti
+                        isMulti= {true}
+                        hideSelectedOptions={false}
+                        components={{
+                            DropdownIndicator,
+                            ValueContainer,
+                            Option: Option,
+                          }}
                         styles={{
                             container: (base, state) => {
                             return ({
                                 ...base,
                                 height: '36px',
                                 width: '200px',
-
                             })
                             },
                             control: (base, state) => ({
@@ -381,11 +387,19 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 color: 'var(--N900)',
                                 padding: '8px 12px',
                             }),
+                            ...styles,
                         }}/>
                   
                      <ReactSelect 
                         placeholder={ "Show deprecated"}
                         className = "date-align-left"
+                        isMulti= {true}
+                        hideSelectedOptions={false}
+                        components={{
+                            DropdownIndicator,
+                            ValueContainer,
+                            Option: Option,
+                          }}
                         styles={{
                             container: (base, state) => {
                             return ({
@@ -399,6 +413,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             ...base,
                             minHeight: '36px',
                             }),
+                            ...styles
                         }}/>
                 </div>
             </div>
