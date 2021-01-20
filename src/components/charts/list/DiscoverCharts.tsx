@@ -360,6 +360,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         options= {chartRepoList}
                         onChange= {(selected)=>{handleChartRepoList(selected)}}
                         className = "date-align-left"
+                        isMulti
                         styles={{
                             container: (base, state) => {
                             return ({
