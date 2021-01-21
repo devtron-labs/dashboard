@@ -323,7 +323,6 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
 
     useEffect(() => {
         function chartRepo(list) {
-            console.log(list)
             return {
                 value: list.id,
                 label: list.name
@@ -344,12 +343,12 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
 
     function handleChartRepoList(selected) {
          let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
-         let searchParams = new URLSearchParams(location.search)
-         let app= searchParams.get("appStoreName")
-         let deprecate= searchParams.get("deprecated")
+         let searchParams = new URLSearchParams(location.search);
+         let app= searchParams.get('appStoreName');
+         let deprecate= searchParams.get('deprecated');
          let qs= `chartRepoId=${chartRepoId}`;
-         if (app) qs=`${qs}&appStoreName=${app}`;
-         if (deprecate) qs=` chartRepoId=${chartRepoId}&appStoreName=${app}&deprecated=${deprecate}`
+         if (app) qs= `${qs}&appStoreName=${app}`;
+         if (deprecate) qs= `${qs}&deprecated=${deprecate}`
          console.log(qs)
          history.push(`${url}?${qs}`);
     }
@@ -391,9 +390,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             option: (base, state) => ({
                                 ...base,
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                fontWeight: "normal",
-                                color: 'var(--N900)',
-                                padding: '8px 12px',
+                                
                             }),
                             ...styles,
                         }} />

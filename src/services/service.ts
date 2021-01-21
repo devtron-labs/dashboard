@@ -90,7 +90,7 @@ export function getAvailableCharts(queryString?: string, options?: APIOptions): 
         url = `${Routes.CHART_AVAILABLE}/`;
     }
     else {
-        url = `${Routes.CHART_AVAILABLE}${queryString}`;
+        url = `${Routes.CHART_AVAILABLE}/${queryString}`;
     }
     return get(url, options).then((response) => {
         return {
