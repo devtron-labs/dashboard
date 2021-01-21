@@ -323,6 +323,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
 
     useEffect(() => {
         function chartRepo(list) {
+            console.log(list)
             return {
                 value: list.id,
                 label: list.name
@@ -342,16 +343,16 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     }, [location.search])
 
     function handleChartRepoList(selected) {
-        let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
-        let qs = `chartRepoId=${chartRepoId}&appStoreName=${app}&deprecated=${deprecate}`;
-        let searchParams = new URLSearchParams(qs)
-         var app= searchParams.get("appStoreName")
-         var deprecate= searchParams.get("deprecated")
+         let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
+         let searchParams = new URLSearchParams(location.search)
+         let app= searchParams.get("appStoreName")
+         let deprecate= searchParams.get("deprecated")
+         let qs= `chartRepoId=${chartRepoId}`;
+         if (app) qs=`${qs}&appStoreName=${app}`;
+         if (deprecate) qs=` chartRepoId=${chartRepoId}&appStoreName=${app}&deprecated=${deprecate}`
          console.log(qs)
-        history.push(`${url}?${qs}`);
-
+         history.push(`${url}?${qs}`);
     }
-
     return (
         <>
             <div className="chart-group__header">
