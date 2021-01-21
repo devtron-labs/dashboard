@@ -342,8 +342,14 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     }, [location.search])
 
     function handleChartRepoList(selected) {
-        let qs = `chartRepoId=2`;
+        let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
+        let qs = `chartRepoId=${chartRepoId}&appStoreName=${app}&deprecated=${deprecate}`;
+        let searchParams = new URLSearchParams(qs)
+         var app= searchParams.get("appStoreName")
+         var deprecate= searchParams.get("deprecated")
+         console.log(qs)
         history.push(`${url}?${qs}`);
+
     }
 
     return (
