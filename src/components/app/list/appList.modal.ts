@@ -5,6 +5,7 @@ import { Environment } from './types';
 import moment from 'moment';
 
 export const getInitState = (appListPayload): Promise<any> => {
+    console.log("init");
     return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppList(appListPayload), getDockerRegistryList()]).then(([teams, environments, appList, dockerRegistryRes]) => {
         let filterApplied = {
             environments: new Set(appListPayload.environments),

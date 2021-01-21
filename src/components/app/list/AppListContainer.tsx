@@ -13,6 +13,8 @@ import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
+    abortController: AbortController;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -42,7 +44,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     componentDidMount() {
-
         let payload = this.createPayloadFromURL(this.props.location.search);
         getInitState(payload).then((response) => {
             let view;
@@ -59,9 +60,11 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         })
     }
 
-    componentWillReceiveProps(nextProps) {
-        let payload = this.createPayloadFromURL(nextProps.location.search)
-        if (nextProps.location.search !== this.props.location.search) this.getAppList(payload);
+    componentDidUpdate(nextProps) {
+        if (nextProps.location.search !== this.props.location.search) {
+            let payload = this.createPayloadFromURL(this.props.location.search);
+            this.getAppList(payload);
+        }
     }
 
     createPayloadFromURL(searchQuery: string) {
@@ -297,7 +300,14 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         state.expandedRow = false;
         state.appData = null;
         this.setState(state);
-        getAppList(request).then((response) => {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
+
+        this.abortController = new AbortController();
+
+        getAppList(request, { signal: this.abortController.signal }).then((response) => {
             let state = { ...this.state };
             state.code = response.code;
             state.apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : [];
@@ -306,9 +316,12 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             state.size = response.result.appCount;
             state.pageSize = request.size;
             this.setState(state);
+            this.abortController = null;
         }).catch((errors: ServerErrors) => {
-            showError(errors);
-            this.setState({ code: errors.code, view: ViewType.ERROR });
+            if (errors.code) {
+                showError(errors);
+                this.setState({ code: errors.code, view: ViewType.ERROR });
+            }
         })
     }
 
@@ -324,9 +337,9 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
-            return `${this.props.match.url}/${app.id}/details/${envId}`
+            return `${this.props.match.url}/${app.id}/details/${envId}`;
         }
-        return `${this.props.match.url}/${app.id}/trigger`
+        return `${this.props.match.url}/${app.id}/trigger`;
     }
 
     closeModal = () => {
