@@ -352,6 +352,10 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
          console.log(qs)
          history.push(`${url}?${qs}`);
     }
+
+    function handleDeprecate(e){
+        console.log(e)
+    }
     return (
         <>
             <div className="chart-group__header">
@@ -362,12 +366,16 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
                         <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
                     </div>
+                    <div className= "search-with-dropdown__dropdown date-align-left">
+                    
                     <ReactSelect
-                        placeholder={"All repositories"}
+                        placeholder= "All repositories"
+                        name="All repositories"
                         value={selectedChartRepo}
                         options={chartRepoList}
+                        isClearable= {false}
                         onChange={(selected) => { handleChartRepoList(selected) }}
-                        className="date-align-left"
+                        className=""
                         isMulti={true}
                         hideSelectedOptions={false}
                         components={{
@@ -380,7 +388,6 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 return ({
                                     ...base,
                                     height: '36px',
-                                    width: '200px',
                                 })
                             },
                             control: (base, state) => ({
@@ -394,32 +401,13 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             }),
                             ...styles,
                         }} />
-
-                    <ReactSelect
-                        placeholder={"Show deprecated"}
-                        className="date-align-left"
-                        isMulti={true}
-                        hideSelectedOptions={false}
-                        components={{
-                            DropdownIndicator,
-                            ValueContainer,
-                            Option: Option,
-                        }}
-                        styles={{
-                            container: (base, state) => {
-                                return ({
-                                    ...base,
-                                    height: '36px',
-                                    width: '200px',
-                                    marginLeft: '16px'
-                                })
-                            },
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                            }),
-                            ...styles
-                        }} />
+                    </div>
+                    <div className="date-align-left--deprecate" onClick={(selected)=>{handleDeprecate(selected)}}>
+                      <div className= "display-flex"> 
+                        <div></div>
+                        Show deprecated
+                        </div>
+                        </div>
                 </div>
             </div>
 

@@ -495,5 +495,19 @@
 .date-align-left{
     margin: auto;
     margin-right: 0;
-    color: var(--N900)
+    color: var(--N900);
+    width: 230px;
+}
+
+.date-align-left--deprecate{
+    background-color: white;
+    margin-left: 16px;
+    width : 200px;
+    font-size: 14px;
+    min-height: 36px;
+    padding: 6px 8px 6px 12px;
+    opacity: 0.9;
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+    cursor: pointer;
 }
