@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
-import { ErrorScreenManager, Progressing, showError } from '../common';
+import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common';
 import { AppConfigStatus, ViewType } from '../../config';
 import { withRouter } from 'react-router';
 import { CreateMaterial } from './CreateMaterial';
@@ -35,7 +35,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 }
             })
             this.setState({
-                materials: materials,
+                materials: materials.sort((a, b) => sortCallback("id", a, b)),
                 providers: providersRes.result,
                 view: ViewType.FORM,
             });
@@ -64,24 +64,26 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 }
             })
             this.setState({
-                materials: materials,
+                materials: materials.sort((a, b) => sortCallback("id", a, b)),
             });
         })
     }
 
     isCheckoutPathValid(checkoutPath: string) {
-        if (checkoutPath.length && !checkoutPath.startsWith("./")) {
-            return "Invalid Path. Checkout path should start with ./";
-        }
-        if (this.state.materials.length > 1 && !checkoutPath.startsWith("./")) {
-            let isValid = this.state.materials.reduce((isValid: boolean, artifact) => {
-                return (isValid && artifact.checkoutPath.length > 0)
-            }, true);
-            if(isValid) return;
-            else return "Mandatory for using multi-git"
+        if (this.state.materials.length > 1) { //Multi git
+            if (!checkoutPath.length) { return "This is a required field"; }
+            else {
+                if (!checkoutPath.startsWith("./")) { return "Invalid Path. Checkout path should start with './'"; }
+                else return;
+            }
         }
 
-        return undefined;
+        else {
+            if (checkoutPath.length && !checkoutPath.startsWith("./")) {
+                return "Invalid Path. Checkout path should start with './'";
+            }
+            return undefined;
+        }
     }
 
     isGitUrlValid(url: string): string | undefined {

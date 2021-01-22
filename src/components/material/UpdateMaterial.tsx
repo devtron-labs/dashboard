@@ -107,25 +107,33 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     }
 
     save(event): void {
-        if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
-
-        this.setState({ isLoading: true });
-        let payload = {
-            appId: this.props.appId,
-            material: {
-                id: this.state.material.id,
-                url: this.state.material.url,
-                checkoutPath: this.state.material.checkoutPath,
-                gitProviderId: this.state.material.gitProvider.id,
+        this.setState({
+            isError: {
+                gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
+                url: this.props.isGitUrlValid(this.state.material.url),
+                checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
-        }
-        updateMaterial(payload).then((response) => {
-            this.props.refreshMaterials();
-            toast.success("Material Saved Successfully");
-        }).catch((error) => {
-            showError(error);
-        }).finally(() => {
-            this.setState({ isLoading: false })
+        }, () => {
+            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
+
+            this.setState({ isLoading: true });
+            let payload = {
+                appId: this.props.appId,
+                material: {
+                    id: this.state.material.id,
+                    url: this.state.material.url,
+                    checkoutPath: this.state.material.checkoutPath,
+                    gitProviderId: this.state.material.gitProvider.id,
+                }
+            }
+            updateMaterial(payload).then((response) => {
+                this.props.refreshMaterials();
+                toast.success("Material Saved Successfully");
+            }).catch((error) => {
+                showError(error);
+            }).finally(() => {
+                this.setState({ isLoading: false })
+            })
         })
     }
 

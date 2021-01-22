@@ -88,24 +88,32 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     }
 
     save(event): void {
-        if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
-        
-        this.setState({ isLoading: true });
-        let payload = {
-            appId: this.props.appId,
-            material: [{
-                url: this.state.material.url,
-                checkoutPath: this.state.material.checkoutPath,
-                gitProviderId: this.state.material.gitProvider.id,
-            }]
-        }
-        createMaterial(payload).then((response) => {
-            this.props.refreshMaterials();
-            toast.success("Material Saved Successfully");
-        }).catch((error) => {
-            showError(error);
-        }).finally(() => {
-            this.setState({ isLoading: false })
+        this.setState({
+            isError: {
+                gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
+                url: this.props.isGitUrlValid(this.state.material.url),
+                checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
+            }
+        }, () => {
+            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
+
+            this.setState({ isLoading: true });
+            let payload = {
+                appId: this.props.appId,
+                material: [{
+                    url: this.state.material.url,
+                    checkoutPath: this.state.material.checkoutPath,
+                    gitProviderId: this.state.material.gitProvider.id,
+                }]
+            }
+            createMaterial(payload).then((response) => {
+                this.props.refreshMaterials();
+                toast.success("Material Saved Successfully");
+            }).catch((error) => {
+                showError(error);
+            }).finally(() => {
+                this.setState({ isLoading: false })
+            })
         })
     }
 
@@ -114,7 +122,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             material: {
                 gitProvider: undefined,
                 url: '',
-                checkoutPath: './',
+                checkoutPath: '',
                 active: true
             },
             isCollapsed: true,
