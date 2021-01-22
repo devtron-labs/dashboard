@@ -7,9 +7,11 @@ import { CreateMaterialState } from './material.types';
 interface CreateMaterialProps {
     appId: number;
     isMultiGit: boolean;
-    isCheckoutPathValid;
     providers: any[];
     refreshMaterials: () => void;
+    isGitProviderValid;
+    isGitUrlValid;
+    isCheckoutPathValid;
 }
 
 export class CreateMaterial extends Component<CreateMaterialProps, CreateMaterialState> {
@@ -20,14 +22,15 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             material: {
                 gitProvider: undefined,
                 url: '',
-                checkoutPath: this.props.isMultiGit ? "./" : "",
+                checkoutPath: "",
                 active: true,
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isLoading: false,
             isError: {
-                gitProvider: false,
-                url: false,
+                gitProvider: undefined,
+                url: undefined,
+                checkoutPath: undefined,
             }
         }
 
@@ -45,9 +48,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 ...this.state.material,
                 gitProvider: selected
             },
-            isError:{
+            isError: {
                 ...this.state.isError,
-                gitProvider: !selected
+                gitProvider: this.props.isGitProviderValid(selected)
             }
         });
     }
@@ -58,6 +61,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 ...this.state.material,
                 checkoutPath: event.target.value
             },
+            isError: {
+                ...this.state.isError,
+                checkoutPath: this.props.isCheckoutPathValid(event.target.value)
+            }
         });
     }
 
@@ -67,9 +74,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 ...this.state.material,
                 url: event.target.value
             },
-            isError:{
+            isError: {
                 ...this.state.isError,
-                url: event.target.value.length<1
+                url: this.props.isGitUrlValid(event.target.value)
             }
         });
     }
@@ -81,22 +88,32 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     }
 
     save(event): void {
-        this.setState({ isLoading: true });
-        let payload = {
-            appId: this.props.appId,
-            material: [{
-                url: this.state.material.url,
-                checkoutPath: this.state.material.checkoutPath,
-                gitProviderId: this.state.material.gitProvider.id,
-            }]
-        }
-        createMaterial(payload).then((response) => {
-            this.props.refreshMaterials();
-            toast.success("Saved");
-        }).catch((error) => {
-            showError(error);
-        }).finally(() => {
-            this.setState({ isLoading: false })
+        this.setState({
+            isError: {
+                gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
+                url: this.props.isGitUrlValid(this.state.material.url),
+                checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
+            }
+        }, () => {
+            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
+
+            this.setState({ isLoading: true });
+            let payload = {
+                appId: this.props.appId,
+                material: [{
+                    url: this.state.material.url,
+                    checkoutPath: this.state.material.checkoutPath,
+                    gitProviderId: this.state.material.gitProvider.id,
+                }]
+            }
+            createMaterial(payload).then((response) => {
+                this.props.refreshMaterials();
+                toast.success("Material Saved Successfully");
+            }).catch((error) => {
+                showError(error);
+            }).finally(() => {
+                this.setState({ isLoading: false })
+            })
         })
     }
 
@@ -105,11 +122,16 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             material: {
                 gitProvider: undefined,
                 url: '',
-                checkoutPath: './',
+                checkoutPath: '',
                 active: true
             },
             isCollapsed: true,
             isLoading: false,
+            isError: {
+                gitProvider: undefined,
+                url: undefined,
+                checkoutPath: undefined,
+            }
         });
     }
 
@@ -127,7 +149,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             toggleCollapse={this.toggleCollapse}
             save={this.save}
             cancel={this.cancel}
-            isCheckoutPathValid={this.props.isCheckoutPathValid}
         />
     }
 }

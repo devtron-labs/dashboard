@@ -51,24 +51,23 @@ const AppSelector: React.FC<{
                 DropdownIndicator,
             }}
             styles={{
-                control: (base, state: any) => {
-                    return {
-                        ...base,
-                        border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
-                        boxShadow: 'none',
-                        color: 'var(--N900)',
-                        minHeight: '32px',
-                        minWidth: state.menuIsOpen ? '300px' : 'unset',
-                        justifyContent: state.menuIsOpen ? 'space-between' : 'flex-start',
-                    }
-                },
+                control: (base, state) => ({
+                    ...base,
+                    border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
+                    boxShadow: 'none',
+                    color: 'var(--N900)',
+                    minHeight: '32px',
+                    minWidth: state.menuIsOpen ? '300px' : 'unset',
+                    justifyContent: state.menuIsOpen ? 'space-between' : 'flex-start',
+                }),
                 valueContainer: (base, state) => ({
                     ...base,
                     display: 'flex',
                     flexDirection: 'row-reverse',
                     flexBasis: '0px',
+                    justifyContent: 'flex-end',
                     padding: state.selectProps.menuIsOpen ? '0 0 0 4px' : '0',
-                    justifyContent: 'flex-end'
+                    color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
                 }),
                 singleValue: (base, state) => ({
                     ...state,

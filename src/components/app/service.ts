@@ -20,9 +20,9 @@ export const CDModalTab = {
     Changes: <CDMdalTabType>"CHANGES",
 }
 
-export const getAppList = (request) => {
+export const getAppList = (request, options?) => {
     const URL = `${Routes.APP_LIST}`;
-    return post(URL, request);
+    return post(URL, request, options);
 }
 
 export function getCITriggerInfo(params: { appId: number | string, ciArtifactId: number | string }) {

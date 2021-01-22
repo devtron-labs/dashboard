@@ -1,11 +1,10 @@
 import { getEnvironmentListMin, getTeamListMin, getDockerRegistryList } from '../../../services/service';
-import { getAppList } from '../service';
 import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
 export const getInitState = (appListPayload): Promise<any> => {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppList(appListPayload), getDockerRegistryList()]).then(([teams, environments, appList, dockerRegistryRes]) => {
+    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getDockerRegistryList()]).then(([teams, environments, dockerRegistryRes]) => {
         let filterApplied = {
             environments: new Set(appListPayload.environments),
             statuses: new Set(appListPayload.statuses),
@@ -46,11 +45,11 @@ export const getInitState = (appListPayload): Promise<any> => {
         filters.status = filters.status.sort((a, b) => { return sortByLabel(a, b) });
         filters.team = filters.team.sort((a, b) => { return sortByLabel(a, b) });
         let parsedResponse = {
-            code: appList.code,
+            code: teams.code,
             filters,
-            apps: (appList.result && appList.result.appContainers) ? appListModal(appList.result.appContainers) : [],
+            apps: [],
             offset: appListPayload.offset,
-            size: appList.result && appList.result.appCount ? appList.result.appCount : 0,
+            size: 0,
             pageSize: appListPayload.size,
             sortRule: {
                 key: appListPayload.sortBy,
