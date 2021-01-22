@@ -32,32 +32,28 @@ export interface CreateMaterialState {
     };
     isCollapsed: boolean;
     isLoading: boolean;
-    isError: {
-        gitProvider: boolean;
-        url: boolean;
-    }
+    isError: MaterialError;
+}
+
+interface MaterialError {
+    gitProvider: undefined | string;
+    url: undefined | string;
+    checkoutPath: undefined | string;
 }
 
 export interface UpdateMaterialState {
     material: GitMaterialType;
     isCollapsed: boolean;
     isLoading: boolean;
-    isError: {
-        gitProvider: boolean;
-        url: boolean;
-    }
+    isError: MaterialError;
 }
-
 
 export interface MaterialViewProps {
     isMultiGit: boolean;
     material: GitMaterialType;
     isCollapsed: boolean;
     isLoading: boolean;
-    isError:{
-        gitProvider: boolean;
-        url: boolean;
-    }
+    isError: MaterialError;
     providers: any[];
     handleProviderChange: (selected) => void;
     handleUrlChange: (event) => void;
@@ -65,5 +61,4 @@ export interface MaterialViewProps {
     toggleCollapse: (event) => void;
     save: (event) => void;
     cancel: (event) => void;
-    isCheckoutPathValid;
 }

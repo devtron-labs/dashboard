@@ -71,16 +71,30 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     isCheckoutPathValid(checkoutPath: string) {
         if (checkoutPath.length && !checkoutPath.startsWith("./")) {
-            return { message: "Invalid Path", result: 'error', isValid: false };
+            return "Invalid Path. Checkout path should start with ./";
         }
         if (this.state.materials.length > 1 && !checkoutPath.startsWith("./")) {
             let isValid = this.state.materials.reduce((isValid: boolean, artifact) => {
                 return (isValid && artifact.checkoutPath.length > 0)
             }, true);
-            return { isValid, message: isValid ? '' : 'Mandatory for using multi-git' };
+            if(isValid) return;
+            else return "Mandatory for using multi-git"
         }
 
-        return { isValid: true, message: '' };
+        return undefined;
+    }
+
+    isGitUrlValid(url: string): string | undefined {
+        if (!url.length) return "This is a required field"
+
+        if (url.endsWith(".git")) return undefined;
+        else return "Invalid Path. URL should end with .git"
+    }
+
+    isGitProviderValid(provider) {
+        if (provider && provider.id) return undefined;
+
+        return "This is required field"
     }
 
     renderPageHeader() {
@@ -103,6 +117,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     isMultiGit={this.state.materials.length > 0}
                     providers={this.state.providers}
                     refreshMaterials={this.refreshMaterials}
+                    isGitUrlValid={this.isGitUrlValid}
+                    isGitProviderValid={this.isGitProviderValid}
                     isCheckoutPathValid={this.isCheckoutPathValid} />
                 {this.state.materials.map((mat) => {
                     return <UpdateMaterial key={mat.name}
@@ -111,6 +127,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         providers={this.state.providers}
                         material={mat}
                         refreshMaterials={this.refreshMaterials}
+                        isGitUrlValid={this.isGitUrlValid}
+                        isGitProviderValid={this.isGitProviderValid}
                         isCheckoutPathValid={this.isCheckoutPathValid} />
                 })}
             </div>

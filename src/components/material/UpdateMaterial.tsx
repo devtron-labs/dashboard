@@ -8,9 +8,11 @@ import { MaterialView } from './MaterialView';
 interface UpdateMaterialProps {
     appId: number;
     isMultiGit: boolean;
-    isCheckoutPathValid;
     material: GitMaterialType;
     providers: any[];
+    isGitProviderValid;
+    isGitUrlValid;
+    isCheckoutPathValid;
     refreshMaterials: () => void;
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
@@ -29,8 +31,9 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             isCollapsed: true,
             isLoading: false,
             isError: {
-                gitProvider: false,
-                url: false,
+                gitProvider: undefined,
+                url: undefined,
+                checkoutPath: undefined,
             }
         }
         this.handleProviderChange = this.handleProviderChange.bind(this);
@@ -63,6 +66,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material: {
                 ...this.state.material,
                 gitProvider: selected
+            },
+            isError: {
+                ...this.state.isError,
+                gitProvider: this.props.isGitProviderValid(selected)
             }
         });
     }
@@ -72,6 +79,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material: {
                 ...this.state.material,
                 checkoutPath: event.target.value
+            },
+            isError: {
+                ...this.state.isError,
+                checkoutPath: this.props.isCheckoutPathValid(event.target.value)
             }
         });
     }
@@ -81,6 +92,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material: {
                 ...this.state.material,
                 url: event.target.value
+            },
+            isError: {
+                ...this.state.isError,
+                url: this.props.isGitUrlValid(event.target.value)
             }
         });
     }
@@ -92,6 +107,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     }
 
     save(event): void {
+        if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
+
         this.setState({ isLoading: true });
         let payload = {
             appId: this.props.appId,
@@ -139,7 +156,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             toggleCollapse={this.toggleCollapse}
             save={this.save}
             cancel={this.cancel}
-            isCheckoutPathValid={this.props.isCheckoutPathValid}
         />
     }
 }

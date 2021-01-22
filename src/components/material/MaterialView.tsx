@@ -30,8 +30,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
     }
 
     renderForm() {
-        console.log(this.props.providers)
-        let checkoutPathValue = this.props.isCheckoutPathValid(this.props.material.checkoutPath);
         return <form key={`${(this.props.material).id}`} className="white-card p-24 mb-16">
             <div className="white-card__header white-card__header--form">
                 {(this.props.material).id ? "Edit Material" : "Add Material"}
@@ -90,8 +88,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     onChange={(selected) => { this.props.handleProviderChange(selected) }} />
                 {this.props.isError.gitProvider && <span className="form__error">
                     <img src={error} className="form__icon" />
-                        This is a required field
-                    </span>}
+                    {this.props.isError.gitProvider}
+                </span>}
             </div>
 
             <label className="form__row">
@@ -103,7 +101,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     onChange={this.props.handleUrlChange} />
                 <span className="form__error">
                     {this.props.isError.url && <>
-                        <img src={error} className="form__icon" />This is a required field
+                        <img src={error} className="form__icon" />{this.props.isError.url}
                     </>}
                 </span>
             </label>
@@ -116,7 +114,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={this.props.material.checkoutPath}
                     onChange={this.props.handlePathChange} />
                 <span className="form__error">
-                    {!checkoutPathValue?.isValid && <> <img src={error} className="form__icon" /> {checkoutPathValue?.message}</>}
+                    {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
             </label>
             <div className="form__buttons">
