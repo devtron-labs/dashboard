@@ -54,7 +54,11 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 view = response.apps.length ? AppListViewType.LIST : AppListViewType.EMPTY;
             }
             this.setState({ ...response, view });
-        }).catch((errors: ServerErrors) => {
+        }).then(()=>{
+            let payload = this.createPayloadFromURL(this.props.location.search);
+            this.getAppList(payload);
+        })
+        .catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
         })
