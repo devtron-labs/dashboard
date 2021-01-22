@@ -320,6 +320,8 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const { url, path } = useRouteMatch()
     const [chartRepoList, setChartRepoList] = useState([])
     const [selectedChartRepo, setSelectedChartRepo] = useState()
+    const [appStoreName, setAppStoreName] = useState("")
+    const  [deprecate, setDeprecate] = useState(true)
 
     useEffect(() => {
         function chartRepo(list) {
@@ -341,6 +343,25 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
 
     }, [location.search])
 
+    useEffect(()=>{
+        handleChartRepoList(chartRepoList)
+    },[chartRepoList])
+
+    useEffect(()=>{
+        handleDeprecate(deprecate)
+    },[deprecate])
+    
+    function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>): void{
+        setAppStoreName(e.target.value)
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate= searchParams.get('deprecated');
+        let chartRepoId= searchParams.get('chartRepoId');
+        let qs= `appStoreName=${appStoreName}`;
+        if (deprecate) qs= `${qs}&deprecated=${deprecate}`;
+        if (chartRepoId) qs= `${qs}&chartRepoId=${chartRepoId}`
+        console.log(qs)
+        history.push(`${url}?${qs}`);
+    }
     function handleChartRepoList(selected) {
          let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
          let searchParams = new URLSearchParams(location.search);
@@ -354,7 +375,14 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     }
 
     function handleDeprecate(e){
-        console.log(e)
+        let searchParams = new URLSearchParams(location.search);
+        let app= searchParams.get('appStoreName');
+        let chartRepoId= searchParams.get('chartRepoId');
+        let qs= `deprecated=${deprecate}`;
+        if (app) qs= `${qs}&appStoreName=${app}`;
+        if (chartRepoId) qs= `${qs}&chartRepoId=${chartRepoId}`
+        console.log(qs)
+        history.push(`${url}?${qs}`);
     }
     return (
         <>
@@ -364,7 +392,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                 <div className="display-flex">
                     <div className="search search--container" >
                         <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                        <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" />
+                        <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" onChange={handleSearchChange}/>
                     </div>
                     <div className= "search-with-dropdown__dropdown date-align-left">
                     
@@ -374,7 +402,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         value={selectedChartRepo}
                         options={chartRepoList}
                         isClearable= {false}
-                        onChange={(selected) => { handleChartRepoList(selected) }}
+                        onChange={(selected : any) => setChartRepoList(selected)}
                         className=""
                         isMulti={true}
                         hideSelectedOptions={false}
@@ -402,12 +430,13 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             ...styles,
                         }} />
                     </div>
-                    <div className="date-align-left--deprecate" onClick={(selected)=>{handleDeprecate(selected)}}>
+                    
+                    <div className="date-align-left--deprecate" onClick={(()=>{setDeprecate(!deprecate)})}>
                       <div className= "display-flex"> 
-                        <div></div>
+                        <input type= "checkbox" className="mr-7" />
                         Show deprecated
                         </div>
-                        </div>
+                    </div>
                 </div>
             </div>
 
