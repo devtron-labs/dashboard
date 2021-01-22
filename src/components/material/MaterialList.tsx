@@ -20,6 +20,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             materials: [],
             providers: [],
         }
+        this.isGitProviderValid = this.isGitProviderValid.bind(this);
+        this.isGitUrlValid = this.isGitUrlValid.bind(this);
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this);
         this.refreshMaterials = this.refreshMaterials.bind(this);
     }
@@ -68,9 +70,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             });
         })
     }
-
+    
     isCheckoutPathValid(checkoutPath: string) {
-        if (this.state.materials.length > 1) { //Multi git
+        if (this.state.materials.length >= 1) { //Multi git
             if (!checkoutPath.length) { return "This is a required field"; }
             else {
                 if (!checkoutPath.startsWith("./")) { return "Invalid Path. Checkout path should start with './'"; }
