@@ -310,6 +310,10 @@ class Artifacts extends Component<ArtifactsProps, ArtifactsState> {
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.id}`}
                         styles={{
+                            valueContainer: (base, state) => ({
+                                ...base,
+                                color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+                            }),
                             control: (base, state) => ({
                                 ...base,
                                 border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
