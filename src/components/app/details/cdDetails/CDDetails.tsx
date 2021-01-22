@@ -25,7 +25,7 @@ import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
-
+import {Moment12HourFormat} from '../../../../config';
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
@@ -198,7 +198,7 @@ const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
 
                 </div>
                 <div className="flex column left ellipsis-right">
-                    <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format("ddd, DD MMM YYYY, HH:mm A")}</div>
+                    <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                     <div className="flex left cn-7 fs-12">
                         <div className="capitalize">{['pre', 'post'].includes(triggerDetails.stage.toLowerCase()) ? `${triggerDetails.stage}-deploy` : triggerDetails.stage}</div>
                         <span className="bullet bullet--d2 ml-4 mr-4"></span>

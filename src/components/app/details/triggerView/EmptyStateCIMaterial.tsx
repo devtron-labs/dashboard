@@ -30,7 +30,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
       return {
         img: <img src={img} alt="no commits found" className="empty-state__img--ci-material" />,
         title: <h1 className="empty__title">{this.props.repoErrorMsg}</h1>,
-        subtitle: <a href={`${this.props.repoUrl}`} target="_blank" className="">{this.props.repoUrl}</a>,
+        subtitle: <a href={`${this.props.repoUrl}`} rel="noopener noreferrer" target="_blank" className="">{this.props.repoUrl}</a>,
         cta: null
       }
     }
@@ -38,7 +38,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
       return {
         img: <img src={img} alt="no commits found" className="empty-state__img--ci-material" />,
         title: <h1 className="empty__title">{this.props.branchErrorMsg}</h1>,
-        subtitle: <a href={this.props.repoUrl} target="_blank" className="">{this.props.repoUrl}</a>,
+        subtitle: <a href={this.props.repoUrl} rel="noopener noreferrer" target="_blank" className="">{this.props.repoUrl}</a>,
         cta: null,
       }
     }

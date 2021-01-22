@@ -9,6 +9,7 @@ export interface AppListState {
     apps: App[];
     searchQuery: string;
     searchApplied: boolean;
+    showCommandBar: boolean;
     filters: {
         environment: FilterOption[];
         status: FilterOption[];
@@ -22,6 +23,7 @@ export interface AppListState {
     offset: number;
     pageSize: number;
     expandedRow: boolean;
+    isDockerRegistryEmpty: boolean;
     appData: App | null;
 }
 

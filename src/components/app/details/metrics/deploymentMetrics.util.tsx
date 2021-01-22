@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import moment from 'moment';
+import React from 'react';
 import { components } from 'react-select';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg';

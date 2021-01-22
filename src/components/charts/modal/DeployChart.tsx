@@ -94,7 +94,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const initialChartValuesFromParent = chartValuesFromParent;
     const [chartValues, setChartValues] = useState(chartValuesFromParent);
     const { push } = useHistory()
-    const { chartId, envId } = useParams()
+    const { chartId, envId } = useParams<{chartId, envId}>()
     const [showCodeEditorError, setCodeEditorError] = useState(false);
     const deployChartForm = useRef(null);
     const deployChartEditor = useRef(null);
@@ -138,6 +138,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
+    function hasChartChanged(): boolean {
+        return appStoreId !== repoChartValue.chartId;
+    }
+
     const deploy = async (e) => {
         if (!(selectedTeam && selectedEnvironment)) {
             return
@@ -153,10 +157,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
         try {
             setLoading(true)
             if (installedAppVersion) {
-                const hasChartChanged = appStoreId !== repoChartValue.chartId;
                 let request = {
                     // if chart has changed send 0
-                    id: hasChartChanged ? 0 : installedAppVersion,
+                    id: hasChartChanged() ? 0 : installedAppVersion,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     // valuesOverride: obj,
@@ -180,9 +183,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverrideYaml: textRef,
                     appName
                 };
-                const { result: { environmentId: newEnvironmentId, installedAppId } } = await installChart(request);
-                toast.success('Deployment initiated')
-                push(`/chart-store/deployments/${installedAppId}/env/${newEnvironmentId}`)
+                const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(request);
+                toast.success('Deployment initiated');
+                push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
             }
         }
         catch (err) {
@@ -498,6 +501,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <CodeEditor.Header>
                                     <span className="bold">values.yaml</span>
                                 </CodeEditor.Header>
+                                {hasChartChanged() && 
+                                <CodeEditor.Information 
+                                    text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}/>}
                             </CodeEditor>
                         </div>
                     </div>

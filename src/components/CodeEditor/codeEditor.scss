@@ -90,6 +90,25 @@
     background-color: var(--Y100);
 }
 
+.code-editor__information {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+    background-color: var(--B100);
+}
+
+.code-editor__information-info-icon {
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    vertical-align: bottom;
+}
+
 .code-editor__toggle {
     .toggle__switch {
         width: 32px;

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useEffect } from 'react';
 import { Progressing, useEffectAfterMount, PopupMenu } from '../../common'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';

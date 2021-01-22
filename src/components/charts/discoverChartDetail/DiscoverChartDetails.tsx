@@ -3,7 +3,8 @@ import { Route, Switch, NavLink } from 'react-router-dom';
 import { useRouteMatch, useLocation, useParams} from 'react-router'
 import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
 import { URLS } from '../../../config';
-import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed, getAvailableCharts } from '../charts.service';
+import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
+import { getAvailableCharts } from '../../../services/service';
 import { DiscoverChartDetailsProps, DeploymentProps } from './types';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'

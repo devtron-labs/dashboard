@@ -5,7 +5,6 @@ import { ReactComponent as Rollback } from '../../../../../../assets/icons/misc/
 import { TriggerViewContext } from '../../TriggerView';
 import { DEFAULT_STATUS } from '../../../../../../config';
 import Tippy from '@tippyjs/react';
-import pipelineDeploy from '../../../../../../assets/img/ic-pipeline-deploy@2x.png';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps>{
 

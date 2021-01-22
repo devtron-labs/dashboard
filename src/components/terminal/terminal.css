@@ -1,0 +1,7 @@
+.terminal-view {
+    position: relative;
+    background-color: inherit;
+    grid-column: 1 / span 2;
+    padding-left: 20px;
+    min-width: 100vw;
+}

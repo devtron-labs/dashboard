@@ -51,6 +51,7 @@ export const Routes = {
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GIT_PROVIDER: 'git/provider',
+    CHART_LIST: 'app-store/repo/list',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -115,11 +116,6 @@ export const AppConfigStatus = {
     END: 10,
 };
 
-export const FormType = {
-    SAVE: 'SAVE',
-    UPDATE: 'UPDATE',
-};
-
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
 };
@@ -162,3 +158,6 @@ export const TagOptions = [
     // { label: "Tag Any", value: "SOURCE_TYPE_TAG_ANY" },
     { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX' },
 ];
+
+
+export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";
