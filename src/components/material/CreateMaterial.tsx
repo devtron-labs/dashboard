@@ -127,6 +127,11 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             },
             isCollapsed: true,
             isLoading: false,
+            isError: {
+                gitProvider: undefined,
+                url: undefined,
+                checkoutPath: undefined,
+            }
         });
     }
 

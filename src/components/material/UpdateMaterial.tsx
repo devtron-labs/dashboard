@@ -147,6 +147,11 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             isCollapsed: true,
             isLoading: false,
+            isError: {
+                gitProvider: this.props.isGitProviderValid(this.props.material.gitProvider),
+                url: this.props.isGitUrlValid(this.props.material.url),
+                checkoutPath: this.props.isCheckoutPathValid(this.props.material.checkoutPath)
+            }
         });
     }
 
