@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Progressing, useAsync, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap } from '../../common';
+import { Progressing, useAsync, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, Checkbox } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -23,7 +23,7 @@ import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-tr
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
 import { getChartRepoList } from '../../../services/service'
-import { DropdownIndicator, styles, ValueContainer, Option } from '../../security/security.util';
+import { DropdownIndicator, styles, ValueContainer, Option } from '../charts.util';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -317,11 +317,11 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const chartList: Chart[] = Array.from(availableCharts.values());
     const history = useHistory();
     const location = useLocation();
-    const { url, path } = useRouteMatch()
-    const [chartRepoList, setChartRepoList] = useState([])
-    const [selectedChartRepo, setSelectedChartRepo] = useState()
-    const [appStoreName, setAppStoreName] = useState("")
-    const  [deprecate, setDeprecate] = useState(true)
+    const { url } = useRouteMatch();
+    const [chartRepoList, setChartRepoList] = useState([]);
+    const [selectedChartRepo, setSelectedChartRepo] = useState();
+    const [appStoreName, setAppStoreName] = useState("");
+    const [deprecate, setDeprecate] = useState(false);
 
     useEffect(() => {
         function chartRepo(list) {
@@ -333,109 +333,105 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         getChartRepoList().then((res) => {
             let list = res.result
             list = list.map(chartRepo)
-            setChartRepoList(list)
+            setChartRepoList(list);
         })
     }, [])
 
     useEffect(() => {
-
         applyFilterOnCharts(location.search);
-
     }, [location.search])
 
-    useEffect(()=>{
-        handleChartRepoList(chartRepoList)
-    },[chartRepoList])
+    useEffect(() => {
+        function handleChartRepoChange(selected): void {
+            let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+            let searchParams = new URLSearchParams(location.search);
+            let app = searchParams.get('appStoreName');
+            let deprecate = searchParams.get('deprecated');
+            let qs = `chartRepoId=${chartRepoId}`;
+            if (app) qs = `${qs}&appStoreName=${app}`;
+            if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
+            history.push(`${url}?${qs}`);
+        }
 
-    useEffect(()=>{
-        handleDeprecate(deprecate)
-    },[deprecate])
-    
-    function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>): void{
-        setAppStoreName(e.target.value)
+        handleChartRepoChange(selectedChartRepo);
+    }, [selectedChartRepo])
+
+    useEffect(() => {
+        function handleDeprecate(e): void {
+            let searchParams = new URLSearchParams(location.search);
+            let app = searchParams.get('appStoreName');
+            let chartRepoId = searchParams.get('chartRepoId');
+            let qs = `deprecated=${deprecate}`;
+            if (app) qs = `${qs}&appStoreName=${app}`;
+            if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`
+            history.push(`${url}?${qs}`);
+        }
+        console.log(deprecate)
+        handleDeprecate(deprecate);
+    }, [deprecate])
+
+    function handleSearchChange(): void {
         let searchParams = new URLSearchParams(location.search);
-        let deprecate= searchParams.get('deprecated');
-        let chartRepoId= searchParams.get('chartRepoId');
-        let qs= `appStoreName=${appStoreName}`;
-        if (deprecate) qs= `${qs}&deprecated=${deprecate}`;
-        if (chartRepoId) qs= `${qs}&chartRepoId=${chartRepoId}`
-        console.log(qs)
+        let deprecate = searchParams.get('deprecated');
+        let chartRepoId = searchParams.get('chartRepoId');
+        let qs = `appStoreName=${appStoreName}`;
+        if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`;
         history.push(`${url}?${qs}`);
     }
-    function handleChartRepoList(selected) {
-         let chartRepoId=  selected.map((e)=>{return e.value}).join(",")
-         let searchParams = new URLSearchParams(location.search);
-         let app= searchParams.get('appStoreName');
-         let deprecate= searchParams.get('deprecated');
-         let qs= `chartRepoId=${chartRepoId}`;
-         if (app) qs= `${qs}&appStoreName=${app}`;
-         if (deprecate) qs= `${qs}&deprecated=${deprecate}`
-         console.log(qs)
-         history.push(`${url}?${qs}`);
-    }
 
-    function handleDeprecate(e){
-        let searchParams = new URLSearchParams(location.search);
-        let app= searchParams.get('appStoreName');
-        let chartRepoId= searchParams.get('chartRepoId');
-        let qs= `deprecated=${deprecate}`;
-        if (app) qs= `${qs}&appStoreName=${app}`;
-        if (chartRepoId) qs= `${qs}&chartRepoId=${chartRepoId}`
-        console.log(qs)
-        history.push(`${url}?${qs}`);
-    }
     return (
         <>
             <div className="chart-group__header">
                 <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
                 <h5 className="form__subtitle">Select chart to deploy. &nbsp;</h5>
-                <div className="display-flex">
-                    <div className="search search--container" >
+                <div className="flexbox flex-justify">
+                    <form onSubmit={handleSearchChange} className="search search--container" >
                         <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                        <input type="text" placeholder="Search charts" className="search__input__chart search__input--app-list" onChange={handleSearchChange}/>
-                    </div>
-                    <div className= "search-with-dropdown__dropdown date-align-left">
-                    
-                    <ReactSelect
-                        placeholder= "All repositories"
-                        name="All repositories"
-                        value={selectedChartRepo}
-                        options={chartRepoList}
-                        isClearable= {false}
-                        onChange={(selected : any) => setChartRepoList(selected)}
-                        className=""
-                        isMulti={true}
-                        hideSelectedOptions={false}
-                        components={{
-                            DropdownIndicator,
-                            ValueContainer,
-                            Option: Option,
-                        }}
-                        styles={{
-                            container: (base, state) => {
-                                return ({
+                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input__chart mr-10 mb-10" onChange={(event) => setAppStoreName(event.target.value)} />
+                    </form>
+                    <div className="flex">
+                        <ReactSelect className="date-align-left"
+                            placeholder="All repositories"
+                            name="All repositories"
+                            value={selectedChartRepo}
+                            options={chartRepoList}
+                            isClearable={false}
+                            onChange={(selected: any) => setSelectedChartRepo(selected)}
+                            isMulti={true}
+                            hideSelectedOptions={false}
+                            components={{
+                                DropdownIndicator,
+                                ValueContainer,
+                                Option: Option,
+                                IndicatorSeparator: null,
+                            }}
+                            styles={{
+                                container: (base, state) => ({
+                                    ...base,
+                                    width: '230px',
+                                }),
+                                control: (base, state) => ({
                                     ...base,
                                     height: '36px',
-                                })
-                            },
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                
-                            }),
-                            ...styles,
-                        }} />
-                    </div>
-                    
-                    <div className="date-align-left--deprecate" onClick={(()=>{setDeprecate(!deprecate)})}>
-                      <div className= "display-flex"> 
-                        <input type= "checkbox" className="mr-7" />
-                        Show deprecated
-                        </div>
+                                    minHeight: 'unset',
+                                    width: '230px',
+                                    border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
+                                    boxShadow: 'none',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    color: 'var(--N900)',
+                                    fontSize: '12px',
+                                    padding: '8px 24px',
+                                }),
+                            }} />
+                        <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pl-12 pr-12 date-align-left--deprecate"
+                            isChecked={deprecate} value={"CHECKED"}
+                            onChange={(event) => setDeprecate(!deprecate)} >
+                            Show deprecated
+                    </Checkbox>
                     </div>
                 </div>
             </div>

@@ -36,11 +36,6 @@
     margin-bottom: 2px;
 }
 
-.search__input--app-list {
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-
 .search__clear-button {
     background-color: transparent;
     position: absolute;
