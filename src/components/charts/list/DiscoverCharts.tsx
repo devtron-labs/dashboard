@@ -321,7 +321,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [chartRepoList, setChartRepoList] = useState([]);
     const [selectedChartRepo, setSelectedChartRepo] = useState();
     const [appStoreName, setAppStoreName] = useState("");
-    const [deprecate, setDeprecate] = useState(false);
+    const [deprecate, setDeprecate] = useState(true);
 
     useEffect(() => {
         function chartRepo(list) {
@@ -370,7 +370,8 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         handleDeprecate(deprecate);
     }, [deprecate])
 
-    function handleSearchChange(): void {
+    function handleSearchChange(e): void {
+        e.preventDefault();
         let searchParams = new URLSearchParams(location.search);
         let deprecate = searchParams.get('deprecated');
         let chartRepoId = searchParams.get('chartRepoId');
