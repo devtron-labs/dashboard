@@ -325,7 +325,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [chartRepoList, setChartRepoList] = useState([]);
     const [selectedChartRepo, setSelectedChartRepo] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
-    const [deprecate, setDeprecate] = useState(false);
+    const [deprecate, setDeprecate] = useState(0);
     const [loading, setloading] = useState(true)
 
     useEffect(() => {
@@ -406,19 +406,21 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         history.push(`${url}?${qs}`);
     }
 
+    function handleViewAllCharts(){
+        history.push(`${url}`)
+    }
+
     function renderEmptyState() {
-        // return <div className="w-100 flex column" style={{ height: '100%' }}>
-        //     <div className="fs-16 fw-6 cn-9">No  matching Charts</div>
-        //     <p className="fs-12 cn-7" style={{ width: '250px', textAlign: 'center' }}>We couldn't find any matching results</p>
-        // </div>
         return <EmptyState >
             <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
             <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
             <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+            <div onClick={handleViewAllCharts} className="empty--viewcharts">View all charts</div>
         </EmptyState>
     }
 
     if (loading) return <Progressing pageLoader />
+    let value = deprecate == 0 ? 1 : 0
    
     return (
         <>
@@ -468,16 +470,14 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 }),
                             }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pl-12 pr-12 date-align-left--deprecate"
-                            isChecked={deprecate} value={"CHECKED"}
-                            onChange={(event) => setDeprecate(!deprecate)} >
+                            isChecked={deprecate == 0} value={"CHECKED"}
+                            onChange={(event) => setDeprecate(value)} >
                             <div className="ml--5"> Show deprecated</div>
                         </Checkbox>
                     </div>
                 </div>
             </div>
-           { !chartList.length ? <div style={{ "height": "calc(100vh - 215px)" }}>
-            {renderEmptyState()}
-        </div> : <div className="chart-grid">
+           { !chartList.length ? <div > {renderEmptyState()} </div> : <div className="chart-grid">
                 {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                     key={chart.id}
                     chart={chart}
