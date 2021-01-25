@@ -469,7 +469,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                     padding: '8px 24px',
                                 }),
                             }} />
-                        <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pl-12 pr-12 date-align-left--deprecate"
+                        <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={deprecate == 0} value={"CHECKED"}
                             onChange={(event) => setDeprecate(value)} >
                             <div className="ml--5"> Show deprecated</div>
