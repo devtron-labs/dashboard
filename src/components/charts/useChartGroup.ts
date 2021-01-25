@@ -101,7 +101,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState(state => ({ ...state, selectedInstances: getSelectedInstances(state.charts) }))
     }, [state.charts])
 
-    async function applyFilterOnCharts(queryString: string): Promise<void> {
+    async function applyFilterOnCharts(queryString: string): Promise<any> {
         try {
             const { result: availableCharts } = await getAvailableCharts(queryString);
             setState(state => ({ ...state, availableCharts: mapByKey(availableCharts, 'id') }));

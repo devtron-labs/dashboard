@@ -323,10 +323,10 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const location = useLocation();
     const { url } = useRouteMatch();
     const [chartRepoList, setChartRepoList] = useState([]);
-    const [selectedChartRepo, setSelectedChartRepo] = useState();
+    const [selectedChartRepo, setSelectedChartRepo] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
     const [deprecate, setDeprecate] = useState(false);
-    const [loading, setloading, result, error] = useAsync(getChartRepoList)
+    const [loading, setloading] = useState(true)
 
     useEffect(() => {
         function chartRepo(list) {
@@ -340,11 +340,31 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
             list = list.map(chartRepo)
             setChartRepoList(list);
         })
+        initialiseSelectChartRepo();
     }, [])
 
+    function initialiseSelectChartRepo() {
+        let searchParams = new URLSearchParams(location.search);
+        let chartRepoId: string = searchParams.get('chartRepoId');
+        let s = [];
+        if (chartRepoId) s = chartRepoId.split("-");
+        let selectedRepos = [];
+        for (let i = 0; i > s.length; i++) {
+            let chartRepo = chartRepoList.find(item => item.value === (s[i] as number));
+            if (chartRepo) selectedRepos.push(chartRepo);
+        }
+        setSelectedChartRepo(selectedRepos);
+    }
     useEffect(() => {
-        applyFilterOnCharts(location.search);
+        
+        callApplyFilterOnCharts()
     }, [location.search])
+
+    async function callApplyFilterOnCharts() {
+        setloading(true);
+        await applyFilterOnCharts(location.search);
+        setloading(false);
+    }
 
     useEffect(() => {
         function handleChartRepoChange(selected): void {
@@ -399,12 +419,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     }
 
     if (loading) return <Progressing pageLoader />
-    else if (!loading && !chartRepoList.length) {
-        return <div style={{ "height": "calc(100vh - 215px)" }}>
-            {renderEmptyState()}
-        </div>
-    }
-
+   
     return (
         <>
             <div className="chart-group__header">
@@ -460,8 +475,9 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     </div>
                 </div>
             </div>
-
-            <div className="chart-grid">
+           { !chartList.length ? <div style={{ "height": "calc(100vh - 215px)" }}>
+            {renderEmptyState()}
+        </div> : <div className="chart-grid">
                 {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                     key={chart.id}
                     chart={chart}
@@ -472,7 +488,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     onClick={(chartId) => charts.length === 0 ? history.push(`${url}/chart/${chart.id}`) : selectChart(chartId)}
                 />
                 )}
-            </div>
+            </div>}
         </>
     )
 }
