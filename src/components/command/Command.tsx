@@ -137,6 +137,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             argumentInput: '',
             suggestedArguments: []
         }, () => {
+            this.setState({ tab: 'this-app' });
             this.callGetArgumentSuggestions(this.state.arguments);
         });
     }
