@@ -326,7 +326,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [selectedChartRepo, setSelectedChartRepo] = useState();
     const [appStoreName, setAppStoreName] = useState("");
     const [deprecate, setDeprecate] = useState(true);
-    const [loading, result, error] = useAsync(getChartRepoList)
+    const [loading, setloading,result, error] = useAsync(getChartRepoList)
 
     useEffect(() => {
         function chartRepo(list) {
@@ -395,8 +395,9 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                     </div>
         }
 
+    //const [loading, result, error] = useAsync(getChartRepoList)
         if (loading ) return <Progressing  pageLoader/>
-        else if(appStoreName && deprecate == !chartRepoList){
+        else if(!loading && !chartRepoList.length){
             return <div style={{ "height": "calc(100vh - 215px)" }}>
             {renderEmptyState()}
         </div>
@@ -415,7 +416,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         <input type="text" placeholder="Search charts" value={appStoreName} className="search__input__chart mr-10 mb-10" onChange={(event) => setAppStoreName(event.target.value)} />
                     </form>
                     <div className="flex">
-                        <ReactSelect className="date-align-left"
+                        <ReactSelect className="date-align-left fs-14"
                             placeholder="All repositories"
                             name="All repositories"
                             value={selectedChartRepo}
@@ -447,14 +448,14 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                     ...base,
                                     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                                     color: 'var(--N900)',
-                                    fontSize: '12px',
+                                    fontSize: '14px',
                                     padding: '8px 24px',
                                 }),
                             }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pl-12 pr-12 date-align-left--deprecate"
                             isChecked={deprecate} value={"CHECKED"}
                             onChange={(event) => setDeprecate(!deprecate)} >
-                            Show deprecated
+                           <div className="ml--5"> Show deprecated</div>
                     </Checkbox>
                     </div>
                 </div>
