@@ -24,6 +24,10 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
 import { getChartRepoList } from '../../../services/service'
 import { DropdownIndicator, styles, ValueContainer, Option } from '../charts.util';
+import EmptyImage from '../../../assets/img/empty-noresult@2x.png';
+import EmptyState from '../../EmptyState/EmptyState';
+import { Link } from 'react-router-dom';
+
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -322,6 +326,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [selectedChartRepo, setSelectedChartRepo] = useState();
     const [appStoreName, setAppStoreName] = useState("");
     const [deprecate, setDeprecate] = useState(true);
+    const [loading, result, error] = useAsync(getChartRepoList)
 
     useEffect(() => {
         function chartRepo(list) {
@@ -370,6 +375,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         handleDeprecate(deprecate);
     }, [deprecate])
 
+
     function handleSearchChange(e): void {
         e.preventDefault();
         let searchParams = new URLSearchParams(location.search);
@@ -380,6 +386,23 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`;
         history.push(`${url}?${qs}`);
     }
+    
+        function renderEmptyState(){
+            return  <div className="w-100 flex column" style={{ height: '100%' }}>
+                        <EmptyImage />
+                        <div className="fs-16 fw-6 cn-9">No  matching Charts</div>
+                        <p className="fs-12 cn-7" style={{width:'250px', textAlign:'center'}}>We couldn't find any matching results</p>
+                    </div>
+        }
+
+        if (loading ) return <Progressing  pageLoader/>
+        else if(appStoreName && deprecate == !chartRepoList){
+            return <div style={{ "height": "calc(100vh - 215px)" }}>
+            {renderEmptyState()}
+        </div>
+        }
+        console.log(selectedChartRepo)
+   
 
     return (
         <>
