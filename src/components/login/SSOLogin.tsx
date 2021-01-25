@@ -57,13 +57,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     componentDidMount() {
         getSSOConfigList().then((res) => {
-            let ssoConfig = res.result.find(sso => sso.active);
-            if (ssoConfig) {
+            let ssoConfig = res.result?.find(sso => sso.active);
+            if (res.result && ssoConfig) {
                 this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig });
             }
             else {
                 ssoConfig = sample['google'];
-                this.setState({ sso: ssoConfig?.name, ssoConfig: this.parseResponse(ssoConfig) });
+                this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) });
             }
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
