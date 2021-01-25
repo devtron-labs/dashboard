@@ -449,6 +449,15 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                     }
                 },
                 {
+                    value: 'chart repository',
+                    ref: null,
+                    data: {
+                        group: undefined,
+                        url: '/global-config/chart-repo',
+                        isEOC: true,
+                    }
+                },
+                {
                     value: 'projects',
                     ref: null,
                     data: {
@@ -474,7 +483,17 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                         url: '/global-config/notifier/channels',
                         isEOC: false,
                     }
-                }],
+                },
+                {
+                    value: 'sso login',
+                    ref: null,
+                    data: {
+                        group: undefined,
+                        url: '/global-config/login-service',
+                        isEOC: false,
+                    }
+                }
+            ],
                 groups: []
             })
         });
