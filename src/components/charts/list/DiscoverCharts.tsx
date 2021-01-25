@@ -23,8 +23,8 @@ import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-tr
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select';
 import { getChartRepoList } from '../../../services/service'
-import { DropdownIndicator, styles, ValueContainer, Option } from '../charts.util';
-import EmptyImage from '../../../assets/img/empty-noresult@2x.png';
+import { DropdownIndicator, ValueContainer, Option } from '../charts.util';
+import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { Link } from 'react-router-dom';
 
@@ -325,8 +325,8 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [chartRepoList, setChartRepoList] = useState([]);
     const [selectedChartRepo, setSelectedChartRepo] = useState();
     const [appStoreName, setAppStoreName] = useState("");
-    const [deprecate, setDeprecate] = useState(true);
-    const [loading, setloading,result, error] = useAsync(getChartRepoList)
+    const [deprecate, setDeprecate] = useState(false);
+    const [loading, setloading, result, error] = useAsync(getChartRepoList)
 
     useEffect(() => {
         function chartRepo(list) {
@@ -371,7 +371,6 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
             if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`
             history.push(`${url}?${qs}`);
         }
-        console.log(deprecate)
         handleDeprecate(deprecate);
     }, [deprecate])
 
@@ -386,24 +385,25 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`;
         history.push(`${url}?${qs}`);
     }
-    
-        function renderEmptyState(){
-            return  <div className="w-100 flex column" style={{ height: '100%' }}>
-                        <EmptyImage />
-                        <div className="fs-16 fw-6 cn-9">No  matching Charts</div>
-                        <p className="fs-12 cn-7" style={{width:'250px', textAlign:'center'}}>We couldn't find any matching results</p>
-                    </div>
-        }
 
-    //const [loading, result, error] = useAsync(getChartRepoList)
-        if (loading ) return <Progressing  pageLoader/>
-        else if(!loading && !chartRepoList.length){
-            return <div style={{ "height": "calc(100vh - 215px)" }}>
+    function renderEmptyState() {
+        // return <div className="w-100 flex column" style={{ height: '100%' }}>
+        //     <div className="fs-16 fw-6 cn-9">No  matching Charts</div>
+        //     <p className="fs-12 cn-7" style={{ width: '250px', textAlign: 'center' }}>We couldn't find any matching results</p>
+        // </div>
+        return <EmptyState >
+            <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+            <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+            <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+        </EmptyState>
+    }
+
+    if (loading) return <Progressing pageLoader />
+    else if (!loading && !chartRepoList.length) {
+        return <div style={{ "height": "calc(100vh - 215px)" }}>
             {renderEmptyState()}
         </div>
-        }
-        console.log(selectedChartRepo)
-   
+    }
 
     return (
         <>
@@ -455,8 +455,8 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pl-12 pr-12 date-align-left--deprecate"
                             isChecked={deprecate} value={"CHECKED"}
                             onChange={(event) => setDeprecate(!deprecate)} >
-                           <div className="ml--5"> Show deprecated</div>
-                    </Checkbox>
+                            <div className="ml--5"> Show deprecated</div>
+                        </Checkbox>
                     </div>
                 </div>
             </div>
