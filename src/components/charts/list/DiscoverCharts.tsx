@@ -411,11 +411,11 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     }
 
     function renderEmptyState() {
-        return <EmptyState >
+        return <EmptyState>
             <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
             <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
             <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-            <div onClick={handleViewAllCharts} className="empty--viewcharts">View all charts</div>
+            <div onClick={handleViewAllCharts} className="empty--viewcharts mb-24">View all charts</div>
         </EmptyState>
     }
 
