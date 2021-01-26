@@ -18,6 +18,9 @@ export interface DeployChartProps
     name?: string;
     readme?: string;
     appName?: string;
+    deprecated?: boolean;
+    appStoreId?: number;
+    installedAppVersionId?: number;
 }
 
 export interface TextAreaProps {

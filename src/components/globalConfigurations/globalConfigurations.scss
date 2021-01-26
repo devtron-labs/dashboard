@@ -7,7 +7,7 @@
         grid-column: 1 / -1;
     }
     .global-configuration__navigation {
-        padding: 16px 24px 0 24px;
+        padding: 16px ;
         border-right: solid 1px #d6dbdf;
         background: white;
         a {
@@ -232,6 +232,15 @@
     border-style: dashed;
 }
 
+.collapsed-list{
+    &.collapsed-list--chart{
+        border: 1px solid #d6dbdf;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+    }
+}
 .collapsed-list {
     &.collapsed-list--git,
     &.collapsed-list--docker {

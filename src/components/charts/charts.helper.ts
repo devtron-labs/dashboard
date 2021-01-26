@@ -32,17 +32,19 @@ export function getChartGroupEditURL(chartGroupId: number | string) {
 }
 
 export function getChartValuesFiltered(chartValuesList: ChartValuesType[]): {
-    savedChartValues: ChartValuesType[], deployedChartValues: ChartValuesType[], defaultChartValues: ChartValuesType[],
+    savedChartValues: ChartValuesType[], deployedChartValues: ChartValuesType[], defaultChartValues: ChartValuesType[], existingChartValues: ChartValuesType[],
 } {
     let chartValues = {
         savedChartValues: [],
         deployedChartValues: [],
         defaultChartValues: [],
+        existingChartValues: [],
     }
     for (let i = 0; i < chartValuesList.length; i++) {
         if (chartValuesList[i].kind === "TEMPLATE") chartValues.savedChartValues.push(chartValuesList[i]);
         else if (chartValuesList[i].kind === "DEPLOYED") chartValues.deployedChartValues.push(chartValuesList[i]);
         else if (chartValuesList[i].kind === "DEFAULT") chartValues.defaultChartValues.push(chartValuesList[i]);
+        else if (chartValuesList[i].kind === "EXISTING") chartValues.existingChartValues.push(chartValuesList[i]);
     }
     return chartValues;
 }

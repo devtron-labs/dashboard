@@ -8,8 +8,8 @@ import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.s
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-dropdown.svg';
-
 import {GitTriggers, CiMaterial} from '../app/details/cIDetails/types'
+import { Moment12HourFormat } from '../../config';
 
 function getGitIcon(repoUrl){
     for(let gitProvider of ['github', 'gitlab', 'bitbucket']){
@@ -51,7 +51,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                 <a
                     href={createGitCommitUrl(ciMaterial?.url, gitTrigger?.Commit)}
                     target="_blank"
-                    rel="noopener noreferer"
+                    rel="noopener noreferrer"
                     className="commit-hash mono fs-14"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -63,7 +63,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                 <PersonIcon className="mr-8" /> Author: {gitTrigger?.Author}
             </div>
             <div className="fs-12 cn-7 flex mb-12 ml-16">
-                <CalendarIcon className="mr-8" /> Date: {moment(gitTrigger?.Date).format('ddd, DD MMM YYYY, HH:mm A')}
+                <CalendarIcon className="mr-8" /> Date: {moment(gitTrigger?.Date).format(Moment12HourFormat)}
             </div>
             <div className="flex left top mb-12 ml-16">
                 <div className="icon-dim-16 mt-4">

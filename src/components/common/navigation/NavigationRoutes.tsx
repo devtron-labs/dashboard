@@ -1,34 +1,33 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { URLS } from '../../config';
-import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../common';
-import VerticalNav from './navigation/verticalNav'
+import { URLS } from '../../../config';
+import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
+import Navigation from './Navigation';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import * as Sentry from '@sentry/browser';
 import ReactGA from 'react-ga';
-import { Security } from '../security/Security';
+import { Security } from '../../security/Security';
 
-const Charts = lazy(() => import('../charts/Charts'));
-const AppCompose = lazy(() => import('../appCompose/AppCompose'));
-const AppDetailsPage = lazy(() => import('../app/details/main'));
-const AppListContainer = lazy(() => import('../app/list/AppListContainer'));
-const GlobalConfig = lazy(() => import('../globalConfigurations/GlobalConfiguration'));
-const BulkActions = lazy(() => import('../deploymentGroups/BulkActions'));
+const Charts = lazy(() => import('../../charts/Charts'));
+const AppCompose = lazy(() => import('../../appCompose/AppCompose'));
+const AppDetailsPage = lazy(() => import('../../app/details/main'));
+const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
+const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
-export default function NavigationWrapper() {
+export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
-    const loginInfo = getLoginInfo()
     const match = useRouteMatch()
+    
     useEffect(() => {
+        const loginInfo = getLoginInfo()
         if (!loginInfo) return
         if (process.env.NODE_ENV !== 'production' || !window._env_ || (window._env_ && !window._env_.SENTRY_ENABLED)) return
         Sentry.configureScope(function (scope) {
             scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] });
         });
-    }, [])
 
-    useEffect(() => {
         if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.GA_ENABLED) {
             let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
             let path = location.pathname;
@@ -59,7 +58,7 @@ export default function NavigationWrapper() {
 
     return (
         <main>
-            <VerticalNav history={history} match={match} location={location} />
+            <Navigation history={history} match={match} location={location} />
             <div className="main">
                 <Suspense fallback={<Progressing pageLoader />}>
                     <ErrorBoundary>

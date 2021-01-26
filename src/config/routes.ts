@@ -27,17 +27,19 @@ export const URLS = {
     APP_CD_CONFIG: 'cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
-    // APP_COMPOSE: '/app/edit', //
-    LOGIN: '/login', //
-    DEVTRON_LOGIN: '/login-dt',
+    AUTHENTICATE: '/auth/login',
+    LOGIN_ADMIN: '/login/admin', //
+    LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_GIT: '/global-config/git',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
+    GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
+    GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     DEPLOYMENT_GROUPS: '/deployment-groups',
     SECURITY: '/security'
 };

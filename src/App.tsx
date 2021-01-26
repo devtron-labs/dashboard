@@ -19,9 +19,8 @@ import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload'
 
-const NavigationWrapper = lazy(() => import('./components/common/navigationWrapper'));
+const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
-const DevtronLogin = lazy(() => import('./components/devtron/DevtronLogin'));
 
 toast.configure({
 	autoClose: 3000,
@@ -42,8 +41,8 @@ export default function App() {
 	const refreshing = useRef(false)
 	const [bgUpdated, setBGUpdated] = useState(false)
 	const [validating, setValidating] = useState(true)
-	const {pathname, search} = useLocation()
-	const {push} = useHistory()
+	const location = useLocation()
+	const { push } = useHistory()
 	const didMountRef = useRef(false);
 
 	function onlineToast(toastBody: JSX.Element, options) {
@@ -59,34 +58,34 @@ export default function App() {
 		if (didMountRef.current) {
 			if (!isOnline) {
 				const toastBody = <ToastBody title="You are offline!" subtitle="You are not seeing real-time data and any changes you make will not be saved." />
-				onlineToast(toastBody, {type: toast.TYPE.ERROR, autoClose: false, closeButton: false});
+				onlineToast(toastBody, { type: toast.TYPE.ERROR, autoClose: false, closeButton: false });
 			}
 			else {
 				const toastBody = <ToastBody title="Connected!" subtitle="You're back online." />;
-				onlineToast(toastBody, {type: toast.TYPE.SUCCESS, autoClose: 3000, closeButton: true})
+				onlineToast(toastBody, { type: toast.TYPE.SUCCESS, autoClose: 3000, closeButton: true })
 			}
 		}
 		else {
 			didMountRef.current = true;
 		}
-		
+
 	}, [isOnline])
 
 	useEffect(() => {
 		async function validation() {
 			try {
 				await validateToken();
-				// check if continue then direct to continue otherwise router will redirect to app list
-				if (search && search.includes("?continue=")) {
-					const newLocation = search.replace("?continue=", "")
-					push(newLocation)
+				// check if admin then direct to admin otherwise router will redirect to app list
+				if (location.search && location.search.includes("?continue=")) {
+					const newLocation = location.search.replace("?continue=", "");
+					push(newLocation);
 				}
 			}
 			catch (err) {
 				// push to login without breaking search
 				if (err?.code === 401) {
-					const loginPath = pathname.includes(URLS.DEVTRON_LOGIN) ? URLS.DEVTRON_LOGIN : URLS.LOGIN
-					const newSearch = pathname.includes(URLS.DEVTRON_LOGIN) || pathname.includes(URLS.LOGIN) ? search : `?continue=${pathname}`
+					const loginPath = URLS.LOGIN_SSO;
+					const newSearch = location.pathname.includes(URLS.LOGIN_SSO) ? location.search : `?continue=${location.pathname}`
 					push(`${loginPath}${newSearch}`)
 				} else {
 					setErrorPage(true)
@@ -199,10 +198,9 @@ export default function App() {
 						) : (
 								<BreadcrumbStore>
 									<Switch>
-										<Route path={`${URLS.LOGIN}`} component={Login} />
-										<Route path={`${URLS.DEVTRON_LOGIN}`} component={DevtronLogin} />
-										<Route path="/" render={() => <NavigationWrapper />} />
-										<Redirect to={`${URLS.LOGIN}${search}`} />
+										<Route path={`/login`} component={Login} />
+										<Route path="/" render={() => <NavigationRoutes />} />
+										<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
 									</Switch>
 									<div id="full-screen-modal"></div>
 									<div id="visible-modal"></div>

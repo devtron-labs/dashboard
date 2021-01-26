@@ -5,21 +5,26 @@ import { URLS } from '../../config';
 import './globalConfigurations.scss';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
-
 import { AddNotification } from '../notifications/AddNotification';
+
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
+const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'));
 const Project = lazy(() => import('../project/ProjectList'));
-const UserGroup = lazy(() => import('../userGroups/UserGroup'))
+const UserGroup = lazy(() => import('../userGroups/UserGroup'));
+const SSOLogin = lazy(()=> import('../login/SSOLogin'));
+
 const routes = [
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
+    { name: 'Chart Repository', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notification', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
+    { name: 'SSO Login Services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
 ]
 
 export default function GlobalConfiguration({ ...props }) {
@@ -65,7 +70,7 @@ function Body({ ...props }) {
 
 function Logo({ src = "", style = {}, className = "", children = null }) {
     return <>
-        {src && <img src={src} className={`list__logo ${className}`} style={style} />}
+        {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
         {children}
     </>
 }
@@ -83,7 +88,7 @@ function ListToggle({ onSelect, enabled = false, ...props }) {
 
 function DropDown({ className = "", style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} className={`list__arrow ${className}`} style={style} />
+    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
 List.Logo = Logo

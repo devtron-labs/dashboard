@@ -1,39 +1,53 @@
 //@ts-nocheck
 
-import React,{useEffect, useState, useRef} from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString} from '../common';
+import React, { useEffect, useState, useRef } from 'react'
+import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
-import {NoPod} from './ResourceTreeNodes'
-import {get} from '../../services/api'
-import {getNodeStatus} from './service'
+import { NoPod } from './ResourceTreeNodes'
+import { get } from '../../services/api'
+import { getNodeStatus } from './service'
 import { Routes, Host } from "../../config";
-import {toast} from 'react-toastify';
-import YamljsParser from 'yamljs'
+import { toast } from 'react-toastify';
+import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
 import WebWorker from './WebWorker';
-import {useParams} from 'react-router'
+import { useParams } from 'react-router'
 import moment from 'moment'
 import { Subject } from '../../util/Subject';
 import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from './types';
-import {AppDetails} from '../app/types'
+import { AppDetails } from '../app/types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg';
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
+import { TerminalView } from '../terminal';
+import { SocketConnectionType } from './details/appDetails/AppDetails';
+import MonacoEditor from 'react-monaco-editor';
+import { editor } from 'monaco-editor';
+import { AutoSizer } from 'react-virtualized'
+
 const commandLineParser = require('command-line-parser')
 
 
 const subject: Subject<string> = new Subject()
 
-interface EventsLogsInterface{
+interface EventsLogsProps {
     nodeName: string;
     containerName: any;
     nodes: AggregatedNodes;
-    logsPaused?:boolean;
-    handleLogPause:(paused: boolean)=>void;
+    logsPaused?: boolean;
     appDetails: AppDetails;
-    subject?: Subject<string>
+    subject?: Subject<string>;
+    socketConnection: SocketConnectionType;
+    terminalCleared: boolean;
+    shell: { label; value; }
+    isReconnection: boolean;
+    setIsReconnection: (flag) => void;
+    selectShell: (shell: { label; value; }) => void;
+    setTerminalCleared: (flag: boolean) => void;
+    setSocketConnection: (value: SocketConnectionType) => void;
+    handleLogPause: (paused: boolean) => void;
 }
 
 export function parsePipes(expression) {
@@ -46,7 +60,7 @@ export function getGrepTokens(expression) {
         booleanKeys: ['v'],
         allowEmbeddedValues: true
     })
-    let { _args, A = 0, B = 0, C = 0,a = 0, b=0, c=0,  v = false } = options
+    let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options
     if (C || c) {
         A = C || c;
         B = C || c;
@@ -57,7 +71,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsInterface> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -88,61 +102,115 @@ const EventsLogs: React.FC<EventsLogsInterface> = React.memo(function EventsLogs
                     />
                 </>
             )}
+            {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
+                <>
+                    <span style={{ background: '#2c3354' }} />
+                    <TerminalView appDetails={appDetails}
+                        nodeName={nodeName}
+                        containerName={containerName}
+                        socketConnection={socketConnection}
+                        terminalCleared={terminalCleared}
+                        shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
+                        selectShell={selectShell}
+                        setTerminalCleared={setTerminalCleared}
+                        setSocketConnection={setSocketConnection}
+                    />
+                </>
+            )}
         </>
     );
 })
 
-export const NodeManifestView:React.FC<{nodeName: string; nodes: AggregatedNodes, appName: string, environmentName: string}>= ({nodeName, nodes, appName, environmentName})=>{
-    const {queryParams, searchParams} = useSearchString()
+export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNodes, appName: string, environmentName: string }> = ({ nodeName, nodes, appName, environmentName }) => {
+    const { queryParams, searchParams } = useSearchString()
     const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
-    const [loadingManifest, manifestResult, error, reload] = useAsync(()=>getNodeStatus({...node, appName: `${appName}-${environmentName}`}), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
-    const [ manifest, setManifest ] = useState(null)
-    
-    useEffect(()=>{
-        if(loadingManifest ) return
-        if(error) showError(error)
-        if(manifestResult?.result?.manifest) {
-            try{
+    const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
+    const [manifest, setManifest] = useState(null)
+
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+
+    useEffect(() => {
+        if (loadingManifest) return
+        if (error) showError(error)
+        if (manifestResult?.result?.manifest) {
+            try {
                 const manifest = JSON.parse(manifestResult?.result?.manifest);
-                setManifest(manifest)
+                setManifest(manifest);
             }
-            catch(err){
+            catch (err) {
 
             }
-        } 
-    },[loadingManifest, manifestResult, error])
+        }
+    }, [loadingManifest, manifestResult, error])
 
-    useEffect(()=>{
-        return()=>{
+    useEffect(() => {
+        return () => {
             setManifest(null)
         }
-    },[nodeName])
+    }, [nodeName])
 
-    if(!node){
+    if (!node) {
         return null
     }
-    return(
-        <div className="flex w-100" style={{gridColumn:'1 / span 2'}} data-testid="manifest-container">
-            {loadingManifest && !manifest ? <Progressing data-testid="manifest-loader" pageLoader/>
-            : <>
-            { manifest 
-            ? <textarea data-testid="manifest-textarea" className="pod-manifest-status" value={YamljsParser.stringify(manifest, 50, 4)} disabled></textarea>
-            : <NoEvents title="Manifest not available"/>
-            }
-            </>}
-        </div>
-    )
+
+    else if (loadingManifest && !manifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
+        <Progressing data-testid="manifest-loader" pageLoader />;
+    </div>
+
+    else if (!manifest) return <div style={{ gridColumn: '1 / span 2' }} className="flex">
+        <NoEvents title="Manifest not available" />
+    </div>
+
+    return <AutoSizer>
+        {({ height, width }) => <div style={{
+            gridColumn: '1 / span 2',
+        }}>
+            <MonacoEditor language={'yaml'}
+                value={YamljsParser.stringify(manifest, { indent: 2 })}
+                theme={'vs-dark--dt'}
+                options={{
+                    selectOnLineNumbers: true,
+                    roundedSelection: false,
+                    readOnly: true,
+                    automaticLayout: false,
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                        vertical: 'auto'
+                    }
+                }}
+                onChange={() => { }}
+                editorDidMount={() => { }}
+                height={height - 75}
+                width={width}
+            />
+        </div>}
+    </AutoSizer>
 }
 
-export const EventsView:React.FC<{nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes}>=({ nodeName, appDetails, nodes }) =>{
-    const {searchParams} = useSearchString()
+export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
+    const { searchParams } = useSearchString()
     const podsMap = nodes.nodes[searchParams.kind]
-    const pod = podsMap && podsMap.has(nodeName) ?  podsMap.get(nodeName) : null;
+    const pod = podsMap && podsMap.has(nodeName) ? podsMap.get(nodeName) : null;
     const eventsUrl = `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.environmentName}/events?resourceNamespace=${appDetails.namespace}&resourceUID=${pod?.uid}&resourceName=${nodeName}`;
-    const [loading, eventsResult, error, reload] = useAsync(()=>get(eventsUrl), [eventsUrl, pod?.name], !!pod)
+    const [loading, eventsResult, error, reload] = useAsync(() => get(eventsUrl), [eventsUrl, pod?.name], !!pod)
     const events: { reason: string; message: string; count: number; lastTimestamp: string }[] = eventsResult?.result?.items || []
-    if(!pod) return null
-    return <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY:'auto', gridColumn:'1 / span 2' }}>
+    if (!pod) return null
+    return <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
         {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
             <div className="events-logs__events-table-row header">
                 {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
@@ -161,23 +229,23 @@ export const EventsView:React.FC<{nodeName: string; appDetails: AppDetails, node
                 <Spinner loading></Spinner>
                 <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
             </div>}
-            {!loading && events.filter(event => event).length === 0 && <NoEvents/>}
+            {!loading && events.filter(event => event).length === 0 && <NoEvents />}
         </div>}
         {!nodeName && <NoPod />}
     </div>
 }
 
-function NoEvents({title="Events not available"}){
-    return(
-    <div style={{ width: '100%', textAlign: 'center' }}>
-        <img src={InfoIcon} />
-        <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
-    </div>
+function NoEvents({ title = "Events not available" }) {
+    return (
+        <div style={{ width: '100%', textAlign: 'center' }}>
+            <img src={InfoIcon} />
+            <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+        </div>
     )
 }
 
-interface LogsView{
-    subject:Subject<string>;
+interface LogsView {
+    subject: Subject<string>;
     nodeName?: string;
     containerName: string;
     handleLogPause: (paused: boolean) => void;
@@ -185,7 +253,7 @@ interface LogsView{
     appDetails: AppDetails;
 }
 
-export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, handleLogPause, logsPaused, appDetails })=> {
+export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName, handleLogPause, logsPaused, appDetails }) => {
     const key = useKeyDown()
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [readyState, setReadyState] = React.useState(null);
@@ -198,7 +266,7 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
         logsPausedRef.current = logsPaused;
     }, [logsPaused]);
 
-    useEffect(()=>{
+    useEffect(() => {
         return () => {
             try {
                 workerRef.current.postMessage({ type: 'stop' });
@@ -207,16 +275,16 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
             }
             handleLogPause(false);
         };
-    },[])
+    }, [])
 
     useEffect(() => {
-        if(!nodeName || !containerName) return
+        if (!nodeName || !containerName) return
         fetchLogs()
         return () => {
             try {
                 workerRef.current.postMessage({ type: 'stop' });
                 workerRef.current.terminate();
-            } catch (err) {}
+            } catch (err) { }
             handleLogPause(false);
         };
     }, [nodeName, containerName, grepTokens]);
@@ -256,7 +324,7 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
 
     function fetchLogs() {
         const url = getLogsURL();
-        if(!url){
+        if (!url) {
             return
         }
         workerRef.current = new WebWorker(sseWorker);
@@ -267,21 +335,22 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
         });
     }
 
-    function handleLogSearchSubmit(e){
+    function handleLogSearchSubmit(e) {
         e.preventDefault();
         setLogSearchString(tempSearch)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         const combo = key.join()
 
-        if(combo === "Control,c"){
+        if (combo === "Control,c") {
             handleLogPause(!logsPaused)
         }
-    },[key.join()])
+    }, [key.join()])
 
-    const uniqueKey = nodeName+containerName+logSearchString
+    const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
+
     return (
         <>
             {!nodeName && (
@@ -313,7 +382,7 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
                                 style={{ height: '32px', background: 'transparent', color: 'white' }}
                             />
                             {tempSearch && (
-                                <CloseImage 
+                                <CloseImage
                                     className="icon-dim-20 pointer"
                                     onClick={(e) => {
                                         setLogSearchString('');
@@ -342,9 +411,8 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
                     </div>
                     <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
                         <div
-                            className={`pod-readyState pod-readyState--top ${
-                                logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
-                            }`}
+                            className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
+                                }`}
                         >
                             {logsPaused && (
                                 <div className="w-100 cn-0">
@@ -381,9 +449,8 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
                             />
                         </div>
                         <div
-                            className={`pod-readyState pod-readyState--bottom ${
-                                !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            }`}
+                            className={`pod-readyState pod-readyState--bottom ${!logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
+                                }`}
                         >
                             {readyState === 0 && (
                                 <div className="readyState loading-dots" style={{ color: 'orange' }}>
@@ -399,8 +466,8 @@ export const LogsView:React.FC<LogsView> = ({ subject, nodeName, containerName, 
     );
 }
 
-function NoContainer({ selectMessage = "Select a container to view events", style={} }) {
-    return <div className="no-pod no-pod--container" style={{...style}}>
+function NoContainer({ selectMessage = "Select a container to view events", style = {} }) {
+    return <div className="no-pod no-pod--container" style={{ ...style }}>
         <div className="no-pod__container-icon">
             {Array(6).fill(0).map((z, idx) => <span key={idx} className="no-pod__container-sub-icon"></span>)}
         </div>

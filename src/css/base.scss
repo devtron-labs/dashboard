@@ -5,24 +5,18 @@
 @import url('./icons.css');
 @import url('./colorPalette.css');
 @import url('./triggerView.css');
- :root {
+
+:root {
     --modal-index: 20;
     --full-screen-modal-index: 10;
     --page-header-index: 4;
     --filter-menu-index: 7;
     --transparent-div-index: 6;
     --app-list-header-index: 3;
-    --navigation-index: 6;
+    --navigation-index: 5;
     --tooltip-index: 7;
-    --events-logs: 5;
+    --events-logs: 4;
     --index-next-section: 3;
-    --yellow: #FF8300;
-    --red: rgba(240, 96, 96, 1);
-    --green: rgba(23, 170, 86, 1);
-    --orange: rgba(252, 173, 38, 1);
-    --gray: rgba(128, 128, 128, 1);
-    --window-bg: #f2f4f7;
-    --white: #fff;
 }
 
 body {
@@ -34,121 +28,6 @@ html {
     width: 100vw;
     overflow-x: hidden;
     max-width: 100%;
-}
-
-#root>main {
-    width: 100%;
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 72px 1fr;
-    overflow-y: hidden;
-    &>nav {
-        background: var(--B500);
-        position: sticky;
-        top: 0;
-        display: flex;
-        overflow: visible;
-        z-index: var(--navigation-index);
-        aside.main-nav {
-            display: grid;
-            grid-template-rows: 84px repeat( auto-fit, 64px);
-            align-items: center;
-            .bottom-nav {
-                grid-row: -1 / auto;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                .hubspot-placeholder {
-                    height: 80px;
-                    width: 100%;
-                }
-                a,
-                button {
-                    &:hover {
-                        text-decoration: none;
-                    }
-                    &:focus {
-                        outline: none;
-                        border: solid 1px var(--N000)
-                    }
-                }
-            }
-        }
-        aside.short-nav {
-            flex-basis: 72px;
-            padding: 0 16px;
-            .svg-container {
-                height: 40px;
-                width: 40px;
-                border-radius: 8px;
-            }
-            a {
-                svg.short-nav-icon {
-                    width: 24px;
-                    height: 24px;
-                    fill: white;
-                    opacity: 0.5;
-                    &.logo {
-                        width: 40px;
-                        height: 40px;
-                        opacity: 1;
-                    }
-                }
-                &.active-nav,
-                &:hover {
-                    svg.short-nav-icon {
-                        opacity: 1;
-                    }
-                }
-                &:not(.active-nav):focus {
-                    border: 1px solid white;
-                    border-radius: 8px;
-                }
-                &.active-nav {
-                    .svg-container {
-                        background: #0000007d;
-                    }
-                }
-            }
-        }
-        .expanded-nav {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 72px;
-            width: 0px;
-            transition: width 300ms ease-out 0s;
-            background: var(--B500);
-            align-items: left;
-            overflow: hidden;
-            .title-container {
-                color: white;
-                font-size: 14px;
-                font-weight: 600;
-                width: 172px;
-                height: 40px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                text-align-last: left;
-            }
-            .text-logo {
-                width: 76px;
-                height: 16px;
-            }
-        }
-        &:hover {
-            aside.expanded-nav {
-                transition: width 300ms ease-out 700ms;
-                width: 188px;
-                height: 100vh;
-            }
-        }
-    }
-    &>div.main {
-        height: 100vh;
-        width: 100%;
-        overflow-y: auto;
-    }
 }
 
 .info__container {
@@ -269,11 +148,13 @@ a:focus {
     white-space: nowrap;
     text-overflow: ellipsis;
     border-bottom: solid 2px transparent;
+
     &.active {
         color: var(--B500);
         font-weight: 600;
         border-bottom: solid 2px var(--B500);
     }
+
     &:hover,
     &.focus {
         color: var(--B500);
@@ -289,8 +170,19 @@ a:focus {
     text-transform: lowercase;
 }
 
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.ff-monospace {
+    font-family: monospace;
+}
+.react-select__bottom{
+    border-top: solid 1px var(--N100);
+}
 @mixin tab-container($bgColor,
-$color) {
+    $color) {
     .tab {
         border-radius: 4px;
         background-color: transparent;
@@ -299,11 +191,13 @@ $color) {
         padding: 0 6px;
         cursor: pointer;
         box-shadow: 0px 0px 0px 1px rgba($color, 0.5);
+
         &.active {
             background-color: $color;
             color: $bgColor;
             box-shadow: 0px 0px 0px 1px rgba($color, 1);
         }
+
         &:hover {
             box-shadow: 0px 0px 0px 1px rgba($color, 1);
         }
@@ -312,11 +206,13 @@ $color) {
 
 .tab-container {
     display: flex;
+
     &.column {
         flex-direction: column;
     }
+
     @include tab-container(#2c3354,
-    white);
+        white);
 }
 
 .w-25 {
@@ -339,10 +235,6 @@ $color) {
     margin: auto;
 }
 
-.m-5 {
-    margin: 5px;
-}
-
 .m-tb-20 {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -351,10 +243,6 @@ $color) {
 .m-lr-0 {
     margin-left: 0px !important;
     margin-right: 0px !important;
-}
-
-.pt-10 {
-    padding-top: 5px;
 }
 
 .p-lr-20 {
@@ -377,6 +265,14 @@ $color) {
 
 .flex-justify {
     justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-nowrap {
+    flex-wrap: nowrap;
 }
 
 .loading-wrapper {
@@ -433,6 +329,10 @@ $color) {
     vertical-align: middle;
 }
 
+.vertical-align-bottom {
+    vertical-align: bottom;
+}
+
 //duplicate style use .cursor class
 .pointer {
     cursor: pointer;
@@ -486,6 +386,7 @@ $color) {
     background: white;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
+
     .no-option-found {
         height: 36px;
         opacity: 0.5;
@@ -541,21 +442,25 @@ $color) {
         display: grid;
         width: 100%;
         height: 100%;
+
         &.active {
             color: var(--B500);
             font-weight: 600;
             border-bottom: solid 2px var(--B500);
         }
     }
+
     .tab-list__tab.active {
         color: var(--B500);
         font-weight: 600;
         border-bottom: solid 2px var(--B500);
     }
+
     .tab-list__tab-link:hover,
     .tab-list__tab-link:focus {
         text-decoration: none;
     }
+
     .white-card {
         border-radius: 8px;
         border: solid 1px var(--N100);
@@ -579,10 +484,13 @@ $color) {
 .anchor {
     color: var(--B500);
     text-decoration: none;
+
     &:hover {
         text-decoration: none;
+        color: var(--B500);
     }
 }
+
 
 button.anchor {
     outline: none;
@@ -627,9 +535,11 @@ button.anchor {
     25% {
         text-shadow: 6px 0;
     }
+
     50% {
         text-shadow: 6px 0, 12px 0;
     }
+
     75% {
         text-shadow: 6px 0, 12px 0, 18px 0;
     }
@@ -641,9 +551,11 @@ button.anchor {
         width: 100%;
         grid-template-columns: minmax(min-content, max-content) auto;
         grid-column-gap: 4px;
+
         .index {
             padding: 0px 5px;
         }
+
         .content {
             overflow-wrap: break-word;
             white-space: pre-wrap;
@@ -658,6 +570,7 @@ button.anchor {
 .app-summary__app-status {
     display: flex;
     align-items: center;
+
     .app-summary__icon {
         position: unset;
         margin: 0 4px 0 10px;
@@ -669,6 +582,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -676,10 +590,12 @@ button.anchor {
     &.f-scalingreplicasetdown {
         color: var(--green);
     }
+
     &.f-suspended,
     &.f-switchedtoactiveservice {
         color: var(--orange);
     }
+
     &.f-degraded,
     &.f-sync.failed,
     &.f-failed,
@@ -688,6 +604,7 @@ button.anchor {
     &.f-outofsync {
         color: var(--R500);
     }
+
     &.f-progressing,
     &.f-inprogress,
     &.f-unknown,
@@ -713,16 +630,19 @@ button.anchor {
     font-family: inherit;
     border-radius: 8px;
     box-shadow: 0 4px 12px 0 rgba(0, 51, 102, 0.2);
+
     &.devtron-toast {
         background: #2c3354;
         position: relative;
         padding: 12px 16px;
+
         &:before {
             background-repeat: no-repeat;
             background-position: top center;
             content: '';
             flex: 0 0 32px;
         }
+
         .devtron-toast__body {
             color: white;
             font-size: 13px;
@@ -731,10 +651,12 @@ button.anchor {
             word-wrap: anywhere;
             white-space: pre-line;
         }
+
         .Toastify__close-button {
             color: white;
             opacity: 0.5;
             padding: 0 4px;
+
             &:hover {
                 opacity: 1;
             }
@@ -919,6 +841,7 @@ button.anchor {
     color: var(--R400);
     display: flex;
     justify-content: space-between;
+
     svg {
         path {
             stroke: var(--R400);
@@ -961,6 +884,7 @@ button.anchor {
         font-size: 14px;
         font-weight: 600;
     }
+
     .toast__subtitle {
         font-size: 13px;
     }
@@ -970,13 +894,16 @@ button.anchor {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
 }
+
 
 .element-scroller {
     width: 40px;
@@ -986,32 +913,40 @@ button.anchor {
     box-shadow: 0 0 4px 0 rgba(0, 10, 20, 0.5), 0 0 4px 0 rgba(0, 10, 20, 0.5);
     border: unset;
     overflow: hidden;
+
     button {
         background: #2c3354;
         height: 50%;
         outline: unset;
         border: unset;
         padding: unset;
+
         &:first-child {
             border-bottom: 1px solid var(--N900);
         }
+
         &:last-child {
             border-top: 1px solid var(--N700);
         }
+
         svg path {
             stroke: white;
         }
+
         &:disabled {
             cursor: not-allowed;
+
             svg path {
                 stroke: var(--N400);
             }
         }
+
         svg {
             height: 32px;
             width: 32px;
         }
     }
+
     &:hover {
         opacity: 1;
     }
@@ -1025,20 +960,24 @@ button.anchor {
     height: 24px;
     width: 24px;
     z-index: 2;
+
     &.pending {
         background-size: contain, contain;
         background: url('../assets/icons/ic-clock.svg'), $background;
     }
+
     &.failed,
     &.error {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
     }
+
     &.cancelled,
     &.aborted {
         background-size: contain, contain;
         background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
     }
+
     &.healthy,
     &.synced,
     &.sync.ok,
@@ -1046,31 +985,38 @@ button.anchor {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
     }
+
     &.missing {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/missing.svg'), $background;
     }
+
     &.unknown {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/unknown.svg'), $background;
     }
+
     &.not-deployed,
     &.not-triggered {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
     }
+
     &.suspended {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/suspended.svg'), $background;
     }
+
     &.degraded {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
+
         &.degraded--node {
             background: url('../assets/icons/misc/errorInfo.svg');
             transform: rotate(180deg);
         }
     }
+
     &.progressing,
     &.running,
     &.request_accepted,
@@ -1079,6 +1025,7 @@ button.anchor {
         background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
         animation: unset;
     }
+
     &.hibernating {
         background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
@@ -1092,18 +1039,23 @@ button.anchor {
 .striped-row {
     &:nth-child(odd) {
         @include striped-row(var(--window-bg));
+
         .app-status__icon {
             @include app-status-icon(var(--window-bg))
         }
     }
+
     &:nth-child(even) {
         @include striped-row(white);
+
         .app-status__icon {
             @include app-status-icon(white)
         }
     }
+
     &:hover {
         @include striped-row(var(--B100));
+
         .app-status__icon {
             @include app-status-icon(var(--B100))
         }
@@ -1112,10 +1064,12 @@ button.anchor {
 
 .app-summary__icon {
     @include app-status-icon(transparent);
+
     &.icon-dim-20 {
         width: 20px;
         height: 20px;
     }
+
     &.icon-dim-16 {
         width: 16px;
         height: 16px;
@@ -1130,11 +1084,13 @@ button.anchor {
 
 .app-update-toast {
     font-size: 14px;
+
     .info {
         line-height: 1.43;
-        color: var(--N0);
+        color: var(--N000);
         font-size: 13px;
     }
+
     button {
         outline: unset;
         border: unset;
@@ -1151,19 +1107,23 @@ button.anchor {
     height: 25px;
     overflow: hidden;
     border-radius: 4px;
+
     input+.radio__item-label {
         border-radius: 0;
         border: 1px solid var(--N200);
     }
+
     input[type=checkbox]:checked+.radio__item-label {
         border-radius: 0;
         border: 1px solid #2c3354;
     }
+
     .radio:first-child input+.radio__item-label {
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
         border-right: unset;
     }
+
     .radio:last-child input+.radio__item-label {
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
@@ -1198,6 +1158,7 @@ button.anchor {
     text-decoration: none;
     cursor: unset;
     font-weight: 600;
+
     &:hover {
         color: inherit;
     }
@@ -1239,6 +1200,7 @@ button.anchor {
     0% {
         background-position: -468px 0;
     }
+
     100% {
         background-position: 468px 0;
     }
@@ -1250,6 +1212,7 @@ button.anchor {
     outline: none;
     border: solid 1px #d6dbdf;
     padding: 12px 10px;
+
     &:disabled {
         background: var(--N100);
     }
@@ -1274,6 +1237,7 @@ button.anchor {
     align-items: center;
     font-family: monospace;
     border: none;
+
     &.app-commit__hash--no-bg {
         background-color: unset;
         padding: 0;
@@ -1334,6 +1298,7 @@ button.anchor {
     height: 4px;
     background: var(--N700);
     border-radius: 50%;
+
     &.bullet--d2 {
         width: 2px;
         height: 2px;
@@ -1344,6 +1309,7 @@ button.anchor {
     .visible-hover--child {
         display: none;
     }
+
     &.visible-hover--parent:hover {
         .visible-hover--child {
             display: inherit;
@@ -1357,6 +1323,7 @@ button.anchor {
 
 .capitalize {
     text-transform: lowercase;
+
     &::first-letter {
         text-transform: uppercase;
     }
@@ -1364,6 +1331,7 @@ button.anchor {
 
 .no-decor {
     text-decoration: none;
+
     &:hover {
         text-decoration: none;
     }
@@ -1420,9 +1388,11 @@ button.anchor {
     display: flex;
     justify-content: space-between;
     text-decoration: none;
+
     &:hover {
         text-decoration: none;
     }
+
     &.active {
         color: var(--B500);
         font-weight: 600;
@@ -1539,4 +1509,11 @@ button.anchor {
     border: none;
     width: 115px;
     margin: 6px;
+}
+
+.deprecated-warn__text {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 1.67;
+    color: #f32e2e;
 }

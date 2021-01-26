@@ -3,7 +3,8 @@ import { Route, Switch, NavLink } from 'react-router-dom';
 import { useRouteMatch, useLocation, useParams} from 'react-router'
 import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
 import { URLS } from '../../../config';
-import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed, getAvailableCharts } from '../charts.service';
+import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
+import { getAvailableCharts } from '../../../services/service';
 import { DiscoverChartDetailsProps, DeploymentProps } from './types';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
@@ -16,7 +17,9 @@ import { ChartValuesSelect } from '../util/ChartValueSelect';
 import './DiscoverChartDetails.scss';
 import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
-import AppSelector from '../../AppSelector'
+import AppSelector from '../../AppSelector';
+import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
+
 
 const DiscoverDetailsContext = React.createContext(null);
 
@@ -39,7 +42,7 @@ function mapById(arr) {
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState(new Map())
-    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '' })
+    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '', deprecated: false })
     const [chartYaml, setChartYaml] = React.useState(null)
     const [loading, setLoading] = React.useState(false);
     const [chartValuesList, setChartValuesList] = useState([])
@@ -186,7 +189,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         <ChartDeploymentList chartId={chartId} />
                     </div>
                     <div className="chart-detail-right">
-                        <Deployment chartId={chartId} {...chartInformation} availableVersions={availableVersions} />
+                        <Deployment 
+                            chartId={chartId} 
+                            {...chartInformation} 
+                            availableVersions={availableVersions} 
+                            />
                 </div>
                 </div>
             </div>
@@ -215,7 +222,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     </DiscoverDetailsContext.Provider>
 }
 
-const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, ...rest }) => {
+const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, deprecated = "", ...rest }) => {
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
     const match = useRouteMatch();
     const handleImageError = (e) => {
@@ -228,9 +235,16 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
         <div className="chart-grid-item__icon-wrapper">
             <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
         </div>
-        <div className="repository">
-            <span className="user anchor">{chartName}/</span>
-            <span className="repo">{appStoreApplicationName}</span>
+        <div className="mb-16">
+            <div className="repository">
+                <span className="user anchor">{chartName}/</span>
+                <span className="repo">{appStoreApplicationName}</span>
+            </div>
+            {   deprecated &&
+                <div className="mt-8">
+                    <DeprecatedWarn/>
+                </div>
+            }
         </div>
         <span className="form__label">Chart version</span>
         <DevtronSelect rootClassName="select-button--default mb-20" value={selectedVersion && availableVersions.has(selectedVersion) ? availableVersions.get(selectedVersion).id : null} onChange={event => { selectVersion(event.target.value) }}>

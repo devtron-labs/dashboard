@@ -10,7 +10,7 @@ export const statusColor = {
     suspended: '#ffaa00',
     unknown: 'var(--N700)',
     degraded: '#f32e2e',
-    healthy: '#02ba02',
+    healthy: 'var(--G500)',
     notdeployed: 'var(--N700)',
     missing: 'var(--N700)',
     progressing: "#FF7E5B",

@@ -51,13 +51,6 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 value={this.props.chartValues}
                 onChange={this.onChange}>
                 <Select.Button>{label}</Select.Button>
-                <Select.OptGroup label="DEFAULT" key={"DEFAULT"}>
-                    {chartValues.defaultChartValues.length ? chartValues.defaultChartValues.map((chartValue) => {
-                        return <Select.Option key={chartValue.id} value={chartValue}>
-                            {chartValue.name} ({chartValue.chartVersion})
-                 </Select.Option>
-                    }) : this.renderNoResultsOption()}
-                </Select.OptGroup>
                 <Select.OptGroup label="DEPLOYED" key={"DEPLOYED"}>
                     {chartValues.deployedChartValues.length ? chartValues.deployedChartValues.map((chartValue) => {
                         let env = chartValue.environmentName || "";
@@ -75,6 +68,20 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                         return <Select.Option key={chartValue.id} value={chartValue}>
                             {chartValue.name} ({chartValue.chartVersion})
                     </Select.Option>
+                    }) : this.renderNoResultsOption()}
+                </Select.OptGroup>
+                <Select.OptGroup label="EXISTING" key={"EXISTING"}>
+                    {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
+                        return <Select.Option key={chartValue.id} value={chartValue}>
+                            {chartValue.name} ({chartValue.chartVersion})
+                    </Select.Option>
+                    }) : this.renderNoResultsOption()}
+                </Select.OptGroup>
+                <Select.OptGroup label="DEFAULT" key={"DEFAULT"}>
+                    {chartValues.defaultChartValues.length ? chartValues.defaultChartValues.map((chartValue) => {
+                        return <Select.Option key={chartValue.id} value={chartValue}>
+                            {chartValue.name} ({chartValue.chartVersion})
+                 </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>
                 <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>

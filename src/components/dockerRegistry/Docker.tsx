@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { getDockerRegistryList } from './service'
 import { showError, useForm, Select, Progressing, useAsync } from '../common';
+import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify';

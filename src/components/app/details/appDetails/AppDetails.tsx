@@ -24,7 +24,6 @@ import {
     FragmentHOC,
     useSearchString,
     multiSelectStyles,
-    useInterval,
     useAsync,
     SingleSelectOption as Option,
     ScanDetailsModal,
@@ -43,14 +42,17 @@ import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
 import restoreIcon from '../../../../assets/icons/ic-restore.svg';
 import warningIcon from '../../../../assets/icons/ic-warning.svg';
 import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
+import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg';
+import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg';
+import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
+import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
-import Select, { components } from 'react-select'
-import { aggregateNodes } from './utils'
+import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {
     AppStreamData,
@@ -62,8 +64,9 @@ import {
     NodeDetailTabsType,
     AppDetails,
 } from '../../types';
-import { SecurityVulnerabilitites } from './appDetails.util';
+import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -112,8 +115,7 @@ export default function AppDetail() {
                     </div>
                 )}
                 <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
-                    <Details
-                        key={params.appId + "-" + params.envId}
+                    <Details key={params.appId + "-" + params.envId}
                         appDetailsAPI={fetchAppDetailsInTime}
                         isAppDeployment
                         environment={otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)}
@@ -133,10 +135,11 @@ export default function AppDetail() {
 export const Details: React.FC<{
     environment?: any;
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
-    setAppDetails?: (appDetails) => void;
+    setAppDetailResultInParent?: (appDetails) => void;
     isAppDeployment?: boolean;
     environments: any;
-}> = ({ appDetailsAPI, setAppDetails, environment, isAppDeployment = false, environments }) => {
+    isPollingRequired?: boolean;
+}> = ({ appDetailsAPI, setAppDetailResultInParent, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -147,16 +150,21 @@ export const Details: React.FC<{
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
-    const [lastExecutionDetail, setLastExecutionDetail] = useState({ imageScanDeployInfoId: 0, severityCount: { critical: 0, moderate: 0, low: 0 } })
+    const [lastExecutionDetail, setLastExecutionDetail] = useState({
+        imageScanDeployInfoId: 0,
+        severityCount: { critical: 0, moderate: 0, low: 0 },
+        isError: false,
+    })
     const [appDetailsLoading, setAppDetailsLoading] = useState(true);
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
-
+    const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         //@ts-ignore
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
+    const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
         `${prefix}${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -165,43 +173,25 @@ export const Details: React.FC<{
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
+    const aggregatedNodes: AggregatedNodes = useMemo(() => {
+        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
+    }, [appDetails]);
+
     async function callAppDetailsAPI() {
         try {
             let response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response);
             setAppDetailsLoading(false);
         } catch (error) {
-            setAppDetailsError(error)
+            if (!appDetailsResult) {
+                setAppDetailsError(error);
+            }
         }
     }
 
-    async function polling() {
-        try {
-            let response = await appDetailsAPI(params.appId, params.envId, 25000);
-            setAppDetailsResult(response);
-            setAppDetailsLoading(false);
-        } catch (error) {
-        }
+    function describeNode(name: string, containerName: string) {
+        setDetailedNode({ name, containerName });
     }
-    
-    useEffect(() => {
-        callAppDetailsAPI();
-    }, []);
-
-    useEffect(() => {
-        if (appDetailsError) {
-            showError(appDetailsError)
-            return
-        }
-        if (appDetailsResult && setAppDetails) {
-            setAppDetails(appDetailsResult?.result);
-            callLastExecutionMinAPI(appDetailsResult?.result?.appId, params.envId)
-        }
-    }, [appDetailsResult, appDetailsError]);
-
-    useEffect(() => {
-        if (isAppDeployment) callLastExecutionMinAPI(params.appId, params.envId);
-    }, []);
 
     async function callLastExecutionMinAPI(appId, envId) {
         if (!appId || !envId) return;
@@ -210,34 +200,64 @@ export const Details: React.FC<{
             const { result } = await getLastExecutionMinByAppAndEnv(appId, envId);;
             setLastExecutionDetail({
                 imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: result.severityCount
+                severityCount: result.severityCount,
+                isError: false,
             });
         } catch (error) {
-            // showError(error);
+            setLastExecutionDetail({
+                imageScanDeployInfoId: 0,
+                severityCount: { critical: 0, moderate: 0, low: 0 },
+                isError: true,
+            });
         }
     }
 
-    const aggregatedNodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
-    }, [appDetails]);
-
-    const interval: number = useMemo(() => {
-        return 30000;
-        // if (!appDetails?.resourceTree?.status) return 30000;
-        // return appDetails?.resourceTree?.status?.toLowerCase() === 'progressing' ? 10000 : 30000;
-    }, [appDetails]);
-
-    useInterval(polling, interval);
-    function describeNode(name: string, containerName: string) {
-        setDetailedNode({ name, containerName });
+    function clearPollingInterval() {
+        if (pollingIntervalID) {
+            clearInterval(pollingIntervalID);
+        }
     }
 
+    useEffect(() => {
+        if (appDetailsResult && setAppDetailResultInParent) {
+            setAppDetailResultInParent(appDetailsResult?.result);
+        }
+
+        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
+            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
+        }
+    }, [appDetailsResult]);
+
+
+    useEffect(() => {
+        if (appDetailsError) {
+            showError(appDetailsError)
+            return
+        }
+    }, [appDetailsError]);
+
+    // useInterval(polling, interval);
+    useEffect(() => {
+        if (isPollingRequired) {
+            callAppDetailsAPI();
+            const intervalID = setInterval(callAppDetailsAPI, interval);
+            setPollingIntervalID(intervalID);
+        }
+        else {
+            clearPollingInterval();
+        }
+    }, [isPollingRequired])
+
+    useEffect(() => {
+        return () => {
+            clearPollingInterval()
+        }
+    }, [pollingIntervalID])
+
     if (appDetailsLoading && !appDetails) {
-        return (
-            <div className="w-100 flex" style={{ height: '100%' }}>
-                <Progressing pageLoader />
-            </div>
-        );
+        return <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
+            <Progressing pageLoader />
+        </div>
     }
 
     let message = null;
@@ -303,8 +323,6 @@ export const Details: React.FC<{
             {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
-                    appName={appDetails?.appName}
-                    environmentName={appDetails?.environmentName}
                     nodes={aggregatedNodes}
                     describeNode={describeNode}
                     appDetails={appDetails}
@@ -385,20 +403,23 @@ export const Details: React.FC<{
 };
 
 const NodeDetails: React.FC<{
-    appName: string;
-    environmentName: string;
     nodes: AggregatedNodes;
     nodeName?: string;
     containerName?: string;
     appDetails: AppDetails;
     isAppDeployment: boolean;
     describeNode: (name: string, containerName?: string) => void;
-}> = ({ appName, environmentName, nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
-    const { url, path } = useRouteMatch();
+}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
     const [selectedNode, selectNode] = useState<string>(null);
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
+    const [terminalCleared, setTerminalCleared] = useState(false);
+    const [isReconnection, setIsReconnection] = useState(false);
+    const [shell, selectShell] = useState({ label: "sh", value: "sh" });
+    const { url, path } = useRouteMatch();
+
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 
     useEffect(() => {
@@ -407,6 +428,13 @@ const NodeDetails: React.FC<{
             if (containerName && containerName !== selectedContainer) {
                 selectContainer(containerName);
             }
+            else {
+                selectContainer(null);
+            }
+        }
+        else {
+            selectContainer(null);
+            selectNode(null);
         }
     }, [nodeName, containerName]);
 
@@ -428,21 +456,23 @@ const NodeDetails: React.FC<{
         const kind: Nodes = searchParams.kind as Nodes || params.kind as Nodes
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
         if (node && node.length && node[1].name) {
-            selectNode(node[1].name)
+            selectNode(node[1].name);
         }
-
     }, [params.tab])
 
     useEffect(() => {
         if (!selectedNode) return
-        if (params.tab === NodeDetailTabs.LOGS && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if ((params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
                 selectContainer(container);
             }
             else if (containers?.length) {
-                selectContainer(containers[0])
+                selectContainer(containers[0]);
+            }
+            else {
+                selectContainer(null)
             }
         }
     }, [selectedNode, params.tab])
@@ -456,10 +486,9 @@ const NodeDetails: React.FC<{
                 nodes={nodes}
                 describeNode={describeNode}
                 isAppDeployment={isAppDeployment}
-                appName={appName}
-                environmentName={environmentName}
+                appName={appDetails?.appName}
+                environmentName={appDetails?.environmentName}
             />
-
             <ResponsiveDrawer
                 className="events-logs"
                 isDetailedView={!!params.tab}
@@ -467,23 +496,35 @@ const NodeDetails: React.FC<{
                 anchor={params.kind ? <EventsLogsTabSelector /> : null}
             >
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
-                    <NodeSelectors
-                        showOldOrNewSuffix={isAppDeployment}
-                        handleLogsPause={handleLogsPause}
+                    <NodeSelectors showOldOrNewSuffix={isAppDeployment}
                         logsPaused={logsPaused}
+                        socketConnection={socketConnection}
                         containerName={selectedContainer}
-                        nodes={nodes}
                         nodeName={selectedNode}
+                        nodes={nodes}
+                        shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
+                        selectShell={selectShell}
+                        setSocketConnection={setSocketConnection}
+                        setTerminalCleared={setTerminalCleared}
+                        handleLogsPause={handleLogsPause}
                         selectNode={selectNode}
                         selectContainer={selectContainer}
-
-                    ></NodeSelectors>
-                    <EventsLogs
-                        nodeName={selectedNode}
+                    />
+                    <EventsLogs nodeName={selectedNode}
                         nodes={nodes}
                         appDetails={appDetails}
                         containerName={selectedContainer}
                         logsPaused={logsPaused}
+                        socketConnection={socketConnection}
+                        terminalCleared={terminalCleared}
+                        shell={shell}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
+                        selectShell={selectShell}
+                        setTerminalCleared={setTerminalCleared}
+                        setSocketConnection={setSocketConnection}
                         handleLogPause={handleLogsPause}
                     />
                 </Route>
@@ -650,29 +691,22 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
             }
         >
             <div className={`pl-20 flex left tab-container ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                {[
-                    // NodeDetailTabs.DESCRIBE,
-                    NodeDetailTabs.MANIFEST,
-                    NodeDetailTabs.EVENTS,
-                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS] : []),
+                {[NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
+                ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
-                    <div
-                        className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''
-                            }`}
+                    <div key={idx}
+                        className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             history.push(generatePath(path, { ...params, tab: title }) + location.search);
                         }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        key={idx}
-                    >
+                        onMouseDown={(e) => e.stopPropagation()}>
                         {title}
                     </div>
                 ))}
             </div>
             <div className={`flex right pr-20 ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                <div
-                    className="flex pointer"
+                <div className="flex pointer"
                     style={{ height: '36px', width: '36px' }}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -682,8 +716,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                             '?' +
                             queryParams.toString(),
                         );
-                    }}
-                >
+                    }}>
                     <NavigationArrow
                         style={{ ['--rotateBy' as any]: !!params?.tab ? '0deg' : '180deg' }}
                         color="#fff"
@@ -697,25 +730,39 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
 
 interface NodeSelectors {
     logsPaused: boolean;
-    handleLogsPause: (e: any) => void;
+    socketConnection: SocketConnectionType;
     nodeName?: string;
-    selectNode: (nodeName: string) => void;
     containerName?: string;
-    selectContainer: (containerName: string) => void;
     showOldOrNewSuffix?: boolean;
-    children?: any;
     nodes: AggregatedNodes;
+    shell: { label: string; value: string };
+    isReconnection: boolean;
+    setIsReconnection: (flag) => void;
+    selectShell: (shell: { label: string; value: string }) => void;
+    setTerminalCleared: (flag: boolean) => void;
+    handleLogsPause: (e: any) => void;
+    selectNode: (nodeName: string) => void;
+    selectContainer: (containerName: string) => void;
+    setSocketConnection: (value: SocketConnectionType) => void;
+    children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
     logsPaused = false,
-    handleLogsPause = null,
+    socketConnection = true,
     nodeName,
     nodes,
     containerName,
     showOldOrNewSuffix = false,
+    shell,
+    isReconnection,
+    setIsReconnection,
+    selectShell,
+    setTerminalCleared,
+    handleLogsPause = null,
+    setSocketConnection,
     selectNode,
-    children = null,
     selectContainer,
+    children = null,
 }) => {
     const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs, showOldOrNewSuffix }>();
     const { queryParams, searchParams } = useSearchString();
@@ -740,118 +787,170 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         const pod = nodesMap.get(nodeName)
         return pod.isNew ? '(new)' : '(old)'
     }
-    return (
-        <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
-            {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
-                <>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
-                    >
-                        <div
-                            className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
-                            onClick={(e) => handleLogsPause(!logsPaused)}
-                        >
-                            {logsPaused ? <PlayButton /> : <span className="stop-btn"></span>}
-                        </div>
-                    </Tippy>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            <div className="events-logs__dropdown-selector pods">
-                <span className="events-logs__label">{kind}</span>
-                <div style={{ width: '175px' }}>
-                    <Select
-                        placeholder={`Select ${kind}`}
-                        options={Array.from(nodesMap).map(([name, data]) => ({
-                            label: name + getPodNameSuffix(name),
-                            value: name,
-                        }))}
-                        value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
-                        onChange={(selected) => selectNode((selected as any).value)}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 10 }),
-                            control: (base, state) => ({
-                                ...base,
-                                backgroundColor: 'transparent',
-                                borderColor: 'transparent',
-                            }),
-                            singleValue: (base, state) => ({
-                                ...base,
-                                marginLeft: '0',
-                                marginRight: '0',
-                                direction: 'rtl',
-                                color: 'var(--N0)',
-                            }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                direction: 'rtl',
-                            }),
-                        }}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                    />
-                </div>
-            </div>
 
-            {Array.isArray(containers) && params.tab === NodeDetailTabs.LOGS && (
-                <>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div className="events-logs__dropdown-selector">
-                        <span className="events-logs__label">Container</span>
-                        <div style={{ width: '175px' }}>
-                            <Select
-                                placeholder="Select Container"
-                                options={containers.map((container) => ({ label: container, value: container }))}
-                                value={containerName ? { label: containerName, value: containerName } : null}
-                                onChange={(selected) => selectContainer((selected as any).value)}
-                                styles={{
-                                    ...multiSelectStyles,
-                                    menu: (base) => ({ ...base, zIndex: 10 }),
-                                    control: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: 'transparent',
-                                        borderColor: 'transparent',
-                                    }),
-                                    singleValue: (base, state) => ({
-                                        ...base,
-                                        direction: 'rtl',
-                                        color: 'var(--N0)',
-                                    }),
-                                    input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
-                                    option: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                        color: 'var(--N900)',
-                                        textOverflow: 'ellipsis',
-                                        overflow: 'hidden',
-                                        whiteSpace: 'nowrap',
-                                        direction: 'rtl',
-                                    }),
-                                }}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
-                                }}
-                            />
-                        </div>
+    let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
+    return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
+        {params.tab === NodeDetailTabs.TERMINAL && <>
+            <div className={`flex mr-12`}>
+                <Tippy className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={isSocketConnecting ? 'Disconnect' : 'Connect'} >
+                    {isSocketConnecting ? <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} /> : <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
+                </Tippy>
+
+                <Tippy className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={'Clear'} >
+                    <Abort className="icon-dim-20 mr-8 ml-8" onClick={(e) => { setTerminalCleared(true); }} />
+                </Tippy>
+            </div>
+            <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+        </>}
+        {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
+            <>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
+                >
+                    <div
+                        className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
+                        onClick={(e) => handleLogsPause(!logsPaused)}
+                    >
+                        {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
                     </div>
-                </>
-            )}
-            {children}
+                </Tippy>
+                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+            </>
+        )}
+        <div className="events-logs__dropdown-selector pods">
+            <span className="events-logs__label">{kind}</span>
+            <div style={{ width: '175px' }}>
+                <Select
+                    placeholder={`Select ${kind}`}
+                    options={Array.from(nodesMap).map(([name, data]) => ({
+                        label: name + getPodNameSuffix(name),
+                        value: name,
+                    }))}
+                    value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
+                    onChange={(selected) => {
+                        selectNode((selected as any).value);
+                    }}
+                    styles={{
+                        ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 12 }),
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'transparent',
+                            borderColor: 'transparent',
+                        }),
+                        singleValue: (base, state) => ({
+                            ...base,
+                            marginLeft: '0',
+                            marginRight: '0',
+                            direction: 'rtl',
+                            color: 'var(--N000)',
+                        }),
+                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                            color: 'var(--N900)',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            direction: 'rtl',
+                        }),
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                />
+            </div>
         </div>
-    );
+        {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
+            <>
+                <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+                <div className="events-logs__dropdown-selector">
+                    <span className="events-logs__label">Containers</span>
+                    <div style={{ width: '175px' }}>
+                        <Select placeholder="Select Container"
+                            options={containers.map((container) => ({ label: container, value: container }))}
+                            value={containerName ? { label: containerName, value: containerName } : null}
+                            onChange={(selected) => {
+                                selectContainer((selected as any).value);
+                            }}
+                            styles={{
+                                ...multiSelectStyles,
+                                menu: (base) => ({ ...base, zIndex: 12 }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: 'transparent',
+                                    borderColor: 'transparent',
+                                }),
+                                singleValue: (base, state) => ({
+                                    ...base,
+                                    direction: 'rtl',
+                                    color: 'var(--N000)',
+                                }),
+                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    color: 'var(--N900)',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    direction: 'rtl',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                            }}
+                        />
+                    </div>
+                </div>
+            </>
+        )}
+        {params.tab === NodeDetailTabs.TERMINAL && <>
+            <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+            <div style={{ width: '130px' }}>
+                <Select placeholder="Select shell" className="pl-20"
+                    options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
+                    value={shell}
+                    onChange={(selected) => { selectShell(selected) }}
+                    styles={{
+                        menu: (base) => ({ ...base, zIndex: 12 }),
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'transparent',
+                            borderColor: 'transparent',
+                        }),
+                        singleValue: (base, state) => ({
+                            ...base,
+                            color: 'var(--N000)',
+                        }),
+                        input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
+                            color: 'var(--N900)',
+                        })
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                />
+            </div>
+        </>}
+        {children}
+    </div>
 };
 
 export function AppNotConfigured({ text = 'You have not finished configuring this app' }) {
