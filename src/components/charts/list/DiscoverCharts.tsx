@@ -5,7 +5,8 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
 import ChartSelect from '../util/ChartSelect';
 import ChartValues from '../chartValues/ChartValues';
-import ChartGroupList, { ChartGroupListMin } from './ChartGroup';
+import ChartGroupList from './ChartGroup';
+import ChartGroupCard from '../util/ChartGroupCard';
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
@@ -27,6 +28,12 @@ import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 
+const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+
+}
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts.filter(chart => chart.isEnabled).map(chart => {
@@ -59,11 +66,11 @@ function DiscoverListing() {
     const [project, setProject] = useState({ id: null, error: "" });
     const [installing, setInstalling] = useState(false);
     const [showDeployModal, toggleDeployModal] = useState(false);
-    const [chartListLoading, setChartListloading] = useState(false);
+    const [chartListLoading, setChartListloading] = useState(true);
     const [selectedChartRepo, setSelectedChartRepo] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
     const [searchApplied, setSearchApplied] = useState(false);
-    const [deprecated, setDeprecated] = useState(0);
+    const [includeDeprecated, setIncludeDeprecated] = useState(1);
     const projectsMap = mapByKey(state.projects, 'id');
     const chartList: Chart[] = Array.from(state.availableCharts.values());
     const isLeavingPageNotAllowed = useRef(false);
@@ -73,16 +80,27 @@ function DiscoverListing() {
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
-        initialiseFromQueryParams(state.chartRepos);
         return () => {
             window.removeEventListener('beforeunload', reloadCallback);
         }
     }, []);
 
     useEffect(() => {
-        initialiseFromQueryParams(state.chartRepos);
-        callApplyFilterOnCharts();
+        if (!location.search) {
+            history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+        }
+        else {
+            initialiseFromQueryParams(state.chartRepos);
+            callApplyFilterOnCharts();
+        }
     }, [location.search])
+
+    useEffect(() => {
+        if (!state.loading) {
+            initialiseFromQueryParams(state.chartRepos);
+            callApplyFilterOnCharts();
+        }
+    }, [state.loading])
 
     function reloadCallback(event) {
         event.preventDefault();
@@ -124,9 +142,9 @@ function DiscoverListing() {
 
     function initialiseFromQueryParams(chartRepoList) {
         let searchParams = new URLSearchParams(location.search);
-        let allChartRepoIds: string = searchParams.get('chartRepoId');
-        let deprecated: string = searchParams.get('deprecated');
-        let appStoreName: string = searchParams.get('appStoreName');
+        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
+        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
+        let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
         let chartRepoIdArray = [];
         if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
@@ -136,7 +154,7 @@ function DiscoverListing() {
             if (chartRepo) selectedRepos.push(chartRepo);
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos);
-        if (deprecated) setDeprecated(parseInt(deprecated));
+        if (deprecated) setIncludeDeprecated(parseInt(deprecated));
         if (appStoreName) {
             setSearchApplied(true);
             setAppStoreName(appStoreName);
@@ -155,70 +173,98 @@ function DiscoverListing() {
     function handleChartRepoChange(selected): void {
         let chartRepoId = selected?.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get('appStoreName');
-        let deprecate = searchParams.get('deprecated');
-        let qs = `chartRepoId=${chartRepoId}`;
-        if (app) qs = `${qs}&appStoreName=${app}`;
-        if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
         history.push(`${url}?${qs}`);
     }
 
     function handleDeprecateChange(deprecated): void {
         let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get('appStoreName');
-        let chartRepoId = searchParams.get('chartRepoId');
-        let qs = `deprecated=${deprecated}`;
-        if (app) qs = `${qs}&appStoreName=${app}`;
-        if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
         history.push(`${url}?${qs}`);
     }
 
     function handleAppStoreChange(event): void {
         event.preventDefault();
         let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get('deprecated');
-        let chartRepoId = searchParams.get('chartRepoId');
-        let qs = `appStoreName=${appStoreName}`;
-        if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`;
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
         history.push(`${url}?${qs}`);
     }
 
     function clearSearch(event): void {
         let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get('deprecate');
-        let chartRepoId = searchParams.get('chartRepoId');
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
         let qs: string = "";
-        if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
         history.push(`${url}?${qs}`);
     }
 
     function handleViewAllCharts() {
-        history.push(`${url}?deprecated=0`);
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
     if (state.loading || chartListLoading) return <Progressing pageLoader />
 
     else if (!chartListLoading && !chartList.length) {
         return <>
-            <ChartListHeader chartRepoList={state.chartRepos}
-                charts={state.charts}
-                searchApplied={searchApplied}
-                appStoreName={appStoreName}
-                deprecated={deprecated}
-                selectedChartRepo={selectedChartRepo}
-                setAppStoreName={setAppStoreName}
-                clearSearch={clearSearch}
-                handleAppStoreChange={handleAppStoreChange}
-                handleChartRepoChange={handleChartRepoChange}
-                handleDeprecateChange={handleDeprecateChange} />
-            <EmptyState>
-                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-            </EmptyState>
+            <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
+                <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
+                    <ConditionalWrap condition={state.charts.length > 0}
+                        wrap={children => <div className="flex left column">{children}</div>}>
+                        <>
+                            {state.charts.length > 0 && (
+                                <div className="flex left">
+                                    <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+                                </div>
+                            )}
+                            <div className="page-header__title flex left">
+                                {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
+                            </div>
+                            {state.charts.length === 0 && <ChartDetailNavigator />}
+                        </>
+                    </ConditionalWrap>
+                    <div className="page-header__cta-container flex">
+                        {state.charts.length === 0 && (
+                            <NavLink className="cta no-decor flex" to={`${url}/create`}>
+                                <Add className="icon-dim-18 mr-5" />
+                                Create Group
+                            </NavLink>
+                        )}
+                    </div>
+                </div>
+                <div className="">
+                    <ChartListHeader chartRepoList={state.chartRepos}
+                        charts={state.charts}
+                        searchApplied={searchApplied}
+                        appStoreName={appStoreName}
+                        includeDeprecated={includeDeprecated}
+                        selectedChartRepo={selectedChartRepo}
+                        setAppStoreName={setAppStoreName}
+                        clearSearch={clearSearch}
+                        handleAppStoreChange={handleAppStoreChange}
+                        handleChartRepoChange={handleChartRepoChange}
+                        handleDeprecateChange={handleDeprecateChange} />
+                    <EmptyState>
+                        <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                        <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                        <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                        <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                    </EmptyState>
+                </div>
+            </div>
         </>
     }
 
@@ -269,7 +315,7 @@ function DiscoverListing() {
                                     charts={state.charts}
                                     searchApplied={searchApplied}
                                     appStoreName={appStoreName}
-                                    deprecated={deprecated}
+                                    includeDeprecated={includeDeprecated}
                                     selectedChartRepo={selectedChartRepo}
                                     setAppStoreName={setAppStoreName}
                                     clearSearch={clearSearch}
@@ -418,7 +464,7 @@ export default function DiscoverChartsRouter() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, deprecated, searchApplied }) {
+function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied }) {
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
@@ -426,10 +472,10 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
         </h5>
         <div className="flexbox flex-justify">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >
-                <Search className="search__icon icon-dim-20" />
-                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0 mr-10 mb-10" onChange={(event) => { setAppStoreName(event.target.value); }} />
+                <Search className="search__icon icon-dim-18" />
+                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
                 {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-20 icon-n4" />
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
             </form>
             <div className="flex">
@@ -470,12 +516,31 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
                         }),
                     }} />
                 <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                    isChecked={deprecated === 0}
+                    isChecked={includeDeprecated === 1}
                     value={"CHECKED"}
-                    onChange={(event) => { let value = (deprecated + 1) % 2; handleDeprecateChange(value) }} >
+                    onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }} >
                     <div className="ml-5"> Show deprecated</div>
                 </Checkbox>
             </div>
+        </div>
+    </div>
+}
+
+export function ChartGroupListMin({ chartGroups }) {
+    const history = useHistory();
+    const match = useRouteMatch();
+
+    return <div className="chart-group" style={{ minHeight: "280px" }}>
+        <div className="chart-group__header">
+            <div className="flexbox">
+                <h2 className="chart-grid__title">Chart Groups</h2>
+                <button type="button" className="chart-group__view-all"
+                    onClick={(e) => history.push(match.url + '/group')}>View All
+                </button>
+            </div>
+        </div>
+        <div className="chart-grid chart-grid--chart-group-snapshot">
+            {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
         </div>
     </div>
 }

@@ -467,7 +467,9 @@ p.sentence-case:first-letter {
     position: absolute;
     z-index: 1;
     color: #9c9c9c;
-    margin: 7px 10px;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
     line-height: 1.9;
 }
 
@@ -489,10 +491,8 @@ p.sentence-case:first-letter {
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    cursor: pointer;
     z-index: 1;
     border: none;
-    font-size: 16px;
     padding: 2px;
     color: #72767a;
     margin: 0px 5px;
