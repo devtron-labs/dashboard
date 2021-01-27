@@ -49,7 +49,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
     })
 }
 
-function DiscoverListing() {
+function DiscoverChartList() {
     const location = useLocation();
     const history = useHistory();
     const { url } = useRouteMatch();
@@ -216,58 +216,6 @@ function DiscoverListing() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
-    if (state.loading || chartListLoading) return <Progressing pageLoader />
-
-    else if (!chartListLoading && !chartList.length) {
-        return <>
-            <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
-                <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
-                    <ConditionalWrap condition={state.charts.length > 0}
-                        wrap={children => <div className="flex left column">{children}</div>}>
-                        <>
-                            {state.charts.length > 0 && (
-                                <div className="flex left">
-                                    <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-                                </div>
-                            )}
-                            <div className="page-header__title flex left">
-                                {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                            </div>
-                            {state.charts.length === 0 && <ChartDetailNavigator />}
-                        </>
-                    </ConditionalWrap>
-                    <div className="page-header__cta-container flex">
-                        {state.charts.length === 0 && (
-                            <NavLink className="cta no-decor flex" to={`${url}/create`}>
-                                <Add className="icon-dim-18 mr-5" />
-                                Create Group
-                            </NavLink>
-                        )}
-                    </div>
-                </div>
-                <div className="">
-                    <ChartListHeader chartRepoList={state.chartRepos}
-                        charts={state.charts}
-                        searchApplied={searchApplied}
-                        appStoreName={appStoreName}
-                        includeDeprecated={includeDeprecated}
-                        selectedChartRepo={selectedChartRepo}
-                        setAppStoreName={setAppStoreName}
-                        clearSearch={clearSearch}
-                        handleAppStoreChange={handleAppStoreChange}
-                        handleChartRepoChange={handleChartRepoChange}
-                        handleDeprecateChange={handleDeprecateChange} />
-                    <EmptyState>
-                        <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                        <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                        <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                        <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                    </EmptyState>
-                </div>
-            </div>
-        </>
-    }
-
     return <>
         <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
             <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
@@ -288,16 +236,46 @@ function DiscoverListing() {
                 <div className="page-header__cta-container flex">
                     {state.charts.length === 0 && (
                         <NavLink className="cta no-decor flex" to={`${url}/create`}>
-                            <Add className="icon-dim-18 mr-5" />
-                                Create Group
+                            <Add className="icon-dim-18 mr-5" />Create Group
                         </NavLink>
                     )}
                 </div>
             </div>
             <Prompt when={isLeavingPageNotAllowed.current} message={'Your changes will be lost. Do you want to leave without deploying?'} />
-            {state.loading ? <Progressing pageLoader /> : (
-                <div className="discover-charts__body">
-                    <div className="discover-charts__body-details">
+            {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
+
+            {!state.loading && !chartListLoading ? <div className="discover-charts__body">
+                {!chartList.length ? <div className="w-100">
+                    {typeof state.configureChartIndex === 'number' ? <AdvancedConfig chart={state.charts[state.configureChartIndex]}
+                        index={state.configureChartIndex}
+                        handleValuesYaml={handleValuesYaml}
+                        getChartVersionsAndValues={getChartVersionsAndValues}
+                        fetchChartValues={fetchChartValues}
+                        handleChartValueChange={handleChartValueChange}
+                        handleChartVersionChange={handleChartVersionChange}
+                        handleEnvironmentChange={handleEnvironmentChange}
+                        handleNameChange={handleNameChange}
+                        discardValuesYamlChanges={discardValuesYamlChanges}
+                    /> : <> <ChartListHeader chartRepoList={state.chartRepos}
+                        charts={state.charts}
+                        searchApplied={searchApplied}
+                        appStoreName={appStoreName}
+                        includeDeprecated={includeDeprecated}
+                        selectedChartRepo={selectedChartRepo}
+                        setAppStoreName={setAppStoreName}
+                        clearSearch={clearSearch}
+                        handleAppStoreChange={handleAppStoreChange}
+                        handleChartRepoChange={handleChartRepoChange}
+                        handleDeprecateChange={handleDeprecateChange} />
+                    <EmptyState>
+                        <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                        <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                        <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                        <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                    </EmptyState>
+                    </>}
+                </div>
+                    : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
                             ? <AdvancedConfig chart={state.charts[state.configureChartIndex]}
                                 index={state.configureChartIndex}
@@ -334,89 +312,88 @@ function DiscoverListing() {
                                     />)}
                                 </div>
                             </>}
-                    </div>
-                    <aside className={`summary`}>
-                        <MultiChartSummary
-                            charts={state.charts}
-                            configureChartIndex={state.configureChartIndex}
-                            configureChart={configureChart}
-                            chartListing={chartListing}
-                            getChartVersionsAndValues={getChartVersionsAndValues}
-                            handleChartValueChange={
-                                typeof state.configureChartIndex === 'number' ? null : handleChartValueChange
-                            }
-                            handleChartVersionChange={
-                                typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange
-                            }
-                            removeChart={removeChart} />
-                        <div className={`flex left deployment-buttons ${state.advanceVisited ? 'deployment-buttons--advanced' : ''}`}>
-                            {state.advanceVisited && (
-                                <div>
-                                    <label>Project*</label>
-                                    <Select rootClassName={`${project.error ? 'popup-button--error' : ''}`}
-                                        value={project.id}
-                                        onChange={(e) => setProject({ id: e.target.value, error: '' })}>
-                                        <Select.Button>
-                                            {project.id && projectsMap.has(project.id)
-                                                ? projectsMap.get(project.id).name
-                                                : 'Select project'}
-                                        </Select.Button>
-                                        {state.projects?.map((project) => (
-                                            <Select.Option key={project.id} value={project.id}>
-                                                {project.name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                    {project.error && (
-                                        <span className="form__error flex left ">
-                                            <WarningIcon className="mr-5" />
-                                            {project.error}
-                                        </span>
-                                    )}
-                                </div>
-                            )}
-                            {!state.advanceVisited && (
-                                <ConditionalWrap
-                                    condition={state.charts.length === 0}
-                                    wrap={(children) => (
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="Add charts to deploy"
-                                        >
-                                            <div>{children}</div>
-                                        </Tippy>
-                                    )}>
-                                    <button type="button"
-                                        disabled={state.charts.length === 0}
-                                        onClick={(e) => configureChart(0)}
-                                        className="cta cancel ellipsis-right">
-                                        Advanced Options
-                                    </button>
-                                </ConditionalWrap>
-                            )}
+                    </div>}
+                <aside className={`summary`}>
+                    <MultiChartSummary
+                        charts={state.charts}
+                        configureChartIndex={state.configureChartIndex}
+                        configureChart={configureChart}
+                        chartListing={chartListing}
+                        getChartVersionsAndValues={getChartVersionsAndValues}
+                        handleChartValueChange={
+                            typeof state.configureChartIndex === 'number' ? null : handleChartValueChange
+                        }
+                        handleChartVersionChange={
+                            typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange
+                        }
+                        removeChart={removeChart} />
+                    <div className={`flex left deployment-buttons ${state.advanceVisited ? 'deployment-buttons--advanced' : ''}`}>
+                        {state.advanceVisited && (
+                            <div>
+                                <label>Project*</label>
+                                <Select rootClassName={`${project.error ? 'popup-button--error' : ''}`}
+                                    value={project.id}
+                                    onChange={(e) => setProject({ id: e.target.value, error: '' })}>
+                                    <Select.Button>
+                                        {project.id && projectsMap.has(project.id)
+                                            ? projectsMap.get(project.id).name
+                                            : 'Select project'}
+                                    </Select.Button>
+                                    {state.projects?.map((project) => (
+                                        <Select.Option key={project.id} value={project.id}>
+                                            {project.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                                {project.error && (
+                                    <span className="form__error flex left ">
+                                        <WarningIcon className="mr-5" />
+                                        {project.error}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                        {!state.advanceVisited && (
                             <ConditionalWrap
                                 condition={state.charts.length === 0}
                                 wrap={(children) => (
-                                    <Tippy className="default-tt"
+                                    <Tippy
+                                        className="default-tt"
                                         arrow={false}
                                         placement="top"
-                                        content="Add charts to deploy">
+                                        content="Add charts to deploy"
+                                    >
                                         <div>{children}</div>
                                     </Tippy>
                                 )}>
                                 <button type="button"
                                     disabled={state.charts.length === 0}
-                                    onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
-                                    className="cta ellipsis-right">
-                                    {installing ? <Progressing /> : state.advanceVisited ? ('Deploy charts') : ('Deploy to...')}
-                                </button>
+                                    onClick={(e) => configureChart(0)}
+                                    className="cta cancel ellipsis-right">
+                                    Advanced Options
+                                    </button>
                             </ConditionalWrap>
-                        </div>
-                    </aside>
-                </div>
-            )}
+                        )}
+                        <ConditionalWrap
+                            condition={state.charts.length === 0}
+                            wrap={(children) => (
+                                <Tippy className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content="Add charts to deploy">
+                                    <div>{children}</div>
+                                </Tippy>
+                            )}>
+                            <button type="button"
+                                disabled={state.charts.length === 0}
+                                onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                className="cta ellipsis-right">
+                                {installing ? <Progressing /> : state.advanceVisited ? ('Deploy charts') : ('Deploy to...')}
+                            </button>
+                        </ConditionalWrap>
+                    </div>
+                </aside>
+            </div> : null}
         </div>
         {showDeployModal ? <ChartGroupBasicDeploy
             projects={state.projects}
@@ -436,10 +413,10 @@ function DiscoverListing() {
 }
 
 
-export default function DiscoverChartsRouter() {
-    const history = useHistory()
-    const location = useLocation()
-    const match = useRouteMatch()
+export default function DiscoverCharts() {
+    const history = useHistory();
+    const location = useLocation();
+    const match = useRouteMatch();
     const { url, path } = match
 
     return <Switch>
@@ -451,7 +428,7 @@ export default function DiscoverChartsRouter() {
         }} />
         <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
         <Route>
-            <DiscoverListing />
+            <DiscoverChartList />
             <Route exact path={`${path}/create`}>
                 <CreateChartGroup
                     history={history}
