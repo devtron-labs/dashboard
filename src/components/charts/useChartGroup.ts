@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry } from './charts.types';
 import { getChartVersionsMin, validateAppNames, getChartValuesCategorizedList, getChartValues, getChartGroupDetail, createChartValues as createChartValuesService } from './charts.service';
-import { getAvailableCharts, getTeamList, getEnvironmentListMin } from '../../services/service'
+import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin } from '../../services/service'
 import { mapByKey, showError } from '../common';
 import { toast } from 'react-toastify';
+import { getChartGroups } from './charts.service';
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -15,6 +16,8 @@ function getSelectedInstances(charts) {
 
 export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     const initialState = {
+        chartGroups: [],
+        chartRepos: [],
         charts: [],
         name: '',
         description: '',
@@ -32,17 +35,24 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     useEffect(() => {
         async function populateCharts() {
             try {
-                const [{ result: availableCharts }, { result: projects }, { result: environments }] = await Promise.all([getAvailableCharts(), getTeamList(), getEnvironmentListMin()])
-                setState(state => ({ ...state, availableCharts: mapByKey(availableCharts, 'id'), projects, environments }));
+                const [{ result: chartRepoList }, { result: chartGroup }, { result: availableCharts }, { result: projects }, { result: environments }] = await Promise.all([getChartRepoList(), getChartGroups(), getAvailableCharts(), getTeamList(), getEnvironmentListMin()])
+                let chartRepos = chartRepoList.map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name
+                    }
+                });
+                setState(state => ({ ...state, loading: false, chartRepos, chartGroups: chartGroup.groups, availableCharts: mapByKey(availableCharts, 'id'), projects, environments }));
             }
             catch (err) {
                 showError(err)
+                setState(state => ({ ...state, loading: false }))
             }
             finally {
                 setState(state => ({ ...state, loading: false }))
             }
         }
-        populateCharts()
+        populateCharts();
     }, [])
 
     //TODO: use response 

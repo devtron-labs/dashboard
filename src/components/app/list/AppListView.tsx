@@ -101,7 +101,7 @@ export class AppListView extends Component<AppListViewProps>{
             <form style={{ display: "inline" }} onSubmit={this.props.search}>
                 <div className="search">
                     <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                    <input type="text" placeholder="Search apps" className="search__input search__input--app-list" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
+                    <input type="text" placeholder="Search apps" className="search__input bcn-1" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
                     {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
                         <i className="fa fa-times-circle" aria-hidden="true"></i>
                     </button> : null}
