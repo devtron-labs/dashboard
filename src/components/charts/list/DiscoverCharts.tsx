@@ -26,7 +26,6 @@ import { getChartRepoList } from '../../../services/service'
 import { DropdownIndicator, ValueContainer, Option } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import { Link } from 'react-router-dom';
 
 
 //TODO: move to service
@@ -325,39 +324,45 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
     const [chartRepoList, setChartRepoList] = useState([]);
     const [selectedChartRepo, setSelectedChartRepo] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
-    const [deprecate, setDeprecate] = useState(0);
+    const [deprecated, setDeprecated] = useState(0);
     const [loading, setloading] = useState(true)
 
+
     useEffect(() => {
-        function chartRepo(list) {
-            return {
-                value: list.id,
-                label: list.name
-            }
-        }
         getChartRepoList().then((res) => {
-            let list = res.result
-            list = list.map(chartRepo)
+            let list = res.result?.map((chartRepo) => {
+                return {
+                    value: chartRepo.id,
+                    label: chartRepo.name
+                }
+            }) || [];
             setChartRepoList(list);
+            initialiseFromQueryParams(list);
         })
-        initialiseSelectChartRepo();
     }, [])
 
-    function initialiseSelectChartRepo() {
+
+    function initialiseFromQueryParams(chartRepoList) {
         let searchParams = new URLSearchParams(location.search);
-        let chartRepoId: string = searchParams.get('chartRepoId');
-        let s = [];
-        if (chartRepoId) s = chartRepoId.split("-");
+        let allChartRepoIds: string = searchParams.get('chartRepoId');
+        let deprecated: string = searchParams.get('deprecated');
+        let appStoreName: string = searchParams.get('appStoreName');
+        let chartRepoIdArray = [];
+        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
+        chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
         let selectedRepos = [];
-        for (let i = 0; i > s.length; i++) {
-            let chartRepo = chartRepoList.find(item => item.value === (s[i] as number));
+        for (let i = 0; i < chartRepoIdArray.length; i++) {
+            let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
             if (chartRepo) selectedRepos.push(chartRepo);
         }
-        setSelectedChartRepo(selectedRepos);
+        if (selectedRepos) setSelectedChartRepo(selectedRepos);
+        if (deprecated) setDeprecated(parseInt(deprecated));
+        if (appStoreName) setAppStoreName(appStoreName);
     }
+
     useEffect(() => {
-        
-        callApplyFilterOnCharts()
+        initialiseFromQueryParams(chartRepoList);
+        callApplyFilterOnCharts();
     }, [location.search])
 
     async function callApplyFilterOnCharts() {
@@ -366,37 +371,29 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         setloading(false);
     }
 
-    useEffect(() => {
-        function handleChartRepoChange(selected): void {
-            let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-            let searchParams = new URLSearchParams(location.search);
-            let app = searchParams.get('appStoreName');
-            let deprecate = searchParams.get('deprecated');
-            let qs = `chartRepoId=${chartRepoId}`;
-            if (app) qs = `${qs}&appStoreName=${app}`;
-            if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
-            history.push(`${url}?${qs}`);
-        }
+    function handleChartRepoChange(selected): void {
+        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get('appStoreName');
+        let deprecate = searchParams.get('deprecated');
+        let qs = `chartRepoId=${chartRepoId}`;
+        if (app) qs = `${qs}&appStoreName=${app}`;
+        if (deprecate) qs = `${qs}&deprecated=${deprecate}`;
+        history.push(`${url}?${qs}`);
+    }
 
-        handleChartRepoChange(selectedChartRepo);
-    }, [selectedChartRepo])
+    function handleDeprecateChange(deprecated): void {
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get('appStoreName');
+        let chartRepoId = searchParams.get('chartRepoId');
+        let qs = `deprecated=${deprecated}`;
+        if (app) qs = `${qs}&appStoreName=${app}`;
+        if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`
+        history.push(`${url}?${qs}`);
+    }
 
-    useEffect(() => {
-        function handleDeprecate(e): void {
-            let searchParams = new URLSearchParams(location.search);
-            let app = searchParams.get('appStoreName');
-            let chartRepoId = searchParams.get('chartRepoId');
-            let qs = `deprecated=${deprecate}`;
-            if (app) qs = `${qs}&appStoreName=${app}`;
-            if (chartRepoId) qs = `${qs}&chartRepoId=${chartRepoId}`
-            history.push(`${url}?${qs}`);
-        }
-        handleDeprecate(deprecate);
-    }, [deprecate])
-
-
-    function handleSearchChange(e): void {
-        e.preventDefault();
+    function handleAppStoreChange(event): void {
+        event.preventDefault();
         let searchParams = new URLSearchParams(location.search);
         let deprecate = searchParams.get('deprecated');
         let chartRepoId = searchParams.get('chartRepoId');
@@ -406,8 +403,8 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
         history.push(`${url}?${qs}`);
     }
 
-    function handleViewAllCharts(){
-        history.push(`${url}`)
+    function handleViewAllCharts() {
+        history.push(`${url}?deprecated=0`);
     }
 
     function renderEmptyState() {
@@ -415,22 +412,21 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
             <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
             <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
             <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-            <div onClick={handleViewAllCharts} className="empty--viewcharts mb-24">View all charts</div>
+            <div onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</div>
         </EmptyState>
     }
 
     if (loading) return <Progressing pageLoader />
-    let value = deprecate == 0 ? 1 : 0
-   
+
     return (
         <>
             <div className="chart-group__header">
                 <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
                 <h5 className="form__subtitle">Select chart to deploy. &nbsp;</h5>
                 <div className="flexbox flex-justify">
-                    <form onSubmit={handleSearchChange} className="search search--container" >
+                    <form onSubmit={handleAppStoreChange} className="search search--container" >
                         <span className="search__icon"><i className="fa fa-search" aria-hidden="true"></i></span>
-                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input__chart mr-10 mb-10" onChange={(event) => setAppStoreName(event.target.value)} />
+                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input__chart mr-10 mb-10" onChange={(event) => { setAppStoreName(event.target.value); }} />
                     </form>
                     <div className="flex">
                         <ReactSelect className="date-align-left fs-14"
@@ -439,7 +435,7 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                             value={selectedChartRepo}
                             options={chartRepoList}
                             isClearable={false}
-                            onChange={(selected: any) => setSelectedChartRepo(selected)}
+                            onChange={(selected: any) => { handleChartRepoChange(selected); }}
                             isMulti={true}
                             hideSelectedOptions={false}
                             components={{
@@ -470,14 +466,15 @@ function ChartList({ availableCharts, selectedInstances, charts, addChart, subtr
                                 }),
                             }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                            isChecked={deprecate == 0} value={"CHECKED"}
-                            onChange={(event) => setDeprecate(value)} >
-                            <div className="ml--5"> Show deprecated</div>
+                            isChecked={deprecated === 0}
+                            value={"CHECKED"}
+                            onChange={(event) => { let value = (deprecated + 1) % 2; handleDeprecateChange(value) }} >
+                            <div className="ml-5"> Show deprecated</div>
                         </Checkbox>
                     </div>
                 </div>
             </div>
-           { !chartList.length ? <div > {renderEmptyState()} </div> : <div className="chart-grid">
+            { !chartList.length ? <div>{renderEmptyState()}</div> : <div className="chart-grid">
                 {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                     key={chart.id}
                     chart={chart}
