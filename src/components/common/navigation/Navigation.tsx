@@ -218,7 +218,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 							</div>
 						</button>
 						else return <NavLink to={item.href} key={index} onClick={(event) => {
-							console.log(`${item.title} Clicked`);
 							ReactGA.event({
 								category: 'Main Navigation',
 								action: `${item.title} Clicked`,
@@ -242,7 +241,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					{NavigationListBottom.map(((item) => {
 						return <a href={item.href} rel="noreferrer noopener" className="" target="_blank"
 							onClick={(event) => {
-								console.log(`${item.title} Clicked`);
 								ReactGA.event({
 									category: 'Main Navigation',
 									action: `${item.title} Clicked`,
