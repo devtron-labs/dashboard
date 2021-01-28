@@ -35,7 +35,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     useEffect(() => {
         async function populateCharts() {
             try {
-                const [{ result: chartRepoList }, { result: chartGroup }, { result: availableCharts }, { result: projects }, { result: environments }] = await Promise.all([getChartRepoList(), getChartGroups(), getAvailableCharts(), getTeamList(), getEnvironmentListMin()])
+                const [{ result: chartRepoList }, { result: chartGroup }, { result: availableCharts }, { result: projects }, { result: environments }] = await Promise.all([getChartRepoList(), getChartGroups(), getAvailableCharts(`?includeDeprecated=1`), getTeamList(), getEnvironmentListMin()])
                 let chartRepos = chartRepoList.map((chartRepo) => {
                     return {
                         value: chartRepo.id,

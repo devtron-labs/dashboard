@@ -90,17 +90,12 @@ function DiscoverChartList() {
             history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
         }
         else {
-            initialiseFromQueryParams(state.chartRepos);
-            callApplyFilterOnCharts();
+            if (!state.loading) {
+                initialiseFromQueryParams(state.chartRepos);
+                callApplyFilterOnCharts();
+            }
         }
-    }, [location.search])
-
-    useEffect(() => {
-        if (!state.loading) {
-            initialiseFromQueryParams(state.chartRepos);
-            callApplyFilterOnCharts();
-        }
-    }, [state.loading])
+    }, [location.search, state.loading])
 
     function reloadCallback(event) {
         event.preventDefault();
@@ -267,13 +262,13 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                    <EmptyState>
-                        <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                        <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                        <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                        <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                    </EmptyState>
-                    </>}
+                            <EmptyState>
+                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                            </EmptyState>
+                        </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
