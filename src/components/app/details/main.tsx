@@ -116,7 +116,7 @@ export function AppHeader() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: `App Details Clicked`,
+                                action: 'App Details Clicked',
                             });
                         }}>
                         App Details
@@ -127,7 +127,7 @@ export function AppHeader() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: `Trigger Clicked`,
+                                action: 'Trigger Clicked',
                             });
                         }}>
                         Trigger
@@ -138,7 +138,7 @@ export function AppHeader() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: `CI Details Clicked`,
+                                action: 'Build History Clicked',
                             });
                         }}>
                         Build History
@@ -149,7 +149,7 @@ export function AppHeader() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: `CD Details Clicked`,
+                                action: 'Deployment History Clicked',
                             });
                         }}>
                         Deployment History
@@ -160,7 +160,7 @@ export function AppHeader() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: `Deployment Metrics Clicked`,
+                                action: 'Deployment Metrics Clicked',
                             });
                         }}>
                         Deployment Metrics
