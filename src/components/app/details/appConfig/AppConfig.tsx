@@ -1,28 +1,27 @@
-import React, { useState, useEffect, lazy, Suspense, useMemo, useRef, useCallback } from 'react';
-import { useParams, useLocation, useRouteMatch, useHistory, generatePath } from 'react-router';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
+import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
 import { NavLink, Link, Route, Redirect, Switch } from 'react-router-dom';
-import { AppConfigStatus, URLS, getAppComposeURL, APP_COMPOSE_STAGE, getNextStageURL, getNavItems, isCIPipelineCreated } from '../../config';
-import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, BreadCrumb, useBreadcrumb, useAppContext } from '../common';
-import { deleteApp } from './service';
-import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment, getAppListMin } from '../../services/service';
-import { ReactComponent as Next } from '../../assets/icons/ic-arrow-forward.svg';
-import warn from '../../assets/icons/ic-warning.svg';
-import lockIcon from '../../assets/icons/ic-locked.svg'
-import arrowIcon from '../../assets/icons/appstatus/ic-dropdown.svg'
+import { AppConfigStatus, URLS, getAppComposeURL, APP_COMPOSE_STAGE, getNextStageURL, getNavItems, isCIPipelineCreated } from '../../../../config';
+import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync } from '../../../common';
+import { deleteApp } from './appConfig.service';
+import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment } from '../../../../services/service';
+import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
+import warn from '../../../../assets/icons/ic-warning.svg';
+import lockIcon from '../../../../assets/icons/ic-locked.svg'
+import arrowIcon from '../../../../assets/icons/appstatus/ic-dropdown.svg'
 import { toast } from 'react-toastify';
-import AppSelector from '../AppSelector';
-import './appCompose.scss';
+import './appConfig.scss';
 
-const MaterialList = lazy(() => import('../material/MaterialList'));
-const CIConfig = lazy(() => import('../ciConfig/CIConfig'));
-const DeploymentConfig = lazy(() => import('../deploymentConfig/DeploymentConfig'));
-const ConfigMap = lazy(() => import('../configMaps/ConfigMap'));
-const Secret = lazy(() => import('../secrets/Secret'));
-const WorkflowEdit = lazy(() => import('../workflowEditor/workflowEditor'));
-const EnvironmentOverride = lazy(() => import('../EnvironmentOverride/EnvironmentOverride'));
+const MaterialList = lazy(() => import('../../../material/MaterialList'));
+const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
+const DeploymentConfig = lazy(() => import('../../../deploymentConfig/DeploymentConfig'));
+const ConfigMap = lazy(() => import('../../../configMaps/ConfigMap'));
+const Secret = lazy(() => import('../../../secrets/Secret'));
+const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'));
+const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'));
 
 
-export default function AppCompose() {
+export default function AppConfig() {
     const [state, setState] = useState({
         configStatus: AppConfigStatus.APP,
         appId: null,
@@ -121,7 +120,6 @@ export default function AppCompose() {
 
     return <>
         <div className="app-compose" >
-            <Header />
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
@@ -202,11 +200,9 @@ function Navigation({ navItems, deleteApp }) {
                         );
                 }
             })}
-            <button
-                type="button"
+            <button type="button"
                 className="cta delete cta-delete-app mt-8"
-                onClick={deleteApp}
-            >
+                onClick={deleteApp}>
                 Delete Application
             </button>
         </>
@@ -214,7 +210,7 @@ function Navigation({ navItems, deleteApp }) {
 }
 
 function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl }) {
-    const { path } = useRouteMatch()
+    const { path } = useRouteMatch();
     return (
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
@@ -258,8 +254,7 @@ function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWor
                     )}
                     {configStatus > AppConfigStatus.CHARTS && (
                         <>
-                            <Route
-                                path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                            <Route path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                                 render={(props) => (
                                     <WorkflowEdit
                                         configStatus={configStatus}
@@ -269,16 +264,13 @@ function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWor
                                     />
                                 )}
                             />
-                            <Route
-                                path={`${path}/${URLS.APP_CM_CONFIG}`}
+                            <Route path={`${path}/${URLS.APP_CM_CONFIG}`}
                                 render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
                             />
-                            <Route
-                                path={`${path}/${URLS.APP_CS_CONFIG}`}
+                            <Route path={`${path}/${URLS.APP_CS_CONFIG}`}
                                 render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
                             />
-                            <Route
-                                path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                            <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                                 render={(props) => <EnvironmentOverride />}
                             />
                         </>
@@ -288,64 +280,6 @@ function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWor
             </Suspense>
         </ErrorBoundary>
     );
-}
-
-function Header() {
-    const { appId } = useParams<{ appId }>()
-    const { url, path } = useRouteMatch()
-    const currentPathname = useRef('');
-    const { push } = useHistory()
-    const { pathname } = useLocation()
-
-    useEffect(() => {
-        currentPathname.current = pathname;
-    }, [pathname]);
-
-    const handleAppChange = useCallback(
-        ({ label, value }) => {
-            const tab = currentPathname.current.replace(url, '').split('/')[1];
-            const newUrl = generatePath(path, { appId: value });
-            push(`${newUrl}/${tab}`);
-        },
-        [pathname],
-    );
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                ':appId(\\d+)': {
-                    component: (
-                        <AppSelector
-                            primaryKey="appId"
-                            api={getAppListMin}
-                            primaryValue="name"
-                            matchedKeys={[]}
-                            apiPrimaryKey="id"
-                            onChange={handleAppChange}
-                        />
-                    ),
-                    linked: false,
-                },
-                'app': {
-                    component: <span className="cn-5 fs-18 lowercase">apps</span>,
-                    linked: true
-                },
-            },
-        },
-        [appId],
-    );
-    return (
-        <div className="page-header">
-            <div className="flex left cn-9 fs-18 page-header__title">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 1)} />
-            </div>
-            <div className="flex page-header__cta-container">
-                <Link className="cta ghosted no-decor" to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`}>
-                    Go to Trigger
-                </Link>
-            </div>
-        </div>
-    )
 }
 
 function EnvironmentOverrideRouter() {

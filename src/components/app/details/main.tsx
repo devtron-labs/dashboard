@@ -1,13 +1,15 @@
-import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
+import React, { lazy, Suspense, useCallback, useRef, useEffect } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
-import { ErrorBoundary, Progressing, showError, asyncWrap, BreadCrumb, useBreadcrumb } from '../../common';
-import { getAppConfigStatus, getAppListMin } from '../../../services/service';
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb } from '../../common';
+import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { URLS, getNextStageURL } from '../../../config';
+import { URLS } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
+import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
+import './app.css';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -34,6 +36,7 @@ export default function AppDetailsPage() {
                         <Route path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
                             <CDDetails key={appId} />
                         </Route>
+                        <Route path={`${path}/${URLS.APP_CONFIG}`} component={AppConfig} />
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             render={() => <TestRunList />}
@@ -50,9 +53,8 @@ export function AppHeader() {
     const { appId } = useParams<{ appId }>();
     const match = useRouteMatch();
     const history = useHistory();
-    const [configStatusLoading, setConfigStatusLoading] = useState(false);
-    const location = useLocation()
-    const currentPathname = useRef("")
+    const location = useLocation();
+    const currentPathname = useRef("");
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -94,77 +96,62 @@ export function AppHeader() {
         [appId],
     );
 
-    async function handleEditApp(e) {
-        setConfigStatusLoading(true);
-        const [error, result] = await asyncWrap(getAppConfigStatus(Number(appId)));
-        if (error) {
-            showError(error);
-            return;
-        }
-        const newUrl = getNextStageURL(result.result, appId);
-        history.push(newUrl);
-    }
-
-    return (
-        <div className="page-header page-header--tabs">
-            <h1 className="page-header__title flex left fs-18 cn-9">
-                <BreadCrumb breadcrumbs={breadcrumbs} />
-            </h1>
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right">
-                    <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">
-                        App Details
+    return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
+        <h1 className="m-0 fw-6 flex left fs-18 cn-9">
+            <BreadCrumb breadcrumbs={breadcrumbs} />
+        </h1>
+        <ul role="tablist" className="tab-list">
+            <li className="tab-list__tab ellipsis-right">
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">
+                    App Details
+                </NavLink>
+            </li>
+            <li className="tab-list__tab">
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link">
+                    Trigger
                     </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link">
-                        Trigger
+            </li>
+            <li className="tab-list__tab">
+                <NavLink
+                    activeClassName="active"
+                    to={`${match.url}/${URLS.APP_CI_DETAILS}`}
+                    className="tab-list__tab-link"
+                >
+                    Build History
                     </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                    >
-                        Build History
+            </li>
+            <li className="tab-list__tab">
+                <NavLink
+                    activeClassName="active"
+                    to={`${match.url}/${URLS.APP_CD_DETAILS}`}
+                    className="tab-list__tab-link"
+                >
+                    Deployment History
                     </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
-                        className="tab-list__tab-link"
-                    >
-                        Deployment History
+            </li>
+            <li className="tab-list__tab">
+                <NavLink
+                    activeClassName="active"
+                    to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
+                    className="tab-list__tab-link"
+                >
+                    Deployment Metrics
                     </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
-                        className="tab-list__tab-link"
-                    >
-                        Deployment Metrics
-                    </NavLink>
-                </li>
-                {/* commented for time being */}
-                {/* <li className="tab-list__tab">
+            </li>
+            <li className="tab-list__tab">
+                <NavLink activeClassName="active"
+                    to={`${match.url}/${URLS.APP_CONFIG}`}
+                    className="tab-list__tab-link flex">
+                    <Settings className="tab-list__icon icon-dim-20 mr-4" />
+                    App Configuration
+                </NavLink>
+            </li>
+            {/* commented for time being */}
+            {/* <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
                         Tests
                     </NavLink>
                 </li> */}
-            </ul>
-            <div className="flex page-header__cta-container">
-                <button type="button"
-                    className="cta-with-img flex cancel"
-                    onClick={handleEditApp}
-                    disabled={configStatusLoading}>
-                    {configStatusLoading ? <Progressing /> : (
-                        <><Settings className="icon-dim-20 mr-5" /> Configure</>
-                    )}
-                </button>
-            </div>
-        </div>
-    );
+        </ul>
+    </div>
 }

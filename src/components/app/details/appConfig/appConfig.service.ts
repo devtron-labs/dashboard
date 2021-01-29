@@ -1,5 +1,5 @@
-import { Routes } from '../../config';
-import { get, trash } from '../../services/api';
+import { Routes } from '../../../../config';
+import { get, trash } from '../../../../services/api';
 
 export const getGitProviderMin = () => {
     const URL = `${Routes.GIT_PROVIDER_MIN}`;
