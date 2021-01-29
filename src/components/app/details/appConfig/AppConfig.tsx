@@ -6,9 +6,9 @@ import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, Confi
 import { deleteApp } from './appConfig.service';
 import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment } from '../../../../services/service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
+import { ReactComponent as Dropdown } from '../../../../assets/icons/appstatus/ic-dropdown.svg'
 import warn from '../../../../assets/icons/ic-warning.svg';
 import lockIcon from '../../../../assets/icons/ic-locked.svg'
-import arrowIcon from '../../../../assets/icons/appstatus/ic-dropdown.svg'
 import { toast } from 'react-toastify';
 import './appConfig.scss';
 
@@ -298,9 +298,9 @@ function EnvironmentOverrideRouter() {
 
     return (
         <div className="flex column left environment-routes-container top">
-            <div className="app-compose__nav-item" onClick={e => toggleCollapsed(!collapsed)}>
+            <div className="app-compose__nav-item flex" onClick={e => toggleCollapsed(!collapsed)}>
                 Environment Overrides
-            <img src={arrowIcon} className="rotate" alt="" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
+            <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
             </div>
             {!collapsed && <div className="environment-routes">
                 {Array.isArray(environmentResult?.result) && (environmentResult.result).map(env => {
