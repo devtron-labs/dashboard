@@ -102,46 +102,66 @@ export function AppHeader() {
         </h1>
         <ul role="tablist" className="tab-list">
             <li className="tab-list__tab ellipsis-right">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link">
-                    App Details
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link"
+                    onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'App Details Clicked',
+                        });
+                    }}>App Details
                 </NavLink>
             </li>
             <li className="tab-list__tab">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link">
-                    Trigger
-                    </NavLink>
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link"
+                    onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'Trigger Clicked',
+                        });
+                    }}>Trigger
+                </NavLink>
             </li>
             <li className="tab-list__tab">
-                <NavLink
-                    activeClassName="active"
-                    to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                    className="tab-list__tab-link"
-                >
-                    Build History
-                    </NavLink>
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_CI_DETAILS}`} className="tab-list__tab-link"
+                    onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'Build History Clicked',
+                        });
+                    }}>Build History
+                </NavLink>
             </li>
             <li className="tab-list__tab">
-                <NavLink
-                    activeClassName="active"
-                    to={`${match.url}/${URLS.APP_CD_DETAILS}`}
-                    className="tab-list__tab-link"
-                >
-                    Deployment History
-                    </NavLink>
+
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_CD_DETAILS}`} className="tab-list__tab-link"
+                    onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'Deployment History Clicked',
+                        });
+                    }}>Deployment History
+                </NavLink>
             </li>
             <li className="tab-list__tab">
-                <NavLink
-                    activeClassName="active"
-                    to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
-                    className="tab-list__tab-link"
-                >
-                    Deployment Metrics
-                    </NavLink>
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`} className="tab-list__tab-link"
+                    onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'Deployment Metrics Clicked',
+                        });
+                    }}>Deployment Metrics
+                </NavLink>
             </li>
+
             <li className="tab-list__tab">
                 <NavLink activeClassName="active"
                     to={`${match.url}/${URLS.APP_CONFIG}`}
-                    className="tab-list__tab-link flex">
+                    className="tab-list__tab-link flex" onClick={(event) => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'App Configuration Clicked',
+                        });
+                    }}>
                     <Settings className="tab-list__icon icon-dim-20 mr-4" />
                     App Configuration
                 </NavLink>
