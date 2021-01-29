@@ -159,15 +159,17 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleChartChange(chartName: ChartTypes, status?: string): void {
+        let mainChartUrl = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, chartName, this.props.newPodHash, this.state.calendarInputs, this.state.tab, true, this.state.statusCode);
         this.setState({
             mainChartName: chartName,
             statusCode: status,
+            mainChartUrl,
         });
     }
 
     handleTabChange(event) {
-        let { cpu, ram, throughput, status2xx, status4xx, status5xx } = this.getNewGraphs(event.target.value);
-        this.setState({ tab: event.target.value, cpu, ram, throughput, status2xx, status4xx, status5xx });
+        let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(event.target.value);
+        this.setState({ tab: event.target.value, cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
     }
 
     handleStatusChange(selected): void {

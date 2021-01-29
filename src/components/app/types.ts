@@ -25,6 +25,7 @@ export interface AddNewAppState {
 }
 
 export interface AppDetails {
+    appId: number;
     appName: string;
     environmentId: number;
     environmentName: string;
@@ -285,7 +286,7 @@ export enum Nodes {
     PersistentVolume = 'PersistentVolume',
     Containers = 'Containers',// containers are being trated same way as nodes for nsted table generation
 }
- export type NodeType = keyof typeof Nodes;
+export type NodeType = keyof typeof Nodes;
 
 export enum AggregationKeys {
     Workloads = 'Workloads',
@@ -329,7 +330,8 @@ export enum NodeDetailTabs {
     EVENTS = 'EVENTS',
     LOGS = 'LOGS',
     MANIFEST = 'MANIFEST',
-    DESCRIBE = 'DESCRIBE'
+    DESCRIBE = 'DESCRIBE',
+    TERMINAL = "TERMINAL",
 };
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
 

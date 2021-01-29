@@ -1,39 +1,39 @@
 //@ts-nocheck
 
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
 import { PopupMenu, Pod as PodIcon, Trash, showError, Progressing, useAsync, copyToClipboard, not, useSearchString } from '../common';
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 import { toast } from 'react-toastify'
-import {  deletePod as deletePodService } from './service'
-import {ReactComponent as DropDown} from '../../assets/icons/ic-dropdown-filled.svg'
-import {AggregatedNodes, Nodes, NodeType, NodeDetailTabs, NodeDetailTabsType, AggregationKeys, AggregationKeysType} from './types'
-import {ReactComponent as ErrorImage} from '../../assets/icons/misc/errorInfo.svg';
+import { deletePod as deletePodService } from './service'
+import { ReactComponent as DropDown } from '../../assets/icons/ic-dropdown-filled.svg'
+import { AggregatedNodes, Nodes, NodeType, NodeDetailTabs, NodeDetailTabsType, AggregationKeys, AggregationKeysType } from './types'
+import { ReactComponent as ErrorImage } from '../../assets/icons/misc/errorInfo.svg';
 
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
 import { getAggregator } from './details/appDetails/utils';
 import Tippy from '@tippyjs/react';
 
-interface ResourceTree{
+interface ResourceTree {
     appName: string;
     environmentName: string;
     nodes: AggregatedNodes;
-    describeNode: (name: string, containerName?: string)=> void;
+    describeNode: (name: string, containerName?: string) => void;
     isAppDeployment: boolean;
 
 }
 
-function ignoreCaseCompare(a: string, b: string):boolean{
+function ignoreCaseCompare(a: string, b: string): boolean {
     return a.toLowerCase() === b.toLowerCase()
 }
 
-function getGenricRowFields(kind:NodeType):string[]{
-    switch(kind){
+function getGenricRowFields(kind: NodeType): string[] {
+    switch (kind) {
         case Nodes.Service:
-            return ['name','url']
+            return ['name', 'url']
         case Nodes.Pod:
             return ['name', 'ready', ''] // empty string denotes menu
         default:
@@ -41,10 +41,10 @@ function getGenricRowFields(kind:NodeType):string[]{
     }
 }
 
-export const StatusFilterButton:React.FC<{status: string; count?: number}>=({status, count})=>{
+export const StatusFilterButton: React.FC<{ status: string; count?: number }> = ({ status, count }) => {
     const location = useLocation()
-    const history=useHistory()
-    const {queryParams} = useSearchString()
+    const history = useHistory()
+    const { queryParams } = useSearchString()
 
     const statusFilter = queryParams.has('status') ? queryParams.get('status') : ''
     return (
@@ -54,35 +54,35 @@ export const StatusFilterButton:React.FC<{status: string; count?: number}>=({sta
             placement="bottom"
             content={status === 'All' ? 'All Objects' : status}
         >
-        <div
-            data-testid={`${status}-filter-button`}
-            onClick={(e) => {
-                if(status.toLowerCase() === 'all'){
-                    queryParams.delete('status')
-                }
-                else{
-                     queryParams.set('status', status);
-                }
-                history.replace(location.pathname + '?' + queryParams.toString());
-            }}
-            style={{
-                height: '32px',
-                border: (!statusFilter && status.toLowerCase() === 'all') ||ignoreCaseCompare(statusFilter, status) ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                background: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? 'var(--B100)' : 'transparent',
-            }}
-            className="pointer ml-8 br-4 flex left p-6"
-        >
-            {status !== 'All' && <div className={`app-summary__icon icon-dim-16 mr-6 ${status.toLowerCase()} ${status.toLowerCase()}--node`} style={{zIndex:'unset'}}/>}
-            <span className="capitalize">{count || status}</span>
-        </div>
+            <div
+                data-testid={`${status}-filter-button`}
+                onClick={(e) => {
+                    if (status.toLowerCase() === 'all') {
+                        queryParams.delete('status')
+                    }
+                    else {
+                        queryParams.set('status', status);
+                    }
+                    history.replace(location.pathname + '?' + queryParams.toString());
+                }}
+                style={{
+                    height: '32px',
+                    border: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                    background: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? 'var(--B100)' : 'transparent',
+                }}
+                className="pointer ml-8 br-4 flex left p-6"
+            >
+                {status !== 'All' && <div className={`app-summary__icon icon-dim-16 mr-6 ${status.toLowerCase()} ${status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
+                <span className="capitalize">{count || status}</span>
+            </div>
         </Tippy>
     );
 }
-const ResourceTreeNodes:React.FC<ResourceTree>=({ nodes, describeNode, isAppDeployment = false, appName, environmentName }) => {
+const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName }) => {
     const { url, path } = useRouteMatch()
-    const params = useParams<{appId: string, envId: string, kind?: NodeType}>()
+    const params = useParams<{ appId: string, envId: string, kind?: NodeType }>()
     const history = useHistory()
-    const {queryParams, searchParams} = useSearchString()
+    const { queryParams, searchParams } = useSearchString()
 
     const orderedAggregators: AggregationKeysType[] = [
         AggregationKeys.Workloads,
@@ -100,21 +100,21 @@ const ResourceTreeNodes:React.FC<ResourceTree>=({ nodes, describeNode, isAppDepl
         for (let kind of Object.keys(nodes.nodes)) {
             const kindNodes = nodes.nodes[kind];
             for (let [nodeName, nodeDetails] of kindNodes) {
-                if((nodeDetails?.status || nodeDetails?.health?.status) === searchParams.status){
-                    history.push(generatePath(path, {...params, kind: nodeDetails.kind})+'?'+queryParams.toString())
+                if ((nodeDetails?.status || nodeDetails?.health?.status) === searchParams.status) {
+                    history.push(generatePath(path, { ...params, kind: nodeDetails.kind }) + '?' + queryParams.toString())
                     break outerloop
                 }
             }
         }
     }, [searchParams.status]);
 
-    if(!params.kind){
-        if(nodes.nodes.Pod){
+    if (!params.kind) {
+        if (nodes.nodes.Pod) {
             history.replace(`${url}/Pod`)
         }
-        else{
+        else {
             const allNodes = Object.keys(nodes.nodes)
-            if(allNodes.length){
+            if (allNodes.length) {
                 history.replace(`${url}/${allNodes[0]}`)
             }
         }
@@ -133,7 +133,7 @@ const ResourceTreeNodes:React.FC<ResourceTree>=({ nodes, describeNode, isAppDepl
             }}
         >
             <div className="flex left pl-24 pr-24 bcn-0" style={{ gridColumn: '1 / span 2' }}>
-                <span className="fs-14 fw-6 cn-7 flex"><CubeIcon className="icon-dim-20 mr-8 fcn-7"/> APPLICATION OBJECTS</span>
+                <span className="fs-14 fw-6 cn-7 flex"><CubeIcon className="icon-dim-20 mr-8 fcn-7" /> APPLICATION OBJECTS</span>
                 <div style={{ marginLeft: 'auto' }} className="flex right">
                     <StatusFilterButton status={'All'} />
                     {Object.entries(nodes.statusCount).map(([status, count]) => (
@@ -204,22 +204,22 @@ const ResourceTreeNodes:React.FC<ResourceTree>=({ nodes, describeNode, isAppDepl
     );
 }
 
-export const NodeGroup:React.FC<{title: AggregationKeysType, data:Object; aggregatedNodes: AggregatedNodes}>=({title, data, aggregatedNodes})=>{
+export const NodeGroup: React.FC<{ title: AggregationKeysType, data: Object; aggregatedNodes: AggregatedNodes }> = ({ title, data, aggregatedNodes }) => {
     const [collapsed, setCollapsed] = useState(true)
-    const {url,path} = useRouteMatch()
-    const params = useParams<{appId: string; envId: string; kind: NodeType; tab?: NodeDetailTabsType}>()
+    const { url, path } = useRouteMatch()
+    const params = useParams<{ appId: string; envId: string; kind: NodeType; tab?: NodeDetailTabsType }>()
     const location = useLocation();
-    const {searchParams, queryParams} = useSearchString()
+    const { searchParams, queryParams } = useSearchString()
     const filterStatus = queryParams.has('status') ? queryParams.get('status') : '';
-    
+
     useEffect(() => {
         const aggregator = getAggregator(params.kind);
         if (aggregator === title) {
             setCollapsed(false);
         }
     }, [params.kind]);
-    
-    if(filterStatus && filterStatus !== 'All'){
+
+    if (filterStatus && filterStatus !== 'All') {
         if (
             !aggregatedNodes ||
             !aggregatedNodes.aggregatorStatusCount ||
@@ -249,13 +249,13 @@ export const NodeGroup:React.FC<{title: AggregationKeysType, data:Object; aggreg
             </>
             {!collapsed &&
                 Object.keys(data)
-                    .filter((kind) => !filterStatus ||  (aggregatedNodes.nodeStatusCount[kind] && aggregatedNodes.nodeStatusCount[kind][filterStatus]))
+                    .filter((kind) => !filterStatus || (aggregatedNodes.nodeStatusCount[kind] && aggregatedNodes.nodeStatusCount[kind][filterStatus]))
                     .map((kind) => (
                         <React.Fragment key={kind}>
                             <span />
                             <NavLink
                                 activeClassName="active"
-                                data-testid={kind+"-anchor"}
+                                data-testid={kind + "-anchor"}
                                 key={kind}
                                 to={generatePath(path, { ...params, kind }) + location.search}
                                 style={{ height: '36px' }}
@@ -276,29 +276,29 @@ export const NodeGroup:React.FC<{title: AggregationKeysType, data:Object; aggreg
 }
 
 
-interface AllPods{
+interface AllPods {
     appName: string;
     environmentName: string;
     isAppDeployment: boolean;
     pods: Map<string, any>;
-    nodes:AggregatedNodes;
-    describeNode: (nodeName: string, containerName?: string)=>void;
+    nodes: AggregatedNodes;
+    describeNode: (nodeName: string, containerName?: string) => void;
 }
-export const AllPods:React.FC<AllPods>=({ isAppDeployment, pods, describeNode, appName, environmentName, nodes})=> {
-    const params = useParams<{appId: string, envId: string}>()
-    const podsArray=Array.from(pods).map(([podName, pod], idx)=>pod)
-    const [podTab, selectPodTab] = useState<'old'| 'new'>('new')
+export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode, appName, environmentName, nodes }) => {
+    const params = useParams<{ appId: string, envId: string }>()
+    const podsArray = Array.from(pods).map(([podName, pod], idx) => pod)
+    const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
 
     const { newPods, oldPods, newPodStats, oldPodStats, allPodStats } = podsArray.reduce((agg, curr, idx) => {
-        let podStatus = curr.info.filter(({name, value})=>name === 'Status Reason')[0]?.value || ''
+        let podStatus = curr.info.filter(({ name, value }) => name === 'Status Reason')[0]?.value || ''
         podStatus = podStatus.toLowerCase()
         curr.status = podStatus
-        if(curr.isNew){
+        if (curr.isNew) {
             agg.newPods.set(curr.name, curr)
-            agg.newPodStats[podStatus] = (agg.newPodStats[podStatus] || 0 ) + 1
+            agg.newPodStats[podStatus] = (agg.newPodStats[podStatus] || 0) + 1
             agg.newPodStats['all'] += 1
         }
-        else{
+        else {
             agg.oldPods.set(curr.name, curr);
             agg.oldPodStats[podStatus] = (agg.oldPodStats[podStatus] || 0) + 1;
             agg.oldPodStats['all'] += 1;
@@ -319,9 +319,8 @@ export const AllPods:React.FC<AllPods>=({ isAppDeployment, pods, describeNode, a
                 <>
                     <div className="flex left old-new-switch-container">
                         <div
-                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${
-                                podTab === 'new' ? 'active' : ''
-                            }`}
+                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'new' ? 'active' : ''
+                                }`}
                             onClick={(e) => selectPodTab('new')}
                             data-testid="all-pods-new"
                         >
@@ -340,9 +339,8 @@ export const AllPods:React.FC<AllPods>=({ isAppDeployment, pods, describeNode, a
                             </div>
                         </div>
                         <div
-                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${
-                                podTab === 'old' ? 'active' : ''
-                            }`}
+                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'old' ? 'active' : ''
+                                }`}
                             onClick={(e) => selectPodTab('old')}
                             data-testid="all-pods-old"
                         >
@@ -363,7 +361,7 @@ export const AllPods:React.FC<AllPods>=({ isAppDeployment, pods, describeNode, a
                     </div>
                     <NestedTable
                         type={Nodes.Pod}
-                        Data={ podTab === 'new' ? newPods : oldPods}
+                        Data={podTab === 'new' ? newPods : oldPods}
                         nodes={nodes}
                         describeNode={describeNode}
                         level={1}
@@ -372,21 +370,21 @@ export const AllPods:React.FC<AllPods>=({ isAppDeployment, pods, describeNode, a
                     />
                 </>
             ) : (
-                <GenericInfo
-                    nodes={nodes}
-                    level={1}
-                    Data={nodes.nodes[Nodes.Pod]}
-                    type={Nodes.Pod}
-                    describeNode={describeNode}
-                    appName={appName}
-                    environmentName={environmentName}
-                />
-            )}
+                    <GenericInfo
+                        nodes={nodes}
+                        level={1}
+                        Data={nodes.nodes[Nodes.Pod]}
+                        type={Nodes.Pod}
+                        describeNode={describeNode}
+                        appName={appName}
+                        environmentName={environmentName}
+                    />
+                )}
         </div>
     );
 }
 
-export const GenericInfo:React.FC<{appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string)=>void}>=({ appName, environmentName, nodes, Data, type, describeNode, level=1 })=> {
+export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 }) => {
     return (
         <div className={`generic-info-container flex left column top w-100`}>
             {level === 1 && (
@@ -394,7 +392,7 @@ export const GenericInfo:React.FC<{appName: string; environmentName: string; nod
                     className="flex left column w-100 generic-info-header"
                 >
                     <div style={{ height: '64px' }} className="pl-16 pr-16 flex column left">
-                    <div className="fs-14 fw-6 cn-9">{type} ({nodes.nodes[type].size})</div>
+                        <div className="fs-14 fw-6 cn-9">{type} ({nodes.nodes[type].size})</div>
                         <div className="flex left">
                             {nodes.nodeStatusCount[type] &&
                                 Object.entries(nodes.nodeStatusCount[type]).map(([status, count], idx, arr) => (
@@ -422,10 +420,10 @@ export const GenericInfo:React.FC<{appName: string; environmentName: string; nod
     );
 }
 
-export const NestedTable:React.FC<{appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode:(nodeName: string, containerName: string)=>void}>=({appName, environmentName, level, type, Data, nodes, describeNode})=>{
+export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void }> = ({ appName, environmentName, level, type, Data, nodes, describeNode }) => {
     const tableColumns = getGenricRowFields(type)
     return (
-        <table className={`resource-tree ${level === 1 ? 'ml-10' : ''}`} style={{width: level === 1 ? 'calc( 100% - 10px )' : '100%'}}>
+        <table className={`resource-tree ${level === 1 ? 'ml-10' : ''}`} style={{ width: level === 1 ? 'calc( 100% - 10px )' : '100%' }}>
             <thead>
                 <tr>
                     <th></th>
@@ -452,7 +450,7 @@ export const NestedTable:React.FC<{appName: string; environmentName: string; lev
                     <tr>
                         <td colSpan={tableColumns.length + 1}>
                             <div className="w-100 flex" style={{ height: '400px' }}>
-                                <NoPod selectMessage="No Available Pods"/>
+                                <NoPod selectMessage="No Available Pods" />
                             </div>
                         </td>
                     </tr>
@@ -477,18 +475,18 @@ const URL: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
-export const Name:React.FC<{nodeDetails: any, describeNode:(nodeName: string, containerName?: string)=>void}>= ({nodeDetails, describeNode})=>{
+export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string, containerName?: string) => void }> = ({ nodeDetails, describeNode }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
     const { queryParams } = useSearchString();
     const [copied, setCopied] = useState(false);
 
-    useEffect(()=>{
-        if(!copied) return
-        setTimeout(()=>setCopied(false), 2000)
-    },[copied])
-    
+    useEffect(() => {
+        if (!copied) return
+        setTimeout(() => setCopied(false), 2000)
+    }, [copied])
+
     function showManifest(tab) {
         queryParams.set('kind', nodeDetails.kind === Nodes.Containers ? Nodes.Pod : nodeDetails.kind);
         const newUrl = generatePath(path, { ...params, tab }) + '?' + queryParams.toString();
@@ -510,7 +508,7 @@ export const Name:React.FC<{nodeDetails: any, describeNode:(nodeName: string, co
                         >
                             <Clipboard
                                 className="hover-only icon-dim-18 pointer"
-                                onClick={(e) => copyToClipboard(nodeDetails?.name, ()=>setCopied(true))}
+                                onClick={(e) => copyToClipboard(nodeDetails?.name, () => setCopied(true))}
                             />
                         </Tippy>
                     </div>
@@ -552,17 +550,23 @@ export const Name:React.FC<{nodeDetails: any, describeNode:(nodeName: string, co
                         LOGS
                     </span>
                 )}
+                {nodeDetails.kind.toLowerCase() === 'pod' ?
+                    <span data-testid={`${nodeDetails.name}-logs`}
+                        className="hover-only fw-6 anchor pointer ml-6"
+                        onClick={(e) => showManifest(NodeDetailTabs.TERMINAL)}>
+                        TERMINAL
+                    </span> : null}
             </div>
         </td>
     );
 }
 
-export const Menu:React.FC<{appName: string; environmentName: string;  name,namespace, describeNode}>=({appName, environmentName, name, namespace, describeNode})=>{
+export const Menu: React.FC<{ appName: string; environmentName: string; name, namespace, describeNode }> = ({ appName, environmentName, name, namespace, describeNode }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
     const { queryParams } = useSearchString();
-    
+
     function describeNodeWrapper(tab) {
         queryParams.set('kind', Nodes.Pod);
         const newUrl = generatePath(path, { ...params, tab }) + '?' + queryParams.toString();
@@ -590,7 +594,7 @@ export const Menu:React.FC<{appName: string; environmentName: string;  name,name
     );
 }
 
-export const GenericRow:React.FC<{appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode:(nodeName: string, containerName?: string)=>void; level?: number}>=({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode,level})=> {
+export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
 
     const tableColumns = getGenricRowFields(nodeDetails.kind)
@@ -599,7 +603,7 @@ export const GenericRow:React.FC<{appName: string; environmentName: string; node
         <React.Fragment>
             <tr className={`data-row `}>
                 <td>
-                    {(nodeDetails.children || nodeDetails?.containers?.length) && (
+                    {(nodeDetails.children || nodeDetails?.containers?.length) ? (
                         <DropDown
                             data-testid="collapse-icon"
                             className="icon-dim-24 rotate"
@@ -610,7 +614,7 @@ export const GenericRow:React.FC<{appName: string; environmentName: string; node
                             }}
                             style={{ ['--rotateBy' as any]: collapsed ? '-90deg' : '0deg' }}
                         />
-                    )}
+                    ) : null}
                 </td>
                 {tableColumns.map((column) => {
                     if (column === 'url') return <URL key={column} url={nodeDetails.url} />;
@@ -639,12 +643,12 @@ export const GenericRow:React.FC<{appName: string; environmentName: string; node
                                 <NestedTable
                                     appName={appName}
                                     environmentName={environmentName}
-                                    level={level+1}
+                                    level={level + 1}
                                     key={childrenType}
                                     type={childrenType as NodeType}
                                     describeNode={describeNode}
                                     nodes={nodes}
-                                    Data={nodeDetails.children[childrenType].reduce((agg, childName)=>{
+                                    Data={nodeDetails.children[childrenType].reduce((agg, childName) => {
                                         agg.set(childName, nodes.nodes[childrenType].get(childName))
                                         return agg
                                     }, new Map)}
@@ -655,8 +659,8 @@ export const GenericRow:React.FC<{appName: string; environmentName: string; node
                                 type={Nodes.Containers}
                                 describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
                                 level={level + 1}
-                                Data={nodeDetails.containers.reduce((agg, containerName)=>{
-                                    agg.set(containerName, {name: containerName, kind: Nodes.Containers})
+                                Data={nodeDetails.containers.reduce((agg, containerName) => {
+                                    agg.set(containerName, { name: containerName, kind: Nodes.Containers })
                                     return agg
                                 }, new Map)}
                                 nodes={nodes}
@@ -671,8 +675,8 @@ export const GenericRow:React.FC<{appName: string; environmentName: string; node
     );
 }
 
-const PodPopup:React.FC<{appName: string, environmentName: string, name: string, namespace: string, describeNode: (tab?: NodeDetailTabsType)=>void}>=({ appName, environmentName, name,namespace,  describeNode })=> {
-    const params=useParams<{appId: string; envId: string}>();
+const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, namespace, describeNode }) => {
+    const params = useParams<{ appId: string; envId: string }>();
     async function asyncDeletePod(e) {
         let apiParams = {
             appId: +params.appId,
@@ -709,8 +713,8 @@ const PodPopup:React.FC<{appName: string, environmentName: string, name: string,
     </div>
 }
 
-export function NoPod({ selectMessage = "Select a pod to view events", style={} }) {
-    return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{...style}}>
+export function NoPod({ selectMessage = "Select a pod to view events", style = {} }) {
+    return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
         <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
         <p>{selectMessage}</p>
     </div>

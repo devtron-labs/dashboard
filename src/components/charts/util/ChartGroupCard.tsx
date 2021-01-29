@@ -30,7 +30,7 @@ export default class ChartGroupCard extends Component<ChartGroupCardProps> {
         return <Link key={chartGroup.id} className={classes} to={GROUP_EDIT_LINK}>
             <div className="chart-grid-item__chart-icons">
                 {chartGroupEntries?.map((chart, index) => {
-                    return <img key={index} src={chart.chartMetaData.icon || ""}
+                    return <img key={index} alt="chart" src={chart.chartMetaData.icon || ""}
                         className="chart-group__chart-icon chart-grid-item__icon" 
                         onError={this.handleImageError} />
                 })}

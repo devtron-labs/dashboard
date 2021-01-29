@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Progressing, useBreadcrumb, BreadCrumb, OpaqueModal } from '../../common';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../charts.service';
-import { Details, EnvSelector } from '../../app/details/appDetails/AppDetails';
+import { Details } from '../../app/details/appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
 import DeployChart from '../modal/DeployChart';
-import yamlJsParser from 'yamljs';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
 import AppSelector from '../../AppSelector';
@@ -127,23 +126,28 @@ export default function AppDetail() {
                                             version: appDetails.appStoreAppVersion,
                                         },
                                     ])}
-                                    {...installedConfig}
+                                    // {...installedConfig}
+                                    installedAppId={installedConfig.installedAppId}
+                                    appStoreVersion={installedConfig.appStoreVersion}
+                                    appName ={installedConfig.appName}
+                                    environmentId={installedConfig.environmentId}
+                                    teamId={installedConfig.teamId}
+                                    readme={installedConfig.readme}
+                                    deprecated={installedConfig.deprecated}
+                                    appStoreId={installedConfig.appStoreId}
+                                    installedAppVersionId={installedConfig.id}
                                     valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
                                     rawValues={
                                         installedConfig.valuesOverrideYaml
                                     }
-                                    appName={installedConfig.appName}
                                     installedAppVersion={installedConfig.id}
+                                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                     chartValuesFromParent={{
                                         id: appDetails.appStoreInstalledAppVersionId,
                                         kind: 'DEPLOYED',
                                     }}
-                                    deprecated={installedConfig.deprecated}
-                                    appStoreId={installedConfig.appStoreId}
-                                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
                                     chartName={appDetails.appStoreChartName}
                                     name={appDetails.appStoreAppName}
-                                    installedAppVersionId={installedConfig.id}
                                     onHide={closeModal}
                                 />
                             ) : (

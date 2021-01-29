@@ -78,7 +78,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
         terminal.current = new Terminal({
             scrollback: 99999,
             fontSize: 14,
-            lineHeight: 1.5,
+            lineHeight: 1.4,
             fontFamily: 'Inconsolata',
             // disableStdin: true,
             cursorStyle: 'bar',
@@ -122,8 +122,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
     return (
         <>
         <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>
-            }
+            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>}
         </AutoSizer>
         <Scroller
             scrollToBottom={scrollToBottom}
@@ -140,7 +139,7 @@ function ResizableLogs({fitAddon, height, width, showCopyToast}){
             if (fitAddon.current) fitAddon.current.fit();
         },
         100,
-        [height],
+        [height, width],
     );
 
     return (

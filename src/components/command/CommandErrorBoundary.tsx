@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { toast } from 'react-toastify';
-import ReactGA from 'react-ga';
 export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
     constructor(props) {
         super(props);
@@ -12,13 +11,8 @@ export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error("Error");
         toast.error("Some Error Occurred");
-        ReactGA.event({
-            category: 'Command Bar',
-            action: 'Error',
-            label: '',
-        });
+        console.error("Error")
         this.props.toggleCommandBar(false);
     }
 
