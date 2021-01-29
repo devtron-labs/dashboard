@@ -218,8 +218,10 @@ export interface DiscoverChartsViewProps extends DiscoverChartsContainerState {
 }
 
 export interface ChartGroupState {
-    charts: ChartGroupEntry[],
-    availableCharts: Map<number, Chart>,
+    chartGroups: any;
+    chartRepos: any[];
+    charts: ChartGroupEntry[];
+    availableCharts: Map<number, Chart>;
     selectedInstances: { [key: number]: number[] };
     configureChartIndex: number;
     name?: string;
@@ -267,5 +269,6 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     discardValuesYamlChanges: (index: number) => void;
     updateChartGroupEntriesFromResponse: () => void;
     reloadState: () => void;
-    setCharts: (charts:ChartGroupEntry[]) => void;
+    applyFilterOnCharts: (qs: string) => Promise<void>;
+    setCharts: (charts: ChartGroupEntry[]) => void;
 }

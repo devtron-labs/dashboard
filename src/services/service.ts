@@ -84,8 +84,12 @@ export function getProjectFilteredApps(projectIds: number[] | string[]): Promise
     return get(`app/min?teamIds=${projectIds.join(",")}`)
 }
 
-export function getAvailableCharts(options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
-    return get(`${Routes.CHART_AVAILABLE}/`, options).then((response) => {
+export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
+    let url = `${Routes.CHART_AVAILABLE}/`;
+    if (queryString) {
+        url = `${url}${queryString}`
+    }
+    return get(url, options).then((response) => {
         return {
             ...response,
             result: response.result || [],
@@ -245,6 +249,11 @@ export function getLastExecutionMinByAppAndEnv(appId: number | string, envId: nu
             }
         }
     })
+}
+
+export function getChartRepoList(): Promise<ResponseType> {
+    const URL = `${Routes.CHART_LIST}`;
+    return get(URL);
 }
 
 
