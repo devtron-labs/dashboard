@@ -36,25 +36,6 @@
     margin-bottom: 2px;
 }
 
-.search__input--app-list {
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-
-.search__clear-button {
-    background-color: transparent;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    z-index: 1;
-    border: none;
-    font-size: 16px;
-    padding: 2px;
-    color: #72767a;
-    margin: 0px 5px;
-}
 
 .filters {
     flex: 1 1;

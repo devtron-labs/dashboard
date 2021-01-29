@@ -1517,3 +1517,11 @@ button.anchor {
     line-height: 1.67;
     color: #f32e2e;
 }
+.search-with-dropdown {
+    width: 100%;
+    border: solid 1px var(--N200);
+    display: flex;
+    border-radius: 4px;
+    background-color: var(--N100);
+    align-items: center;
+}
