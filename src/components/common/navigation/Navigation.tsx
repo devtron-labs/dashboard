@@ -65,7 +65,7 @@ const NavigationListBottom = [
 	{
 		title: 'Discord Community',
 		iconClass: 'nav-short-discord',
-		href: 'https://discord.com/invite/72JDKy4',
+		href: 'https://discord.gg/jsRG5qx2gp',
 	},
 ];
 export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
