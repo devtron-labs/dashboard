@@ -31,13 +31,14 @@ export interface ChartsProps extends RouteComponentProps<any> {
 }
 
 
-export interface DeployedChartProps {
+export interface DeployedChartProps extends RouteComponentProps<{}> {
 
 }
 
 export interface DeployedChartState {
     code: number;
     view: string;
+    isCommandBarActive: boolean;
     installedCharts: InstalledChartGroup[];
 }
 

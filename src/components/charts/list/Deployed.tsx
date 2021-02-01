@@ -8,8 +8,9 @@ import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
 import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
-import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import {HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator} from '../Charts'
+import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
+import { Command, CommandErrorBoundary } from '../../command';
+import { HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -18,14 +19,22 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             code: 0,
             view: ViewType.LOADING,
             installedCharts: [],
+            isCommandBarActive: false,
         }
+        this.toggleCommandBar = this.toggleCommandBar.bind(this);
     }
 
     componentDidMount() {
         this.getInstalledCharts();
     }
 
-    getInstalledCharts() {
+    toggleCommandBar(flag: boolean): void {
+        this.setState({
+            isCommandBarActive: flag
+        });
+    }
+
+    getInstalledCharts(): void {
         getInstalledCharts().then((response) => {
             this.setState({ installedCharts: response.result, view: ViewType.FORM });
         }).catch((errors) => {
@@ -36,7 +45,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         })
     }
 
-    handleImageError(e) {
+    handleImageError(e): void {
         const target = e.target as HTMLImageElement
         target.onerror = null
         target.src = placeHolder
@@ -49,13 +58,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 <div className="chart-grid-item__icon-wrapper">
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
-                {
-                    deprecated && 
-                    <div>
-                        <UpdateWarn/>
+                {deprecated && <div>
+                        <UpdateWarn />
                         {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
-                    </div>
-                }
+                    </div>}
             </div>
             <div className="chart-grid-item__title ellipsis-right">{appName}</div>
             <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
@@ -68,14 +74,28 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (this.state.code) return <ErrorScreenManager code={this.state.code} />
         else return <div className="chart-list-page">
             <GenericChartsHeader>
-                <HeaderTitle>Chart Store</HeaderTitle>
-                <ChartDetailNavigator/>
-                <HeaderButtonGroup><span/></HeaderButtonGroup>
+                <div className="flexbox flex-align-items-center flex-justify">
+                    <h1 className="m-0 fs-16 cn-9 fw-6">Chart Store</h1>
+                    <div className="cursor flexbox flex-align-items-center bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                        onClick={() => this.toggleCommandBar(true)}>
+                        <span>Jump to...</span>
+                    </div>
+                    <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
+                        <Command location={this.props.location}
+                            match={this.props.match}
+                            history={this.props.history}
+                            isCommandBarActive={this.state.isCommandBarActive}
+                            toggleCommandBar={this.toggleCommandBar}
+                        />
+                    </CommandErrorBoundary>
+                </div>
+                <ChartDetailNavigator />
+                <HeaderButtonGroup><span /></HeaderButtonGroup>
             </GenericChartsHeader>
-            {this.state.view === ViewType.LOADING 
-            ? <Progressing pageLoader />
-            :    this.state.installedCharts.length === 0 
-                ? <EmptyState>
+            {this.state.view === ViewType.LOADING
+                ? <Progressing pageLoader />
+                : this.state.installedCharts.length === 0
+                    ? <EmptyState>
                         <EmptyState.Image><img src={emptyAppListImage} alt="" /> </EmptyState.Image>
                         <EmptyState.Title><h2 className="empty__title">No Charts Deployed</h2></EmptyState.Title>
                         <EmptyState.Subtitle>You haven’t deployed any charts. Browse and deploy charts to find them here.</EmptyState.Subtitle>
@@ -84,10 +104,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         </EmptyState.Button>
                     </EmptyState>
                     : <div className="chart-grid">
-                    {this.state.installedCharts.map((chart) => {
-                        return this.renderCard(chart);
-                    })}
-                </div>
+                        {this.state.installedCharts.map((chart) => {
+                            return this.renderCard(chart);
+                        })}
+                    </div>
             }
         </div>
     }

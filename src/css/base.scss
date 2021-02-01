@@ -100,7 +100,7 @@ a:focus {
 }
 
 .page-header--tabs {
-    grid-template-rows: 1.5fr 0.9fr;
+    grid-template-rows: 1fr 1fr;
 }
 
 .page-header__title {
@@ -178,9 +178,11 @@ a:focus {
 .ff-monospace {
     font-family: monospace;
 }
-.react-select__bottom{
+
+.react-select__bottom {
     border-top: solid 1px var(--N100);
 }
+
 @mixin tab-container($bgColor,
     $color) {
     .tab {
@@ -269,6 +271,10 @@ a:focus {
 
 .flex-wrap {
     flex-wrap: wrap;
+}
+
+.flex-align-items-center {
+    align-items: center;
 }
 
 .flex-nowrap {
@@ -1517,6 +1523,7 @@ button.anchor {
     line-height: 1.67;
     color: #f32e2e;
 }
+
 .search-with-dropdown {
     width: 100%;
     border: solid 1px var(--N200);

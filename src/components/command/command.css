@@ -190,3 +190,9 @@
     letter-spacing: normal;
     color: #f32e2e;
 }
+
+.command-open {
+    line-height: 1.54;
+    height: 30px;
+    width: 220px;
+}

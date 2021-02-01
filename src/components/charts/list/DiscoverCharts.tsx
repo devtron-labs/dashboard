@@ -27,6 +27,7 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { Command, CommandErrorBoundary } from '../../command';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -52,7 +53,8 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 function DiscoverChartList() {
     const location = useLocation();
     const history = useHistory();
-    const { url } = useRouteMatch();
+    const match = useRouteMatch();
+    const { url } = match;
     const { breadcrumbs, setCrumb } = useBreadcrumb({});
     const {
         state,
@@ -71,6 +73,7 @@ function DiscoverChartList() {
     const [appStoreName, setAppStoreName] = useState("");
     const [searchApplied, setSearchApplied] = useState(false);
     const [includeDeprecated, setIncludeDeprecated] = useState(1);
+    const [isCommandBarActive, toggleCommandBar] = useState(false)
     const projectsMap = mapByKey(state.projects, 'id');
     const chartList: Chart[] = Array.from(state.availableCharts.values());
     const isLeavingPageNotAllowed = useRef(false);
@@ -214,7 +217,28 @@ function DiscoverChartList() {
     return <>
         <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
             <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
-                <ConditionalWrap condition={state.charts.length > 0}
+                {state.charts.length > 0 && (
+                    <div className="flex left">
+                        <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+                    </div>)}
+                <h1 className="m-0 fs-16 cn-9 fw-6 flex left">
+                    {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
+                </h1>
+                <div className="flex">
+                    {state.charts.length === 0 && (
+                        <NavLink className="cta no-decor flex mr-12" to={`${url}/create`} style={{ height: "30px" }}>
+                            <Add className="icon-dim-18 mr-5" />Create Group
+                        </NavLink>
+                    )}
+                    <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                        onClick={() => { toggleCommandBar(true); }}>
+                        <span>Jump to...</span>
+                        <span>/</span>
+                    </div>
+                </div>
+                {state.charts.length === 0 && <ChartDetailNavigator />}
+
+                {/* <ConditionalWrap condition={state.charts.length > 0}
                     wrap={children => <div className="flex left column">{children}</div>}>
                     <>
                         {state.charts.length > 0 && (
@@ -228,13 +252,21 @@ function DiscoverChartList() {
                         {state.charts.length === 0 && <ChartDetailNavigator />}
                     </>
                 </ConditionalWrap>
-                <div className="page-header__cta-container flex">
+                <div className="flex">
                     {state.charts.length === 0 && (
                         <NavLink className="cta no-decor flex" to={`${url}/create`}>
                             <Add className="icon-dim-18 mr-5" />Create Group
                         </NavLink>
                     )}
-                </div>
+                </div> */}
+                <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
+                    <Command location={location}
+                        match={match}
+                        history={history}
+                        isCommandBarActive={isCommandBarActive}
+                        toggleCommandBar={toggleCommandBar}
+                    />
+                </CommandErrorBoundary>
             </div>
             <Prompt when={isLeavingPageNotAllowed.current} message={'Your changes will be lost. Do you want to leave without deploying?'} />
             {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
@@ -408,7 +440,7 @@ function DiscoverChartList() {
 }
 
 
-export default function DiscoverCharts() {
+export default function Discover() {
     const history = useHistory();
     const location = useLocation();
     const match = useRouteMatch();

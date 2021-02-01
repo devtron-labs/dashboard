@@ -3,7 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { URLS } from '../../config';
 import Deployed from './list/Deployed';
 import DeploymentDetail from './deploymentDetail/DeploymentDetail';
-import DiscoverCharts from './list/DiscoverCharts';
+import Discover from './list/DiscoverCharts';
 import { NavLink } from 'react-router-dom'
 import './list/list.scss';
 import '../app/details/appDetails/appDetails.scss';
@@ -12,7 +12,7 @@ import './charts.css';
 export default function Charts() {
     return <Switch>
         <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-        <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
+        <Route path={`${URLS.CHARTS}/discover`} component={Discover} />
         <Route path={`${URLS.CHARTS}/deployed`} component={Deployed} />
         <Redirect to={`${URLS.CHARTS}/deployed`} />
     </Switch>
@@ -39,7 +39,7 @@ export function ChartDetailNavigator() {
 }
 
 export function HeaderTitle({ children=null }) {
-    return <h1 className="page-header__title flex left">{children}</h1>
+    return <h1 className="m-0 fs-20 cn-9 fw-6 flex left">{children}</h1>
 }
 
 export function HeaderSubtitle({ children=null }) {

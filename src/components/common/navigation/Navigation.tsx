@@ -7,7 +7,6 @@ import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import ReactDOM from 'react-dom';
-import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
 import './navigation.scss';
 
@@ -55,7 +54,7 @@ const NavigationListBottom = [
 		href: 'https://discord.gg/jsRG5qx2gp',
 	},
 ];
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
+export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; }> {
 
 	constructor(props) {
 		super(props);
@@ -63,12 +62,10 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			loginInfo: getLoginInfo(),
 			showLogoutCard: false,
 			showMoreOptionCard: false,
-			isCommandBarActive: false,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
 		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
-		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
 
 	toggleLogoutCard() {
@@ -76,10 +73,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	}
 	toggleMoreOptionCard() {
 		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
-	}
-
-	toggleCommandBar(flag: boolean): void {
-		this.setState({ isCommandBarActive: flag });
 	}
 
 	deleteCookie(): void {
@@ -268,14 +261,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 				</aside>
 
 			</nav>
-			<CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
-				<Command location={this.props.location}
-					match={this.props.match}
-					history={this.props.history}
-					isCommandBarActive={this.state.isCommandBarActive}
-					toggleCommandBar={this.toggleCommandBar}
-				/>
-			</CommandErrorBoundary>
+			
 		</>
 	}
 }
