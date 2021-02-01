@@ -19,34 +19,32 @@ const CDDetails = lazy(() => import('./cdDetails/CDDetails'));
 const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 
 export default function AppDetailsPage() {
-    const { url, path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
-    return (
-        <div className="app-details-page">
-            <AppHeader />
-            <ErrorBoundary>
-                <Suspense fallback={<Progressing pageLoader />}>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={() => <AppDetails />} />
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={() => <TriggerView />} />
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
-                            <CIDetails key={appId} />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`} component={DeploymentMetrics} />
-                        <Route path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
-                            <CDDetails key={appId} />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`} component={AppConfig} />
-                        {/* commented for time being */}
-                        {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
+    const { path } = useRouteMatch();
+    const { appId } = useParams<{ appId }>();
+    return <div className="app-details-page">
+        <AppHeader />
+        <ErrorBoundary>
+            <Suspense fallback={<Progressing pageLoader />}>
+                <Switch>
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetails />} />
+                    <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
+                    <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
+                        <CIDetails key={appId} />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`} component={DeploymentMetrics} />
+                    <Route path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
+                        <CDDetails key={appId} />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_CONFIG}`} component={AppConfig} />
+                    {/* commented for time being */}
+                    {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             render={() => <TestRunList />}
                         /> */}
-                        <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
-                    </Switch>
-                </Suspense>
-            </ErrorBoundary>
-        </div>
-    );
+                    <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
+                </Switch>
+            </Suspense>
+        </ErrorBoundary>
+    </div>
 }
 
 export function AppHeader() {
@@ -61,9 +59,10 @@ export function AppHeader() {
     }, [location.pathname])
 
     const handleAppChange = useCallback(({ label, value }) => {
-        const tab = currentPathname.current.replace(match.url, "").split("/")[1]
-        const newUrl = generatePath(match.path, { appId: value })
-        history.push(`${newUrl}/${tab}`)
+        const tab = currentPathname.current.replace(match.url, "").split("/")[1];
+        const newUrl = generatePath(match.path, { appId: value });
+        history.push(`${newUrl}/${tab}`);
+        console.log(`${newUrl}/${tab}`);
         ReactGA.event({
             category: 'App Selector',
             action: 'App Selection Changed',

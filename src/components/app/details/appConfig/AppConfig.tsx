@@ -1,14 +1,14 @@
-import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
 import { NavLink, Link, Route, Redirect, Switch } from 'react-router-dom';
-import { AppConfigStatus, URLS, getAppComposeURL, APP_COMPOSE_STAGE, getNextStageURL, getNavItems, isCIPipelineCreated } from '../../../../config';
-import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync } from '../../../common';
+import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType } from '../../../../config';
+import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, ErrorScreenManager } from '../../../common';
+import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
 import { deleteApp } from './appConfig.service';
-import { getAppConfigStatus, getSourceConfig, getAppOtherEnvironment } from '../../../../services/service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { ReactComponent as Dropdown } from '../../../../assets/icons/appstatus/ic-dropdown.svg'
+import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import warn from '../../../../assets/icons/ic-warning.svg';
-import lockIcon from '../../../../assets/icons/ic-locked.svg'
 import { toast } from 'react-toastify';
 import './appConfig.scss';
 
@@ -20,57 +20,155 @@ const Secret = lazy(() => import('../../../secrets/Secret'));
 const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'));
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'));
 
+export enum STAGE_NAME {
+    LOADING = "LOADING",
+    APP = "APP",
+    GIT_MATERIAL = "MATERIAL",
+    CI_CONFIG = "TEMPLATE",
+    CI_PIPELINE = "CI_PIPELINE",
+    DEPLOYMENT_TEMPLATE = "CHART",
+    CD_PIPELINE = "CD_PIPELINE",
+    CHART_ENV_CONFIG = "CHART_ENV_CONFIG",
+}
+
+type StageNames = keyof typeof STAGE_NAME | "WORKFLOW" | "CONFIGMAP" | "SECRETS" | "ENV_OVERRIDE";
+export interface AppConfigState {
+    view: string;
+    stattusCode: number;
+    stageName: StageNames;
+    isUnlocked: any,
+    appName: string;
+    isCiPipeline: boolean;
+    showDeleteConfirm: boolean;
+    navItems: any[],
+    maximumAllowedUrl: string;
+    canDeleteApp: boolean;
+}
+//stage: last configured stage
+function isUnlocked(stage) {
+    return {
+        material: stage === STAGE_NAME.APP || stage === STAGE_NAME.GIT_MATERIAL || stage === STAGE_NAME.CI_CONFIG || stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        dockerBuildConfig: stage === STAGE_NAME.GIT_MATERIAL || stage === STAGE_NAME.CI_CONFIG || stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        deploymentTemplate: stage === STAGE_NAME.CI_CONFIG || stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        workflowEditor: stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        configmap: stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        secret: stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+        envOverride: stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
+    }
+}
+
+function getNavItems(isUnlocked, appId): { navItems } {
+    let navItems = [
+        {
+            title: 'Git Material',
+            href: `/app/${appId}/edit/materials`,
+            stage: STAGE_NAME.GIT_MATERIAL,
+            isLocked: !isUnlocked.material,
+        },
+        {
+            title: 'Docker Build Config',
+            href: `/app/${appId}/edit/docker-build-config`,
+            stage: STAGE_NAME.CI_CONFIG,
+            isLocked: !isUnlocked.dockerBuildConfig,
+        },
+        {
+            title: 'Deployment Template',
+            href: `/app/${appId}/edit/deployment-template`,
+            stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
+            isLocked: !isUnlocked.deploymentTemplate,
+        },
+        {
+            title: 'Workflow Editor',
+            href: `/app/${appId}/edit/workflow`,
+            stage: "WORKFLOW",
+            isLocked: !isUnlocked.workflowEditor,
+        },
+        {
+            title: 'ConfigMaps',
+            href: `/app/${appId}/edit/configmap`,
+            stage: "CONFIGMAP",
+            isLocked: !isUnlocked.configmap,
+        },
+        {
+            title: 'Secrets',
+            href: `/app/${appId}/edit/secrets`,
+            stage: "SECRETS",
+            isLocked: !isUnlocked.secret,
+        },
+        {
+            title: 'Environment Override',
+            href: `/app/${appId}/edit/env-override`,
+            stage: "ENV_OVERRIDE",
+            isLocked: !isUnlocked.envOverride,
+        },
+    ];
+
+    return { navItems };
+}
 
 export default function AppConfig() {
-    const [state, setState] = useState({
-        configStatus: AppConfigStatus.APP,
-        appId: null,
-        navItems: [],
+    const { appId } = useParams<{ appId }>();
+    const match = useRouteMatch();
+    const location = useLocation();
+    const history = useHistory();
+
+    const [state, setState] = useState<AppConfigState>({
+        view: ViewType.LOADING,
+        stattusCode: 0,
+        isUnlocked: isUnlocked(STAGE_NAME.LOADING),
+        stageName: STAGE_NAME.LOADING,
+        appName: '',
         isCiPipeline: false,
         showDeleteConfirm: false,
-        appName: '',
+        navItems: [],
         maximumAllowedUrl: '',
+        canDeleteApp: false,
     })
-    const { appId } = useParams<{ appId }>()
-    const match = useRouteMatch()
-    const location = useLocation()
-    const history = useHistory()
-    const [loading, result, error, reload] = useAsync(() => Promise.all([fetchAppConfigStatus(), getSourceConfig(appId)]), [appId])
 
     useEffect(() => {
-        if (loading) return
-        if (error) {
-            showError(error)
-            return
-        }
-        setState(state => ({ ...state, appName: result ? result[1]?.result?.appName : '' }))
-
-    }, [loading, result, error])
-
-
-    const canDeleteApp: boolean = useMemo(() => {
-        if (loading) return false
-        if (result && result[1]?.result?.workflows?.length > 0) return false
-        return true
-    }, [loading, result])
-
-    async function fetchAppConfigStatus() {
-        getAppConfigStatus(+appId).then((response) => {
-            let nextUrl = getNextStageURL(response.result, appId);
-            let { configStatus, navItems } = getNavItems(response.result, appId);
-            let isCiPipeline = isCIPipelineCreated(response.result);
-            setState(state => ({ ...state, isCiPipeline, configStatus, navItems, maximumAllowedUrl: nextUrl, appId: +appId }));
+        Promise.all([getAppConfigStatus(+appId), getWorkflowList(appId)]).then(([configStatusRes, workflowRes]) => {
+            let lastConfiguredStage = configStatusRes.result.slice().reverse().find(stage => stage.status);
+            let lastConfiguredStageName = lastConfiguredStage.stageName;
+            let configs = isUnlocked(lastConfiguredStageName);
+            let { navItems } = getNavItems(configs, appId);
+            let index = navItems.findIndex(item => item.isLocked);
+            if (index < 0) {
+                index = 4;
+            }
+            let redirectUrl = navItems[index - 1].href;
+            let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
+            setState({
+                view: ViewType.FORM,
+                stattusCode: 200,
+                showDeleteConfirm: false,
+                appName: workflowRes.result.appName,
+                isUnlocked: configs,
+                stageName: lastConfiguredStage,
+                isCiPipeline,
+                navItems,
+                maximumAllowedUrl: redirectUrl,
+                canDeleteApp: workflowRes.result.workflows.length > 0,
+            })
             if (location.pathname === match.url) {
-                //tab is not specified
-                history.push(nextUrl)
+                console.log(redirectUrl);
+                history.replace(redirectUrl);
             }
         }).catch((errors) => {
             showError(errors);
+            setState({ ...state, view: ViewType.ERROR, stattusCode: errors.code });
+        })
+    }, [appId])
+
+    function reloadWorkflows() {
+        getWorkflowList(appId).then((response) => {
+            setState({
+                ...state,
+                canDeleteApp: response.result.length
+            })
         })
     }
-
     function redirectToWorkflowEditor() {
-        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR);
     }
 
     async function deleteAppHandler() {
@@ -85,16 +183,37 @@ export default function AppConfig() {
     }
 
     function respondOnSuccess() {
-        fetchAppConfigStatus();
+        getAppConfigStatus(+appId).then((configStatusRes) => {
+            let lastConfiguredStage = configStatusRes.result.slice().reverse().find(stage => stage.status);
+            let configs = isUnlocked(lastConfiguredStage.stageName);
+            let { navItems } = getNavItems(configs, appId);
+            let index = navItems.findIndex(item => item.isLocked);
+            if (index < 0) {
+                index = 4;
+            }
+            let redirectUrl = navItems[index - 1].href;
+            let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
+
+            setState(state => ({
+                ...state,
+                isUnlocked: configs,
+                stageName: lastConfiguredStage,
+                isCiPipeline,
+                navItems,
+                maximumAllowedUrl: redirectUrl,
+            }));
+        }).catch((errors) => {
+            showError(errors);
+        })
     }
 
     function showDeleteConfirmation(e) {
         setState((state) => ({ ...state, showDeleteConfirm: true }));
     }
 
-    function DeleteDialogContainer() {
+    function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
-            if (canDeleteApp)
+            if (state.canDeleteApp)
                 return <DeleteDialog title={`${state.appName}`}
                     description={"This will delete all resources associated with this application. Deleted applications cannot be restored."}
                     closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}
@@ -116,88 +235,65 @@ export default function AppConfig() {
         }
         return null
     }
-    if (+appId !== state.appId) return <Progressing pageLoader />
 
-    return <>
+    if (state.view === ViewType.LOADING) return <Progressing pageLoader />
+    else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
+    else return <>
         <div className="app-compose" >
             <div className="app-compose__nav flex column left top position-rel">
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
             </div>
             <div className="app-compose__main">
-                {loading
-                    ? <Progressing pageLoader />
-                    : <AppComposeRouter
-                        configStatus={state.configStatus}
-                        respondOnSuccess={respondOnSuccess}
-                        isCiPipeline={state.isCiPipeline}
-                        getWorkflows={reload}
-                        maxAllowedUrl={state.maximumAllowedUrl}
-                    />}
+                <AppComposeRouter navItems={state.navItems}
+                    isUnlocked={state.isUnlocked}
+                    isCiPipeline={state.isCiPipeline}
+                    maxAllowedUrl={state.maximumAllowedUrl}
+                    respondOnSuccess={respondOnSuccess}
+                    getWorkflows={reloadWorkflows} />
             </div>
         </div>
-        <DeleteDialogContainer />
+        {renderDeleteDialog()}
     </>
 }
 
-const NextButton: React.FC<{ configStatus: any; isCiPipeline: boolean; stage: APP_COMPOSE_STAGE; stageNo: number }> = ({ configStatus, isCiPipeline, stage, stageNo }) => {
-    const { push } = useHistory()
-    const { appId } = useParams<{ appId }>()
+const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, isDisabled }> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
+    const history = useHistory();
+    let index = navItems.findIndex(item => item.stage === currentStageName);
+    let nextUrl = navItems[index + 1].href;
 
-    if (!isCiPipeline)
-        return (
-            <div className="app-compose__next-section">
-                <button
-                    type="button"
-                    disabled={configStatus <= stageNo}
-                    className="cta align-right flex"
-                    onClick={(event) => {
-                        let url = getAppComposeURL(appId, stage);
-                        push(url);
-                    }}
-                >
-                    <span className="mr-5">Next </span>
-                    <Next className="icon-dim-18" />
-                </button>
-            </div>
-        );
+    if (!isCiPipeline) {
+        return <div className="app-compose__next-section">
+            <button type="button"
+                disabled={isDisabled}
+                className="cta align-right flex"
+                onClick={(event) => {
+                    history.push(nextUrl);
+                }}>
+                <span className="mr-5">Next </span>
+                <Next className="icon-dim-18" />
+            </button>
+        </div>
+    }
     return null;
 };
-
 
 function Navigation({ navItems, deleteApp }) {
     return (
         <>
             {navItems.map((item) => {
-                if (item.stage < AppConfigStatus.ENV_OVERRIDE) {
-                    return (
-                        <NavLink
-                            key={item.title}
-                            onClick={(event) => {
-                                if (item.isLocked) event.preventDefault();
-                            }}
-                            className={'app-compose__nav-item'}
-                            to={item.href}
-                        >
-                            {item.title}
-                            {item.isLocked && <img src={lockIcon} alt="locked" className="app-compose__nav-icon" />}
-                        </NavLink>
-                    );
-                } else {
-                    return item.isLocked ? (
-                        <NavLink
-                            key={item.title}
-                            onClick={(event) => {
-                                if (item.isLocked) event.preventDefault();
-                            }}
-                            className={'app-compose__nav-item'}
-                            to={item.href}
-                        >
-                            {item.title}
-                            {item.isLocked && <img src={lockIcon} alt="locked" className="app-compose__nav-icon" />}
-                        </NavLink>
-                    ) : (
-                            <EnvironmentOverrideRouter key={item.title} />
-                        );
+                if (item.stage !== "ENV_OVERRIDE" || (item.stage === "ENV_OVERRIDE" && item.isLocked)) {
+                    return <NavLink key={item.title}
+                        onClick={(event) => {
+                            if (item.isLocked) event.preventDefault();
+                        }}
+                        className={'app-compose__nav-item'}
+                        to={item.href}>
+                        {item.title}
+                        {item.isLocked && <Lock className="app-compose__nav-icon" />}
+                    </NavLink>
+                }
+                else {
+                    return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
             <button type="button"
@@ -209,77 +305,70 @@ function Navigation({ navItems, deleteApp }) {
     );
 }
 
-function AppComposeRouter({ configStatus, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl }) {
+function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl }) {
     const { path } = useRouteMatch();
-    return (
-        <ErrorBoundary>
-            <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${path}/materials`}>
+
+    return <ErrorBoundary>
+        <Suspense fallback={<Progressing pageLoader />}>
+            <Switch>
+                <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
+                    <>
+                        <MaterialList respondOnSuccess={respondOnSuccess} configStatus={-1} />
+                        <NextButton currentStageName={STAGE_NAME.GIT_MATERIAL}
+                            navItems={navItems}
+                            isDisabled={!isUnlocked.dockerBuildConfig}
+                            isCiPipeline={isCiPipeline} />
+                    </>
+                </Route>
+                {isUnlocked.dockerBuildConfig && (
+                    <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
                         <>
-                            <MaterialList respondOnSuccess={respondOnSuccess} configStatus={configStatus} />
-                            <NextButton
-                                stage={APP_COMPOSE_STAGE.CI_CONFIG}
-                                stageNo={AppConfigStatus.MATERIAL}
+                            <CIConfig respondOnSuccess={respondOnSuccess} />
+                            <NextButton currentStageName={STAGE_NAME.CI_CONFIG}
+                                navItems={navItems}
+                                isDisabled={!isUnlocked.deploymentTemplate}
                                 isCiPipeline={isCiPipeline}
-                                configStatus={configStatus}
                             />
                         </>
                     </Route>
-                    {configStatus > AppConfigStatus.MATERIAL && (
-                        <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
-                            <>
-                                <CIConfig respondOnSuccess={respondOnSuccess} />
-                                <NextButton
-                                    stage={APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE}
-                                    stageNo={AppConfigStatus.TEMPLATE}
-                                    isCiPipeline={isCiPipeline}
-                                    configStatus={configStatus}
-                                />
-                            </>
-                        </Route>
-                    )}
-                    {configStatus > AppConfigStatus.TEMPLATE && (
-                        <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                            <>
-                                <DeploymentConfig respondOnSuccess={respondOnSuccess} />
-                                <NextButton
-                                    stage={APP_COMPOSE_STAGE.WORKFLOW_EDITOR}
-                                    stageNo={AppConfigStatus.CHARTS}
-                                    isCiPipeline={isCiPipeline}
-                                    configStatus={configStatus}
-                                />
-                            </>
-                        </Route>
-                    )}
-                    {configStatus > AppConfigStatus.CHARTS && (
+                )}
+                {isUnlocked.deploymentTemplate && (
+                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <>
-                            <Route path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                                render={(props) => (
-                                    <WorkflowEdit
-                                        configStatus={configStatus}
-                                        isCiPipeline={isCiPipeline}
-                                        respondOnSuccess={respondOnSuccess}
-                                        getWorkflows={getWorkflows}
-                                    />
-                                )}
-                            />
-                            <Route path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                            />
-                            <Route path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                            />
-                            <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                                render={(props) => <EnvironmentOverride />}
+                            <DeploymentConfig respondOnSuccess={respondOnSuccess} />
+                            <NextButton currentStageName={STAGE_NAME.DEPLOYMENT_TEMPLATE}
+                                navItems={navItems}
+                                isDisabled={!isUnlocked.workflow}
+                                isCiPipeline={isCiPipeline}
                             />
                         </>
-                    )}
-                    <Redirect to={maxAllowedUrl} />
-                </Switch>
-            </Suspense>
-        </ErrorBoundary>
-    );
+                    </Route>
+                )}
+                {isUnlocked.workflowEditor && (
+                    <>
+                        <Route path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                            render={(props) => (
+                                <WorkflowEdit configStatus={1}
+                                    isCiPipeline={isCiPipeline}
+                                    respondOnSuccess={respondOnSuccess}
+                                    getWorkflows={getWorkflows}
+                                />
+                            )}
+                        />
+                        <Route path={`${path}/${URLS.APP_CM_CONFIG}`}
+                            render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                        />
+                        <Route path={`${path}/${URLS.APP_CS_CONFIG}`}
+                            render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                        />
+                        <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                            render={(props) => <EnvironmentOverride />}
+                        />
+                    </>
+                )}
+            </Switch>
+        </Suspense>
+    </ErrorBoundary>
 }
 
 function EnvironmentOverrideRouter() {

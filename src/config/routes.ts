@@ -54,28 +54,28 @@ export enum APP_COMPOSE_STAGE {
     ENV_OVERRIDE = 'ENV_OVERRIDE',
 };
 
-export const ORDERED_APP_COMPOSE_ROUTES: {stage: string, path: string}[] = [
-        { stage: APP_COMPOSE_STAGE.SOURCE_CONFIG, path: URLS.APP_GIT_CONFIG },
-        { stage: APP_COMPOSE_STAGE.CI_CONFIG, path: URLS.APP_DOCKER_CONFIG },
-        { stage: APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, path: URLS.APP_DEPLOYMENT_CONFIG },
-        { stage: APP_COMPOSE_STAGE.WORKFLOW_EDITOR, path: URLS.APP_WORKFLOW_CONFIG },
-        { stage: APP_COMPOSE_STAGE.CONFIG_MAPS, path: URLS.APP_CM_CONFIG },
-        { stage: APP_COMPOSE_STAGE.SECRETS, path: URLS.APP_CS_CONFIG },
-        { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG }
-    ];
+export const ORDERED_APP_COMPOSE_ROUTES: { stage: string, path: string }[] = [
+    { stage: APP_COMPOSE_STAGE.SOURCE_CONFIG, path: URLS.APP_GIT_CONFIG },
+    { stage: APP_COMPOSE_STAGE.CI_CONFIG, path: URLS.APP_DOCKER_CONFIG },
+    { stage: APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, path: URLS.APP_DEPLOYMENT_CONFIG },
+    { stage: APP_COMPOSE_STAGE.WORKFLOW_EDITOR, path: URLS.APP_WORKFLOW_CONFIG },
+    { stage: APP_COMPOSE_STAGE.CONFIG_MAPS, path: URLS.APP_CM_CONFIG },
+    { stage: APP_COMPOSE_STAGE.SECRETS, path: URLS.APP_CS_CONFIG },
+    { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG }
+];
 
-export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE):string => {
-    if(!appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}`;
-    for(let stageDetail of ORDERED_APP_COMPOSE_ROUTES){
-        const {stage, path} = stageDetail
-        if(stage === appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${path}`
+export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE): string => {
+    if (!appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}`;
+    for (let stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
+        const { stage, path } = stageDetail
+        if (stage === appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${path}`
     }
     return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_GIT_CONFIG}`;
 }
 
-export function getAppDetailsURL(appId: number | string, envId?: number |  string):string{
+export function getAppDetailsURL(appId: number | string, envId?: number | string): string {
     let url = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}`
-    if(envId){
+    if (envId) {
         url = `${url}/${envId}`
     }
     return url
@@ -86,7 +86,7 @@ export function getAppTriggerURL(appId: number | string): string {
 }
 export function getAppCIURL(appId: number | string, ciPipelineId: number | string, buildId: number | string): string {
     let url = `${URLS.APP}/${appId}/${URLS.APP_CI_DETAILS}`
-    if(ciPipelineId){
+    if (ciPipelineId) {
         url = `${url}/${ciPipelineId}`
         if (buildId) {
             url = `${url}/${buildId}`
@@ -94,13 +94,13 @@ export function getAppCIURL(appId: number | string, ciPipelineId: number | strin
     }
     return url
 }
-export function getAppCDURL(appId: number | string, envId?: number | string, cdPipelineId?:number | string, triggerId?:number | string): string {
+export function getAppCDURL(appId: number | string, envId?: number | string, cdPipelineId?: number | string, triggerId?: number | string): string {
     let url = `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}`
-    if(envId){
+    if (envId) {
         url = `${url}/${envId}`
-        if(cdPipelineId){
+        if (cdPipelineId) {
             url = `${url}/${cdPipelineId}`
-            if(triggerId){
+            if (triggerId) {
                 url = `${url}/${triggerId}`
             }
         }
@@ -111,8 +111,8 @@ export function getAppDeploymentMetricsURL(appId: number | string): string {
     return `${URLS.APP}/${appId}/${URLS.APP_DEPLOYMENT_METRICS}`
 }
 
-enum APP_CONFIG_STAGES{
-    APP= 'APP',
+enum APP_CONFIG_STAGES {
+    APP = 'APP',
     MATERIAL = 'MATERIAL',
     TEMPLATE = 'TEMPLATE',
     CI_PIPELINE = 'CI_PIPELINE',
@@ -131,12 +131,12 @@ interface StageStatusResponseItem {
 //@responseArr: Array from Stage Status
 export function getNextStageURL(responseArr: StageStatusResponseItem[], appId: string): string {
     let requiredStages = [APP_CONFIG_STAGES.APP, APP_CONFIG_STAGES.MATERIAL, APP_CONFIG_STAGES.TEMPLATE, APP_CONFIG_STAGES.CHART];
-    let statusMap:Map<APP_CONFIG_STAGES, boolean> = new Map();
+    let statusMap: Map<APP_CONFIG_STAGES, boolean> = new Map();
     for (let i = 0; i < responseArr.length; i++) {
         statusMap.set(responseArr[i].stageName, responseArr[i].status);
     }
-    let goToStage:APP_CONFIG_STAGES=APP_CONFIG_STAGES.CHART;
-    
+    let goToStage: APP_CONFIG_STAGES = APP_CONFIG_STAGES.CHART;
+
     for (let i = 0; i < requiredStages.length; i++) {
         goToStage = requiredStages[i];
         let status = statusMap.get(goToStage);
@@ -157,10 +157,8 @@ export function getNextStageURL(responseArr: StageStatusResponseItem[], appId: s
     return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR);
 }
 
-export function getNavItems(
-    responseArr: StageStatusResponseItem[],
-    appId,
-): { navItems: NavItem[]; configStatus: number } {
+export function getNavItems(responseArr: StageStatusResponseItem[],
+    appId,): { navItems: NavItem[]; configStatus: number } {
     let statusMap = new Map();
     for (let i = 0; i < responseArr.length; i++) {
         statusMap.set(responseArr[i].stageName, responseArr[i].status);
@@ -168,43 +166,43 @@ export function getNavItems(
     let navItems = [
         {
             title: 'Git Material',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG),
+            href: `/app/${appId}/edit/materials`,
             stage: AppConfigStatus.MATERIAL,
             isLocked: !statusMap.get('APP'),
         },
         {
             title: 'Docker Build Config',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.CI_CONFIG),
+            href: `/app/${appId}/edit/docker-build-config`,
             stage: AppConfigStatus.TEMPLATE,
             isLocked: !statusMap.get('MATERIAL'),
         },
         {
             title: 'Deployment Template',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE),
+            href: `/app/${appId}/edit/deployment-template`,
             stage: AppConfigStatus.CHARTS,
             isLocked: !statusMap.get('TEMPLATE'),
         },
         {
             title: 'Workflow Editor',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR),
+            href: `/app/${appId}/edit/workflow`,
             stage: AppConfigStatus.WORKFLOW,
             isLocked: !statusMap.get('CHART'),
         },
         {
             title: 'ConfigMaps',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.CONFIG_MAPS),
+            href: `/app/${appId}/edit/configmap`,
             stage: AppConfigStatus.CONFIGMAP,
             isLocked: !statusMap.get('CHART'),
         },
         {
             title: 'Secrets',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.SECRETS),
+            href: `/app/${appId}/edit/secrets`,
             stage: AppConfigStatus.SECRETS,
             isLocked: !statusMap.get('CHART'),
         },
         {
             title: 'Environment Override',
-            href: getAppComposeURL(appId, APP_COMPOSE_STAGE.ENV_OVERRIDE),
+            href: `/app/${appId}/edit/env-override`,
             stage: AppConfigStatus.ENV_OVERRIDE,
             isLocked: !statusMap.get('CHART'),
         },
