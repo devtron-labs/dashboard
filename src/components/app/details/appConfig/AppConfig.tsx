@@ -260,7 +260,6 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
     const history = useHistory();
     let index = navItems.findIndex(item => item.stage === currentStageName);
     let nextUrl = navItems[index + 1].href;
-
     if (!isCiPipeline) {
         return <div className="app-compose__next-section">
             <button type="button"
@@ -338,7 +337,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
                             <DeploymentConfig respondOnSuccess={respondOnSuccess} />
                             <NextButton currentStageName={STAGE_NAME.DEPLOYMENT_TEMPLATE}
                                 navItems={navItems}
-                                isDisabled={!isUnlocked.workflow}
+                                isDisabled={!isUnlocked.workflowEditor}
                                 isCiPipeline={isCiPipeline}
                             />
                         </>
