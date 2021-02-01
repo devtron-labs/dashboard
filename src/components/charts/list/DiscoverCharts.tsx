@@ -21,7 +21,7 @@ import { URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select';
+import ReactSelect, {components} from 'react-select';
 import { DropdownIndicator, ValueContainer, Option } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
@@ -436,6 +436,20 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
+const menuHeaderStyle = {
+    padding: '8px 12px',
+    background: 'blue',
+    color: 'white',
+  };
+  
+  const MenuList = props => {
+return (
+    <components.MenuList {...props}>
+      <div style={menuHeaderStyle}>Apply Filter</div>
+      {props.children}
+    </components.MenuList>
+  );
+};
 function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied }) {
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
@@ -465,6 +479,7 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
                         ValueContainer,
                         Option: Option,
                         IndicatorSeparator: null,
+                        MenuList
                     }}
                     styles={{
                         container: (base, state) => ({
