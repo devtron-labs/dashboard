@@ -11,44 +11,31 @@ import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
 import './navigation.scss';
 
-const NavigationList = [
-	{
-		title: 'Search (⌘+/)',
-		type: 'button',
-		iconClass: 'nav-short-search',
-		href: URLS.APP,
-	},
-	{
-		title: 'Applications',
-		type: 'link',
-		iconClass: 'nav-short-apps',
-		href: URLS.APP,
-	},
-	{
-		title: 'Charts',
-		type: 'link',
-		iconClass: 'nav-short-helm',
-		href: URLS.CHARTS,
-	},
-	{
-		title: 'Deployment Groups',
-		type: 'link',
-		iconClass: 'nav-short-bulk-actions',
-		href: URLS.DEPLOYMENT_GROUPS,
-	},
-	{
-		title: 'Security',
-		type: 'link',
-		href: URLS.SECURITY,
-		iconClass: 'nav-security',
-	},
-	{
-		title: 'Global Configurations',
-		type: 'link',
-		href: URLS.GLOBAL_CONFIG,
-		iconClass: 'nav-short-global'
-	},
-];
+const NavigationList = [{
+	title: 'Applications',
+	iconClass: 'nav-short-apps',
+	href: URLS.APP,
+},
+{
+	title: 'Charts',
+	iconClass: 'nav-short-helm',
+	href: URLS.CHARTS,
+},
+{
+	title: 'Deployment Groups',
+	iconClass: 'nav-short-bulk-actions',
+	href: URLS.DEPLOYMENT_GROUPS,
+},
+{
+	title: 'Security',
+	href: URLS.SECURITY,
+	iconClass: 'nav-security',
+},
+{
+	title: 'Global Configurations',
+	href: URLS.GLOBAL_CONFIG,
+	iconClass: 'nav-short-global'
+}];
 
 
 const NavigationListBottom = [
@@ -185,39 +172,39 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</div>
 					</NavLink>
 					{NavigationList.map((item, index) => {
-						if (item.type === "button") return <button type="button" key={index}
-							className="transparent"
-							onClick={(e) => {
-								if (!this.state.isCommandBarActive) {
-									ReactGA.event({
-										category: 'Command Bar',
-										action: 'Open (Click)',
-										label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
-									});
-								}
-								else {
-									ReactGA.event({
-										category: 'Command Bar',
-										action: 'Close',
-										label: '',
-									});
-								}
-								this.toggleCommandBar(!this.state.isCommandBarActive);
-							}}>
-							<div className="short-nav--flex">
-								<div className="svg-container flex">
-									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
-										<use href={`${NavSprite}#${item.iconClass}`}></use>
-									</svg>
-								</div>
-								<div className="expandable-active-nav">
-									<div className="title-container flex left">
-										{item.title}
-									</div>
-								</div>
-							</div>
-						</button>
-						else return <NavLink to={item.href} key={index} onClick={(event) => {
+						// if (item.type === "button") return <button type="button" key={index}
+						// 	className="transparent"
+						// 	onClick={(e) => {
+						// 		if (!this.state.isCommandBarActive) {
+						// 			ReactGA.event({
+						// 				category: 'Command Bar',
+						// 				action: 'Open (Click)',
+						// 				label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+						// 			});
+						// 		}
+						// 		else {
+						// 			ReactGA.event({
+						// 				category: 'Command Bar',
+						// 				action: 'Close',
+						// 				label: '',
+						// 			});
+						// 		}
+						// 		this.toggleCommandBar(!this.state.isCommandBarActive);
+						// 	}}>
+						// 	<div className="short-nav--flex">
+						// 		<div className="svg-container flex">
+						// 			<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
+						// 				<use href={`${NavSprite}#${item.iconClass}`}></use>
+						// 			</svg>
+						// 		</div>
+						// 		<div className="expandable-active-nav">
+						// 			<div className="title-container flex left">
+						// 				{item.title}
+						// 			</div>
+						// 		</div>
+						// 	</div>
+						// </button>
+						return <NavLink to={item.href} key={index} onClick={(event) => {
 							ReactGA.event({
 								category: 'Main Navigation',
 								action: `${item.title} Clicked`,
@@ -289,7 +276,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					toggleCommandBar={this.toggleCommandBar}
 				/>
 			</CommandErrorBoundary>
-
 		</>
 	}
 }
