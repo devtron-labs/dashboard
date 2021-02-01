@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
-import { NavLink, Link, Route, Redirect, Switch } from 'react-router-dom';
+import { NavLink, Link, Route, Switch } from 'react-router-dom';
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType } from '../../../../config';
 import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, ErrorScreenManager } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
@@ -313,7 +313,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
                     <>
-                        <MaterialList respondOnSuccess={respondOnSuccess} configStatus={-1} />
+                        <MaterialList respondOnSuccess={respondOnSuccess} />
                         <NextButton currentStageName={STAGE_NAME.GIT_MATERIAL}
                             navItems={navItems}
                             isDisabled={!isUnlocked.dockerBuildConfig}
