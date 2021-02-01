@@ -1,7 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
 import { NavLink, Link, Route, Switch } from 'react-router-dom';
-import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType } from '../../../../config';
+import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType, NavItem } from '../../../../config';
 import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, ErrorScreenManager } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
 import { deleteApp } from './appConfig.service';
@@ -40,7 +40,7 @@ export interface AppConfigState {
     appName: string;
     isCiPipeline: boolean;
     showDeleteConfirm: boolean;
-    navItems: any[],
+    navItems: NavItem[],
     maximumAllowedUrl: string;
     canDeleteApp: boolean;
 }

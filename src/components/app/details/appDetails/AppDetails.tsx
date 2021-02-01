@@ -4,7 +4,6 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
-    getNextStageURL,
     getAppCDURL,
 } from '../../../../config';
 import {
@@ -958,7 +957,7 @@ export function AppNotConfigured({ text = 'You have not finished configuring thi
     const { push } = useHistory();
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = getNextStageURL(response.result, appId);
+            let url = `/app/${appId}/edit`;
             push(url);
         });
     }

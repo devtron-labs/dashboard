@@ -1,5 +1,3 @@
-import { AppConfigStatus } from './';
-
 export interface NavItem {
     title: string;
     href: string;
@@ -126,95 +124,6 @@ interface StageStatusResponseItem {
     stageName: APP_CONFIG_STAGES;
     status: boolean;
     required: boolean;
-}
-
-//@responseArr: Array from Stage Status
-export function getNextStageURL(responseArr: StageStatusResponseItem[], appId: string): string {
-    let requiredStages = [APP_CONFIG_STAGES.APP, APP_CONFIG_STAGES.MATERIAL, APP_CONFIG_STAGES.TEMPLATE, APP_CONFIG_STAGES.CHART];
-    let statusMap: Map<APP_CONFIG_STAGES, boolean> = new Map();
-    for (let i = 0; i < responseArr.length; i++) {
-        statusMap.set(responseArr[i].stageName, responseArr[i].status);
-    }
-    let goToStage: APP_CONFIG_STAGES = APP_CONFIG_STAGES.CHART;
-
-    for (let i = 0; i < requiredStages.length; i++) {
-        goToStage = requiredStages[i];
-        let status = statusMap.get(goToStage);
-        if (!status) break;
-    }
-
-    switch (goToStage) {
-        case 'CHART':
-            if (statusMap.has(APP_CONFIG_STAGES.CHART)) return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR);
-            else return getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE);
-        case 'TEMPLATE':
-            return getAppComposeURL(appId, APP_COMPOSE_STAGE.CI_CONFIG);
-        case 'MATERIAL':
-            return getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG);
-        case 'APP':
-            return `${URLS.APP}`;
-    }
-    return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR);
-}
-
-export function getNavItems(responseArr: StageStatusResponseItem[],
-    appId,): { navItems: NavItem[]; configStatus: number } {
-    let statusMap = new Map();
-    for (let i = 0; i < responseArr.length; i++) {
-        statusMap.set(responseArr[i].stageName, responseArr[i].status);
-    }
-    let navItems = [
-        {
-            title: 'Git Material',
-            href: `/app/${appId}/edit/materials`,
-            stage: AppConfigStatus.MATERIAL,
-            isLocked: !statusMap.get('APP'),
-        },
-        {
-            title: 'Docker Build Config',
-            href: `/app/${appId}/edit/docker-build-config`,
-            stage: AppConfigStatus.TEMPLATE,
-            isLocked: !statusMap.get('MATERIAL'),
-        },
-        {
-            title: 'Deployment Template',
-            href: `/app/${appId}/edit/deployment-template`,
-            stage: AppConfigStatus.CHARTS,
-            isLocked: !statusMap.get('TEMPLATE'),
-        },
-        {
-            title: 'Workflow Editor',
-            href: `/app/${appId}/edit/workflow`,
-            stage: AppConfigStatus.WORKFLOW,
-            isLocked: !statusMap.get('CHART'),
-        },
-        {
-            title: 'ConfigMaps',
-            href: `/app/${appId}/edit/configmap`,
-            stage: AppConfigStatus.CONFIGMAP,
-            isLocked: !statusMap.get('CHART'),
-        },
-        {
-            title: 'Secrets',
-            href: `/app/${appId}/edit/secrets`,
-            stage: AppConfigStatus.SECRETS,
-            isLocked: !statusMap.get('CHART'),
-        },
-        {
-            title: 'Environment Override',
-            href: `/app/${appId}/edit/env-override`,
-            stage: AppConfigStatus.ENV_OVERRIDE,
-            isLocked: !statusMap.get('CHART'),
-        },
-    ];
-    let configStatus = AppConfigStatus.ENV_OVERRIDE;
-    for (let i = 0; i < navItems.length; i++) {
-        if (navItems[i].isLocked) {
-            configStatus = navItems[i].stage;
-            break;
-        }
-    }
-    return { configStatus: configStatus - 1, navItems };
 }
 
 export function isCIPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
