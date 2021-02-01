@@ -414,6 +414,7 @@ export default function DiscoverCharts() {
     const match = useRouteMatch();
     const { url, path } = match
 
+    
     return <Switch>
         <Route path={`${path}/group`}>
             <ChartGroupList />
@@ -438,18 +439,24 @@ export default function DiscoverCharts() {
 
 const menuHeaderStyle = {
     padding: '8px 12px',
-    background: 'blue',
+    background: 'rgba(65, 154, 249, 0.99)',
     color: 'white',
   };
   
-  const MenuList = props => {
+  const MenuList = props=> {
 return (
     <components.MenuList {...props}>
-      <div style={menuHeaderStyle}>Apply Filter</div>
+                    
+      <div style={menuHeaderStyle} onChange={(selected: any) => { props.handleChartRepoChange(selected); }}>Apply Filter</div>
       {props.children}
     </components.MenuList>
   );
 };
+
+function handlechartselect(selected){
+
+}
+
 function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied }) {
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
@@ -470,8 +477,8 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
                     name="All repositories"
                     value={selectedChartRepo}
                     options={chartRepoList}
+                    onChange={selected=>{handlechartselect(selected)}}
                     isClearable={false}
-                    onChange={(selected: any) => { handleChartRepoChange(selected); }}
                     isMulti={true}
                     hideSelectedOptions={false}
                     components={{
