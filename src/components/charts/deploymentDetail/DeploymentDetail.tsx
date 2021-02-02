@@ -93,16 +93,14 @@ export default function AppDetail() {
                             <span className="command-delimiter">/</span>
                         </div>
                     </div>
-
                     <div className="flexbox flex-align-items-center flex-justify pl-24 pr-24">
-                        <div className="flex left fw-6 fs-16">{appDetails?.appName}</div>
-                        {appDetails?.deprecated && <div className="mr-20">
-                            <UpdateWarn />
-                        </div>}
-                        <button type="button" className="cta cancel flex left" style={{ height: "30px" }} onClick={fetchChartVersionDetails}>
-                            {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
-                            configure
-                        </button>
+                        <h1 className="flex left fw-6 fs-16 m-0">{appDetails?.appName}</h1>
+                        <div className="flex">
+                            {appDetails?.deprecated && <div className="mr-20"><UpdateWarn /></div>}
+                            <button type="button" className="cta cancel flex left" style={{ height: "30px" }} onClick={fetchChartVersionDetails}>
+                                {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}Configure
+                            </button>
+                        </div>
                     </div>
                     <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
                         <Command location={location}
