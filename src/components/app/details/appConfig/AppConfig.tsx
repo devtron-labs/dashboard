@@ -147,10 +147,9 @@ export default function AppConfig() {
                 isCiPipeline,
                 navItems,
                 maximumAllowedUrl: redirectUrl,
-                canDeleteApp: workflowRes.result.workflows.length > 0,
+                canDeleteApp: workflowRes.result.workflows.length === 0,
             })
             if (location.pathname === match.url) {
-                console.log(redirectUrl);
                 history.replace(redirectUrl);
             }
         }).catch((errors) => {
@@ -163,7 +162,7 @@ export default function AppConfig() {
         getWorkflowList(appId).then((response) => {
             setState({
                 ...state,
-                canDeleteApp: response.result.length
+                canDeleteApp: response.result.workflows.length === 0
             })
         })
     }
@@ -226,7 +225,7 @@ export default function AppConfig() {
                     <p className="modal__description">Delete all pipelines and workflows before deleting this application.</p>
                     <ConfirmationDialog.ButtonGroup>
                         <button type="button" className="cta cancel" onClick={e => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
-                        <Link onClick={e => setState(state => ({ ...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12">
+                        <Link onClick={e => setState(state => ({ ...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12 no-decor">
                             View Workflows
                         </Link>
                     </ConfirmationDialog.ButtonGroup>
