@@ -161,7 +161,7 @@ export function AppHeader() {
                             action: 'App Configuration Clicked',
                         });
                     }}>
-                    <Settings className="tab-list__icon icon-dim-20 mr-4" />
+                    <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                     App Configuration
                 </NavLink>
             </li>
