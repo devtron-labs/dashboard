@@ -27,6 +27,7 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import makeAnimated from 'react-select/animated';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -77,7 +78,7 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
-
+    
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
         return () => {
@@ -166,6 +167,7 @@ function DiscoverChartList() {
     }
 
     function handleChartRepoChange(selected): void {
+        console.log(selected)
         let chartRepoId = selected?.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(location.search);
         let app = searchParams.get(QueryParams.AppStoreName);
@@ -174,6 +176,10 @@ function DiscoverChartList() {
         if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
         if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
         history.push(`${url}?${qs}`);
+    }
+
+    function handleSelectedChartRepoChange(selected){
+        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
     }
 
     function handleDeprecateChange(deprecated): void {
@@ -252,6 +258,7 @@ function DiscoverChartList() {
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : <> <ChartListHeader chartRepoList={state.chartRepos}
+                        chartGroups={state.chartGroups.slice(0, 4)}setSelectedChartRepo={setSelectedChartRepo}
                         charts={state.charts}
                         searchApplied={searchApplied}
                         appStoreName={appStoreName}
@@ -285,6 +292,8 @@ function DiscoverChartList() {
                             /> : <>
                                 <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
                                 <ChartListHeader chartRepoList={state.chartRepos}
+                                setSelectedChartRepo={setSelectedChartRepo}
+                                chartGroups={state.chartGroups.slice(0, 4)}
                                     charts={state.charts}
                                     searchApplied={searchApplied}
                                     appStoreName={appStoreName}
@@ -437,27 +446,27 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-const menuHeaderStyle = {
-    padding: '8px 12px',
-    background: 'rgba(65, 154, 249, 0.99)',
-    color: 'white',
-  };
-  
-  const MenuList = props=> {
-return (
-    <components.MenuList {...props}>
-                    
-      <div style={menuHeaderStyle} onChange={(selected: any) => { props.handleChartRepoChange(selected); }}>Apply Filter</div>
-      {props.children}
-    </components.MenuList>
-  );
-};
+function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied ,chartGroups}) {
+   
+    const menuHeaderStyle = {
+        padding: '8px 12px',
+        background: 'rgba(65, 154, 249, 0.99)',
+        color: 'white',
+       
+      };
+      
+      const MenuList = props=> {
+    return (
+        <components.MenuList {...props}>
+                        
+          <div className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</div>
+          {props.children}
+        </components.MenuList>
+      );
+    };
 
-function handlechartselect(selected){
+    const AnimatedComponents = makeAnimated()
 
-}
-
-function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied }) {
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
@@ -477,16 +486,19 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
                     name="All repositories"
                     value={selectedChartRepo}
                     options={chartRepoList}
-                    onChange={selected=>{handlechartselect(selected)}}
+                    onChange={setSelectedChartRepo}
                     isClearable={false}
-                    isMulti={true}
+                    isMulti
+                   
                     hideSelectedOptions={false}
                     components={{
                         DropdownIndicator,
                         ValueContainer,
                         Option: Option,
                         IndicatorSeparator: null,
-                        MenuList
+                        MenuList,
+                        //@ts-ignore
+                        AnimatedComponents
                     }}
                     styles={{
                         container: (base, state) => ({
@@ -500,13 +512,14 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
                             width: '230px',
                             border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
                             boxShadow: 'none',
+                           
                         }),
                         option: (base, state) => ({
                             ...base,
                             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                             color: 'var(--N900)',
                             fontSize: '14px',
-                            padding: '8px 24px',
+                            padding: '8px 24px'
                         }),
                     }} />
                 <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
