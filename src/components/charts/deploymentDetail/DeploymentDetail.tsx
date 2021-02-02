@@ -4,12 +4,13 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../charts.service';
 import { Details } from '../../app/details/appDetails/AppDetails';
 import { toast } from 'react-toastify';
-import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
+import { useParams, useHistory, useLocation, useRouteMatch, Route, generatePath } from 'react-router'
 import DeployChart from '../modal/DeployChart';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
 import AppSelector from '../../AppSelector';
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
+import { Command, CommandErrorBoundary } from '../../command';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -19,13 +20,16 @@ function mapById(arr) {
 }
 
 export default function AppDetail() {
+    const location = useLocation();
+    const history = useHistory();
+    const match = useRouteMatch();
     const params = useParams<{ appId: string; envId: string }>();
-    const { url, path } = useRouteMatch();
+    const { url, path } = match;
     const [loading, setLoading] = useState<boolean>(false)
-    const history = useHistory()
     const [installedConfig, setInstalledConfig] = useState(null)
     const [appDetails, setAppDetails] = useState(null)
     const [isPollingRequired, setPollingRequired] = useState<boolean>(true);
+    const [isCommandBarActive, toggleCommandBar] = useState(false);
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -78,26 +82,38 @@ export default function AppDetail() {
     return (
         <>
             <div className="deployment-page">
-                <div className="page-header" style={{ height: '80px' }}>
+                <div className="page-header page-header--tabs" style={{ height: '80px' }}>
                     <div className="flex left column">
                         <div className="flex left fs-12 cn-7">
                             <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
                         </div>
                         <div className="flex left page-header__title">{appDetails?.appName}</div>
                     </div>
+
                     <div className="page-header__cta-container flex">
-                        {
-                            appDetails?.deprecated &&
+                        {appDetails?.deprecated &&
                             <div className="mr-20">
                                 <UpdateWarn />
-                            </div>
-                        }
+                            </div>}
 
-                        <button type="button" className="cta-with-img cancel" onClick={fetchChartVersionDetails}>
+                        <button type="button" className="cta cancel flex left mr-12" style={{ height: "30px" }} onClick={fetchChartVersionDetails}>
                             {loading ? <Progressing /> : <Settings className="icon-dim-20 mr-5" />}
-                        configure
-                    </button>
+                            configure
+                        </button>
+                        <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                            onClick={() => { toggleCommandBar(true); }}>
+                            <span>Jump to...</span>
+                            <span className="command-delimiter">/</span>
+                        </div>
                     </div>
+                    <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
+                        <Command location={location}
+                            match={match}
+                            history={history}
+                            isCommandBarActive={isCommandBarActive}
+                            toggleCommandBar={toggleCommandBar}
+                        />
+                    </CommandErrorBoundary>
                 </div>
                 <div className="deployment-page__body">
                     {/* <div className="flex left w-100 p-16">
@@ -129,7 +145,7 @@ export default function AppDetail() {
                                     // {...installedConfig}
                                     installedAppId={installedConfig.installedAppId}
                                     appStoreVersion={installedConfig.appStoreVersion}
-                                    appName ={installedConfig.appName}
+                                    appName={installedConfig.appName}
                                     environmentId={installedConfig.environmentId}
                                     teamId={installedConfig.teamId}
                                     readme={installedConfig.readme}

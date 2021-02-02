@@ -10,16 +10,19 @@ import { Empty } from './emptyView/Empty';
 import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import { Command, CommandErrorBoundary } from '../../command';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
+    toggleCommandBar: (flag: boolean) => void;
     applyFilter: (type: string, list: FilterOption[]) => void;
     expandRow: (app: App | null) => void;
     closeExpandedRow: () => void;
@@ -60,14 +63,28 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderPageHeader() {
         return <div className="app-header">
-            <div className="app-header__title">
-                <h1 className="app-header__text">Applications({this.props.size})</h1>
-                {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
-                    onClick={this.openCreateModal}>
-                    <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
-                    Add new app
-                </button> : null}
+            <div className="app-header__title page-header__top">
+                <h1 className="app-header__text fs-16 fw-6 m-0 mr-12">Applications({this.props.size})</h1>
+                {this.props.view != AppListViewType.EMPTY ? <div className="flex">
+                    <button type="button" className="cta flex left mr-8" style={{height:"30px"}}
+                        onClick={this.openCreateModal}>
+                            <Add className="icon-dim-18 inline-block mr-8"/>New app
+                    </button>
+                    <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                        onClick={() => { this.props.toggleCommandBar(true); }}>
+                        <span>Jump to...</span>
+                        <span className="command-delimiter">/</span>
+                    </div>
+                </div> : null}
             </div>
+            <CommandErrorBoundary toggleCommandBar={this.props.toggleCommandBar}>
+                <Command location={this.props.location}
+                    match={this.props.match}
+                    history={this.props.history}
+                    isCommandBarActive={this.props.isCommandBarActive}
+                    toggleCommandBar={this.props.toggleCommandBar}
+                />
+            </CommandErrorBoundary>
             {this.renderFilters()}
         </div>
     }

@@ -25,6 +25,7 @@ export interface AppListState {
     expandedRow: boolean;
     isDockerRegistryEmpty: boolean;
     appData: App | null;
+    isCommandBarActive: boolean;
 }
 
 export interface App {

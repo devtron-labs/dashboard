@@ -9,17 +9,14 @@
 
 .app-header__title {
     display: flex;
+    height: 40px;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px 0px 24px;
+    padding: 0px 24px 0px 24px;
 }
 
 .app-header__text {
     margin: 0px;
-    font-size: 20px;
-    font-weight: 500;
-    font-style: normal;
-    font-stretch: normal;
     line-height: 1.4;
     letter-spacing: normal;
     color: var(--N900);
@@ -202,11 +199,6 @@
     background-color: var(--B500);
     color: var(--white);
     font-size: 14px;
-}
-
-.round-button__icon {
-    display: inline-block;
-    margin-right: 8px;
 }
 
 .button-edit {

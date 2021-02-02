@@ -237,28 +237,6 @@ function DiscoverChartList() {
                     </div>
                 </div>
                 {state.charts.length === 0 && <ChartDetailNavigator />}
-
-                {/* <ConditionalWrap condition={state.charts.length > 0}
-                    wrap={children => <div className="flex left column">{children}</div>}>
-                    <>
-                        {state.charts.length > 0 && (
-                            <div className="flex left">
-                                <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-                            </div>
-                        )}
-                        <div className="page-header__title flex left">
-                            {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                        </div>
-                        {state.charts.length === 0 && <ChartDetailNavigator />}
-                    </>
-                </ConditionalWrap>
-                <div className="flex">
-                    {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex" to={`${url}/create`}>
-                            <Add className="icon-dim-18 mr-5" />Create Group
-                        </NavLink>
-                    )}
-                </div> */}
                 <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
                     <Command location={location}
                         match={match}

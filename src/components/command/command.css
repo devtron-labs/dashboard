@@ -196,3 +196,12 @@
     height: 30px;
     width: 220px;
 }
+
+.command-delimiter {
+    font-size: 10px;
+    padding: 0px 4px;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 0 #979a9c;
+    border: solid 1px #979a9c;
+    background-color: #eeeeee;
+}

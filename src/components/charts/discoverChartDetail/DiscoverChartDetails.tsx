@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, NavLink } from 'react-router-dom';
-import { useRouteMatch, useLocation, useParams} from 'react-router'
-import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
+import { useRouteMatch, useLocation, useParams } from 'react-router'
+import { Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
 import { URLS } from '../../../config';
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
 import { getAvailableCharts } from '../../../services/service';
@@ -19,6 +19,7 @@ import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
+import { Command, CommandErrorBoundary } from '../../command';
 
 
 const DiscoverDetailsContext = React.createContext(null);
@@ -47,22 +48,23 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const [loading, setLoading] = React.useState(false);
     const [chartValuesList, setChartValuesList] = useState([])
     const [chartValues, setChartValues] = useState({ id: 0, kind: null, name: '', chartVersion: "", environmentName: "" });
-    const { chartId } = useParams()
+    const { chartId } = useParams<{ chartId }>()
+    const [isCommandBarActive, toggleCommandBar] = useState(false);
 
-    function formatOptionLabel({label, value, ...rest}){
+    function formatOptionLabel({ label, value, ...rest }) {
         return rest?.chart_name ? (
             <div>
                 <span className="cn-7">{rest.chart_name}</span> / <span className="cn-9">{label}</span>
             </div>
         ) : (
-            label
-        );
+                label
+            );
     }
 
-    function filterOption({ data: {label, value, ...rest}}, searchString: string):boolean{
-        if(!searchString) return true
-        searchString=searchString.toLowerCase()
-        const match:boolean=(label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
+    function filterOption({ data: { label, value, ...rest } }, searchString: string): boolean {
+        if (!searchString) return true
+        searchString = searchString.toLowerCase()
+        const match: boolean = (label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
         return match
     }
     const { breadcrumbs } = useBreadcrumb(
@@ -83,11 +85,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     linked: false
                 },
                 'chart': null,
-                'chart-store':null
+                'chart-store': null
             },
         },
         [chartId],
-    );    
+    );
 
     function goBackToDiscoverChart(isReload) {
         const url = `${URLS.CHARTS}/discover/chart/${chartId}`;
@@ -173,41 +175,53 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         redirectToChartValues,
     }}>
         <div className="chart-detail-container">
-            <div className="page-header">
-                <div className="flex column left fs-12 cn-7">
-                    <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
-                    <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
-                </div>
-                <div className="page-header__cta-container"/>
-            </div>
-            {loading? <Progressing pageLoader/>
-            : <div style={{overflow:'auto'}}>
-                <div className="left-right-container">
-                    <div className="chart-detail-left">
-                        <About {...chartInformation} chartYaml={chartYaml} />
-                        <ReadmeRowHorizontal {...chartInformation} />
-                        <ChartDeploymentList chartId={chartId} />
+            <div className="page-header page-header--tabs">
+                    <div className="flex column left fs-12 cn-7">
+                        <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
+                        <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
                     </div>
-                    <div className="chart-detail-right">
-                        <Deployment 
-                            chartId={chartId} 
-                            {...chartInformation} 
-                            availableVersions={availableVersions} 
-                            />
-                </div>
-                </div>
+                    <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                        onClick={() => { toggleCommandBar(true); }}>
+                        <span>Jump to...</span>
+                        <span className="command-delimiter">/</span>
+                    </div>
+                <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
+                    <Command location={location}
+                        match={match}
+                        history={history}
+                        isCommandBarActive={isCommandBarActive}
+                        toggleCommandBar={toggleCommandBar}
+                    />
+                </CommandErrorBoundary>
             </div>
+            {loading ? <Progressing pageLoader />
+                : <div style={{ overflow: 'auto' }}>
+                    <div className="left-right-container">
+                        <div className="chart-detail-left">
+                            <About {...chartInformation} chartYaml={chartYaml} />
+                            <ReadmeRowHorizontal {...chartInformation} />
+                            <ChartDeploymentList chartId={chartId} />
+                        </div>
+                        <div className="chart-detail-right">
+                            <Deployment
+                                chartId={chartId}
+                                {...chartInformation}
+                                availableVersions={availableVersions}
+                            />
+                        </div>
+                    </div>
+                </div>
             }
         </div>
         <Switch>
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`} render={(props) => {
                 return <OpaqueModal onHide={goBackToDiscoverChart}>
-                        <DeployChart
-                            chartValuesFromParent={chartValues}
-                            {...chartInformation}
-                            appStoreVersion={selectedVersion}
-                            versions={availableVersions}
-                            onHide={goBackToDiscoverChart} />
+                    <DeployChart
+                        chartValuesFromParent={chartValues}
+                        {...chartInformation}
+                        appStoreVersion={selectedVersion}
+                        versions={availableVersions}
+                        onHide={goBackToDiscoverChart} />
                 </OpaqueModal>
             }} />
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/manage-values`} render={(props) => {
@@ -240,9 +254,9 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
                 <span className="user anchor">{chartName}/</span>
                 <span className="repo">{appStoreApplicationName}</span>
             </div>
-            {   deprecated &&
+            {deprecated &&
                 <div className="mt-8">
-                    <DeprecatedWarn/>
+                    <DeprecatedWarn />
                 </div>
             }
         </div>

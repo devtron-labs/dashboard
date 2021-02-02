@@ -40,6 +40,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             expandedRow: false,
             appData: null,
             isDockerRegistryEmpty: false,
+            isCommandBarActive: false,
         }
     }
 
@@ -54,14 +55,14 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 view = response.apps.length ? AppListViewType.LIST : AppListViewType.EMPTY;
             }
             this.setState({ ...response, view });
-        }).then(()=>{
+        }).then(() => {
             let payload = this.createPayloadFromURL(this.props.location.search);
             this.getAppList(payload);
         })
-        .catch((errors: ServerErrors) => {
-            showError(errors);
-            this.setState({ view: AppListViewType.ERROR, code: errors.code });
-        })
+            .catch((errors: ServerErrors) => {
+                showError(errors);
+                this.setState({ view: AppListViewType.ERROR, code: errors.code });
+            })
     }
 
     componentDidUpdate(nextProps) {
@@ -104,6 +105,10 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             size: +pageSize,
         }
         return payload;
+    }
+
+    toggleCommandBar = (flag: boolean): void => {
+        this.setState({ isCommandBarActive: flag });
     }
 
     handleSearchStr = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -362,6 +367,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             match={this.props.match}
             location={this.props.location}
             history={this.props.history}
+            toggleCommandBar={this.toggleCommandBar}
             applyFilter={this.applyFilter}
             expandRow={this.expandRow}
             closeExpandedRow={this.closeExpandedRow}
