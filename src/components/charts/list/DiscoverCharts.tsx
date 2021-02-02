@@ -178,9 +178,6 @@ function DiscoverChartList() {
         history.push(`${url}?${qs}`);
     }
 
-    function handleSelectedChartRepoChange(selected){
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-    }
 
     function handleDeprecateChange(deprecated): void {
         let searchParams = new URLSearchParams(location.search);
@@ -279,7 +276,8 @@ function DiscoverChartList() {
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
-                            ? <AdvancedConfig chart={state.charts[state.configureChartIndex]}
+                            ?<>
+                             <AdvancedConfig chart={state.charts[state.configureChartIndex]}
                                 index={state.configureChartIndex}
                                 handleValuesYaml={handleValuesYaml}
                                 getChartVersionsAndValues={getChartVersionsAndValues}
@@ -289,8 +287,7 @@ function DiscoverChartList() {
                                 handleEnvironmentChange={handleEnvironmentChange}
                                 handleNameChange={handleNameChange}
                                 discardValuesYamlChanges={discardValuesYamlChanges}
-                            /> : <>
-                                <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
+                            /> </>: <>
                                 <ChartListHeader chartRepoList={state.chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
                                 chartGroups={state.chartGroups.slice(0, 4)}
@@ -468,6 +465,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
     const AnimatedComponents = makeAnimated()
 
     return <div className="chart-group__header">
+     <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
             <a href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
@@ -482,7 +480,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
             </form>
             <div className="flex">
                 <ReactSelect className="date-align-left fs-14"
-                    placeholder="All repositories"
+                    placeholder="All repositories : all"
                     name="All repositories"
                     value={selectedChartRepo}
                     options={chartRepoList}
