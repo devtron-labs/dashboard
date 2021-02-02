@@ -175,16 +175,18 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         redirectToChartValues,
     }}>
         <div className="chart-detail-container">
-            <div className="page-header page-header--tabs">
-                    <div className="flex column left fs-12 cn-7">
-                        <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
-                        <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
-                    </div>
+            <div className="page-header p-0 page-header__rows-only">
+                <div className="page-header__top flexbox flex-justify left pl-24 pr-24 fs-12 cn-7">
+                    <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
                     <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
                         onClick={() => { toggleCommandBar(true); }}>
                         <span>Jump to...</span>
                         <span className="command-delimiter">/</span>
                     </div>
+                </div>
+                <div className="flex left">
+                    <h1 className="fs-16 fw-6 m-0 cn-9 pl-24 pr-24">{chartInformation?.appStoreApplicationName}</h1>
+                </div>
                 <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
                     <Command location={location}
                         match={match}
