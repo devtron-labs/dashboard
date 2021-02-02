@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useRef, useEffect } from 'react';
+import React, { useState, lazy, Suspense, useCallback, useRef, useEffect } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb } from '../../common';
 import { getAppListMin } from '../../../services/service';
@@ -6,6 +6,7 @@ import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 
 import { URLS } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
+import { Command, CommandErrorBoundary } from '../../command';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
@@ -53,6 +54,7 @@ export function AppHeader() {
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
+    const [isCommandBarActive, toggleCommandBar] = useState(false)
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -87,7 +89,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cn-5 fs-18 lowercase">apps</span>,
+                    component: <span className="cn-5 fs-16 lowercase">apps</span>,
                     linked: true,
                 },
             },
@@ -95,11 +97,26 @@ export function AppHeader() {
         [appId],
     );
 
-    return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
-        <h1 className="m-0 fw-6 flex left fs-18 cn-9">
-            <BreadCrumb breadcrumbs={breadcrumbs} />
-        </h1>
-        <ul role="tablist" className="tab-list">
+    return <div className="page-header page-header__rows-only p-0">
+        <div className="page-header__top flexbox flex-justify flex-align-items-center pl-24 pr-24">
+            <h1 className="m-0 fw-6 flex left fs-16 cn-9">
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+            </h1>
+            <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                onClick={() => { toggleCommandBar(true); }}>
+                <span>Jump to...</span>
+                <span className="command-delimiter">/</span>
+            </div>
+        </div>
+        <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
+            <Command location={location}
+                match={match}
+                history={history}
+                isCommandBarActive={isCommandBarActive}
+                toggleCommandBar={toggleCommandBar}
+            />
+        </CommandErrorBoundary>
+        <ul role="tablist" className="tab-list pl-25 pr-25">
             <li className="tab-list__tab ellipsis-right">
                 <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link"
                     onClick={(event) => {
@@ -131,7 +148,6 @@ export function AppHeader() {
                 </NavLink>
             </li>
             <li className="tab-list__tab">
-
                 <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_CD_DETAILS}`} className="tab-list__tab-link"
                     onClick={(event) => {
                         ReactGA.event({

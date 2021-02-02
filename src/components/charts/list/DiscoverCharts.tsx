@@ -218,8 +218,8 @@ function DiscoverChartList() {
         <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
             <div className={`page-header p-0 ${state.charts.length === 0 ? 'page-header__rows-only' : ''}`}>
                 {state.charts.length > 0 && (
-                    <div className="flex left">
-                        <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+                    <div className="flex left fs-16">
+                        <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} className="devtron-breadcrumb__item fs-16"/>
                     </div>)}
                 <div className="page-header__top flexbox flex-justify pl-24 pr-24">
                     <h1 className="m-0 fs-16 cn-9 fw-6 flex left">
