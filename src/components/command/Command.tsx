@@ -421,7 +421,6 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     render() {
-        console.log(this.props.isCommandBarActive);
         if (this.props.isCommandBarActive) {
             return <div className="transparent-div" onKeyDown={this.disableTab}
                 onClick={() => {

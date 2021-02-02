@@ -7,7 +7,7 @@ import ChartSelect from '../util/ChartSelect';
 import ChartValues from '../chartValues/ChartValues';
 import ChartGroupList from './ChartGroup';
 import ChartGroupCard from '../util/ChartGroupCard';
-import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
+import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails';
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
 import { ChartDetailNavigator } from '../Charts'
@@ -216,26 +216,29 @@ function DiscoverChartList() {
 
     return <>
         <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
-            <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
+            <div className={`page-header p-0 ${state.charts.length === 0 ? 'page-header__rows-only' : ''}`}>
                 {state.charts.length > 0 && (
                     <div className="flex left">
                         <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
                     </div>)}
-                <h1 className="m-0 fs-16 cn-9 fw-6 flex left">
-                    {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                </h1>
-                <div className="flex">
-                    {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex mr-12" to={`${url}/create`} style={{ height: "30px" }}>
-                            <Add className="icon-dim-18 mr-5" />Create Group
-                        </NavLink>
-                    )}
-                    <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
-                        onClick={() => { toggleCommandBar(true); }}>
-                        <span>Jump to...</span>
-                        <span>/</span>
+                <div className="page-header__top flexbox flex-justify pl-24 pr-24">
+                    <h1 className="m-0 fs-16 cn-9 fw-6 flex left">
+                        {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
+                    </h1>
+                    <div className="flex">
+                        {state.charts.length === 0 && (
+                            <NavLink className="cta no-decor flex mr-12" to={`${url}/create`} style={{ height: "30px" }}>
+                                <Add className="icon-dim-18 mr-5" />Create Group
+                            </NavLink>
+                        )}
+                        <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                            onClick={() => { toggleCommandBar(true); }}>
+                            <span>Jump to...</span>
+                            <span className="command-delimiter">/</span>
+                        </div>
                     </div>
                 </div>
+
                 {state.charts.length === 0 && <ChartDetailNavigator />}
                 <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
                     <Command location={location}

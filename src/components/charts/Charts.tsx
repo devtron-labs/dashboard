@@ -18,7 +18,7 @@ export default function Charts() {
     </Switch>
 }
 
-export function GenericChartsHeader({ children=null }) {
+ function GenericChartsHeader({ children=null }) {
     return (
         <div className="page-header page-header--tabs">
             {children}
@@ -27,7 +27,7 @@ export function GenericChartsHeader({ children=null }) {
 
 export function ChartDetailNavigator() {
     return (
-        <ul role="tablist" className="tab-list">
+        <ul role="tablist" className="tab-list pl-24 pr-24">
             <li className='tab-list__tab'>
                 <NavLink replace to="deployed" className="tab-list__tab-link" activeClassName="active">Deployed</NavLink>
             </li>

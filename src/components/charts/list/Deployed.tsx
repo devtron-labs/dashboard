@@ -10,7 +10,7 @@ import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import { Command, CommandErrorBoundary } from '../../command';
-import { HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
+import { HeaderButtonGroup, ChartDetailNavigator } from '../Charts';
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -59,9 +59,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
                 {deprecated && <div>
-                        <UpdateWarn />
-                        {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
-                    </div>}
+                    <UpdateWarn />
+                    {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
+                </div>}
             </div>
             <div className="chart-grid-item__title ellipsis-right">{appName}</div>
             <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
@@ -73,12 +73,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     render() {
         if (this.state.code) return <ErrorScreenManager code={this.state.code} />
         else return <div className="chart-list-page">
-            <GenericChartsHeader>
-                <div className="flexbox flex-align-items-center flex-justify">
+            <div className="page-header page-header__rows-only pl-0 pr-0">
+                <div className="flexbox flex-align-items-center pl-24 pr-24 flex-justify page-header__top">
                     <h1 className="m-0 fs-16 cn-9 fw-6">Chart Store</h1>
-                    <div className="cursor flexbox flex-align-items-center bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                    <div className="cursor flexbox flex-justify flex-align-items-center bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
                         onClick={() => this.toggleCommandBar(true)}>
                         <span>Jump to...</span>
+                        <span className="command-delimiter">/</span>
                     </div>
                     <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
                         <Command location={this.props.location}
@@ -91,7 +92,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 </div>
                 <ChartDetailNavigator />
                 <HeaderButtonGroup><span /></HeaderButtonGroup>
-            </GenericChartsHeader>
+            </div>
             {this.state.view === ViewType.LOADING
                 ? <Progressing pageLoader />
                 : this.state.installedCharts.length === 0
@@ -107,8 +108,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         {this.state.installedCharts.map((chart) => {
                             return this.renderCard(chart);
                         })}
-                    </div>
-            }
+                    </div>}
         </div>
     }
 }
