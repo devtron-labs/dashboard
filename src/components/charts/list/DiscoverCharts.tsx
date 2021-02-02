@@ -456,12 +456,10 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
     return (
         <components.MenuList {...props}>
           {props.children}
-          <div className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</div>
+          <button className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
         </components.MenuList>
       );
     };
-
-    const AnimatedComponents = makeAnimated()
 
     return <div className="chart-group__header">
      <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
@@ -479,7 +477,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
             </form>
             <div className="flex">
                 <ReactSelect className="date-align-left fs-14"
-                    placeholder="All repositories : all"
+                    placeholder="All repositories : All"
                     name="All repositories"
                     value={selectedChartRepo}
                     options={chartRepoList}
@@ -494,7 +492,6 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                         Option: Option,
                         IndicatorSeparator: null,
                         MenuList,
-                        
                     }}
                     styles={{
                         container: (base, state) => ({
