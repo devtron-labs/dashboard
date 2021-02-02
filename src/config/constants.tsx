@@ -99,7 +99,6 @@ export const ViewType = {
     EMPTY: 'EMPTY',
     LOADING: 'LOADING',
     FORM: 'FORM',
-    INVALID_URL: 'INVALID_URL',
     ERROR: 'ERROR',
 };
 

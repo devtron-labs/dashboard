@@ -1,7 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 
 export interface MaterialListProps extends RouteComponentProps<{ appId: string; }> {
-    configStatus: number;
     respondOnSuccess: () => void;
 }
 

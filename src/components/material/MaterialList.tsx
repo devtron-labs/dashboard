@@ -58,6 +58,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     refreshMaterials() {
+        if (this.state.materials.length < 1) {
+            this.props.respondOnSuccess();
+        }
         getSourceConfig(this.props.match.params.appId).then((response) => {
             let materials = response.result.material.map((mat) => {
                 return {
@@ -70,7 +73,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             });
         })
     }
-    
+
     isCheckoutPathValid(checkoutPath: string) {
         if (this.state.materials.length >= 1) { //Multi git
             if (!checkoutPath.length) { return "This is a required field"; }

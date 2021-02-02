@@ -9,7 +9,6 @@ import ReactGA from 'react-ga';
 import { Security } from '../../security/Security';
 
 const Charts = lazy(() => import('../../charts/Charts'));
-const AppCompose = lazy(() => import('../../appCompose/AppCompose'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
@@ -86,7 +85,7 @@ export function AppRouter() {
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} />
+                    {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
                     <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
