@@ -176,7 +176,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }}>
         <div className="chart-detail-container">
             <div className="page-header p-0 page-header__rows-only">
-                <div className="page-header__top flexbox flex-justify left pl-24 pr-24 fs-12 cn-7">
+                <div className="page-header__top flexbox flex-justify flex-align-items-center left pl-24 pr-24 fs-12 cn-7">
                     <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
                     <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
                         onClick={() => { toggleCommandBar(true); }}>
