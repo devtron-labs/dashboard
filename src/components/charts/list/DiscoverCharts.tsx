@@ -455,9 +455,8 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
       const MenuList = props=> {
     return (
         <components.MenuList {...props}>
-                        
-          <div className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</div>
           {props.children}
+          <div className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</div>
         </components.MenuList>
       );
     };
@@ -486,8 +485,8 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                     options={chartRepoList}
                     onChange={setSelectedChartRepo}
                     isClearable={false}
-                    isMulti
-                   
+                    isMulti={true}
+                    closeMenuOnSelect={false}
                     hideSelectedOptions={false}
                     components={{
                         DropdownIndicator,
@@ -495,8 +494,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                         Option: Option,
                         IndicatorSeparator: null,
                         MenuList,
-                        //@ts-ignore
-                        AnimatedComponents
+                        
                     }}
                     styles={{
                         container: (base, state) => ({
