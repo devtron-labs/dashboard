@@ -1,13 +1,10 @@
 .app-compose {
     display: grid;
     grid-template-columns: 240px 1fr;
-    grid-template-rows: 80px 1fr;
-    height: 100vh;
+    height: calc(100vh - 80px);
     background: white;
     overflow: hidden;
-    .page-header{
-        grid-column: 1 / -1;
-    }
+
     .app-compose__nav {
         padding: 16px;
         border-right: solid 1px #d6dbdf;
@@ -18,10 +15,12 @@
         grid-template-rows: 40px 40px 40px 40px 40px 40px 1fr auto;
         overflow: hidden;
     }
+
     .app-compose__main {
         overflow: auto;
         background-color: var(--window-bg);
     }
+
     .app-compose__nav-item {
         font-size: 13px;
         line-height: 40px;
@@ -32,26 +31,31 @@
         display: flex;
         justify-content: space-between;
         text-decoration: none;
+
         &:hover {
             text-decoration: none;
         }
+
         &.active {
             color: var(--B500);
             font-weight: 600;
             background: #f0f7ff;
         }
     }
+
     .shebang {
         padding: 0 60px;
         color: #151515;
         opacity: 0.6;
     }
+
     .yaml-container {
         border: 1px solid var(--N200);
         border-radius: 4px;
         overflow: hidden;
         margin-bottom: 8px;
     }
+
     .validation-error-block {
         padding: 8px 16px;
         background: var(--R100);
@@ -61,12 +65,15 @@
         align-content: initial;
         color: #f32e2e;
         font-size: 12px;
+
         svg {
             height: 16px;
             width: 16px;
         }
+
         white-space: pre;
     }
+
     .app-compose__next-section {
         position: fixed;
         bottom: 0;
@@ -77,23 +84,28 @@
         box-shadow: inset 0 1px 0 0 #d6dbdf;
         z-index: var(--index-next-section);
     }
+
     .app-compose__nav-icon {
         margin-left: auto;
     }
+
     .environment-routes {
         width: 100%;
         margin-left: 8px;
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
+
         .app-compose__nav-item {
-            width:96%;
+            width: 96%;
         }
     }
+
     .environment-routes-container {
         width: 100%;
         height: 100%;
         overflow: hidden;
+
         &>.app-compose__nav-item {
             height: 40px;
             line-height: 40px;
