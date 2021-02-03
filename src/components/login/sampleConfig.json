@@ -56,8 +56,8 @@
   "ldap": {
     "config": {
       "type": "ldap",
-      "name": "ActiveDirectory",
-      "id": "ad",
+      "name": "LDAP",
+      "id": "ldap",
       "config": {
         "host": "ad.example.com:636",
         "insecureNoSSL": false,
