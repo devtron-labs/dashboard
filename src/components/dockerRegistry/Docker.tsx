@@ -34,6 +34,7 @@ export default function Docker({ ...props }) {
 
 function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
+    console.log(collapsed)
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
@@ -136,6 +137,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         try {
             toggleLoading(true)
             const { result } = await api(payload, id)
+            if (!id) {
+                toggleCollapse(true);
+            }
             await reload()
             toast.success('Successfully saved.')
         } catch (err) {
