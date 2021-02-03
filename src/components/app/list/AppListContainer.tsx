@@ -3,9 +3,8 @@ import React, { Component } from 'react';
 import { getInitState, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';
 import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
-import { URLS, ViewType, getNextStageURL } from '../../../config';
+import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
-import { getAppConfigStatus } from '../../../services/service';
 import { getAppList } from '../service';
 import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
@@ -330,13 +329,8 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     handleEditApp = (appId: number): void => {
-        getAppConfigStatus(appId).then((response) => {
-            let url = getNextStageURL(response.result, appId.toString());
-            this.props.history.push(url);
-        }).catch((errors: ServerErrors) => {
-            showError(errors);
-            this.setState({ view: AppListViewType.LIST, code: errors.code });
-        })
+        let url = `/app/${appId}/edit`;
+        this.props.history.push(url);
     }
 
     redirectToAppDetails = (app, envId: number): string => {
