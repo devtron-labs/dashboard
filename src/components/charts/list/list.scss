@@ -528,18 +528,20 @@
     border: solid 1px var(--N200);
     font-weight: normal;
 }
-.chartListApplyFilter{
-    cursor: pointer;
+
+.chartListApplyFilter {
     text-align: center;
-    position:sticky;
-    bottom:0;
-    margin-left: 10px;
-    width: 90%;
+    position: sticky;
+    bottom: 0;
+    width: 100%;
     border-radius: 4px;
     z-index: 1;
     border: none;
 }
 
-.empty-height{
-   height: 400px; 
+.empty-height {
+    height: 400px;
+}
+.cta--chart-store {
+    width: 80%;
 }

@@ -21,7 +21,7 @@ import { URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import ReactSelect, {components} from 'react-select';
+import ReactSelect, { components } from 'react-select';
 import { DropdownIndicator, ValueContainer, Option } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
@@ -78,7 +78,7 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
-    
+
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
         return () => {
@@ -158,7 +158,7 @@ function DiscoverChartList() {
             setSearchApplied(false);
             setAppStoreName("");
         }
-        if(selectedRepos) setAppliedChartRepoFilter(selectedRepos)
+        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
     async function callApplyFilterOnCharts() {
@@ -215,8 +215,9 @@ function DiscoverChartList() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
-    function handleCloseFilter(){
-       setSelectedChartRepo(appliedChartRepoFilter)
+    function handleCloseFilter() {
+        console.log(appliedChartRepoFilter);
+        setSelectedChartRepo(appliedChartRepoFilter)
     }
 
     return <>
@@ -260,7 +261,7 @@ function DiscoverChartList() {
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : <> <ChartListHeader chartRepoList={state.chartRepos}
-                    handleCloseFilter={handleCloseFilter}
+                        handleCloseFilter={handleCloseFilter}
                         appliedChartRepoFilter={appliedChartRepoFilter}
                         chartGroups={state.chartGroups.slice(0, 4)}
                         setSelectedChartRepo={setSelectedChartRepo}
@@ -274,34 +275,34 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                           <span className='empty-height'>
-                               <EmptyState>
+                            <span className='empty-height'>
+                                <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
                                     <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
                                     <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
                                     <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                             </EmptyState>
+                                </EmptyState>
                             </span>
                         </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
-                            ?<>
-                             <AdvancedConfig chart={state.charts[state.configureChartIndex]}
-                                index={state.configureChartIndex}
-                                handleValuesYaml={handleValuesYaml}
-                                getChartVersionsAndValues={getChartVersionsAndValues}
-                                fetchChartValues={fetchChartValues}
-                                handleChartValueChange={handleChartValueChange}
-                                handleChartVersionChange={handleChartVersionChange}
-                                handleEnvironmentChange={handleEnvironmentChange}
-                                handleNameChange={handleNameChange}
-                                discardValuesYamlChanges={discardValuesYamlChanges}
-                            /> </>: <>
+                            ? <>
+                                <AdvancedConfig chart={state.charts[state.configureChartIndex]}
+                                    index={state.configureChartIndex}
+                                    handleValuesYaml={handleValuesYaml}
+                                    getChartVersionsAndValues={getChartVersionsAndValues}
+                                    fetchChartValues={fetchChartValues}
+                                    handleChartValueChange={handleChartValueChange}
+                                    handleChartVersionChange={handleChartVersionChange}
+                                    handleEnvironmentChange={handleEnvironmentChange}
+                                    handleNameChange={handleNameChange}
+                                    discardValuesYamlChanges={discardValuesYamlChanges}
+                                /> </> : <>
                                 <ChartListHeader chartRepoList={state.chartRepos}
-                                appliedChartRepoFilter={appliedChartRepoFilter}
-                                setSelectedChartRepo={setSelectedChartRepo}
-                                chartGroups={state.chartGroups.slice(0, 4)}
+                                    appliedChartRepoFilter={appliedChartRepoFilter}
+                                    setSelectedChartRepo={setSelectedChartRepo}
+                                    chartGroups={state.chartGroups.slice(0, 4)}
                                     charts={state.charts}
                                     searchApplied={searchApplied}
                                     appStoreName={appStoreName}
@@ -432,7 +433,7 @@ export default function DiscoverCharts() {
     const match = useRouteMatch();
     const { url, path } = match
 
-    
+
     return <Switch>
         <Route path={`${path}/group`}>
             <ChartGroupList />
@@ -455,22 +456,26 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied ,chartGroups,appliedChartRepoFilter,handleCloseFilter}) {
-   
+function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
+
     const menuHeaderStyle = {
         padding: '8px 12px',
         background: '#0066cc',
         color: 'white',
-       
-      };
-      
-      const MenuList = props=> {
-    return (
-        <components.MenuList {...props}>
-          {props.children}
-          <button type="button" className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
-        </components.MenuList>
-      );
+
+    };
+
+    const MenuList = props => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="chartListApplyFilter flex bcn-0">
+                    <button type="button" className="cta flex cta--chart-store" 
+                        disabled={false}
+                    style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
+                </div>
+            </components.MenuList>
+        );
     };
     function ValueContainer(props) {
         if (!props.hasValue) return <components.ValueContainer {...props}>
@@ -486,7 +491,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
     }
 
     return <div className="chart-group__header">
-     <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
+        <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
         <h3 className="chart-grid__title pl-24">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle pl-24">Select chart to deploy. &nbsp;
             <a href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
@@ -520,6 +525,10 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                         MenuList,
                     }}
                     styles={{
+                        menuList: (base, state) => ({
+                            ...base,
+                            paddingBottom: "0px"
+                        }),
                         container: (base, state) => ({
                             ...base,
                             width: '230px',
@@ -531,7 +540,7 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                             width: '230px',
                             border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
                             boxShadow: 'none',
-                           
+
                         }),
                         option: (base, state) => ({
                             ...base,
