@@ -15,28 +15,30 @@
     }
   },
   "github": {
-    "type": "github",
-    "id": "github",
-    "name": "GitHub",
     "config": {
-      "clientID": "$GITHUB_CLIENT_ID",
-      "clientSecret": "$GITHUB_CLIENT_SECRET",
-      "redirectURI": "http://127.0.0.1:5556/dex/callback",
-      "orgs": [
-        {
-          "name": "my-organization"
-        },
-        {
-          "name": "my-organization-with-teams",
-          "teams": [
-            "red-team",
-            "blue-team"
-          ]
-        }
-      ],
-      "loadAllGroups": false,
-      "teamNameField": "slug",
-      "useLoginAsID": false
+      "type": "github",
+      "id": "github",
+      "name": "GitHub",
+      "config": {
+        "clientID": "$GITHUB_CLIENT_ID",
+        "clientSecret": "$GITHUB_CLIENT_SECRET",
+        "redirectURI": "http://127.0.0.1:5556/dex/callback",
+        "orgs": [
+          {
+            "name": "my-organization"
+          },
+          {
+            "name": "my-organization-with-teams",
+            "teams": [
+              "red-team",
+              "blue-team"
+            ]
+          }
+        ],
+        "loadAllGroups": false,
+        "teamNameField": "slug",
+        "useLoginAsID": false
+      }
     }
   },
   "microsoft": {
