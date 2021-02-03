@@ -27,7 +27,6 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import makeAnimated from 'react-select/animated';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -69,6 +68,7 @@ function DiscoverChartList() {
     const [showDeployModal, toggleDeployModal] = useState(false);
     const [chartListLoading, setChartListloading] = useState(true);
     const [selectedChartRepo, setSelectedChartRepo] = useState([]);
+    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
     const [searchApplied, setSearchApplied] = useState(false);
     const [includeDeprecated, setIncludeDeprecated] = useState(1);
@@ -158,6 +158,7 @@ function DiscoverChartList() {
             setSearchApplied(false);
             setAppStoreName("");
         }
+        if(selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
     async function callApplyFilterOnCharts() {
@@ -214,6 +215,10 @@ function DiscoverChartList() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
+    function handleCloseFilter(){
+       setSelectedChartRepo(appliedChartRepoFilter)
+    }
+
     return <>
         <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
             <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
@@ -255,7 +260,10 @@ function DiscoverChartList() {
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : <> <ChartListHeader chartRepoList={state.chartRepos}
-                        chartGroups={state.chartGroups.slice(0, 4)}setSelectedChartRepo={setSelectedChartRepo}
+                    handleCloseFilter={handleCloseFilter}
+                        appliedChartRepoFilter={appliedChartRepoFilter}
+                        chartGroups={state.chartGroups.slice(0, 4)}
+                        setSelectedChartRepo={setSelectedChartRepo}
                         charts={state.charts}
                         searchApplied={searchApplied}
                         appStoreName={appStoreName}
@@ -266,12 +274,14 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                            <EmptyState>
-                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                            </EmptyState>
+                           <span className='empty-height'>
+                               <EmptyState>
+                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                             </EmptyState>
+                            </span>
                         </>}
                 </div>
                     : <div className="discover-charts__body-details">
@@ -289,6 +299,7 @@ function DiscoverChartList() {
                                 discardValuesYamlChanges={discardValuesYamlChanges}
                             /> </>: <>
                                 <ChartListHeader chartRepoList={state.chartRepos}
+                                appliedChartRepoFilter={appliedChartRepoFilter}
                                 setSelectedChartRepo={setSelectedChartRepo}
                                 chartGroups={state.chartGroups.slice(0, 4)}
                                     charts={state.charts}
@@ -300,7 +311,8 @@ function DiscoverChartList() {
                                     clearSearch={clearSearch}
                                     handleAppStoreChange={handleAppStoreChange}
                                     handleChartRepoChange={handleChartRepoChange}
-                                    handleDeprecateChange={handleDeprecateChange} />
+                                    handleDeprecateChange={handleDeprecateChange}
+                                    handleCloseFilter={handleCloseFilter} />
                                 <div className="chart-grid">
                                     {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
                                         key={chart.id}
@@ -443,11 +455,11 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied ,chartGroups}) {
+function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied ,chartGroups,appliedChartRepoFilter,handleCloseFilter}) {
    
     const menuHeaderStyle = {
         padding: '8px 12px',
-        background: 'rgba(65, 154, 249, 0.99)',
+        background: '#0066cc',
         color: 'white',
        
       };
@@ -456,29 +468,41 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
     return (
         <components.MenuList {...props}>
           {props.children}
-          <button className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
+          <button type="button" className="chartListApplyFilter" style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
         </components.MenuList>
       );
     };
+    function ValueContainer(props) {
+        if (!props.hasValue) return <components.ValueContainer {...props}>
+        </components.ValueContainer>
+        else {
+            return <components.ValueContainer {...props}>
+                <p style={{ margin: '0px' }}>
+                    {props?.selectProps?.name}
+                    <span className="badge">{appliedChartRepoFilter?.length}</span>
+                </p>
+            </components.ValueContainer>
+        }
+    }
 
     return <div className="chart-group__header">
      <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
-        <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
-        <h5 className="form__subtitle">Select chart to deploy. &nbsp;
+        <h3 className="chart-grid__title pl-24">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+        <h5 className="form__subtitle pl-24">Select chart to deploy. &nbsp;
             <a href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <div className="flexbox flex-justify">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >
-                <Search className="search__icon icon-dim-18" />
-                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
+                <Search className="search__icon icon-dim-18 pl-24" />
+                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0 ml-24" onChange={(event) => { setAppStoreName(event.target.value); }} />
                 {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
             </form>
             <div className="flex">
                 <ReactSelect className="date-align-left fs-14"
-                    placeholder="All repositories : All"
-                    name="All repositories"
+                    placeholder="Repository : All"
+                    name="Repository :"
                     value={selectedChartRepo}
                     options={chartRepoList}
                     onChange={setSelectedChartRepo}
@@ -486,6 +510,8 @@ function ChartListHeader({ handleAppStoreChange,setSelectedChartRepo, handleChar
                     isMulti={true}
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
+                    openMenuOnClick={false}
+                    onMenuOpen={handleCloseFilter}
                     components={{
                         DropdownIndicator,
                         ValueContainer,
@@ -533,7 +559,7 @@ export function ChartGroupListMin({ chartGroups }) {
     return <div className="chart-group" style={{ minHeight: "280px" }}>
         <div className="chart-group__header">
             <div className="flexbox">
-                <h2 className="chart-grid__title">Chart Groups</h2>
+                <h2 className="chart-grid__title pl-24">Chart Groups</h2>
                 <button type="button" className="chart-group__view-all"
                     onClick={(e) => history.push(match.url + '/group')}>View All
                 </button>
