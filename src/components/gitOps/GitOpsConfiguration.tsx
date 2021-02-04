@@ -3,7 +3,7 @@ import { ViewType } from '../../config'
 import '../login/login.css'
 import './gitops.css';
 import  { GitOpsState, GitOpsProps } from './gitops.type'
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import {  CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ConfirmationDialog } from '../common'
@@ -23,7 +23,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
             view: ViewType.LOADING,
             statusCode: 0,
             githost: SwitchGitItemValues.GitLab,
-            git: '',
+            git: "",
             customGitOpsState: {
                 password: { value: "", error: "" }, 
                 username: { value: "", error: "" },
@@ -64,8 +64,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
     render() {
         return <section className="git-page">
             <h2 className="form__title">GitOps configuration</h2>
-            <h5 className="form__subtitle">Devtron uses Gitops&nbsp;
-            </h5>
+            <h5 className="form__subtitle">Devtron uses Gitops&nbsp; </h5>
             <div className="gitops login__sso-wrapper  pr-20">
                     <div className="login__sso-flex">
                           <div>
@@ -74,8 +73,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                                     <span className="tertiary-tab sso-icons">
                                         <aside className="login__icon-alignment"><GitLab/></aside>
                                         <aside className="login__text-alignment"> GitLab</aside>
-                                        <label>
-                                        </label>
                                     </span>
                                 </label>
                          </div>
@@ -85,24 +82,22 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                                     <span className="tertiary-tab sso-icons">
                                         <aside className="login__icon-alignment"><GitHub /></aside>
                                         <aside className="login__text-alignment"> GitHub</aside>
-                                        <label>
-                                        </label>
                                     </span>
                                 </label>
                          </div>
                     </div>
                    <div className="flex column left top  pl-20">
-                      <div className="gitops__id pb-6">Git host*</div> 
+                        <div className="gitops__id pb-6">Git host*</div> 
                         <input type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
                     </div>
-                   <div className="flex column left top pt-16 pl-20 pb-6">
-                       <div className="gitops__id ">GitLab organisation ID*</div>
-                        <input type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
+                    <div className="flex column left top pt-16 pl-20 pb-6">
+                         <div className="gitops__id ">GitLab organisation ID*</div>
+                         <input type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
                     </div>
                     <div className="pl-20"><hr/></div>
-                   <div className="gitops__access  pl-20 ">Git access credentials</div>
-                   <form  className="  pl-20 pr-20">
-                     <div className=" form__row--two-third pt-16 gitops__id ">
+                    <div className="gitops__access  pl-20 ">Git access credentials</div>
+                    <form  className="  pl-20 pr-20">
+                    <div className=" form__row--two-third pt-16 gitops__id ">
                         <CustomInput value={this.state.customGitOpsState.username.value} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
                         <ProtectedInput value={this.state.customGitOpsState.password.value} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
                    </div>
