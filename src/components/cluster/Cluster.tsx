@@ -149,7 +149,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
         try {
             let payload = {};
             const { result } = await retryClusterInstall(clusterId, payload);
-            if (result) toast.success("Retry successful")
+            if (result) toast.success("Successfully triggered")
             reload();
         } catch (error) {
             showError(error);
