@@ -412,12 +412,16 @@
 .cluster-create-status {
     padding: 8px 24px;
     display: grid;
-    grid-template-columns: 20px auto 48px;
+    grid-template-columns: 20px auto 64px;
     column-gap: 16px;
 }
 
 .cluster-create-status--healthy {
     background-color: var(--G100);
+}
+
+.cluster-create-status--not-triggered {
+    background-color: var(--N100);
 }
 
 .cluster-create-status--installing {

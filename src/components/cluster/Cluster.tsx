@@ -149,7 +149,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
         try {
             let payload = {};
             const { result } = await retryClusterInstall(clusterId, payload);
-            if (result) toast.success("Retry successful")
+            if (result) toast.success("Successfully triggered")
             reload();
         } catch (error) {
             showError(error);
@@ -177,7 +177,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                     {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                 </List>
                 {clusterId ? <hr className="mt-0 mb-16" /> : null}
-                {clusterId && defaultClusterComponent ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
+                {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
                     envName={envName}
                     onClick={clusterInstallStatusOnclick} /> : null}
                 {showClusterComponentModal ? <ClusterComponentModal agentInstallationStage={agentInstallationStage}

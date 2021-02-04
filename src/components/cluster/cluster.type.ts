@@ -22,7 +22,7 @@ export enum ClusterComponentStatus {
 
 export type ClusterComponentStatusType = keyof typeof ClusterComponentStatus;
 
-export type ClusterInstallStage = 0 | 1 | 2 | 3;
+export type ClusterInstallStage = -1 | 0 | 1 | 2 | 3;
 
 export interface ClusterComponentType {
     name: string;
