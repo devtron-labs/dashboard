@@ -8,7 +8,8 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ConfirmationDialog } from '../common'
 import warn from '../../assets/icons/ic-warning.svg';
-
+import { getGitOpsConfigurationList } from './serice'
+import { showError } from '../common';
 
  const SwitchGitItemValues = {
     GitLab: 'gitlab',
@@ -24,6 +25,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
             statusCode: 0,
             githost: SwitchGitItemValues.GitLab,
             git: "",
+            gitList: [],
             customGitOpsState: {
                 password: { value: "", error: "" }, 
                 username: { value: "", error: "" },
@@ -35,6 +37,16 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
         }
         this.handleGitHost= this.handleGitHost.bind(this);
         this.handleOnChange= this.handleOnChange.bind(this);
+    }
+
+    componentDidMount() {
+        getGitOpsConfigurationList().then((response) => {
+          this.setState({ 
+             gitList : response, 
+            view: ViewType.FORM, });
+        }).catch((error) => {
+          showError(error);
+        })
     }
 
     handleGitHost(event){

@@ -11,11 +11,15 @@ export interface CustomGitOpsState{
 };
 }
 
+export interface GitList{
+  
+}
 export interface GitOpsState{
     view: string;
     statusCode: number;
     githost: string;
     git: string;
+    gitList: GitList;
     customGitOpsState: CustomGitOpsState;
     showToggling: boolean;
     githostCom:{
