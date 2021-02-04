@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useState, useEffect, useRef } from 'react'
 import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput } from '../common'
 import { useParams } from 'react-router'
