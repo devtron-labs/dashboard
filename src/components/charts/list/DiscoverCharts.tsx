@@ -249,7 +249,7 @@ function DiscoverChartList() {
             {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
 
             {!state.loading && !chartListLoading ? <div className="discover-charts__body">
-                {!chartList.length ? <div className="w-100">
+                {!chartList.length ? <div className="w-100" style={{ overflow: "auto" }}>
                     {typeof state.configureChartIndex === 'number' ? <AdvancedConfig chart={state.charts[state.configureChartIndex]}
                         index={state.configureChartIndex}
                         handleValuesYaml={handleValuesYaml}
@@ -470,9 +470,9 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chartListApplyFilter flex bcn-0">
-                    <button type="button" className="cta flex cta--chart-store" 
+                    <button type="button" className="cta flex cta--chart-store"
                         disabled={false}
-                    style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
+                        style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
                 </div>
             </components.MenuList>
         );
