@@ -6,7 +6,13 @@ import { ClusterComponentModalProps } from './cluster.type';
 export class ClusterComponentModal extends Component<ClusterComponentModalProps, {}>{
 
     renderStatus() {
-        if (this.props.agentInstallationStage === 1) {
+        if (this.props.agentInstallationStage === 0) {
+            return <p className="m-0 fw-6 fs-14 app-status-icon not-triggered">
+                Not Triggered
+                <button type="button" className="cluster-create-status__button ml-16" onClick={this.props.callRetryClusterInstall}>Install</button>
+            </p>
+        }
+        else if (this.props.agentInstallationStage === 1) {
             return <p className="m-0 fw-6 fs-14 app-summary__status-name f-progressing">
                 In progress...
             </p>
