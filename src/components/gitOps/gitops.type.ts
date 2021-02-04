@@ -12,14 +12,20 @@ export interface CustomGitOpsState{
 }
 
 export interface GitList{
-  
+  id: string;
+  url: string;
+  customGitOpsState: {
+    password: { value: string, error: string }, 
+    username: { value: string, error: string },
+},
 }
+
 export interface GitOpsState{
     view: string;
     statusCode: number;
     githost: string;
     git: string;
-    gitList: GitList;
+    gitList: GitList[];
     customGitOpsState: CustomGitOpsState;
     showToggling: boolean;
     githostCom:{

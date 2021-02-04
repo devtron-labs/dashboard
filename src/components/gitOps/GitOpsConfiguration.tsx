@@ -10,6 +10,7 @@ import { ConfirmationDialog } from '../common'
 import warn from '../../assets/icons/ic-warning.svg';
 import { getGitOpsConfigurationList } from './serice'
 import { showError } from '../common';
+import { DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
 
  const SwitchGitItemValues = {
     GitLab: 'gitlab',
@@ -47,6 +48,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
         }).catch((error) => {
           showError(error);
         })
+        
     }
 
     handleGitHost(event){
