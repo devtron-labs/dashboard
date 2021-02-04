@@ -168,7 +168,6 @@ function DiscoverChartList() {
     }
 
     function handleChartRepoChange(selected): void {
-        console.log(selected)
         let chartRepoId = selected?.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(location.search);
         let app = searchParams.get(QueryParams.AppStoreName);
@@ -216,7 +215,6 @@ function DiscoverChartList() {
     }
 
     function handleCloseFilter() {
-        console.log(appliedChartRepoFilter);
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
@@ -462,14 +460,14 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
         padding: '8px 12px',
         background: '#0066cc',
         color: 'white',
-
+        
     };
 
     const MenuList = props => {
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="chartListApplyFilter flex bcn-0">
+                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
                     <button type="button" className="cta flex cta--chart-store"
                         disabled={false}
                         style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
@@ -484,7 +482,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             return <components.ValueContainer {...props}>
                 <p style={{ margin: '0px' }}>
                     {props?.selectProps?.name}
-                    <span className="badge">{appliedChartRepoFilter?.length}</span>
+                    {  (appliedChartRepoFilter?.length==0) ? '' :<span className="badge">{appliedChartRepoFilter?.length}</span> }
                 </p>
             </components.ValueContainer>
         }
@@ -507,7 +505,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             <div className="flex">
                 <ReactSelect className="date-align-left fs-14"
                     placeholder="Repository : All"
-                    name="Repository :"
+                    name="Repository "
                     value={selectedChartRepo}
                     options={chartRepoList}
                     onChange={setSelectedChartRepo}
