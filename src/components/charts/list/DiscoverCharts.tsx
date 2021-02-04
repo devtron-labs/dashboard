@@ -496,10 +496,10 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
         <h5 className="form__subtitle pl-24">Select chart to deploy. &nbsp;
             <a href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
-        <div className="flexbox flex-justify">
+        <div className="flexbox flex-justify pl-24 pr-24">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >
-                <Search className="search__icon icon-dim-18 pl-24" />
-                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0 ml-24" onChange={(event) => { setAppStoreName(event.target.value); }} />
+                <Search className="search__icon icon-dim-18" />
+                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
                 {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
