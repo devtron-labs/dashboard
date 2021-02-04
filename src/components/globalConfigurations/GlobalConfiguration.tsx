@@ -104,21 +104,22 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off" }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off", labelClassName="" }) {
     return <div className="flex column left top">
-        <label className="form__label">{label}</label>
+        <label className={`form__label ${labelClassName}`} >{label}</label>
         <input type={type}
             name={name}
             autoComplete="off"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}
-            disabled={disabled} />
+            disabled={disabled} 
+            />
         {error && <div className="form__error">{error}</div>}
     </div>
 }
 
-export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true }) {
+export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true ,labelClassName="" }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -126,7 +127,7 @@ export function ProtectedInput({ name, value, error, onChange, label, type = "te
 
     return (
         <div className="flex column left top">
-            <label htmlFor="" className="form__label">{label}</label>
+            <label htmlFor="" className={`form__label ${labelClassName}`}>{label}</label>
             <div className="flex protected-input-container">
                 <input type={shown ? 'text' : 'password'} name={name} onChange={e => { e.persist(); onChange(e) }} value={value} disabled={disabled} />
                 <ShowHide hidden={!shown} defaultOnClick={e => toggleShown(!shown)} disabled={disabled} />

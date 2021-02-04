@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { ViewType } from '../../config'
 import '../login/login.css'
 import './gitops.css';
-import  {GitOpsState, GitOpsProps} from './gitops.type'
+import  { GitOpsState, GitOpsProps } from './gitops.type'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-
+import { ConfirmationDialog } from '../common'
+import warn from '../../assets/icons/ic-warning.svg';
 
 
  const SwitchGitItemValues = {
@@ -24,8 +25,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
             githost: SwitchGitItemValues.GitLab,
             git: '',
             customGitOpsState: {
-                password: { value: "password", error: '' }, 
-                username: { value: "userName", error: '' },
+                password: { value: "", error: "" }, 
+                username: { value: "", error: "" },
+            },
+            showToggling: false,
+            githostCom:{
+                value:'gitlab.com', error:'',
             }
         }
         this.handleGitHost= this.handleGitHost.bind(this);
@@ -35,7 +40,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
     handleGitHost(event){
        let newGitOps= event.target.value
        console.log(newGitOps)
-       
+       this.setState({
+           githost: newGitOps
+       })
     }
 
     handleOnChange(){
@@ -48,6 +55,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
 
     onLoginConfigSave(){
 
+    }
+
+    toggleWarningModal(): void {
+        this.setState({ showToggling: !this.state.showToggling });
     }
 
     render() {
@@ -90,17 +101,25 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                     </div>
                     <div className="pl-20"><hr/></div>
                    <div className="gitops__access  pl-20 ">Git access credentials</div>
-                   <form  className="gitops__id  pl-20 pr-20">
-                     <div className=" form__row--two-third pt-16">
-                        <CustomInput value={this.state.customGitOpsState.username.value} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" />
-                        <ProtectedInput value={this.state.customGitOpsState.password.value} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" />
+                   <form  className="  pl-20 pr-20">
+                     <div className=" form__row--two-third pt-16 gitops__id ">
+                        <CustomInput value={this.state.customGitOpsState.username.value} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
+                        <ProtectedInput value={this.state.customGitOpsState.password.value} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
                    </div>
                    <div className="form__buttons mr-24">
                     <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" className={`cta`}> Save</button>
                 </div>
                 </form>
             </div>
-        </section >
+            {this.state.showToggling ? <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">GitOps configuration required</div>
+                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
+                    <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>: ''
+            }        </section >
 
     }
 

@@ -17,6 +17,11 @@ export interface GitOpsState{
     githost: string;
     git: string;
     customGitOpsState: CustomGitOpsState;
+    showToggling: boolean;
+    githostCom:{
+        value: string;
+        error:''
+    }
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
