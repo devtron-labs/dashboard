@@ -31,7 +31,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     return <div className="form__app-compose">
         <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
         <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
-            <a rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/deployment-template" target="_blank">Learn more about Deployment Template Configurations</a>
+            <a className="learn-more__href" rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/deployment-template" target="_blank">Learn more about Deployment Template Configurations</a>
         </p>
         <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
     </div>
