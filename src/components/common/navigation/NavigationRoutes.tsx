@@ -2,11 +2,13 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { URLS } from '../../../config';
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
-import Navigation from './Navigation';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
-import * as Sentry from '@sentry/browser';
-import ReactGA from 'react-ga';
+import Navigation from './Navigation';
+import ReactGA, { event } from 'react-ga';
 import { Security } from '../../security/Security';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import * as Sentry from '@sentry/browser';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
@@ -18,7 +20,8 @@ export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
-    
+    const [showInfoBar, setShowInfobar] = useState(true);
+
     useEffect(() => {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
@@ -55,10 +58,24 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    return (
-        <main>
+    return <main>
+        <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showInfoBar ? '40px' : '0px' }}>
+            <span className="mt-10 mb-10">
+                <Info className="icon-dim-20" />
+            </span>
+            <p className="m-0 pt-10 pb-10">
+                A new version of Devtron is available.&nbsp;
+                <a href="">See what's new.</a>&nbsp;
+                <span className="fw-6">Customers: </span> <span>mail us</span> to request latest version.&nbsp;
+                <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
+            </p>
+            <button type="button" className="transparent pt-10 pb-10" onClick={(event) => { setShowInfobar(false) }}>
+                <Close className="icon-dim-20" />
+            </button>
+        </div>
+        <div className="page-content" style={{ height: showInfoBar ? 'calc(100% - 40px)' : '100%' }}>
             <Navigation history={history} match={match} location={location} />
-            <div className="main">
+            <div>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <ErrorBoundary>
                         <Switch>
@@ -74,8 +91,8 @@ export default function NavigationRoutes() {
                     </ErrorBoundary>
                 </Suspense>
             </div>
-        </main>
-    )
+        </div>
+    </main>
 }
 
 export function AppRouter() {
@@ -85,7 +102,6 @@ export function AppRouter() {
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
                     <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">

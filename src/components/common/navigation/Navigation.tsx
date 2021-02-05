@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
-import { URLS } from '../../../config';
 import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
@@ -10,60 +9,9 @@ import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
+import { NavigationList, NavigationListBottom } from './navigation.util';
+import { URLS } from '../../../config';
 import './navigation.scss';
-
-const NavigationList = [
-	{
-		title: 'Search (⌘+/)',
-		type: 'button',
-		iconClass: 'nav-short-search',
-		href: URLS.APP,
-	},
-	{
-		title: 'Applications',
-		type: 'link',
-		iconClass: 'nav-short-apps',
-		href: URLS.APP,
-	},
-	{
-		title: 'Charts',
-		type: 'link',
-		iconClass: 'nav-short-helm',
-		href: URLS.CHARTS,
-	},
-	{
-		title: 'Deployment Groups',
-		type: 'link',
-		iconClass: 'nav-short-bulk-actions',
-		href: URLS.DEPLOYMENT_GROUPS,
-	},
-	{
-		title: 'Security',
-		type: 'link',
-		href: URLS.SECURITY,
-		iconClass: 'nav-security',
-	},
-	{
-		title: 'Global Configurations',
-		type: 'link',
-		href: URLS.GLOBAL_CONFIG,
-		iconClass: 'nav-short-global'
-	},
-];
-
-
-const NavigationListBottom = [
-	{
-		title: 'View on Github',
-		iconClass: 'nav-short-github',
-		href: 'https://github.com/devtron-labs/devtron',
-	},
-	{
-		title: 'Discord Community',
-		iconClass: 'nav-short-discord',
-		href: 'https://discord.gg/jsRG5qx2gp',
-	},
-];
 
 export interface NavigationState {
 	loginInfo: any;
@@ -74,6 +22,7 @@ export interface NavigationState {
 	isNewVersionAvailable: boolean;
 	currentversion: string;
 	latestVersion: string;
+	showInfobar: boolean;
 }
 export default class Navigation extends Component<RouteComponentProps<{}>, NavigationState> {
 
@@ -88,6 +37,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 			isNewVersionAvailable: false,
 			currentversion: "1.8.2",
 			latestVersion: "1.8.4",
+			showInfobar: true,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
@@ -148,7 +98,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 
 	renderMoreOption() {
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
-			<div className="nav-grid__card more-option-card ">
+			<div className="nav-grid__card more-option-card">
 				<div className="more-option-card__title clickable">
 					<a className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank" rel="noreferrer noopener"
 						onClick={(event) => {
@@ -157,7 +107,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 								action: 'Devtron Blog Clicked',
 							})
 						}}>
-						<div className="more-option-card__rect">Devtron Blog</div>
+						<div className="fs-14 fw-5 cn-9 pt-10 pb-10 pl-16 pr-16">Devtron Blog</div>
 					</a>
 				</div>
 				<div className="more-option-card__title">
@@ -208,7 +158,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 						});
 					}}>
 						<div className="short-nav--flex">
-							<svg className="devtron-logo" viewBox="0 0 40 40">
+							<svg className="devtron-logo icon-dim-40" viewBox="0 0 40 40">
 								<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 							</svg>
 							<div className="pl-12 pt-10">
