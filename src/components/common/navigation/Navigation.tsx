@@ -6,6 +6,7 @@ import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
+import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
@@ -53,11 +54,6 @@ const NavigationList = [
 
 const NavigationListBottom = [
 	{
-		title: 'Documentation',
-		iconClass: 'nav-short-documentation',
-		href: 'https://docs.devtron.ai/',
-	},
-	{
 		title: 'View on Github',
 		iconClass: 'nav-short-github',
 		href: 'https://github.com/devtron-labs/devtron',
@@ -68,7 +64,18 @@ const NavigationListBottom = [
 		href: 'https://discord.gg/jsRG5qx2gp',
 	},
 ];
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showHelpCard: boolean; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
+
+export interface NavigationState {
+	loginInfo: any;
+	showHelpCard: boolean;
+	showLogoutCard: boolean;
+	showMoreOptionCard: boolean;
+	isCommandBarActive: boolean;
+	isNewVersionAvailable: boolean;
+	currentversion: string;
+	latestVersion: string;
+}
+export default class Navigation extends Component<RouteComponentProps<{}>, NavigationState> {
 
 	constructor(props) {
 		super(props);
@@ -78,16 +85,25 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			showMoreOptionCard: false,
 			isCommandBarActive: false,
 			showHelpCard: false,
+			isNewVersionAvailable: false,
+			currentversion: "1.8.2",
+			latestVersion: "1.8.4",
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
 		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
+		this.toggleHelpCard = this.toggleHelpCard.bind(this);
 	}
 
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
 	}
+
+	toggleHelpCard() {
+		this.setState({ showHelpCard: !this.state.showHelpCard })
+	}
+
 	toggleMoreOptionCard() {
 		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
 	}
@@ -102,15 +118,22 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	}
 
 	renderHelpCard() {
-		return <div className="logout-card">
-			
-		</div>
+		let isLatest = this.state.currentversion === this.state.latestVersion;
+		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleHelpCard}>
+			<div className="nav-grid__card help-card p-8 br-4 bcn-0">
+				<a href="https://docs.devtron.ai/" rel="noreferrer noopener" target="_blank" className="block pt-10 pb-10 pl-8 pr-8 m-0 fs-13 fw-5 lh-1-54 cn-9">Documentation</a>
+				<div className="pt-10 pb-10 pl-8 pr-8">
+					<p className="m-0 fs-13 fw-5 lh-1-54 cn-9">What's New{isLatest ? null : <span className="inline-block ml-8 br-5 icon-dim-10 bcy-5"></span>}</p>
+					<p className="m-0 fs-12 fw-5 lh-1-54 cb-5">New Version Available({this.state.latestVersion})</p>
+				</div>
+			</div>
+		</div>, document.getElementById('root'))
 	}
 
 	renderLogout() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleLogoutCard}>
-			<div className="logout-card">
+			<div className="nav-grid__card logout-card">
 				<div className="flexbox flex-justify p-16">
 					<div className="logout-card-user ">
 						<p className="logout-card__name ellipsis-right">{email}</p>
@@ -118,15 +141,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</div>
 					<p className="logout-card__initial fs-16 icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
-				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
+				<div className="logout-card__logout clickable cursor" onClick={this.deleteCookie}>Logout</div>
 			</div>
 		</div>, document.getElementById('root'))
 	}
 
 	renderMoreOption() {
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
-			<div className="more-option-card ">
-				<div className="more-option-card__title">
+			<div className="nav-grid__card more-option-card ">
+				<div className="more-option-card__title clickable">
 					<a className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank" rel="noreferrer noopener"
 						onClick={(event) => {
 							ReactGA.event({
@@ -173,6 +196,8 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 
 	render() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
+		let isLatest = this.state.currentversion === this.state.latestVersion;
+
 		return <>
 			<nav>
 				<aside className="short-nav nav-grid nav-grid--collapsed">
@@ -245,6 +270,27 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</NavLink>
 					})}
 					<div></div>
+					<div className="cursor"
+						onClick={(event) => {
+							this.toggleHelpCard();
+							ReactGA.event({
+								category: 'Main Navigation',
+								action: `Help Clicked`,
+							});
+						}}>
+						<div className="short-nav--flex">
+							<div className="icon-dim-40 flex position-rel">
+								{isLatest ? null : <span className="inline-block br-5 icon-dim-10 bcy-5 en-0 bw-2" style={{ position: 'absolute', top: "7px", right: "11px" }}></span>}
+								<Help className="icon-dim-24 fcn-0" />
+							</div>
+							<div className="expandable-active-nav">
+								<div className="title-container flex left">
+									Help
+								</div>
+							</div>
+						</div>
+					</div>
+					{this.state.showHelpCard ? this.renderHelpCard() : null}
 					{NavigationListBottom.map(((item) => {
 						return <a href={item.href} rel="noreferrer noopener" className="" target="_blank"
 							onClick={(event) => {
@@ -276,7 +322,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<div><button type="button" className="transparent ellipsis-right expandable-active-nav title-container" onClick={this.toggleLogoutCard}>{email}</button></div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
-					{this.state.showHelpCard ? this.renderHelpCard(): null}
 					<div className="short-nav--flex">
 						<div className="icon-dim-40 flex ">
 							<div className="icon-dim-32 ml-5 mt-5" onClick={this.toggleMoreOptionCard} >
@@ -297,7 +342,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					toggleCommandBar={this.toggleCommandBar}
 				/>
 			</CommandErrorBoundary>
-
 		</>
 	}
 }

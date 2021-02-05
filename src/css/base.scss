@@ -170,6 +170,9 @@ a:focus {
     text-transform: lowercase;
 }
 
+.clickable:hover {
+    background-color: var(--N100);
+}
 
 .text-uppercase {
     text-transform: uppercase;
