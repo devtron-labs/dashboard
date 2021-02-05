@@ -12,13 +12,15 @@ export interface CustomGitOpsState{
 }
 
 export interface GitList{
-  id: string;
-  url: string;
-  customGitOpsState: {
-    password: { value: string, error: string }, 
-    username: { value: string, error: string },
-},
-}
+          orgOrGroupId: string,
+          id: number,
+          provider: string,
+          host: string,
+          token:  string,
+          username: string ,
+          active: boolean,
+        }
+ 
 
 export interface GitOpsState{
     view: string;

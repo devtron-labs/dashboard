@@ -19,6 +19,9 @@ import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
+import { getGitOpsConfigurationList } from '../../gitOps/service'
+import { ConfirmationDialog } from '../../common'
+import warn from '../../../assets/icons/ic-warning.svg';
 
 
 const DiscoverDetailsContext = React.createContext(null);
@@ -48,6 +51,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const [chartValuesList, setChartValuesList] = useState([])
     const [chartValues, setChartValues] = useState({ id: 0, kind: null, name: '', chartVersion: "", environmentName: "" });
     const { chartId } = useParams()
+    const[ showToggling, setShowToggling] = useState(false)
 
     function formatOptionLabel({label, value, ...rest}){
         return rest?.chart_name ? (
@@ -148,6 +152,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     useEffect(() => {
         fetchVersions();
         getChartValuesList();
+        getGitOpsConfigurationList().then((response)=>{
+            console.log(response)
+            setShowToggling(true)
+           
+        })
     }, [chartId])
 
     useEffectAfterMount(() => {
@@ -197,7 +206,16 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                 </div>
                 </div>
             </div>
-            }
+            }  
+             {loading ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                    <div className="modal__title sso__warn-title">GitOps configuration required</div>
+                    <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
+                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={e=>setShowToggling}>Cancel</button>
+                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>: ''
+                } 
         </div>
         <Switch>
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`} render={(props) => {

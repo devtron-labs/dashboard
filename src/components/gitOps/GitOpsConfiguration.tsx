@@ -8,9 +8,8 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ConfirmationDialog } from '../common'
 import warn from '../../assets/icons/ic-warning.svg';
-import { getGitOpsConfigurationList } from './serice'
+import { getGitOpsConfigurationList } from './service'
 import { showError } from '../common';
-import { DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
 
  const SwitchGitItemValues = {
     GitLab: 'gitlab',
@@ -43,8 +42,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
     componentDidMount() {
         getGitOpsConfigurationList().then((response) => {
           this.setState({ 
-             gitList : response, 
-            view: ViewType.FORM, });
+                gitList : response[0].result, 
+                view: ViewType.FORM, 
+             }
+            ,()=>console.log(response[0].result));
         }).catch((error) => {
           showError(error);
         })
@@ -68,7 +69,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
     }
 
     onLoginConfigSave(){
-
+      
     }
 
     toggleWarningModal(): void {
