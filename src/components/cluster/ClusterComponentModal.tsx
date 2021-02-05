@@ -41,7 +41,7 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
                     </button>
                 </div>
                 <hr className="m-0" />
-                <div style={{ minHeight: "128px" }}>
+                <div style={{ minHeight: "192px" }}>
                     {list}
                 </div>
                 <div className="pl-24 pr-24 pt-16 pb-16 flex right">
@@ -53,20 +53,26 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
     }
 
     render() {
-        let list = <ul className="cluster-component__list mt-16 p-0">
-            {this.props.components?.map((c) => {
-                let status = c.status.toLowerCase().replace('_', '-');
-                return <li className="cluster-component__list-item flexbox" onClick={(e) => this.props.redirectToChartDeployment(c.installedAppId, c.envId)}>
-                    <div className="mr-16 flex">
-                        <span className={`icon-dim-20 inline-block mr-16 ${status}`}></span>
-                    </div>
-                    <div className="flex-1">
-                        <p className="cluster-component__name m-0">{c.name}</p>
-                        <p className="cluster-component__status m-0">{c.status}</p>
-                    </div>
-                </li>
-            })}
-        </ul>
+        let list = <div className="flex" style={{ height: "192px" }}>
+
+        </div>
+
+        if (this.props?.components?.length) {
+            list = <ul className="cluster-component__list mt-16 p-0">
+                {this.props.components?.map((c) => {
+                    let status = c.status.toLowerCase().replace('_', '-');
+                    return <li className="cluster-component__list-item flexbox" onClick={(e) => this.props.redirectToChartDeployment(c.installedAppId, c.envId)}>
+                        <div className="mr-16 flex">
+                            <span className={`icon-dim-20 inline-block mr-16 ${status}`}></span>
+                        </div>
+                        <div className="flex-1">
+                            <p className="cluster-component__name m-0">{c.name}</p>
+                            <p className="cluster-component__status m-0">{c.status}</p>
+                        </div>
+                    </li>
+                })}
+            </ul>
+        }
         return this.renderWithBackdrop(list)
     }
 }
