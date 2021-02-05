@@ -102,7 +102,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         else return <section className="cluster-page">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-            <a href="https://docs.devtron.ai/global-configurations/cluster-and-environments"  rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+            <a href="https://docs.devtron.ai/global-configurations/cluster-and-environments" rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
             {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
@@ -157,10 +157,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
     }
 
     async function clusterInstallStatusOnclick(e) {
-        if (agentInstallationStage === 3) {
-            callRetryClusterInstall();
-        }
-        else toggleClusterComponentModal(!showClusterComponentModal)
+        toggleClusterComponentModal(!showClusterComponentModal)
     }
 
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
@@ -176,7 +173,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                     </div>
                     {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                 </List>
-                {clusterId ? <hr className="mt-0 mb-16" /> : null}
+                {clusterId ? <hr className="mt-0 mb-0" /> : null}
                 {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
                     envName={envName}
                     onClick={clusterInstallStatusOnclick} /> : null}
