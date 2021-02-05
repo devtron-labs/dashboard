@@ -68,7 +68,7 @@ const NavigationListBottom = [
 		href: 'https://discord.gg/jsRG5qx2gp',
 	},
 ];
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
+export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showHelpCard: boolean; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
 
 	constructor(props) {
 		super(props);
@@ -77,6 +77,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			showLogoutCard: false,
 			showMoreOptionCard: false,
 			isCommandBarActive: false,
+			showHelpCard: false,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
@@ -98,6 +99,12 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	deleteCookie(): void {
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
+	}
+
+	renderHelpCard() {
+		return <div className="logout-card">
+			
+		</div>
 	}
 
 	renderLogout() {
@@ -269,6 +276,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						<div><button type="button" className="transparent ellipsis-right expandable-active-nav title-container" onClick={this.toggleLogoutCard}>{email}</button></div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
+					{this.state.showHelpCard ? this.renderHelpCard(): null}
 					<div className="short-nav--flex">
 						<div className="icon-dim-40 flex ">
 							<div className="icon-dim-32 ml-5 mt-5" onClick={this.toggleMoreOptionCard} >
