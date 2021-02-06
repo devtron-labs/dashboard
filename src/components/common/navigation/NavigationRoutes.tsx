@@ -66,14 +66,14 @@ export default function NavigationRoutes() {
             <p className="m-0 pt-10 pb-10">
                 A new version of Devtron is available.&nbsp;
                 <a href="">See what's new.</a>&nbsp;
-                <span className="fw-6">Customers: </span> <span>mail us</span> to request latest version.&nbsp;
+                <span className="fw-6">Customers: </span><span>mail us</span> to request latest version.&nbsp;
                 <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
             </p>
-            <button type="button" className="transparent pt-10 pb-10" onClick={(event) => { setShowInfobar(false) }}>
+            <button type="button" className="transparent icon-dim-42" onClick={(event) => { setShowInfobar(false); }}>
                 <Close className="icon-dim-20" />
             </button>
         </div>
-        <div className="page-content" style={{ height: showInfoBar ? 'calc(100% - 40px)' : '100%' }}>
+        <div className="page-content" style={{ height: showInfoBar ? 'calc(100vh - 40px)' : '100%' }}>
             <Navigation history={history} match={match} location={location} />
             <div>
                 <Suspense fallback={<Progressing pageLoader />}>
