@@ -12,13 +12,14 @@ export interface CustomGitOpsState{
 }
 
 export interface GitList{
-          orgOrGroupId: string,
           id: number,
           provider: string,
           host: string,
           token:  string,
           username: string ,
           active: boolean,
+          gitLabGroupId: string,
+          gitHUbOrgId: string
         }
  
 
@@ -28,12 +29,8 @@ export interface GitOpsState{
     githost: string;
     git: string;
     gitList: GitList[];
-    customGitOpsState: CustomGitOpsState;
     showToggling: boolean;
-    githostCom:{
-        value: string;
-        error:''
-    }
+    
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }

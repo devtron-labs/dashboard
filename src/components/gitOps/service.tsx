@@ -3,13 +3,15 @@ export function getGitOpsConfigurationList(): Promise<{
   status: string;
   result:[
       {
-        orgOrGroupId: string,
         id: number,
         provider: string,
         host: string,
         token:  string,
         username: string ,
-        active: boolean,}
+        active: boolean,
+        gitLabGroupId: string,
+        gitHUbOrgId: string
+      }
       ]}[]>{
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -23,7 +25,8 @@ export function getGitOpsConfigurationList(): Promise<{
                       provider: "Gitlab/Github",
                       username: "devtron",
                       token: "abdgdgdg",
-                      orgOrGroupId: "10001",
+                      gitLabGroupId: "10001",
+                      gitHUbOrgId:"234",
                       host: "http://github.com",
                       active: true
                   }

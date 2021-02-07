@@ -7,10 +7,6 @@ import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.ut
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
 import { getGitOpsConfigurationList } from '../../gitOps/service';
-import { ConfirmationDialog } from '../../common';
-import warn from '../../../assets/icons/ic-warning.svg';
-
-
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
@@ -31,7 +27,6 @@ interface ChartGroupBasicDeployState {
     showAppNames: boolean;
     selectedEnvironmentId: number;
     showError: boolean;
-    showToggling: boolean;
 }
 
 export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDeployProps, ChartGroupBasicDeployState> {
@@ -41,11 +36,9 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             selectedEnvironmentId: 0,
             showAppNames: false,
             showError: false,
-            showToggling: true
         }
         this.toggleShowAppName = this.toggleShowAppName.bind(this);
         this.deployChartGroup = this.deployChartGroup.bind(this);
-        this.toggleWarningModal= this.toggleWarningModal.bind(this);
     }
 
     toggleShowAppName(event): void {
@@ -82,30 +75,11 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             </button>
         </div>
     }
-    toggleWarningModal(){
-        this.setState({ showToggling: !this.state.showToggling })
-    }
 
-    renderWarningModal(){
-       return <ConfirmationDialog>
-        <ConfirmationDialog.Icon src={warn} />
-            <div className="modal__title sso__warn-title">GitOps configuration required</div>
-            <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
-    }
-
-    handleDeplyOnSave=()=>{ return this.state.showToggling ? <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">GitOps configuration required</div>
-                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
-                    <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog> : ''  
-        
+    handleOnSave(){console.log('hi')
+     // if(getGitOpsConfigurationList) return this.toggleShowAppName
+     // else {return this.deployChartGroup}
+    // return this.deployChartGroup
     }
 
     render() {
@@ -129,7 +103,9 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             isLoading={this.props.loading}
             closeOnESC={true}
             close={this.props.closeDeployModal}
-            onSave={this.toggleWarningModal}>
+            onSave={this.deployChartGroup}
+            // onSave={this.handleOnSave}
+            >
             <div className="deploy-selected-charts__body">
                 <label className="form__row">
                     <span className="form__label">Project*</span>
@@ -186,7 +162,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 <button type="button" className="cta cancel" onClick={this.props.redirectToAdvancedOptions}>
                     Advanced Options
                 </button>
-                <DialogFormSubmit tabIndex={3} >Deploy Chart</DialogFormSubmit>
+                <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
             </div>
         </DialogForm>
     }

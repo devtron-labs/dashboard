@@ -12,8 +12,8 @@ import { getGitOpsConfigurationList } from './service'
 import { showError } from '../common';
 
  const SwitchGitItemValues = {
-    GitLab: 'gitlab',
-    Github: 'github',
+    GitLab: 'Gitlab.com',
+    Github: 'Github.com',
    
 };
 
@@ -23,17 +23,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
+            gitList: [],
             githost: SwitchGitItemValues.GitLab,
             git: "",
-            gitList: [],
-            customGitOpsState: {
-                password: { value: "", error: "" }, 
-                username: { value: "", error: "" },
-            },
             showToggling: false,
-            githostCom:{
-                value:'gitlab.com', error:'',
-            }
+            
         }
         this.handleGitHost= this.handleGitHost.bind(this);
         this.handleOnChange= this.handleOnChange.bind(this);
@@ -69,7 +63,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
     }
 
     onLoginConfigSave(){
-      
+      this.toggleWarningModal()
     }
 
     toggleWarningModal(): void {
@@ -103,18 +97,18 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                     </div>
                    <div className="flex column left top  pl-20">
                         <div className="gitops__id pb-6">Git host*</div> 
-                        <input type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
+                        <input value={this.state.githost} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
                     </div>
                     <div className="flex column left top pt-16 pl-20 pb-6">
                          <div className="gitops__id ">GitLab organisation ID*</div>
-                         <input type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
+                         <input value={this.state.gitList.map((e)=>e.gitLabGroupId)} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
                     </div>
                     <div className="pl-20"><hr/></div>
                     <div className="gitops__access  pl-20 ">Git access credentials</div>
                     <form  className="  pl-20 pr-20">
                     <div className=" form__row--two-third pt-16 gitops__id ">
-                        <CustomInput value={this.state.customGitOpsState.username.value} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
-                        <ProtectedInput value={this.state.customGitOpsState.password.value} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
+                        <CustomInput value={this.state.gitList.map((e)=>e.username)} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
+                        <ProtectedInput value={this.state.gitList.map((e)=>e.token)} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
                    </div>
                    <div className="form__buttons mr-24">
                     <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" className={`cta`}> Save</button>
