@@ -1,4 +1,4 @@
-import { fetchAPI } from '../../../../services/hostGrafana';
+import { fetchAPI } from '../../../../services/fetchAPI';
 
 export function isDatasourceConfigured(envName: string) {
     const root = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');

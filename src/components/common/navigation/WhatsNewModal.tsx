@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
-import { VisibleModal } from '../../common';
+import { VisibleModal, MarkDown } from '../../common';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import { getReleases } from './navigation.service';
 
 export interface WhatsNewModalState {
-    versions: any[];
-    selectedVersion: string;
+    selected: any;
+    releases: any[];
 }
 
 export interface WhatsNewModalProps {
@@ -18,13 +19,18 @@ export default class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNe
     constructor(props) {
         super(props);
         this.state = {
-            selectedVersion: "",
-            versions: [{ name: "v1.9.0", metadata: {} }],
+            selected: 0,
+            releases: []
         }
     }
 
     componentDidMount() {
-
+        getReleases().then((response) => {
+            this.setState({
+                releases: response,
+                selected: response[0],
+            });
+        })
     }
 
     render() {
@@ -47,12 +53,14 @@ export default class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNe
                 </div>
                 <div className="flexbox whats-new-modal">
                     <div className="whats-new-modal__left pt-8 pb-8 pl-20 pr-20">
-                        {this.state.versions.map((ver) => {
-                            return <p className="m-0" onClick={() => { this.setState({ selectedVersion: ver.name }) }}>{ver.name}</p>
+                        {this.state.releases.map((release) => {
+                            return <p className="m-0" onClick={() => { this.setState({ selected: release }) }}>
+                                {release.name}
+                            </p>
                         })}
                     </div>
-                    <div className="w-100 pl-20 pr-20 pt-8 pb-8">
-                        Right
+                    <div className="whats-new-modal__right w-100 pl-20 pr-20 pt-8 pb-8">
+                        <MarkDown markdown={this.state.selected.body}/>
                     </div>
                 </div>
             </div>

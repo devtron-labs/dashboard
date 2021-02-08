@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, NavLink } from 'react-router-dom';
-import { useRouteMatch, useLocation, useParams} from 'react-router'
-import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
+import { useRouteMatch, useParams} from 'react-router'
+import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb, MarkDown } from '../../common';
 import { URLS } from '../../../config';
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
 import { getAvailableCharts } from '../../../services/service';
 import { DiscoverChartDetailsProps, DeploymentProps } from './types';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
-import marked from 'marked'
 import DeployChart from '../modal/DeployChart';
 import ManageValues from '../modal/ManageValues';
 import { About } from './About';
@@ -278,47 +277,4 @@ function ReadmeRowHorizontal({ readme = null, version = "", ...props }) {
     )
 }
 
-export function MarkDown({ markdown = "", className = "", ...props }) {
-    const { hash } = useLocation()
-    const renderer = new marked.Renderer();
-    renderer.table = function (header, body) {
-        return `
-        <div class="table-container">
-            <table>
-                ${header}
-                ${body}
-            </table>
-        </div>
-        `
-    };
-
-    renderer.heading = function (text, level) {
-        const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
-
-        return `
-          <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
-                <h${level}>
-              <span class="header-link"></span>
-              ${text}
-              </h${level}>
-            </a>`;
-    };
-
-
-    marked.setOptions({
-        renderer,
-        gfm: true,
-        smartLists: true,
-    });
-
-    function createMarkup() {
-        return { __html: marked(markdown) };
-    }
-    return (
-        <article {...props} className={`deploy-chart__readme-markdown ${className}`}
-            dangerouslySetInnerHTML={createMarkup()}
-        />
-    )
-}
-
-export default DiscoverChartDetails
+export default DiscoverChartDetails;

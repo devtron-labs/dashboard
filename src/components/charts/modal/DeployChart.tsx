@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Page, DropdownIcon, Progressing, ConfirmationDialog, showError, useJsonYaml } from '../../common';
+import { Select, Page, DropdownIcon, Progressing, ConfirmationDialog, showError, useJsonYaml, MarkDown } from '../../common';
 import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
-import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { useHistory, useParams } from 'react-router'
 import { URLS } from '../../../config'
