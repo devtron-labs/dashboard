@@ -4,11 +4,12 @@ import { URLS } from '../../../config';
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import Navigation from './Navigation';
-import ReactGA, { event } from 'react-ga';
+import ReactGA from 'react-ga';
 import { Security } from '../../security/Security';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import * as Sentry from '@sentry/browser';
+import WhatsNewModal from './WhatsNewModal';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
@@ -21,6 +22,7 @@ export default function NavigationRoutes() {
     const location = useLocation()
     const match = useRouteMatch()
     const [showInfoBar, setShowInfobar] = useState(true);
+    const [showWhatsNewModal, setShowWhatsNewModal] = useState(true);
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -73,8 +75,10 @@ export default function NavigationRoutes() {
                 <Close className="icon-dim-20" />
             </button>
         </div>
+
         <div className="page-content" style={{ height: showInfoBar ? 'calc(100vh - 40px)' : '100%' }}>
             <Navigation history={history} match={match} location={location} />
+            {showWhatsNewModal ? <WhatsNewModal close={() => setShowWhatsNewModal(false)} /> : null}
             <div>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <ErrorBoundary>

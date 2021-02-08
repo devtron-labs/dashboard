@@ -66,7 +66,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
 	}
-
+	
 	renderHelpCard() {
 		let isLatest = this.state.currentversion === this.state.latestVersion;
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleHelpCard}>
@@ -157,12 +157,12 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 							action: 'Devtron Logo Clicked',
 						});
 					}}>
-						<div className="short-nav--flex">
-							<svg className="devtron-logo icon-dim-40" viewBox="0 0 40 40">
+						<div className="flexbox">
+							<svg className="devtron-logo icon-dim-40 fcn-0 icon-dim-40" viewBox="0 0 40 40">
 								<use href={`${NavSprite}#nav-short-devtron-logo`}></use>
 							</svg>
 							<div className="pl-12 pt-10">
-								<img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
+								<img src={TextLogo} alt="devtron" className="devtron-logo fcn-0 devtron-logo--text" />
 							</div>
 						</div>
 					</NavLink>
@@ -186,8 +186,8 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 								}
 								this.toggleCommandBar(!this.state.isCommandBarActive);
 							}}>
-							<div className="short-nav--flex">
-								<div className="svg-container flex">
+							<div className="flexbox">
+								<div className="svg-container icon-dim-40 br-8 flex">
 									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
 										<use href={`${NavSprite}#${item.iconClass}`}></use>
 									</svg>
@@ -205,8 +205,8 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 								action: `${item.title} Clicked`,
 							});
 						}} className="" activeClassName="active-nav">
-							<div className="short-nav--flex">
-								<div className="svg-container flex">
+							<div className="flexbox">
+								<div className="svg-container icon-dim-40 br-8 flex">
 									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
 										<use href={`${NavSprite}#${item.iconClass}`}></use>
 									</svg>
@@ -228,7 +228,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 								action: `Help Clicked`,
 							});
 						}}>
-						<div className="short-nav--flex">
+						<div className="flexbox">
 							<div className="icon-dim-40 flex position-rel">
 								{isLatest ? null : <span className="inline-block br-5 icon-dim-10 bcy-5 en-0 bw-2" style={{ position: 'absolute', top: "7px", right: "11px" }}></span>}
 								<Help className="icon-dim-24 fcn-0" />
@@ -249,7 +249,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 									action: `${item.title} Clicked`,
 								});
 							}}>
-							<div className="short-nav--flex">
+							<div className="flexbox">
 								<div className="icon-dim-40 flex">
 									<svg className="icon-dim-20 cursor" viewBox="0 0 24 24">
 										<use href={`${NavSprite}#${item.iconClass}`}></use>
@@ -263,7 +263,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 							</div>
 						</a>
 					}))}
-					<div className="short-nav--flex">
+					<div className="flexbox">
 						<div className="icon-dim-40 flex">
 							<div className="logout-card__initial icon-dim-24 fs-12 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 								{email[0]}
@@ -272,7 +272,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 						<div><button type="button" className="transparent ellipsis-right expandable-active-nav title-container" onClick={this.toggleLogoutCard}>{email}</button></div>
 					</div>
 					{this.state.showLogoutCard ? this.renderLogout() : null}
-					<div className="short-nav--flex">
+					<div className="flexbox">
 						<div className="icon-dim-40 flex ">
 							<div className="icon-dim-32 ml-5 mt-5" onClick={this.toggleMoreOptionCard} >
 								<MoreOption className="icon-dim-24 fcn-0 cursor" />

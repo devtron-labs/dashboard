@@ -22,7 +22,7 @@
     text-align-last: left;
 
     &:hover {
-        svg.short-nav-icon {
+        .short-nav-icon {
             opacity: 1;
         }
     }
@@ -64,12 +64,6 @@
         padding: 0 12px;
         height: 100%;
 
-        .svg-container {
-            height: 40px;
-            width: 40px;
-            border-radius: 8px;
-        }
-
         a {
             .short-nav-icon {
                 width: 20px;
@@ -78,8 +72,6 @@
                 opacity: 0.5;
 
             }
-
-
 
             &.active-nav,
             &:hover {
@@ -105,10 +97,7 @@
     }
 
     .devtron-logo {
-        width: 40px;
-        height: 40px;
         opacity: 1;
-        fill: #ffffff;
     }
 
     .devtron-logo--text {
@@ -217,10 +206,11 @@
     text-decoration: none !important;
 }
 
-.short-nav--flex {
-    display: flex;
-}
-
 .expandable-active-nav {
     padding: 0px 0 0 12px;
+}
+
+.whats-new-modal__left {
+    width: 208px;
+    border-right: solid 1px var(--N100);
 }
