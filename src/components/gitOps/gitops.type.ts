@@ -16,10 +16,11 @@ export interface GitList{
           provider: string,
           host: string,
           token:  string,
-          username: string ,
+          username?: string ,
           active: boolean,
           gitLabGroupId: string,
-          gitHUbOrgId: string
+          gitHubOrgId: string,
+
         }
  
 
@@ -30,6 +31,8 @@ export interface GitOpsState{
     git: string;
     gitList: GitList[];
     showToggling: boolean;
+    form:GitList
+    saveLoading:boolean,
     
 }
 

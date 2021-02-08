@@ -1,4 +1,31 @@
-export function getGitOpsConfigurationList(): Promise<{
+import { Routes } from '../../config';
+import { post, put, get } from '../../services/api';
+
+
+export const getGitOpsConfigurationList=()=>{
+  const URL = `${Routes.GIT_PROVIDER}`;
+    return get(URL);
+
+}
+
+export const getGitOpsConfiguration = (id: number): Promise<any> => {
+  const URL = `${Routes.GIT_PROVIDER}/${id}`;
+  return get(URL);
+}
+
+export const updateGitOpsConfiguration = (request: any) => {
+  const URL = `${Routes.GIT_PROVIDER}`;
+  return put(URL, request);
+}
+
+export const saveGitOpsConfiguration = (request: any) => {
+  const URL = `${Routes.GIT_PROVIDER}`;
+  return post(URL, request);
+}
+
+
+
+/*export function getGitOpsConfigurationList(): Promise<{
   code: number,
   status: string;
   result:[
@@ -36,4 +63,4 @@ export function getGitOpsConfigurationList(): Promise<{
         ])
       }, 1000)
     })
-  }
+  }*/

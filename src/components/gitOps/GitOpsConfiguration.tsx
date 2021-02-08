@@ -8,14 +8,18 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ConfirmationDialog } from '../common'
 import warn from '../../assets/icons/ic-warning.svg';
-import { getGitOpsConfigurationList } from './service'
+import { getGitOpsConfigurationList, updateGitOpsConfiguration, saveGitOpsConfiguration } from './service'
 import { showError } from '../common';
+import { toast } from 'react-toastify';
+
 
  const SwitchGitItemValues = {
-    GitLab: 'Gitlab.com',
-    Github: 'Github.com',
+    GitLab: 'gitlab',
+    Github: 'github',
    
 };
+
+
 
 export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsState> {
     constructor(props) {
@@ -24,20 +28,35 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
             view: ViewType.LOADING,
             statusCode: 0,
             gitList: [],
+            saveLoading: false,
             githost: SwitchGitItemValues.GitLab,
             git: "",
             showToggling: false,
+            form:{
+                id: 0,
+                provider:"",
+                host: "",
+                token:  "",
+                username: "" ,
+                active: false,
+                gitLabGroupId: "",
+                gitHubOrgId: ""
+            }
             
         }
-        this.handleGitHost= this.handleGitHost.bind(this);
+        this.handleSSOGitHost= this.handleSSOGitHost.bind(this);
         this.handleOnChange= this.handleOnChange.bind(this);
     }
 
     componentDidMount() {
         getGitOpsConfigurationList().then((response) => {
+            console.log(response)
+           var form = response[0].result.find((item)=>{if(item.active) return item})
+           if (!form){ form = this.state.form}
           this.setState({ 
-                gitList : response[0].result, 
+                gitList : response[0].result || [], 
                 view: ViewType.FORM, 
+                form: form
              }
             ,()=>console.log(response[0].result));
         }).catch((error) => {
@@ -46,24 +65,65 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
         
     }
 
-    handleGitHost(event){
+    handleSSOGitHost(event){
+        
        let newGitOps= event.target.value
+       let form = this.state.gitList.find((item)=>{if(item.provider== newGitOps) return item})
+           if (!form){ form = this.state.form}
        console.log(newGitOps)
        this.setState({
-           githost: newGitOps
+           githost: newGitOps,
+           form: form
        })
     }
 
-    handleOnChange(){
-
+    handleOnChange(event){
+        let newGitOps= event.target.value
+      this.setState({
+          ...this.state,
+          form: newGitOps
+      })
     }
 
-    customHandleChange(){
-
+    customHandleChange(event){
+        let newGitOps= event.target.value
+        this.setState({
+            form : newGitOps})
     }
 
     onLoginConfigSave(){
-      this.toggleWarningModal()
+        let payload = {
+            id: this.state.form.id,
+            provider: this.state.form.provider,
+            username: this.state.form.username,
+            host: this.state.form.host,
+            token: this.state.form.token,
+            gitLabGroupId: this.state.form.gitLabGroupId,
+            gitHubOrgId: this.state.form.gitHubOrgId,
+            active: true,
+        }
+        let promise = this.state.form.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
+        promise.then((response) => {
+            let form = response.result;
+            this.setState({
+                view: ViewType.FORM,
+                showToggling: false,
+                form:{
+                    id: form.id,
+                    provider: form.provider,
+                    username: form.username,
+                    token: form.token,
+                    gitLabGroupId: form.gitLabGroupId,
+                    gitHubOrgId: form.gitHubOrgId,
+                    host: form.host,
+                    active: true
+                }
+            });
+            toast.success("Saved Successful");
+        }).catch((error) => {
+            showError(error);
+            this.setState({ saveLoading: false });
+        })
     }
 
     toggleWarningModal(): void {
@@ -78,7 +138,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                     <div className="login__sso-flex">
                           <div>
                                 <label className="tertiary-tab__radio ">
-                                    <input type="radio" name="status" value="gitlab" checked={this.state.githost === "gitlab"} onClick={this.handleGitHost} />
+                                    <input type="radio" name="status" value="gitlab" checked={this.state.githost === "gitlab"} onClick={this.handleSSOGitHost} />
                                     <span className="tertiary-tab sso-icons">
                                         <aside className="login__icon-alignment"><GitLab/></aside>
                                         <aside className="login__text-alignment"> GitLab</aside>
@@ -87,7 +147,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                          </div>
                          <div>
                                 <label className="tertiary-tab__radio ">
-                                    <input type="radio" name="status" value="github" checked={this.state.githost === "github"} onClick={this.handleGitHost} />
+                                    <input type="radio" name="status" value="github" checked={this.state.githost === "github"} onClick={this.handleSSOGitHost} />
                                     <span className="tertiary-tab sso-icons">
                                         <aside className="login__icon-alignment"><GitHub /></aside>
                                         <aside className="login__text-alignment"> GitHub</aside>
@@ -97,18 +157,18 @@ export default class GitOpsConfiguration extends Component<GitOpsProps,GitOpsSta
                     </div>
                    <div className="flex column left top  pl-20">
                         <div className="gitops__id pb-6">Git host*</div> 
-                        <input value={this.state.githost} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
+                        <input value={this.state.form.host} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange(e) }} />
                     </div>
                     <div className="flex column left top pt-16 pl-20 pb-6">
                          <div className="gitops__id ">GitLab organisation ID*</div>
-                         <input value={this.state.gitList.map((e)=>e.gitLabGroupId)} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange() }} />
+                         <input value={this.state.form.gitLabGroupId} type="text" name= "Git Host*" className="form__input" onChange={e => { e.persist(); this.handleOnChange(e) }} />
                     </div>
                     <div className="pl-20"><hr/></div>
                     <div className="gitops__access  pl-20 ">Git access credentials</div>
                     <form  className="  pl-20 pr-20">
                     <div className=" form__row--two-third pt-16 gitops__id ">
-                        <CustomInput value={this.state.gitList.map((e)=>e.username)} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
-                        <ProtectedInput value={this.state.gitList.map((e)=>e.token)} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
+                        <CustomInput value={this.state.form.username} onChange={this.customHandleChange} name="Enter username" error={Error} label="GitLab username*" labelClassName="gitops__id" />
+                        <ProtectedInput value={this.state.form.token} onChange={this.customHandleChange} name="Enter token" error={Error} label="GitLab token*" labelClassName="gitops__id"/>
                    </div>
                    <div className="form__buttons mr-24">
                     <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" className={`cta`}> Save</button>
