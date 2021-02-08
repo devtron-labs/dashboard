@@ -9,7 +9,7 @@ import { Security } from '../../security/Security';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import * as Sentry from '@sentry/browser';
-import WhatsNewModal from './WhatsNewModal';
+import { WhatsNewModal } from './WhatsNewModal';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
@@ -17,14 +17,19 @@ const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
+type WhatsNewPrompt = "true" | "false";
+
 export default function NavigationRoutes() {
-    const history = useHistory()
-    const location = useLocation()
-    const match = useRouteMatch()
-    const [showInfoBar, setShowInfobar] = useState(true);
-    const [showWhatsNewModal, setShowWhatsNewModal] = useState(true);
+    const history = useHistory();
+    const location = useLocation();
+    const match = useRouteMatch();
+    const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("false");
+    const [showWhatsNewModal, setShowWhatsNewModal] = useState(false);
 
     useEffect(() => {
+        let show = localStorage.getItem('infobar');
+        setWhatsNewPrompt(show as WhatsNewPrompt);
+
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
         if (process.env.NODE_ENV !== 'production' || !window._env_ || (window._env_ && !window._env_.SENTRY_ENABLED)) return
@@ -61,22 +66,22 @@ export default function NavigationRoutes() {
     }, [])
 
     return <main>
-        <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showInfoBar ? '40px' : '0px' }}>
+        <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showWhatsNewPrompt === "true" ? '40px' : '0px' }}>
             <span className="mt-10 mb-10">
                 <Info className="icon-dim-20" />
             </span>
             <p className="m-0 pt-10 pb-10">
                 A new version of Devtron is available.&nbsp;
-                <a href="">See what's new.</a>&nbsp;
+                <span className="cursor cb-5" onClick={(event) => { setShowWhatsNewModal(true) }}>See what's new.</span>&nbsp;
                 <span className="fw-6">Customers: </span><span>mail us</span> to request latest version.&nbsp;
                 <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
             </p>
-            <button type="button" className="transparent icon-dim-42" onClick={(event) => { setShowInfobar(false); }}>
+            <button type="button" className="transparent icon-dim-42" onClick={(event) => { localStorage.setItem('infobar', "false"); setWhatsNewPrompt("false"); }}>
                 <Close className="icon-dim-20" />
             </button>
         </div>
 
-        <div className="page-content" style={{ height: showInfoBar ? 'calc(100vh - 40px)' : '100%' }}>
+        <div className="page-content" style={{ height: showWhatsNewPrompt === "true" ? 'calc(100vh - 40px)' : '100vh' }}>
             <Navigation history={history} match={match} location={location} />
             {showWhatsNewModal ? <WhatsNewModal close={() => setShowWhatsNewModal(false)} /> : null}
             <div>

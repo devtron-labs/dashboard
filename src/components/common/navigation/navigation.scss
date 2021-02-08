@@ -217,10 +217,14 @@
 .whats-new-modal__left {
     width: 208px;
     border-right: solid 1px var(--N100);
-    
+
 }
 
 .whats-new-modal__right {
     height: 420px;
     overflow: scroll;
+}
+
+.whats-new-modal__release img {
+    max-width: 100%;
 }

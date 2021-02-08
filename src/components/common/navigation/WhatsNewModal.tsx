@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { VisibleModal, MarkDown } from '../../common';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
@@ -14,13 +13,13 @@ export interface WhatsNewModalProps {
     close: () => void;
 }
 
-export default class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalState> {
+export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalState> {
 
     constructor(props) {
         super(props);
         this.state = {
             selected: 0,
-            releases: []
+            releases: [],
         }
     }
 
@@ -60,7 +59,7 @@ export default class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNe
                         })}
                     </div>
                     <div className="whats-new-modal__right w-100 pl-20 pr-20 pt-8 pb-8">
-                        <MarkDown markdown={this.state.selected.body}/>
+                        <MarkDown markdown={this.state.selected.body} className="whats-new-modal__release"/>
                     </div>
                 </div>
             </div>
