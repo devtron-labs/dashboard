@@ -13,18 +13,20 @@ import { NavigationList, NavigationListBottom } from './navigation.util';
 import { URLS } from '../../../config';
 import './navigation.scss';
 
+export interface NavigationProps extends RouteComponentProps<{}> {
+	latestVersion: string;
+	currentVersion: string;
+	showWhatsNewModal: boolean;
+	setShowWhatsNewModal: (flag) => void;
+}
 export interface NavigationState {
 	loginInfo: any;
 	showHelpCard: boolean;
 	showLogoutCard: boolean;
 	showMoreOptionCard: boolean;
 	isCommandBarActive: boolean;
-	isNewVersionAvailable: boolean;
-	currentversion: string;
-	latestVersion: string;
-	showInfobar: boolean;
 }
-export default class Navigation extends Component<RouteComponentProps<{}>, NavigationState> {
+export default class Navigation extends Component<NavigationProps, NavigationState> {
 
 	constructor(props) {
 		super(props);
@@ -34,10 +36,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 			showMoreOptionCard: false,
 			isCommandBarActive: false,
 			showHelpCard: false,
-			isNewVersionAvailable: false,
-			currentversion: "1.8.2",
-			latestVersion: "1.8.4",
-			showInfobar: true,
 		}
 		this.deleteCookie = this.deleteCookie.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
@@ -46,15 +44,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 		this.toggleHelpCard = this.toggleHelpCard.bind(this);
 	}
 
-	toggleLogoutCard() {
+	toggleLogoutCard(): void {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
 	}
 
-	toggleHelpCard() {
+	toggleHelpCard(): void {
 		this.setState({ showHelpCard: !this.state.showHelpCard })
 	}
 
-	toggleMoreOptionCard() {
+	toggleMoreOptionCard(): void {
 		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
 	}
 
@@ -66,15 +64,15 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
 	}
-	
+
 	renderHelpCard() {
-		let isLatest = this.state.currentversion === this.state.latestVersion;
+		let isLatest = this.props.currentVersion === this.props.latestVersion;
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleHelpCard}>
-			<div className="nav-grid__card help-card p-8 br-4 bcn-0">
-				<a href="https://docs.devtron.ai/" rel="noreferrer noopener" target="_blank" className="block pt-10 pb-10 pl-8 pr-8 m-0 fs-13 fw-5 lh-1-54 cn-9">Documentation</a>
-				<div className="pt-10 pb-10 pl-8 pr-8">
-					<p className="m-0 fs-13 fw-5 lh-1-54 cn-9">What's New{isLatest ? null : <span className="inline-block ml-8 br-5 icon-dim-10 bcy-5"></span>}</p>
-					<p className="m-0 fs-12 fw-5 lh-1-54 cb-5">New Version Available({this.state.latestVersion})</p>
+			<div className="nav-grid__card help-card br-4 bcn-0">
+				<a href="https://docs.devtron.ai/" rel="noreferrer noopener" target="_blank" className="block pt-14 pb-10 pl-16 pr-16 m-0 fs-13 fw-5 lh-1-54 cn-9">Documentation</a>
+				<div className="pt-10 pb-18 cursor clickable" onClick={(event) => this.props.setShowWhatsNewModal(true)}>
+					<p className="m-0 pl-16 pr-16 fs-13 fw-5 lh-1-54 cn-9" >What's New{isLatest ? null : <span className="inline-block ml-8 br-5 icon-dim-10 bcy-5"></span>}</p>
+					{isLatest ? null : <p className="m-0 pl-16 pr-16 fs-12 fw-5 lh-1-54 cb-5">New Version Available ({this.props.latestVersion})</p>}
 				</div>
 			</div>
 		</div>, document.getElementById('root'))
@@ -146,7 +144,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, Navig
 
 	render() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
-		let isLatest = this.state.currentversion === this.state.latestVersion;
+		let isLatest = this.props.currentVersion === this.props.latestVersion;
 
 		return <>
 			<nav>

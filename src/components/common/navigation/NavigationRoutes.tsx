@@ -10,6 +10,7 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import * as Sentry from '@sentry/browser';
 import { WhatsNewModal } from './WhatsNewModal';
+import { getLatestReleases } from './navigation.service';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
@@ -25,11 +26,10 @@ export default function NavigationRoutes() {
     const match = useRouteMatch();
     const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("false");
     const [showWhatsNewModal, setShowWhatsNewModal] = useState(false);
+    const [currentVersion, setCurrentVersion] = useState("");
+    const [latestVersion, setLatestVersion] = useState("");
 
     useEffect(() => {
-        let show = localStorage.getItem('infobar');
-        setWhatsNewPrompt(show as WhatsNewPrompt);
-
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
         if (process.env.NODE_ENV !== 'production' || !window._env_ || (window._env_ && !window._env_.SENTRY_ENABLED)) return
@@ -65,6 +65,15 @@ export default function NavigationRoutes() {
         }
     }, [])
 
+    useEffect(() => {
+        let show = localStorage.getItem('infobar');
+        setWhatsNewPrompt(show as WhatsNewPrompt);
+        getLatestReleases().then((response) => {
+            let latest = response.name;
+            setLatestVersion(latest)
+        })
+    }, [])
+
     return <main>
         <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showWhatsNewPrompt === "true" ? '40px' : '0px' }}>
             <span className="mt-10 mb-10">
@@ -82,7 +91,12 @@ export default function NavigationRoutes() {
         </div>
 
         <div className="page-content" style={{ height: showWhatsNewPrompt === "true" ? 'calc(100vh - 40px)' : '100vh' }}>
-            <Navigation history={history} match={match} location={location} />
+            <Navigation history={history} match={match} location={location}
+                latestVersion={latestVersion}
+                currentVersion={currentVersion}
+                showWhatsNewModal={showWhatsNewModal}
+                setShowWhatsNewModal={setShowWhatsNewModal}
+            />
             {showWhatsNewModal ? <WhatsNewModal close={() => setShowWhatsNewModal(false)} /> : null}
             <div>
                 <Suspense fallback={<Progressing pageLoader />}>
