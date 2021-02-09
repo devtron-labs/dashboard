@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
 import { DialogForm, DialogFormSubmit } from '../../common';
 import { ProjectType, ChartGroupEntry } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
@@ -188,7 +189,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 <div className="modal__title sso__warn-title">GitOps configuration required</div>
                 <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={(e)=>this.state.showGitOpsWarningModal}>Cancel</button>
-                    <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                    <NavLink className=" cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Confirm</NavLink>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>: ''
             } 

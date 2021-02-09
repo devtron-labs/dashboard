@@ -120,11 +120,6 @@ function DiscoverChartList() {
         getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : configureChart(0)
     }
 
-    function hanndleGtOpsConfiguration(){
-        history.push('global-config/gitops')
-        
-    }
-
     async function handleInstall() {
         if (!project.id) {
             setProject(project => ({ ...project, error: "Project is mandatory for deployment." }))
@@ -433,7 +428,7 @@ function DiscoverChartList() {
                 <div className="modal__title sso__warn-title">GitOps configuration required</div>
                 <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
-                    <button type="submit" className="cta  sso__warn-button" onClick={hanndleGtOpsConfiguration}>Confirm</button>
+                    <NavLink className=" cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Confirm</NavLink>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog> : null}
     </>
