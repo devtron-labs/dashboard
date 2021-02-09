@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, NavLink } from 'react-router-dom';
-import { useRouteMatch, useLocation, useParams} from 'react-router'
-import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
+import { useRouteMatch, useLocation, useParams ,useHistory,} from 'react-router'
+import { Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
 import { URLS } from '../../../config';
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
 import { getAvailableCharts } from '../../../services/service';
@@ -19,9 +19,11 @@ import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
+import { Command, CommandErrorBoundary } from '../../command';
 import { getGitOpsConfigurationList } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
+
 
 
 const DiscoverDetailsContext = React.createContext(null);
@@ -50,23 +52,25 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const [loading, setLoading] = React.useState(false);
     const [chartValuesList, setChartValuesList] = useState([])
     const [chartValues, setChartValues] = useState({ id: 0, kind: null, name: '', chartVersion: "", environmentName: "" });
-    const { chartId } = useParams()
+    const { chartId } = useParams<{ chartId }>()
+    const [isCommandBarActive, toggleCommandBar] = useState(false);
     const[ showToggling, setShowToggling] = useState(false)
 
-    function formatOptionLabel({label, value, ...rest}){
+
+    function formatOptionLabel({ label, value, ...rest }) {
         return rest?.chart_name ? (
             <div>
                 <span className="cn-7">{rest.chart_name}</span> / <span className="cn-9">{label}</span>
             </div>
         ) : (
-            label
-        );
+                label
+            );
     }
 
-    function filterOption({ data: {label, value, ...rest}}, searchString: string):boolean{
-        if(!searchString) return true
-        searchString=searchString.toLowerCase()
-        const match:boolean=(label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
+    function filterOption({ data: { label, value, ...rest } }, searchString: string): boolean {
+        if (!searchString) return true
+        searchString = searchString.toLowerCase()
+        const match: boolean = (label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
         return match
     }
     const { breadcrumbs } = useBreadcrumb(
@@ -87,11 +91,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     linked: false
                 },
                 'chart': null,
-                'chart-store':null
+                'chart-store': null
             },
         },
         [chartId],
-    );    
+    );
 
     function goBackToDiscoverChart(isReload) {
         const url = `${URLS.CHARTS}/discover/chart/${chartId}`;
@@ -170,6 +174,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         if (chartValues) setChartValues(chartValues);
     }, [selectedVersion, chartValuesList])
 
+    
     return <DiscoverDetailsContext.Provider value={{
         goBackToDiscoverChart,
         openManageValues,
@@ -182,50 +187,59 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         redirectToChartValues,
     }}>
         <div className="chart-detail-container">
-            <div className="page-header">
-                <div className="flex column left fs-12 cn-7">
+            <div className="page-header p-0 page-header__rows-only">
+                <div className="page-header__top flexbox flex-justify flex-align-items-center left pl-24 pr-24 fs-12 cn-7">
                     <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
-                    <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
-                </div>
-                <div className="page-header__cta-container"/>
-            </div>
-            {loading? <Progressing pageLoader/>
-            : <div style={{overflow:'auto'}}>
-                <div className="left-right-container">
-                    <div className="chart-detail-left">
-                        <About {...chartInformation} chartYaml={chartYaml} />
-                        <ReadmeRowHorizontal {...chartInformation} />
-                        <ChartDeploymentList chartId={chartId} />
+                    <div className="cursor flexbox flex-align-items-center flex-justify bcn-1 bw-1 en-2 pl-12 pr-12 br-4 fs-13 cn-5 command-open"
+                        onClick={() => { toggleCommandBar(true); }}>
+                        <span>Jump to...</span>
+                        <span className="command-delimiter">/</span>
                     </div>
-                    <div className="chart-detail-right">
-                        <Deployment 
-                            chartId={chartId} 
-                            {...chartInformation} 
-                            availableVersions={availableVersions} 
-                            />
                 </div>
+                <div className="flex left">
+                    <h1 className="fs-16 fw-6 m-0 cn-9 pl-24 pr-24">{chartInformation?.appStoreApplicationName}</h1>
                 </div>
+                <CommandErrorBoundary toggleCommandBar={toggleCommandBar}>
+                    <Command location={location}
+                        match={match}
+                        history={history}
+                        isCommandBarActive={isCommandBarActive}
+                        toggleCommandBar={toggleCommandBar}
+                    />
+                </CommandErrorBoundary>
             </div>
-            }  
-             {loading ? <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                    <div className="modal__title sso__warn-title">GitOps configuration required</div>
-                    <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={e=>setShowToggling}>Cancel</button>
-                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>: ''
-                } 
+
+            {loading ? <Progressing pageLoader />
+                : <div style={{ overflow: 'auto' }}>
+                    <div className="left-right-container">
+                        <div className="chart-detail-left">
+                            <About {...chartInformation} chartYaml={chartYaml} />
+                            <ReadmeRowHorizontal {...chartInformation} />
+                            <ChartDeploymentList chartId={chartId} />
+                        </div>
+                        <div className="chart-detail-right">
+                            <Deployment
+                                chartId={chartId}
+                                {...chartInformation}
+                                availableVersions={availableVersions}
+                            />
+                        </div>
+                    </div>
+                </div>
+            }
+
+              
+          
         </div>
         <Switch>
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`} render={(props) => {
                 return <OpaqueModal onHide={goBackToDiscoverChart}>
-                        <DeployChart
-                            chartValuesFromParent={chartValues}
-                            {...chartInformation}
-                            appStoreVersion={selectedVersion}
-                            versions={availableVersions}
-                            onHide={goBackToDiscoverChart} />
+                    <DeployChart
+                        chartValuesFromParent={chartValues}
+                        {...chartInformation}
+                        appStoreVersion={selectedVersion}
+                        versions={availableVersions}
+                        onHide={goBackToDiscoverChart} />
                 </OpaqueModal>
             }} />
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/manage-values`} render={(props) => {
@@ -242,13 +256,21 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
 
 const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, deprecated = "", ...rest }) => {
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal]= useState(false);
+    const [showDeployModal, toggleDeployModal] = useState(false);
     const match = useRouteMatch();
+    const { push } = useHistory();
+
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
         target.onerror = null
         target.src = placeHolder
     }
 
+    function handleOnSave(){
+        (getGitOpsConfigurationList) ? toggleGitOpsWarningModal(true) : push(`${match.url}/deploy-chart`) 
+      }
+  
     return <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
         <div className="chart-grid-item__icon-wrapper">
             <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
@@ -258,9 +280,9 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
                 <span className="user anchor">{chartName}/</span>
                 <span className="repo">{appStoreApplicationName}</span>
             </div>
-            {   deprecated &&
+            {deprecated &&
                 <div className="mt-8">
-                    <DeprecatedWarn/>
+                    <DeprecatedWarn />
                 </div>
             }
         </div>
@@ -278,7 +300,19 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
             <ChartValuesSelect chartValuesList={chartValuesList} chartValues={chartValues} redirectToChartValues={redirectToChartValues}
                 onChange={(event) => { setChartValues(event) }} />
         </div>
-        <NavLink className="flex cta" to={`${match.url}/deploy-chart`}>Deploy</NavLink>
+        {/*<NavLink className="flex cta" to={`${match.url}/deploy-chart`}>Deploy</NavLink>*/}
+        <button className="flex cta" onClick={handleOnSave}>Deploy</button>
+
+        {showGitOpsWarningModal ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                    <div className="modal__title sso__warn-title">GitOps configuration required</div>
+                    <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
+                        <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
+                        <button type="submit" className="cta  sso__warn-button" >Confirm</button>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>: ''
+                } 
+
     </div>
 }
 
