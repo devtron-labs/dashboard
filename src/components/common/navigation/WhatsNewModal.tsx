@@ -10,6 +10,8 @@ export interface WhatsNewModalState {
 }
 
 export interface WhatsNewModalProps {
+    currentVersion: string;
+    latestVersion: string;
     close: () => void;
 }
 
@@ -53,13 +55,19 @@ export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalSt
                 <div className="flexbox whats-new-modal">
                     <div className="whats-new-modal__left pt-8 pb-8 pl-20 pr-20">
                         {this.state.releases.map((release) => {
-                            return <p className="m-0" onClick={() => { this.setState({ selected: release }) }}>
-                                {release.name}
+                            let isLatest = this.props.latestVersion === this.props.currentVersion;
+                            let classes = '';
+                            if (release.tag_name === this.state.selected.tag_name) classes = 'm-0 cursor cb-5';
+                            else classes = 'm-0 cursor';
+                            return <p className={classes} onClick={() => { this.setState({ selected: release }) }}>
+                                {release.tag_name}
+                                {this.props.latestVersion === release.tag_name ? " (Latest)" : ""}
+                                {!isLatest && this.props.currentVersion === release.tag_name ? " (Current)" : ""}
                             </p>
                         })}
                     </div>
                     <div className="whats-new-modal__right w-100 pl-20 pr-20 pt-8 pb-8">
-                        <MarkDown markdown={this.state.selected.body} className="whats-new-modal__release"/>
+                        <MarkDown markdown={this.state.selected.body} className="whats-new-modal__release" />
                     </div>
                 </div>
             </div>

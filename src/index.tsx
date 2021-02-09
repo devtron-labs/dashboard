@@ -13,6 +13,7 @@ interface customEnv{
     APPLICATION_METRICS_ENABLED?: boolean;
     GTM_ID?: string;
     GA_TRACKING_ID?: string;
+    VERSION: string;
 }
 declare global {
     interface Window {

@@ -24,7 +24,7 @@ export default function NavigationRoutes() {
     const history = useHistory();
     const location = useLocation();
     const match = useRouteMatch();
-    const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("false");
+    const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("true");
     const [showWhatsNewModal, setShowWhatsNewModal] = useState(false);
     const [currentVersion, setCurrentVersion] = useState("");
     const [latestVersion, setLatestVersion] = useState("");
@@ -66,13 +66,29 @@ export default function NavigationRoutes() {
     }, [])
 
     useEffect(() => {
-        let show = localStorage.getItem('infobar');
+        let show = localStorage.getItem('infobarppp');
+        if (show != "false") show = "true";
         setWhatsNewPrompt(show as WhatsNewPrompt);
         getLatestReleases().then((response) => {
-            let latest = response.name;
-            setLatestVersion(latest)
+            setLatestVersion(response.tag_name);
+
         })
+        setCurrentVersion(window?._env_?.VERSION)
     }, [])
+
+    function sendEmail(): void {
+        let message = {
+            emailId: "email",
+            from: "from",
+            subject: "Subject",
+            emailBody: "Hi ",
+        }
+        let email = message.emailId;
+        let subject = message.subject;
+        let emailBody = 'Hi ' + message.from;
+        //@ts-ignore
+        document.location = "mailto:" + email + "?subject=" + subject + "&body=" + emailBody;
+    }
 
     return <main>
         <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showWhatsNewPrompt === "true" ? '40px' : '0px' }}>
@@ -82,8 +98,11 @@ export default function NavigationRoutes() {
             <p className="m-0 pt-10 pb-10">
                 A new version of Devtron is available.&nbsp;
                 <span className="cursor cb-5" onClick={(event) => { setShowWhatsNewModal(true) }}>See what's new.</span>&nbsp;
-                <span className="fw-6">Customers: </span><span>mail us</span> to request latest version.&nbsp;
+                <span className="fw-6">Customers: </span>
+                <span className="cursor cb-5" onClick={sendEmail}>Mail us</span>
+                to request latest version.&nbsp;
                 <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
+                {/* <a href="mailto:support@example.com?subject=SendMail&body=Description"> Mail Us</a> */}
             </p>
             <button type="button" className="transparent icon-dim-42" onClick={(event) => { localStorage.setItem('infobar', "false"); setWhatsNewPrompt("false"); }}>
                 <Close className="icon-dim-20" />
@@ -97,7 +116,9 @@ export default function NavigationRoutes() {
                 showWhatsNewModal={showWhatsNewModal}
                 setShowWhatsNewModal={setShowWhatsNewModal}
             />
-            {showWhatsNewModal ? <WhatsNewModal close={() => setShowWhatsNewModal(false)} /> : null}
+            {showWhatsNewModal ? <WhatsNewModal currentVersion={currentVersion}
+                latestVersion={latestVersion}
+                close={() => setShowWhatsNewModal(false)} /> : null}
             <div>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <ErrorBoundary>
