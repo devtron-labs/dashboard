@@ -14,6 +14,7 @@ import AppSelector from '../AppSelector/AppSelector';
 import { getGitOpsConfigurationList } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
+import { NavLink } from 'react-router-dom'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams();
@@ -238,8 +239,10 @@ export default function ChartGroupDetails() {
             <ConfirmationDialog.Icon src={warn} />
                 <div className="modal__title sso__warn-title">GitOps configuration required</div>
                 <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
-                    <button type="submit" className="cta  sso__warn-button" onClick={hanndleGtOpsConfiguration}>Confirm</button>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button " onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
+                    {/*<button type="submit" className="cta  sso__warn-button">Confirm</button>*/}
+                    <NavLink className=" cta sso__warn-button mr-20" to={`./global-config/gitops`}>Confirm</NavLink>
+                    {console.log(url)}
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog> : null}
         </div>
