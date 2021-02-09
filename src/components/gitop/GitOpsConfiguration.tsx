@@ -39,28 +39,34 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             form: {
                 ...DefaultGitOpsConfig,
                 host: SwitchGitItemValues.Github,
-                provider: SwitchGitItemValues.Github,
+                provider: "GITHUB",
             }
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this);
     }
 
     componentDidMount() {
+        this.fetchGitOpsConfigurationList();
+    }
+
+    fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList().then((response) => {
             let form = response.result?.find(item => item.active);
             if (!form) {
                 form = {
                     ...DefaultGitOpsConfig,
                     host: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
-                    provider: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
+                    provider: this.state.tab === SwitchGitItemValues.Github ? "GITHUB" : "GITLAB",
                 }
             }
             this.setState({
                 gitList: response.result || [],
                 view: ViewType.FORM,
-                tab: form.provider,
-                form: form
+                tab: form.provider.toLowerCase(),
+                form: form,
+                saveLoading: false,
             })
         }).catch((error) => {
             showError(error);
@@ -75,7 +81,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             form = {
                 ...DefaultGitOpsConfig,
                 host: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab",
-                provider: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab",
+                provider: newGitOps === SwitchGitItemValues.Github ? "GITHUB" : "GITLAB",
             }
         };
         this.setState({
@@ -107,22 +113,23 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
-            let form = response.result;
-            this.setState({
-                view: ViewType.FORM,
-                form: {
-                    id: form.id,
-                    provider: form.provider,
-                    username: form.username,
-                    token: form.token,
-                    gitLabGroupId: form.gitLabGroupId,
-                    gitHubOrgId: form.gitHubOrgId,
-                    host: form.host,
-                    active: true
-                },
-                saveLoading: false
-            });
+            // let form = response.result;
+            // this.setState({
+            //     view: ViewType.FORM,
+            //     form: {
+            //         id: form.id,
+            //         provider: form.provider,
+            //         username: form.username,
+            //         token: form.token,
+            //         gitLabGroupId: form.gitLabGroupId,
+            //         gitHubOrgId: form.gitHubOrgId,
+            //         host: form.host,
+            //         active: true
+            //     },
+            //     saveLoading: false
+            // });
             toast.success("Saved Successful");
+            this.fetchGitOpsConfigurationList();
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
