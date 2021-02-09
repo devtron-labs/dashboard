@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { CINode } from './nodes/CINode';
 import { CDNode } from './nodes/CDNode';
 import { StaticNode } from './nodes/StaticNode';
-import { RectangularEdge as Edge, getLinkedCIPipelineURL } from '../common';
+import { RectangularEdge as Edge, getLinkedCIPipelineURL, ConfirmationDialog } from '../common';
 import { RouteComponentProps } from 'react-router';
 import { NodeAttr } from '../../components/app/details/triggerView/types';
 import { PipelineSelect } from './modals/PipelineSelect';
@@ -11,7 +11,8 @@ import { getCIPipelineURL, getCDPipelineURL, getExCIPipelineURL } from '../commo
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import { WorkflowEditorContext } from './workflowEditor';
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
+import warn from '../../assets/icons/ic-warning.svg';
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {
     nodes: NodeAttr[];
@@ -35,8 +36,26 @@ export class Workflow extends Component<WorkflowProps, any> {
             showCDMenu: false,
             showCIMenu: false,
             top: 0,
-            left: 0
+            left: 0,
+            showGitOpsWarningModal: false
         }
+    }
+
+    toggleGitOpsWarningModal = () => {
+        this.setState({ showGitOpsWarningModal: !this.state.showGitOpsWarningModal });
+    }
+
+    handleAddCDPipeline = () => {
+        if (this.props.isGitOpsConfigAvailable) {
+            this.toggleCDMenu();
+        }
+        else {
+            this.toggleGitOpsWarningModal();
+        }
+    }
+
+    toggleCDMenu = () => {
+        this.setState({ showCDMenu: !this.state.showCDMenu })
     }
 
     setPosition = (top: number, left: number) => {
@@ -128,7 +147,7 @@ export class Workflow extends Component<WorkflowProps, any> {
             isExternalCI={node.isExternalCI}
             isLinkedCI={node.isLinkedCI}
             linkedCount={node.linkedCount}
-            toggleCDMenu={() => { this.setState({ showCDMenu: !this.state.showCDMenu }) }}
+            toggleCDMenu={() => { this.handleAddCDPipeline(); }}
             setPosition={this.setPosition}
             to={this.openCIPipeline(node)}
         />
@@ -221,6 +240,16 @@ export class Workflow extends Component<WorkflowProps, any> {
     render() {
         return <React.Fragment>
             {this.renderWorkflow()}
+            {this.state.showGitOpsWarningModal ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <ConfirmationDialog.Body title="GitOps configuration required">
+                    <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
+                </ConfirmationDialog.Body>
+                <ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleGitOpsWarningModal}>Cancel</button>
+                    <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
         </React.Fragment>
     }
 }
