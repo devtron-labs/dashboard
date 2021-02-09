@@ -82,7 +82,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     handleGitopsTab(event): void {
         let newGitOps = event.target.value;
-        let form = this.state.gitList.find(item => item.provider === newGitOps);
+        let form = this.state.gitList.find(item => item.provider.toLowerCase() === newGitOps);
         if (!form) {
             form = {
                 ...DefaultGitOpsConfig,
