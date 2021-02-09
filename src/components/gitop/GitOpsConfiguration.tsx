@@ -103,7 +103,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         this.setState({ saveLoading: true });
         let payload = {
             id: this.state.form.id,
-            provider: this.state.form.provider,
+            provider: this.state.form.provider.toUpperCase(),
             username: this.state.form.username,
             host: this.state.form.host,
             token: this.state.form.token,
@@ -113,21 +113,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
-            // let form = response.result;
-            // this.setState({
-            //     view: ViewType.FORM,
-            //     form: {
-            //         id: form.id,
-            //         provider: form.provider,
-            //         username: form.username,
-            //         token: form.token,
-            //         gitLabGroupId: form.gitLabGroupId,
-            //         gitHubOrgId: form.gitHubOrgId,
-            //         host: form.host,
-            //         active: true
-            //     },
-            //     saveLoading: false
-            // });
             toast.success("Saved Successful");
             this.fetchGitOpsConfigurationList();
         }).catch((error) => {
