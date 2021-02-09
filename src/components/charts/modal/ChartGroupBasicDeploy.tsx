@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
 import { DialogForm, DialogFormSubmit } from '../../common';
 import { ProjectType, ChartGroupEntry } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
@@ -7,9 +6,6 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
-import { getGitOpsConfigurationList } from '../../../services/service';
-import { ConfirmationDialog } from '../../common'
-import warn from '../../../assets/icons/ic-warning.svg';
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
@@ -30,7 +26,6 @@ interface ChartGroupBasicDeployState {
     showAppNames: boolean;
     selectedEnvironmentId: number;
     showError: boolean;
-    showGitOpsWarningModal: boolean;
 }
 
 export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDeployProps, ChartGroupBasicDeployState> {
@@ -40,16 +35,9 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             selectedEnvironmentId: 0,
             showAppNames: false,
             showError: false,
-            showGitOpsWarningModal: false
-
         }
-        this.toggleGitOpsWarningModal = this.toggleGitOpsWarningModal.bind(this);
         this.toggleShowAppName = this.toggleShowAppName.bind(this);
         this.deployChartGroup = this.deployChartGroup.bind(this);
-    }
-
-    toggleGitOpsWarningModal(): void {
-        this.setState({ showGitOpsWarningModal: !this.state.showGitOpsWarningModal });
     }
 
     toggleShowAppName(event): void {
@@ -87,21 +75,6 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
         </div>
     }
 
-
-    handleOnSave(){
-        getGitOpsConfigurationList ? this.toggleGitOpsWarningModal() : this.props.redirectToAdvancedOptions()
-      }
-  
-    handleAdvancedChart(){
-          getGitOpsConfigurationList ? this.toggleGitOpsWarningModal() : this.props.redirectToAdvancedOptions()
-      }
-  
-    hanndleGtOpsConfiguration(){
-         // history.push('global-config/gitops')
-          
-      }
-
-    
     render() {
         let environments: { label: string, value: string }[] = this.props.environments.map(p => { return { value: String(p.id), label: p.environment_name } });
         let tempE = this.props.environments.find(env => env.id === this.state.selectedEnvironmentId);
@@ -123,8 +96,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             isLoading={this.props.loading}
             closeOnESC={true}
             close={this.props.closeDeployModal}
-            onSave={this.deployChartGroup}
-            >
+            onSave={this.deployChartGroup}>
             <div className="deploy-selected-charts__body">
                 <label className="form__row">
                     <span className="form__label">Project*</span>
@@ -178,24 +150,12 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 />
             </div>
             <div className="deploy-selected-charts__bottom flexbox flex-justify">
-               {/* <button type="button" className="cta cancel" onClick={this.props.redirectToAdvancedOptions}>*/}
-                <button type="button" className="cta cancel" onClick={this.handleAdvancedChart}>
-               Advanced Options
+                <button type="button" className="cta cancel" onClick={this.props.redirectToAdvancedOptions}>
+                    Advanced Options
                 </button>
                 <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
             </div>
-            {this.state.showGitOpsWarningModal ? <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">GitOps configuration required</div>
-                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={(e)=>this.state.showGitOpsWarningModal}>Cancel</button>
-                    <NavLink className=" cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Confirm</NavLink>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>: ''
-            } 
         </DialogForm>
-       
-        
     }
 }
 
@@ -242,8 +202,6 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                 </div>
                 else return null
             })}
-            
-
         </div>
     )
 }
