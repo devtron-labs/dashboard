@@ -17,7 +17,7 @@ const SwitchGitItemValues = {
 };
 
 const DefaultGitOpsConfig = {
-    id: 0,
+    id: undefined,
     provider: "",
     host: "",
     token: "",
@@ -73,7 +73,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         if (!form) {
             form = {
                 ...DefaultGitOpsConfig,
-                host: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab"
+                host: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab",
+                provider: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab",
             }
         };
         this.setState({
@@ -175,7 +176,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
-                            Save
+                            {this.state.saveLoading ? <Progressing /> : "Save"}
                         </button>
                     </div>
                 </form>
