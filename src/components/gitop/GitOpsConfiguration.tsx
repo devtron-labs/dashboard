@@ -116,7 +116,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
         let isValid = username?.length === 0 && token?.length === 0;
-        
+
         this.setState({ saveLoading: true });
         let payload = {
             id: this.state.form.id,
@@ -168,13 +168,13 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                 </div>
                 <div className="flex column left top pl-20">
-                    <div className="gitops__id fw-5 fs-13 mb-8">Git host*</div>
+                    <div className="gitops__id fw-5 fs-13 mb-8">Git Host*</div>
                     <input value={this.state.form.host} type="text" name="githost" className="form__input"
                         onChange={(event) => this.handleChange(event, 'host')} />
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
                     <div className="gitops__id fw-5 fs-13 mb-8">
-                        {this.state.tab === SwitchGitItemValues.Github ? "GitHub organisation name" : "GitLab group name"}
+                        {this.state.tab === SwitchGitItemValues.Github ? "GitHub Organisation ID" : "GitLab Group ID"}
                     </div>
                     <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
@@ -183,8 +183,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="fw-6 cn-9 fs-14 pl-20">Git access credentials</div>
                 <form className="pl-20 pr-20">
                     <div className="form__row--two-third pt-16 gitops__id mb-20 fs-13 ">
-                        <CustomInput value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={""} label="GitLab username*" labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                        <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={""} label="GitLab token*" labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                        <CustomInput value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={""}
+                            label={this.state.tab === SwitchGitItemValues.Github ? "Github Username*" : "GitLab Username*"}
+                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+                        <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={""}
+                            label={this.state.tab === SwitchGitItemValues.Github ? "Github Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
