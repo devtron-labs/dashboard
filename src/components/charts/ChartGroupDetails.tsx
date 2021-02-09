@@ -203,7 +203,8 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() => toggleDeployModal(true)}
+                                       // onClick={() => toggleDeployModal(true)}
+                                       onClick={() =>handleOnSave()}
                                         className="cta ellipsis-right w100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
