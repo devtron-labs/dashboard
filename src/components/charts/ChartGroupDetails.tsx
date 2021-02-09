@@ -10,7 +10,10 @@ import { deployChartGroup, getChartGroupInstallationDetails, deleteInstalledChar
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector/AppSelector'
+import AppSelector from '../AppSelector/AppSelector';
+import { getGitOpsConfigurationList } from '../gitOps/service';
+import { ConfirmationDialog } from '../common';
+import warn from '../../assets/icons/ic-warning.svg';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams();
@@ -18,6 +21,7 @@ export default function ChartGroupDetails() {
     const { url } = useRouteMatch();
     const [projectId, setProjectId] = useState(null);
     const [loading, setLoading] = useState(null);
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal]= useState(false);
     const {
         state,
         validateData,
@@ -55,10 +59,24 @@ export default function ChartGroupDetails() {
         reloadChartGroupDetails,
     ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
 
+    function handleOnSave(){
+        getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : toggleDeployModal(true) 
+      }
+  
+      function handleAdvancedChart(){
+          getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : push(`${url}/deploy`, { charts: state.charts,configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),})
+      }
+  
+      function hanndleGtOpsConfiguration(){
+          //history.push('global-config/gitops')
+          
+      }
+
     function redirectToConfigure() {
         let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`;
         push(url);
     }
+
 
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
         try {
@@ -156,12 +174,14 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={(e) =>
-                                            push(`${url}/deploy`, {
-                                                charts: state.charts,
-                                                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-                                            })
-                                        }
+                                        /*onClick={(e) =>
+                                           push(`${url}/deploy`, {
+                                               charts: state.charts,
+                                               configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+                                           })
+
+                                        }*/
+                                        onClick={handleAdvancedChart}
                                         className="cta cancel ellipsis-right w100"
                                     >
                                         Advanced Options
@@ -213,6 +233,14 @@ export default function ChartGroupDetails() {
                     }}
                 />
             ) : null}
+             {showGitOpsWarningModal? <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">GitOps configuration required</div>
+                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
+                    <button type="submit" className="cta  sso__warn-button" onClick={hanndleGtOpsConfiguration}>Confirm</button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
         </div>
     );
 }

@@ -27,6 +27,9 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { getGitOpsConfigurationList } from '../../gitOps/service'
+import { ConfirmationDialog } from '../../common'
+import warn from '../../../assets/icons/ic-warning.svg';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -77,6 +80,11 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal]= useState(false);
+
+    useEffect(()=>{
+        getGitOpsConfigurationList()
+    })
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
@@ -102,6 +110,19 @@ function DiscoverChartList() {
         if (isLeavingPageNotAllowed.current) {
             event.returnValue = "Your changes will be lost. Do you want to reload without deploying?"
         }
+    }
+
+    function handleOnSave(){
+      getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : toggleDeployModal(true) 
+    }
+
+    function handleAdvancedChart(){
+        getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : configureChart(0)
+    }
+
+    function hanndleGtOpsConfiguration(){
+        history.push('global-config/gitops')
+        
     }
 
     async function handleInstall() {
@@ -363,7 +384,8 @@ function DiscoverChartList() {
                                 )}>
                                 <button type="button"
                                     disabled={state.charts.length === 0}
-                                    onClick={(e) => configureChart(0)}
+                                    onClick={handleAdvancedChart}
+                                  //  onClick={(e) => configureChart(0)}
                                     className="cta cancel ellipsis-right">
                                     Advanced Options
                                     </button>
@@ -381,7 +403,8 @@ function DiscoverChartList() {
                             )}>
                             <button type="button"
                                 disabled={state.charts.length === 0}
-                                onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                onClick={state.advanceVisited ? handleInstall : () => handleOnSave()}
+                              //  onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
                                 className="cta ellipsis-right">
                                 {installing ? <Progressing /> : state.advanceVisited ? ('Deploy charts') : ('Deploy to...')}
                             </button>
@@ -404,6 +427,15 @@ function DiscoverChartList() {
             redirectToAdvancedOptions={redirectToConfigure}
             validateData={validateData}
         /> : null}
+
+        {showGitOpsWarningModal? <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+                <div className="modal__title sso__warn-title">GitOps configuration required</div>
+                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
+                    <button type="submit" className="cta  sso__warn-button" onClick={hanndleGtOpsConfiguration}>Confirm</button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
     </>
 }
 
