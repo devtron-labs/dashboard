@@ -19,7 +19,7 @@ import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
-import { getGitOpsConfigurationList } from '../../gitOps/service'
+import { getGitOpsConfigurationList } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
 

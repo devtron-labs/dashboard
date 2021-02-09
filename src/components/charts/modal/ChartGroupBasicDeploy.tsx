@@ -6,7 +6,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
-import { getGitOpsConfigurationList } from '../../gitOps/service';
+import { getGitOpsConfigurationList } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
 

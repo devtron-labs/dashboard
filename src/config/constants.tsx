@@ -50,6 +50,7 @@ export const Routes = {
     TEAM_USER: 'team/app/user', //TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
+    GITOPS: 'gitops/config',
     GIT_PROVIDER: 'git/provider',
     CHART_LIST: 'app-store/repo/list',
     GITOPS_CONFIGURATION:'gitops/config/',

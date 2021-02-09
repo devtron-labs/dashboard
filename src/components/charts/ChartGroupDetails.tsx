@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
 import AppSelector from '../AppSelector/AppSelector';
-import { getGitOpsConfigurationList } from '../gitOps/service';
+import { getGitOpsConfigurationList } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 

@@ -256,4 +256,7 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
-
+export function getGitOpsConfigurationList() {
+    const URL = `${Routes.GITOPS}`;
+    return get(URL);
+}  

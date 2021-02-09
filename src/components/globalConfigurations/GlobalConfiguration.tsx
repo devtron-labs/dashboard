@@ -7,7 +7,7 @@ import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
 
-const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
+const GitOpsConfiguration= lazy(()=> import('../gitop/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -22,11 +22,11 @@ const routes = [
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Chart Repository', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
+    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
-    { name: 'Notification', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-    { name: 'SSO Login Services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
+    { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
+    { name: 'SSO login services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
 ]
 
 export default function GlobalConfiguration({ ...props }) {
