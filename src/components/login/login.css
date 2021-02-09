@@ -170,13 +170,6 @@
     }
 }
 
-.login__sso-wrapper {
-    background-color: var(--N000);
-    border-radius: 8px;
-    border: solid 1px var(--N200);
-    padding-bottom: 22px;
-}
-
 .login__title {
     padding: 22px 24px;
     color: var(--N900);

@@ -126,8 +126,8 @@ export function ProtectedInput({ name, value, error, onChange, label, type = "te
     }, [hidden])
 
     return (
-        <div className="flex column left top">
-            <label htmlFor="" className={`form__label ${labelClassName}`}>{label}</label>
+        <div className="flex column left top form__label">
+            <label htmlFor="" className={`${labelClassName}`}>{label}</label>
             <div className="flex protected-input-container">
                 <input type={shown ? 'text' : 'password'} name={name} onChange={e => { e.persist(); onChange(e) }} value={value} disabled={disabled} />
                 <ShowHide hidden={!shown} defaultOnClick={e => toggleShown(!shown)} disabled={disabled} />

@@ -28,12 +28,9 @@ export interface GitOpsState{
     view: string;
     statusCode: number;
     githost: string;
-    git: string;
     gitList: GitList[];
-    showToggling: boolean;
     form:GitList
     saveLoading:boolean,
-    
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
