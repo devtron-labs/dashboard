@@ -11,7 +11,7 @@ import { getCIPipelineURL, getCDPipelineURL, getExCIPipelineURL } from '../commo
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import { WorkflowEditorContext } from './workflowEditor';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {
     nodes: NodeAttr[];
@@ -21,6 +21,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     startY: number;
     width: number;
     height: number;
+    isGitOpsConfigAvailable?: boolean;
     showDeleteDialog: (workflowId: number) => void;
     handleCDSelect: (wf, isExternalCI: boolean, cdPipelineId) => void;
     openEditWorkflow: (event, workflowId: number) => string;
@@ -97,14 +98,14 @@ export class Workflow extends Component<WorkflowProps, any> {
 
     openCDPipeline(node) {
         let { appId } = this.props.match.params;
-        return this.props.match.url+"/"+getCDPipelineURL(appId, this.props.id.toString(), node.parents[0], node.id);
+        return this.props.match.url + "/" + getCDPipelineURL(appId, this.props.id.toString(), node.parents[0], node.id);
     }
 
     openCIPipeline(node: NodeAttr) {
         let { appId } = this.props.match.params;
         let url = ""
-        if(node.isLinkedCI) url =  getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
-        else if(node.isExternalCI) url =  getExCIPipelineURL(appId, this.props.id.toString(), node.id)
+        if (node.isLinkedCI) url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
+        else if (node.isExternalCI) url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         else url = getCIPipelineURL(appId, this.props.id.toString(), node.id);
         return `${this.props.match.url}/${url}`
     }

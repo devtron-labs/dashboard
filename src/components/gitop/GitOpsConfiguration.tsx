@@ -35,10 +35,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             statusCode: 0,
             gitList: [],
             saveLoading: false,
-            tab: SwitchGitItemValues.GitLab,
+            tab: SwitchGitItemValues.Github,
             form: {
                 ...DefaultGitOpsConfig,
                 host: SwitchGitItemValues.Github,
+                provider: SwitchGitItemValues.Github,
             }
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
@@ -47,14 +48,14 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     componentDidMount() {
         getGitOpsConfigurationList().then((response) => {
-            let form = response.result.find(item => item.active);
+            let form = response.result?.find(item => item.active);
             if (!form) {
                 form = {
                     ...DefaultGitOpsConfig,
                     host: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
+                    provider: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
                 }
             }
-
             this.setState({
                 gitList: response.result || [],
                 view: ViewType.FORM,
