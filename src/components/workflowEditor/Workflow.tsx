@@ -28,7 +28,15 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     openEditWorkflow: (event, workflowId: number) => string;
 }
 
-export class Workflow extends Component<WorkflowProps, any> {
+interface WorkflowState {
+    showCDMenu: boolean;
+    showCIMenu: boolean;
+    top: number
+    left: number
+    showGitOpsWarningModal: boolean;
+}
+
+export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     constructor(props) {
         super(props)
