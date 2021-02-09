@@ -77,17 +77,21 @@ function DiscoverChartList() {
     const projectsMap = mapByKey(state.projects, 'id');
     const chartList: Chart[] = Array.from(state.availableCharts.values());
     const isLeavingPageNotAllowed = useRef(false);
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
-    const [showGitOpsWarningModal, toggleGitOpsWarningModal]= useState(false);
-
-    useEffect(()=>{
-        getGitOpsConfigurationList()
-    })
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
+        getGitOpsConfigurationList().then((response) => {
+            let isGitOpsConfigAvailable = (response.result) && (response.result.length > 0);
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+
+        }).catch((error) => {
+            showError(error);
+        })
         return () => {
             window.removeEventListener('beforeunload', reloadCallback);
         }
@@ -112,12 +116,22 @@ function DiscoverChartList() {
         }
     }
 
-    function handleOnSave(){
-      getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : toggleDeployModal(true) 
+    function handleOnDeployTo() {
+        if (isGitOpsConfigAvailable) {
+            toggleDeployModal(true)
+        }
+        else {
+            toggleGitOpsWarningModal(true)
+        }
     }
 
-    function handleAdvancedChart(){
-        getGitOpsConfigurationList ? toggleGitOpsWarningModal(true) : configureChart(0)
+    function handleAdvancedChart() {
+        if (isGitOpsConfigAvailable) {
+            configureChart(0)
+        }
+        else {
+            toggleGitOpsWarningModal(true)
+        }
     }
 
     async function handleInstall() {
@@ -380,7 +394,6 @@ function DiscoverChartList() {
                                 <button type="button"
                                     disabled={state.charts.length === 0}
                                     onClick={handleAdvancedChart}
-                                  //  onClick={(e) => configureChart(0)}
                                     className="cta cancel ellipsis-right">
                                     Advanced Options
                                     </button>
@@ -398,8 +411,7 @@ function DiscoverChartList() {
                             )}>
                             <button type="button"
                                 disabled={state.charts.length === 0}
-                                onClick={state.advanceVisited ? handleInstall : () => handleOnSave()}
-                              //  onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                onClick={state.advanceVisited ? handleInstall : () => handleOnDeployTo()}
                                 className="cta ellipsis-right">
                                 {installing ? <Progressing /> : state.advanceVisited ? ('Deploy charts') : ('Deploy to...')}
                             </button>
@@ -423,14 +435,16 @@ function DiscoverChartList() {
             validateData={validateData}
         /> : null}
 
-        {showGitOpsWarningModal? <ConfirmationDialog>
+        {showGitOpsWarningModal ? <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warn} />
-                <div className="modal__title sso__warn-title">GitOps configuration required</div>
-                <p className="modal__description sso__warn-description">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p><ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={()=>toggleGitOpsWarningModal(false)}>Cancel</button>
-                    <NavLink className=" cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Confirm</NavLink>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog> : null}
+            <ConfirmationDialog.Body title="GitOps configuration required">
+                <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
+            </ConfirmationDialog.Body>
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={() => toggleGitOpsWarningModal(false)}>Cancel</button>
+                <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog> : null}
     </>
 }
 
