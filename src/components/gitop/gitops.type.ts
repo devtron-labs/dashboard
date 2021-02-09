@@ -27,7 +27,7 @@ export interface GitList{
 export interface GitOpsState{
     view: string;
     statusCode: number;
-    githost: string;
+    tab: string;
     gitList: GitList[];
     form:GitList
     saveLoading:boolean,
