@@ -40,6 +40,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 ...DefaultGitOpsConfig,
                 host: SwitchGitItemValues.Github,
                 provider: "GITHUB",
+            },
+            isError: {
+                username: "",
+                token: "",
+                gitHubOrgId: "",
+                gitLabGroupId: "",
             }
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
@@ -86,20 +92,31 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         };
         this.setState({
             tab: newGitOps,
-            form: form
-        })
-    }
-
-    handleChange(event, key): void {
-        this.setState({
-            form: {
-                ...this.state.form,
-                [key]: event.target.value,
+            form: form,
+            isError: {
+                username: "",
+                token: "",
+                gitHubOrgId: "",
+                gitLabGroupId: "",
             }
         })
     }
 
+    handleChange(event, key: "host" | "username" | "token" | "gitHubOrgId" | "gitLabGroupId"): void {
+        let errorKey = (key === 'gitHubOrgId' || key === 'gitLabGroupId') ? 'org' : '';
+
+        this.setState({
+            form: {
+                ...this.state.form,
+                [key]: event.target.value,
+            },
+        })
+    }
+
     onSave() {
+        let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
+        let isValid = username?.length === 0 && token?.length === 0;
+        
         this.setState({ saveLoading: true });
         let payload = {
             id: this.state.form.id,
@@ -122,7 +139,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     }
 
     render() {
-        let key = this.state.tab === SwitchGitItemValues.Github ? 'gitHubOrgId' : 'gitLabGroupId';
+        let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === SwitchGitItemValues.Github ? 'gitHubOrgId' : 'gitLabGroupId';
         if (this.state.view === ViewType.LOADING) return <div>
             <Progressing pageLoader />
         </div>
@@ -156,7 +173,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         onChange={(event) => this.handleChange(event, 'host')} />
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
-                    <div className="gitops__id fw-5 fs-13 mb-8">GitLab organisation ID*</div>
+                    <div className="gitops__id fw-5 fs-13 mb-8">
+                        {this.state.tab === SwitchGitItemValues.Github ? "GitHub organisation name" : "GitLab group name"}
+                    </div>
                     <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
                 </div>

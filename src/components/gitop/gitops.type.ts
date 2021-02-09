@@ -28,7 +28,13 @@ export interface GitOpsState {
     tab: string;
     gitList: GitList[];
     form: GitList
-    saveLoading: boolean,
+    saveLoading: boolean;
+    isError: {
+        username: string;
+        token: string;
+        gitHubOrgId: string;
+        gitLabGroupId: string;
+    }
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
