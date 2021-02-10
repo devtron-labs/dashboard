@@ -147,8 +147,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             <Progressing pageLoader />
         </div>
         return <section className="git-page">
-            <h2 className="form__title">GitOps configuration</h2>
-            <h5 className="form__subtitle"></h5>
+            <h2 className="form__title">GitOps</h2>
+            <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22 pr-20">
                 <div className="login__sso-flex">
                     <div>
