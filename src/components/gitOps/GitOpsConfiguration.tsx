@@ -181,13 +181,13 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 </div>
                 <div className="pl-20"><hr /></div>
                 <div className="fw-6 cn-9 fs-14 pl-20">Git access credentials</div>
-                <form className="pl-20 pr-20">
+                <form className="pl-20 ">
                     <div className="form__row--two-third pt-16 gitops__id mb-20 fs-13 ">
                         <CustomInput value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={""}
-                            label={this.state.tab === SwitchGitItemValues.Github ? "Github Username*" : "GitLab Username*"}
+                            label={this.state.tab === SwitchGitItemValues.Github ? "GithHb Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                         <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={""}
-                            label={this.state.tab === SwitchGitItemValues.Github ? "Github Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                            label={this.state.tab === SwitchGitItemValues.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">

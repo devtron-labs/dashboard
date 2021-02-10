@@ -18,7 +18,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(()=> import('../login/SSOLogin'));
 
 const routes = [
-    { name: 'GitOps configuration', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
+    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
@@ -65,7 +65,7 @@ function Body({ ...props }) {
         <Switch location={location}>
             <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
             {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
-            <Redirect to={URLS.GLOBAL_CONFIG_GIT} />
+            <Redirect to={URLS.GLOBAL_CONFIG_GITOPS} />
         </Switch>
     )
 }
