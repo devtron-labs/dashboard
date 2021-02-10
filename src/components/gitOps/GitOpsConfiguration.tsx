@@ -10,6 +10,7 @@ import { updateGitOpsConfiguration, saveGitOpsConfiguration } from './gitops.ser
 import { getGitOpsConfigurationList } from '../../services/service';
 import '../login/login.css';
 import './gitops.css';
+import Check from '../../assets/icons/ic-outline-check.svg'
 
 const SwitchGitItemValues = {
     GitLab: 'gitlab',
@@ -36,6 +37,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             gitList: [],
             saveLoading: false,
             tab: SwitchGitItemValues.Github,
+            lastActiveGitOp: undefined,
             form: {
                 ...DefaultGitOpsConfig,
                 host: SwitchGitItemValues.Github,
@@ -73,7 +75,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 tab: form.provider.toLowerCase(),
                 form: form,
                 saveLoading: false,
-            })
+                lastActiveGitOp: form
+            },()=>{console.log(this.state)})
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code });
@@ -154,7 +157,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
-                            </span>
+                                <label>
+                                   {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : "" }
+                                </label>  
+                             </span>
                         </label>
                     </div>
                     <div>
@@ -163,6 +169,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
+                                <label>
+                                     {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "github"?<aside className="login__check-icon"><img src={Check} /></aside>:""}
+                                </label>
                             </span>
                         </label>
                     </div>
@@ -184,7 +193,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <form className="pl-20 ">
                     <div className="form__row--two-third pt-16 gitops__id mb-20 fs-13 ">
                         <CustomInput value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={""}
-                            label={this.state.tab === SwitchGitItemValues.Github ? "GithHb Username*" : "GitLab Username*"}
+                            label={this.state.tab === SwitchGitItemValues.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                         <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={""}
                             label={this.state.tab === SwitchGitItemValues.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />

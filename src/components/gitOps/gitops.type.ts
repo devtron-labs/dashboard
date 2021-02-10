@@ -11,6 +11,7 @@ export interface CustomGitOpsState {
     };
 }
 
+
 export interface GitList {
     id: number,
     provider: "GITHUB" | "GITLAB";
@@ -29,6 +30,7 @@ export interface GitOpsState {
     gitList: GitList[];
     form: GitList
     saveLoading: boolean;
+    lastActiveGitOp: undefined | GitList;
     isError: {
         username: string;
         token: string;
