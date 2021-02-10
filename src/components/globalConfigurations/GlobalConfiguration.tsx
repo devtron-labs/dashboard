@@ -20,11 +20,11 @@ const routes = [
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Chart Repository', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
+    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
-    { name: 'Notification', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-    { name: 'SSO Login Services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
+    { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
+    { name: 'SSO login services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
 ]
 
 export default function GlobalConfiguration({ ...props }) {

@@ -299,7 +299,7 @@ function AppMetricsEmptyState(props) {
             <div>
                 <p className="app-metrics-graph__empty-state-title">Unable to show app metrics</p>
                 <p className="app-metrics-graph__empty-state-subtitle">{props.subtitle}</p>
-                <a href={`https://docs.devtron.ai/global-configurations/cluster-and-environments`} target="_blank" className="cta small text" style={{ paddingLeft: '0px' }} >See how to fix</a>
+                <a className="learn-more__href cta small text" href={`https://docs.devtron.ai/global-configurations/cluster-and-environments`} target="_blank"  style={{ paddingLeft: '0px' }} >See how to fix</a>
                 <Link to={`/global-config/cluster-env`} className="cta small text">Review Configuration</Link>
             </div>
         </article>
