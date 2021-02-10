@@ -61,8 +61,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList().then((response) => {
-            let form = response.result?.find(item => item.active);
-            if (!form) {
+            let lastActiveGitOp = response.result?.find(item => item.active);
+            let form = lastActiveGitOp;
+            if (!lastActiveGitOp) {
                 form = {
                     ...DefaultGitOpsConfig,
                     host: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
@@ -75,8 +76,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 tab: form.provider.toLowerCase(),
                 form: form,
                 saveLoading: false,
-                lastActiveGitOp: form
-            },()=>{console.log(this.state)})
+                lastActiveGitOp: lastActiveGitOp
+            })
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code });
@@ -158,9 +159,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
                                 <label>
-                                   {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : "" }
-                                </label>  
-                             </span>
+                                    {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                </label>
+                            </span>
                         </label>
                     </div>
                     <div>
@@ -170,7 +171,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                     {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "github"?<aside className="login__check-icon"><img src={Check} /></aside>:""}
+                                    {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
