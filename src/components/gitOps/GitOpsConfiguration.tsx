@@ -149,7 +149,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             <div className="bcn-0 bw-1 en-2 br-8 pb-22 pr-20">
                 <div className="login__sso-flex">
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value={SwitchGitItemValues.GitLab} checked={this.state.tab === "gitlab"} onClick={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
@@ -158,7 +158,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value={SwitchGitItemValues.Github} checked={this.state.tab === "github"} onClick={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>

@@ -315,12 +315,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         return <section className="git-page">
             <h2 className="form__title">SSO Login Services</h2>
-            <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;
-            </h5>
+            <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex">
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Google} /></aside>
@@ -332,7 +331,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
@@ -344,7 +343,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
@@ -357,7 +356,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={LDAP} /></aside>
@@ -369,7 +368,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={SAML} /></aside>
@@ -381,7 +380,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={OIDC} /></aside>
@@ -393,7 +392,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                     <div>
-                        <label className="tertiary-tab__radio ">
+                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><img src={Openshift} /></aside>
@@ -405,10 +404,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                 </div>
-                <div className="sso__description">
+                <div className="sso__description flexbox p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flex">
                         <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="login__bold">Help: </span>See documentation for
+                        <div><span className="fw-6">Help: </span>See documentation for
                         <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a></div>
                     </div>
                 </div>
@@ -423,7 +422,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             {this.state.showToggling ? <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
                 <div className="modal__title sso__warn-title">Use '{this.state.sso}' instead of '{this.state.lastActiveSSO?.name}' for login?</div>
-                <p className="modal__description sso__warn-description">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
+                <p className="modal__description fs-14">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
                     <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>Confirm</button>
                 </ConfirmationDialog.ButtonGroup>

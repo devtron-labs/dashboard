@@ -7,7 +7,7 @@ import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
 
-const GitOpsConfiguration= lazy(()=> import('../gitop/GitOpsConfiguration'))
+const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))

@@ -53,7 +53,6 @@ export const Routes = {
     GITOPS: 'gitops/config',
     GIT_PROVIDER: 'git/provider',
     CHART_LIST: 'app-store/repo/list',
-    GITOPS_CONFIGURATION:'gitops/config/',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
