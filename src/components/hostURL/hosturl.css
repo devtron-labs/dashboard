@@ -10,3 +10,6 @@
 .hosturl__icon{
     display: flex;
 }
+.hosturl__container{
+    color: #404040;
+}
