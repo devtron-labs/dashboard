@@ -170,13 +170,6 @@
     }
 }
 
-.login__sso-wrapper {
-    background-color: var(--N000);
-    border-radius: 8px;
-    border: solid 1px var(--N200);
-    padding-bottom: 22px;
-}
-
 .login__title {
     padding: 22px 24px;
     color: var(--N900);
@@ -193,12 +186,12 @@
     margin: 4px 12px 20px 24px;
 }
 
-
-.login__flex{
+.login__flex {
     display: flex;
     text-align: center;
     justify-content: center;
 }
+
 .sso-icons {
     position: relative;
     border-radius: 4px;
@@ -207,24 +200,13 @@
     cursor: pointer;
     box-sizing: border-box;
     display: block;
-    height: 100%;
     width: 96px;
     padding: 12px 16px;
     height: 84px;
 }
 
 .sso__description {
-    margin: 20px 24px;
-    padding: 16px;
-    border-radius: 4px;
-    border: solid 1px var(--B200);
     background-color: #f0f7ff;
-    display: flex;
-    font-size: 14px;
-}
-
-.login__bold {
-    font-weight: 600;
 }
 
 .login__codeblock {
@@ -247,12 +229,13 @@
     padding: 2px;
 }
 
-.login__check-icon{
+.login__check-icon {
     position: absolute;
     top: 8px;
     right: 8px;
 }
 
+/* 
 .mr-24 {
     margin-right: 24px;
 }
@@ -263,7 +246,7 @@
 
 .mr-12 {
     margin-right: 12px;
-}
+} */
 
 .login__auth-link {
     text-decoration: none !important;
@@ -273,10 +256,6 @@
 .sso__warn-title {
     font-size: 16px;
     margin-bottom: 8px;
-}
-
-.sso__warn-description {
-    font-size: 14px;
 }
 
 .sso__warn-button {

@@ -7,6 +7,7 @@ export interface WorkflowEditState {
     workflowId: number;
     appName: string;
     showDeleteDialog: boolean;
+    isGitOpsConfigAvailable: boolean;
 }
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {
