@@ -7,9 +7,16 @@
     font-size: 14px;
 }
 
-.hosturl__icon{
-    display: flex;
-}
+
 .hosturl__container{
     color: #404040;
+}
+
+.hosturl__autodetection{
+    color: #6b778c;
+    font-size: 11px;
+}
+
+.hosturl__url{
+    color: var(--B500)
 }
