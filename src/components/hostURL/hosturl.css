@@ -1,0 +1,12 @@
+.hosturl__description{
+    margin: 20px 24px;
+    padding: 16px;
+    border-radius: 4px;
+    border: solid 1px var(--B200);
+    background-color: #f0f7ff;
+    font-size: 14px;
+}
+
+.hosturl__icon{
+    display: flex;
+}
