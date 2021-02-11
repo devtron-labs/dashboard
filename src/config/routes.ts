@@ -30,6 +30,7 @@ export const URLS = {
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_GIT: '/global-config/git',
+    GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',

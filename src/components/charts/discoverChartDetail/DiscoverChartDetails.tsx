@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, NavLink } from 'react-router-dom';
-import { useRouteMatch, useLocation, useParams} from 'react-router'
-import {Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
+import { useRouteMatch, useLocation, useParams, useHistory, } from 'react-router'
+import { Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
 import { URLS } from '../../../config';
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
 import { getAvailableCharts } from '../../../services/service';
@@ -14,12 +14,14 @@ import ManageValues from '../modal/ManageValues';
 import { About } from './About';
 import { ChartDeploymentList } from './ChartDeploymentList';
 import { ChartValuesSelect } from '../util/ChartValueSelect';
-import './DiscoverChartDetails.scss';
 import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
-
+import { getGitOpsConfigurationList } from '../../../services/service';
+import { ConfirmationDialog } from '../../common'
+import warn from '../../../assets/icons/ic-warning.svg';
+import './DiscoverChartDetails.scss';
 
 const DiscoverDetailsContext = React.createContext(null);
 
@@ -46,23 +48,25 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const [chartYaml, setChartYaml] = React.useState(null)
     const [loading, setLoading] = React.useState(false);
     const [chartValuesList, setChartValuesList] = useState([])
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
     const [chartValues, setChartValues] = useState({ id: 0, kind: null, name: '', chartVersion: "", environmentName: "" });
-    const { chartId } = useParams()
+    const { chartId } = useParams<{ chartId }>()
 
-    function formatOptionLabel({label, value, ...rest}){
+    function formatOptionLabel({ label, value, ...rest }) {
         return rest?.chart_name ? (
             <div>
                 <span className="cn-7">{rest.chart_name}</span> / <span className="cn-9">{label}</span>
             </div>
         ) : (
-            label
-        );
+                label
+            );
     }
 
-    function filterOption({ data: {label, value, ...rest}}, searchString: string):boolean{
-        if(!searchString) return true
-        searchString=searchString.toLowerCase()
-        const match:boolean=(label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
+    function filterOption({ data: { label, value, ...rest } }, searchString: string): boolean {
+        if (!searchString) return true
+        searchString = searchString.toLowerCase()
+        const match: boolean = (label.toLowerCase().includes(searchString) || (rest?.chart_name || "").toLowerCase().includes(searchString))
         return match
     }
     const { breadcrumbs } = useBreadcrumb(
@@ -83,11 +87,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     linked: false
                 },
                 'chart': null,
-                'chart-store':null
+                'chart-store': null
             },
         },
         [chartId],
-    );    
+    );
 
     function goBackToDiscoverChart(isReload) {
         const url = `${URLS.CHARTS}/discover/chart/${chartId}`;
@@ -148,6 +152,12 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     useEffect(() => {
         fetchVersions();
         getChartValuesList();
+        getGitOpsConfigurationList().then((response) => {
+            let isGitOpsConfigAvailable = (response.result) && (response.result.length > 0);
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+        }).catch((error) => {
+            showError(error);
+        })
     }, [chartId])
 
     useEffectAfterMount(() => {
@@ -178,36 +188,38 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     <div className="flex left"><BreadCrumb breadcrumbs={breadcrumbs} /></div>
                     <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
                 </div>
-                <div className="page-header__cta-container"/>
+                <div className="page-header__cta-container" />
             </div>
-            {loading? <Progressing pageLoader/>
-            : <div style={{overflow:'auto'}}>
-                <div className="left-right-container">
-                    <div className="chart-detail-left">
-                        <About {...chartInformation} chartYaml={chartYaml} />
-                        <ReadmeRowHorizontal {...chartInformation} />
-                        <ChartDeploymentList chartId={chartId} />
-                    </div>
-                    <div className="chart-detail-right">
-                        <Deployment 
-                            chartId={chartId} 
-                            {...chartInformation} 
-                            availableVersions={availableVersions} 
+            {loading ? <Progressing pageLoader />
+                : <div style={{ overflow: 'auto' }}>
+                    <div className="left-right-container">
+                        <div className="chart-detail-left">
+                            <About {...chartInformation} chartYaml={chartYaml} />
+                            <ReadmeRowHorizontal {...chartInformation} />
+                            <ChartDeploymentList chartId={chartId} />
+                        </div>
+                        <div className="chart-detail-right">
+                            <Deployment
+                                chartId={chartId}
+                                {...chartInformation}
+                                availableVersions={availableVersions}
+                                isGitOpsConfigAvailable={isGitOpsConfigAvailable}
+                                showGitOpsWarningModal={showGitOpsWarningModal}
+                                toggleGitOpsWarningModal={toggleGitOpsWarningModal}
                             />
-                </div>
-                </div>
-            </div>
-            }
+                        </div>
+                    </div>
+                </div>}
         </div>
         <Switch>
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`} render={(props) => {
                 return <OpaqueModal onHide={goBackToDiscoverChart}>
-                        <DeployChart
-                            chartValuesFromParent={chartValues}
-                            {...chartInformation}
-                            appStoreVersion={selectedVersion}
-                            versions={availableVersions}
-                            onHide={goBackToDiscoverChart} />
+                    <DeployChart
+                        chartValuesFromParent={chartValues}
+                        {...chartInformation}
+                        appStoreVersion={selectedVersion}
+                        versions={availableVersions}
+                        onHide={goBackToDiscoverChart} />
                 </OpaqueModal>
             }} />
             <Route path={`${URLS.CHARTS}/discover/chart/:chartId/manage-values`} render={(props) => {
@@ -222,13 +234,24 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     </DiscoverDetailsContext.Provider>
 }
 
-const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", appStoreApplicationName = "", availableVersions, deprecated = "", ...rest }) => {
+const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartName = "", name = "", isGitOpsConfigAvailable, showGitOpsWarningModal, toggleGitOpsWarningModal, appStoreApplicationName = "", availableVersions, deprecated = "", ...rest }) => {
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
     const match = useRouteMatch();
+    const { push } = useHistory();
+
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
         target.onerror = null
         target.src = placeHolder
+    }
+
+    function handleDeploy() {
+        if (isGitOpsConfigAvailable) {
+            push(`${match.url}/deploy-chart`)
+        }
+        else {
+            toggleGitOpsWarningModal(true);
+        }
     }
 
     return <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
@@ -240,9 +263,9 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
                 <span className="user anchor">{chartName}/</span>
                 <span className="repo">{appStoreApplicationName}</span>
             </div>
-            {   deprecated &&
+            {deprecated &&
                 <div className="mt-8">
-                    <DeprecatedWarn/>
+                    <DeprecatedWarn />
                 </div>
             }
         </div>
@@ -260,7 +283,18 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
             <ChartValuesSelect chartValuesList={chartValuesList} chartValues={chartValues} redirectToChartValues={redirectToChartValues}
                 onChange={(event) => { setChartValues(event) }} />
         </div>
-        <NavLink className="flex cta" to={`${match.url}/deploy-chart`}>Deploy</NavLink>
+        <button type="button" className="flex cta" onClick={handleDeploy}>Deploy</button>
+
+        {showGitOpsWarningModal ? <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+            <ConfirmationDialog.Body title="GitOps configuration required">
+                <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
+            </ConfirmationDialog.Body>
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={() => toggleGitOpsWarningModal(false)}>Cancel</button>
+                <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog> : null}
     </div>
 }
 
