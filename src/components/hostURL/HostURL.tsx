@@ -1,21 +1,27 @@
-import React, { Component } from 'react'
-import {ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import './hosturl.css'
-import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import React, { Component } from 'react';
+import {ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
+import { HostURLState, HostURLProps } from './hosturl.type';
+import './hosturl.css';
+import { Progressing, showError } from '../common';
+import { ViewType } from '../../config';
 
-interface HostURLState{
-       value: string;
-}
 
-export default class HostURL extends Component<HostURLState> {
+
+export default class HostURL extends Component <HostURLProps, HostURLState> {
     constructor(props){
         super(props)
         this.state= ({
-           value: ""
+           value: "",
+           saveLoading: false,
         })
     }
+
     handleChange(event){
      let newURL = event.target.value
+    }
+
+    onSave(){
+
     }
 
 render(){
@@ -44,9 +50,13 @@ render(){
                         Auto-detected from your browser: &nbsp;
                         <div className="hosturl__url"> http://cd.devtron.ai:32080/</div>
                    </div>
+                   <div className="form__buttons pt-20">
+                        <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
+                            {this.state.saveLoading ? <Progressing /> : "Save"}
+                        </button>
                 </div>
            </div>
-           
+        </div>
         </section>
     )
 }
