@@ -12,10 +12,15 @@ import '../login/login.css';
 import './gitops.css';
 import Check from '../../assets/icons/ic-outline-check.svg'
 
-const SwitchGitItemValues = {
+const GitProvider = {
     GitLab: 'gitlab',
     Github: 'github',
 };
+
+const GitHost = {
+    github: "https://github.com/",
+    gitlab: "https://gitlab.com/"
+}
 
 const DefaultGitOpsConfig = {
     id: undefined,
@@ -36,11 +41,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             statusCode: 0,
             gitList: [],
             saveLoading: false,
-            tab: SwitchGitItemValues.Github,
+            tab: GitProvider.Github,
             lastActiveGitOp: undefined,
             form: {
                 ...DefaultGitOpsConfig,
-                host: SwitchGitItemValues.Github,
+                host: GitHost.github,
                 provider: "GITHUB",
             },
             isError: {
@@ -66,8 +71,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             if (!lastActiveGitOp) {
                 form = {
                     ...DefaultGitOpsConfig,
-                    host: this.state.tab === SwitchGitItemValues.Github ? "github" : "gitlab",
-                    provider: this.state.tab === SwitchGitItemValues.Github ? "GITHUB" : "GITLAB",
+                    host: GitHost[this.state.tab],
+                    provider: this.state.tab === GitProvider.Github ? "GITHUB" : "GITLAB",
                 }
             }
             this.setState({
@@ -90,8 +95,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         if (!form) {
             form = {
                 ...DefaultGitOpsConfig,
-                host: newGitOps === SwitchGitItemValues.Github ? "github" : "gitlab",
-                provider: newGitOps === SwitchGitItemValues.Github ? "GITHUB" : "GITLAB",
+                host: GitHost[newGitOps],
+                provider: newGitOps === GitProvider.Github ? "GITHUB" : "GITLAB",
             }
         };
         this.setState({
@@ -143,7 +148,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     }
 
     render() {
-        let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === SwitchGitItemValues.Github ? 'gitHubOrgId' : 'gitLabGroupId';
+        let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
         if (this.state.view === ViewType.LOADING) return <div>
             <Progressing pageLoader />
         </div>
@@ -154,7 +159,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={SwitchGitItemValues.GitLab} checked={this.state.tab === "gitlab"} onClick={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onClick={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
@@ -166,7 +171,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={SwitchGitItemValues.Github} checked={this.state.tab === "github"} onClick={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === "github"} onClick={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
@@ -184,7 +189,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
                     <div className="gitops__id fw-5 fs-13 mb-8">
-                        {this.state.tab === SwitchGitItemValues.Github ? "GitHub Organisation ID" : "GitLab Group ID"}
+                        {this.state.tab === GitProvider.Github ? "GitHub Organisation ID" : "GitLab Group ID"}
                     </div>
                     <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
@@ -194,10 +199,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <form className="pl-20 ">
                     <div className="form__row--two-third pt-16 gitops__id mb-20 fs-13 ">
                         <CustomInput value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={""}
-                            label={this.state.tab === SwitchGitItemValues.Github ? "GithHub Username*" : "GitLab Username*"}
+                            label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                         <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={""}
-                            label={this.state.tab === SwitchGitItemValues.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                            label={this.state.tab === GitProvider.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
