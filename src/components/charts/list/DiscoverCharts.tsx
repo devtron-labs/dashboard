@@ -481,7 +481,7 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
-            <a href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
+            <a className="learn-more__href" href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <div className="flexbox flex-justify">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >
