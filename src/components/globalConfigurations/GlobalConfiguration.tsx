@@ -7,6 +7,7 @@ import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
 
+const HostURL = lazy(()=> import('../hostURL/HostURL'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -17,6 +18,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(()=> import('../login/SSOLogin'));
 
 const routes = [
+    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
@@ -63,7 +65,7 @@ function Body({ ...props }) {
         <Switch location={location}>
             <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
             {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
-            <Redirect to={URLS.GLOBAL_CONFIG_GIT} />
+            <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
         </Switch>
     )
 }
