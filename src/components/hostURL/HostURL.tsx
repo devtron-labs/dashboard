@@ -5,12 +5,16 @@ export default function GitProvider({ ...props }) {
 
     return (
         <section className="git-page">
-            <h2 className="form__title">Git accounts</h2>
-            <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
-            <a className="learn-more__href" href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
-                    Learn more about git accounts
-            </a>
-            </h5>
+            <h2 className="form__title">Host URL</h2>
+            <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
+            <div className="white-wrapper">
+                <div className="sso__description">
+                    <div>
+                       <div>Host URL is the domain address at which your devtron dashboard can be reached.</div>
+                       <div>It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
+                </div>
+                </div>
+             </div>
         </section>
     )
 }
