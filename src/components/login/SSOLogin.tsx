@@ -144,11 +144,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     saveNewSSO(): void {
-        if (this.state.ssoConfig.url) {
-            toast.error("Some required field are missing");
-            return;
-        }
-        
         this.setState({ saveLoading: true });
         let configJSON: any = {};
         try {
