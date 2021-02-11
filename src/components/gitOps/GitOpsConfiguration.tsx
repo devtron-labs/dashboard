@@ -159,7 +159,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
                                 <label>
-                                    {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
@@ -171,7 +171,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                    {this.state.lastActiveGitOp.provider.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
