@@ -18,5 +18,10 @@
 }
 
 .hosturl__url{
-    color: var(--B500)
+    color: var(--B500);
+    background: none;
+    border: none;
+}
+.hosturl__url:focus{ 
+    outline:0; 
 }

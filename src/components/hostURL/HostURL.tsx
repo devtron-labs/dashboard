@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import {ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { HostURLState, HostURLProps } from './hosturl.type';
 import './hosturl.css';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 
 
-
 export default class HostURL extends Component <HostURLProps, HostURLState> {
     constructor(props){
         super(props)
         this.state= ({
+           view: ViewType.LOADING,
+           statusCode: 0,
            value: "",
            saveLoading: false,
         })
@@ -21,7 +23,9 @@ export default class HostURL extends Component <HostURLProps, HostURLState> {
     }
 
     onSave(){
-
+      this.setState({
+         // saveLoading: true
+      })
     }
 
 render(){
@@ -46,9 +50,9 @@ render(){
                         onChange={(event) => this.handleChange(event)} />
                    </div>
                    <div className="hosturl__autodetection flex left pt-4">
-                       <Info className="icon-dim-16  mr-8 "/>
+                        <Warn className="icon-dim-16 mr-8 "/>
                         Auto-detected from your browser: &nbsp;
-                        <div className="hosturl__url"> http://cd.devtron.ai:32080/</div>
+                        <button  className="hosturl__url"> http://cd.devtron.ai:32080/</button>
                    </div>
                    <div className="form__buttons pt-20">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
