@@ -108,6 +108,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
+    handleURLChange(event): void {
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                url: event.target.value,
+            }
+        })
+    }
+
     toggleWarningModal(): void {
         this.setState({ showToggling: !this.state.showToggling });
     }
@@ -353,7 +362,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                     {this.state.lastActiveSSO?.name == "microsoft" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
-
                         </label>
                     </div>
                     <div>
@@ -414,7 +422,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
 
                 {this.renderSSOCodeEditor()}
-
+                <label className="form__row mr-24 ml-24">
+                    <span className="form__label">URL</span>
+                    <input type="text" className="form__input" value={this.state.ssoConfig.url} onChange={this.handleURLChange} />
+                </label>
                 <div className="form__buttons mr-24">
                     <button onClick={(e) => { e.preventDefault(); this.onLoginConfigSave() }} tabIndex={5} type="submit" disabled={this.state.saveLoading} className={`cta`}>{this.state.saveLoading ? <Progressing /> : this.state.ssoConfig.id ? 'Update' : 'Save'}</button>
                 </div>
