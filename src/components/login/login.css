@@ -288,8 +288,3 @@
     border-color: 1px solid var(--B500);
     background-color: var(--B500);
 }
-
-.sso__code-editor-wrap {
-    margin: 0 24px 32px 24px;
-}
-
