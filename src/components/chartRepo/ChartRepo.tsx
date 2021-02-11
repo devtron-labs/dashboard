@@ -22,7 +22,7 @@ export default function ChartRepo() {
                 <h2 className="form__title">Chart Repository</h2>
                 <h5 className="form__subtitle">Manage your organization’s chart repositories. &nbsp;
                 </h5>
-                {[{ id: null,default: true, url: "", name: "", active: true,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+                {[{ id: null,default: true, url: "", name: "", active: true,  authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
             </section>
             );
         }
@@ -78,7 +78,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         </article>
     )
 }
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },

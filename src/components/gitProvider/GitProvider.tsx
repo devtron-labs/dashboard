@@ -17,11 +17,11 @@ export default function GitProvider({ ...props }) {
         <section className="git-page">
             <h2 className="form__title">Git accounts</h2>
             <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
-            <a href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
+            <a className="learn-more__href" href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
                     Learn more about git accounts
             </a>
             </h5>
-            {[{ id: null, name: "", active: true, url: "", authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+            {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
         </section>
     )
 }
