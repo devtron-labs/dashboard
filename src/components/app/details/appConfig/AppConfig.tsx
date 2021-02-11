@@ -287,7 +287,7 @@ function Navigation({ navItems, deleteApp }) {
                         className={'app-compose__nav-item'}
                         to={item.href}>
                         {item.title}
-                        {item.isLocked && <Lock className="app-compose__nav-icon" />}
+                        {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
                     </NavLink>
                 }
                 else {
