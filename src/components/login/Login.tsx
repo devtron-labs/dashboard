@@ -37,7 +37,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             toast.error('Please login again');
         }
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${window.location.search}`)
+            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}/orchestrator${window.location.search}`)
         })
         getSSOConfigList().then((response) => {
             let list = response.result || [];
