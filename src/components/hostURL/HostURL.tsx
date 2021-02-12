@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
 import { HostURLState, HostURLProps } from './hosturl.type';
 import './hosturl.css';
 import { Progressing, showError } from '../common';
@@ -42,6 +43,10 @@ render(){
                         </div>
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                    </div>
+                </div>
+                <div className="hosturl__warning ml-20 mr-20 mb-16 flex left">
+                        <Error className= "icon-dim-20 mr-8"/>
+                        <div>Saved host URL doesn’t match the domain address in your browser.</div>
                 </div>
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
