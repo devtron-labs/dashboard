@@ -33,12 +33,12 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         const currentPath = window.location.href;
         // let cont = "";
         if (currentPath.includes('?continue=')) {
-            // cont = currentPath.split('?continue=')[1]
             toast.error('Please login again');
         }
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}/orchestrator${window.location.search}`)
+            continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${window.location.search}`)
         })
+        console.log(process.env.PUBLIC_URL)
         getSSOConfigList().then((response) => {
             let list = response.result || [];
             this.setState({
