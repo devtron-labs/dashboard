@@ -192,6 +192,8 @@ export interface TriggerViewState {
   materialType: '' | 'inputMaterialList' | 'rollbackMaterialList';
   isLoading: boolean;
   invalidateCache: boolean;
+  isHostErrorShown: boolean,
+
 }
 
 //-- begining of response type objects for trigger view
