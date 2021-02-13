@@ -1550,3 +1550,21 @@ button.anchor {
     display: flex;
     font-size: 14px;
 }
+
+.hosturl__error{
+    border-radius: 4px;
+    border: solid 1px var(--R200);
+    color: var(--N900);
+    padding: 10px 16px;
+    background-color: var(--R100);
+    font-size: 13px;
+}
+
+.hosturl__review{
+    color: var(--B500);
+    font-weight: 600;
+}
+
+.hosturl__review:hover{
+     color: var(--B500)
+}

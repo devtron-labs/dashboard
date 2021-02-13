@@ -44,13 +44,13 @@ render(){
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                    </div>
                 </div>
-                <div className="hosturl__warning ml-20 mr-20 mb-16 flex left">
+                <div className="hosturl__error ml-20 mr-20 mb-16 flex left">
                         <Error className= "icon-dim-20 mr-8"/>
                         <div>Saved host URL doesn’t match the domain address in your browser.</div>
                 </div>
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
-                        <div className="gitops__id fw-5 fs-13 mb-8">Name*</div>
+                        <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
                         <input value={""} type="text" name="name" className="form__input" placeholder={ "Enter Host URL"}
                         onChange={(event) => this.handleChange(event)} />
                    </div>

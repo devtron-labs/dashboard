@@ -26,10 +26,3 @@
     outline:0; 
 }
 
-.hosturl__warning{
-    border-radius: 4px;
-    border: solid 1px var(--R200);
-    color: var(--N900);
-    padding: 10px 16px;
-    background-color: var(--R100);
-}
