@@ -6,6 +6,7 @@ export interface HostURLState{
     statusCode: number;
     value: string;
     saveLoading: boolean;
+    hostStoreName: string;
 }
 
 export interface HostURLProps extends RouteComponentProps<{}> { }

@@ -14,19 +14,26 @@ export default class HostURL extends Component <HostURLProps, HostURLState> {
         this.state= ({
            view: ViewType.LOADING,
            statusCode: 0,
-           value: "",
+           value: window.location.hostname,
            saveLoading: false,
+           hostStoreName: "",
         })
     }
 
     handleChange(event){
      let newURL = event.target.value
+     this.setState({
+         hostStoreName: newURL
+     })
     }
 
     onSave(){
       this.setState({
          // saveLoading: true
       })
+    }
+    handleHostURLLocation(value:string):void{
+        this.setState({hostStoreName: value})
     }
 
 render(){
@@ -51,13 +58,13 @@ render(){
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
                         <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
-                        <input value={""} type="text" name="name" className="form__input" placeholder={ "Enter Host URL"}
+                        <input id="host" value={this.state.hostStoreName}  type="text" className="form__input" placeholder={ "Enter Host URL"}
                         onChange={(event) => this.handleChange(event)} />
                    </div>
                    <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 "/>
                         Auto-detected from your browser: &nbsp;
-                        <button  className="hosturl__url"> http://cd.devtron.ai:32080/</button>
+                        <button onClick={(e)=>this.handleHostURLLocation(this.state.value)} className="hosturl__url"> {window.location.hostname}</button>
                    </div>
                    <div className="form__buttons pt-20">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">

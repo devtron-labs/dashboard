@@ -6,6 +6,7 @@ import './globalConfigurations.scss';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
+import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
 
 const HostURL = lazy(()=> import('../hostURL/HostURL'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
@@ -54,7 +55,9 @@ export default function GlobalConfiguration({ ...props }) {
 function LeftNav({ ...props }) {
     return (
         <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name}</NavLink>)}
+            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name} 
+            {/*<span className=""><Error className="icon-dim-20 mt-10 " /></span>*/}
+            </NavLink>)}
         </div>
     )
 }
