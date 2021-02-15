@@ -36,6 +36,13 @@ export default class HostURL extends Component <HostURLProps, HostURLState> {
         this.setState({hostStoreName: value})
     }
 
+    renderHostErrorMessage(){
+        return<div className="hosturl__error ml-20 mr-20 mb-16 flex left">
+        <Error className= "icon-dim-20 mr-8"/>
+        <div>Saved host URL doesn’t match the domain address in your browser.</div>
+       </div>
+    }
+
 render(){
     return (
         <section className="git-page">
@@ -51,10 +58,8 @@ render(){
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                    </div>
                 </div>
-                <div className="hosturl__error ml-20 mr-20 mb-16 flex left">
-                        <Error className= "icon-dim-20 mr-8"/>
-                        <div>Saved host URL doesn’t match the domain address in your browser.</div>
-                </div>
+                
+                { (this.state.value == this.state.hostStoreName) ? '' : this.renderHostErrorMessage()  }
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
                         <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
