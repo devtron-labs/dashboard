@@ -4,7 +4,7 @@ import { GitOpsState, GitOpsProps } from './gitops.type'
 import { CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
-import { Progressing, showError } from '../common';
+import { ErrorScreenManager, Progressing, showError } from '../common';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service'
 import '../login/login.css';
@@ -151,6 +151,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         if (this.state.view === ViewType.LOADING) return <div>
             <Progressing pageLoader />
         </div>
+        else if(this.state.view === ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.statusCode} />
+        }
         return <section className="git-page">
             <h2 className="form__title">GitOps</h2>
             <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
