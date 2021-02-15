@@ -6,8 +6,7 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { Progressing, showError } from '../common';
 import { toast } from 'react-toastify';
-import { updateGitOpsConfiguration, saveGitOpsConfiguration } from './gitops.service'
-import { getGitOpsConfigurationList } from '../../services/service';
+import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service'
 import '../login/login.css';
 import './gitops.css';
 import Check from '../../assets/icons/ic-outline-check.svg'

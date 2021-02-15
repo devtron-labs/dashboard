@@ -17,7 +17,7 @@ import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline';
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit';
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView';
 import { Link } from 'react-router-dom';
-import { getGitOpsConfigurationList } from '../../services/service';
+import { isGitopsConfigured } from '../../services/service';
 import './workflowEditor.css';
 
 export const WorkflowEditorContext = createContext({
@@ -46,8 +46,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     }
 
     getWorkflows = () => {
-        getGitOpsConfigurationList().then((response) => {
-            let isGitOpsConfigAvailable = response.result && response.result.length > 0;
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
             this.setState({ isGitOpsConfigAvailable });
         })
         getCreateWorkflows(this.props.match.params.appId).then((result) => {
