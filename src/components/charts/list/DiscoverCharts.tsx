@@ -27,7 +27,7 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { getGitOpsConfigurationList } from '../../../services/service';
+import { isGitopsConfigured } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
 
@@ -85,10 +85,9 @@ function DiscoverChartList() {
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
-        getGitOpsConfigurationList().then((response) => {
-            let isGitOpsConfigAvailable = (response.result) && (response.result.length > 0);
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
             setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-
         }).catch((error) => {
             showError(error);
         })
