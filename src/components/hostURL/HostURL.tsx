@@ -6,7 +6,8 @@ import { HostURLState, HostURLProps } from './hosturl.type';
 import './hosturl.css';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
-import { getHostURLList, createHostURLList, updateHostURLList } from './hosturl.service';
+import { toast } from 'react-toastify';
+import { getHostURLConfigurationList, saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 
 export default class HostURL extends Component<HostURLProps, HostURLState> {
     constructor(props) {
@@ -14,10 +15,26 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         this.state = ({
             view: ViewType.LOADING,
             statusCode: 0,
+            hostList: [],
+            form: {
+                id: undefined,
+                url: "",
+                active: true,
+            },
             value: window.location.hostname,
             saveLoading: false,
             hostStoreName: "",
         })
+    }
+
+    componentDidMount(){
+        /* getHostURLConfigurationList().then((response)=>{
+             console.log(response)
+         })*/
+         this.setState({
+             saveLoading: false,
+             view: ViewType.FORM,
+         })
     }
 
     handleChange(event) {
@@ -29,9 +46,25 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
 
     onSave() {
         this.setState({
-            // saveLoading: true
+             saveLoading: true
+        })
+        let payload= {
+            id: this.state.form.id,
+            url: this.state.form.url,
+            active: this.state.form.active,
+        }
+        let promise = payload.id ? updateHostURLConfiguration(payload) : saveHostURLConfiguration(payload);
+        promise.then((response) => {
+            toast.success("Saved Successful")
+        }).catch((error) => {
+            showError(error);
+            this.setState({ 
+                view: ViewType.ERROR, 
+                statusCode: error.code, 
+                saveLoading: false });
         })
     }
+
     handleHostURLLocation(value: string): void {
         this.setState({ hostStoreName: value })
     }
@@ -78,7 +111,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                         </div>
                         <div className="form__buttons pt-20">
                             <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
-                                {this.state.saveLoading ? <Progressing /> : "Save"}
+                                {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
                             </button>
                         </div>
                     </div>
