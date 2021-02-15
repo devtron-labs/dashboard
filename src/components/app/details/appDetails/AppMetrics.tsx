@@ -11,7 +11,7 @@ import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
-import HostErrorImage from '../../../../assets/img/ic-error-prometheus.png';
+import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
 
@@ -146,7 +146,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [calendarValue])
 
-    if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper">
+    if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
@@ -167,6 +167,20 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
     else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
+            <div className="app-metrics-graph__empty-state-wrapper p-24">
+        <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
+            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
+        </h4>
+        <article className="app-metrics-graph__empty-state">
+            <img src={HostErrorImage} alt="" className="w-100" />
+            <div>
+                <p className="app-metrics-graph__empty-state-title">Metrics cannot be displayed as host url is not configured or is incorrect</p>
+                <p className="app-metrics-graph__empty-state-subtitle">Reach out to your DevOps team (super-admin) to configure host url.</p>
+                <Link className="hosturl__review" to="/global-config/gost-url"> Review and update</Link>
+
+            </div>
+        </article>
+    </div>
         {(appMetrics || infraMetrics) && (
             <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
                 <span className="fs-14 fw-6 cn-7 flex left mr-9">
@@ -297,10 +311,11 @@ function EnableAppMetrics() {
 }
 
 function AppMetricsEmptyState(props) {
-    return <div className="app-metrics-graph__empty-state-wrapper">
+    return <div className="app-metrics-graph__empty-state-wrapper p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
+        <AppMetricsHostEmptyState/>
         <article className="app-metrics-graph__empty-state">
             <img src={PrometheusErrorImage} alt="" className="w-100" />
             <div>
@@ -315,15 +330,12 @@ function AppMetricsEmptyState(props) {
 
 function AppMetricsHostEmptyState() {
     return <div className="app-metrics-graph__empty-state-wrapper">
-        <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
-            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
-        </h4>
         <article className="app-metrics-graph__empty-state">
             <img src={HostErrorImage} alt="" className="w-100" />
             <div>
                 <p className="app-metrics-graph__empty-state-title">Metrics cannot be displayed as host url is not configured or is incorrect</p>
                 <p className="app-metrics-graph__empty-state-subtitle">Reach out to your DevOps team (super-admin) to configure host url.</p>
-                <Link className="hosturl__review" to="/global-config/gost-url">&nbsp; Review and update</Link>
+                <Link className="hosturl__review" to="/global-config/gost-url"> Review and update</Link>
 
             </div>
         </article>
