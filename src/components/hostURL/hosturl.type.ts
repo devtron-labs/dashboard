@@ -9,7 +9,7 @@ export interface HostList{
 export interface HostURLState {
     view: string;
     statusCode: number;
-    hostList: HostList[];
+    isHostUrlSaved: boolean;
     value: string;
     saveLoading: boolean;
     hostStoreName: string;

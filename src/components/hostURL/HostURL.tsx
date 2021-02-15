@@ -15,26 +15,24 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         this.state = ({
             view: ViewType.LOADING,
             statusCode: 0,
-            hostList: [],
+            isHostUrlSaved: false,
             form: {
                 id: undefined,
                 url: "",
                 active: true,
             },
-            value: window.location.hostname,
+            value: window.location.host,
             saveLoading: false,
             hostStoreName: "",
         })
     }
 
     componentDidMount() {
-        /* getHostURLConfigurationList().then((response)=>{
+       /*
+         getHostURLConfigurationList().then((response)=>{
              console.log(response)
          })*/
-        this.setState({
-            saveLoading: false,
-            view: ViewType.FORM,
-        })
+        
     }
 
     handleChange(event) {
@@ -45,10 +43,10 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
     }
 
     onSave() {
+
         this.setState({
             saveLoading: true
         })
-        if (this.state.value == this.state.hostStoreName) return this.renderHostErrorMessage
 
         let payload = {
             id: this.state.form.id,
@@ -58,14 +56,15 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         let promise = payload.id ? updateHostURLConfiguration(payload) : saveHostURLConfiguration(payload);
         promise.then((response) => {
             toast.success("Saved Successful")
+            this.setState({ saveLoading: false})
         }).catch((error) => {
             showError(error);
             this.setState({
-                view: ViewType.ERROR,
                 statusCode: error.code,
                 saveLoading: false
             });
         })
+
     }
 
     handleHostURLLocation(value: string): void {
@@ -94,6 +93,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                             <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                         </div>
                     </div>
+                    { (this.state.value !== this.state.hostStoreName) ? this.renderHostErrorMessage() : ''}
 
                     <div className="pl-20 pr-20">
                         <div className="flex column left top ">
@@ -109,7 +109,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                         <div className="hosturl__autodetection flex left pt-4">
                             <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
-                        <button onClick={(e) => this.handleHostURLLocation(this.state.value)} className="hosturl__url"> {window.location.hostname}</button>
+                        <button onClick={(e) => this.handleHostURLLocation(this.state.value)} className="hosturl__url"> {window.location.host}</button>
                         </div>
                         <div className="form__buttons pt-20">
                             <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
