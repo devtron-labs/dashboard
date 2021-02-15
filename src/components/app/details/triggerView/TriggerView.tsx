@@ -619,8 +619,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderHostErrorMessage() {
         return <div className="hosturl__error mb-16 mt-16 flex left">
                 <Error className="icon-dim-20 mr-8" />
-                <div>Host url is required for notifications. Reach out to your DevOps team (super-admin) to
-                            <NavLink className="hosturl__review" to="/global-config/gost-url">&nbsp; Review and update</NavLink>
+                <div>Host url is required for notifications. Reach out to your DevOps team (super-admin) to &nbsp;
+                            <NavLink className="hosturl__review" to="/global-config/gost-url"> Review and update</NavLink>
                 </div>
         </div>
     }
