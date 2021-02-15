@@ -27,14 +27,14 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         /* getHostURLConfigurationList().then((response)=>{
              console.log(response)
          })*/
-         this.setState({
-             saveLoading: false,
-             view: ViewType.FORM,
-         })
+        this.setState({
+            saveLoading: false,
+            view: ViewType.FORM,
+        })
     }
 
     handleChange(event) {
@@ -46,9 +46,11 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
 
     onSave() {
         this.setState({
-             saveLoading: true
+            saveLoading: true
         })
-        let payload= {
+        if (this.state.value == this.state.hostStoreName) return this.renderHostErrorMessage
+
+        let payload = {
             id: this.state.form.id,
             url: this.state.form.url,
             active: this.state.form.active,
@@ -58,10 +60,11 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             toast.success("Saved Successful")
         }).catch((error) => {
             showError(error);
-            this.setState({ 
-                view: ViewType.ERROR, 
-                statusCode: error.code, 
-                saveLoading: false });
+            this.setState({
+                view: ViewType.ERROR,
+                statusCode: error.code,
+                saveLoading: false
+            });
         })
     }
 
@@ -92,7 +95,6 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                         </div>
                     </div>
 
-                    {(this.state.value == this.state.hostStoreName) ? '' : this.renderHostErrorMessage()}
                     <div className="pl-20 pr-20">
                         <div className="flex column left top ">
                             <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
