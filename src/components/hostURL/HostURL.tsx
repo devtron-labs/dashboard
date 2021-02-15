@@ -6,7 +6,7 @@ import { HostURLState, HostURLProps } from './hosturl.type';
 import './hosturl.css';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
-
+import { getHostURLList, createHostURLList, updateHostURLList } from './hosturl.service';
 
 export default class HostURL extends Component<HostURLProps, HostURLState> {
     constructor(props) {
