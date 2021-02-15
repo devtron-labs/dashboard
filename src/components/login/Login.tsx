@@ -38,7 +38,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
         this.setState({
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${window.location.search}`)
         })
-        console.log(process.env.PUBLIC_URL)
         getSSOConfigList().then((response) => {
             let list = response.result || [];
             this.setState({
