@@ -6,6 +6,12 @@ import { List, CustomInput, ProtectedInput } from '../globalConfigurations/Globa
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 
+const DockerRegistryType = [
+    { label: 'docker hub', value: 'docker-hub' },
+    { label: 'ecr', value: 'ecr' },
+    { label: 'other', value: 'other' }
+];
+
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     if (loading && !result) return <Progressing pageLoader />
@@ -28,6 +34,7 @@ export default function Docker({ ...props }) {
 
 function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
+    console.log(collapsed)
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
@@ -94,6 +101,16 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
+        else if (state.registryType.value === 'docker-hub') {
+            if (!customState.username.value || !customState.password.value) {
+                setCustomState(st => ({
+                    ...st,
+                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' }
+                }))
+                return
+            }
+        }
         else if (state.registryType.value === 'other') {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState(st => ({
@@ -112,6 +129,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryType: state.registryType.value,
             isDefault: Isdefault,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
+            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value } : {}),
         }
 
@@ -119,6 +137,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         try {
             toggleLoading(true)
             const { result } = await api(payload, id)
+            if (!id) {
+                toggleCollapse(true);
+            }
             await reload()
             toast.success('Successfully saved.')
         } catch (err) {
@@ -126,8 +147,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         } finally {
             toggleLoading(false)
         }
-
     }
+
+    let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     return (
         <form onSubmit={handleOnSubmit} className="docker-form">
             <div className="form__row">
@@ -137,8 +159,8 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="flex left column top">
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
                     <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
-                        <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
-                        {['ecr', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
+                        <Select.Button rootClassName="select-button--docker-register">{selectedDckerRegistryType?.label || `Select Docker Registry`}</Select.Button>
+                        {DockerRegistryType.map(type => <Select.Option value={type.value} key={type.value}>{type.label}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
@@ -158,6 +180,12 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="form__row form__row--two-third">
                     <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
                     <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
+                </div>
+            </>}
+            {state.registryType.value === 'docker-hub' && <>
+                <div className="form__row form__row--two-third">
+                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
