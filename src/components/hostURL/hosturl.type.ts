@@ -2,7 +2,8 @@ import { RouteComponentProps } from 'react-router';
 
 export interface HostList{
     id: number,
-    url: string,
+    key: string;
+    value: string,
     active: boolean,
 }
 
