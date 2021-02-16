@@ -65,19 +65,19 @@ function LeftNav({ ...props }) {
     }, [])
     
 
-    const [isHostErrorShown, setIsHostErrorShown] = useState(true);
+    const [isHostURLConFigAvailable, setIsHostURLConFigAvailable] = useState(false);
     function  getHostURL(){
         getHostURLConfigurationList().then((response)=>{
             let isHostURLConFigAvailable = response.result && response.result.active
             if (isHostURLConFigAvailable) {
-                setIsHostErrorShown(true)
+                setIsHostURLConFigAvailable(true)
             }
         })
     }
     return (
         <div className="flex column left">
             {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flex left"><div>{route.name}</div>
-                {(route.name == 'Host URL' && isHostErrorShown) ? <span className="global-configuration__error-icon"><Error className="icon-dim-20 " /></span> : ''}</div>
+                {(route.name == 'Host URL' && !isHostURLConFigAvailable) ? <span className="global-configuration__error-icon"><Error className="icon-dim-20 " /></span> : ''}</div>
             </NavLink>)}
         </div>
     )
