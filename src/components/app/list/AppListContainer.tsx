@@ -10,6 +10,7 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
+import { getDockerRegistryStatus } from '../../../services/service';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -44,6 +45,13 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
+        getDockerRegistryStatus().then((response) => {
+            this.setState({
+                isDockerRegistryEmpty: !(response.result),
+            })
+        }).catch((errors: ServerErrors) => {
+
+        })
         getInitState(payload).then((response) => {
             let view;
             if (payload.appNameSearch || payload.environments.length || payload.teams.length || payload.statuses.length) {
@@ -52,12 +60,25 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             else {
                 view = response.apps.length ? AppListViewType.LIST : AppListViewType.EMPTY;
             }
-            this.setState({ ...response, view });
-        }).then(()=>{
+            this.setState({
+                code: response.code,
+                filters: response.filters,
+                apps: [],
+                offset: response.offset,
+                size: 0,
+                pageSize: response.size,
+                sortRule: {
+                    key: response.sortBy,
+                    order: response.sortOrder,
+                },
+                searchQuery: response.appNameSearch || "",
+                searchApplied: !!response.appNameSearch?.length,
+                view: view
+            });
+        }).then(() => {
             let payload = this.createPayloadFromURL(this.props.location.search);
             this.getAppList(payload);
-        })
-        .catch((errors: ServerErrors) => {
+        }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
         })
