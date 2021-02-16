@@ -25,18 +25,25 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             value: window.location.host,
             saveLoading: false,
             hostStoreName: "",
+            
         })
     }
 
     componentDidMount() {
         getHostURLConfigurationList().then((response) => {
-             let form = response.result?.find(host => host.active)
-             if (response.result && form) {
+             let form = response.result
+             if (!form){
+                 form = {
+                    id: undefined,
+                    key: "url",
+                    value: "",
+                    active: true,
+                }
+             }
                  this.setState({
                      view: ViewType.FORM,
                      form: form
-                 })
-             }
+                 },()=>{console.log(this.state)})
          }).catch((error) => {
              showError(error);
              this.setState({ view: ViewType.ERROR, statusCode: error.code });
@@ -46,7 +53,10 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
     handleChange(event) {
         let newURL = event.target.value
         this.setState({
-            hostStoreName: newURL
+            form: {
+                ...this.state.form,
+                value: newURL
+            }
         })
     }
 
@@ -104,7 +114,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                     </div>
                 </div>
-                {(this.state.value !== this.state.hostStoreName) ? this.renderHostErrorMessage() : ''}
+                {(this.state.isHostUrlSaved) ? this.renderHostErrorMessage() : ''}
 
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
