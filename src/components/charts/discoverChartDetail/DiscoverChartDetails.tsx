@@ -18,7 +18,7 @@ import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
 import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
-import { getGitOpsConfigurationList } from '../../../services/service';
+import { isGitopsConfigured } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
 import './DiscoverChartDetails.scss';
@@ -152,8 +152,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     useEffect(() => {
         fetchVersions();
         getChartValuesList();
-        getGitOpsConfigurationList().then((response) => {
-            let isGitOpsConfigAvailable = (response.result) && (response.result.length > 0);
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
             setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
         }).catch((error) => {
             showError(error);
