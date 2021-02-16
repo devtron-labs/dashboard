@@ -152,7 +152,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             <Progressing pageLoader />
         </div>
         else if(this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.statusCode} />
+            return <div className="flex" style={{height: "calc(100vh - 80px)"}}>
+                <ErrorScreenManager code={this.state.statusCode} />
+            </div>
         }
         return <section className="git-page">
             <h2 className="form__title">GitOps</h2>

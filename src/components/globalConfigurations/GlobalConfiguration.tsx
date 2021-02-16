@@ -5,6 +5,7 @@ import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
+<<<<<<< HEAD
 import './globalConfigurations.scss';
 
 import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
@@ -13,6 +14,14 @@ import { getHostURLConfigurationList } from '../../services/service';
 const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
 
 const HostURL = lazy(() => import('../hostURL/HostURL'))
+=======
+import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
+import { getHostURLConfigurationList } from '../../services/service';
+import './globalConfigurations.scss';
+
+const HostURL = lazy(() => import('../hostURL/HostURL'))
+const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
+>>>>>>> host-url
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -23,8 +32,13 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
 const routes = [
+<<<<<<< HEAD
     { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
     { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
+=======
+    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
+    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
+>>>>>>> host-url
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
@@ -93,7 +107,10 @@ function Body({ ...props }) {
         <Switch location={location}>
             <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
             {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
+<<<<<<< HEAD
             <Redirect to={URLS.GLOBAL_CONFIG_GITOPS} />
+=======
+>>>>>>> host-url
             <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
         </Switch>
     )

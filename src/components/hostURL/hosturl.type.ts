@@ -13,7 +13,6 @@ export interface HostURLState {
     isHostUrlSaved: boolean;
     value: string;
     saveLoading: boolean;
-    hostStoreName: string;
     form: HostList
 }
 

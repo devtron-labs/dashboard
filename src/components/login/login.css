@@ -207,12 +207,23 @@
     height: 84px;
 }
 
+<<<<<<< HEAD
 .sso__description {
     background-color: #f0f7ff;
 }
 
 .login__bold {
     font-weight: 600;
+=======
+
+
+.login__bold {
+    font-weight: 600;
+}
+
+.sso__description {
+    background-color: #f0f7ff;
+>>>>>>> host-url
 }
 
 .login__codeblock {
