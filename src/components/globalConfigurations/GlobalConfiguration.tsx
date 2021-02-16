@@ -7,8 +7,9 @@ import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
+import { getHostURLConfigurationList } from '../../services/service';
 
-const HostURL = lazy(()=> import('../hostURL/HostURL'))
+const HostURL = lazy(() => import('../hostURL/HostURL'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -16,21 +17,26 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'));
 const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'));
-const SSOLogin = lazy(()=> import('../login/SSOLogin'));
+const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
 const routes = [
     { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
+    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-    { name: 'SSO login services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
+    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
 ]
 
+
+
+
 export default function GlobalConfiguration({ ...props }) {
+
+
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
@@ -53,10 +59,25 @@ export default function GlobalConfiguration({ ...props }) {
 }
 
 function LeftNav({ ...props }) {
+    
+    useEffect(() => {
+        getHostURL();
+    }, [])
+    
+
+    const [isHostErrorShown, setIsHostErrorShown] = useState(true);
+    function  getHostURL(){
+        getHostURLConfigurationList().then((response)=>{
+            let isHostURLConFigAvailable = response.result && response.result.active
+            if (isHostURLConFigAvailable) {
+                setIsHostErrorShown(true)
+            }
+        })
+    }
     return (
         <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name} 
-            {/*<span className=""><Error className="icon-dim-20 mt-10 " /></span>*/}
+            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name}
+                {(route.name == 'Host URL' && isHostErrorShown) ? <span className=""><Error className="icon-dim-20 mt-10 " /></span> : ''}
             </NavLink>)}
         </div>
     )
@@ -107,7 +128,7 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off" }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off" }) {
     return <div className="flex column left top">
         <label className="form__label">{label}</label>
         <input type={type}

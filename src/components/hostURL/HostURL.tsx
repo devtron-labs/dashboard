@@ -88,7 +88,11 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
     }
 
     handleHostURLLocation(value: string): void {
-        this.setState({ hostStoreName: value })
+        this.setState({
+            form :{   
+                ...this.state.form,
+                value: value
+                } })
     }
 
     renderHostErrorMessage() {
@@ -121,7 +125,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                     <div className="flex column left top ">
                         <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
                         <input id="host"
-                            value={this.state.hostStoreName}
+                            value={this.state.form.value}
                             type="text"
                             className="form__input"
                             placeholder={"Enter Host URL"}
