@@ -11,8 +11,11 @@ import { ViewType } from '../../../../config';
 import { AppNotConfigured } from '../appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import ReactGA from 'react-ga';
-import { withRouter } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
+import { ReactComponent as Error } from '../../../../assets/icons/ic-info-error.svg';
+import { getHostURLConfigurationList } from '../../../../services/service';
+
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -48,6 +51,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showCIModal: false,
             isLoading: false,
             invalidateCache: false,
+            isHostErrorShown: true,
+
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -72,6 +77,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ code: errors.code, view: ViewType.ERROR });
+        })
+
+        this.getHostURL();
+
+    }
+
+
+    getHostURL(){
+        getHostURLConfigurationList().then((response)=>{
+            let isHostURLConFigAvailable = response.result && response.result.active
+            if (isHostURLConFigAvailable) {
+                this.setState({
+                    isHostErrorShown: false,
+                })
+            }
         })
     }
 
@@ -612,6 +632,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         </React.Fragment>
     }
 
+    renderHostErrorMessage() {
+        return <div className="hosturl__error mb-16 mt-16 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div>Host url is required for notifications. Reach out to your DevOps team (super-admin) to &nbsp;
+                            <NavLink className="hosturl__review" to="/global-config/gost-url"> Review and update</NavLink>
+                </div>
+        </div>
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -625,6 +654,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             </div>
         }
         return <div className="svg-wrapper-trigger">
+            {this.state.isHostErrorShown? this.renderHostErrorMessage(): ''}
             <TriggerViewContext.Provider value={{
                 invalidateCache: this.state.invalidateCache,
                 refreshMaterial: this.refreshMaterial,

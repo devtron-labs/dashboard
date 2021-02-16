@@ -29,6 +29,7 @@ export const URLS = {
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
+    GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',
     GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',

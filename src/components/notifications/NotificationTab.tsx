@@ -15,9 +15,11 @@ import { ViewType, URLS } from '../../config';
 import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmails } from './notifications.service';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
+import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
+import { getHostURLConfigurationList } from '../../services/service';
 
 export interface NotificationConfiguration {
     id: number;
@@ -66,6 +68,7 @@ export interface NotificationTabState {
         pageSize: number;
         offset: number;
     }
+    isHostErrorShown: boolean;
 }
 
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -101,7 +104,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 size: 20,
                 pageSize: 20,
                 offset: 0,
-            }
+            },
+            isHostErrorShown: true,
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -111,6 +115,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     componentDidMount() {
         this.getAllNotifications();
         this.getChannels();
+        this.getHostURL();
+    }
+
+    getHostURL() {
+        getHostURLConfigurationList().then((response) => {
+            let isHostURLConFigAvailable = response.result && response.result.active
+            if (isHostURLConFigAvailable) {
+                this.setState({
+                    isHostErrorShown: false,
+                })
+            }
+        })
+
     }
 
     getAllNotifications() {
@@ -508,6 +525,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
+    renderHostErrorMessage() {
+        return <div className="hosturl__error ml-20 mr-20 mb-16 mt-16 flex left">
+            <Error className="icon-dim-20 mr-8" />
+            <div>Host url is required for notifications. Reach out to your DevOps team (super-admin) to &nbsp;
+                            <NavLink className="hosturl__review" to="/global-config/gost-url">Review and update</NavLink>
+            </div>
+        </div>
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <div style={{ "height": "calc(100vh - 215px)" }}>
@@ -519,12 +545,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 <Reload />
             </div>
         }
+
         else if (!this.state.notificationList.length) {
             return <div style={{ "height": "calc(100vh - 215px)" }}>
+                {this.state.isHostErrorShown ? this.renderHostErrorMessage() : ''}
                 {this.renderEmptyState()}
             </div>
         }
         else return <div style={{ backgroundColor: "white", "minHeight": "calc(100vh - 215px)" }}>
+            {this.state.isHostErrorShown ? this.renderHostErrorMessage() : ''}
             {this.renderBody()}
             {this.renderDeleteDialog()}
             {this.remderModifyRecipients()}

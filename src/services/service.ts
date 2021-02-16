@@ -265,3 +265,8 @@ export function isGitopsConfigured(): Promise<ResponseType> {
     const URL = `${Routes.GITOPS_CONFIGURED}`;
     return get(URL);
 }  
+
+export function getHostURLConfigurationList(): Promise<ResponseType> {
+    const URL = `${Routes.HOST_URL}?key=url`;
+    return get(URL)
+}

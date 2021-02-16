@@ -11,8 +11,11 @@ import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
+import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
+import { getHostURLConfigurationList } from '../../../../services/service';
+
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any> }> = ({ appName, environment, podMap }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
@@ -34,7 +37,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const [chartName, setChartName] = useState<ChartTypes>(null);
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
-    const [statusCode, setStatusCode] = useState('Throughput')
+    const [statusCode, setStatusCode] = useState('Throughput');
+    const [isHostErrorShown, setIsHostErrorShown] = useState(true);
     const [graphs, setGraphs] = useState({
         cpu: "",
         ram: "",
@@ -132,19 +136,29 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
+    function  getHostURL(){
+        getHostURLConfigurationList().then((response)=>{
+            let isHostURLConFigAvailable = response.result && response.result.active
+            if (isHostURLConFigAvailable) {
+                setIsHostErrorShown(false)
+            }
+        })
+    }
 
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
         getNewGraphs(tab);
         checkDatasource();
+        getHostURL();
+
     }, [])
 
     useEffect(() => {
         getNewGraphs(tab);
     }, [calendarValue])
 
-    if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper">
+    if (datasource.isLoading) return <div className="app-metrics-graph__empty-state-wrapper p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
@@ -152,14 +166,33 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             <Progressing pageLoader />
         </div>
     </div>
+
+    
     if (!datasource.isConfigured) {
         return <AppMetricsEmptyState subtitle="We could not connect to prometheus endpoint. Please configure data source and try reloading this page." />
     }
     else if (!datasource.isHealthy) {
         return <AppMetricsEmptyState subtitle="Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page." />
     }
+    if(isHostErrorShown){
+        return <AppMetricsHostEmptyState/>
+    }
     else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
+            <div className="app-metrics-graph__empty-state-wrapper p-24">
+        <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
+            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
+        </h4>
+        <article className="app-metrics-graph__empty-state">
+            <img src={HostErrorImage} alt="" className="w-100" />
+            <div>
+                <p className="app-metrics-graph__empty-state-title">Metrics cannot be displayed as host url is not configured or is incorrect</p>
+                <p className="app-metrics-graph__empty-state-subtitle">Reach out to your DevOps team (super-admin) to configure host url.</p>
+                <Link className="hosturl__review" to="/global-config/gost-url"> Review and update</Link>
+
+            </div>
+        </article>
+    </div>
         {(appMetrics || infraMetrics) && (
             <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
                 <span className="fs-14 fw-6 cn-7 flex left mr-9">
@@ -290,10 +323,11 @@ function EnableAppMetrics() {
 }
 
 function AppMetricsEmptyState(props) {
-    return <div className="app-metrics-graph__empty-state-wrapper">
+    return <div className="app-metrics-graph__empty-state-wrapper p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
+        <AppMetricsHostEmptyState/>
         <article className="app-metrics-graph__empty-state">
             <img src={PrometheusErrorImage} alt="" className="w-100" />
             <div>
@@ -301,6 +335,20 @@ function AppMetricsEmptyState(props) {
                 <p className="app-metrics-graph__empty-state-subtitle">{props.subtitle}</p>
                 <a className="learn-more__href cta small text" href={`https://docs.devtron.ai/global-configurations/cluster-and-environments`} target="_blank"  style={{ paddingLeft: '0px' }} >See how to fix</a>
                 <Link to={`/global-config/cluster-env`} className="cta small text">Review Configuration</Link>
+            </div>
+        </article>
+    </div>
+}
+
+function AppMetricsHostEmptyState() {
+    return <div className="app-metrics-graph__empty-state-wrapper">
+        <article className="app-metrics-graph__empty-state">
+            <img src={HostErrorImage} alt="" className="w-100" />
+            <div>
+                <p className="app-metrics-graph__empty-state-title">Metrics cannot be displayed as host url is not configured or is incorrect</p>
+                <p className="app-metrics-graph__empty-state-subtitle">Reach out to your DevOps team (super-admin) to configure host url.</p>
+                <Link className="hosturl__review" to="/global-config/gost-url"> Review and update</Link>
+
             </div>
         </article>
     </div>

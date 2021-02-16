@@ -170,6 +170,8 @@
     }
 }
 
+
+
 .login__title {
     padding: 22px 24px;
     color: var(--N900);
@@ -207,6 +209,10 @@
 
 .sso__description {
     background-color: #f0f7ff;
+}
+
+.login__bold {
+    font-weight: 600;
 }
 
 .login__codeblock {
