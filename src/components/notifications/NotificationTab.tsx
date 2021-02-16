@@ -105,7 +105,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 pageSize: 20,
                 offset: 0,
             },
-            isHostErrorShown: false,
+            isHostErrorShown: true,
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -123,7 +123,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             let isHostURLConFigAvailable = response.result && response.result.active
             if (isHostURLConFigAvailable) {
                 this.setState({
-                    isHostErrorShown: true,
+                    isHostErrorShown: false,
                 })
             }
         })

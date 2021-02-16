@@ -140,7 +140,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getHostURLConfigurationList().then((response)=>{
             let isHostURLConFigAvailable = response.result && response.result.active
             if (isHostURLConFigAvailable) {
-                setIsHostErrorShown(true)
+                setIsHostErrorShown(false)
             }
         })
     }

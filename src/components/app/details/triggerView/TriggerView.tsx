@@ -51,7 +51,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showCIModal: false,
             isLoading: false,
             invalidateCache: false,
-            isHostErrorShown: false,
+            isHostErrorShown: true,
 
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
@@ -89,7 +89,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let isHostURLConFigAvailable = response.result && response.result.active
             if (isHostURLConFigAvailable) {
                 this.setState({
-                    isHostErrorShown: true,
+                    isHostErrorShown: false,
                 })
             }
         })
