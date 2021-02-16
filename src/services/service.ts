@@ -114,6 +114,11 @@ export function getClusterListMin() {
     return get(URL);
 }
 
+export function getDockerRegistryStatus(): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status`;
+    return get(URL);
+}
+
 export function getDockerRegistryList(): Promise<ResponseType> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
     return get(URL);
@@ -261,3 +266,7 @@ export function getHostURLConfigurationList(): Promise<ResponseType> {
     const URL = `${Routes.HOST_URL}?key=url`;
     return get(URL)
 }
+export function isGitopsConfigured(): Promise<ResponseType> {
+    const URL = `${Routes.GITOPS_CONFIGURED}`;
+    return get(URL);
+}  

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useHistory, useRouteMatch } from 'react-router';
 import ChartGroupDeployments from './ChartGroupDeployments';
 import MultiChartSummary from './MultiChartSummary';
@@ -10,14 +10,20 @@ import { deployChartGroup, getChartGroupInstallationDetails, deleteInstalledChar
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector/AppSelector'
+import AppSelector from '../AppSelector/AppSelector';
+import { isGitopsConfigured } from '../../services/service';
+import { ConfirmationDialog } from '../common';
+import warn from '../../assets/icons/ic-warning.svg';
+import { NavLink } from 'react-router-dom'
 
 export default function ChartGroupDetails() {
-    const { groupId } = useParams();
+    const { groupId } = useParams<{ groupId }>();
     const { push } = useHistory();
     const { url } = useRouteMatch();
     const [projectId, setProjectId] = useState(null);
     const [loading, setLoading] = useState(null);
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
     const {
         state,
         validateData,
@@ -28,14 +34,14 @@ export default function ChartGroupDetails() {
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
     } = useChartGroup(groupId);
-    const {breadcrumbs} = useBreadcrumb(
+    const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
                 'chart-store': null,
                 group: 'Chart groups',
                 ':groupId': {
                     component: <AppSelector
-                        api={()=>getChartGroups().then(res=>({result: res.result.groups}))}
+                        api={() => getChartGroups().then(res => ({ result: res.result.groups }))}
                         primaryKey="groupId"
                         primaryValue='name'
                         matchedKeys={[]}
@@ -54,6 +60,36 @@ export default function ChartGroupDetails() {
         chartGroupDetailsError,
         reloadChartGroupDetails,
     ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
+
+    useEffect(() => {
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+        }).catch((error) => {
+            showError(error);
+        })
+    }, []);
+
+    function handleOnDeployTo() {
+        if (isGitOpsConfigAvailable) {
+            toggleDeployModal(true)
+        }
+        else {
+            toggleGitOpsWarningModal(true)
+        }
+    }
+
+    function handleAdvancedChart() {
+        if (isGitOpsConfigAvailable) {
+            push(`${url}/deploy`, {
+                charts: state.charts,
+                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+            })
+        }
+        else {
+            toggleGitOpsWarningModal(true)
+        }
+    }
 
     function redirectToConfigure() {
         let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`;
@@ -156,12 +192,14 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={(e) =>
-                                            push(`${url}/deploy`, {
-                                                charts: state.charts,
-                                                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-                                            })
-                                        }
+                                        /*onClick={(e) =>
+                                           push(`${url}/deploy`, {
+                                               charts: state.charts,
+                                               configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+                                           })
+
+                                        }*/
+                                        onClick={handleAdvancedChart}
                                         className="cta cancel ellipsis-right w100"
                                     >
                                         Advanced Options
@@ -178,14 +216,11 @@ export default function ChartGroupDetails() {
                                         >
                                             <div>{children}</div>
                                         </Tippy>
-                                    )}
-                                >
-                                    <button
-                                        type="button"
+                                    )}>
+                                    <button type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() => toggleDeployModal(true)}
-                                        className="cta ellipsis-right w100"
-                                    >
+                                        onClick={() => handleOnDeployTo()}
+                                        className="cta ellipsis-right w100">
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>
                                 </ConditionalWrap>
@@ -213,6 +248,17 @@ export default function ChartGroupDetails() {
                     }}
                 />
             ) : null}
+
+            {showGitOpsWarningModal ? <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <ConfirmationDialog.Body title="GitOps configuration required">
+                    <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
+                </ConfirmationDialog.Body>
+                <ConfirmationDialog.ButtonGroup>
+                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={() => toggleGitOpsWarningModal(false)}>Cancel</button>
+                    <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog> : null}
         </div>
     );
 }

@@ -2,14 +2,15 @@ import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
-import './globalConfigurations.scss';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
 import { getHostURLConfigurationList } from '../../services/service';
+import './globalConfigurations.scss';
 
 const HostURL = lazy(() => import('../hostURL/HostURL'))
+const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -21,6 +22,7 @@ const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
 const routes = [
     { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
+    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
@@ -128,29 +130,30 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off" }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off", labelClassName="" }) {
     return <div className="flex column left top">
-        <label className="form__label">{label}</label>
+        <label className={`form__label ${labelClassName}`} >{label}</label>
         <input type={type}
             name={name}
             autoComplete="off"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}
-            disabled={disabled} />
+            disabled={disabled} 
+            />
         {error && <div className="form__error">{error}</div>}
     </div>
 }
 
-export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true }) {
+export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true ,labelClassName="" }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
     }, [hidden])
 
     return (
-        <div className="flex column left top">
-            <label htmlFor="" className="form__label">{label}</label>
+        <div className="flex column left top form__label">
+            <label htmlFor="" className={`${labelClassName}`}>{label}</label>
             <div className="flex protected-input-container">
                 <input type={shown ? 'text' : 'password'} name={name} onChange={e => { e.persist(); onChange(e) }} value={value} disabled={disabled} />
                 <ShowHide hidden={!shown} defaultOnClick={e => toggleShown(!shown)} disabled={disabled} />

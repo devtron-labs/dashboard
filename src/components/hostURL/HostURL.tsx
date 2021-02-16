@@ -25,8 +25,6 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             },
             value: window.location.host,
             saveLoading: false,
-            hostStoreName: "",
-            
         })
     }
 
@@ -76,7 +74,10 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         console.log(payload)
         promise.then((response) => {
             toast.success("Saved Successful")
-            this.setState({ saveLoading: false })
+            this.setState({ 
+                saveLoading: false ,
+                form: response.result
+            })
         }).catch((error) => {
             showError(error);
             this.setState({
@@ -103,9 +104,9 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
     }
 
     render() {
-        /*if (this.state.view === ViewType.LOADING) return <div>
+        if (this.state.view === ViewType.LOADING) return <div>
             <Progressing pageLoader />
-        </div>*/
+        </div>
         return <section className="git-page">
             <h2 className="form__title">Host URL</h2>
             <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>

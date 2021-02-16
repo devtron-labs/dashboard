@@ -31,6 +31,7 @@ export const URLS = {
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',
+    GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',

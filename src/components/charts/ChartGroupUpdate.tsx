@@ -15,7 +15,7 @@ import {ReactComponent as SaveIcon} from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
 
 export default function ChartGroupUpdate({ }) {
-    const { groupId } = useParams()
+    const { groupId } = useParams<{groupId}>()
     const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
     const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState } = useChartGroup(Number(groupId))
     const [loading, setLoading] = useState(false)

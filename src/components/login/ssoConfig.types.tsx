@@ -1,7 +1,6 @@
 export interface SSOLogin {
     id: number;
     name: string;
-    // label: string;
     active: boolean;
 }
 
@@ -14,6 +13,9 @@ export interface SSOLoginState {
     configMap: string;
     showToggling: boolean;
     ssoConfig: SSOConfigType;
+    isError: {
+        url: string;
+    }
 }
 
 export interface SSOConfigType {
