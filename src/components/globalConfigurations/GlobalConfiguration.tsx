@@ -59,7 +59,7 @@ export default function GlobalConfiguration({ ...props }) {
 }
 
 function LeftNav({ ...props }) {
-    
+
     useEffect(() => {
         getHostURL();
     }, [])
@@ -76,8 +76,8 @@ function LeftNav({ ...props }) {
     }
     return (
         <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name}
-                {(route.name == 'Host URL' && isHostErrorShown) ? <span className=""><Error className="icon-dim-20 mt-10 " /></span> : ''}
+            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flex left"><div>{route.name}</div>
+                {(route.name == 'Host URL' && isHostErrorShown) ? <span className="global-configuration__error-icon"><Error className="icon-dim-20 " /></span> : ''}</div>
             </NavLink>)}
         </div>
     )
