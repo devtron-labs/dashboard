@@ -1,10 +1,6 @@
 import { post, put, get } from '../../services/api';
 import { Routes } from '../../config';
 
-export function getHostURLConfigurationList(): Promise<any> {
-    const URL = `${Routes.HOST_URL}?key=url`;
-    return get(URL)
-}
 
 export function saveHostURLConfiguration(request): Promise<any> {
     const URL = `${Routes.HOST_URL}/create`;

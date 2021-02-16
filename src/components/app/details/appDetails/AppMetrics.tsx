@@ -14,6 +14,8 @@ import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
+import { getHostURLConfigurationList } from '../../../../services/service';
+
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any> }> = ({ appName, environment, podMap }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
@@ -134,12 +136,22 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
+    function  getHostURL(){
+        getHostURLConfigurationList().then((response)=>{
+            let isHostURLConFigAvailable = response.result && response.result.active
+            if (isHostURLConFigAvailable) {
+                setIsHostErrorShown(true)
+            }
+        })
+    }
 
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
         getNewGraphs(tab);
         checkDatasource();
+        getHostURL();
+
     }, [])
 
     useEffect(() => {

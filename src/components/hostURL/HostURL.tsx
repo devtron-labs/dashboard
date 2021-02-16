@@ -7,7 +7,8 @@ import './hosturl.css';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getHostURLConfigurationList, saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
+import { getHostURLConfigurationList } from '../../services/service';
+import {  saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 
 export default class HostURL extends Component<HostURLProps, HostURLState> {
     constructor(props) {
