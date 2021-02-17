@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { PATTERNS } from '../../config';
+import {  DOCUMENTATION, PATTERNS } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -103,7 +103,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
             <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains small amount of sensitive data such as passwords, OAuth tokens, and SSH keys. 
-            <a className="learn-more__href" rel="noreferer noopener" href="https://docs.devtron.ai/creating-application/secrets" target="blank"> Learn more about Secrets</a></p>
+            <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION. APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
             {list && <CollapsedSecretForm appId={appId} id={list.id || 0} title="Add Secret" update={update} initialise={initialise} />}
             {list && Array.isArray(list.configData) && list.configData.filter(cs => cs).map((cs, idx) => <CollapsedSecretForm key={cs.name} {...cs} appId={appId} id={list.id} update={update} index={idx} initialise={initialise} />)}
         </div>

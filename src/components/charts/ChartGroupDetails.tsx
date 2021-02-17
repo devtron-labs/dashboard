@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
 import AppSelector from '../AppSelector/AppSelector';
-import { getGitOpsConfigurationList } from '../../services/service';
+import { isGitopsConfigured } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 import { NavLink } from 'react-router-dom'
@@ -62,8 +62,8 @@ export default function ChartGroupDetails() {
     ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
 
     useEffect(() => {
-        getGitOpsConfigurationList().then((response) => {
-            let isGitOpsConfigAvailable = (response.result) && (response.result.length > 0);
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
             setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
         }).catch((error) => {
             showError(error);

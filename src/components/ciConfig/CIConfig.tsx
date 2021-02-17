@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Select from '../common/Select/Select'
 import { Progressing, useForm, showError } from '../common'
-import { PATTERNS } from '../../config'
+import { DOCUMENTATION, PATTERNS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
 import { getSourceConfig, getCIConfig } from '../../services/service';
 import { useParams } from 'react-router'
@@ -168,7 +168,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         <div className="form__app-compose">
             <h1 className="form__title">Docker build configuration</h1>
             <p className="form__subtitle">Required to execute CI pipelines for this application.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href="https://docs.devtron.ai/creating-application/docker-build-configuration"> Learn more about Docker Build Config</a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}> Learn more about Docker Build Config</a> </span></p>
             <div className="white-card white-card__docker-config">
                 <div className="form-row form-row__docker">
                     <div className="form__field">
