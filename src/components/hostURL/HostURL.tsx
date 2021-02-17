@@ -18,7 +18,6 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             view: ViewType.LOADING,
             statusCode: 0,
             isHostUrlSaved: false,
-            isHostFieldBlank: true,
             form: {
                 id: undefined,
                 key: "url",
