@@ -1,4 +1,4 @@
-import { post, put, get } from '../../services/api';
+import { post, put } from '../../services/api';
 import { Routes } from '../../config';
 
 
