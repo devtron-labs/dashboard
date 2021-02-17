@@ -30,13 +30,19 @@ export default class Login extends Component<LoginProps, LoginFormState>{
     }
 
     componentDidMount() {
-        const currentPath = window.location.href;
-        // let cont = "";
-        if (currentPath.includes('?continue=')) {
+        let queryString = new URLSearchParams(this.props.location.search);
+        let queryParam = queryString.get('continue');
+
+        if (queryParam) {
             toast.error('Please login again');
         }
+        if (queryParam && queryParam.includes("login")) {
+            queryParam = '/app';
+            let url = `${this.props.location.pathname}?continue=${queryParam}`;
+            this.props.history.push(url);
+        }
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${window.location.search}`)
+            continueUrl: encodeURI(`${window.location.origin}${process.env.PUBLIC_URL}${queryParam}`)
         })
         getSSOConfigList().then((response) => {
             let list = response.result || [];
