@@ -9,6 +9,7 @@ import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
 import {  saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
+import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 
 export default class HostURL extends Component<HostURLProps, HostURLState> {
     constructor(props) {
@@ -17,6 +18,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             view: ViewType.LOADING,
             statusCode: 0,
             isHostUrlSaved: false,
+            isHostFieldBlank: true,
             form: {
                 id: undefined,
                 key: "url",
@@ -105,6 +107,13 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
         </div>
     }
 
+    renderBlankHostField() {
+        return <div className="flex left pt-4">
+        <img src={TriangleAlert} alt="" className="icon-dim-16 mr-8"/>
+        <div className="deprecated-warn__text fs-11">Please enter host url</div>
+        </div>
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) return <div>
             <Progressing pageLoader />
@@ -135,6 +144,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                             onChange={(event) => this.handleChange(event)}
                             autoComplete="off" />
                     </div>
+                    {this.state.form.value.length == 0 ? this.renderBlankHostField() : ''}
                     <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
