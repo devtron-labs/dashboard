@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { HostURLState, HostURLProps } from './hosturl.type';
-import './hosturl.css';
+import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
-import {  saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
+import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
+import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
+import './hosturl.css';
 
-export default class HostURL extends Component<HostURLProps, HostURLState> {
+export default class HostURLConfig extends Component<HostURLConfigProps, HostURLConfigState> {
+
     constructor(props) {
         super(props)
         this.state = ({
@@ -30,23 +32,23 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
 
     componentDidMount() {
         getHostURLConfiguration().then((response) => {
-             let form = response.result
-             if (!form){
-                 form = {
+            let form = response.result
+            if (!form) {
+                form = {
                     id: undefined,
                     key: "url",
                     value: "",
                     active: true,
                 }
-             }
-                 this.setState({
-                     view: ViewType.FORM,
-                     form: form
-                 },()=>{console.log(this.state)})
-         }).catch((error) => {
-             showError(error);
-             this.setState({ view: ViewType.ERROR, statusCode: error.code });
-         })
+            }
+            this.setState({
+                view: ViewType.FORM,
+                form: form
+            }, () => { console.log(this.state) })
+        }).catch((error) => {
+            showError(error);
+            this.setState({ view: ViewType.ERROR, statusCode: error.code });
+        })
     }
 
     handleChange(event) {
@@ -72,11 +74,10 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
             active: this.state.form.active,
         }
         let promise = payload.id ? updateHostURLConfiguration(payload) : saveHostURLConfiguration(payload);
-        console.log(payload)
         promise.then((response) => {
             toast.success("Saved Successful")
-            this.setState({ 
-                saveLoading: false ,
+            this.setState({
+                saveLoading: false,
                 form: response.result,
                 isHostUrlSaved: true
             })
@@ -92,16 +93,24 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
 
     handleHostURLLocation(value: string): void {
         this.setState({
-            form :{   
+            form: {
                 ...this.state.form,
                 value: value
-                } })
+            }
+        })
     }
 
     renderHostErrorMessage() {
         return <div className="hosturl__error ml-20 mr-20 mb-16 flex left">
             <Error className="icon-dim-20 mr-8" />
             <div>Saved host URL doesn’t match the domain address in your browser.</div>
+        </div>
+    }
+
+    renderBlankHostField() {
+        return <div className="flex left pt-4">
+            <img src={TriangleAlert} alt="" className="icon-dim-16 mr-8" />
+            <div className="deprecated-warn__text fs-11">Please enter host url</div>
         </div>
     }
 
@@ -122,7 +131,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                     </div>
                 </div>
-                {( this.state.isHostUrlSaved && this.state.form.id && this.state.value !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
+                {(this.state.isHostUrlSaved && this.state.form.id && this.state.value !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
 
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
@@ -135,6 +144,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
                             onChange={(event) => this.handleChange(event)}
                             autoComplete="off" />
                     </div>
+                    {this.state.form.value.length == 0 ? this.renderBlankHostField() : ''}
                     <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
