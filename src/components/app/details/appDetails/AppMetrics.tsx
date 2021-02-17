@@ -7,7 +7,7 @@ import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
-import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, Documentation} from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
@@ -299,7 +299,7 @@ function AppMetricsEmptyState(props) {
             <div>
                 <p className="app-metrics-graph__empty-state-title">Unable to show app metrics</p>
                 <p className="app-metrics-graph__empty-state-subtitle">{props.subtitle}</p>
-                <a className="learn-more__href cta small text" href={`https://docs.devtron.ai/global-configurations/cluster-and-environments`} target="_blank"  style={{ paddingLeft: '0px' }} >See how to fix</a>
+                <a className="learn-more__href cta small text" href={Documentation.GLOBAL_CONFIG_CLUSTER} target="_blank"  style={{ paddingLeft: '0px' }} >See how to fix</a>
                 <Link to={`/global-config/cluster-env`} className="cta small text">Review Configuration</Link>
             </div>
         </article>
