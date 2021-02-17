@@ -125,7 +125,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             <div className="flex column left">
                 <div className="info__title">Info</div>
                 <div className="info__subtitle">Use Linked CI Pipelines to refer to an existing CI Pipeline.
-                    {/* <a className="learn-more__href" href="https://docs.devtron.ai/docs/deployment-template/" target="_blank" className="ml-5">Learn More about</a> */}
+                    {/* <a className="learn-more__href" href={Documentation. APP_CREATE_CI_CONFIG} target="_blank" className="ml-5">Learn More about</a> */}
                 </div>
             </div>
         </div>
