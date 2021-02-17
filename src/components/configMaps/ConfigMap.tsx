@@ -7,7 +7,7 @@ import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '.
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import Reload from '../Reload/Reload'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -37,7 +37,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
     return <div className="form__app-compose">
         <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
         <p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
-            <a rel="noreferrer noopener" className="learn-more__href"  href="https://docs.devtron.ai/creating-application/config-maps" target="blank">Learn more about ConfigMaps</a>
+            <a rel="noreferrer noopener" className="learn-more__href"  href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
         </p>
         {Array.isArray(configData) && configData.filter(cm => cm).map((cm, idx) => <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }} appId={appId} id={id} update={reload} index={idx} />)}
     </div>

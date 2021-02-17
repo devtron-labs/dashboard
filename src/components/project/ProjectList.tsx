@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ErrorScreenManager, Progressing, showError } from '../../components/common';
-import { ViewType } from '../../config';
+import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';
 import { Project } from './Project';
@@ -113,7 +113,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
         return <>
             <h1 className="form__title">Projects</h1>
             <p className="form__subtitle">Manage your organization's projects.&nbsp;
-                <a className="learn-more__href" href="https://docs.devtron.ai/global-configurations/projects" rel="noopener noreferer" target="_blank">Learn more about projects.</a>
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
             </p>
         </>
     }

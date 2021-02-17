@@ -5,6 +5,7 @@ import { ConfigurationTab } from './ConfigurationTab';
 import { NotificationTab } from './NotificationTab';
 import { ErrorBoundary } from '../common';
 import './notifications.css';
+import { DOCUMENTATION } from '../../config';
 
 interface NotificationsProps extends RouteComponentProps<{}> {
 
@@ -18,7 +19,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                 <h2 className="form__title">Notifications</h2>
                 <p className="form__subtitle">
                     Manage notifications for build and deployment pipelines.&nbsp;
-                    <a className="learn-more__href" rel="noreferrer noopener" href="https://docs.devtron.ai/global-configurations/manage-notification" target="_blank">Learn more about notifications</a>
+                    <a className="learn-more__href" rel="noreferrer noopener" href={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION} target="_blank">Learn more about notifications</a>
                 </p>
                 <ul className="tab-list">
                     <li className='tab-list__tab'>
