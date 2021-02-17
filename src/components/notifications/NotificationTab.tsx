@@ -19,7 +19,7 @@ import { Link, NavLink } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
 import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
-import { getHostURLConfigurationList } from '../../services/service';
+import { getHostURLConfiguration } from '../../services/service';
 
 export interface NotificationConfiguration {
     id: number;
@@ -119,7 +119,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     getHostURL() {
-        getHostURLConfigurationList().then((response) => {
+        getHostURLConfiguration().then((response) => {
             let isHostURLConFigAvailable = response.result && response.result.id
             if (isHostURLConFigAvailable) {
                 this.setState({

@@ -7,7 +7,7 @@ import './hosturl.css';
 import { Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getHostURLConfigurationList } from '../../services/service';
+import { getHostURLConfiguration } from '../../services/service';
 import {  saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 
 export default class HostURL extends Component<HostURLProps, HostURLState> {
@@ -29,7 +29,7 @@ export default class HostURL extends Component<HostURLProps, HostURLState> {
     }
 
     componentDidMount() {
-        getHostURLConfigurationList().then((response) => {
+        getHostURLConfiguration().then((response) => {
              let form = response.result
              if (!form){
                  form = {

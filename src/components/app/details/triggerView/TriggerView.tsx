@@ -14,7 +14,7 @@ import ReactGA from 'react-ga';
 import { withRouter, NavLink } from 'react-router-dom';
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-info-error.svg';
-import { getHostURLConfigurationList } from '../../../../services/service';
+import { getHostURLConfiguration } from '../../../../services/service';
 
 
 export const TriggerViewContext = createContext({
@@ -81,7 +81,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getHostURL() {
-        getHostURLConfigurationList().then((response) => {
+        getHostURLConfiguration().then((response) => {
             let isHostURLConfigAvailable = response.result && response.result.id;
             this.setState({
                 isHostErrorShown: isHostURLConfigAvailable,
