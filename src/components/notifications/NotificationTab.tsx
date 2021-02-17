@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import { Link, NavLink } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
-import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
 
 export interface NotificationConfiguration {
@@ -115,10 +115,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     componentDidMount() {
         this.getAllNotifications();
         this.getChannels();
-        this.getHostURL();
+        this.getHostURLConfig();
     }
 
-    getHostURL() {
+    getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
             let isHostURLConFigAvailable = response.result && response.result.id
             if (isHostURLConFigAvailable) {

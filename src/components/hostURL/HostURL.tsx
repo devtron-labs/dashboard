@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLState, HostURLProps } from './hosturl.type';
 import './hosturl.css';
 import { Progressing, showError } from '../common';

@@ -136,7 +136,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
-    function getHostURL() {
+    function getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
             let isHostURLConFigAvailable = response.result && response.result.id
             setIsHostErrorShown(isHostURLConFigAvailable)
@@ -148,7 +148,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setCalendarValue(str);
         getNewGraphs(tab);
         checkDatasource();
-        getHostURL();
+        getHostURLConfig();
 
     }, [])
 

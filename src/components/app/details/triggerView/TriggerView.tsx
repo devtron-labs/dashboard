@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import ReactGA from 'react-ga';
 import { withRouter, NavLink } from 'react-router-dom';
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
-import { ReactComponent as Error } from '../../../../assets/icons/ic-info-error.svg';
+import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../../../services/service';
 
 
@@ -77,10 +77,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showError(errors);
             this.setState({ code: errors.code, view: ViewType.ERROR });
         })
-        this.getHostURL();
+        this.getHostURLConfig();
     }
 
-    getHostURL() {
+    getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
             let isHostURLConfigAvailable = response.result && response.result.id;
             this.setState({
