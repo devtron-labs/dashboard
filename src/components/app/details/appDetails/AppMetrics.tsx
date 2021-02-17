@@ -288,7 +288,7 @@ function EnableAppMetrics() {
 }
 
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLConfigured }) {
-    if (isLoading) return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 bw-1 en-2 p-24">
+    if (isLoading) return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
@@ -303,7 +303,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLCon
     else if (!isHealthy) {
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
-    return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 bw-1 en-2 p-24">
+    return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
