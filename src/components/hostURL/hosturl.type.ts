@@ -1,19 +1,19 @@
 import { RouteComponentProps } from 'react-router';
 
-export interface HostList{
+export interface HostURLConfig {
     id: number,
     key: string;
     value: string,
     active: boolean,
 }
 
-export interface HostURLState {
+export interface HostURLConfigState {
     view: string;
     statusCode: number;
     isHostUrlSaved: boolean;
     value: string;
     saveLoading: boolean;
-    form: HostList;
+    form: HostURLConfig;
 }
 
-export interface HostURLProps extends RouteComponentProps<{}> { }
+export interface HostURLConfigProps extends RouteComponentProps<{}> { }
