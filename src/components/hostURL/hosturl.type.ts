@@ -13,6 +13,7 @@ export interface HostURLConfigState {
     isHostUrlSaved: boolean;
     saveLoading: boolean;
     form: HostURLConfig;
+    isHostUrlValid: boolean;
 }
 
 export interface HostURLConfigProps extends RouteComponentProps<{}> { }
