@@ -3,7 +3,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
-import { Progressing, showError } from '../common';
+import { ErrorScreenManager, Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
@@ -25,13 +25,14 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                 value: "",
                 active: true,
             },
+            isHostUrlValid: true,
             saveLoading: false,
         })
     }
 
     componentDidMount() {
         getHostURLConfiguration().then((response) => {
-            let form = response.result
+            let form = response.result;
             if (!form) {
                 form = {
                     id: undefined,
@@ -56,14 +57,19 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
             form: {
                 ...this.state.form,
                 value: newURL
-            }
+            },
+
+            isHostUrlValid: newURL?.length > 0
         })
     }
 
     onSave() {
-        this.setState({
-            saveLoading: true,
-        })
+        if (!this.state.form.value.length) {
+            toast.error("Some required fields are missing");
+            return;
+        }
+
+        this.setState({ saveLoading: true, })
 
         let payload = {
             id: this.state.form.id,
@@ -86,7 +92,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                 saveLoading: false
             });
         })
-
     }
 
     handleHostURLLocation(value: string): void {
@@ -94,7 +99,8 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
             form: {
                 ...this.state.form,
                 value: value
-            }
+            },
+            isHostUrlValid: value?.length > 0
         })
     }
 
@@ -113,13 +119,18 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <div>
+        if (this.state.view === ViewType.LOADING) return <section className="git-page">
             <Progressing pageLoader />
-        </div>
+        </section>
+        else if (this.state.view === ViewType.ERROR) {
+            return <section className="git-page flex" >
+                <ErrorScreenManager code={this.state.statusCode} />
+            </section>
+        }
         return <section className="git-page">
             <h2 className="form__title">Host URL</h2>
             <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
-            <div className="white-wrapper">
+            <form className="bcn-0 br-8 bw-1 en-2 pb-22">
                 <div className="hosturl__description">
                     <div>
                         <div className="flex left">
@@ -130,31 +141,36 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                     </div>
                 </div>
                 {(this.state.isHostUrlSaved && this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
-
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
                         <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
                         <input id="host"
                             value={this.state.form.value}
+                            autoFocus
+                            tabIndex={1}
                             type="text"
                             className="form__input"
                             placeholder={"Enter Host URL"}
                             onChange={(event) => this.handleChange(event)}
                             autoComplete="off" />
                     </div>
-                    {this.state.form.value.length == 0 ? this.renderBlankHostField() : ''}
+                    {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
                     <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
                         <button onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
                     </div>
                     <div className="form__buttons pt-20">
-                        <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
+                        <button type="button"
+                            tabIndex={2}
+                            disabled={this.state.saveLoading}
+                            onClick={(e) => { this.onSave() }} 
+                            className="cta">
                             {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
                         </button>
                     </div>
                 </div>
-            </div>
+            </form>
         </section>
     }
 }

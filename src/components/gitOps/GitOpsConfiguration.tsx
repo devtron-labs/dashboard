@@ -148,11 +148,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     render() {
         let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
-        if (this.state.view === ViewType.LOADING) return <div>
+        if (this.state.view === ViewType.LOADING) return <div className="git-page">
             <Progressing pageLoader />
         </div>
-        else if(this.state.view === ViewType.ERROR) {
-            return <div className="flex" style={{height: "calc(100vh - 80px)"}}>
+        else if (this.state.view === ViewType.ERROR) {
+            return <div className="git-page flex" >
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
