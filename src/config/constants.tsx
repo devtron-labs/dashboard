@@ -163,7 +163,7 @@ export const TagOptions = [
 
 export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";
 
-export const Documentation = {
+export const DOCUMENTATION = {
     APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
     APP_CREATE_DEPLOYMENT_TEMPLATE: 'https://docs.devtron.ai/user-guide/creating-application/deployment-template',
@@ -173,9 +173,10 @@ export const Documentation = {
 
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
 
-    GLOBAL_CONFIG_GITL: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
+    GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
     GLOBAL_CONFIG_CLUSTER: 'https://docs.devtron.ai/user-guide/global-configurations/cluster-and-environments',
+    GLOBAL_CONFIG_CHART: 'https://docs.devtron.ai/user-guide/global-configurations/chart-repo',
     GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/global-configurations/manage-notification',
     GLOBAL_CONFIG_PROJECT:   'https://docs.devtron.ai/global-configurations/projects',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
