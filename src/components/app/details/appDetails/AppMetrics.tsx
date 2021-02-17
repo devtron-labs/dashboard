@@ -86,9 +86,9 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         try {
             let datasourceConfiguredRes, datasourceHealthyRes, hostUrlRes;
             hostUrlRes = await getHostURLConfiguration();
+            setIsHostURLConfigured(hostUrlRes.result && hostUrlRes.result.id);
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
-            setIsHostURLConfigured(hostUrlRes.result && hostUrlRes.result.id);
             setDatasource({
                 isLoading: false,
                 isConfigured: !!datasourceConfiguredRes.id,
@@ -288,7 +288,7 @@ function EnableAppMetrics() {
 }
 
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLConfigured }) {
-    if (isLoading) return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 bw-1 en-2 p-24">
+    if (isLoading) return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
@@ -303,7 +303,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLCon
     else if (!isHealthy) {
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
-    return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 bw-1 en-2 p-24">
+    return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
