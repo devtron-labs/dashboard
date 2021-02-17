@@ -11,7 +11,6 @@ export interface HostURLConfigState {
     view: string;
     statusCode: number;
     isHostUrlSaved: boolean;
-    value: string;
     saveLoading: boolean;
     form: HostURLConfig;
 }

@@ -10,7 +10,7 @@ import { getHostURLConfiguration } from '../../services/service';
 import './globalConfigurations.scss';
 
 const HostURL = lazy(() => import('../hostURL/HostURL'))
-const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
+const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -33,11 +33,7 @@ const routes = [
     { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
 ]
 
-
-
-
 export default function GlobalConfiguration({ ...props }) {
-
 
     return (
         <main className="global-configuration">
@@ -61,25 +57,21 @@ export default function GlobalConfiguration({ ...props }) {
 }
 
 function LeftNav({ ...props }) {
-
     useEffect(() => {
         getHostURLConfig();
     }, [])
-    
 
-    const [isHostURLConFigAvailable, setIsHostURLConFigAvailable] = useState(false);
-    function  getHostURLConfig(){
-        getHostURLConfiguration().then((response)=>{
-            let isHostURLConFigAvailable = response.result && response.result.active
-            if (isHostURLConFigAvailable) {
-                setIsHostURLConFigAvailable(true)
-            }
+    const [isHostURLConfigAvailable, setIsHostURLConfigAvailable] = useState(true);
+    function getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            let isHostURLConfigAvailable = response.result && response.result.id;
+            setIsHostURLConfigAvailable(isHostURLConfigAvailable);
         })
     }
     return (
         <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flex left"><div>{route.name}</div>
-                {(route.name == 'Host URL' && !isHostURLConFigAvailable) ? <span className="global-configuration__error-icon"><Error className="icon-dim-20 " /></span> : ''}</div>
+            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+                {(route.name == 'Host URL' && !isHostURLConfigAvailable) ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
             </NavLink>)}
         </div>
     )
@@ -130,7 +122,7 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off", labelClassName="" }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off", labelClassName = "" }) {
     return <div className="flex column left top">
         <label className={`form__label ${labelClassName}`} >{label}</label>
         <input type={type}
@@ -139,13 +131,13 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}
-            disabled={disabled} 
-            />
+            disabled={disabled}
+        />
         {error && <div className="form__error">{error}</div>}
     </div>
 }
 
-export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true ,labelClassName="" }) {
+export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true, labelClassName = "" }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)

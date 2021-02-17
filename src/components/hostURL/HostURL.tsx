@@ -25,12 +25,12 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                 value: "",
                 active: true,
             },
-            value: "",
             saveLoading: false,
         })
     }
 
     componentDidMount() {
+        console.log(window.location)
         getHostURLConfiguration().then((response) => {
             let form = response.result
             if (!form) {
@@ -44,7 +44,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
             this.setState({
                 view: ViewType.FORM,
                 form: form
-            }, () => { console.log(this.state) })
+            })
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code });
@@ -64,7 +64,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
     onSave() {
         this.setState({
             saveLoading: true,
-
         })
 
         let payload = {
@@ -131,7 +130,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                     </div>
                 </div>
-                {(this.state.isHostUrlSaved && this.state.form.id && this.state.value !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
+                {(this.state.isHostUrlSaved && this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
 
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
@@ -148,7 +147,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                     <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
-                        <button onClick={(e) => this.handleHostURLLocation(this.state.value)} className="hosturl__url"> {window.location.host}</button>
+                        <button onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
                     </div>
                     <div className="form__buttons pt-20">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
