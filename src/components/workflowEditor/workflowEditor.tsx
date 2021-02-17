@@ -1,7 +1,7 @@
 import React, { Component, createContext } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { URLS, AppConfigStatus, ViewType } from '../../config';
+import { URLS, AppConfigStatus, ViewType, DOCUMENTATION} from '../../config';
 import { Progressing, showError, ErrorScreenManager } from '../common';
 import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
@@ -187,7 +187,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             <h1 className="form__title form__title--workflow-editor">Workflows</h1>
             <p className="form__subtitle form__subtitle--workflow-editor">
                 Workflows consist of pipelines from build to deployment stages of an application.&nbsp;
-                <a className="learn-more__href" href="https://docs.devtron.ai/creating-application/workflow" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
+                <a className="learn-more__href" href="" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
             </p>
             <Link className="no-decor" to={this.openCreateWorkflow()}>
                 <button type="button" className="cta">Create Workflow</button>
@@ -241,7 +241,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             <div className="workflow-editor">
                 <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                 <p>Workflow consist of pipelines from buid to deployment stages of an application.&nbsp;
-                    <a className="learn-more__href" href="https://docs.devtron.ai/creating-application/workflow" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
+                    <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_WORKFLOW} target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
                 </p>
                 {this.renderRouter()}
                 <Link to={this.openCreateWorkflow()} className="cta mb-12 cta-with-img no-decor" style={{ width: '140px' }}>

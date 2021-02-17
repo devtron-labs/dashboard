@@ -17,7 +17,7 @@ import { ChartGroupEntry, Chart } from '../charts.types'
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy';
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { URLS } from '../../../config';
+import { DOCUMENTATION, URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
@@ -480,7 +480,7 @@ function ChartListHeader({ handleAppStoreChange, handleChartRepoChange, handleDe
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
-            <a className="learn-more__href" href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
+            <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <div className="flexbox flex-justify">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >

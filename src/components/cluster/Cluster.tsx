@@ -13,7 +13,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
 import { useHistory } from 'react-router';
 import { toast } from 'react-toastify';
-import { ViewType } from '../../config';
+import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 
@@ -102,7 +102,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         else return <section className="cluster-page">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-            <a href="https://docs.devtron.ai/global-configurations/cluster-and-environments"  rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+            <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}  rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
             {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>

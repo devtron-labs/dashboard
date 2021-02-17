@@ -13,7 +13,7 @@ import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, 
 import UserForm from './User'
 import GroupForm from './Group';
 import './UserGroup.scss';
-import { Routes } from '../../config'
+import { DOCUMENTATION, Routes } from '../../config'
 
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react';
@@ -158,7 +158,7 @@ function HeaderSection() {
         <div className="auth-page__header">
             <h1 className="form__title">User access</h1>
             <p className="form__subtitle">Manage user permissions.&nbsp;
-                <a className="learn-more__href" rel="noreferrer noopener" href="https://docs.devtron.ai/global-configurations/user-access" target="_blank">Learn more about User Access</a>
+                <a className="learn-more__href" rel="noreferrer noopener" href={DOCUMENTATION.GLOBAL_CONFIG_USER} target="_blank">Learn more about User Access</a>
             </p>
 
             <ul role="tablist" className="tab-list">
