@@ -51,7 +51,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showCIModal: false,
             isLoading: false,
             invalidateCache: false,
-            isHostErrorShown: false,
+            isHostURLConfigAvailable: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -84,7 +84,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         getHostURLConfiguration().then((response) => {
             let isHostURLConfigAvailable = response.result && response.result.id;
             this.setState({
-                isHostErrorShown: isHostURLConfigAvailable,
+                isHostURLConfigAvailable: isHostURLConfigAvailable,
             })
         })
     }
@@ -648,7 +648,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             </div>
         }
         return <div className="svg-wrapper-trigger">
-            {this.state.isHostErrorShown ? this.renderHostErrorMessage() : ''}
+            {!this.state.isHostURLConfigAvailable ? this.renderHostErrorMessage() : ''}
             <TriggerViewContext.Provider value={{
                 invalidateCache: this.state.invalidateCache,
                 refreshMaterial: this.refreshMaterial,
