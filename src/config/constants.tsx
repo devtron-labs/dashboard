@@ -42,7 +42,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
     
-    HOST_URL: 'hosturl',
+    HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
     NOTIFIER: 'notification',
     PROJECT: 'team',

@@ -18,8 +18,8 @@ import { toast } from 'react-toastify';
 import { Link, NavLink } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
-import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
-import { getHostURLConfigurationList } from '../../services/service';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../services/service';
 
 export interface NotificationConfiguration {
     id: number;
@@ -105,7 +105,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 pageSize: 20,
                 offset: 0,
             },
-            isHostErrorShown: true,
+            isHostErrorShown: false,
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -115,15 +115,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     componentDidMount() {
         this.getAllNotifications();
         this.getChannels();
-        this.getHostURL();
+        this.getHostURLConfig();
     }
 
-    getHostURL() {
-        getHostURLConfigurationList().then((response) => {
-            let isHostURLConFigAvailable = response.result && response.result.active
+    getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            let isHostURLConFigAvailable = response.result && response.result.id
             if (isHostURLConFigAvailable) {
                 this.setState({
-                    isHostErrorShown: false,
+                    isHostErrorShown: isHostURLConFigAvailable,
                 })
             }
         })
@@ -526,10 +526,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderHostErrorMessage() {
-        return <div className="hosturl__error ml-20 mr-20 mb-16 mt-16 flex left">
+        return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 ml-20 mr-20 mb-16 mt-16 flex left">
             <Error className="icon-dim-20 mr-8" />
-            <div>Host url is required for notifications. Reach out to your DevOps team (super-admin) to &nbsp;
-                            <NavLink className="hosturl__review" to="/global-config/gost-url">Review and update</NavLink>
+            <div className="cn-9 fs-13">Host url is required for notifications. Reach out to your DevOps team (super-admin) to &nbsp;
+                   <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
             </div>
         </div>
     }

@@ -5,8 +5,8 @@ import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
-import { ReactComponent as Error } from '../../assets/icons/ic-info-error.svg';
-import { getHostURLConfigurationList } from '../../services/service';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../services/service';
 import './globalConfigurations.scss';
 
 const HostURL = lazy(() => import('../hostURL/HostURL'))
@@ -63,13 +63,13 @@ export default function GlobalConfiguration({ ...props }) {
 function LeftNav({ ...props }) {
 
     useEffect(() => {
-        getHostURL();
+        getHostURLConfig();
     }, [])
     
 
     const [isHostURLConFigAvailable, setIsHostURLConFigAvailable] = useState(false);
-    function  getHostURL(){
-        getHostURLConfigurationList().then((response)=>{
+    function  getHostURLConfig(){
+        getHostURLConfiguration().then((response)=>{
             let isHostURLConFigAvailable = response.result && response.result.active
             if (isHostURLConFigAvailable) {
                 setIsHostURLConFigAvailable(true)
