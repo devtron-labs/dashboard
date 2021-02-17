@@ -5,6 +5,7 @@ import { saveRegistryConfig, updateRegistryConfig } from './service';
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
+import { DOCUMENTATION } from '../../config';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
@@ -17,7 +18,7 @@ export default function Docker({ ...props }) {
         <section className="docker-page">
             <h2 className="form__title">Docker registries</h2>
             <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
-            <a className="learn-more__href" href={`https://docs.devtron.ai/global-configurations/docker-registries`} rel="noopener noreferrer" target="_blank">
+            <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER} rel="noopener noreferrer" target="_blank">
                     Learn more about docker registries
             </a>
             </h5>

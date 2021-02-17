@@ -4,6 +4,7 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
+import { DOCUMENTATION } from '../../config'
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
@@ -17,7 +18,7 @@ export default function GitProvider({ ...props }) {
         <section className="git-page">
             <h2 className="form__title">Git accounts</h2>
             <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
-            <a className="learn-more__href" href={`https://docs.devtron.ai/global-configurations/git-accounts`} rel="noopener noreferrer" target="_blank">
+            <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
                     Learn more about git accounts
             </a>
             </h5>

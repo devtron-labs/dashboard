@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
+import {  DOCUMENTATION } from '../../config';
 
 export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
@@ -31,7 +32,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     return <div className="form__app-compose">
         <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
         <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
-            <a rel="noreferrer noopener" className="learn-more__href" href="https://docs.devtron.ai/creating-application/deployment-template" target="_blank">Learn more about Deployment Template Configurations</a>
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
         </p>
         <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
     </div>
