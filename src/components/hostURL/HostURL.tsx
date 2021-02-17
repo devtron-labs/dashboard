@@ -158,7 +158,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                     <div className="hosturl__autodetection flex left pt-4">
                         <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
-                        <button onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
+                        <button type="button" onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
                     </div>
                     <div className="form__buttons pt-20">
                         <button type="button"
