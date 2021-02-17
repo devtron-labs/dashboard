@@ -30,7 +30,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
     }
 
     componentDidMount() {
-        console.log(window.location)
         getHostURLConfiguration().then((response) => {
             let form = response.result
             if (!form) {
