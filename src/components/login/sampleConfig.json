@@ -88,21 +88,6 @@
       }
     }
   },
-  "saml": {
-    "config": {
-      "type": "saml",
-      "id": "okta",
-      "name": "Okta",
-      "config": {
-        "ssoURL": "https://dev-111102.oktapreview.com/app/foo/exk91cb99lKkKSYoy0h7/sso/saml",
-        "ca": "/etc/dex/saml-ca.pem",
-        "redirectURI": "http://127.0.0.1:5556/dex/callback",
-        "usernameAttr": "name",
-        "emailAttr": "email",
-        "groupsAttr": "groups"
-      }
-    }
-  },
   "oidc": {
     "config": {
       "type": "oidc",
