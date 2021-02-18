@@ -10,6 +10,10 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react';
 import { ValidationRules } from './validationRules';
 import { ButtonWithLoader } from '../common';
+import { NavLink } from 'react-router-dom';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../services/service';
+import { URLS } from '../../config';
 import './ciPipeline.css';
 
 export default class ExternalCIPipeline extends Component<CIPipelineProps, ExternalCIPipelineState> {
@@ -50,6 +54,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
+            hostURLConfig: undefined,
         }
         this.handlePipelineName = this.handlePipelineName.bind(this);
         this.savePipeline = this.savePipeline.bind(this);
@@ -61,6 +66,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     }
 
     componentDidMount() {
+        this.getHostURLConfig();
         if (this.props.match.params.ciPipelineId) {
             getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response });
@@ -82,6 +88,14 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                 });
             })
         }
+    }
+
+    getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            this.setState({ hostURLConfig: response.result, })
+        }).catch((error) => {
+
+        })
     }
 
     handlePipelineName(event): void {
@@ -292,6 +306,17 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         }
     }
 
+    renderHostErrorMessage() {
+        if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
+                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                </div>
+            </div>
+        }
+    }
+
     render() {
         let errorObj = this.validationRules.name(this.state.form.name);
         if (this.state.view === ViewType.LOADING) {
@@ -302,6 +327,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         else {
             return <OpaqueModal onHide={this.props.close}>
                 <div className="modal__body modal__body--ci">
+                    {this.renderHostErrorMessage()}
                     {this.renderHeader()}
                     <div className="form__row">
                         <span className="form__label">Pipeline Name*</span>
