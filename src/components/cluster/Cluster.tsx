@@ -222,7 +222,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         {
             cluster_name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ }
+                validator: { error: 'Name is required', regex: /^([a-z][a-z]$){5,16}/ }
             },
             url: {
                 required: true,
