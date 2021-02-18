@@ -11,7 +11,7 @@ import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import './hosturl.css';
 
-export default class HostURLConfig extends Component<HostURLConfigProps, HostURLConfigState> {
+export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
     constructor(props) {
         super(props)
