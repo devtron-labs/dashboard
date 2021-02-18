@@ -327,8 +327,8 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         else {
             return <OpaqueModal onHide={this.props.close}>
                 <div className="modal__body modal__body--ci">
-                    {this.renderHostErrorMessage()}
                     {this.renderHeader()}
+                    {this.renderHostErrorMessage()}
                     <div className="form__row">
                         <span className="form__label">Pipeline Name*</span>
                         <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
