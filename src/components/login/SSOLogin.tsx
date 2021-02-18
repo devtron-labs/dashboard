@@ -106,8 +106,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 view: ViewType.FORM,
                 sso: newsso,
                 ssoConfig: newConfig,
-            },()=>{
-                console.log(this.state.ssoConfig.url)
             })
         }).catch((error) => {
             this.setState({ view: ViewType.ERROR, statusCode: error.code })
@@ -423,7 +421,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
                 <label className="form__row mr-24 ml-24 mb-24">
                     <span className="form__label">URL*</span>
-                    {console.log(this.state.ssoConfig.url)}
                     <input type="text" className="form__input" value={this.state.ssoConfig.url} onChange={this.handleURLChange} />
                     {this.state.isError.url && <div className="form__error">
                         {this.state.isError.url}
