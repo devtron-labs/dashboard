@@ -8,9 +8,8 @@ import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
 import './globalConfigurations.scss';
-import HostURLConfig from '../hostURL/HostURL';
 
-const HostURL = lazy(() => import('../hostURL/HostURL'))
+const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
@@ -22,7 +21,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
 const routes = [
-    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURL },
+    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration },
     { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
@@ -93,7 +92,7 @@ function Body({ getHostURLConfig }) {
         {routes.map(({ href, component: Component }) => {
             if (href.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
               return <Route key={href} path={href} render={(props) => {
-                    return <HostURLConfig {...props} refreshGlobalConfig={getHostURLConfig} />
+                    return <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
                 }} />
             }
             else {
