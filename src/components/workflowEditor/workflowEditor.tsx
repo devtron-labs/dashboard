@@ -50,6 +50,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     }
 
     getWorkflows = () => {
+        this.getHostURLConfig();
         isGitopsConfigured().then((response) => {
             let isGitOpsConfigAvailable = response.result && response.result.exists;
             this.setState({ isGitOpsConfigAvailable });
@@ -60,7 +61,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             showError(errors);
             this.setState({ view: ViewType.ERROR, code: errors.code });
         })
-        this.getHostURLConfig();
     }
 
     getHostURLConfig() {

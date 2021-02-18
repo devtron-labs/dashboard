@@ -65,6 +65,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     componentDidMount() {
+        this.getHostURLConfig();
         getTriggerWorkflows(this.props.match.params.appId).then((result) => {
             let wf = result.workflows || [];
             this.setState({ workflows: wf, view: ViewType.FORM }, () => {
@@ -77,7 +78,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showError(errors);
             this.setState({ code: errors.code, view: ViewType.ERROR });
         })
-        this.getHostURLConfig();
     }
 
     getHostURLConfig() {
