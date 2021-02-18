@@ -114,9 +114,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     componentDidMount() {
+        this.getHostURLConfig();
         this.getAllNotifications();
         this.getChannels();
-        this.getHostURLConfig();
     }
 
     getHostURLConfig() {
