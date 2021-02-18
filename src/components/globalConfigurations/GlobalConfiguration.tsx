@@ -47,7 +47,6 @@ export default function GlobalConfiguration({ ...props }) {
     }, [location.pathname])
 
     function getHostURLConfig() {
-        console.log("global config")
         getHostURLConfiguration().then((response) => {
             setIsHostURLConfig(response.result);
         }).catch((error) => {
