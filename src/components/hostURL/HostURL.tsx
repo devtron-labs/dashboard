@@ -50,7 +50,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
         })
     }
 
-    handleChange(event) {
+    handleChange(event): void {
         let newURL = event.target.value
         this.setState({
             form: {
@@ -61,7 +61,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
         })
     }
 
-    onSave() {
+    onSave(): void {
         if (!this.state.form.value.length) {
             toast.error("Some required fields are missing");
             return;
@@ -80,6 +80,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                 saveLoading: false,
                 form: response.result,
             })
+            this.props.refreshGlobalConfig();
         }).catch((error) => {
             showError(error);
             this.setState({
@@ -159,7 +160,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                         <button type="button"
                             tabIndex={2}
                             disabled={this.state.saveLoading}
-                            onClick={(e) => { this.onSave() }} 
+                            onClick={(e) => { this.onSave() }}
                             className="cta">
                             {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
                         </button>

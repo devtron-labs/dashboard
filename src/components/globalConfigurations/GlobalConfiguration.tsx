@@ -8,6 +8,7 @@ import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
 import './globalConfigurations.scss';
+import HostURLConfig from '../hostURL/HostURL';
 
 const HostURL = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -39,18 +40,20 @@ export default function GlobalConfiguration({ ...props }) {
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
 
     useEffect(() => {
-        function getHostURLConfig() {
-            getHostURLConfiguration().then((response) => {
-                setIsHostURLConfig(response.result);
-            }).catch((error) => {
-
-            })
-        }
         if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
             getHostURLConfig();
         }
 
     }, [location.pathname])
+
+    function getHostURLConfig() {
+        console.log("global config")
+        getHostURLConfiguration().then((response) => {
+            setIsHostURLConfig(response.result);
+        }).catch((error) => {
+
+        })
+    }
 
     return (
         <main className="global-configuration">
@@ -64,7 +67,7 @@ export default function GlobalConfiguration({ ...props }) {
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body />
+                            <Body getHostURLConfig={getHostURLConfig} />
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -84,11 +87,21 @@ function NavItem({ hostURLConfig }) {
     </div>
 }
 
-function Body({ ...props }) {
-    const location = useLocation()
+function Body({ getHostURLConfig }) {
+    const location = useLocation();
+
     return <Switch location={location}>
+        {routes.map(({ href, component: Component }) => {
+            if (href.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
+              return <Route key={href} path={href} render={(props) => {
+                    return <HostURLConfig {...props} refreshGlobalConfig={getHostURLConfig} />
+                }} />
+            }
+            else {
+                return <Route key={href} path={href} component={Component} />
+            }
+        })}
         <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
-        {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
         <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
     </Switch>
 }

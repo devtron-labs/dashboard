@@ -9,4 +9,6 @@ export interface HostURLConfigState {
     isHostUrlValid: boolean;
 }
 
-export interface HostURLConfigProps extends RouteComponentProps<{}> { }
+export interface HostURLConfigProps extends RouteComponentProps<{}> {
+    refreshGlobalConfig: () => void;
+}
