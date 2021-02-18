@@ -39,7 +39,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
     const [statusCode, setStatusCode] = useState('Throughput');
-    const [isHostURLConfigured, setIsHostURLConfigured] = useState(false);
+    const [hostURLConfig, setHostURLConfig] = useState(undefined);
     const [graphs, setGraphs] = useState({
         cpu: "",
         ram: "",
@@ -86,7 +86,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         try {
             let datasourceConfiguredRes, datasourceHealthyRes, hostUrlRes;
             hostUrlRes = await getHostURLConfiguration();
-            setIsHostURLConfigured(hostUrlRes.result && hostUrlRes.result.id);
+            setHostURLConfig(hostUrlRes.result);
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
             if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
             setDatasource({
@@ -114,7 +114,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
         let str = getCalendarValue(startStr, 'now');
         setCalendarValue(str);
-
     }
 
     function handleStatusChange(selected): void {
@@ -150,11 +149,11 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [calendarValue])
 
-    if (!datasource.isConfigured || !datasource.isHealthy || isHostURLConfigured) {
+    if (!datasource.isConfigured || !datasource.isHealthy || hostURLConfig) {
         return <AppMetricsEmptyState isLoading={datasource.isLoading}
             isConfigured={datasource.isConfigured}
             isHealthy={datasource.isHealthy}
-            isHostURLConfigured={isHostURLConfigured} />
+            hostURLConfig={hostURLConfig} />
     }
     else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
         style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
@@ -287,7 +286,7 @@ function EnableAppMetrics() {
     );
 }
 
-function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLConfigured }) {
+function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig }) {
     if (isLoading) return <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24">
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
@@ -311,7 +310,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, isHostURLCon
             <img src={HostErrorImage} alt="" className="w-100" />
             <div>
                 <p className="fw-6 fs-14 cn-9">Unable to show metrics due to insufficient/incorrect configurations</p>
-                {!isHostURLConfigured && <>
+                {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && <>
                     <p className="fw-4 fs-12 cn-7 mt-16 mb-8">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to configure host url.</p>
                     <Link to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="cta small text" style={{ paddingLeft: "0" }}>Review and update</Link>
                 </>}

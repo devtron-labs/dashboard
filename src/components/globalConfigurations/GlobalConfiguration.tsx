@@ -34,6 +34,19 @@ const routes = [
 ]
 
 export default function GlobalConfiguration({ ...props }) {
+    const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+
+    useEffect(() => {
+        getHostURLConfig();
+    }, [])
+
+    function getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            setIsHostURLConfig(response.result);
+        }).catch((error) => {
+
+        })
+    }
 
     return (
         <main className="global-configuration">
@@ -42,7 +55,7 @@ export default function GlobalConfiguration({ ...props }) {
             </section>
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <LeftNav />
+                    <NavItem hostURLConfig={hostURLConfig} />
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -56,36 +69,24 @@ export default function GlobalConfiguration({ ...props }) {
     )
 }
 
-function LeftNav({ ...props }) {
-    useEffect(() => {
-        getHostURLConfig();
-    }, [])
+function NavItem({ hostURLConfig }) {
+    const location = useLocation();
+    let showError = (!hostURLConfig || hostURLConfig.value !== window.location.origin) && !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
 
-    const [isHostURLConfigAvailable, setIsHostURLConfigAvailable] = useState(true);
-    function getHostURLConfig() {
-        getHostURLConfiguration().then((response) => {
-            let isHostURLConfigAvailable = response.result && response.result.id;
-            setIsHostURLConfigAvailable(isHostURLConfigAvailable);
-        })
-    }
-    return (
-        <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
-                {(route.name == 'Host URL' && !isHostURLConfigAvailable) ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
-            </NavLink>)}
-        </div>
-    )
+    return <div className="flex column left">
+        {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+            {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
+        </NavLink>)}
+    </div>
 }
 
 function Body({ ...props }) {
     const location = useLocation()
-    return (
-        <Switch location={location}>
-            <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
-            {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
-            <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
-        </Switch>
-    )
+    return <Switch location={location}>
+        <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
+        {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
+        <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
+    </Switch>
 }
 
 function Logo({ src = "", style = {}, className = "", children = null }) {

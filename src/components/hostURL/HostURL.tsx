@@ -18,7 +18,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
         this.state = ({
             view: ViewType.LOADING,
             statusCode: 0,
-            isHostUrlSaved: false,
             form: {
                 id: undefined,
                 key: "url",
@@ -58,7 +57,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                 ...this.state.form,
                 value: newURL
             },
-
             isHostUrlValid: newURL?.length > 0
         })
     }
@@ -68,9 +66,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
             toast.error("Some required fields are missing");
             return;
         }
-
         this.setState({ saveLoading: true, })
-
         let payload = {
             id: this.state.form.id,
             key: this.state.form.key,
@@ -83,7 +79,6 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
             this.setState({
                 saveLoading: false,
                 form: response.result,
-                isHostUrlSaved: true
             })
         }).catch((error) => {
             showError(error);
@@ -140,7 +135,7 @@ export default class HostURLConfig extends Component<HostURLConfigProps, HostURL
                         <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                     </div>
                 </div>
-                {(this.state.isHostUrlSaved && this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
+                {(this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
                 <div className="pl-20 pr-20">
                     <div className="flex column left top ">
                         <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>

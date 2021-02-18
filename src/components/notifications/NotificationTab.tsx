@@ -523,8 +523,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderHostErrorMessage() {
-        if (this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
-            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 ml-20 mr-20 mb-16 flex left">
+        if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
                 <Error className="icon-dim-20 mr-8" />
                 <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
                 <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>

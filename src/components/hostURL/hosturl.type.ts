@@ -4,7 +4,6 @@ import { HostURLConfig } from '../../services/service.types';
 export interface HostURLConfigState {
     view: string;
     statusCode: number;
-    isHostUrlSaved: boolean;
     saveLoading: boolean;
     form: HostURLConfig;
     isHostUrlValid: boolean;
