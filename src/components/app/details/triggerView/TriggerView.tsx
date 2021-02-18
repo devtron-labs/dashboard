@@ -51,7 +51,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showCIModal: false,
             isLoading: false,
             invalidateCache: false,
-            isHostURLConfigAvailable: false,
+            hostURLConfig: undefined,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -82,9 +82,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
-            let isHostURLConfigAvailable = response.result && response.result.id;
             this.setState({
-                isHostURLConfigAvailable: isHostURLConfigAvailable,
+                hostURLConfig: response.result,
             })
         })
     }
@@ -627,12 +626,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderHostErrorMessage() {
-        return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 mt-16 flex left">
-            <Error className="icon-dim-20 mr-8" />
-            <div className="cn-9 fs-13">Host url is required for notifications. Reach out to your DevOps team (super-admin) to&nbsp;
+        if (this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
                 <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                </div>
             </div>
-        </div>
+        }
     }
 
     render() {
@@ -648,7 +649,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             </div>
         }
         return <div className="svg-wrapper-trigger">
-            {!this.state.isHostURLConfigAvailable ? this.renderHostErrorMessage() : ''}
             <TriggerViewContext.Provider value={{
                 invalidateCache: this.state.invalidateCache,
                 refreshMaterial: this.refreshMaterial,
@@ -663,6 +663,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 toggleChanges: this.toggleChanges,
                 toggleInvalidateCache: this.toggleInvalidateCache,
             }} >
+                {this.renderHostErrorMessage()}
                 {this.renderWorkflow()}
                 {this.renderCIMaterial()}
                 {this.renderCDMaterial()}

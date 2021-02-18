@@ -20,6 +20,7 @@ import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
+import { HostURLConfig } from '../../services/service.types';
 
 export interface NotificationConfiguration {
     id: number;
@@ -68,7 +69,7 @@ export interface NotificationTabState {
         pageSize: number;
         offset: number;
     }
-    hostURLConfig: any;
+    hostURLConfig: HostURLConfig;
 }
 
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -105,7 +106,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 pageSize: 20,
                 offset: 0,
             },
-            hostURLConfig: false,
+            hostURLConfig: undefined,
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -120,10 +121,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
-            let hostURLConfig = response.result;
-            this.setState({
-                hostURLConfig: hostURLConfig,
-            })
+            this.setState({ hostURLConfig: response.result, })
+        }).catch((error) => {
+
         })
     }
 
