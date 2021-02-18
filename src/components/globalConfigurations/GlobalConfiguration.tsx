@@ -34,19 +34,23 @@ const routes = [
 ]
 
 export default function GlobalConfiguration({ ...props }) {
+    const history = useHistory();
+    const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
 
     useEffect(() => {
-        getHostURLConfig();
-    }, [])
+        function getHostURLConfig() {
+            getHostURLConfiguration().then((response) => {
+                setIsHostURLConfig(response.result);
+            }).catch((error) => {
 
-    function getHostURLConfig() {
-        getHostURLConfiguration().then((response) => {
-            setIsHostURLConfig(response.result);
-        }).catch((error) => {
+            })
+        }
+        if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
+            getHostURLConfig();
+        }
 
-        })
-    }
+    }, [location.pathname])
 
     return (
         <main className="global-configuration">
