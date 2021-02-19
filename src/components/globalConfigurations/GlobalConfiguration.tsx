@@ -1,6 +1,6 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router';
+import { useHistory, useRouteMatch, useLocation } from 'react-router';
 import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
@@ -34,15 +34,17 @@ const routes = [
 ]
 
 export default function GlobalConfiguration({ ...props }) {
-    const history = useHistory();
     const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+
+    useEffect(() => {
+        getHostURLConfig();
+    }, [])
 
     useEffect(() => {
         if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
             getHostURLConfig();
         }
-
     }, [location.pathname])
 
     function getHostURLConfig() {
