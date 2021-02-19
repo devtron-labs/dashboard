@@ -34,9 +34,12 @@ const routes = [
 ]
 
 export default function GlobalConfiguration({ ...props }) {
-    const history = useHistory();
     const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+
+    useEffect(() => {
+        getHostURLConfig();
+    }, [])
 
     useEffect(() => {
         if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
