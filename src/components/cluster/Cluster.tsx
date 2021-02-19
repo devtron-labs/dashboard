@@ -222,7 +222,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         {
             cluster_name: {
                 required: true,
-                validator: { error: `Allowed: 5-16 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,16}$/ }
+                validator: { error: `Allowed: 5-16 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,16}$/ }
             },
             url: {
                 required: true,
@@ -375,11 +375,11 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         {
             environment_name: {
                 required: true,
-                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,25}$/  }
+                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,25}$/  }
             },
             namespace: {
                 required: isNamespaceMandatory,
-                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,25}$/ }
+                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,25}$/ }
             },
             isProduction: {
                 required: true,
