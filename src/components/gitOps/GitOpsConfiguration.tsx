@@ -148,11 +148,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     render() {
         let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
-        if (this.state.view === ViewType.LOADING) return <div>
+        if (this.state.view === ViewType.LOADING) return <div className="git-page">
             <Progressing pageLoader />
         </div>
-        else if(this.state.view === ViewType.ERROR) {
-            return <div className="flex" style={{height: "calc(100vh - 80px)"}}>
+        else if (this.state.view === ViewType.ERROR) {
+            return <div className="git-page flex" >
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
@@ -163,7 +163,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onClick={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onChange={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
@@ -175,7 +175,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === "github"} onClick={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === "github"} onChange={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>

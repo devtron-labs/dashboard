@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import {HostURLConfig} from '../../services/service.types';
 
 export interface WorkflowEditState {
     view: string;
@@ -8,6 +9,7 @@ export interface WorkflowEditState {
     appName: string;
     showDeleteDialog: boolean;
     isGitOpsConfigAvailable: boolean;
+    hostURLConfig: HostURLConfig;
 }
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {

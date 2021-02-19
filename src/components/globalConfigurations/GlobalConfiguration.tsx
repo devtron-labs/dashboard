@@ -5,9 +5,12 @@ import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AddNotification } from '../notifications/AddNotification';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../services/service';
 import './globalConfigurations.scss';
 
-const GitOpsConfiguration= lazy(()=> import('../gitOps/GitOpsConfiguration'))
+const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
+const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const ClusterList = lazy(() => import('../cluster/Cluster'))
@@ -15,21 +18,41 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'));
 const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'));
-const SSOLogin = lazy(()=> import('../login/SSOLogin'));
+const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
 const routes = [
+    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration },
     { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo},
+    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-    { name: 'SSO login services', href:URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin},
+    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
 ]
 
 export default function GlobalConfiguration({ ...props }) {
+    const history = useHistory();
+    const location = useLocation();
+    const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+
+    useEffect(() => {
+        if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
+            getHostURLConfig();
+        }
+
+    }, [location.pathname])
+
+    function getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            setIsHostURLConfig(response.result);
+        }).catch((error) => {
+
+        })
+    }
+
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
@@ -37,12 +60,12 @@ export default function GlobalConfiguration({ ...props }) {
             </section>
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <LeftNav />
+                    <NavItem hostURLConfig={hostURLConfig} />
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body />
+                            <Body getHostURLConfig={getHostURLConfig} />
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -51,23 +74,34 @@ export default function GlobalConfiguration({ ...props }) {
     )
 }
 
-function LeftNav({ ...props }) {
-    return (
-        <div className="flex column left">
-            {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">{route.name}</NavLink>)}
-        </div>
-    )
+function NavItem({ hostURLConfig }) {
+    const location = useLocation();
+    let showError = (!hostURLConfig || hostURLConfig.value !== window.location.origin) && !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
+
+    return <div className="flex column left">
+        {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+            {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
+        </NavLink>)}
+    </div>
 }
 
-function Body({ ...props }) {
-    const location = useLocation()
-    return (
-        <Switch location={location}>
-            <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
-            {routes.map(({ href, component: Component }) => <Route key={href} path={href} component={Component} />)}
-            <Redirect to={URLS.GLOBAL_CONFIG_GITOPS} />
-        </Switch>
-    )
+function Body({ getHostURLConfig }) {
+    const location = useLocation();
+
+    return <Switch location={location}>
+        {routes.map(({ href, component: Component }) => {
+            if (href.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
+              return <Route key={href} path={href} render={(props) => {
+                    return <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
+                }} />
+            }
+            else {
+                return <Route key={href} path={href} component={Component} />
+            }
+        })}
+        <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
+        <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
+    </Switch>
 }
 
 function Logo({ src = "", style = {}, className = "", children = null }) {
@@ -104,7 +138,7 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
-export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete="off", labelClassName="" }) {
+export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off", labelClassName = "" }) {
     return <div className="flex column left top">
         <label className={`form__label ${labelClassName}`} >{label}</label>
         <input type={type}
@@ -113,13 +147,13 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
             className="form__input"
             onChange={e => { e.persist(); onChange(e) }}
             value={value}
-            disabled={disabled} 
-            />
+            disabled={disabled}
+        />
         {error && <div className="form__error">{error}</div>}
     </div>
 }
 
-export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true ,labelClassName="" }) {
+export function ProtectedInput({ name, value, error, onChange, label, type = "text", disabled = false, hidden = true, labelClassName = "" }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
