@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, useForm, Select, Progressing, useAsync } from '../common';
+import { showError, useForm, Select, Progressing, useAsync, sortCallback } from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
@@ -20,22 +20,22 @@ export default function Docker({ ...props }) {
         showError(error)
         if (!result) return null
     }
-    return (
-        <section className="docker-page">
-            <h2 className="form__title">Docker registries</h2>
-            <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
+    let dockerRegistryList = result.result || [];
+    dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback("id", a, b))
+    dockerRegistryList = [{ id: null }].concat(dockerRegistryList);
+    return <section className="docker-page">
+        <h2 className="form__title">Docker registries</h2>
+        <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER} rel="noopener noreferrer" target="_blank">
-                    Learn more about docker registries
+                Learn more about docker registries
             </a>
-            </h5>
-            {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
-        </section>
-    )
+        </h5>
+        {dockerRegistryList.map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
+    </section>
 }
 
 function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
-    console.log(collapsed)
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
