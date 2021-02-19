@@ -41,6 +41,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             let url = `${this.props.location.pathname}?continue=${queryParam}`;
             this.props.history.push(url);
         }
+        if (!queryParam) queryParam = "";
         this.setState({
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${queryParam}`)
         })
