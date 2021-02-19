@@ -261,6 +261,11 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getHostURLConfiguration(): Promise<ResponseType> {
+    const URL = `${Routes.HOST_URL}?key=url`;
+    return get(URL);
+}
+
 export function isGitopsConfigured(): Promise<ResponseType> {
     const URL = `${Routes.GITOPS_CONFIGURED}`;
     return get(URL);

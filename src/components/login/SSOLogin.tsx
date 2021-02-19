@@ -7,16 +7,15 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import Microsoft from '../../assets/icons/ic-microsoft.svg'
 import LDAP from '../../assets/icons/ic-ldap.svg'
-import SAML from '../../assets/icons/ic-saml.svg'
 import OIDC from '../../assets/icons/ic-oidc.svg'
 import Openshift from '../../assets/icons/ic-openshift.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { SSOLoginProps, SSOLoginState } from './ssoConfig.types'
-import { toast } from 'react-toastify';
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType } from '../../config'
+import { toast } from 'react-toastify';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
 import './login.css'
@@ -31,7 +30,6 @@ const ssoMap = {
     github: "https://dexidp.io/docs/connectors/github/",
     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
     ldap: "https://dexidp.io/docs/connectors/ldap/",
-    saml: "https://dexidp.io/docs/connectors/saml/",
     oidc: "https://dexidp.io/docs/connectors/oidc/",
     openshift: "https://dexidp.io/docs/connectors/openshift/",
 }
@@ -125,14 +123,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     toggleWarningModal(): void {
-        this.setState({ showToggling: !this.state.showToggling });
+        this.setState({ showToggling: !this.state.showToggling, saveLoading: false });
     }
 
     parseResponse(ssoConfig): SSOConfigType {
         return {
             id: ssoConfig.id,
             name: ssoConfig.name,
-            url: ssoConfig.url,
+            url: ssoConfig.url || "",
             config: {
                 name: ssoConfig.config.name,
                 type: ssoConfig.config.type,
@@ -371,18 +369,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 <aside className="login__text-alignment">LDAP</aside>
                                 <label>
                                     {this.state.lastActiveSSO?.name == "ldap" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="saml" checked={this.state.sso === "saml"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={SAML} /></aside>
-                                <aside className="login__text-alignment"> SAML 2.0</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "saml" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
                                 </label>
                             </span>
                         </label>

@@ -1661,15 +1661,13 @@ table.resource-tree {
 }
 
 .app-metrics-graph__empty-state-wrapper {
-    background-color: #fff;
-    padding: 24px;
-    width: 100%;
     border-bottom: solid 1px var(--N200);
+    border-top: solid 1px var(--N200);
 }
 
 .app-metrics-graph__empty-state {
     display: grid;
-    grid-template-columns: 150px 500px;
+    grid-template-columns: 150px 615px;
     gap: 32px;
     margin: 42px 0 20px 0;
 }
@@ -1683,23 +1681,6 @@ table.resource-tree {
     color: var(--N700);
     height: 28px;
     align-items: center;
-}
-
-.app-metrics-graph__empty-state-title {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-}
-
-.app-metrics-graph__empty-state-subtitle {
-    font-weight: 400;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N700);
 }
 
 .app-details-graph {

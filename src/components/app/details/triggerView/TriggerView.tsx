@@ -7,12 +7,15 @@ import { Workflow } from './workflow/Workflow';
 import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType } from './types';
 import { CIMaterial } from './ciMaterial';
 import { CDMaterial } from './cdMaterial';
-import { ViewType } from '../../../../config';
+import { URLS, ViewType } from '../../../../config';
 import { AppNotConfigured } from '../appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import ReactGA from 'react-ga';
-import { withRouter } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
+import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../../../services/service';
+
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -48,6 +51,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showCIModal: false,
             isLoading: false,
             invalidateCache: false,
+            hostURLConfig: undefined,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -61,6 +65,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     componentDidMount() {
+        this.getHostURLConfig();
         getTriggerWorkflows(this.props.match.params.appId).then((result) => {
             let wf = result.workflows || [];
             this.setState({ workflows: wf, view: ViewType.FORM }, () => {
@@ -72,6 +77,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ code: errors.code, view: ViewType.ERROR });
+        })
+    }
+
+    getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            this.setState({ hostURLConfig: response.result, })
+        }).catch((error) => {
+
         })
     }
 
@@ -612,6 +625,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         </React.Fragment>
     }
 
+    renderHostErrorMessage() {
+        if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
+                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                </div>
+            </div>
+        }
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -639,6 +663,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 toggleChanges: this.toggleChanges,
                 toggleInvalidateCache: this.toggleInvalidateCache,
             }} >
+                {this.renderHostErrorMessage()}
                 {this.renderWorkflow()}
                 {this.renderCIMaterial()}
                 {this.renderCDMaterial()}
