@@ -92,15 +92,15 @@
         align-items: center;
         margin-top: 4px;
 
-        &:before {
-            content: '';
-            background: url('../../assets/icons/misc/errorInfo.svg');
-            height: 14px;
-            width: 14px;
-            display: inline-block;
-            background-size: contain;
-            margin-right: 4px;
-        }
+        // &:before {
+        //     content: '';
+        //     background: url('../../assets/icons/misc/errorInfo.svg');
+        //     height: 14px;
+        //     width: 14px;
+        //     display: inline-block;
+        //     background-size: contain;
+        //     margin-right: 4px;
+        // }
     }
 
     textarea {

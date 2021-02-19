@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { showError, useForm, Select, Progressing, useAsync, sortCallback } from '../common';
+import { showError, useForm, Select, Progressing, useAsync, sortCallback, CustomInput } from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
@@ -54,17 +54,12 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             id: { value: id, error: "" },
-            registryUrl: { value: registryUrl, error: "" },
             registryType: { value: registryType || 'ecr', error: "" },
         },
         {
             id: {
                 required: true,
                 validator: { error: 'Name is required', regex: /^.*$/ }
-            },
-            registryUrl: {
-                required: true,
-                validator: { error: 'URL is required', regex: /^.{3,}$/ }
             },
             registryType: {
                 required: true,
@@ -82,6 +77,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: "" },
         awsSecretAccessKey: { value: awsSecretAccessKey, error: "" },
+        registryUrl: { value: registryUrl, error: "" },
         awsRegion: { value: awsRegion, error: "" },
         username: { value: username, error: "" },
         password: { value: password, error: "" }
@@ -92,12 +88,13 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
 
     async function onValidation() {
         if (state.registryType.value === 'ecr') {
-            if (!customState.awsRegion.value || !customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value) {
+            if (!customState.awsRegion.value || !customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
                     ...st,
                     awsRegion: { ...st.awsRegion, error: st.awsRegion.value ? '' : 'Mandatory' },
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: { ...st.awsSecretAccessKey, error: st.awsSecretAccessKey.value ? '' : 'Mandatory' },
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
                 return
             }
@@ -107,17 +104,18 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 setCustomState(st => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' }
+                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
                 }))
                 return
             }
         }
         else if (state.registryType.value === 'other') {
-            if (!customState.username.value || !customState.password.value) {
+            if (!customState.username.value || !customState.password.value || !customState.registryUrl.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' }
+                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
                 return
             }
@@ -126,11 +124,11 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         let payload = {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
-            registryUrl: state.registryUrl.value,
             registryType: state.registryType.value,
             isDefault: Isdefault,
+            registryUrl: customState.registryUrl.value,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
-            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value } : {}),
+            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
             ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value } : {}),
         }
 
@@ -154,7 +152,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     return (
         <form onSubmit={handleOnSubmit} className="docker-form">
             <div className="form__row">
-                <CustomInput name="id" value={state.id.value} error={state.id.error} onChange={handleOnChange} label="Name*" disabled={!!id} />
+                <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>
             <div className="form__row form__row--two-third">
                 <div className="flex left column top">
@@ -165,7 +163,14 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
-                <CustomInput name="registryUrl" value={state.registryUrl.value} error={state.registryUrl.error} onChange={handleOnChange} label="Registry URL*" disabled={!!registryUrl} />
+                <CustomInput name="registryUrl"
+                    label={state.registryType.value !== 'docker-hub' ? "Registry URL*" : "Registry URL"}
+                    value={customState.registryUrl.value}
+                    autoComplete="off"
+                    helperText={state.registryType.value === 'docker-hub' ? "If registry exists on hub.docker.com then leave registry url empty" : ''}
+                    error={customState.registryUrl.error}
+                    onChange={customHandleChange}
+                    disabled={!!registryUrl} />
             </div>
             {state.registryType.value === 'ecr' && <>
                 <div className="form__row">
@@ -179,19 +184,19 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     </div>
                 </div>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
+                    <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" autoComplete={"off"} />
                     <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'docker-hub' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <CustomInput name="username" value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
                     <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <CustomInput name="username" value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
                     <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
