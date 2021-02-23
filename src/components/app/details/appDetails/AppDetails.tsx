@@ -160,13 +160,14 @@ export const Details: React.FC<{
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
-        //@ts-ignore
-        prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+    //     //@ts-ignore
+    //     prefix = `${location.protocol}//${location.host}`; 
     }
+    
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
-        `${prefix}${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
+        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
         !!appDetails?.appName && !!appDetails?.environmentName,
         (event) => setStreamData(JSON.parse(event.data)),

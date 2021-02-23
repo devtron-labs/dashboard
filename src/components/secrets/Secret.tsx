@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import {  DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -102,8 +102,8 @@ const Secret = ({ respondOnSuccess, ...props }) => {
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
-            <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains small amount of sensitive data such as passwords, OAuth tokens, and SSH keys. 
-            <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION. APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
+            <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains small amount of sensitive data such as passwords, OAuth tokens, and SSH keys.
+            <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
             {list && <CollapsedSecretForm appId={appId} id={list.id || 0} title="Add Secret" update={update} initialise={initialise} />}
             {list && Array.isArray(list.configData) && list.configData.filter(cs => cs).map((cs, idx) => <CollapsedSecretForm key={cs.name} {...cs} appId={appId} id={list.id} update={update} index={idx} initialise={initialise} />)}
         </div>
@@ -482,13 +482,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </Select>
             </div>
         </div>
-        {externalType === "KubernetesSecret" ?<div className="info__container mb-24">
-                <Info />
-                <div className="flex column left">
-                    <div className="info__title">Using External Secrets</div>
-                    <div className="info__subtitle">Secret will not be created by system. However, they will be used inside the pod. Please make sure that secret with the same name is present in the environment.</div>
-                </div>
-            </div> : null}
+        {externalType === "KubernetesSecret" ? <div className="info__container mb-24">
+            <Info />
+            <div className="flex column left">
+                <div className="info__title">Using External Secrets</div>
+                <div className="info__subtitle">Secret will not be created by system. However, they will be used inside the pod. Please make sure that secret with the same name is present in the environment.</div>
+            </div>
+        </div> : null}
         <div className="form-row">
             <label className="form__label">Name*</label>
             <input value={configName.value} autoComplete="off" onChange={props.isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-secret`} disabled={props.isUpdate} />
@@ -505,16 +505,16 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 label={"Volume mount path*"}
                 placeholder={"Enter mount path"}
                 helperText={"keys are mounted as files to volume"}
-                error={volumeMountPath.error}
+                error={[{ name: volumeMountPath.error }]}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
-            autoComplete="off"
+                autoComplete="off"
                 tabIndex={4}
                 label={"Role ARN"}
                 placeholder={"Enter Role ARN"}
-                error={roleARN.error}
+                error={[{name:roleARN.error}]}
                 onChange={event => handleRoleARNChange(event)} />
         </div> : null}
         {isExternalValues && <div className="flex left mb-16">

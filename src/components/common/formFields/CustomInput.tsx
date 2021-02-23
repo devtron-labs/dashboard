@@ -9,12 +9,12 @@ export interface CustomInputProps {
     labelClassName?: string;
     placeholder?: string;
     disabled?: boolean;
-    error?: string;
+    error?: { name: string }[];
     helperText?: string;
     name?: string;
     tabIndex?: number;
+    autoComplete: string;
     onChange: (...args) => void;
-    autoComplete:string
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -34,15 +34,20 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
-            {this.props.error && <div className="form__error">
-                <Error className="form__icon form__icon--error" />
-                {this.props.error}
+            {this.props.error?.length && <div className="form__error">
+                {this.props.error.map((error) => {
+                    return <>
+                        <Error className="form__icon form__icon--error" />
+                        {error.name}</>
+                })}
             </div>}
 
-            {this.props.helperText ? <> <div className="form__text-field-info">
-                <Info className="form__icon form__icon--info" />
-                <p className="sentence-case">{this.props.helperText}</p>
-            </div> </> : null}
+            {this.props.helperText ? <>
+                <div className="form__text-field-info">
+                    <Info className="form__icon form__icon--info" />
+                    <p className="sentence-case">{this.props.helperText}</p>
+                </div>
+            </> : null}
         </>
     }
 }

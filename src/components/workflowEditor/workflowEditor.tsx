@@ -1,7 +1,7 @@
 import React, { Component, createContext } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { URLS, AppConfigStatus, ViewType, DOCUMENTATION} from '../../config';
+import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config';
 import { Progressing, showError, ErrorScreenManager } from '../common';
 import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
@@ -17,7 +17,10 @@ import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline';
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit';
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView';
 import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { isGitopsConfigured } from '../../services/service';
+import { getHostURLConfiguration } from '../../services/service';
 import './workflowEditor.css';
 
 export const WorkflowEditorContext = createContext({
@@ -38,6 +41,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             showDeleteDialog: false,
             workflowId: 0,
             isGitOpsConfigAvailable: false,
+            hostURLConfig: undefined,
         }
     }
 
@@ -46,6 +50,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     }
 
     getWorkflows = () => {
+        this.getHostURLConfig();
         isGitopsConfigured().then((response) => {
             let isGitOpsConfigAvailable = response.result && response.result.exists;
             this.setState({ isGitOpsConfigAvailable });
@@ -55,6 +60,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         }).catch((errors) => {
             showError(errors);
             this.setState({ view: ViewType.ERROR, code: errors.code });
+        })
+    }
+
+    getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            this.setState({ hostURLConfig: response.result, })
+        }).catch((error) => {
+
         })
     }
 
@@ -195,6 +208,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         </div>
     }
 
+    renderHostErrorMessage() {
+        if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
+                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                </div>
+            </div>
+        }
+    }
+
     renderWorkflows() {
         return <>
             {this.state.workflows.map((wf) => {
@@ -231,6 +255,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 handleCDSelect: this.handleCDSelect,
             }}>
                 {this.renderRouter()}
+                <div className="mt-16 ml-20 mr-20 mb-16">
+                    {this.renderHostErrorMessage()}
+                </div>
                 {this.renderEmptyState()}
             </WorkflowEditorContext.Provider>
         }
@@ -244,6 +271,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                     <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_WORKFLOW} target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
                 </p>
                 {this.renderRouter()}
+                {this.renderHostErrorMessage()}
                 <Link to={this.openCreateWorkflow()} className="cta mb-12 cta-with-img no-decor" style={{ width: '140px' }}>
                     <img src={add} alt="add-worflow" className="icon-dim-18" />New Workflow
                 </Link>
