@@ -9,12 +9,12 @@ export interface CustomInputProps {
     labelClassName?: string;
     placeholder?: string;
     disabled?: boolean;
-    error?: string;
+    error?: { name: string }[];
     helperText?: string;
     name?: string;
     tabIndex?: number;
+    autoComplete: string;
     onChange: (...args) => void;
-    autoComplete:string
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {

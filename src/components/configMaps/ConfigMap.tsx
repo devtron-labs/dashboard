@@ -37,7 +37,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
     return <div className="form__app-compose">
         <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
         <p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
-            <a rel="noreferrer noopener" className="learn-more__href"  href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
         </p>
         {Array.isArray(configData) && configData.filter(cm => cm).map((cm, idx) => <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }} appId={appId} id={id} update={reload} index={idx} />)}
     </div>
@@ -380,7 +380,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     label={"Volume mount path*"}
                     placeholder={"/directory-path"}
                     helperText={"Keys are mounted as files to volume"}
-                    error={volumeMountPath.error}
+                    error={[{ name: volumeMountPath.error }]}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
 
