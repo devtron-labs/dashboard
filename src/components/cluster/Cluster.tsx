@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Component } from 'react'
+import React, { useState, useMemo, Component, useEffect } from 'react'
 import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
@@ -102,7 +102,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         else return <section className="cluster-page">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-            <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}  rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+            <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
             {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
@@ -206,6 +206,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
+    const [clusterNameError, setClusterNameError] = useState([])
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -220,10 +221,10 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             authType: { value: authenTicationType, error: "" }
         },
         {
-            cluster_name: {
-                required: true,
-                validator: { error: `Allowed: 5-16 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,16}$/ }
-            },
+            //  cluster_name: {
+            //  required: true,
+            //  validator: { error: ``, regex: /^[a-z](-?\.?[a-z0-9]){4,16}$/ }
+            // },
             url: {
                 required: true,
                 validator: { error: 'URL is required', regex: /^.*$/ }
@@ -257,6 +258,14 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'endpoint is required', regex: /^.*$/ }
             }
         }, onValidation);
+
+    useEffect(() => {
+         let errors= []
+        if (state.cluster_name.value.length < 3) {
+            errors.push("Length is less than  3")
+        }
+
+    }, [state.cluster_name.value])
 
     async function onValidation() {
 
@@ -375,7 +384,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         {
             environment_name: {
                 required: true,
-                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,25}$/  }
+                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){4,25}$/ }
             },
             namespace: {
                 required: isNamespaceMandatory,
