@@ -123,7 +123,16 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
-        let isValid = username?.length === 0 && token?.length === 0;
+        //let isValid = username?.length === 0 && token?.length === 0
+        let isInvalid = gitHubOrgId?.length === 0 && gitLabGroupId?.length === 0;
+
+        if(isInvalid){
+            this.setState({ 
+                view: ViewType.FORM,
+            })
+            toast.error("Some Required Fields are missing");
+            return;
+        }
 
         this.setState({ saveLoading: true });
         let payload = {
@@ -195,7 +204,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     <div className="gitops__id fw-5 fs-13 mb-8">
                         {this.state.tab === GitProvider.Github ? "GitHub Organisation ID*" : "GitLab Group ID*"}
                     </div>
-                    <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
+                    <input value={this.state.form[key]} type="text"  name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
                 </div>
                 <div className="pl-20"><hr /></div>
