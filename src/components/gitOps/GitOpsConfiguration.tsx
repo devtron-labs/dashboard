@@ -193,7 +193,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
                     <div className="gitops__id fw-5 fs-13 mb-8">
-                        {this.state.tab === GitProvider.Github ? "GitHub Organisation ID" : "GitLab Group ID"}
+                        {this.state.tab === GitProvider.Github ? "GitHub Organisation ID*" : "GitLab Group ID*"}
                     </div>
                     <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
