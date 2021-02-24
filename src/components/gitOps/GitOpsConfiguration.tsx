@@ -163,24 +163,24 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onChange={this.handleGitopsTab} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><GitLab /></aside>
-                                <aside className="login__text-alignment"> GitLab</aside>
-                                <label>
-                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
                             <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === "github"} onChange={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
                                     {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                </label>
+                            </span>
+                        </label>
+                    </div>
+                    <div>
+                        <label className="tertiary-tab__radio">
+                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onChange={this.handleGitopsTab} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><GitLab /></aside>
+                                <aside className="login__text-alignment"> GitLab</aside>
+                                <label>
+                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
