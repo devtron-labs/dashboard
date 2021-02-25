@@ -189,7 +189,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             toast.error("Some required field are missing");
             return;
         }
-        
+
         this.setState({ saveLoading: true });
         let configJSON: any = {};
         try {
