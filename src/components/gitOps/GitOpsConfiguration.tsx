@@ -249,7 +249,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                         <ProtectedInput  value={this.state.form.token} onChange={(event) => this.handleTokenChange(event, 'token')} name="Enter token" error={""}
-                            label={this.state.tab === GitProvider.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                            label={"Personal Access Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
