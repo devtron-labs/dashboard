@@ -127,7 +127,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
    
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
-         let isInvalid = username?.length === 0 && token?.length === 0 && gitHubOrgId?.length === 0 && gitLabGroupId?.length === 0;
+         let isInvalid = username?.length > 0 || token?.length > 0 ;
+         if(this.state.tab=="github"){
+              isInvalid = isInvalid || gitHubOrgId?.length > 0
+         }else{
+            isInvalid = isInvalid || gitLabGroupId?.length > 0
+         }
 
          if(isInvalid){
             this.setState({ 
