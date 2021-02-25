@@ -246,7 +246,7 @@ export class AppListView extends Component<AppListViewProps>{
                 {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
                     <Info className="icon-dim-20 fcb-5 vertical-align-bottom mr-8" />
                     Docker registry configuration is required to setup a new application.
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Click here to configure docker registry.</Link>
+                    &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
                 {this.renderRouter()}
                 <Empty view={this.props.view}
@@ -262,7 +262,7 @@ export class AppListView extends Component<AppListViewProps>{
                 {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
                     <Info className="icon-dim-20 fcb-5 vertical-align-bottom mr-8" />
                     Docker registry configuration is required to setup a new application.
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Click here to configure docker registry.</Link>
+                    &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
                 {this.renderSavedFilters()}
                 {this.renderRouter()}
@@ -285,7 +285,7 @@ export class AppListView extends Component<AppListViewProps>{
                 {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
                     <Info className="icon-dim-20 fcb-5 vertical-align-bottom mr-8" />
                     Docker registry configuration is required to setup a new application.
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Click here to configure docker registry.</Link>
+                    &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
