@@ -159,7 +159,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
          if(isInvalid){
             this.setState({ 
                 view: ViewType.FORM,
-                saveLoading: false,
             })
             toast.error("Some Required Fields are missing");
             return;
@@ -208,7 +207,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
