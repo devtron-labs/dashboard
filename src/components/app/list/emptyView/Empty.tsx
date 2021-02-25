@@ -5,6 +5,7 @@ import noresult from '../../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../../EmptyState/EmptyState';
 import { EmptyProps } from './types';
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg';
+import { DOCUMENTATION } from '../../../../config';
 
 export class Empty extends Component<EmptyProps>{
 
@@ -17,7 +18,12 @@ export class Empty extends Component<EmptyProps>{
                 <EmptyState.Title>
                     <h2 className="fs-16 fw-4 c-9">{this.props.title}</h2>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>{this.props.message}</EmptyState.Subtitle>
+                <EmptyState.Subtitle>
+                    {this.props.message}<br />
+                    <a rel="noreferrer noopener" target="_blank" href={DOCUMENTATION.APP_CREATE} className="anchor">
+                        Learn about creating applications
+                    </a>
+                </EmptyState.Subtitle>
                 <EmptyState.Button>
                     <button type="button" className="cta flex"
                         onClick={this.props.clickHandler}>

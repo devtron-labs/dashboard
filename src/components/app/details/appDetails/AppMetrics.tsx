@@ -149,7 +149,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [calendarValue])
 
-    if (!datasource.isConfigured || !datasource.isHealthy || hostURLConfig) {
+    //@ts-ignore
+    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
         return <AppMetricsEmptyState isLoading={datasource.isLoading}
             isConfigured={datasource.isConfigured}
             isHealthy={datasource.isHealthy}
