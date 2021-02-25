@@ -270,7 +270,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
-        let isSearchOrFilterApplied = request.environments || request.statuses || request.teams || request.appNameSearch.length;
+        let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {
             environments: new Set(request.environments),
             statuses: new Set(request.statuses),
