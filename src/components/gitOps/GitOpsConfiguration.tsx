@@ -179,9 +179,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
-                                <label>
+                                <div>
                                     {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                                </label>
+                                </div>
                             </span>
                         </label>
                     </div>
@@ -191,9 +191,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
-                                <label>
+                                <div>
                                     {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                                </label>
+                                </div>
                             </span>
                         </label>
                     </div>
@@ -205,12 +205,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
                     <div className="gitops__id fw-5 fs-13 mb-8">
-                        {this.state.tab === GitProvider.Github ? "GitHub Organisation ID*" : "GitLab Group ID*"}
+                        {this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
                     </div>
                     <input autoComplete="off" value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
-                    {this.state.isError.gitHubOrgId && <div className="form__error">
-                        {this.state.isError.gitHubOrgId}
+                    { this.state.isError[key] && <div className="form__error">
+                    {this.state.isError[key]}
                     </div>}
                 </div>
                 <div className="pl-20"><hr /></div>
@@ -233,5 +233,4 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             </div>
         </section>
     }
-
 }
