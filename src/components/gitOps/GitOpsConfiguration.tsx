@@ -112,7 +112,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     handleChange(event, key: "host" | "username" | "token" | "gitHubOrgId" | "gitLabGroupId"): void {
         let errorKey = (key === 'gitHubOrgId' || key === 'gitLabGroupId') ? 'org' : '';
-
         this.setState({
             form: {
                 ...this.state.form,
@@ -124,18 +123,18 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             }
         })
     }
-   
+
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
-         let isInvalid = username?.length > 0 || token?.length > 0 ;
-         if(this.state.tab=="github"){
-              isInvalid = isInvalid || gitHubOrgId?.length > 0
-         }else{
+        let isInvalid = username?.length > 0 || token?.length > 0;
+        if (this.state.tab == "github") {
+            isInvalid = isInvalid || gitHubOrgId?.length > 0
+        } else {
             isInvalid = isInvalid || gitLabGroupId?.length > 0
-         }
+        }
 
-         if(isInvalid){
-            this.setState({ 
+        if (isInvalid) {
+            this.setState({
                 view: ViewType.FORM,
             })
             toast.error("Some Required Fields are missing");
@@ -185,7 +184,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <div>
-                                    {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github") ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </div>
                             </span>
                         </label>
@@ -214,8 +213,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                     <input autoComplete="off" value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
-                    { this.state.isError[key] && <div className="form__error">
-                    {this.state.isError[key]}
+                    {this.state.isError[key] && <div className="form__error">
+                        {this.state.isError[key]}
                     </div>}
                 </div>
                 <div className="pl-20"><hr /></div>
@@ -225,7 +224,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         <CustomInput autoComplete="off" value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={this.state.isError.username}
                             label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                        <ProtectedInput  value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={this.state.isError.token}
+                        <ProtectedInput value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={this.state.isError.token}
                             label={"Personal Access Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
 
