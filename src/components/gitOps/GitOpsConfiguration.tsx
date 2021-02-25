@@ -159,7 +159,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
          if(isInvalid){
             this.setState({ 
                 view: ViewType.FORM,
-                saveLoading: false,
             })
             toast.error("Some Required Fields are missing");
             return;
@@ -208,7 +207,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <label>
-                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github" ) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </label>
                             </span>
                         </label>
@@ -228,14 +227,14 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 </div>
                 <div className="flex column left top pl-20">
                     <div className="gitops__id fw-5 fs-13 mb-8">Git Host*</div>
-                    <input value={this.state.form.host} type="text" name="githost" className="form__input"
+                    <input autoComplete="off" value={this.state.form.host} type="text" name="githost" className="form__input"
                         onChange={(event) => this.handleChange(event, 'host')} />
                 </div>
                 <div className="flex column left top pt-16 pl-20 pb-6">
                     <div className="gitops__id fw-5 fs-13 mb-8">
                         {this.state.tab === GitProvider.Github ? "GitHub Organisation ID*" : "GitLab Group ID*"}
                     </div>
-                    <input value={this.state.form[key]} type="text" name="gitorg" className="form__input"
+                    <input autoComplete="off" value={this.state.form[key]} type="text" name="gitorg" className="form__input"
                         onChange={(event) => { this.handleChange(event, key); }} />
                     {this.state.isError.gitHubOrgId && <div className="form__error">
                         {this.state.isError.gitHubOrgId}
@@ -249,7 +248,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                         <ProtectedInput  value={this.state.form.token} onChange={(event) => this.handleTokenChange(event, 'token')} name="Enter token" error={""}
-                            label={this.state.tab === GitProvider.Github ? "GitHub Token*" : "GitLab Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                            label={"Personal Access Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
