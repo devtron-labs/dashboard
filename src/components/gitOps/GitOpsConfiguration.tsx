@@ -119,41 +119,14 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 [key]: event.target.value,
             },
             isError: {
-                username: event.target.value.length === 0 ? "This is required field" : "",
-                token: event.target.value.length === 0 ? "This is required field" : "",
-                gitHubOrgId: event.target.value.length === 0 ? "This is required field" : "",
-                gitLabGroupId: event.target.value.length === 0 ? "This is required field" : ""
-            }
-        })
-    }
-    handleUsernameChange(event, key: "username"){
-        this.setState({
-            form: {
-                ...this.state.form,
-                [key]: event.target.value,
-            },
-            isError: {
                 ...this.state.isError,
-                username: event.target.value.length === 0 ? "This is required field" : "",
+                [key]: event.target.value.length === 0 ? "This is required field" : "",
             }
         })
     }
-    handleTokenChange(event, key: "token"){
-        this.setState({
-            form: {
-                ...this.state.form,
-                [key]: event.target.value,
-            },
-            isError: {
-                ...this.state.isError,
-                token: event.target.value.length === 0 ? "This is required field" : "",
-            }
-        })
-    }
-
+   
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
-        //let isValid = username?.length === 0 && token?.length === 0
          let isInvalid = username?.length === 0 && token?.length === 0 && gitHubOrgId?.length === 0 && gitLabGroupId?.length === 0;
 
          if(isInvalid){
@@ -244,12 +217,13 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="fw-6 cn-9 fs-14 pl-20">Git access credentials</div>
                 <form className="pl-20 ">
                     <div className="form__row--two-third pt-16 gitops__id mb-20 fs-13 ">
-                        <CustomInput autoComplete="off" value={this.state.form.username} onChange={(event) => this.handleUsernameChange(event, 'username')} name="Enter username" error={""}
+                        <CustomInput autoComplete="off" value={this.state.form.username} onChange={(event) => this.handleChange(event, 'username')} name="Enter username" error={this.state.isError.username}
                             label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                        <ProtectedInput  value={this.state.form.token} onChange={(event) => this.handleTokenChange(event, 'token')} name="Enter token" error={""}
+                        <ProtectedInput  value={this.state.form.token} onChange={(event) => this.handleChange(event, 'token')} name="Enter token" error={this.state.isError.token}
                             label={"Personal Access Token*"} labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
+
                     <div className="form__buttons">
                         <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
                             {this.state.saveLoading ? <Progressing /> : "Save"}
