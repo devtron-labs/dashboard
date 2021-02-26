@@ -238,13 +238,11 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     label="Git Host*"
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                <div className="flex column left top pt-16 pb-6">
-                    <CustomInput autoComplete="off" value={this.state.form[key]}
-                        tabIndex={2}
-                        error={this.state.isError[key]}
-                        label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
-                        onChange={(event) => { this.handleChange(event, key); }} />
-                </div>
+                <CustomInput autoComplete="off" value={this.state.form[key]}
+                    tabIndex={2}
+                    error={this.state.isError[key]}
+                    label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
+                    onChange={(event) => { this.handleChange(event, key); }} />
                 <hr />
                 <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
 
