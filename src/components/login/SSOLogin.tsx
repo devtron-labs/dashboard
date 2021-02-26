@@ -427,7 +427,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <div className="flex left pt-8">
                         <div className="bcy-5 pl-4 pr-4 mr-8 cn-9">TIP</div>
                         Click to use:
-                        <button type="button" onClick={(e) => this.handleSSOURLLocation(window.location.origin)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}</button>
+                        <button type="button" onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}/orchestrator</button>
                     </div>
                 </label>
                 {this.renderSSOCodeEditor()}
