@@ -286,10 +286,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
             <p className="m-0">config:</p>
-            <p className="m-0">&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-            <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
-            <p className="m-0">&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
-            <p className="m-0">&nbsp;&nbsp;config:</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
         </div> : null;
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
