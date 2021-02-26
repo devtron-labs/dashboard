@@ -172,9 +172,13 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             <div className="form__row form__buttons  ">
                 <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
                     <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
-                    <div>Set as default</div>
+                    <div className="mr-4"> Set as default </div>
+                    <Tippy className="default-tt" arrow={false} placement="top" content={
+                        <span style={{ display: "block", width: "200px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                        <Question className="icon-dim-20" />
+                    </Tippy>
                 </label>
-       
+
                 <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : 'Save'}</button>
             </div>
