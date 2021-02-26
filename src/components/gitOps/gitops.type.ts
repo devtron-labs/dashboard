@@ -1,5 +1,6 @@
 import { RouteComponentProps } from 'react-router'
 
+export type GitProviderType = "GITHUB" | "GITLAB";
 export interface CustomGitOpsState {
     username: {
         value: string;
@@ -12,9 +13,9 @@ export interface CustomGitOpsState {
 }
 
 
-export interface GitList {
+export interface GitOpsConfig {
     id: number,
-    provider: "GITHUB" | "GITLAB";
+    provider: GitProviderType;
     host: string,
     token: string,
     username?: string,
@@ -26,11 +27,12 @@ export interface GitList {
 export interface GitOpsState {
     view: string;
     statusCode: number;
-    tab: string;
-    gitList: GitList[];
-    form: GitList
+    tab: GitProviderType;
+    gitList: GitOpsConfig[];
+    form: GitOpsConfig;
+    isFormValid: boolean;
+    lastActiveGitOp: undefined | GitOpsConfig;
     saveLoading: boolean;
-    lastActiveGitOp: undefined | GitList;
     isError: {
         username: string;
         token: string;

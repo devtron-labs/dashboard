@@ -11,14 +11,14 @@ import '../login/login.css';
 import './gitops.css';
 import Check from '../../assets/icons/ic-outline-check.svg'
 
-const GitProvider = {
-    GitLab: 'gitlab',
-    Github: 'github',
+enum GitProvider {
+    GitLab = 'GITLAB',
+    Github = 'GITHUB',
 };
 
 const GitHost = {
-    github: "https://github.com/",
-    gitlab: "https://gitlab.com/"
+    GITHUB: "https://github.com/",
+    GITLAB: "https://gitlab.com/"
 }
 
 const DefaultGitOpsConfig = {
@@ -44,9 +44,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             lastActiveGitOp: undefined,
             form: {
                 ...DefaultGitOpsConfig,
-                host: GitHost.github,
+                host: GitHost.GITHUB,
                 provider: "GITHUB",
             },
+            isFormValid: false,
             isError: {
                 username: "",
                 token: "",
@@ -67,17 +68,21 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         getGitOpsConfigurationList().then((response) => {
             let lastActiveGitOp = response.result?.find(item => item.active);
             let form = lastActiveGitOp;
+            let isFormValid = false;
+            let isError = this.state.isError;
+
             if (!lastActiveGitOp) {
                 form = {
                     ...DefaultGitOpsConfig,
                     host: GitHost[this.state.tab],
-                    provider: this.state.tab === GitProvider.Github ? "GITHUB" : "GITLAB",
+                    provider: this.state.tab === GitProvider.Github,
                 }
             }
+
             this.setState({
                 gitList: response.result || [],
                 view: ViewType.FORM,
-                tab: form.provider.toLowerCase(),
+                tab: form.provider,
                 form: form,
                 saveLoading: false,
                 lastActiveGitOp: lastActiveGitOp
@@ -90,12 +95,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     handleGitopsTab(event): void {
         let newGitOps = event.target.value;
-        let form = this.state.gitList.find(item => item.provider.toLowerCase() === newGitOps);
+        let form = this.state.gitList.find(item => item.provider === newGitOps);
         if (!form) {
             form = {
                 ...DefaultGitOpsConfig,
                 host: GitHost[newGitOps],
-                provider: newGitOps === GitProvider.Github ? "GITHUB" : "GITLAB",
+                provider: GitProvider.Github,
             }
         };
         this.setState({
@@ -111,8 +116,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     }
 
     handleChange(event, key: "host" | "username" | "token" | "gitHubOrgId" | "gitLabGroupId"): void {
-        let errorKey = (key === 'gitHubOrgId' || key === 'gitLabGroupId') ? 'org' : '';
-
         this.setState({
             form: {
                 ...this.state.form,
@@ -128,20 +131,17 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     onSave() {
         let { username, token, gitHubOrgId, gitLabGroupId } = this.state.isError;
         let isInvalid = username?.length > 0 || token?.length > 0;
-        if (this.state.tab == "github") {
+        if (this.state.tab === GitProvider.Github) {
             isInvalid = isInvalid || gitHubOrgId?.length > 0
-        } else {
+        }
+        else {
             isInvalid = isInvalid || gitLabGroupId?.length > 0
         }
 
         if (isInvalid) {
-            this.setState({
-                view: ViewType.FORM,
-            })
             toast.error("Some Required Fields are missing");
             return;
         }
-
 
         this.setState({ saveLoading: true });
         let payload = {
@@ -181,24 +181,24 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <div className="login__sso-flex">
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === "github"} onChange={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === GitProvider.Github} onChange={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitHub /></aside>
                                 <aside className="login__text-alignment"> GitHub</aside>
                                 <div>
-                                    {(this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "github") ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {(this.state.lastActiveGitOp?.provider === GitProvider.Github) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </div>
                             </span>
                         </label>
                     </div>
                     <div>
                         <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === "gitlab"} onChange={this.handleGitopsTab} />
+                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === GitProvider.GitLab} onChange={this.handleGitopsTab} />
                             <span className="tertiary-tab sso-icons">
                                 <aside className="login__icon-alignment"><GitLab /></aside>
                                 <aside className="login__text-alignment"> GitLab</aside>
                                 <div>
-                                    {this.state.lastActiveGitOp?.provider?.toLocaleLowerCase() == "gitlab" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                    {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                                 </div>
                             </span>
                         </label>
