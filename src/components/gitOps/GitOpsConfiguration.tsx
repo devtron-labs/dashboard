@@ -23,8 +23,8 @@ const GitHost = {
 
 const DefaultGitOpsConfig = {
     id: undefined,
-    provider: "",
-    host: GitProvider.Github,
+    provider: GitProvider.Github,
+    host: "",
     token: "",
     username: "",
     gitLabGroupId: "",
@@ -101,7 +101,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             form = {
                 ...DefaultGitOpsConfig,
                 host: GitHost[newGitOps],
-                provider: GitProvider.Github,
+                provider: newGitOps,
             }
         };
         let isError = this.getFormErrors(false, form);
