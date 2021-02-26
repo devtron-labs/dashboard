@@ -68,7 +68,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList().then((response) => {
             let lastActiveGitOp = response.result?.find(item => item.active);
-            lastActiveGitOp = undefined;
             let form = lastActiveGitOp;
             if (!lastActiveGitOp) {
                 form = {
