@@ -53,13 +53,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
         })
         getInitState(payload).then((response) => {
-            let view;
-            if (payload.appNameSearch || payload.environments.length || payload.teams.length || payload.statuses.length) {
-                view = response.apps.length ? AppListViewType.LIST : AppListViewType.NO_RESULT;
-            }
-            else {
-                view = response.apps.length ? AppListViewType.LIST : AppListViewType.EMPTY;
-            }
             this.setState({
                 code: response.code,
                 filters: response.filters,
@@ -73,7 +66,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 },
                 searchQuery: response.appNameSearch || "",
                 searchApplied: !!response.appNameSearch?.length,
-                view: view
             });
         }).then(() => {
             let payload = this.createPayloadFromURL(this.props.location.search);
@@ -278,6 +270,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
+        let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {
             environments: new Set(request.environments),
             statuses: new Set(request.statuses),
@@ -332,10 +325,15 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.abortController = new AbortController();
 
         getAppList(request, { signal: this.abortController.signal }).then((response) => {
+            let view = AppListViewType.LIST;
+            if (response.result.appCount === 0) {
+                if (isSearchOrFilterApplied) view = AppListViewType.NO_RESULT;
+                else view = AppListViewType.EMPTY;
+            }
             let state = { ...this.state };
             state.code = response.code;
             state.apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : [];
-            state.view = state.apps.length ? AppListViewType.LIST : AppListViewType.NO_RESULT;
+            state.view = view;
             state.offset = request.offset;
             state.size = response.result.appCount;
             state.pageSize = request.size;
