@@ -30,10 +30,11 @@ export interface GitOpsState {
     tab: GitProviderType;
     gitList: GitOpsConfig[];
     form: GitOpsConfig;
-    isFormValid: boolean;
+    isFormEdited: boolean;
     lastActiveGitOp: undefined | GitOpsConfig;
     saveLoading: boolean;
     isError: {
+        host: string;
         username: string;
         token: string;
         gitHubOrgId: string;

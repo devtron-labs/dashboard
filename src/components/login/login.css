@@ -185,7 +185,8 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    margin: 4px 12px 20px 24px;
+    margin-top: 4px ;
+    margin-bottom: 24px;
 }
 
 .login__flex {
