@@ -64,6 +64,7 @@
         }
     }
 
+<<<<<<< HEAD
     .protected-input-container {
         padding: 0;
         overflow: hidden;
@@ -101,8 +102,15 @@
         //     background-size: contain;
         //     margin-right: 4px;
         // }
+=======
+    .protected-input__toggle{
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+>>>>>>> gitops-issue
     }
-
+    
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
