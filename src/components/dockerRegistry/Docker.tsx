@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
-import { ReactComponent as Question } from '../../assets/icons/appstatus/unknown.svg';
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
@@ -174,7 +174,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
                     <div className="mr-4"> Set as default </div>
                     <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "200px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
                         <Question className="icon-dim-20" />
                     </Tippy>
                 </label>
