@@ -13,14 +13,14 @@ export interface CustomInputProps {
     helperText?: string;
     name?: string;
     tabIndex?: number;
-    autoComplete: string;
+    autoComplete?: string;
     onChange: (...args) => void;
 }
 
-export class CustomInput extends Component<CustomInputProps, any> {
+export class CustomInput extends Component<CustomInputProps, {}> {
 
     render() {
-        let isError: boolean = !!this.props.error;
+        let isError: boolean = !!this.props.error.length;
         let labelClasses = `form__label`;
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <>
@@ -30,7 +30,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
                 placeholder={this.props.placeholder}
-                className={isError ? "form__input form__input--error" : "form__input"}
+                className={isError ? "form__input bw-1 er-5" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
