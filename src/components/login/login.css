@@ -253,3 +253,8 @@
     border-color: 1px solid var(--B500);
     background-color: var(--B500);
 }
+
+.login__btn{
+    border: none;
+    outline: none;
+}

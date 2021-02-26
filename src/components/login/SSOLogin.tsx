@@ -313,7 +313,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
     handleSSOURLLocation(value: string): void {
         this.setState({
-
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                url: value
+            }
         })
     }
 
@@ -407,7 +410,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
                         <Help className="icon-dim-20 fcb-5 mr-12" />
-                        <div>For redirect URL or callback URL use: http://cd.devtron.ai:32080/orchestrator/api/dex/callback. <br/>
+                        <div>For redirect URL or callback URL use: http://cd.devtron.ai:32080/orchestrator/api/dex/callback. <br />
                             Please ensure above URL is registered with the identity provider.</div>
                     </div>
                     <div className="mt-8 ml-30">
@@ -421,10 +424,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     {this.state.isError.url && <div className="form__error">
                         {this.state.isError.url}
                     </div>}
-                    <div className="flex left pt-4">
+                    <div className="flex left pt-8">
                         <div className="bcy-5 pl-4 pr-4 mr-8 cn-9">TIP</div>
                         Click to use:
-                        <button type="button" onClick={(e) => this.handleSSOURLLocation(window.location.origin)} className="bcb-3 "> {window.location.origin}</button>
+                        <button type="button" onClick={(e) => this.handleSSOURLLocation(window.location.origin)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}</button>
                     </div>
                 </label>
                 {this.renderSSOCodeEditor()}
