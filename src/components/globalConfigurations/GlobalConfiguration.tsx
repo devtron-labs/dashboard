@@ -163,11 +163,11 @@ export function ProtectedInput({ name, value, error, onChange, label, type = "te
     }, [hidden])
 
     return (
-        <div className="flex column left top form__label">
-            <label htmlFor="" className={`${labelClassName}`}>{label}</label>
+        <div className="flex column left top ">
+            <label htmlFor="" className={`form__label ${labelClassName}`}>{label}</label>
             <div className="position-rel w-100">
                 <input type={shown ? 'text' : 'password'} tabIndex={tabIndex}
-                    className={error ? "form__input form__input--error" : "form__input"}
+                    className={error ? "form__input form__input--error pl-42" : "form__input pl-42"}
                     name={name}
                     onChange={e => { e.persist(); onChange(e) }}
                     value={value}

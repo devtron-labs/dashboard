@@ -154,18 +154,19 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     return (
         <form onSubmit={handleOnSubmit} className="docker-form">
             <div className="form__row">
-                <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} onChange={handleOnChange} label="Name*" disabled={!!id} />
+                <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>
             <div className="form__row form__row--two-third">
                 <div className="flex left column top">
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
-                    <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
+                    <Select name="registryType" tabIndex={2} rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
                         <Select.Button rootClassName="select-button--docker-register">{selectedDckerRegistryType?.label || `Select Docker Registry`}</Select.Button>
                         {DockerRegistryType.map(type => <Select.Option value={type.value} key={type.value}>{type.label}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
                 <CustomInput name="registryUrl"
+                    tabIndex={3}
                     label={state.registryType.value !== 'docker-hub' ? "Registry URL*" : "Registry URL"}
                     value={customState.registryUrl.value}
                     autoComplete="off"
@@ -178,7 +179,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="form__row">
                     <div className="flex left column">
                         <label htmlFor="" className="form__label">AWS region*</label>
-                        <Select rootClassName="form__input form__input--aws-region" name="awsRegion" onChange={customHandleChange} value={customState.awsRegion.value}>
+                        <Select tabIndex={4} rootClassName="form__input form__input--aws-region" name="awsRegion" onChange={customHandleChange} value={customState.awsRegion.value}>
                             <Select.Button>{customState.awsRegion.value ? awsRegionMap.get(customState.awsRegion.value) : 'Select AWS region'}</Select.Button>
                             {Array.from(awsRegionMap).map(([value, name]) => <Select.Option value={value} key={value}>{name}</Select.Option>)}
                         </Select>
@@ -186,20 +187,20 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     </div>
                 </div>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" autoComplete={"off"} />
-                    <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
+                    <CustomInput name="awsAccessKeyId" tabIndex={5} value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" autoComplete={"off"} />
+                    <ProtectedInput name="awsSecretAccessKey" tabIndex={6} value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'docker-hub' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
-                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
+                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
-                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
+                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             <div className="form__row form__buttons  ">
