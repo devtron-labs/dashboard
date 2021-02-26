@@ -222,7 +222,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         {
             cluster_name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ }
+                validator: { error: `Allowed: 5-16 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,16}$/ }
             },
             url: {
                 required: true,
@@ -375,11 +375,11 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         {
             environment_name: {
                 required: true,
-                validator: { error: 'This is required field(max 16 chars).', regex: /^.{1,16}$/ }
+                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,25}$/  }
             },
             namespace: {
                 required: isNamespaceMandatory,
-                validator: { error: '^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$ pattern should satisfy.', regex: /^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$/ }
+                validator: { error: `Allowed: 5-25 chars 'a-z' '0-9' '.'  '-' Start/end with alphanumeric`, regex: /^[a-z](-?\.?[a-z0-9]){5,25}$/ }
             },
             isProduction: {
                 required: true,
@@ -429,7 +429,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 <CustomInput autoComplete="off" disabled={!!environment_name} name="environment_name" value={state.environment_name.value} error={state.environment_name.error} onChange={handleOnChange} label="Environment Name*" />
             </div>
             <div className="form__row form__row--namespace">
-                <CustomInput disabled={!!namespace || ignore} name="namespace" value={state.namespace.value} error={state.namespace.error} onChange={handleOnChange} label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`} />
+                <CustomInput disabled={!!namespace || ignore} name="namespace" value={state.namespace.value} error={state.namespace.error} onChange={handleOnChange} label={`Namespace ${isNamespaceMandatory ? '*' : ''}`} />
             </div>
             {!isNamespaceMandatory && <><div className="form__row form__row--ignore-namespace">
                 <input type="checkbox" onChange={e => { setIngore(t => !t); setIngoreError("") }} checked={ignore} />
