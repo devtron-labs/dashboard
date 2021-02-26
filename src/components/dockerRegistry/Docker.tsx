@@ -6,6 +6,8 @@ import { List, CustomInput, ProtectedInput } from '../globalConfigurations/Globa
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
+import Tippy from '@tippyjs/react';
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
@@ -167,11 +169,16 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
-            <div className="form__row form__buttons">
-                <label htmlFor="" className="docker-default" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
+            <div className="form__row form__buttons  ">
+                <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
                     <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
-                    Set as default
+                    <div className="mr-4"> Set as default </div>
+                    <Tippy className="default-tt" arrow={false} placement="top" content={
+                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                        <Question className="icon-dim-20" />
+                    </Tippy>
                 </label>
+
                 <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : 'Save'}</button>
             </div>
