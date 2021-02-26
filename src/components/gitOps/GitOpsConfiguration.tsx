@@ -120,7 +120,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             },
             isError: {
                 ...this.state.isError,
-                [key]: event.target.value.length === 0 ? "This is required field" : "",
+                [key]: event.target.value.length === 0 ? "This is a required field" : "",
             },
             isFormEdited: false,
         })

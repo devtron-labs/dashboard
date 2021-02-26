@@ -238,19 +238,6 @@
     right: 8px;
 }
 
-/* 
-.mr-24 {
-    margin-right: 24px;
-}
-
-.ml-2 {
-    margin-left: 2px;
-}
-
-.mr-12 {
-    margin-right: 12px;
-} */
-
 .login__auth-link {
     text-decoration: none !important;
     color: var(--B500)
