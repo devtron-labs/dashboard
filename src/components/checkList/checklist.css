@@ -1,3 +1,11 @@
 .img-width{
     max-width: 100px;
 }
+
+.checklist__top-img{
+    max-width: 175px;
+}
+
+.checklist__custom-input{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
