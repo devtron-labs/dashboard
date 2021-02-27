@@ -282,8 +282,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 4 });
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 4 });
+        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
             <p className="m-0">config:</p>
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
@@ -413,7 +413,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <div>For redirect URL or callback URL use: http://cd.devtron.ai:32080/orchestrator/api/dex/callback. <br />
                             Please ensure above URL is registered with the identity provider.</div>
                     </div>
-                    <div className="mt-8 ml-30">
+                    <div className="mt-8 ml-32">
                         <span className="fw-6">Help: </span>See documentation for
                         <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a>
                     </div>
@@ -426,7 +426,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>}
                     <div className="flex left pt-8">
                         <div className="bcy-5 pl-4 pr-4 mr-8 cn-9">TIP</div>
-                        Click to use:
+                        <div className="fw-4">Click to use:</div>
                         <button type="button" onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}/orchestrator</button>
                     </div>
                 </label>
