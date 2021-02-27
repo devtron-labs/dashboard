@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { AppListViewType } from '../config';
 import { ErrorScreenManager, Filter, Pagination, FilterOption, Progressing } from '../../common';
 import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
-import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
+import { Link, Switch, Route, RouteComponentProps, NavLink } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
 import { AddNewApp } from '../create/CreateApp';
@@ -13,7 +13,9 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { ReactComponent as Check } from '../../../assets/icons/ic-outline-check.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import Checklist from '../../../assets/img/ic-empty-checklist.png'
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -231,6 +233,25 @@ export class AppListView extends Component<AppListViewProps>{
         }
     }
 
+    renderCheckList(){
+        return (<div className="br-4 bcn-0 p-20 applist__checklist">
+          <img src={Checklist} className="checklist__img"/>
+          <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
+          <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+          <div className="checklist__custom-input cn-9 pt-12 pb-12 fw-6">To deploy custom application (2/6 completed)</div>
+          <div className="checklist__custom-input ">
+              <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Add host URL</NavLink>
+              <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Configure GitOps</NavLink>
+              <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Add Git account</NavLink>
+              <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Add docker registry</NavLink>
+              <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Add cluster & environment</NavLink>
+              <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8"/></span>Add project</NavLink>
+          </div>
+          <div className="cn-9 pt-12 pb-12 fw-6">To deploy chart (0/3 completed)</div>
+        </div>)
+    }
+    //no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8
+
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
@@ -287,6 +308,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Docker registry configuration is required to setup a new application.
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
+                {this.renderCheckList()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}
