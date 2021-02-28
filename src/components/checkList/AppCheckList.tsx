@@ -12,18 +12,26 @@ import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-drop
 import { AppCheckListState, AppCheckListProps } from './checklist.type';
 import { ENGINE_METHOD_STORE } from 'constants';
 
-export class AppCheckList extends Component< AppCheckListProps, AppCheckListState> {
+export class AppCheckList extends Component<AppCheckListProps, AppCheckListState> {
     constructor(props) {
         super(props)
         this.state = {
             isCollapsed: false,
+            isChartCollapsed: false,
         }
-        this.toggleAppCheckbox= this.toggleAppCheckbox.bind(this);
+        this.toggleAppCheckbox = this.toggleAppCheckbox.bind(this);
+        this.toggleChartCheckbox= this.toggleChartCheckbox.bind(this);
     }
 
-    toggleAppCheckbox(){
+    toggleAppCheckbox() {
         this.setState({
             isCollapsed: !this.state.isCollapsed,
+        })
+    }
+
+    toggleChartCheckbox() {
+        this.setState({
+            isChartCollapsed: !this.state.isChartCollapsed,
         })
     }
 
@@ -44,10 +52,15 @@ export class AppCheckList extends Component< AppCheckListProps, AppCheckListStat
                 <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add cluster & environment</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
             </div> : ''}
-            <div className="flex cn-9 pt-12 pb-12 fw-6">
+            <div className="flex cn-9 pt-12 pb-12 fw-6" onClick={this.toggleChartCheckbox}>
                 <div>To deploy chart (0/3 completed)</div>
-                <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " /></span>
+                <span className="checklist__dropdown"><Dropdown className="icon-dim-20 rotate " /></span>
             </div>
+            {this.state.isChartCollapsed ? <div className="checklist__custom-input ">
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add host URL</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
+            </div> : ''}
         </div>)
     }
 
