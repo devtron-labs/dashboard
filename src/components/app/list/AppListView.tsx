@@ -293,7 +293,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Docker registry configuration is required to setup a new application.
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
-                <AppCheckList/>
+                <AppCheckList {...this.props}/>
                 {this.renderCheckList()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

@@ -9,27 +9,41 @@ import Complete from '../../assets/img/ic-empty-done@2x.png';
 import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { AppCheckListState, AppCheckListProps } from './checklist.type';
+import { ENGINE_METHOD_STORE } from 'constants';
 
+export class AppCheckList extends Component< AppCheckListProps, AppCheckListState> {
+    constructor(props) {
+        super(props)
+        this.state = {
+            isCollapsed: false,
+        }
+        this.toggleAppCheckbox= this.toggleAppCheckbox.bind(this);
+    }
 
-export class AppCheckList extends Component {
+    toggleAppCheckbox(){
+        this.setState({
+            isCollapsed: !this.state.isCollapsed,
+        })
+    }
 
     renderAppCheckListModal() {
         return (<div>
             <img src={Checklist} className="checklist__top-img" />
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
             <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
-            <div className="checklist__custom-input cn-9 pt-12 pb-12 fw-6 flex">
+            <div className="checklist__custom-input cursor cn-9 pt-12 pb-12 fw-6 flex" onClick={this.toggleAppCheckbox}>
                 <div>To deploy custom application (2/6 completed)</div>
                 <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: '180deg' }} /></span>
             </div>
-            <div className="checklist__custom-input ">
+            {this.state.isCollapsed ? <div className="checklist__custom-input ">
                 <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add host URL</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add Git account</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add docker registry</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add cluster & environment</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
-            </div>
+            </div> : ''}
             <div className="flex cn-9 pt-12 pb-12 fw-6">
                 <div>To deploy chart (0/3 completed)</div>
                 <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " /></span>
