@@ -5,22 +5,67 @@ import { ReactComponent as Check } from '../../assets/icons/ic-outline-check.svg
 import { URLS } from '../../config';
 import img from '../../assets/img/ic-checklist-chart@2x.png';
 import './checklist.css';
+import { ViewType } from '../../config'
 import Complete from '../../assets/img/ic-empty-done@2x.png';
 import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AppCheckListState, AppCheckListProps } from './checklist.type';
-import { ENGINE_METHOD_STORE } from 'constants';
+import { getAppCheckList } from './checklist.service';
+import {  Progressing, showError } from '../common';
+
+const DefaultAppCheckList = {
+    gitOps: false,
+    project: false,
+    git: false,
+    environment: false,
+    docker: false,
+    hostUrl: false,
+}
+const DefaultChartCheckList = {
+    gitOps: false,
+    project: false,
+    git: false,
+}
 
 export class AppCheckList extends Component<AppCheckListProps, AppCheckListState> {
     constructor(props) {
         super(props)
         this.state = {
+            view: ViewType.LOADING,
+            statusCode: 0,
             isCollapsed: false,
             isChartCollapsed: false,
+            saveLoading: false,
+            form:{
+                appChecklist:{
+                    ...DefaultAppCheckList
+                },
+                chartChecklist:{
+                    ...DefaultChartCheckList
+                }
+            }
         }
         this.toggleAppCheckbox = this.toggleAppCheckbox.bind(this);
         this.toggleChartCheckbox= this.toggleChartCheckbox.bind(this);
+    }
+
+    componentDidMount(){
+        this.fetchAppCheckList()
+    }
+
+    fetchAppCheckList(){
+        getAppCheckList().then((response)=>{
+           let appCheckList = response.result
+           this.setState({
+            view: ViewType.FORM,
+            saveLoading: false,
+               form: appCheckList,
+           },(()=>{console.log(this.state)}))
+        }).catch((error) => {
+            showError(error);
+            this.setState({ view: ViewType.ERROR, statusCode: error.code });
+        })
     }
 
     toggleAppCheckbox() {
@@ -57,8 +102,8 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 <span className="checklist__dropdown"><Dropdown className="icon-dim-20 rotate " /></span>
             </div>
             {this.state.isChartCollapsed ? <div className="checklist__custom-input ">
-                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add host URL</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" />Add cluster & environment</span></NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
             </div> : ''}
         </div>)
