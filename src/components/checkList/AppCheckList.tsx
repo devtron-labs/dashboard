@@ -13,6 +13,7 @@ import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-drop
 import { AppCheckListState, AppCheckListProps } from './checklist.type';
 import { getAppCheckList } from './checklist.service';
 import { Progressing, showError } from '../common';
+import  Uncheck from '../../assets/img/ic-success@2x.png';
 
 const DefaultAppCheckList = {
     gitOps: false,
@@ -91,23 +92,23 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: '180deg' }} /></span>
             </div>
             {this.state.isAppCollapsed ? <div className="checklist__custom-input ">
-                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox">
-                    {!this.state.form.appChecklist.hostUrl ? '' : <Check className="ic-dim-16 mr-8" />}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flex left">
+                    {!this.state.form.appChecklist.hostUrl ? <img src={Uncheck} className="icon-dim-16 flex mr-8"/> : <Check className="icon-dim-16 mr-8" />}
                     Add host URL</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox">
-                    {!this.state.form.appChecklist.gitOps ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
-                     Configure GitOps</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flexbox">
-                    {!this.state.form.appChecklist.git ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
-                     Add Git account</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flexbox">
-                    {!this.state.form.appChecklist.docker ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flex left">
+                    {!this.state.form.appChecklist.gitOps ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
+                    Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flex left">
+                    {!this.state.form.appChecklist.git ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
+                    Add Git account</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flex left">
+                    {!this.state.form.appChecklist.docker ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
                     Add docker registry</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox">
-                    {!this.state.form.appChecklist.environment ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flex left">
+                    {!this.state.form.appChecklist.environment ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
                     Add cluster & environment</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox">
-                    {!this.state.form.appChecklist.project ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flex left">
+                    {!this.state.form.appChecklist.project ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
                     Add project</NavLink>
             </div> : ''}
             <div className="flex cn-9 pt-12 pb-12 fw-6" onClick={this.toggleChartCheckbox}>
@@ -115,14 +116,14 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 <span className="checklist__dropdown"><Dropdown className="icon-dim-20 rotate " /></span>
             </div>
             {this.state.isChartCollapsed ? <div className="checklist__custom-input ">
-                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox">
-                    {!this.state.form.chartChecklist.gitOps ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flex left">
+                    {!this.state.form.chartChecklist.gitOps ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className=" icon-dim-16 mr-8" />}
                     Configure GitOps</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span>
-                    {!this.state.form.chartChecklist.environment ? '' : <Check className="ic-dim-16 mr-8" />}
-                    Add cluster & environment</span></NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox">
-                    {!this.state.form.chartChecklist.project ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flex left">
+                    {!this.state.form.chartChecklist.environment ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
+                    Add cluster & environment</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flex left">
+                    {!this.state.form.chartChecklist.project ? <img src={Uncheck} className="icon-dim-16 mr-8"/> : <Check className="icon-dim-16 mr-8" />}
                     Add project</NavLink>
             </div> : ''}
         </div>)
