@@ -8,15 +8,20 @@ import './checklist.css';
 import Complete from '../../assets/img/ic-empty-done@2x.png';
 import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
+import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
+
 
 export class AppCheckList extends Component {
 
-    renderAppCheckListModal(){
-        return(<div>
+    renderAppCheckListModal() {
+        return (<div>
             <img src={Checklist} className="checklist__top-img" />
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
             <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
-            <div className="checklist__custom-input cn-9 pt-12 pb-12 fw-6">To deploy custom application (2/6 completed)</div>
+            <div className="checklist__custom-input cn-9 pt-12 pb-12 fw-6 flex">
+                <div>To deploy custom application (2/6 completed)</div>
+                <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: '180deg' }} /></span>
+            </div>
             <div className="checklist__custom-input ">
                 <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add host URL</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
@@ -25,12 +30,15 @@ export class AppCheckList extends Component {
                 <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add cluster & environment</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
             </div>
-            <div className="cn-9 pt-12 pb-12 fw-6">To deploy chart (0/3 completed)</div>
+            <div className="flex cn-9 pt-12 pb-12 fw-6">
+                <div>To deploy chart (0/3 completed)</div>
+                <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " /></span>
+            </div>
         </div>)
     }
 
     renderCheckChartModal() {
-       return  <div className="bcg-1 flexbox ">
+        return <div className="bcg-1 flexbox ">
             <img className="img-width pt-12 pb-12 pl-16 " src={img} />
             <div className="pl-20">
                 <div className="pt-16 cn-9"> Deploy charts using Devtron.</div>
@@ -39,8 +47,8 @@ export class AppCheckList extends Component {
         </div>
     }
 
-    renderCustomAppDeploy(){
-        return  <div className="bcg-1 mb-8 flexbox">
+    renderCustomAppDeploy() {
+        return <div className="bcg-1 mb-8 flexbox">
             <img className="img-width pt-12 pb-12 pl-16 " src={Deploy} />
             <div className="pl-20">
                 <div className="pt-16 cn-9"> Create, build and deploy a custom application.</div>
@@ -49,8 +57,8 @@ export class AppCheckList extends Component {
         </div>
     }
 
-    renderSampleApplication(){
-        return  <div className="bcg-1 mb-8 flexbox">
+    renderSampleApplication() {
+        return <div className="bcg-1 mb-8 flexbox">
             <img className="img-width pt-12 pb-12 pl-16 " src={Sample} />
             <div className="pl-20">
                 <div className="pt-16 cn-9"> Deploy sample “Hello world” application.</div>
@@ -59,9 +67,9 @@ export class AppCheckList extends Component {
         </div>
     }
 
-    renderAllCheckSetModal(){
-        return(<div className="">
-            <img src={Complete} className="checklist__top-img"/>
+    renderAllCheckSetModal() {
+        return (<div className="">
+            <img src={Complete} className="checklist__top-img" />
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
             <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
             {this.renderSampleApplication()}
@@ -70,13 +78,13 @@ export class AppCheckList extends Component {
         </div>)
     }
 
-   
+
 
     render() {
         return (<div className="br-4 bcn-0 p-20 applist__checklist">
-             {/*{this.renderAppCheckListModal()}*/}
-             {/* {this.renderCheckChartModal()}*/}
-             {this.renderAllCheckSetModal()}
+            {this.renderAppCheckListModal()}
+            {/* {this.renderCheckChartModal()}*/}
+            {this.renderAllCheckSetModal()}
         </div>)
     }
 }
