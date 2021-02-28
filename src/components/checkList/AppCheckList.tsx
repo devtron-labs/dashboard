@@ -12,7 +12,7 @@ import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { AppCheckListState, AppCheckListProps } from './checklist.type';
 import { getAppCheckList } from './checklist.service';
-import {  Progressing, showError } from '../common';
+import { Progressing, showError } from '../common';
 
 const DefaultAppCheckList = {
     gitOps: false,
@@ -22,10 +22,11 @@ const DefaultAppCheckList = {
     docker: false,
     hostUrl: false,
 }
+
 const DefaultChartCheckList = {
     gitOps: false,
     project: false,
-    git: false,
+    environment: false,
 }
 
 export class AppCheckList extends Component<AppCheckListProps, AppCheckListState> {
@@ -34,34 +35,34 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
-            isCollapsed: false,
+            isAppCollapsed: true,
             isChartCollapsed: false,
             saveLoading: false,
-            form:{
-                appChecklist:{
+            form: {
+                appChecklist: {
                     ...DefaultAppCheckList
                 },
-                chartChecklist:{
+                chartChecklist: {
                     ...DefaultChartCheckList
                 }
             }
         }
         this.toggleAppCheckbox = this.toggleAppCheckbox.bind(this);
-        this.toggleChartCheckbox= this.toggleChartCheckbox.bind(this);
+        this.toggleChartCheckbox = this.toggleChartCheckbox.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchAppCheckList()
     }
 
-    fetchAppCheckList(){
-        getAppCheckList().then((response)=>{
-           let appCheckList = response.result
-           this.setState({
-            view: ViewType.FORM,
-            saveLoading: false,
-               form: appCheckList,
-           },(()=>{console.log(this.state)}))
+    fetchAppCheckList() {
+        getAppCheckList().then((response) => {
+            let appCheckList = response.result
+            this.setState({
+                view: ViewType.FORM,
+                saveLoading: false,
+                form: appCheckList,
+            }, (() => { console.log(this.state) }))
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code });
@@ -70,7 +71,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
 
     toggleAppCheckbox() {
         this.setState({
-            isCollapsed: !this.state.isCollapsed,
+            isAppCollapsed: !this.state.isAppCollapsed,
         })
     }
 
@@ -89,22 +90,40 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 <div>To deploy custom application (2/6 completed)</div>
                 <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: '180deg' }} /></span>
             </div>
-            {this.state.isCollapsed ? <div className="checklist__custom-input ">
-                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add host URL</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add Git account</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add docker registry</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add cluster & environment</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
+            {this.state.isAppCollapsed ? <div className="checklist__custom-input ">
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox">
+                    {!this.state.form.appChecklist.hostUrl ? '' : <Check className="ic-dim-16 mr-8" />}
+                    Add host URL</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox">
+                    {!this.state.form.appChecklist.gitOps ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                     Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor cn-5 mt-8 flexbox">
+                    {!this.state.form.appChecklist.git ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                     Add Git account</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor cb-5 mt-8 flexbox">
+                    {!this.state.form.appChecklist.docker ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                    Add docker registry</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor cn-5 mt-8 flexbox">
+                    {!this.state.form.appChecklist.environment ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                    Add cluster & environment</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox">
+                    {!this.state.form.appChecklist.project ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                    Add project</NavLink>
             </div> : ''}
             <div className="flex cn-9 pt-12 pb-12 fw-6" onClick={this.toggleChartCheckbox}>
                 <div>To deploy chart (0/3 completed)</div>
                 <span className="checklist__dropdown"><Dropdown className="icon-dim-20 rotate " /></span>
             </div>
             {this.state.isChartCollapsed ? <div className="checklist__custom-input ">
-                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Configure GitOps</NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span><Check className="ic-dim-16 mr-8" />Add cluster & environment</span></NavLink>
-                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox"><span><Check className="ic-dim-16 mr-8" /></span>Add project</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor cb-5 mt-8 flexbox">
+                    {!this.state.form.chartChecklist.gitOps ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                    Configure GitOps</NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor cb-5 mt-8 flexbox"><span>
+                    {!this.state.form.chartChecklist.environment ? '' : <Check className="ic-dim-16 mr-8" />}
+                    Add cluster & environment</span></NavLink>
+                <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor cb-5 mt-8 pb-8 flexbox">
+                    {!this.state.form.chartChecklist.project ? '' : <span><Check className="ic-dim-16 mr-8" /></span>}
+                    Add project</NavLink>
             </div> : ''}
         </div>)
     }
@@ -149,8 +168,6 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
             {this.renderCheckChartModal()}
         </div>)
     }
-
-
 
     render() {
         return (<div className="br-4 bcn-0 p-20 applist__checklist">

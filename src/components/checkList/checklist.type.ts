@@ -11,13 +11,13 @@ export interface AppCheckList{
 export interface ChartChecklist{
     gitOps: boolean;
     project: boolean;
-    git: boolean;
+    environment: boolean;
 }
 
 export interface AppCheckListState{
     view: string;
     statusCode: number;
-    isCollapsed: boolean;
+    isAppCollapsed: boolean;
     isChartCollapsed: boolean;
     saveLoading: boolean;
     form:{
