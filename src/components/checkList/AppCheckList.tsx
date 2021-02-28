@@ -6,6 +6,8 @@ import { URLS } from '../../config';
 import img from '../../assets/img/ic-checklist-chart@2x.png';
 import './checklist.css';
 import Complete from '../../assets/img/ic-empty-done@2x.png';
+import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
+import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 
 export class AppCheckList extends Component {
 
@@ -31,7 +33,7 @@ export class AppCheckList extends Component {
        return  <div className="bcg-1 flexbox ">
             <img className="img-width pt-12 pb-12 pl-16 " src={img} />
             <div className="pl-20">
-                <div className="pt-20 cn-9"> Deploy charts using Devtron.</div>
+                <div className="pt-16 cn-9"> Deploy charts using Devtron.</div>
                 <NavLink to={`${URLS.CHARTS}/discover`} className="no-decor cb-5 fw-6">Discover charts</NavLink>
             </div>
         </div>
@@ -39,9 +41,9 @@ export class AppCheckList extends Component {
 
     renderCustomAppDeploy(){
         return  <div className="bcg-1 mb-8 flexbox">
-            <img className="img-width pt-12 pb-12 pl-16 " src={img} />
+            <img className="img-width pt-12 pb-12 pl-16 " src={Deploy} />
             <div className="pl-20">
-                <div className="pt-20 cn-9"> Create, build and deploy a custom application.</div>
+                <div className="pt-16 cn-9"> Create, build and deploy a custom application.</div>
                 <NavLink to={`${URLS.APP}/create-app`} className="no-decor cb-5 fw-6">Create App</NavLink>
             </div>
         </div>
@@ -49,9 +51,9 @@ export class AppCheckList extends Component {
 
     renderSampleApplication(){
         return  <div className="bcg-1 mb-8 flexbox">
-            <img className="img-width pt-12 pb-12 pl-16 " src={img} />
+            <img className="img-width pt-12 pb-12 pl-16 " src={Sample} />
             <div className="pl-20">
-                <div className="pt-20 cn-9"> Deploy sample “Hello world” application.</div>
+                <div className="pt-16 cn-9"> Deploy sample “Hello world” application.</div>
                 <NavLink to={`${URLS.CHARTS}/discover`} className="no-decor cb-5 fw-6">View documentation</NavLink>
             </div>
         </div>
