@@ -14,7 +14,7 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.sv
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
-import { AppCheckList } from '../../checkList/AppCheckList';
+import { AppCheckListModal } from '../../checkList/AppCheckListModal';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -293,7 +293,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Docker registry configuration is required to setup a new application.
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
-                <AppCheckList {...this.props}/>
+                <AppCheckListModal {...this.props}/>
                 {this.renderCheckList()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
