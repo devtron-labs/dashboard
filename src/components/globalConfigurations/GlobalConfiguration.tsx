@@ -8,6 +8,7 @@ import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
 import { getHostURLConfiguration } from '../../services/service';
+import { AppCheckList } from '../checkList/AppCheckList';
 import './globalConfigurations.scss';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -131,11 +132,6 @@ function DropDown({ className = "", style = {}, src = null, ...props }) {
     return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
-List.Logo = Logo
-List.Title = Title
-List.Toggle = ListToggle
-List.DropDown = DropDown
-
 export function List({ children = null, className = "", ...props }) {
     return <div className={`list ${className}`} {...props}>
         {children}
@@ -201,3 +197,7 @@ export function ShowHide({ hidden = true, className = "", onClick = null, defaul
 
 
 ProtectedInput.ShowHide = ShowHide
+List.Logo = Logo
+List.Title = Title
+List.Toggle = ListToggle
+List.DropDown = DropDown

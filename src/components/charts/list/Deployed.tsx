@@ -85,7 +85,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                             <Link to="discover" className="cta no-decor ghosted" >Discover charts</Link>
                         </EmptyState.Button>
                     </EmptyState>
-                    : <div>{/*<ChartCheckListModal />*/}
+                    : <div> <ChartCheckListModal {...this.props}/>
                     <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
