@@ -25,7 +25,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
-            isAppCollapsed: true,
+            isAppCollapsed: this.props.isAppCollapsed,
             saveLoading: false,
             form: {
                 appChecklist: {
