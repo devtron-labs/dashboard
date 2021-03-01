@@ -18,6 +18,16 @@ export interface AppCheckListState{
     view: string;
     statusCode: number;
     isAppCollapsed: boolean;
+    saveLoading: boolean;
+    form:{
+        appChecklist: AppCheckList,
+    }
+}
+
+export interface AppCheckListModalState{
+    view: string;
+    statusCode: number;
+    isAppCollapsed: boolean;
     isChartCollapsed: boolean;
     saveLoading: boolean;
     form:{
@@ -26,4 +36,5 @@ export interface AppCheckListState{
     }
 }
 
+export interface AppCheckListModalProps extends RouteComponentProps { }
 export interface AppCheckListProps extends RouteComponentProps { }
