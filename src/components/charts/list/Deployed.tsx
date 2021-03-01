@@ -10,7 +10,7 @@ import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import {HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator} from '../Charts'
-import { ChartCheckList } from '../../checkList/ChartCheckList'
+
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -84,7 +84,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                             <Link to="discover" className="cta no-decor ghosted" >Discover charts</Link>
                         </EmptyState.Button>
                     </EmptyState>
-                    : <div><ChartCheckList/> <div className="chart-grid">
+                    : <div><div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
                     })}

@@ -6,13 +6,9 @@ export interface AppCheckList{
     git: boolean;
     environment: boolean;
     docker: boolean;
-    hostUrl: boolean;}
+    hostUrl: boolean;
+    }
 
-export interface ChartChecklist{
-    gitOps: boolean;
-    project: boolean;
-    environment: boolean;
-}
 
 export interface AppCheckListState{
     view: string;
@@ -20,7 +16,23 @@ export interface AppCheckListState{
     isAppCollapsed: boolean;
     saveLoading: boolean;
     form:{
-        appChecklist: AppCheckList,
+        appChecklist: AppCheckList;
+    }
+}
+
+export interface ChartCheckList{
+    gitOps: boolean;
+    project: boolean;
+    environment: boolean;
+}
+
+export interface ChartCheckListState{
+    view: string;
+    statusCode: number;
+    isChartCollapsed: boolean;
+    saveLoading: boolean;
+    form:{
+        chartChecklist: ChartCheckList;
     }
 }
 
@@ -32,9 +44,11 @@ export interface AppCheckListModalState{
     saveLoading: boolean;
     form:{
         appChecklist: AppCheckList,
-        chartChecklist: ChartChecklist
+        chartChecklist: ChartCheckList
     }
 }
 
 export interface AppCheckListModalProps extends RouteComponentProps { }
 export interface AppCheckListProps extends RouteComponentProps { }
+export interface ChartCheckListProps extends RouteComponentProps { }
+
