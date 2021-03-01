@@ -153,7 +153,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
         </div>
     }
 
-    renderSampleApplication() {
+     renderSampleApplication() {
         return <div className="bcg-1 mb-8 flexbox">
             <img className="img-width pt-12 pb-12 pl-16 " src={Sample} />
             <div className="pl-20">
