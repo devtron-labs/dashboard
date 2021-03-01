@@ -21,7 +21,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, ChartCheckLis
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
-            isChartCollapsed: false,
+            isChartCollapsed: this.props.isChartCollapsed,
             saveLoading: false,
             form: {
                 chartChecklist: {

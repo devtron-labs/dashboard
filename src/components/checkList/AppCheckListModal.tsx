@@ -22,8 +22,8 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
             <img src={Checklist} className="checklist__top-img" />
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
             <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
-            < AppCheckList {...this.props} isAppCollapsed={true}/>
-            < ChartCheckList {...this.props} isChartCollapsed={true}/>            
+            < AppCheckList {...this.props} isAppCollapsed={true} />
+            < ChartCheckList {...this.props} isChartCollapsed={false}/>            
         </div>)
     }
 

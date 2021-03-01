@@ -56,7 +56,14 @@ export interface ChartCheckListModalState{
 }
 
 export interface AppCheckListModalProps extends RouteComponentProps { }
+
 export interface ChartCheckListModalProps extends RouteComponentProps { }
-export interface AppCheckListProps extends RouteComponentProps { isAppCollapsed : boolean }
-export interface ChartCheckListProps extends RouteComponentProps { isChartCollapsed : boolean }
+
+export interface AppCheckListProps extends RouteComponentProps { 
+    isAppCollapsed : boolean;
+}
+
+export interface ChartCheckListProps extends RouteComponentProps { 
+    isChartCollapsed : boolean 
+}
 

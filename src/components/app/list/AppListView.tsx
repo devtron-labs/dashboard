@@ -295,7 +295,6 @@ export class AppListView extends Component<AppListViewProps>{
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
                 <AppCheckListModal {...this.props } />
-                <ChartCheckListModal {...this.props}/>
                 {this.renderCheckList()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}

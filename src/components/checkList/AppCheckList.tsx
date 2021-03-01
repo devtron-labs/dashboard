@@ -33,6 +33,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 },
             }
         }
+        this.toggleAppCheckbox = this.toggleAppCheckbox.bind(this)
     }
 
     componentDidMount() {
