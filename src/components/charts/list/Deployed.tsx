@@ -10,7 +10,7 @@ import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import {HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator} from '../Charts'
-import { ChartCheckListModal } from '../../checkList/ChartCheckListModal';
+import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 

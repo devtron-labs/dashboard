@@ -14,8 +14,8 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.sv
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
-import { AppCheckListModal } from '../../checkList/AppCheckListModal';
-import { ChartCheckListModal } from '../../checkList/ChartCheckListModal';
+import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
