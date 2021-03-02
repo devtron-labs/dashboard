@@ -11,12 +11,7 @@ export interface AppCheckList {
 
 
 export interface AppCheckListState {
-    view: string;
-    statusCode: number;
-    isAppCollapsed: boolean;
-    appChecklist: AppCheckList;
-    appStageCompleted: number;
-    chartStageCompleted: number;
+
 }
 
 export interface ChartCheckList {
@@ -36,33 +31,49 @@ export interface ChartCheckListState {
 }
 
 export interface AppCheckListModalState {
-    view: string;
-    statusCode: number;
-    saveLoading: boolean;
-
+    isAppCollapsed: boolean;
+    isChartCollapsed: boolean;
 }
 
 export interface ChartCheckListModalState {
-    view: string;
-    statusCode: number;
     isAppCollapsed: boolean;
     isChartCollapsed: boolean;
-    saveLoading: boolean;
-    form: {
-        appChecklist: AppCheckList,
-        chartChecklist: ChartCheckList
-    }
+    appStageCompleted: number;
+    chartStageCompleted: number;
+    appChecklist: AppCheckList,
+    chartChecklist: ChartCheckList
 }
 
-export interface AppCheckListModalProps extends RouteComponentProps { }
+export interface AppCheckListModalProps extends RouteComponentProps {
+    appStageCompleted: number;
+    chartStageCompleted: number;
+    appChecklist: AppCheckList;
+    chartChecklist: ChartCheckList;
+}
 
-export interface ChartCheckListModalProps extends RouteComponentProps { }
+export interface ChartCheckListModalProps extends RouteComponentProps {
 
-export interface AppCheckListProps {
+}
+
+
+export interface GlobalConfigCheckListState {
+    isChartCollapsed: boolean;
     isAppCollapsed: boolean;
+    appChecklist: AppCheckList;
+    chartChecklist: ChartCheckList;
+    appStageCompleted: number;
+    chartStageCompleted: number;
+}
+export interface AppCheckListProps {
+    appChecklist: AppCheckList;
+    appStageCompleted: number;
+    isAppCollapsed: boolean;
+    toggleAppChecklist: (event) => void;
 }
 
 export interface ChartCheckListProps {
-    isChartCollapsed: boolean
+    isChartCollapsed: boolean;
+    chartChecklist: ChartCheckList;
+    chartStageCompleted: number;
+    toggleChartChecklist: (event) => void;
 }
-

@@ -15,7 +15,6 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
-import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -233,7 +232,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
     }
 
-    
+
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
@@ -290,7 +289,12 @@ export class AppListView extends Component<AppListViewProps>{
                     Docker registry configuration is required to setup a new application.
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
-                <AppCheckListModal history={this.props.history} location={this.props.location} match={this.props.match} />
+                <AppCheckListModal history={this.props.history} location={this.props.location} match={this.props.match}
+                    appChecklist={this.props.appChecklist}
+                    chartChecklist={this.props.chartChecklist}
+                    appStageCompleted={this.props.appStageCompleted}
+                    chartStageCompleted={this.props.chartStageCompleted}
+                />
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}

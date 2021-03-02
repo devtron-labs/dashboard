@@ -10,7 +10,7 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import { getDockerRegistryStatus } from '../../../services/service';
+import { getDockerRegistryStatus, getAppCheckList } from '../../../services/service';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -40,6 +40,10 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             expandedRow: false,
             appData: null,
             isDockerRegistryEmpty: false,
+            appChecklist: undefined,
+            chartChecklist: undefined,
+            appStageCompleted: 0,
+            chartStageCompleted: 0,
         }
     }
 
@@ -52,6 +56,32 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         }).catch((errors: ServerErrors) => {
 
         })
+        getAppCheckList().then((response) => {
+            let appChecklist = response.result.appChecklist;
+            let chartChecklist = response.result.chartChecklist;
+            let appStageArray: number[] = Object.values(appChecklist);
+            let chartStageArray: number[] = Object.values(chartChecklist);
+            let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+            let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+
+            this.setState({
+                view: ViewType.FORM,
+                appChecklist,
+                chartChecklist,
+                appStageCompleted,
+                chartStageCompleted,
+            })
+        }).catch((error) => {
+            showError(error);
+            this.setState({ view: ViewType.ERROR, });
+        })
+
         getInitState(payload).then((response) => {
             this.setState({
                 code: response.code,

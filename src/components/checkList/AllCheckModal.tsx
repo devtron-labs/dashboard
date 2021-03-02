@@ -5,11 +5,8 @@ import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import Complete from '../../assets/img/ic-empty-done@2x.png';
 import { AllChartsCheck } from './AllChartsCheck';
-import './checklist.css';
 
-
-export class AllCheckModal extends Component{
-
+export class AllCheckModal extends Component {
 
     renderCustomAppDeploy() {
         return <div className="bcg-1 mb-8 flexbox">
@@ -31,16 +28,16 @@ export class AllCheckModal extends Component{
         </div>
     }
 
-    render(){
-        return(<>
-        <div className="">
-            <img src={Complete} className="checklist__top-img" />
-            <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
-            <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
-            {this.renderSampleApplication()}
-            {this.renderCustomAppDeploy()}
-            <AllChartsCheck/>        
+    render() {
+        return (
+            <div className="">
+                <img src={Complete} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
+                <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
+                {this.renderSampleApplication()}
+                {this.renderCustomAppDeploy()}
+                <AllChartsCheck />
             </div>
-        </>)
+        )
     }
 }
