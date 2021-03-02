@@ -115,17 +115,17 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <section className="git-page">
-            <Progressing pageLoader />
-        </section>
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
         else if (this.state.view === ViewType.ERROR) {
-            return <section className="git-page flex" >
+            return <section className="global-configuration__component flex" >
                 <ErrorScreenManager code={this.state.statusCode} />
             </section>
         }
         return <>
-            <section className="flexbox">
-                <div className="mt-16 mb-16 ml-20 mr-20">
+            <section className="flexbox ">
+                <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
                     <h2 className="form__title">Host URL</h2>
                     <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
                     <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
@@ -170,7 +170,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                         </div>
                     </form>
                 </div>
-                <GlobalConfigCheckList {...this.props}/>
+                <GlobalConfigCheckList {...this.props} />
             </section>
         </>
     }

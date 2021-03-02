@@ -17,7 +17,7 @@ export default function ChartRepo() {
     }
 
     return (
-        <section className="git-page">
+        <section className="global-configuration__component">
             <h2 className="form__title">Chart Repository</h2>
             <h5 className="form__subtitle">Manage your organization’s chart repositories. &nbsp;
                 </h5>

@@ -95,19 +95,16 @@
     transition: opacity 300ms linear 150ms;
 }
 
-.git-page,
-.docker-page,
-.cluster-page,
-.project-list,
+.global-configuration__component,
 .add-notification-page {
     margin: 0 auto;
     max-width: 1012px;
     padding: 24px;
 }
 
-.git-page {
-    height: calc(100vh - 80px);
-}
+// .git-page {
+//     height: calc(100vh - 80px);
+// }
 
 .auth-page {
     height: 100%;

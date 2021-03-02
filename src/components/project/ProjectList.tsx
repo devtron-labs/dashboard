@@ -136,8 +136,8 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return <ErrorScreenManager code={this.state.code} />
         }
         else {
-            return <div className="flexbox">
-                <section className="project-list">
+            return <section className="flexbox">
+                <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     {this.renderPageHeader()}
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {
@@ -145,9 +145,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                             {this.renderProjects(project, index)}
                         </React.Fragment>
                     })}
-                </section>
+                </div>
                 <GlobalConfigCheckList {...this.props} />
-            </div>
+            </section>
         }
     }
 }

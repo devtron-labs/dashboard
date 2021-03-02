@@ -19,8 +19,8 @@ export default function GitProvider({ ...props }) {
         if (!result) return null
     }
 
-    return (<div className="flexbox">
-        <section className="git-page">
+    return (<section className="flexbox">
+        <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
             <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
@@ -28,9 +28,9 @@ export default function GitProvider({ ...props }) {
             </a>
             </h5>
             {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
-        </section>
+        </div>
         <GlobalConfigCheckList history={history} location={location} match={match} />
-    </div>
+    </section>
     )
 }
 

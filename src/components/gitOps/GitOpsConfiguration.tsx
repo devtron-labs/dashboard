@@ -198,16 +198,16 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     render() {
         let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
-        if (this.state.view === ViewType.LOADING) return <div className="git-page">
-            <Progressing pageLoader />
-        </div>
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
         else if (this.state.view === ViewType.ERROR) {
-            return <div className="git-page flex" >
+            return <div className="global-configuration__component flex" >
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-        return <div className="flexbox">
-            <section className="git-page">
+        return <section className="flexbox">
+            <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                 <h2 className="form__title">GitOps</h2>
                 <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
                 <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
@@ -276,8 +276,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         </button>
                     </div>
                 </form>
-            </section>
-            <GlobalConfigCheckList {...this.props}/>
-        </div>
+            </div>
+            <GlobalConfigCheckList {...this.props} />
+        </section>
     }
 }
