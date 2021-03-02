@@ -14,10 +14,9 @@ export interface AppCheckListState {
     view: string;
     statusCode: number;
     isAppCollapsed: boolean;
-    saveLoading: boolean;
-    form: {
-        appChecklist: AppCheckList;
-    }
+    appChecklist: AppCheckList;
+    appStageCompleted: number;
+    chartStageCompleted: number;
 }
 
 export interface ChartCheckList {

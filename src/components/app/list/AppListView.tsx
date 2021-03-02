@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { AppListViewType } from '../config';
 import { ErrorScreenManager, Filter, Pagination, FilterOption, Progressing } from '../../common';
 import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
-import { Link, Switch, Route, RouteComponentProps} from 'react-router-dom';
+import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
 import { AddNewApp } from '../create/CreateApp';
@@ -233,11 +233,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
     }
 
-    renderCheckList(){
-        return 
-    }
-    //no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8
-
+    
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
@@ -294,8 +290,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Docker registry configuration is required to setup a new application.
                     &nbsp;<Link to={URLS.GLOBAL_CONFIG_DOCKER} className="cb-5 anchor">Click here to configure docker registry.</Link>
                 </p>}
-                <AppCheckListModal {...this.props } />
-                {this.renderCheckList()}
+                <AppCheckListModal history={this.props.history} location={this.props.location} match={this.props.match} />
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}

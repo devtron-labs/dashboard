@@ -1,21 +1,11 @@
 import React, { Component } from 'react';
 import Checklist from '../../assets/img/ic-empty-checklist.png';
-import './checklist.css';
-import { ViewType } from '../../config'
 import { AppCheckListModalState, AppCheckListModalProps } from './checklist.type';
 import { AppCheckList } from './AppCheckList';
-import { ChartCheckList }from './ChartCheckList'
+import { ChartCheckList } from './ChartCheckList'
+import './checklist.css';
 
 export class AppCheckListModal extends Component<AppCheckListModalProps, AppCheckListModalState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            statusCode: 0,
-            saveLoading: false,
-        }
-    }
-
 
     renderAppCheckListModal() {
         return (<div>
@@ -23,7 +13,7 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
             <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
             < AppCheckList {...this.props} isAppCollapsed={true} />
-            < ChartCheckList {...this.props} isChartCollapsed={false}/>            
+            < ChartCheckList {...this.props} isChartCollapsed={false} />
         </div>)
     }
 
