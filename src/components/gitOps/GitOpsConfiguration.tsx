@@ -205,76 +205,78 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-        return <section className="git-page">
-            <h2 className="form__title">GitOps</h2>
-            <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
-            <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
-                <div className="login__sso-flex">
-                    <label className="tertiary-tab__radio">
-                        <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === GitProvider.Github} onChange={this.handleGitopsTab} />
-                        <span className="tertiary-tab sso-icons">
-                            <aside className="login__icon-alignment"><GitHub /></aside>
-                            <aside className="login__text-alignment"> GitHub</aside>
-                            <div>
-                                {(this.state.lastActiveGitOp?.provider === GitProvider.Github) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                            </div>
-                        </span>
-                    </label>
-                    <label className="tertiary-tab__radio">
-                        <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === GitProvider.GitLab} onChange={this.handleGitopsTab} />
-                        <span className="tertiary-tab sso-icons">
-                            <aside className="login__icon-alignment"><GitLab /></aside>
-                            <aside className="login__text-alignment"> GitLab</aside>
-                            <div>
-                                {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                            </div>
-                        </span>
-                    </label>
-                </div>
-                <CustomInput autoComplete="off"
-                    value={this.state.form.host}
-                    onChange={(event) => this.handleChange(event, 'host')}
-                    name="Enter host"
-                    error={this.state.isError.host}
-                    label="Git Host*"
-                    tabIndex={1}
-                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                <div className="mt-16">
-                    <CustomInput autoComplete="off" value={this.state.form[key]}
-                        tabIndex={2}
-                        error={this.state.isError[key]}
-                        label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
-                        onChange={(event) => { this.handleChange(event, key); }} />
-                </div>
-                <hr />
-                <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
-
-                <div className="form__row--two-third gitops__id mb-20 fs-13">
-                    <div>
-                        <CustomInput autoComplete="off"
-                            value={this.state.form.username}
-                            onChange={(event) => this.handleChange(event, 'username')}
-                            name="Enter username" error={this.state.isError.username}
-                            tabIndex={3}
-                            label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+        return <div className="flexbox">
+            <section className="git-page">
+                <h2 className="form__title">GitOps</h2>
+                <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
+                <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
+                    <div className="login__sso-flex">
+                        <label className="tertiary-tab__radio">
+                            <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === GitProvider.Github} onChange={this.handleGitopsTab} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><GitHub /></aside>
+                                <aside className="login__text-alignment"> GitHub</aside>
+                                <div>
+                                    {(this.state.lastActiveGitOp?.provider === GitProvider.Github) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                </div>
+                            </span>
+                        </label>
+                        <label className="tertiary-tab__radio">
+                            <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === GitProvider.GitLab} onChange={this.handleGitopsTab} />
+                            <span className="tertiary-tab sso-icons">
+                                <aside className="login__icon-alignment"><GitLab /></aside>
+                                <aside className="login__text-alignment"> GitLab</aside>
+                                <div>
+                                    {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                </div>
+                            </span>
+                        </label>
                     </div>
-                    <ProtectedInput value={this.state.form.token}
-                        onChange={(event) => this.handleChange(event, 'token')}
-                        name="Enter token"
-                        tabIndex={4}
-                        error={this.state.isError.token}
-                        label={"Personal Access Token*"}
-                        labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
-                </div>
+                    <CustomInput autoComplete="off"
+                        value={this.state.form.host}
+                        onChange={(event) => this.handleChange(event, 'host')}
+                        name="Enter host"
+                        error={this.state.isError.host}
+                        label="Git Host*"
+                        tabIndex={1}
+                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+                    <div className="mt-16">
+                        <CustomInput autoComplete="off" value={this.state.form[key]}
+                            tabIndex={2}
+                            error={this.state.isError[key]}
+                            label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
+                            onChange={(event) => { this.handleChange(event, key); }} />
+                    </div>
+                    <hr />
+                    <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
 
-                <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
-                        {this.state.saveLoading ? <Progressing /> : "Save"}
-                    </button>
-                </div>
-            </form>
-            <GlobalConfigCheckList />
-        </section>
+                    <div className="form__row--two-third gitops__id mb-20 fs-13">
+                        <div>
+                            <CustomInput autoComplete="off"
+                                value={this.state.form.username}
+                                onChange={(event) => this.handleChange(event, 'username')}
+                                name="Enter username" error={this.state.isError.username}
+                                tabIndex={3}
+                                label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
+                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+                        </div>
+                        <ProtectedInput value={this.state.form.token}
+                            onChange={(event) => this.handleChange(event, 'token')}
+                            name="Enter token"
+                            tabIndex={4}
+                            error={this.state.isError.token}
+                            label={"Personal Access Token*"}
+                            labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                    </div>
+
+                    <div className="form__buttons">
+                        <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
+                            {this.state.saveLoading ? <Progressing /> : "Save"}
+                        </button>
+                    </div>
+                </form>
+                <GlobalConfigCheckList />
+            </section>
+        </div>
     }
 }

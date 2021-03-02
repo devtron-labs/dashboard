@@ -12,7 +12,7 @@ interface GlobalConfigCheckListProps {
 export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps, AppCheckListModalState> {
 
     renderAppCheckListModal() {
-        return (<div>
+        return (<div className="">
             <img src={Checklist} className="checklist__top-img" />
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
             <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
@@ -22,7 +22,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     }
 
     render() {
-        return (<div className="br-4 bcn-0 p-20 applist__checklist">
+        return (<div className="br-4 bcn-0 p-20 global__checklist">
             {this.renderAppCheckListModal()}
             {/* {this.renderCheckChartModal()}*/}
             {/*this.renderAllCheckSetModal()*/}
