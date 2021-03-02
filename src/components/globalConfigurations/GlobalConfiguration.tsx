@@ -8,7 +8,6 @@ import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
 import { getHostURLConfiguration } from '../../services/service';
-import { AppCheckList } from '../checkList/AppCheckList';
 import './globalConfigurations.scss';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))

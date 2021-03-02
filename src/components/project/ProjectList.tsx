@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { Project } from './Project';
 import { ProjectListState, ProjectType } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import './project.css';
 
 export default class ProjectList extends Component<{}, ProjectListState>  {
@@ -143,6 +144,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
                         {this.renderProjects(project, index)}
                     </React.Fragment>
                 })}
+            <GlobalConfigCheckList />
             </section>
         }
     }

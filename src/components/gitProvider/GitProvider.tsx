@@ -4,7 +4,8 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION } from '../../config';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
@@ -23,6 +24,7 @@ export default function GitProvider({ ...props }) {
             </a>
             </h5>
             {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+            <GlobalConfigCheckList />
         </section>
     )
 }
@@ -142,33 +144,36 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
         }
     }
     return (
-        <form onSubmit={handleOnSubmit} className="git-form">
-            <div className="form__row form__row--two-third">
-                <CustomInput autoComplete="off" value={state.name.value}  onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
-            </div>
-            <div className="form__label">Authentication type*</div>
-            <div className="form__row form__row--auth-type pointer">
-                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
-                    .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+        <>
+            <form onSubmit={handleOnSubmit} className="git-form">
+                <div className="form__row form__row--two-third">
+                    <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                    <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                </div>
+                <div className="form__label">Authentication type*</div>
+                <div className="form__row form__row--auth-type pointer">
+                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
+                        .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
 
-                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                    </label>)}
+                            <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                        </label>)}
 
-            </div>
-            {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-            {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
-            </div>}
-            {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
-                <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-            </div>}
-            <div className="form__row form__buttons">
-                <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
-            </div>
-        </form>
+                </div>
+                {state.auth.error && <div className="form__error">{state.auth.error}</div>}
+                {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
+                    <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+                    <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
+                </div>}
+                {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
+                    <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
+                </div>}
+                <div className="form__row form__buttons">
+                    <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
+                    <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                </div>
+
+            </form>
+        </>
     )
 }
 

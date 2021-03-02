@@ -7,7 +7,8 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
-import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service'
+import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import '../login/login.css';
 import './gitops.css';
 
@@ -273,6 +274,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </button>
                 </div>
             </form>
+            <GlobalConfigCheckList />
         </section>
     }
 }

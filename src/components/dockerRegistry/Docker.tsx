@@ -8,6 +8,7 @@ import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
@@ -25,6 +26,7 @@ export default function Docker({ ...props }) {
             </a>
             </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
+            <GlobalConfigCheckList />
         </section>
     )
 }
@@ -132,56 +134,58 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
 
     }
     return (
-        <form onSubmit={handleOnSubmit} className="docker-form">
-            <div className="form__row">
-                <CustomInput name="id" value={state.id.value} error={state.id.error} onChange={handleOnChange} label="Name*" disabled={!!id} />
-            </div>
-            <div className="form__row form__row--two-third">
-                <div className="flex left column top">
-                    <label htmlFor="" className="form__label w-100">Registry type*</label>
-                    <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
-                        <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
-                        {['ecr', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
-                    </Select>
-                    {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
-                </div>
-                <CustomInput name="registryUrl" value={state.registryUrl.value} error={state.registryUrl.error} onChange={handleOnChange} label="Registry URL*" disabled={!!registryUrl} />
-            </div>
-            {state.registryType.value === 'ecr' && <>
+        <>
+            <form onSubmit={handleOnSubmit} className="docker-form">
                 <div className="form__row">
-                    <div className="flex left column">
-                        <label htmlFor="" className="form__label">AWS region*</label>
-                        <Select rootClassName="form__input form__input--aws-region" name="awsRegion" onChange={customHandleChange} value={customState.awsRegion.value}>
-                            <Select.Button>{customState.awsRegion.value ? awsRegionMap.get(customState.awsRegion.value) : 'Select AWS region'}</Select.Button>
-                            {Array.from(awsRegionMap).map(([value, name]) => <Select.Option value={value} key={value}>{name}</Select.Option>)}
+                    <CustomInput name="id" value={state.id.value} error={state.id.error} onChange={handleOnChange} label="Name*" disabled={!!id} />
+                </div>
+                <div className="form__row form__row--two-third">
+                    <div className="flex left column top">
+                        <label htmlFor="" className="form__label w-100">Registry type*</label>
+                        <Select name="registryType" rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
+                            <Select.Button rootClassName="select-button--docker-register">{state.registryType.value}</Select.Button>
+                            {['ecr', 'other'].map(type => <Select.Option value={type} key={type}>{type}</Select.Option>)}
                         </Select>
-                        {customState.awsRegion.error && <div className="form__error">{customState.awsRegion.error}</div>}
+                        {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                     </div>
+                    <CustomInput name="registryUrl" value={state.registryUrl.value} error={state.registryUrl.error} onChange={handleOnChange} label="Registry URL*" disabled={!!registryUrl} />
                 </div>
-                <div className="form__row form__row--two-third">
-                    <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
-                    <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
-                </div>
-            </>}
-            {state.registryType.value === 'other' && <>
-                <div className="form__row form__row--two-third">
-                    <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
-                    <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
-                </div>
-            </>}
-            <div className="form__row form__buttons  ">
-                <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
-                    <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
-                    <div className="mr-4"> Set as default </div>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
-                </label>
+                {state.registryType.value === 'ecr' && <>
+                    <div className="form__row">
+                        <div className="flex left column">
+                            <label htmlFor="" className="form__label">AWS region*</label>
+                            <Select rootClassName="form__input form__input--aws-region" name="awsRegion" onChange={customHandleChange} value={customState.awsRegion.value}>
+                                <Select.Button>{customState.awsRegion.value ? awsRegionMap.get(customState.awsRegion.value) : 'Select AWS region'}</Select.Button>
+                                {Array.from(awsRegionMap).map(([value, name]) => <Select.Option value={value} key={value}>{name}</Select.Option>)}
+                            </Select>
+                            {customState.awsRegion.error && <div className="form__error">{customState.awsRegion.error}</div>}
+                        </div>
+                    </div>
+                    <div className="form__row form__row--two-third">
+                        <CustomInput name="awsAccessKeyId" value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" />
+                        <ProtectedInput name="awsSecretAccessKey" value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
+                    </div>
+                </>}
+                {state.registryType.value === 'other' && <>
+                    <div className="form__row form__row--two-third">
+                        <CustomInput name="username" value={customState.username.value} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                        <ProtectedInput name="password" value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
+                    </div>
+                </>}
+                <div className="form__row form__buttons  ">
+                    <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
+                        <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
+                        <div className="mr-4"> Set as default </div>
+                        <Tippy className="default-tt" arrow={false} placement="top" content={
+                            <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                            <Question className="icon-dim-20" />
+                        </Tippy>
+                    </label>
 
-                <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : 'Save'}</button>
-            </div>
-        </form>
+                    <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
+                    <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : 'Save'}</button>
+                </div>
+            </form>
+        </>
     )
 }
