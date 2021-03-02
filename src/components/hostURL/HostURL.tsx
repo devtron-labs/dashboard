@@ -9,9 +9,10 @@ import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import './hosturl.css';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
@@ -172,8 +173,9 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 </form>
             </section>
             <div>
-            <GlobalConfigCheckList />
-            <GlobalChartsCheck />
+           {/* <GlobalConfigCheckList />
+            <GlobalChartsCheck />*/}
+            <GlobalAllCheckModal/>
             </div>
             
         </div>
