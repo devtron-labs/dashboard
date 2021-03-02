@@ -410,7 +410,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
                         <Help className="icon-dim-20 fcb-5 mr-12" />
-                        <div>For redirect URL or callback URL use: http://cd.devtron.ai:32080/orchestrator/api/dex/callback. <br />
+                        <div>For redirect URL or callback URL use:  {`${this.state.ssoConfig.url}`}/api/dex/callback<br />
                             Please ensure above URL is registered with the identity provider.</div>
                     </div>
                     <div className="mt-8 ml-32">
