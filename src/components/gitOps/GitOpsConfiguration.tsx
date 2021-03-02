@@ -276,6 +276,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                 </form>
             </section>
+                <GlobalConfigCheckList />
         </div>
     }
 }
