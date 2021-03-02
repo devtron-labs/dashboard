@@ -333,7 +333,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
-                <div className="login__sso-flex">
+                <div className="login__sso-flex pl-24">
                     <div>
                         <label className="tertiary-tab__radio">
                             <input type="radio" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
