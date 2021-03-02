@@ -8,6 +8,8 @@ import { ProjectListState, ProjectType } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import './project.css';
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
 export default class ProjectList extends Component<{}, ProjectListState>  {
 
@@ -146,6 +148,8 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
                         </React.Fragment>
                     })}
                 </section>
+                {/* <GlobalAllCheckModal />
+                  <GlobalChartsCheck />*/}
                 <GlobalConfigCheckList />
             </div>
         }

@@ -6,6 +6,8 @@ import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
@@ -25,7 +27,9 @@ export default function GitProvider({ ...props }) {
             </h5>
             {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
         </section>
-        <GlobalConfigCheckList/>
+        {/* <GlobalConfigCheckList />
+            <GlobalChartsCheck />*/}
+            <GlobalAllCheckModal />
         </div>
     )
 }

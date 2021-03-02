@@ -6,7 +6,7 @@ import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import { GlobalChartsCheck } from './GlobalChartCheck';
 import './checklist.css';
 
-export class GlobalAllCheckModal extends Component{
+export class GlobalAllCheckModal extends Component {
 
 
     renderCustomAppDeploy() {
@@ -29,14 +29,14 @@ export class GlobalAllCheckModal extends Component{
         </div>
     }
 
-    render(){
-        return(<>
-        <div className="ml-20 mr-20 mt-20 mb-20">
-            <div className="cn-9 fw-6 fs-16 mb-8">Get started!</div>
-            <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
-            {this.renderSampleApplication()}
-            {this.renderCustomAppDeploy()}
-            <GlobalChartsCheck/>        
+    render() {
+        return (<>
+            <div className="ml-20 mr-20 mt-20 mb-20">
+                <div className="cn-9 fw-6 fs-16 mb-8">Get started!</div>
+                <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
+                {this.renderCustomAppDeploy()}
+                {this.renderSampleApplication()}
+                <GlobalChartsCheck />
             </div>
         </>)
     }

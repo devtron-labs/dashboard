@@ -9,6 +9,8 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
@@ -27,7 +29,9 @@ export default function Docker({ ...props }) {
             </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
-        <GlobalConfigCheckList />
+        {/* <GlobalConfigCheckList />
+            <GlobalChartsCheck />*/}
+            <GlobalAllCheckModal />
         </div>
     )
 }

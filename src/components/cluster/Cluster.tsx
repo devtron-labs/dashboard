@@ -17,6 +17,9 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal'
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
+
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
 
@@ -107,7 +110,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 </h5>
                 {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
             </section>
-            <GlobalConfigCheckList />
+             {/* <GlobalConfigCheckList />
+                <GlobalChartsCheck />*/}
+            <GlobalAllCheckModal />
         </div>
     }
 }

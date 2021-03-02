@@ -11,6 +11,8 @@ import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurat
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import '../login/login.css';
 import './gitops.css';
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
+import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
 enum GitProvider {
     GitLab = 'GITLAB',
@@ -276,7 +278,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                 </form>
             </section>
-                <GlobalConfigCheckList />
+            {/* <GlobalConfigCheckList />
+                <GlobalChartsCheck />*/}
+            <GlobalAllCheckModal />
         </div>
     }
 }
