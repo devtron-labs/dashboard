@@ -17,7 +17,7 @@ export default function Docker({ ...props }) {
         showError(error)
         if (!result) return null
     }
-    return (
+    return (<div className="flexbox">
         <section className="docker-page">
             <h2 className="form__title">Docker registries</h2>
             <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
@@ -26,8 +26,9 @@ export default function Docker({ ...props }) {
             </a>
             </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
-            <GlobalConfigCheckList />
         </section>
+        <GlobalConfigCheckList />
+        </div>
     )
 }
 

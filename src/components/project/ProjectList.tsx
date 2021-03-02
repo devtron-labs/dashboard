@@ -136,16 +136,18 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
             return <ErrorScreenManager code={this.state.code} />
         }
         else {
-            return <section className="project-list">
-                {this.renderPageHeader()}
-                {this.renderAddProject()}
-                {this.state.projects.map((project, index) => {
-                    return <React.Fragment key={`${project.name}-${index}`}>
-                        {this.renderProjects(project, index)}
-                    </React.Fragment>
-                })}
-            <GlobalConfigCheckList />
-            </section>
+            return <div className="flexbox">
+                <section className="project-list">
+                    {this.renderPageHeader()}
+                    {this.renderAddProject()}
+                    {this.state.projects.map((project, index) => {
+                        return <React.Fragment key={`${project.name}-${index}`}>
+                            {this.renderProjects(project, index)}
+                        </React.Fragment>
+                    })}
+                </section>
+                <GlobalConfigCheckList />
+            </div>
         }
     }
 }
