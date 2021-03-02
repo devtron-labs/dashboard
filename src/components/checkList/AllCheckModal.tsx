@@ -5,6 +5,7 @@ import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
 import Complete from '../../assets/img/ic-empty-done@2x.png';
 import { AllChartsCheck } from './AllChartsCheck';
+import './checklist.css';
 
 
 export class AllCheckModal extends Component{

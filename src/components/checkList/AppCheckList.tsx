@@ -9,6 +9,7 @@ import Uncheck from '../../assets/img/ic-success@2x.png';
 import { ReactComponent as Check } from '../../assets/icons/ic-outline-check.svg';
 import { getAppCheckList } from './checklist.service';
 import { Progressing, showError } from '../common';
+import './checklist.css';
 
 const DefaultAppCheckList = {
     gitOps: false,

@@ -173,8 +173,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 </form>
             </section>
             <div>
-           {/* <GlobalConfigCheckList />
-            <GlobalChartsCheck />*/}
+           {/* <GlobalConfigCheckList />*/}
+            <GlobalChartsCheck />
             <GlobalAllCheckModal/>
             </div>
             
