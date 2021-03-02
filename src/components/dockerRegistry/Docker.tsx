@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useLocation, useHistory, useRouteMatch } from 'react-router'
 import { showError, useForm, Select, Progressing, useAsync } from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
@@ -8,12 +9,14 @@ import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
-import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
-import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
+    const location = useLocation();
+    const match = useRouteMatch();
+    const history = useHistory();
+
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -29,10 +32,8 @@ export default function Docker({ ...props }) {
             </h5>
             {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
-        {/* <GlobalConfigCheckList />
-            <GlobalChartsCheck />*/}
-            <GlobalAllCheckModal />
-        </div>
+        <GlobalConfigCheckList history={history} location={location} match={match} />
+    </div>
     )
 }
 

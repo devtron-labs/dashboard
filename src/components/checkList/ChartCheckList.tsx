@@ -14,8 +14,10 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
         return (
             <>
                 <div className="cursor cn-9 pt-12 pb-12 fw-6 flex" onClick={this.props.toggleChartChecklist}>
-                    <div>To deploy chart (0/3 completed)</div>
-                    <span className="checklist__dropdown "><Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: this.props.isChartCollapsed ? '180deg' : '0deg' }} /></span>
+                    <div>To deploy chart ({this.props.chartStageCompleted}/3 completed)</div>
+                    <span className="checklist__dropdown">
+                        <Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: this.props.isChartCollapsed ? '180deg' : '0deg' }} />
+                    </span>
                 </div>
                 {this.props.isChartCollapsed ? <div className="">
                     <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>

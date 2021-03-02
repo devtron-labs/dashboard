@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import Checklist from '../../assets/img/ic-empty-checklist.png';
 import { AppCheckList } from './AppCheckList';
 import { ChartCheckList } from './ChartCheckList';
-import { showError } from '../common';
+import { showError, ErrorScreenManager } from '../common';
 import { GlobalConfigCheckListState } from './checklist.type';
 import { getAppCheckList } from '../../services/service';
-import './checklist.css';
 import { GlobalAllCheckModal } from './GlobalAllCheckModal';
 import { GlobalChartsCheck } from './GlobalChartCheck';
+import { ViewType } from '../../config';
+import { RouteComponentProps } from 'react-router-dom';
+import './checklist.css';
 
-interface GlobalConfigCheckListProps {
-
-
+export interface GlobalConfigCheckListProps extends RouteComponentProps<{}> {
 
 }
 
@@ -20,6 +20,8 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     constructor(props) {
         super(props);
         this.state = {
+            view: ViewType.LOADING,
+            statusCode: 0,
             isChartCollapsed: true,
             isAppCollapsed: true,
             appChecklist: undefined,
@@ -47,7 +49,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
             }, 0)
 
             this.setState({
-                // view: ViewType.FORM,
+                view: ViewType.FORM,
                 appChecklist,
                 chartChecklist,
                 appStageCompleted,
@@ -55,7 +57,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
             })
         }).catch((error) => {
             showError(error);
-            // this.setState({ view: ViewType.ERROR, });
+            this.setState({ view: ViewType.ERROR, statusCode: error.code });
         })
     }
 
@@ -70,43 +72,49 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     renderGlobalChecklist() {
         if (this.state.appStageCompleted < 6 && this.state.chartStageCompleted < 3) {
             //(app + chart) incomplete
-            return <>
+            return <div className="">
+                <img src={Checklist} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
+                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+                <AppCheckList appChecklist={this.state.appChecklist}
+                    isAppCollapsed={this.state.isAppCollapsed}
+                    appStageCompleted={this.state.appStageCompleted}
+                    toggleAppChecklist={this.toggleAppChecklist} />
+                <hr className="checklist__divider mt-0 mb-0" />
                 <ChartCheckList chartChecklist={this.state.chartChecklist}
                     isChartCollapsed={this.state.isChartCollapsed}
                     chartStageCompleted={this.state.chartStageCompleted}
                     toggleChartChecklist={this.toggleChartChecklist} />
-                <AppCheckList appChecklist={this.state.appChecklist}
-                    isAppCollapsed={this.state.isAppCollapsed}
-                    appStageCompleted={this.state.appStageCompleted}
-                    toggleAppChecklist={this.toggleAppChecklist} />
-            </>
+            </div>
         }
         else if (this.state.appStageCompleted >= 6 && this.state.chartStageCompleted >= 3) {
             //(app + chart) complete
             return <GlobalAllCheckModal />
-
         }
         else {
             //app incomplete, chart complete 
-            return <>
-                <GlobalChartsCheck />
+            return <div className="">
+                <img src={Checklist} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
+                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
                 <AppCheckList appChecklist={this.state.appChecklist}
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.state.appStageCompleted}
                     toggleAppChecklist={this.toggleAppChecklist} />
-            </>
+                <GlobalChartsCheck />
+            </div>
         }
     }
 
     render() {
-        return (<div className="br-4 bcn-0 p-20 global__checklist">
-            {/* {this.renderAppCheckListModal()} */}
-            <div className="">
-                <img src={Checklist} className="checklist__top-img" />
-                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
-                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+        if (this.state.view === ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.statusCode} />
+        }
+        else if (this.state.view !== ViewType.LOADING) {
+            return <div className="mt-36 ml-20 mr-20 mb-20 global__checklist">
                 {this.renderGlobalChecklist()}
             </div>
-        </div>)
+        }
+        return null;
     }
 }

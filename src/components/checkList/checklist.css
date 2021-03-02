@@ -5,6 +5,7 @@
 .applist__checklist-img {
     height: 140px;
 }
+
 /* 
 .checklist__custom-input {
     box-shadow: inset 0 -1px 0 0 var(--N200);
@@ -22,7 +23,9 @@
 }
 
 .global__checklist {
-    background-color: var(--window-bg);
+    background-color: inherit;
+    width: 226px;
+    flex-shrink: 0;
 }
 
 .applist__checklist {

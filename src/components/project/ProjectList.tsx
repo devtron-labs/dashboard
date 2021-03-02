@@ -4,14 +4,12 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';
 import { Project } from './Project';
-import { ProjectListState, ProjectType } from './types';
+import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
-import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
-import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
 
-export default class ProjectList extends Component<{}, ProjectListState>  {
+export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
 
     constructor(props) {
         super(props);
@@ -148,9 +146,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
                         </React.Fragment>
                     })}
                 </section>
-                {/* <GlobalAllCheckModal />
-                  <GlobalChartsCheck />*/}
-                <GlobalConfigCheckList />
+                <GlobalConfigCheckList {...this.props} />
             </div>
         }
     }

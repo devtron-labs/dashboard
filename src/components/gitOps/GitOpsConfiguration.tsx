@@ -8,11 +8,10 @@ import { CustomInput, ErrorScreenManager, Progressing, showError } from '../comm
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
-import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
-import { GlobalAllCheckModal } from '../checkList/GlobalAllCheckModal';
+
 
 enum GitProvider {
     GitLab = 'GITLAB',
@@ -278,9 +277,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     </div>
                 </form>
             </section>
-            {/* <GlobalConfigCheckList />
-                <GlobalChartsCheck />*/}
-            <GlobalAllCheckModal />
+            <GlobalConfigCheckList {...this.props}/>
         </div>
     }
 }

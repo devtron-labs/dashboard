@@ -1,3 +1,5 @@
+import { RouteComponentProps } from "react-router-dom";
+
 export const POLLING_INTERVAL = 30000;
 
 export const AuthenticationType = {
@@ -49,7 +51,7 @@ export interface ClusterInstallStatusProps {
 }
 
 
-export interface ClusterListProps {
+export interface ClusterListProps extends RouteComponentProps<{}> {
     view: string;
     clusters: {
         id: number;

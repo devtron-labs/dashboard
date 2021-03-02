@@ -59,6 +59,8 @@ export interface ChartCheckListModalProps extends RouteComponentProps {
 
 
 export interface GlobalConfigCheckListState {
+    view: string;
+    statusCode: number;
     isChartCollapsed: boolean;
     isAppCollapsed: boolean;
     appChecklist: AppCheckList;
