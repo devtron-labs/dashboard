@@ -24,7 +24,6 @@ export interface AppListState {
     offset: number;
     pageSize: number;
     expandedRow: boolean;
-    isDockerRegistryEmpty: boolean;
     appData: App | null;
     appStageCompleted: number;
     chartStageCompleted: number;

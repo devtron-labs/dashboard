@@ -10,7 +10,6 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import { getDockerRegistryStatus, getAppCheckList } from '../../../services/service';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -39,7 +38,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
-            isDockerRegistryEmpty: false,
             appChecklist: undefined,
             chartChecklist: undefined,
             appStageCompleted: 0,
@@ -49,39 +47,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
-        getDockerRegistryStatus().then((response) => {
-            this.setState({
-                isDockerRegistryEmpty: !(response.result),
-            })
-        }).catch((errors: ServerErrors) => {
-
-        })
-        getAppCheckList().then((response) => {
-            let appChecklist = response.result.appChecklist;
-            let chartChecklist = response.result.chartChecklist;
-            let appStageArray: number[] = Object.values(appChecklist);
-            let chartStageArray: number[] = Object.values(chartChecklist);
-            let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-                sum = sum + item;
-                return sum;
-            }, 0)
-            let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-                sum = sum + item;
-                return sum;
-            }, 0)
-
-            this.setState({
-                view: ViewType.FORM,
-                appChecklist,
-                chartChecklist,
-                appStageCompleted,
-                chartStageCompleted,
-            })
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, });
-        })
-
         getInitState(payload).then((response) => {
             this.setState({
                 code: response.code,
@@ -96,10 +61,16 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 },
                 searchQuery: response.appNameSearch || "",
                 searchApplied: !!response.appNameSearch?.length,
+                appChecklist: response.appChecklist,
+                chartChecklist: response.chartChecklist,
+                appStageCompleted: response.appStageCompleted,
+                chartStageCompleted: response.chartStageCompleted,
             });
         }).then(() => {
-            let payload = this.createPayloadFromURL(this.props.location.search);
-            this.getAppList(payload);
+            if (this.state.appStageCompleted >= 6) {
+                let payload = this.createPayloadFromURL(this.props.location.search);
+                this.getAppList(payload);
+            }
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
