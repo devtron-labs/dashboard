@@ -28,7 +28,7 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
     }
 
     render() {
-        return (<div className="br-4 bcn-0 p-20 applist__checklist">
+        return (<div className="br-4 p-20 applist__checklist">
             {this.renderAppCheckListModal()}
             {/* {this.renderCheckChartModal()}*/}
             {/*this.renderAllCheckSetModal()*/}

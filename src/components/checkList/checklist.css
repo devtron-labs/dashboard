@@ -14,3 +14,7 @@
     margin: auto;
     margin-right: 0;
 }
+
+.global__checklist{
+    background-color: var(--window-bg);
+}
