@@ -68,17 +68,21 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     renderChartChecklist() {
         if (this.state.appStageCompleted < 6 && this.state.chartStageCompleted < 3) {
             //(app + chart) incomplete
-            return <>
-                <AppCheckList appChecklist={this.state.appChecklist}
-                    isAppCollapsed={this.state.isAppCollapsed}
-                    appStageCompleted={this.state.appStageCompleted}
-                    toggleAppChecklist={this.toggleChartChecklist} />
+            return <div>
+                <img src={Checklist} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
+                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
                 <ChartCheckList chartChecklist={this.state.chartChecklist}
                     isChartCollapsed={this.state.isChartCollapsed}
                     chartStageCompleted={this.state.chartStageCompleted}
                     toggleChartChecklist={this.toggleChartChecklist}
                 />
-            </>
+                <hr className="checklist__divider mt-0 mb-0" />
+                <AppCheckList appChecklist={this.state.appChecklist}
+                    isAppCollapsed={this.state.isAppCollapsed}
+                    appStageCompleted={this.state.appStageCompleted}
+                    toggleAppChecklist={this.toggleChartChecklist} />
+            </div>
         }
         else if (this.state.appStageCompleted >= 6 && this.state.chartStageCompleted >= 3) {
             //(app + chart) complete
@@ -86,13 +90,16 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
         }
         else {
             //app incomplete, chart complete 
-            return <>
+            return <div>
+                <img src={Checklist} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
+                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
                 <AppCheckList appChecklist={this.state.appChecklist}
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.state.appStageCompleted}
                     toggleAppChecklist={this.toggleChartChecklist} />
                 <AllChartsCheck />
-            </>
+            </div>
         }
     }
 
@@ -102,13 +109,8 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
         }
         else if (this.state.view !== ViewType.LOADING) {
             return (
-                <div className="br-4 bcn-0 p-20 applist__checklist">
-                    <div>
-                        <img src={Checklist} className="checklist__top-img" />
-                        <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
-                        <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
-                        {this.renderChartChecklist()}
-                    </div>
+                <div className="br-4 bcn-0 p-20 mt-16 applist__checklist">
+                    {this.renderChartChecklist()}
                 </div>
             )
         }
