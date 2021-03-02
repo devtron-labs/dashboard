@@ -36,6 +36,8 @@ export interface AppCheckListModalState {
 }
 
 export interface ChartCheckListModalState {
+    statusCode: number;
+    view: string;
     isAppCollapsed: boolean;
     isChartCollapsed: boolean;
     appStageCompleted: number;

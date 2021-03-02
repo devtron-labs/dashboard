@@ -5,8 +5,9 @@ import { ChartCheckList } from './ChartCheckList'
 import { ChartCheckListModalProps, ChartCheckListModalState } from './checklist.type';
 import { AllChartsCheck } from './AllChartsCheck';
 import { AllCheckModal } from './AllCheckModal';
-import { showError } from '../common';
+import { ErrorScreenManager, showError } from '../common';
 import { getAppCheckList } from '../../services/service';
+import { ViewType } from '../../config';
 import './checklist.css';
 
 export class ChartCheckListModal extends Component<ChartCheckListModalProps, ChartCheckListModalState> {
@@ -14,6 +15,8 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     constructor(props) {
         super(props);
         this.state = {
+            statusCode: 0,
+            view: ViewType.LOADING,
             isChartCollapsed: true,
             isAppCollapsed: true,
             appChecklist: undefined,
@@ -42,7 +45,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
             }, 0)
 
             this.setState({
-                // view: ViewType.FORM,
+                view: ViewType.FORM,
                 appChecklist,
                 chartChecklist,
                 appStageCompleted,
@@ -50,7 +53,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
             })
         }).catch((error) => {
             showError(error);
-            // this.setState({ view: ViewType.ERROR, });
+            this.setState({ statusCode: error.code, view: ViewType.ERROR, });
         })
     }
 
@@ -94,15 +97,21 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     }
 
     render() {
-        return (
-            <div className="br-4 bcn-0 p-20 applist__checklist">
-                <div>
-                    <img src={Checklist} className="checklist__top-img" />
-                    <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
-                    <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
-                    {this.renderChartChecklist()}
+        if (this.state.view === ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.statusCode} />
+        }
+        else if (this.state.view !== ViewType.LOADING) {
+            return (
+                <div className="br-4 bcn-0 p-20 applist__checklist">
+                    <div>
+                        <img src={Checklist} className="checklist__top-img" />
+                        <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
+                        <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+                        {this.renderChartChecklist()}
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }
+        return null;
     }
 }

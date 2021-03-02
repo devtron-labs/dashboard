@@ -9,7 +9,7 @@ import { getInstalledCharts } from '../charts.service';
 import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import {HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator} from '../Charts'
+import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
@@ -52,9 +52,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
                 {
-                    deprecated && 
+                    deprecated &&
                     <div>
-                        <UpdateWarn/>
+                        <UpdateWarn />
                         {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
                     </div>
                 }
@@ -71,13 +71,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         else return <div className="chart-list-page">
             <GenericChartsHeader>
                 <HeaderTitle>Chart Store</HeaderTitle>
-                <ChartDetailNavigator/>
-                <HeaderButtonGroup><span/></HeaderButtonGroup>
+                <ChartDetailNavigator />
+                <HeaderButtonGroup><span /></HeaderButtonGroup>
             </GenericChartsHeader>
-            {this.state.view === ViewType.LOADING 
-            ? <Progressing pageLoader />
-            :    this.state.installedCharts.length === 0 
-                ? <EmptyState>
+            {this.state.view === ViewType.LOADING
+                ? <Progressing pageLoader />
+                : this.state.installedCharts.length === 0
+                    ? <EmptyState>
                         <EmptyState.Image><img src={emptyAppListImage} alt="" /> </EmptyState.Image>
                         <EmptyState.Title><h2 className="empty__title">No Charts Deployed</h2></EmptyState.Title>
                         <EmptyState.Subtitle>You haven’t deployed any charts. Browse and deploy charts to find them here.</EmptyState.Subtitle>
@@ -85,13 +85,14 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                             <Link to="discover" className="cta no-decor ghosted" >Discover charts</Link>
                         </EmptyState.Button>
                     </EmptyState>
-                    : <div> <ChartCheckListModal {...this.props}/>
-                    <div className="chart-grid">
-                    {this.state.installedCharts.map((chart) => {
-                        return this.renderCard(chart);
-                    })}
-                </div>
-                </div>
+                    : <div>
+                        <ChartCheckListModal {...this.props} />
+                        <div className="chart-grid">
+                            {this.state.installedCharts.map((chart) => {
+                                return this.renderCard(chart);
+                            })}
+                        </div>
+                    </div>
             }
         </div>
     }
