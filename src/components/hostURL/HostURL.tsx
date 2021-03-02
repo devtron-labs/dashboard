@@ -11,6 +11,7 @@ import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckModal';
 import './hosturl.css';
+import { GlobalChartsCheck } from '../checkList/GlobalChartCheck';
 
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
@@ -170,7 +171,11 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     </div>
                 </form>
             </section>
+            <div>
             <GlobalConfigCheckList />
+            <GlobalChartsCheck />
+            </div>
+            
         </div>
     }
 }
