@@ -20,7 +20,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 </span>
             </div>
             {!this.props.isAppCollapsed ? <div className="">
-                <hr className="checklist__divider mt-0 mb-0" />
+                {this.props.showDivider && <hr className="checklist__divider mt-0 mb-0" />}
                 <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor mt-8 flex left" style={{ ['color']: hostUrl ? `#767d84` : `#0066cc` }} >
                     {!hostUrl ? <img src={Uncheck} className="icon-dim-16 flex mr-8" /> : <Check className="icon-dim-16 mr-8" />}
                     Add host URL</NavLink>

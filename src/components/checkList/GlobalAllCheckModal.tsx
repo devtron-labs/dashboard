@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
-import { URLS } from '../../config';
+import { DOCUMENTATION, URLS } from '../../config';
 import { GlobalChartsCheck } from './GlobalChartCheck';
 import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
 import Deploy from '../../assets/img/ic-checklist-app@2x.png';
@@ -23,7 +23,7 @@ export class GlobalAllCheckModal extends Component {
             <img className="img-width pt-12 pl-16" src={Sample} />
             <div className="pl-16 pr-16 pt-12 pb-12">
                 <div className="cn-9">Deploy sample “Hello world” application.</div>
-                <NavLink to={`${URLS.CHARTS}/discover`} className="no-decor cb-5 fw-6">View documentation</NavLink>
+                <a href={DOCUMENTATION.APP_CREATE} rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
             </div>
         </div>
     }

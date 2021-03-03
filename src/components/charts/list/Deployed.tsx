@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { DeployedChartProps, DeployedChartState } from '../charts.types';
 import { ViewType } from '../../../config';
-import EmptyState from '../../EmptyState/EmptyState';
 import { Link, withRouter } from 'react-router-dom';
 import { ErrorScreenManager, LazyImage, Progressing } from '../../common';
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
-import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'

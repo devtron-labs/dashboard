@@ -186,11 +186,11 @@ function Body({ getHostURLConfig, checkList }) {
         <Route path={URLS.GLOBAL_CONFIG_AUTH} render={(props) => {
             return <UserGroup />
         }} />
-        <Route path={URLS.GLOBAL_CONFIG_NOTIFIER} render={(props) => {
-            return <Notifier {...props} />
-        }} />
         <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => {
             return <AddNotification {...props} />
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_NOTIFIER} render={(props) => {
+            return <Notifier {...props} />
         }} />
         <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
     </Switch>

@@ -20,7 +20,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                     </span>
                 </div>
                 {!this.props.isChartCollapsed ? <div className="">
-                    <hr className="checklist__divider mt-0 mb-0" />
+                    {this.props.showDivider && <hr className="checklist__divider mt-0 mb-0" />}
                     <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>
                         {!this.props.chartChecklist.gitOps ? <img src={Uncheck} className="icon-dim-16 mr-8" /> : <Check className="icon-dim-16 mr-8" />}
                     Configure GitOps</NavLink>

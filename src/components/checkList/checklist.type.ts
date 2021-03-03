@@ -71,6 +71,7 @@ export interface GlobalConfigCheckListState {
     isAppCollapsed: boolean;
 }
 export interface AppCheckListProps {
+    showDivider: boolean;
     appChecklist: AppCheckList;
     appStageCompleted: number;
     isAppCollapsed: boolean;
@@ -81,5 +82,6 @@ export interface ChartCheckListProps {
     isChartCollapsed: boolean;
     chartChecklist: ChartCheckList;
     chartStageCompleted: number;
+    showDivider: boolean;
     toggleChartChecklist: (event) => void;
 }
