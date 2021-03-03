@@ -8,7 +8,7 @@
         "issuer": "https://accounts.google.com",
         "clientID": "$GOOGLE_CLIENT_ID",
         "clientSecret": "$GOOGLE_CLIENT_SECRET",
-        "redirectURI": "http://127.0.0.1:5556/callback",
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback",
         "hostedDomains": [
           "google.com"
         ]
@@ -23,7 +23,7 @@
       "config": {
         "clientID": "$GITHUB_CLIENT_ID",
         "clientSecret": "$GITHUB_CLIENT_SECRET",
-        "redirectURI": "http://127.0.0.1:5556/dex/callback",
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback",
         "orgs": [
           {
             "name": "my-organization"
@@ -50,7 +50,7 @@
       "config": {
         "clientID": "$MICROSOFT_APPLICATION_ID",
         "clientSecret": "$MICROSOFT_CLIENT_SECRET",
-        "redirectURI": "http://127.0.0.1:5556/dex/callback"
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback"
       }
     }
   },
@@ -97,7 +97,7 @@
         "issuer": "https://accounts.google.com",
         "clientID": "$GOOGLE_CLIENT_ID",
         "clientSecret": "$GOOGLE_CLIENT_SECRET",
-        "redirectURI": "http://127.0.0.1:5556/callback"
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback"
       }
     }
   },
@@ -110,7 +110,7 @@
         "issuer": "https://api.mycluster.example.com:6443",
         "clientID": "$OPENSHIFT_OAUTH_CLIENT_ID",
         "clientSecret": "$OPENSHIFT_OAUTH_CLIENT_SECRET",
-        "redirectURI": "http://127.0.0.1:5556/dex/",
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback",
         "insecureCA": false,
         "rootCA": "/etc/ssl/openshift.pem",
         "groups": [
