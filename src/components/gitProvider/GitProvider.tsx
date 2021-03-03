@@ -19,17 +19,14 @@ export default function GitProvider({ ...props }) {
         if (!result) return null
     }
 
-    return (<section className="flexbox">
-        <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">Git accounts</h2>
-            <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+    return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+        <h2 className="form__title">Git accounts</h2>
+        <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
-                    Learn more about git accounts
+                Learn more about git accounts
             </a>
-            </h5>
-            {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
-        </div>
-        <GlobalConfigCheckList history={history} location={location} match={match} />
+        </h5>
+        {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
     </section>
     )
 }

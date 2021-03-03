@@ -22,17 +22,14 @@ export default function Docker({ ...props }) {
         showError(error)
         if (!result) return null
     }
-    return (<section className="flexbox">
-        <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">Docker registries</h2>
-            <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
+    return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+        <h2 className="form__title">Docker registries</h2>
+        <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER} rel="noopener noreferrer" target="_blank">
                 Learn more about docker registries
             </a>
-            </h5>
-            {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
-        </div>
-        <GlobalConfigCheckList history={history} location={location} match={match} />
+        </h5>
+        {[{ id: null }].concat(result && Array.isArray(result.result) ? result.result : []).map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
     </section>
     )
 }
