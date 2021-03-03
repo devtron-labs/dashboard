@@ -66,35 +66,43 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         </Link>
     }
 
+    renderPageHeader() {
+        return <GenericChartsHeader>
+            <HeaderTitle>Chart Store</HeaderTitle>
+            <ChartDetailNavigator />
+            <HeaderButtonGroup><span /></HeaderButtonGroup>
+        </GenericChartsHeader>
+    }
+
     render() {
-        if (this.state.code) return <ErrorScreenManager code={this.state.code} />
-        else return <div className="chart-list-page">
-            <GenericChartsHeader>
-                <HeaderTitle>Chart Store</HeaderTitle>
-                <ChartDetailNavigator />
-                <HeaderButtonGroup><span /></HeaderButtonGroup>
-            </GenericChartsHeader>
-            {this.state.view === ViewType.LOADING
-                ? <Progressing pageLoader />
-                : this.state.installedCharts.length === 0
-                    ? <EmptyState>
-                        <EmptyState.Image><img src={emptyAppListImage} alt="" /> </EmptyState.Image>
-                        <EmptyState.Title><h2 className="empty__title">No Charts Deployed</h2></EmptyState.Title>
-                        <EmptyState.Subtitle>You haven’t deployed any charts. Browse and deploy charts to find them here.</EmptyState.Subtitle>
-                        <EmptyState.Button>
-                            <Link to="discover" className="cta no-decor ghosted" >Discover charts</Link>
-                        </EmptyState.Button>
-                    </EmptyState>
-                    : <div>
-                        <ChartCheckListModal {...this.props} />
-                        <div className="chart-grid">
-                            {this.state.installedCharts.map((chart) => {
-                                return this.renderCard(chart);
-                            })}
-                        </div>
-                    </div>
-            }
-        </div>
+        if (this.state.view === ViewType.LOADING) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <Progressing pageLoader />
+            </div>
+        }
+        else if (this.state.view === ViewType.ERROR) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <ErrorScreenManager code={this.state.code} />
+            </div>
+        }
+        else if (this.state.installedCharts.length === 0) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <ChartCheckListModal {...this.props} />
+            </div>
+        }
+        else {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <div className="chart-grid">
+                    {this.state.installedCharts.map((chart) => {
+                        return this.renderCard(chart);
+                    })}
+                </div>
+            </div>
+        }
     }
 }
 export default withRouter(props => <Deployed {...props} />)
