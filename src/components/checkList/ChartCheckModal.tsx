@@ -95,12 +95,13 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                 <img src={Checklist} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
                 <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+                <AllChartsCheck />
+                <hr className="checklist__divider mt-8 mb-0" />
                 <AppCheckList appChecklist={this.state.appChecklist}
                     showDivider={false}
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.state.appStageCompleted}
-                    toggleAppChecklist={this.toggleChartChecklist} />
-                <AllChartsCheck />
+                    toggleAppChecklist={this.toggleAppChecklist} />
             </div>
         }
     }
