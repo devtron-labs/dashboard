@@ -23,7 +23,7 @@ export class GlobalAllCheckModal extends Component {
             <img className="img-width pt-12 pl-16" src={Sample} />
             <div className="pl-16 pr-16 pt-12 pb-12">
                 <div className="cn-9">Deploy sample “Hello world” application.</div>
-                <a href={DOCUMENTATION.APP_CREATE} rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
+                <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
             </div>
         </div>
     }
