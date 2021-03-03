@@ -52,16 +52,16 @@ export interface ClusterInstallStatusProps {
 
 
 export interface ClusterListProps extends RouteComponentProps<{}> {
-    view: string;
-    clusters: {
-        id: number;
-        active: boolean;
-        cluster_name: string;
-        agentInstallationStage: ClusterInstallStage;
-        defaultClusterComponent: any[] | null;
-        prometheus_url: string;
-        environments: any[];
-        server_url: string;
-    }[];
-    clusterEnvMap: any;
+    // view: string;
+    // clusters: {
+    //     id: number;
+    //     active: boolean;
+    //     cluster_name: string;
+    //     agentInstallationStage: ClusterInstallStage;
+    //     defaultClusterComponent: any[] | null;
+    //     prometheus_url: string;
+    //     environments: any[];
+    //     server_url: string;
+    // }[];
+    // clusterEnvMap: any;
 }

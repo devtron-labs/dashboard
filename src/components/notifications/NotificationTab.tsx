@@ -491,7 +491,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return <div className="notification-tab">
-            <Link to={`edit`} style={{ width: "100px" }}
+            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} style={{ width: "100px" }}
                 className="cta small flex no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
             </Link>

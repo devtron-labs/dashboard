@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './hosturl.css';
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
@@ -124,53 +123,50 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             </section>
         }
         return <>
-            <section className="flexbox ">
-                <div className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
-                    <h2 className="form__title">Host URL</h2>
-                    <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
-                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
-                        <div className="hosturl__description">
-                            <div>
-                                <div className="flex left ">
-                                    <Info className="icon-dim-20 mr-8 " />
-                                    <div>Host URL is the domain address at which your devtron dashboard can be reached.</div>
-                                </div>
-                                <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
+            <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
+                <h2 className="form__title">Host URL</h2>
+                <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
+                <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
+                    <div className="hosturl__description">
+                        <div>
+                            <div className="flex left ">
+                                <Info className="icon-dim-20 mr-8 " />
+                                <div>Host URL is the domain address at which your devtron dashboard can be reached.</div>
                             </div>
+                            <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
                         </div>
-                        {(this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
-                        <div className="pl-20 pr-20">
-                            <div className="flex column left top ">
-                                <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
-                                <input id="host"
-                                    value={this.state.form.value}
-                                    autoFocus
-                                    tabIndex={1}
-                                    type="text"
-                                    className="form__input"
-                                    placeholder={"Enter Host URL"}
-                                    onChange={(event) => this.handleChange(event)}
-                                    autoComplete="off" />
-                            </div>
-                            {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
-                            <div className="hosturl__autodetection flex left pt-4">
-                                <Warn className="icon-dim-16 mr-8 " />
+                    </div>
+                    {(this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
+                    <div className="pl-20 pr-20">
+                        <div className="flex column left top ">
+                            <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
+                            <input id="host"
+                                value={this.state.form.value}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input"
+                                placeholder={"Enter Host URL"}
+                                onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                        {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
+                        <div className="hosturl__autodetection flex left pt-4">
+                            <Warn className="icon-dim-16 mr-8 " />
                         Auto-detected from your browser:
                         <button type="button" onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
-                            </div>
-                            <div className="form__buttons pt-20">
-                                <button type="button"
-                                    tabIndex={2}
-                                    disabled={this.state.saveLoading}
-                                    onClick={(e) => { this.onSave() }}
-                                    className="cta">
-                                    {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
-                                </button>
-                            </div>
                         </div>
-                    </form>
-                </div>
-                <GlobalConfigCheckList {...this.props} />
+                        <div className="form__buttons pt-20">
+                            <button type="button"
+                                tabIndex={2}
+                                disabled={this.state.saveLoading}
+                                onClick={(e) => { this.onSave() }}
+                                className="cta">
+                                {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </section>
         </>
     }
