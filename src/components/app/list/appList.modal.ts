@@ -70,6 +70,7 @@ export const getInitState = (appListPayload): Promise<any> => {
             },
             searchQuery: appListPayload.appNameSearch || "",
             searchApplied: !!appListPayload.appNameSearch.length,
+            isAppCreated: checkList.result.isAppCreated,
             appChecklist,
             chartChecklist,
             appStageCompleted,

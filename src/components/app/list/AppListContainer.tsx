@@ -38,6 +38,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
+            isAppCreated: false,
             appChecklist: undefined,
             chartChecklist: undefined,
             appStageCompleted: 0,
@@ -61,18 +62,19 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 },
                 searchQuery: response.appNameSearch || "",
                 searchApplied: !!response.appNameSearch?.length,
+                isAppCreated: response.isAppCreated,
                 appChecklist: response.appChecklist,
                 chartChecklist: response.chartChecklist,
                 appStageCompleted: response.appStageCompleted,
                 chartStageCompleted: response.chartStageCompleted,
             });
         }).then(() => {
-            if (this.state.appStageCompleted >= 6) {
+            if (this.state.isAppCreated) {
                 let payload = this.createPayloadFromURL(this.props.location.search);
                 this.getAppList(payload);
             }
             else {
-                this.setState({ view: ViewType.EMPTY });
+                this.setState({ view: AppListViewType.EMPTY });
             }
         }).catch((errors: ServerErrors) => {
             showError(errors);

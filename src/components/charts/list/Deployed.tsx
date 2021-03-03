@@ -90,7 +90,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         else if (this.state.installedCharts.length === 0) {
             return <div className="chart-list-page">
                 {this.renderPageHeader()}
-                <ChartCheckListModal {...this.props} />
+                <div>
+                    <ChartCheckListModal {...this.props} />
+                </div>
             </div>
         }
         else {

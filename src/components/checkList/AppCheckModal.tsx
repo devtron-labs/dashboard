@@ -12,7 +12,7 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
     constructor(props) {
         super(props);
         this.state = {
-            isAppCollapsed: true,
+            isAppCollapsed: false,
             isChartCollapsed: true,
         }
         this.toggleAppChecklist = this.toggleAppChecklist.bind(this);

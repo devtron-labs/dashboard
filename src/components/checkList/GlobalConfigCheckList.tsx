@@ -12,8 +12,8 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     constructor(props) {
         super(props);
         this.state = {
+            isAppCollapsed: false,
             isChartCollapsed: true,
-            isAppCollapsed: true,
         }
         this.toggleChartChecklist = this.toggleChartChecklist.bind(this);
         this.toggleAppChecklist = this.toggleAppChecklist.bind(this);

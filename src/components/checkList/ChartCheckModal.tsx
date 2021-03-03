@@ -16,7 +16,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
         this.state = {
             isLoading: true,
             isAppCreated: false,
-            isChartCollapsed: true,
+            isChartCollapsed: false,
             isAppCollapsed: true,
             appChecklist: undefined,
             chartChecklist: undefined,
@@ -76,11 +76,10 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                     chartStageCompleted={this.state.chartStageCompleted}
                     toggleChartChecklist={this.toggleChartChecklist}
                 />
-                <hr className="checklist__divider mt-0 mb-0" />
                 <AppCheckList appChecklist={this.state.appChecklist}
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.state.appStageCompleted}
-                    toggleAppChecklist={this.toggleChartChecklist} />
+                    toggleAppChecklist={this.toggleAppChecklist} />
             </div>
         }
         else if (this.state.appStageCompleted >= 6 && this.state.chartStageCompleted >= 3) {
@@ -104,7 +103,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
 
     render() {
         if (!this.state.isLoading && !this.state.isAppCreated) {
-            return <div className="mt-36 ml-20 mr-20 mb-20 global__checklist">
+            return <div className="mt-36 ml-20 mr-20 mb-20 bcn-0 br-4 p-20 applist__checklist">
                 {this.renderChartChecklist()}
             </div>
         }

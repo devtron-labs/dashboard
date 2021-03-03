@@ -25,6 +25,7 @@ export interface AppListState {
     pageSize: number;
     expandedRow: boolean;
     appData: App | null;
+    isAppCreated: boolean;
     appStageCompleted: number;
     chartStageCompleted: number;
     appChecklist: AppCheckList;
