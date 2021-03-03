@@ -36,8 +36,8 @@ export interface AppCheckListModalState {
 }
 
 export interface ChartCheckListModalState {
-    statusCode: number;
-    view: string;
+    isLoading: boolean;
+    isAppCreated: boolean;
     isAppCollapsed: boolean;
     isChartCollapsed: boolean;
     appStageCompleted: number;
@@ -57,16 +57,18 @@ export interface ChartCheckListModalProps extends RouteComponentProps {
 
 }
 
-
-export interface GlobalConfigCheckListState {
-    view: string;
-    statusCode: number;
-    isChartCollapsed: boolean;
-    isAppCollapsed: boolean;
+export interface GlobalConfigCheckListProps extends RouteComponentProps<{}> {
+    isLoading: boolean;
+    isAppCreated: boolean;
     appChecklist: AppCheckList;
     chartChecklist: ChartCheckList;
     appStageCompleted: number;
     chartStageCompleted: number;
+}
+
+export interface GlobalConfigCheckListState {
+    isChartCollapsed: boolean;
+    isAppCollapsed: boolean;
 }
 export interface AppCheckListProps {
     appChecklist: AppCheckList;

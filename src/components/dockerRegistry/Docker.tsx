@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useLocation, useHistory, useRouteMatch } from 'react-router'
 import { showError, useForm, Select, Progressing, useAsync } from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
@@ -9,13 +8,9 @@ import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
-    const location = useLocation();
-    const match = useRouteMatch();
-    const history = useHistory();
 
     if (loading && !result) return <Progressing pageLoader />
     if (error) {

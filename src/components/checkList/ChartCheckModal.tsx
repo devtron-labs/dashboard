@@ -5,9 +5,8 @@ import { ChartCheckList } from './ChartCheckList'
 import { ChartCheckListModalProps, ChartCheckListModalState } from './checklist.type';
 import { AllChartsCheck } from './AllChartsCheck';
 import { AllCheckModal } from './AllCheckModal';
-import { ErrorScreenManager, showError } from '../common';
+import { showError } from '../common';
 import { getAppCheckList } from '../../services/service';
-import { ViewType } from '../../config';
 import './checklist.css';
 
 export class ChartCheckListModal extends Component<ChartCheckListModalProps, ChartCheckListModalState> {
@@ -15,8 +14,8 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     constructor(props) {
         super(props);
         this.state = {
-            statusCode: 0,
-            view: ViewType.LOADING,
+            isLoading: true,
+            isAppCreated: false,
             isChartCollapsed: true,
             isAppCollapsed: true,
             appChecklist: undefined,
@@ -45,7 +44,8 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
             }, 0)
 
             this.setState({
-                view: ViewType.FORM,
+                isLoading: false,
+                isAppCreated: response.result.isAppCreated,
                 appChecklist,
                 chartChecklist,
                 appStageCompleted,
@@ -53,7 +53,6 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
             })
         }).catch((error) => {
             showError(error);
-            this.setState({ statusCode: error.code, view: ViewType.ERROR, });
         })
     }
 
@@ -104,15 +103,10 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     }
 
     render() {
-        if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.statusCode} />
-        }
-        else if (this.state.view !== ViewType.LOADING) {
-            return (
-                <div className="br-4 bcn-0 p-20 mt-16 applist__checklist">
-                    {this.renderChartChecklist()}
-                </div>
-            )
+        if (!this.state.isLoading && !this.state.isAppCreated) {
+            return <div className="mt-36 ml-20 mr-20 mb-20 global__checklist">
+                {this.renderChartChecklist()}
+            </div>
         }
         return null;
     }

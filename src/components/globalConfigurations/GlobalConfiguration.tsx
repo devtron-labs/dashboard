@@ -9,6 +9,8 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
 import { getHostURLConfiguration } from '../../services/service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
+import { getAppCheckList } from '../../services/service';
+import { showError } from '../common';
 import './globalConfigurations.scss';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -41,9 +43,18 @@ const ConfigOptional = [
 export default function GlobalConfiguration({ ...props }) {
     const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+    const [checkList, setCheckList] = useState({
+        isLoading: true,
+        isAppCreated: false,
+        appChecklist: undefined,
+        chartChecklist: undefined,
+        appStageCompleted: 0,
+        chartStageCompleted: 0,
+    });
 
     useEffect(() => {
         getHostURLConfig();
+        fetchCheckList();
     }, [])
 
     useEffect(() => {
@@ -61,6 +72,34 @@ export default function GlobalConfiguration({ ...props }) {
         })
     }
 
+    function fetchCheckList(): void {
+        getAppCheckList().then((response) => {
+            let appChecklist = response.result.appChecklist;
+            let chartChecklist = response.result.chartChecklist;
+            let appStageArray: number[] = Object.values(appChecklist);
+            let chartStageArray: number[] = Object.values(chartChecklist);
+            let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+            let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+
+            setCheckList({
+                isLoading: false,
+                isAppCreated: response.result.isAppCreated,
+                appChecklist,
+                chartChecklist,
+                appStageCompleted,
+                chartStageCompleted,
+            })
+        }).catch((error) => {
+            showError(error);
+        })
+    }
+
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
@@ -73,7 +112,7 @@ export default function GlobalConfiguration({ ...props }) {
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body getHostURLConfig={getHostURLConfig} />
+                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} />
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -90,51 +129,51 @@ function NavItem({ hostURLConfig }) {
         {ConfigRequired.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
         </NavLink>)}
-        <hr className="mt-8 mb-8 checklist__divider" />
+        <hr className="mt-8 mb-8 w-100 checklist__divider" />
         {ConfigOptional.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
         </NavLink>)}
     </div>
 }
 
-function Body({ getHostURLConfig }) {
+function Body({ getHostURLConfig, checkList }) {
     const location = useLocation();
 
     return <Switch location={location}>
         <Route path={URLS.GLOBAL_CONFIG_HOST_URL} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_GITOPS} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <GitOpsConfiguration {...props} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_PROJECT} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <Project {...props} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_CLUSTER} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <ClusterList {...props} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_GIT} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <GitProvider {...props} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_DOCKER} render={(props) => {
-            return <div className="flexbox">
+            return <div className="flexbox h-100">
                 <Docker {...props} />
-                <GlobalConfigCheckList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
 
