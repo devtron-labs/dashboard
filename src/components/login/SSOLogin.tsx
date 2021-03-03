@@ -286,17 +286,17 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
             <p className="m-0">config:</p>
-            <p className="m-0">&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-            <p className="m-0">&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
-            <p className="m-0">&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
-            <p className="m-0">&nbsp;&nbsp;config:</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
         </div> : null;
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'
-                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 32 : 0}
+                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={(event) => { this.handleConfigChange(event) }}>
@@ -310,6 +310,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </CodeEditor>
             </div>
         </div>
+    }
+    handleSSOURLLocation(value: string): void {
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                url: value
+            }
+        })
     }
 
     render() {
@@ -325,7 +333,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
-                <div className="login__sso-flex">
+                <div className="login__sso-flex pl-24">
                     <div>
                         <label className="tertiary-tab__radio">
                             <input type="radio" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
@@ -399,11 +407,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </label>
                     </div>
                 </div>
-                <div className="sso__description flexbox p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
-                    <div className="flex">
-                        <Help className="icon-dim-20 vertical-align-middle fcb-5 mr-12" />
-                        <div><span className="fw-6">Help: </span>See documentation for
-                        <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a></div>
+                <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
+                    <div className="flexbox">
+                        <Help className="icon-dim-20 fcb-5 mr-12" />
+                        <div>For redirect URL or callback URL use:  {`${this.state.ssoConfig.url}`}/api/dex/callback<br />
+                            Please ensure above URL is registered with the identity provider.</div>
+                    </div>
+                    <div className="mt-8 ml-32">
+                        <span className="fw-6">Help: </span>See documentation for
+                        <a rel="noreferrer noopener" href={`${ssoMap[this.state.sso]}`} target="_blank" className="login__auth-link"> Authentication through {this.state.sso}</a>
                     </div>
                 </div>
                 <label className="form__row mr-24 ml-24 mb-24">
@@ -412,6 +424,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     {this.state.isError.url && <div className="form__error">
                         {this.state.isError.url}
                     </div>}
+                    <div className="flex left pt-8">
+                        <div className="bcy-5 pl-4 pr-4 mr-8 cn-9">TIP</div>
+                        <div className="fw-4">Click to use:</div>
+                        <button type="button" onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}/orchestrator</button>
+                    </div>
                 </label>
                 {this.renderSSOCodeEditor()}
                 <div className="form__buttons mt-32 mr-24">
