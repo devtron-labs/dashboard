@@ -8,6 +8,9 @@ import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
 import { getHostURLConfiguration } from '../../services/service';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
+import { getAppCheckList } from '../../services/service';
+import { showError } from '../common';
 import './globalConfigurations.scss';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -21,25 +24,37 @@ const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
-const routes = [
+const ConfigRequired = [
     { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration },
     { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
+    { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
+    { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
     { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
-    { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
+]
+
+const ConfigOptional = [
     { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
-    { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
+    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
 ]
 
 export default function GlobalConfiguration({ ...props }) {
     const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+    const [checkList, setCheckList] = useState({
+        isLoading: true,
+        isAppCreated: false,
+        appChecklist: undefined,
+        chartChecklist: undefined,
+        appStageCompleted: 0,
+        chartStageCompleted: 0,
+    });
 
     useEffect(() => {
         getHostURLConfig();
+        fetchCheckList();
     }, [])
 
     useEffect(() => {
@@ -57,6 +72,34 @@ export default function GlobalConfiguration({ ...props }) {
         })
     }
 
+    function fetchCheckList(): void {
+        getAppCheckList().then((response) => {
+            let appChecklist = response.result.appChecklist;
+            let chartChecklist = response.result.chartChecklist;
+            let appStageArray: number[] = Object.values(appChecklist);
+            let chartStageArray: number[] = Object.values(chartChecklist);
+            let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+            let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                sum = sum + item;
+                return sum;
+            }, 0)
+
+            setCheckList({
+                isLoading: false,
+                isAppCreated: response.result.isAppCreated,
+                appChecklist,
+                chartChecklist,
+                appStageCompleted,
+                chartStageCompleted,
+            })
+        }).catch((error) => {
+            showError(error);
+        })
+    }
+
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
@@ -69,7 +112,7 @@ export default function GlobalConfiguration({ ...props }) {
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body getHostURLConfig={getHostURLConfig} />
+                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} />
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -83,27 +126,72 @@ function NavItem({ hostURLConfig }) {
     let showError = (!hostURLConfig || hostURLConfig.value !== window.location.origin) && !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
 
     return <div className="flex column left">
-        {routes.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+        {ConfigRequired.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+            {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
+        </NavLink>)}
+        <hr className="mt-8 mb-8 w-100 checklist__divider" />
+        {ConfigOptional.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
         </NavLink>)}
     </div>
 }
 
-function Body({ getHostURLConfig }) {
+function Body({ getHostURLConfig, checkList }) {
     const location = useLocation();
 
     return <Switch location={location}>
-        {routes.map(({ href, component: Component }) => {
-            if (href.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
-                return <Route key={href} path={href} render={(props) => {
-                    return <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
-                }} />
-            }
-            else {
-                return <Route key={href} path={href} component={Component} />
-            }
-        })}
-        <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => <AddNotification history={props.history} match={props.match} location={props.location} />} />
+        <Route path={URLS.GLOBAL_CONFIG_HOST_URL} render={(props) => {
+            return <div className="flexbox h-100">
+                <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_GITOPS} render={(props) => {
+            return <div className="flexbox h-100">
+                <GitOpsConfiguration {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_PROJECT} render={(props) => {
+            return <div className="flexbox h-100">
+                <Project {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_CLUSTER} render={(props) => {
+            return <div className="flexbox h-100">
+                <ClusterList {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_GIT} render={(props) => {
+            return <div className="flexbox h-100">
+                <GitProvider {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_DOCKER} render={(props) => {
+            return <div className="flexbox h-100">
+                <Docker {...props} />
+                <GlobalConfigCheckList {...checkList} {...props} />
+            </div>
+        }} />
+
+        <Route path={URLS.GLOBAL_CONFIG_CHART} render={(props) => {
+            return <ChartRepo />
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_LOGIN} render={(props) => {
+            return <SSOLogin {...props} />
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_AUTH} render={(props) => {
+            return <UserGroup />
+        }} />
+        <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => {
+            return <AddNotification {...props} />
+        }} />
+        <Route path={URLS.GLOBAL_CONFIG_NOTIFIER} render={(props) => {
+            return <Notifier {...props} />
+        }} />
         <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
     </Switch>
 }
@@ -130,11 +218,6 @@ function DropDown({ className = "", style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
     return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
-
-List.Logo = Logo
-List.Title = Title
-List.Toggle = ListToggle
-List.DropDown = DropDown
 
 export function List({ children = null, className = "", ...props }) {
     return <div className={`list ${className}`} {...props}>
@@ -201,3 +284,7 @@ export function ShowHide({ hidden = true, className = "", onClick = null, defaul
 
 
 ProtectedInput.ShowHide = ShowHide
+List.Logo = Logo
+List.Title = Title
+List.Toggle = ListToggle
+List.DropDown = DropDown

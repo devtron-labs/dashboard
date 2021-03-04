@@ -28,6 +28,8 @@ export const Routes = {
     ENVIRONMENT_CONFIG: 'app/env',
     PIPELINE_CONFIG: 'app/cd-pipeline/pipeline-config',
 
+    APP_CHECKLIST: 'global/checklist',
+
     APP: 'app',
     APP_LIST: 'app/list',
     APP_LIST_MIN: 'app/autocomplete',

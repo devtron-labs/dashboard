@@ -1,3 +1,5 @@
+import { RouteComponentProps } from "react-router-dom";
+
 export const POLLING_INTERVAL = 30000;
 
 export const AuthenticationType = {
@@ -49,17 +51,17 @@ export interface ClusterInstallStatusProps {
 }
 
 
-export interface ClusterListProps {
-    view: string;
-    clusters: {
-        id: number;
-        active: boolean;
-        cluster_name: string;
-        agentInstallationStage: ClusterInstallStage;
-        defaultClusterComponent: any[] | null;
-        prometheus_url: string;
-        environments: any[];
-        server_url: string;
-    }[];
-    clusterEnvMap: any;
+export interface ClusterListProps extends RouteComponentProps<{}> {
+    // view: string;
+    // clusters: {
+    //     id: number;
+    //     active: boolean;
+    //     cluster_name: string;
+    //     agentInstallationStage: ClusterInstallStage;
+    //     defaultClusterComponent: any[] | null;
+    //     prometheus_url: string;
+    //     environments: any[];
+    //     server_url: string;
+    // }[];
+    // clusterEnvMap: any;
 }

@@ -4,8 +4,8 @@ import { RouteComponentProps } from 'react-router'
 import { ConfigurationTab } from './ConfigurationTab';
 import { NotificationTab } from './NotificationTab';
 import { ErrorBoundary } from '../common';
-import './notifications.css';
 import { DOCUMENTATION } from '../../config';
+import './notifications.css';
 
 interface NotificationsProps extends RouteComponentProps<{}> {
 

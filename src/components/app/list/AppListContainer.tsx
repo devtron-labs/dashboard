@@ -10,7 +10,6 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import { getDockerRegistryStatus } from '../../../services/service';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -39,19 +38,16 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
-            isDockerRegistryEmpty: false,
+            isAppCreated: false,
+            appChecklist: undefined,
+            chartChecklist: undefined,
+            appStageCompleted: 0,
+            chartStageCompleted: 0,
         }
     }
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
-        getDockerRegistryStatus().then((response) => {
-            this.setState({
-                isDockerRegistryEmpty: !(response.result),
-            })
-        }).catch((errors: ServerErrors) => {
-
-        })
         getInitState(payload).then((response) => {
             this.setState({
                 code: response.code,
@@ -66,10 +62,20 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 },
                 searchQuery: response.appNameSearch || "",
                 searchApplied: !!response.appNameSearch?.length,
+                isAppCreated: response.isAppCreated,
+                appChecklist: response.appChecklist,
+                chartChecklist: response.chartChecklist,
+                appStageCompleted: response.appStageCompleted,
+                chartStageCompleted: response.chartStageCompleted,
             });
         }).then(() => {
-            let payload = this.createPayloadFromURL(this.props.location.search);
-            this.getAppList(payload);
+            if (this.state.isAppCreated) {
+                let payload = this.createPayloadFromURL(this.props.location.search);
+                this.getAppList(payload);
+            }
+            else {
+                this.setState({ view: AppListViewType.EMPTY });
+            }
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
