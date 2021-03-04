@@ -15,7 +15,9 @@ export  function ClusterForm({ id: defaultClusterComponent, agentInstallationSta
     const [endpoint, setEndpoint] = useState("")
     const [authType, setAuthType] = useState("")
     const [userName, setUsername] = useState("")
-    const [error, setError] = useState("")
+    const [error, setError] = useState({
+
+    })
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [tlsClientCert, setTlsClientCert]= useState("")

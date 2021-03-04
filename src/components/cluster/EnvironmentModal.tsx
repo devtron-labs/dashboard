@@ -5,15 +5,29 @@ import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvi
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
 
-export function Environment({  id, cluster_id, handleClose, prometheus_endpoint, isNamespaceMandatory = true }) {
+const DefaultEnvironmentValue = {
+    environment_name: "",
+    namespace: "",
+    isProduction: "true"
+}
+
+export function Environment({ id, cluster_id, handleClose, prometheus_endpoint, isNamespaceMandatory = true }) {
     const [loading, setLoading] = useState(false)
     const [ignore, setIngore] = useState(false)
     const [ignoreError, setIngoreError] = useState("")
-    const [environment_name, setEnvironment_name] = useState("")
-    const [namespace, setNamespace] = useState("")
-    const [isProduction, setIsProduction] = useState("true" || "false")
     const [error, setError] = useState("")
-   
+    const [values, setValues] = useState(DefaultEnvironmentValue);
+
+    const handleInputChange = (e) => {
+        e.preventDefault()
+        e.persist()
+        const { name, value } = e.target;
+        setValues({
+            ...values,
+            [name]: value,
+        });
+        console.log([name], value)
+    };
 
     return <VisibleModal className="environment-create-modal" close={handleClose}>
         <form className="environment-create-body" onClick={(e) => e.stopPropagation()} >
@@ -24,10 +38,20 @@ export function Environment({  id, cluster_id, handleClose, prometheus_endpoint,
                 </div>
             </div>
             <div className="form__row">
-                <CustomInput autoComplete="off" disabled={!!environment_name} name="environment_name" value={environment_name} error={error} onChange={e => setEnvironment_name(e.target.value)} label="Environment Name*" />
+                <CustomInput
+                    autoComplete="off"
+                    disabled={!!DefaultEnvironmentValue.environment_name}
+                    name="environment_name"
+                    value={DefaultEnvironmentValue.environment_name}
+                    error={error} onChange={handleInputChange}
+                    label="Environment Name*" />
             </div>
             <div className="form__row form__row--namespace">
-                <CustomInput disabled={!!namespace || ignore} name="namespace" value={namespace} error={error} onChange={e => setNamespace(e.target.value)} label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`} />
+                <CustomInput
+                    disabled={!!DefaultEnvironmentValue.namespace || ignore}
+                    name="namespace" value={DefaultEnvironmentValue.namespace}
+                    error={error} onChange={handleInputChange}
+                    label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`} />
             </div>
             {!isNamespaceMandatory && <><div className="form__row form__row--ignore-namespace">
                 <input type="checkbox" onChange={e => { setIngore(t => !t); setIngoreError("") }} checked={ignore} />
@@ -44,25 +68,25 @@ export function Environment({  id, cluster_id, handleClose, prometheus_endpoint,
                 <div className="environment-type pointer">
                     <div className="flex left environment environment--production">
                         <label className="form__label">
-                            <input 
-                            type="radio" 
-                            name="isProduction" 
-                            checked={isProduction === 'true'} 
-                            value="true" 
-                            onChange={e => setIsProduction(e.target.value)} 
+                            <input
+                                type="radio"
+                                name="isProduction"
+                                checked={DefaultEnvironmentValue.isProduction === 'true'}
+                                value="true"
+                                onChange={handleInputChange}
                             />
                             <span>Production</span></label>
                     </div>
                     <div className="flex left environment environment--non-production">
                         <label className="form__label">
-                            <input 
-                            type="radio" 
-                            name="isProduction" 
-                            checked={isProduction === 'false'} 
-                            value="false" 
-                            onChange={e => setIsProduction(e.target.value)}
-                             />
-                             <span>Non - Production</span></label>
+                            <input
+                                type="radio"
+                                name="isProduction"
+                                checked={DefaultEnvironmentValue.isProduction === 'false'}
+                                value="false"
+                                onChange={handleInputChange}
+                            />
+                            <span>Non - Production</span></label>
                     </div>
                 </div>
             </div>
