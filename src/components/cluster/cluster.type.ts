@@ -1,3 +1,5 @@
+import { RouteComponentProps } from 'react-router';
+
 export const POLLING_INTERVAL = 30000;
 
 export const AuthenticationType = {
@@ -63,3 +65,24 @@ export interface ClusterListProps {
     }[];
     clusterEnvMap: any;
 }
+export interface Config{
+    bearer_token: string;
+}
+
+export interface ClusterFormState{
+            cluster_name : string;
+            clusterId: number;
+            endpoint: string;
+            url: string;
+            authType: string;
+            userName: string;
+            password: string;
+            loading: true,
+            tlsClientCert:string;
+            tlsClientKey:string;
+            config:Config;
+            error: string;
+            value?:string;
+}
+
+export interface ClusterFormProps extends RouteComponentProps<{}> { }
