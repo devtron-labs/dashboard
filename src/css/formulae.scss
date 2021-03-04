@@ -34,7 +34,7 @@ $margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right,
 
 @each $margin,
 $style in $margins {
-    @for $i from 0 through 40 {
+    @for $i from 0 through 42 {
         $tempStyle: $style;
 
         .#{$margin}-#{$i} {

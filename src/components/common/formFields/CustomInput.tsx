@@ -32,7 +32,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
                 placeholder={this.props.placeholder}
-                className={isError ? "form__input form__input--error" : "form__input"}
+                className={isError ? "form__input" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
