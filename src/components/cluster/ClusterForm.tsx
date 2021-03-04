@@ -1,5 +1,4 @@
-
-import React, {useState} from 'react';
+import React, { useState, useMemo, Component } from 'react'
 import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
@@ -18,156 +17,160 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 
-export function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
-    const [loading, setLoading] = useState(false);
-    let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
-        {
-            cluster_name: { value: cluster_name, error: "" },
-            url: { value: server_url, error: "" },
-            userName: { value: prometheusAuth?.userName, error: "" },
-            password: { value: prometheusAuth?.password, error: "" },
-            tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: "" },
-            tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: "" },
-            token: { value: config && config.bearer_token ? config.bearer_token : "", error: "" },
-            endpoint: { value: prometheus_url || "", error: "" },
-            authType: { value: authenTicationType, error: "" }
-        },
-        {
-            cluster_name: {
-                required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ }
-            },
-            url: {
-                required: true,
-                validator: { error: 'URL is required', regex: /^.*$/ }
-            },
-            authType: {
-                required: false,
-                validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ }
-            },
-            userName: {
-                required: false,
-                validator: { error: 'username is required', regex: /^(?!\s*$).+/ }
-            },
-            password: {
-                required: false,
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ }
-            },
-            tlsClientKey: {
-                required: false,
-                validator: { error: 'TLS Key is required', regex: /^(?!\s*$).+/ }
-            },
-            tlsClientCert: {
-                required: false,
-                validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ }
-            },
-            token: {
-                required: true,
-                validator: { error: 'token is required', regex: /[^]+/ }
-            },
-            endpoint: {
-                required: true,
-                validator: { error: 'endpoint is required', regex: /^.*$/ }
-            }
-        }, onValidation);
 
-    async function onValidation() {
+export  function ClusterForm({ id: defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url }) {
+    const [cluster_name, setCluster_name] = useState("")
+    const [clusterId, setClusterId] = useState()
+    const [url, setUrl] = useState("")
+    const [endpoint, setEndpoint] = useState("")
+    const [authType, setAuthType] = useState("")
+    const [userName, setUsername] = useState("")
+    const [error, setError] = useState("")
+    const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [tlsClientCert, setTlsClientCert]= useState("")
+    const [tlsClientKey, setTlsClientKey] = useState("")
+    const [editMode, toggleEditMode] = useState(false);
+    const [environment, setEnvironment] = useState(null);
+    const [config, setConfig] = useState(defaultConfig);
+    const [prometheusAuth, setPrometheusAuth] = useState(undefined);
+    const [showClusterComponentModal, toggleClusterComponentModal] = useState(false);
+    const history = useHistory();
+    const newEnvs = useMemo(() => {
+        let namespacesInAll = true;
+        if (Array.isArray(environments)) {
+            namespacesInAll = !environments.some(env => !env.namespace)
+        }
+        return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : (environments || [])
+    }, [environments])
 
-        let payload = {
-            id,
-            cluster_name: state.cluster_name.value,
-            server_url: state.url.value,
-            config: { bearer_token: state.token.value },
-            active,
-            prometheus_url: state.endpoint.value,
-            prometheusAuth: {
-                userName: "",
-                password: ""
-            }
-        }
+    function handleClose(isReload): void {
+        setEnvironment(null)
+        if (isReload) reload()
+    }
 
-        if (state.authType.value === AuthenticationType.BASIC) {
-            let isValid = state.userName?.value && state.password?.value;
-            if (!isValid) {
-                toast.error("Please add both username and password");
-                return;
-            }
-            else {
-                payload.prometheusAuth['userName'] = state.userName.value || "";
-                payload.prometheusAuth['password'] = state.password.value || "";
-            }
-        }
-        if (state.tlsClientKey.value || state.tlsClientCert.value) {
-            let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length;
-            if (!isValid) {
-                toast.error("Please add both TLS Key and Certificate");
-                return;
-            }
-            else {
-                payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || "";
-                payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || "";
-            }
-        }
-        const api = id ? updateCluster : saveCluster
+    async function handleEdit(e) {
         try {
-            setLoading(true)
-            const { result } = await api(payload)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
-            reload()
-            toggleEditMode(e => !e)
+            const { result } = await getCluster(clusterId);
+            setPrometheusAuth(result.prometheusAuth);
+            setConfig(result.config);
+            toggleEditMode(t => !t);
         }
-        catch (err) { showError(err) }
-        finally {
-            setLoading(false)
+        catch (err) {
+            showError(err)
         }
     }
-    return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
+
+    function redirectToChartDeployment(appId, envId): void {
+        history.push(`/chart-store/deployments/${appId}/env/${envId}`);
+    }
+
+    async function callRetryClusterInstall() {
+        try {
+            let payload = {};
+            const { result } = await retryClusterInstall(clusterId, payload);
+            if (result) toast.success("Successfully triggered")
+            reload();
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function clusterInstallStatusOnclick(e) {
+        if (agentInstallationStage === 3) {
+            callRetryClusterInstall();
+        }
+        else toggleClusterComponentModal(!showClusterComponentModal)
+    }
+
+    //let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
+    return <form action="" className="cluster-form" //onSubmit={handleOnSubmit}
+    >
         <h2 className="form__title">Edit cluster</h2>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
+            <CustomInput
+                autoComplete="off"
+                name="cluster_name"
+                value={cluster_name}
+                error={error}
+                onChange={e => setCluster_name(e.target.value)}
+                label="Name*" />
         </div>
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
+            <CustomInput
+                autoComplete="off"
+                name="url"
+                value={url}
+                error={error}
+                onChange={e => setUrl(e.target.value)}
+                label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
             <label htmlFor="" className="form__label">Bearer token*</label>
             <div className="bearer-token">
-                <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
+                <ResizableTextarea 
+                className="resizable-textarea__with-max-height" 
+                name="token" 
+                value={config && config.bearer_token ? config.bearer_token : ""} 
+                onChange={e => setConfig(e.target.value)} />
             </div>
-            {state.token.error && <label htmlFor="" className="form__error">{state.token.error}</label>}
+
         </div>
         <hr></hr>
         <div className="form__input-header mb-8">Prometheus Info</div>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
+            <CustomInput
+                autoComplete="off"
+                name="endpoint"
+                value={endpoint}
+                error={error}
+                onChange={e => setEndpoint(e.target.value)}
+                label="Prometheus endpoint*" />
         </div>
         <div className="form__row">
             <span className="form__label">Authentication Type*</span>
-            <RadioGroup value={state.authType.value} name={`authType`} onChange={handleOnChange}>
+            <RadioGroup value={authType} name={`authType`} onChange={e => setAuthType(e.target.value)}>
                 <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
                 <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
             </RadioGroup>
         </div>
-        {state.authType.value === AuthenticationType.BASIC ?
+        {authType === AuthenticationType.BASIC ?
             <div className="form__row form__row--flex">
                 <div className="w-50 mr-8">
-                    <CustomInput name="userName" value={state.userName.value} error={state.userName.error} onChange={handleOnChange} label="Username*" />
+                    <CustomInput 
+                    name="userName" 
+                    value={userName} 
+                    error={error} 
+                    onChange={e => setUsername(e.target.value)} 
+                    label="Username*" />
                 </div>
                 <div className="w-50 ml-8">
-                    <CustomPassword name="password" value={state.password.value} error={state.userName.error} onChange={handleOnChange} label="Password*" />
+                    <CustomPassword 
+                    name="password" 
+                    value={password} 
+                    error={error} 
+                    onChange={e => setPassword(e.target.value)} 
+                    label="Password*" />
                 </div>
             </div>
             : null}
         <div className="form__row">
             <span className="form__label">TLS Key</span>
-            <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientKey" value={state.tlsClientKey.value} onChange={handleOnChange} />
+            <ResizableTextarea 
+            className="resizable-textarea__with-max-height w-100" 
+            name="tlsClientKey" 
+            value={tlsClientKey} 
+            onChange={e => setTlsClientKey(e.target.value)} />
         </div>
         <div className="form__row">
             <span className="form__label">TLS Certificate</span>
-            <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientCert" value={state.tlsClientCert.value} onChange={handleOnChange} />
+            <ResizableTextarea 
+            className="resizable-textarea__with-max-height w-100" 
+            name="tlsClientCert" 
+            value={tlsClientCert} 
+            onChange={e => setTlsClientCert(e.target.value)} />
         </div>
         <div className="form__buttons">
             <button className="cta cancel" type="button" onClick={e => toggleEditMode(t => !t)}>Cancel</button>
