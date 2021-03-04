@@ -17,7 +17,7 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import { ClusterForm }from './ClusterForm';
-import { Environment } from './EnvironmentModal';
+import { Environment } from './Environment';
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
@@ -205,6 +205,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
         {environment && <Environment {...environment} handleClose={handleClose} isNamespaceMandatory={Array.isArray(environments) && environments.length > 0} />}
     </>
 }
+
 
 
 
