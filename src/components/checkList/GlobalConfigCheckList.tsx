@@ -33,7 +33,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
             return <div className="">
                 <img src={Checklist} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
-                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+                <div className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</div>
                 <AppCheckList appChecklist={this.props.appChecklist}
                     showDivider={true}
                     isAppCollapsed={this.state.isAppCollapsed}
@@ -56,7 +56,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
             return <div className="">
                 <img src={Checklist} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
-                <div className="cn-9 mb-16">Complete the required configurations to perform desired task</div>
+                <div className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</div>
                 <AppCheckList appChecklist={this.props.appChecklist}
                     showDivider={true}
                     isAppCollapsed={this.state.isAppCollapsed}
