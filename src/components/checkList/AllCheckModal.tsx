@@ -11,7 +11,7 @@ export class AllCheckModal extends Component {
     renderCustomAppDeploy() {
         return <div className="bcg-1 mb-8 flexbox">
             <img className="img-width pt-12 pb-12 pl-16" src={Deploy} />
-            <div className="pl-20">
+            <div className="pl-20 fs-13">
                 <div className="pt-16 cn-9"> Create, build and deploy a custom application.</div>
                 <NavLink to={`${URLS.APP}/create-app`} className="no-decor cb-5 fw-6">Create App</NavLink>
             </div>
@@ -21,7 +21,7 @@ export class AllCheckModal extends Component {
     renderSampleApplication() {
         return <div className="bcg-1 mb-8 mt-8 flexbox">
             <img className="img-width pt-12 pb-12 pl-16" src={Sample} />
-            <div className="pl-20">
+            <div className="pl-20 fs-13">
                 <div className="pt-16 cn-9"> Deploy sample “Hello world” application.</div>
                 <a href={DOCUMENTATION.APP_CREATE} target="_blank"  rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
             </div>
@@ -33,7 +33,7 @@ export class AllCheckModal extends Component {
             <div className="">
                 <img src={Complete} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
-                <div className="cn-9 mb-16"> You’re all set to get started with Devtron.</div>
+                <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
                 <AllChartsCheck />
                 {this.renderSampleApplication()}
                 {this.renderCustomAppDeploy()}
