@@ -25,7 +25,7 @@ export default function Docker({ ...props }) {
     let dockerRegistryList = result.result || [];
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback("id", a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList);
-    return <section className="docker-page">
+    return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
         <h2 className="form__title">Docker registries</h2>
         <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER} rel="noopener noreferrer" target="_blank">

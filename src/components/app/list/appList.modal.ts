@@ -1,10 +1,23 @@
-import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
+import { getAppCheckList, getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
 export const getInitState = (appListPayload): Promise<any> => {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin()]).then(([teams, environments]) => {
+    return Promise.all([getAppCheckList(), getTeamListMin(), getEnvironmentListMin()]).then(([checkList, teams, environments]) => {
+        let appChecklist = checkList.result.appChecklist;
+        let chartChecklist = checkList.result.chartChecklist;
+        let appStageArray: number[] = Object.values(appChecklist);
+        let chartStageArray: number[] = Object.values(chartChecklist);
+        let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+            sum = sum + item;
+            return sum;
+        }, 0)
+        let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+            sum = sum + item;
+            return sum;
+        }, 0)
+
         let filterApplied = {
             environments: new Set(appListPayload.environments),
             statuses: new Set(appListPayload.statuses),
@@ -57,6 +70,11 @@ export const getInitState = (appListPayload): Promise<any> => {
             },
             searchQuery: appListPayload.appNameSearch || "",
             searchApplied: !!appListPayload.appNameSearch.length,
+            isAppCreated: checkList.result.isAppCreated,
+            appChecklist,
+            chartChecklist,
+            appStageCompleted,
+            chartStageCompleted,
         }
         return parsedResponse;
     })

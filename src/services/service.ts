@@ -269,4 +269,19 @@ export function getHostURLConfiguration(): Promise<ResponseType> {
 export function isGitopsConfigured(): Promise<ResponseType> {
     const URL = `${Routes.GITOPS_CONFIGURED}`;
     return get(URL);
-}  
+}
+
+export function getAppCheckList(): Promise<any> {
+    const URL = `${Routes.APP_CHECKLIST}`;
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve({
+    //         "code": 200, "status": "OK",
+    //         "result": {
+    //             "appChecklist": { "gitOps": 0, "project": 1, "git": 1, "environment": 1, "docker": 1, "hostUrl": 1 },
+    //             "chartChecklist": { "gitOps": 0, "project": 1, "environment": 1 },
+    //             "isAppCreated": false,
+    //         }
+    //     })
+    // })
+} 

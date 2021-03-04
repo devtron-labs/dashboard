@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { DeployedChartProps, DeployedChartState } from '../charts.types';
 import { ViewType } from '../../../config';
-import EmptyState from '../../EmptyState/EmptyState';
 import { Link, withRouter } from 'react-router-dom';
 import { ErrorScreenManager, LazyImage, Progressing } from '../../common';
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
-import emptyAppListImage from '../../../assets/img/empty-applist@2x.png'
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import {HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator} from '../Charts'
+import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
+import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
+
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -50,9 +50,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
                 {
-                    deprecated && 
+                    deprecated &&
                     <div>
-                        <UpdateWarn/>
+                        <UpdateWarn />
                         {/* <div className="chart-grid-item__top-right"><img src={check} className="chart-grid-item__top-right-icon" />Deployed</div> */}
                     </div>
                 }
@@ -64,32 +64,45 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         </Link>
     }
 
+    renderPageHeader() {
+        return <GenericChartsHeader>
+            <HeaderTitle>Chart Store</HeaderTitle>
+            <ChartDetailNavigator />
+            <HeaderButtonGroup><span /></HeaderButtonGroup>
+        </GenericChartsHeader>
+    }
+
     render() {
-        if (this.state.code) return <ErrorScreenManager code={this.state.code} />
-        else return <div className="chart-list-page">
-            <GenericChartsHeader>
-                <HeaderTitle>Chart Store</HeaderTitle>
-                <ChartDetailNavigator/>
-                <HeaderButtonGroup><span/></HeaderButtonGroup>
-            </GenericChartsHeader>
-            {this.state.view === ViewType.LOADING 
-            ? <Progressing pageLoader />
-            :    this.state.installedCharts.length === 0 
-                ? <EmptyState>
-                        <EmptyState.Image><img src={emptyAppListImage} alt="" /> </EmptyState.Image>
-                        <EmptyState.Title><h2 className="empty__title">No Charts Deployed</h2></EmptyState.Title>
-                        <EmptyState.Subtitle>You haven’t deployed any charts. Browse and deploy charts to find them here.</EmptyState.Subtitle>
-                        <EmptyState.Button>
-                            <Link to="discover" className="cta no-decor ghosted" >Discover charts</Link>
-                        </EmptyState.Button>
-                    </EmptyState>
-                    : <div className="chart-grid">
+        if (this.state.view === ViewType.LOADING) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <Progressing pageLoader />
+            </div>
+        }
+        else if (this.state.view === ViewType.ERROR) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <ErrorScreenManager code={this.state.code} />
+            </div>
+        }
+        else if (this.state.installedCharts.length === 0) {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <div>
+                    <ChartCheckListModal {...this.props} />
+                </div>
+            </div>
+        }
+        else {
+            return <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
                     })}
                 </div>
-            }
-        </div>
+            </div>
+        }
     }
 }
 export default withRouter(props => <Deployed {...props} />)

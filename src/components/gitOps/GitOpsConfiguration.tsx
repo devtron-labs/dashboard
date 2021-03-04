@@ -7,9 +7,11 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
-import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service'
+import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
+
 
 enum GitProvider {
     GitLab = 'GITLAB',
@@ -196,15 +198,15 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     render() {
         let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
-        if (this.state.view === ViewType.LOADING) return <div className="git-page">
-            <Progressing pageLoader />
-        </div>
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
         else if (this.state.view === ViewType.ERROR) {
-            return <div className="git-page flex" >
+            return <div className="global-configuration__component flex" >
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-        return <section className="git-page">
+        return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">GitOps</h2>
             <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
