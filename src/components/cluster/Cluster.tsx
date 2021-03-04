@@ -17,6 +17,8 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import { ClusterForm }from './ClusterForm';
+import { Environment } from './EnvironmentModal';
+
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
 
@@ -204,6 +206,92 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
     </>
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
@@ -361,7 +449,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
         </div>
     </form>
 }
-*/
+
 function Environment({ environment_name, namespace, id, cluster_id, handleClose, prometheus_endpoint, isProduction, isNamespaceMandatory = true }) {
     const [loading, setLoading] = useState(false)
     const [ignore, setIngore] = useState(false)
@@ -456,5 +544,5 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
             </div>
         </form>
-    </VisibleModal>
-}
+    </VisibleModal>*/
+

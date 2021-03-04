@@ -1,22 +1,12 @@
-import React, { useState, useMemo, Component } from 'react'
+import React, { useState, useMemo } from 'react'
 import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
-import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
-import { ResizableTextarea } from '../configMaps/ConfigMap'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg';
-import { ClusterComponentModal } from './ClusterComponentModal';
-import { ClusterInstallStatus } from './ClusterInstallStatus';
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
 import { useHistory } from 'react-router';
 import { toast } from 'react-toastify';
-import { DOCUMENTATION, ViewType } from '../../config';
-import { getEnvName } from './cluster.util';
-import Reload from '../Reload/Reload';
-
+import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
+import { ResizableTextarea } from '../configMaps/ConfigMap'
+import { AuthenticationType } from './cluster.type';
 
 export  function ClusterForm({ id: defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url }) {
     const [cluster_name, setCluster_name] = useState("")
