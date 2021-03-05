@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, CustomInput, sortCallback } from '../common';
 import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { EnvironmentValue,EnvironmentProps, EnvironmentState } from './cluster.type'
@@ -78,6 +77,10 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
 
     handleInputChange = (e, key: "environment_name" | "namespace" ) => {
         const { name, value } = e.target;
+       if(value.length < 0){ return "too short"}
+
+
+
         this.setState({
             ...value,
             form: {
@@ -87,12 +90,16 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
             isError: {
                 ...this.state.isError,
                 [key]: e.target.value.length === 0 ? "This is a required field" : "",
+                [key]: e.target.value.length < 3 ? "This is less than three " : "",
+                [key]: e.target.value.length < 1 ? "This is less than one " : "",
             },
             isFormEdited: false,
         });
         console.log(name, value)
         
     };
+
+    validation
 
     handleIgnore() {
         this.setState({
@@ -146,17 +153,16 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
                         autoComplete="off"
                         name="environment_name"
                         value={this.state.form.environment_name}
-                        error={this.state.isError.environment_name}
+                        error={[{name: this.state.isError.environment_name}]}
                         onChange={(e) => this.handleInputChange(e, 'environment_name' )}
                         label="Environment Name*" />
-                        <div>Error</div>
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
                         autoComplete="off"
                         name="namespace"
                         value={this.state.form.namespace}
-                        error={this.state.isError.namespace}
+                        error={[{name: this.state.isError.namespace}]}
                         onChange={e => this.handleInputChange(e, 'namespace')}
                         label={`Enter Namespace ${this.props.isNamespaceMandatory ? '*' : ''}`} />
                 </div>
