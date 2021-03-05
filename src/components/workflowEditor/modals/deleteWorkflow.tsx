@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DeleteDialog, DialogBody } from '../../common';
+import { DeleteDialog } from '../../common';
 
 export interface DeleteWorkflowProps {
     closeDelete: () => void;
@@ -14,9 +14,6 @@ export class DeleteWorkflow extends Component<DeleteWorkflowProps> {
             delete={this.props.deleteWorkflow}
             title={this.props.workflowName}
             description={this.props.description}>
-            <DialogBody>
-                <div></div>
-            </DialogBody>
         </DeleteDialog>
     }
 }

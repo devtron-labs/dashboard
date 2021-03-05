@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DeleteDialog, DialogBody } from '.';
+import { DeleteDialog } from '.';
 
 export interface DeletePipelineProps {
     closeDelete: () => void;
@@ -18,11 +18,6 @@ export class DeletePipeline extends Component<DeletePipelineProps> {
             delete={this.props.deletePipeline}
             title={this.props.pipelineName}
             description={this.props.description}>
-            <DialogBody>
-                <div>
-
-                </div>
-            </DialogBody>
         </DeleteDialog>
     }
 }

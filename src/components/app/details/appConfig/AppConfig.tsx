@@ -8,6 +8,7 @@ import { deleteApp } from './appConfig.service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { ReactComponent as Dropdown } from '../../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
+import deleteIcon from '../../../../assets/img/warning-medium.svg';
 import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';
@@ -213,16 +214,24 @@ export default function AppConfig() {
     function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
             if (state.canDeleteApp)
-                return <DeleteDialog title={`${state.appName}`}
-                    description={"This will delete all resources associated with this application. Deleted applications cannot be restored."}
-                    closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}
-                    delete={deleteAppHandler}
-                />
+                return <ConfirmationDialog className="confirmation-dialog__body--w-360">
+                    <ConfirmationDialog.Icon src={deleteIcon} />
+                    <ConfirmationDialog.Body title={state.appName} >
+                        <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application.</p>
+                        <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+                    </ConfirmationDialog.Body>
+                    <ConfirmationDialog.ButtonGroup>
+                        <div className="flex right">
+                            <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
+                            <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={deleteAppHandler}>Delete</button>
+                        </div>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog >
             else {
                 return <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <ConfirmationDialog.Body title="Cannot Delete application" />
-                    <p className="modal__description">Delete all pipelines and workflows before deleting this application.</p>
+                    <p className="fs-13 cn-7 lh-1-54">Delete all pipelines and workflows before deleting this application.</p>
                     <ConfirmationDialog.ButtonGroup>
                         <button type="button" className="cta cancel" onClick={e => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
                         <Link onClick={e => setState(state => ({ ...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12 no-decor">

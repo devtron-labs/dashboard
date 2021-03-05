@@ -88,7 +88,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                 <div className="trigger-modal__header">
                     <div className="">
                         <h1 className="modal__title">{this.state.appName}</h1>
-                        <p className="modal__description m-0">
+                        <p className="fs-13 cn-7 lh-1-54 m-0">
                             {headerDescription}
                         </p>
                     </div>
