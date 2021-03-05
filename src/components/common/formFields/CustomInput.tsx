@@ -7,6 +7,7 @@ export interface CustomInputProps {
     label: string;
     value: string | number;
     labelClassName?: string;
+    autoFocus?: boolean;
     placeholder?: string;
     disabled?: boolean;
     error?: { name: string }[];
@@ -23,14 +24,15 @@ export class CustomInput extends Component<CustomInputProps, any> {
         let isError: boolean = !!this.props.error;
         let labelClasses = `form__label`;
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
-        return <>
+        return <div>
             <label className={labelClasses}>{this.props.label}</label>
             <input type="text"
+                autoFocus={this.props.autoFocus}
                 autoComplete={this.props.autoComplete}
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
                 placeholder={this.props.placeholder}
-                className={isError ? "form__input form__input--error" : "form__input"}
+                className={isError ? "form__input" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
@@ -48,6 +50,6 @@ export class CustomInput extends Component<CustomInputProps, any> {
                     <p className="sentence-case">{this.props.helperText}</p>
                 </div>
             </> : null}
-        </>
+       </div>
     }
 }

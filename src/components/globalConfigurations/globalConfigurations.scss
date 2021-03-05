@@ -64,45 +64,13 @@
         }
     }
 
-    .protected-input-container {
-        padding: 0;
-        overflow: hidden;
-        border-radius: 4px;
-        border: solid 1px #d6dbdf;
-        width: 100%;
-        height: 40px;
-
-        input {
-            height: 100%;
-            border: none;
-            outline: none;
-            width: calc(100% - 34px);
-            padding: 0 10px;
-            background: transparent;
-        }
-
-        svg {
-            margin-right: 10px;
-        }
+    .protected-input__toggle{
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
     }
-
-    .form__error {
-        position: unset;
-        display: flex;
-        align-items: center;
-        margin-top: 4px;
-
-        &:before {
-            content: '';
-            background: url('../../assets/icons/misc/errorInfo.svg');
-            height: 14px;
-            width: 14px;
-            display: inline-block;
-            background-size: contain;
-            margin-right: 4px;
-        }
-    }
-
+    
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
@@ -127,18 +95,11 @@
     transition: opacity 300ms linear 150ms;
 }
 
-.git-page,
-.docker-page,
-.cluster-page,
-.project-list,
+.global-configuration__component,
 .add-notification-page {
     margin: 0 auto;
     max-width: 1012px;
     padding: 24px;
-}
-
-.git-page {
-    height: calc(100vh - 80px);
 }
 
 .auth-page {
@@ -286,7 +247,7 @@
 
     &.collapsed-list--git,
     &.collapsed-list--docker {
-        border: 1px dashed #d6dbdf;
+        border: 1px solid #d6dbdf;
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;

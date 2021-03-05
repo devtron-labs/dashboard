@@ -10,7 +10,6 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import { getDockerRegistryStatus } from '../../../services/service';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -39,27 +38,17 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
-            isDockerRegistryEmpty: false,
+            isAppCreated: false,
+            appChecklist: undefined,
+            chartChecklist: undefined,
+            appStageCompleted: 0,
+            chartStageCompleted: 0,
         }
     }
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
-        getDockerRegistryStatus().then((response) => {
-            this.setState({
-                isDockerRegistryEmpty: !(response.result),
-            })
-        }).catch((errors: ServerErrors) => {
-
-        })
         getInitState(payload).then((response) => {
-            let view;
-            if (payload.appNameSearch || payload.environments.length || payload.teams.length || payload.statuses.length) {
-                view = response.apps.length ? AppListViewType.LIST : AppListViewType.NO_RESULT;
-            }
-            else {
-                view = response.apps.length ? AppListViewType.LIST : AppListViewType.EMPTY;
-            }
             this.setState({
                 code: response.code,
                 filters: response.filters,
@@ -73,11 +62,20 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                 },
                 searchQuery: response.appNameSearch || "",
                 searchApplied: !!response.appNameSearch?.length,
-                view: view
+                isAppCreated: response.isAppCreated,
+                appChecklist: response.appChecklist,
+                chartChecklist: response.chartChecklist,
+                appStageCompleted: response.appStageCompleted,
+                chartStageCompleted: response.chartStageCompleted,
             });
         }).then(() => {
-            let payload = this.createPayloadFromURL(this.props.location.search);
-            this.getAppList(payload);
+            if (this.state.isAppCreated) {
+                let payload = this.createPayloadFromURL(this.props.location.search);
+                this.getAppList(payload);
+            }
+            else {
+                this.setState({ view: AppListViewType.EMPTY });
+            }
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
@@ -278,6 +276,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
+        let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {
             environments: new Set(request.environments),
             statuses: new Set(request.statuses),
@@ -332,10 +331,15 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.abortController = new AbortController();
 
         getAppList(request, { signal: this.abortController.signal }).then((response) => {
+            let view = AppListViewType.LIST;
+            if (response.result.appCount === 0) {
+                if (isSearchOrFilterApplied) view = AppListViewType.NO_RESULT;
+                else view = AppListViewType.EMPTY;
+            }
             let state = { ...this.state };
             state.code = response.code;
             state.apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : [];
-            state.view = state.apps.length ? AppListViewType.LIST : AppListViewType.NO_RESULT;
+            state.view = view;
             state.offset = request.offset;
             state.size = response.result.appCount;
             state.pageSize = request.size;

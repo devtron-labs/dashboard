@@ -4,11 +4,12 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';
 import { Project } from './Project';
-import { ProjectListState, ProjectType } from './types';
+import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
 
-export default class ProjectList extends Component<{}, ProjectListState>  {
+export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
 
     constructor(props) {
         super(props);
@@ -135,7 +136,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
             return <ErrorScreenManager code={this.state.code} />
         }
         else {
-            return <section className="project-list">
+            return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                 {this.renderPageHeader()}
                 {this.renderAddProject()}
                 {this.state.projects.map((project, index) => {

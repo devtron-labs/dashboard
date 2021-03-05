@@ -28,6 +28,8 @@ export const Routes = {
     ENVIRONMENT_CONFIG: 'app/env',
     PIPELINE_CONFIG: 'app/cd-pipeline/pipeline-config',
 
+    APP_CHECKLIST: 'global/checklist',
+
     APP: 'app',
     APP_LIST: 'app/list',
     APP_LIST_MIN: 'app/autocomplete',
@@ -165,6 +167,7 @@ export const TagOptions = [
 export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";
 
 export const DOCUMENTATION = {
+    APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
     APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
     APP_CREATE_DEPLOYMENT_TEMPLATE: 'https://docs.devtron.ai/user-guide/creating-application/deployment-template',
