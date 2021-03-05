@@ -18,7 +18,9 @@ import { ViewType } from '../../config'
 import { toast } from 'react-toastify';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
-import './login.css'
+import './login.css';
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
+
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -410,7 +412,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
                         <Help className="icon-dim-20 fcb-5 mr-12" />
-                        <div>For redirect URL or callback URL use:  {`${this.state.ssoConfig.url}`}/api/dex/callback<br />
+                        <div>For redirect URL or callback URL use:  {`${window.location.origin}/orchestrator`}/api/dex/callback<br />
                             Please ensure above URL is registered with the identity provider.</div>
                     </div>
                     <div className="mt-8 ml-32">
@@ -424,10 +426,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     {this.state.isError.url && <div className="form__error">
                         {this.state.isError.url}
                     </div>}
-                    <div className="flex left pt-8">
-                        <div className="bcy-5 pl-4 pr-4 mr-8 cn-9">TIP</div>
-                        <div className="fw-4">Click to use:</div>
-                        <button type="button" onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)} className="login__btn cn-0 bcb-3 ml-4"> {window.location.origin}/orchestrator</button>
+                    <div className="flex left fw-4 pt-4">
+                        <Warn className="icon-dim-16 mr-4 " />
+                        <div className="">Click to use:</div>
+                        <button type="button" onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)} className="login__btn cg-5"> {window.location.origin}/orchestrator</button>
                     </div>
                 </label>
                 {this.renderSSOCodeEditor()}
