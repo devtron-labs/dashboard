@@ -16,8 +16,9 @@ import { toast } from 'react-toastify';
 import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
-import { ClusterFormState, ClusterFormProps } from './cluster.type'
-import { ClusterForm } from './ClusterForm';
+import { ClusterForm }from './ClusterForm';
+import { Environment } from './Environment';
+
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
 
@@ -100,28 +101,17 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload />
-        else return <section className="cluster-page">
+        else return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-            <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+                <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
-            {this.state.clusters.map(cluster => <ClusterForm {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
+            {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
     }
 }
 
-function Cluster({ id: defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url }) {
-    const [cluster_name, setCluster_name] = useState("")
-    const [clusterId, setClusterId] = useState()
-    const [url, setUrl] = useState("")
-    const [endpoint, setEndpoint] = useState("")
-    const [authType, setAuthType] = useState("")
-    const [userName, setUsername] = useState("")
-    const [error, setError] = useState("")
-    const [password, setPassword] = useState("")
-    const [loading, setLoading] = useState(true)
-    const [tlsClientCert, setTlsClientCert]= useState("")
-    const [tlsClientKey, setTlsClientKey] = useState("")
+function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url }) {
     const [editMode, toggleEditMode] = useState(false);
     const [environment, setEnvironment] = useState(null);
     const [config, setConfig] = useState(defaultConfig);
@@ -175,195 +165,8 @@ function Cluster({ id: defaultClusterComponent, agentInstallationStage, server_u
         else toggleClusterComponentModal(!showClusterComponentModal)
     }
 
-    //let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
-    return <form action="" className="cluster-form" //onSubmit={handleOnSubmit}
-    >
-        <h2 className="form__title">Edit cluster</h2>
-        <div className="form__row">
-            <CustomInput
-                autoComplete="off"
-                name="cluster_name"
-                value={cluster_name}
-                error={error}
-                onChange={e => setCluster_name(e.target.value)}
-                label="Name*" />
-        </div>
-        <hr></hr>
-        <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
-        <div className="form__row">
-            <CustomInput
-                autoComplete="off"
-                name="url"
-                value={url}
-                error={error}
-                onChange={e => setUrl(e.target.value)}
-                label="Server URL*" />
-        </div>
-        <div className="form__row form__row--bearer-token flex column left top">
-            <label htmlFor="" className="form__label">Bearer token*</label>
-            <div className="bearer-token">
-                <ResizableTextarea 
-                className="resizable-textarea__with-max-height" 
-                name="token" 
-                value={config && config.bearer_token ? config.bearer_token : ""} 
-                onChange={e => setConfig(e.target.value)} />
-            </div>
+    let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
 
-        </div>
-        <hr></hr>
-        <div className="form__input-header mb-8">Prometheus Info</div>
-        <div className="form__row">
-            <CustomInput
-                autoComplete="off"
-                name="endpoint"
-                value={endpoint}
-                error={error}
-                onChange={e => setEndpoint(e.target.value)}
-                label="Prometheus endpoint*" />
-        </div>
-        <div className="form__row">
-            <span className="form__label">Authentication Type*</span>
-            <RadioGroup value={authType} name={`authType`} onChange={e => setAuthType(e.target.value)}>
-                <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
-                <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
-            </RadioGroup>
-        </div>
-        {authType === AuthenticationType.BASIC ?
-            <div className="form__row form__row--flex">
-                <div className="w-50 mr-8">
-                    <CustomInput 
-                    name="userName" 
-                    value={userName} 
-                    error={error} 
-                    onChange={e => setUsername(e.target.value)} 
-                    label="Username*" />
-                </div>
-                <div className="w-50 ml-8">
-                    <CustomPassword 
-                    name="password" 
-                    value={password} 
-                    error={error} 
-                    onChange={e => setPassword(e.target.value)} 
-                    label="Password*" />
-                </div>
-            </div>
-            : null}
-        <div className="form__row">
-            <span className="form__label">TLS Key</span>
-            <ResizableTextarea 
-            className="resizable-textarea__with-max-height w-100" 
-            name="tlsClientKey" 
-            value={tlsClientKey} 
-            onChange={e => setTlsClientKey(e.target.value)} />
-        </div>
-        <div className="form__row">
-            <span className="form__label">TLS Certificate</span>
-            <ResizableTextarea 
-            className="resizable-textarea__with-max-height w-100" 
-            name="tlsClientCert" 
-            value={tlsClientCert} 
-            onChange={e => setTlsClientCert(e.target.value)} />
-        </div>
-        <div className="form__buttons">
-            <button className="cta cancel" type="button" onClick={e => toggleEditMode(t => !t)}>Cancel</button>
-            <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
-        </div>
-    </form>
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/*
     return <>
         <article className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'}`}>
             {!editMode ? <>
@@ -397,17 +200,103 @@ function Cluster({ id: defaultClusterComponent, agentInstallationStage, server_u
                 </div>}
             </>
                 : <>
-                    <ClusterForm {...{ id: clusterId, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }} /></>}
+                    <ClusterForm {...{ agentInstallationStage,id: clusterId, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }} /></>}
         </article>
         {environment && <Environment {...environment} handleClose={handleClose} isNamespaceMandatory={Array.isArray(environments) && environments.length > 0} />}
     </>
 }
- 
-function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
-    const [state, setState] = useState("")
-   const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: "" },
             url: { value: server_url, error: "" },
@@ -656,4 +545,5 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
             </div>
         </form>
-</VisibleModal>*/}
+    </VisibleModal>*/
+
