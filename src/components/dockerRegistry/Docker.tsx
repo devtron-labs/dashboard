@@ -171,7 +171,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     value={customState.registryUrl.value}
                     autoComplete="off"
                     helperText={state.registryType.value === 'docker-hub' ? "If registry exists on hub.docker.com then leave registry url empty" : ''}
-                    error={customState.registryUrl.error}
+                    error={[{ name: customState.registryUrl.error }]}
                     onChange={customHandleChange}
                     disabled={!!registryUrl} />
             </div>
@@ -187,19 +187,19 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     </div>
                 </div>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="awsAccessKeyId" tabIndex={5} value={customState.awsAccessKeyId.value} error={customState.awsAccessKeyId.error} onChange={customHandleChange} label="Access key ID*" autoComplete={"off"} />
+                    <CustomInput name="awsAccessKeyId" tabIndex={5} value={customState.awsAccessKeyId.value} error={[{ name: customState.awsAccessKeyId.error }]} onChange={customHandleChange} label="Access key ID*" autoComplete={"off"} />
                     <ProtectedInput name="awsSecretAccessKey" tabIndex={6} value={customState.awsSecretAccessKey.value} error={customState.awsSecretAccessKey.error} onChange={customHandleChange} label="Secret access key*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'docker-hub' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={[{ name: customState.username.error }]} onChange={customHandleChange} label="Username*" />
                     <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
             {state.registryType.value === 'other' && <>
                 <div className="form__row form__row--two-third">
-                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={customState.username.error} onChange={customHandleChange} label="Username*" />
+                    <CustomInput name="username" tabIndex={5} value={customState.username.value} autoComplete={"off"} error={[{ name: customState.username.error }]} onChange={customHandleChange} label="Username*" />
                     <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}

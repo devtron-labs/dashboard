@@ -8,7 +8,6 @@ import { CustomInput, ErrorScreenManager, Progressing, showError } from '../comm
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 
@@ -236,14 +235,13 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
                     name="Enter host"
-                    error={this.state.isError.host}
                     label="Git Host*"
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 <div className="mt-16">
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
-                        error={this.state.isError[key]}
+                        error={[{ name: this.state.isError[key] }]}
                         label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
                         onChange={(event) => { this.handleChange(event, key); }} />
                 </div>
@@ -255,7 +253,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         <CustomInput autoComplete="off"
                             value={this.state.form.username}
                             onChange={(event) => this.handleChange(event, 'username')}
-                            name="Enter username" error={this.state.isError.username}
+                            name="Enter username"
+                            error={[{ name: this.state.isError.username }]}
                             tabIndex={3}
                             label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />

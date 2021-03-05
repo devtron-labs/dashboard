@@ -21,8 +21,12 @@ export interface CustomInputProps {
 export class CustomInput extends Component<CustomInputProps, any> {
 
     render() {
-        let isError: boolean = !!this.props.error;
+        let isError: boolean = this.props.error && (this.props.error.length > 0) && !!this.props.error.reduce((str, error) => {
+            str = str + error.name;
+            return str;
+        }, "");
         let labelClasses = `form__label`;
+
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <div>
             <label className={labelClasses}>{this.props.label}</label>
@@ -36,11 +40,10 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
-            {this.props.error?.length && <div className="form__error">
+            {isError && <div className="form__error">
+                <Error className="form__icon form__icon--error" />
                 {this.props.error.map((error) => {
-                    return <>
-                        <Error className="form__icon form__icon--error" />
-                        {error.name}</>
+                    return error.name
                 })}
             </div>}
 
@@ -50,6 +53,6 @@ export class CustomInput extends Component<CustomInputProps, any> {
                     <p className="sentence-case">{this.props.helperText}</p>
                 </div>
             </> : null}
-       </div>
+        </div>
     }
 }
