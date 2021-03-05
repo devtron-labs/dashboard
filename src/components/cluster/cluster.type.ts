@@ -99,6 +99,6 @@ export interface EnvironmentProps extends RouteComponentProps<{}> {
     isNamespaceMandatory: boolean;
     ignore: boolean;
     ignoreError: string;
-
+    close: () => void;
     
 }

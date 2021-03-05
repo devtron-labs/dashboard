@@ -32,7 +32,6 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
             },
         }
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleClose = this.handleClose.bind(this);
         this.handleOnSubmit = this.handleOnSubmit.bind(this);
     }
 
@@ -95,13 +94,6 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
         
     };
 
-    handleClose(): void {
-        this.setState({
-            isclosed: !this.state.isclosed,
-            loading: false
-        })
-    }
-
     handleIgnore() {
         this.setState({
 
@@ -141,12 +133,12 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
     }
 
     render() {
-        return <VisibleModal className="environment-create-modal" close={this.handleClose}>
+        return <VisibleModal className="environment-create-modal" close={this.props.close}>
             <form className="environment-create-body" onClick={(e) => e.stopPropagation()} onSubmit={this.handleOnSubmit} >
                 <div className="form__row">
                     <div className="flex left">
                         <div className="form__title">{this.state.id ? 'Update Environment' : 'New Environment'}</div>
-                        <Close className="icon-dim-24 align-right cursor" onClick={() => this.handleClose} />
+                        <Close className="icon-dim-24 align-right cursor"  onClick={this.props.close} />
                     </div>
                 </div>
                 <div className="form__row">
@@ -157,6 +149,7 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
                         error={this.state.isError.environment_name}
                         onChange={(e) => this.handleInputChange(e, 'environment_name' )}
                         label="Environment Name*" />
+                        <div>Error</div>
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
