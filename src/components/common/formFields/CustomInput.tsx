@@ -21,7 +21,9 @@ export interface CustomInputProps {
 export class CustomInput extends Component<CustomInputProps, any> {
 
     render() {
-        let isError: boolean = this.props.error && (this.props.error.length > 0) && !!this.props.error.reduce((str, error) => {
+        let isError: boolean = this.props.error && (this.props.error.length > 0);
+
+        isError = isError && !!this.props.error?.reduce((str, error) => {
             str = str + error.name;
             return str;
         }, "");
@@ -36,7 +38,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
                 placeholder={this.props.placeholder}
-                className={isError ? "form__input" : "form__input"}
+                className={isError ? "form__input form__input--error" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
