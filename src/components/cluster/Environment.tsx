@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, CustomInput, sortCallback } from '../common';
-import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
+import { showError, Pencil, Progressing, CustomPassword, VisibleModal, CustomInput, sortCallback } from '../common';
+import { saveEnvironment, updateEnvironment, getEnvironmentList} from './cluster.service';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { EnvironmentValue,EnvironmentProps, EnvironmentState } from './cluster.type'
 import { toast } from 'react-toastify';
@@ -91,7 +91,7 @@ export class Environment extends Component<EnvironmentProps, EnvironmentState> {
                 ...this.state.isError,
                 [key]: e.target.value.length === 0 ? "This is a required field" : "",
                 [key]: e.target.value.length < 3 ? "This is less than three " : "",
-                [key]: e.target.value.length < 1 ? "This is less than one " : "",
+                [key]: e.target.value.length < 2 ? "This is less than one " : "",
             },
             isFormEdited: false,
         });

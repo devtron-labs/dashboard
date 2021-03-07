@@ -1,4 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
+import ChartValues from "../charts/chartValues/ChartValues";
 
 export const POLLING_INTERVAL = 30000;
 
@@ -50,39 +51,60 @@ export interface ClusterInstallStatusProps {
     onClick: (...args) => void;
 }
 
-
-export interface ClusterListProps extends RouteComponentProps<{}> {
-    // view: string;
-    // clusters: {
-    //     id: number;
-    //     active: boolean;
-    //     cluster_name: string;
-    //     agentInstallationStage: ClusterInstallStage;
-    //     defaultClusterComponent: any[] | null;
-    //     prometheus_url: string;
-    //     environments: any[];
-    //     server_url: string;
-    // }[];
-    // clusterEnvMap: any;
+export interface ClusterListProps extends RouteComponentProps<{}> { 
+    
 }
-export interface Config{
+
+export default interface Config {
     bearer_token: string;
+} 
+
+export interface ClusterFormProps extends RouteComponentProps<{}> {
+}
+
+// export interface ClusterFormProps extends RouteComponentProps<{}> {
+//         environments: string[];       
+//          id: number;
+//         active: boolean;
+//         cluster_name: string;
+//         agentInstallationStage: ClusterInstallStage; 
+//         Component: any[] | null;
+//         prometheus_url: string;
+//         prometheusAuth: string;
+//         server_url: string; 
+//         config: Config;
+//         toggleEditMode: boolean;
+//         reload: boolean;
+// }
+
+export interface ChartValue{
+    cluster_name : string;
+    clusterId: number;
+    endpoint: string;
+    url: string;
+    authType: string;
+    userName: string;
+    password: string;
+    tlsClientCert:string;
+    tlsClientKey:string;
+    config:Config;
+    
 }
 
 export interface ClusterFormState{
-            cluster_name : string;
-            clusterId: number;
-            endpoint: string;
-            url: string;
-            authType: string;
-            userName: string;
-            password: string;
-            loading: true,
-            tlsClientCert:string;
-            tlsClientKey:string;
-            config:Config;
-            error: string;
-            value?:string;
+    id: number;
+    saveLoading: boolean;
+    isClusterError: undefined;
+    form : ChartValue;
+    loading: true,
+    value?:string;
+    isError: {
+        cluster_name: string;
+        url: string;
+        endpoint: string;
+        userName: string;
+        password: string;
+    },
 }
 
 export interface ClusterFormProps extends RouteComponentProps<{}> { }
