@@ -277,10 +277,10 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             setLoading(false)
         }
     }
-    function handleOnChange(e, key: "environment_name" | "namespace") {
+
+    function handleOnChange(e, key: "cluster_name" | "server_url" | "username" | "password" |  "endpoint") {
         const { name, value } = e.target;
         if (value.length < 0) { return "too short" }
-
         console.log(name, value)
 
     };
@@ -293,7 +293,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="url" value={url} error={isError.url} onChange={handleOnChange} label="Server URL*" />
+            <CustomInput autoComplete="off" name="server_url" value={server_url} error={isError.url} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
             <label htmlFor="" className="form__label">Bearer token*</label>
