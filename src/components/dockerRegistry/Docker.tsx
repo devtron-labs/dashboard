@@ -154,7 +154,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     return (
         <form onSubmit={handleOnSubmit} className="docker-form">
             <div className="form__row">
-                <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
+                <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={[{name:state.id.error}]} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>
             <div className="form__row form__row--two-third">
                 <div className="flex left column top">
