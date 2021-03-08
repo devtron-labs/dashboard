@@ -293,7 +293,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="server_url" value={server_url} error={isError.url} onChange={handleOnChange} label="Server URL*" />
+            <CustomInput autoComplete="off" name="server_url" value={server_url.value} error={isError.url} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
             <label htmlFor="" className="form__label">Bearer token*</label>
