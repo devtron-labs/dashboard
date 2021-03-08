@@ -313,6 +313,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         </div>
     }
+    
     handleSSOURLLocation(value: string): void {
         this.setState({
             ssoConfig: {
