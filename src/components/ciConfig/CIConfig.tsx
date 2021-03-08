@@ -213,7 +213,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                     </div>
                 </div>
-
                 <div onClick={toggleCollapse} className="flex left">
                     <div>
                         <div className="fs-16 fw-6 pb-4">Advanced</div>
@@ -227,7 +226,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 </div>
                 {isCollapsed ? <>
                     {args && args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={handleArgsChange} onDelete={e => { let argsTemp = [...args]; argsTemp.splice(idx, 1); setArgs(argsTemp) }} valueType="text" />)}
-
                     <div className="add-parameter pointer fs-14 cb-5 mb-20" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
                         <span className="fa fa-plus mr-8"></span>Add parameter
                     </div> </> : ''}
