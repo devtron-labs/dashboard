@@ -33,7 +33,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
         return <div className="white-card white-card--add-new-item mb-16" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
-            <span className="artifact__add">Add Material</span>
+            <span className="artifact__add">Add Git Material</span>
         </div>
     }
 
@@ -44,8 +44,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     }
 
     renderForm() {
-        return <form key={`${(this.props.material).id}`} className="white-card p-24 mb-16">
-            <div className="white-card__header white-card__header--form">
+        return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
+            <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Material" : "Add Material"}
                 {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
