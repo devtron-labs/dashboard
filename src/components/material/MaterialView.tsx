@@ -3,13 +3,21 @@ import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
-import { Progressing } from '../common';
-import { MaterialViewProps } from './material.types';
+import { Progressing, Checkbox } from '../common';
+import { MaterialViewProps, MaterialViewState } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
 
-export class MaterialView extends Component<MaterialViewProps, {}> {
+export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            isChecked: false,
+        }
+        this.handleCheckbox = this.handleCheckbox.bind(this);
+    }
 
     renderCollapsedView() {
         if ((this.props.material).id) {
@@ -29,6 +37,12 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         </div>
     }
 
+    handleCheckbox(event): void {
+        this.setState({
+            isChecked: !this.state.isChecked
+        });
+    }
+
     renderForm() {
         return <form key={`${(this.props.material).id}`} className="white-card p-24 mb-16">
             <div className="white-card__header white-card__header--form">
@@ -37,82 +51,91 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
-            <div className="form__row">
-                <span className="form__label">Select Provider*</span>
-                <ReactSelect className=""
-                    tabIndex='1'
-                    isMulti={false}
-                    isClearable={false}
-                    options={this.props.providers}
-                    getOptionLabel={option => `${option.name}`}
-                    getOptionValue={option => `${option.id}`}
-                    value={this.props.material.gitProvider}
-                    styles={{
-                        valueContainer: (base, state) => ({
-                            ...base,
-                            color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
-                        }),
-                        control: (base, state) => ({
-                            ...base,
-                            border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                            boxShadow: 'none',
-                            fontWeight: 'normal',
-                            height: "40px"
-                        }),
-                        option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            fontWeight: "normal",
-                            color: 'var(--N900)',
-                            padding: '8px 12px',
-                        }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: (props) => {
-                            return <components.Option {...props}>
-                                {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-                                {props.label}
-                            </components.Option>
-                        },
-                        MenuList: (props) => {
-                            return <components.MenuList {...props}>
-                                {props.children}
-                                <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="react-select__bottom p-10 cb-5 block fw-5 anchor cursor no-decor">
-                                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+            <div className="form__row form__row--two-third">
+                <label>
+                    <span className="form__label">Git Account*</span>
+                    <ReactSelect className=""
+                        tabIndex='1'
+                        isMulti={false}
+                        isClearable={false}
+                        options={this.props.providers}
+                        getOptionLabel={option => `${option.name}`}
+                        getOptionValue={option => `${option.id}`}
+                        value={this.props.material.gitProvider}
+                        styles={{
+                            valueContainer: (base, state) => ({
+                                ...base,
+                                color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
+                                boxShadow: 'none',
+                                fontWeight: 'normal',
+                                height: "40px"
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                fontWeight: "normal",
+                                color: 'var(--N900)',
+                                padding: '8px 12px',
+                            }),
+                        }}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: (props) => {
+                                return <components.Option {...props}>
+                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
+                                    {props.label}
+                                </components.Option>
+                            },
+                            MenuList: (props) => {
+                                return <components.MenuList {...props}>
+                                    {props.children}
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="react-select__bottom p-10 cb-5 block fw-5 anchor cursor no-decor">
+                                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
                                         Add Git Provider
                                     </NavLink>
-                            </components.MenuList>
-                        },
-                    }}
-                    onChange={(selected) => { this.props.handleProviderChange(selected) }} />
-                {this.props.isError.gitProvider && <span className="form__error">
-                    <img src={error} className="form__icon" />
-                    {this.props.isError.gitProvider}
-                </span>}
+                                </components.MenuList>
+                            },
+                        }}
+                        onChange={(selected) => { this.props.handleProviderChange(selected) }} />
+                    {this.props.isError.gitProvider && <span className="form__error">
+                        <img src={error} className="form__icon" />
+                        {this.props.isError.gitProvider}
+                    </span>}
+                </label>
+
+                <label >
+                    <span className="form__label">Git Repo URL*</span>
+                    <input className="form__input"
+                        type="text"
+                        placeholder="e.g. https://gitlab.com/abc/xyz.git"
+                        value={this.props.material.url}
+                        onChange={this.props.handleUrlChange} />
+                    <span className="form__error">
+                        {this.props.isError.url && <>
+                            <img src={error} className="form__icon" />{this.props.isError.url}
+                        </>}
+                    </span>
+                </label>
             </div>
 
             <label className="form__row">
-                <span className="form__label">Git Repo URL*</span>
-                <input className="form__input"
-                    type="text"
-                    placeholder="e.g. https://gitlab.com/abc/xyz.git"
-                    value={this.props.material.url}
-                    onChange={this.props.handleUrlChange} />
-                <span className="form__error">
-                    {this.props.isError.url && <>
-                        <img src={error} className="form__icon" />{this.props.isError.url}
-                    </>}
-                </span>
-            </label>
-
-            <label className="form__row">
-                <span className="form__label">Checkout Path(*Required If you’re using multiple Git Materials)</span>
-                <input className="form__input"
+                <Checkbox
+                    isChecked={this.state.isChecked}
+                    value={"CHECKED"}
+                    tabIndex={3}
+                    onChange={this.handleCheckbox} 
+                    rootClassName="form__label">
+                    <span className="">Set Checkout Path(*Required If you’re using multiple Git Materials)</span>
+                </Checkbox>
+                {this.state.isChecked ? <input className="form__input"
                     type="text"
                     placeholder="e.g. /abc"
                     value={this.props.material.checkoutPath}
-                    onChange={this.props.handlePathChange} />
+                    onChange={this.props.handlePathChange} /> : ""}
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>

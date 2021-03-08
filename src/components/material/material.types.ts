@@ -61,3 +61,7 @@ export interface MaterialViewProps {
     save: (event) => void;
     cancel: (event) => void;
 }
+
+export interface MaterialViewState{
+    isChecked: boolean
+}
