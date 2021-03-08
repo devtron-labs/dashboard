@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { OpaqueModal, Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
-import { DeletePipeline, ErrorScreenManager } from '../common';
+import { ErrorScreenManager, ConfirmationDialog } from '../common';
 import { getDeploymentStrategyList, saveCDPipeline, getCDPipelineConfig, updateCDPipeline, deleteCDPipeline, getConfigMapAndSecrets } from './service';
 import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './types';
 import { ValidationRules } from './validationRules';
@@ -18,6 +18,7 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { getEnvironmentListMinPublic } from '../../services/service';
+import deleteIcon from '../../assets/img/warning-medium.svg';
 import './cdPipeline.css';
 
 export const SwitchItemValues = {
@@ -675,14 +676,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderDeleteCD() {
         if (this.props.match.params.cdPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.pipelineConfig.name}
-                appName={this.props.appName}
-                shouldDeleteApp={this.state.shouldDeleteApp}
-                setDeleteApp={this.setDeleteApp}
-                closeDelete={this.closeCDDeleteModal}
-                description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deleteCD} />
-
+            return <ConfirmationDialog className="confirmation-dialog__body--w-360">
+                <ConfirmationDialog.Icon src={deleteIcon} />
+                <ConfirmationDialog.Body title={`Delete '${this.state.pipelineConfig.name}' ?`} >
+                    <p className="fs-13 cn-7 lh-1-54">{`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}</p>
+                </ConfirmationDialog.Body>
+                <ConfirmationDialog.ButtonGroup>
+                    <div className="flex right">
+                        <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={this.closeCDDeleteModal}>Cancel</button>
+                        <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={this.deleteCD}>Delete</button>
+                    </div>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog >
         }
         return null;
     }

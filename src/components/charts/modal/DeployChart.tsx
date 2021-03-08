@@ -4,18 +4,18 @@ import { getEnvironmentListMin, getTeamListMin } from '../../../services/service
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
-import CodeEditor from '../../CodeEditor/CodeEditor'
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { useHistory, useParams } from 'react-router'
 import { URLS } from '../../../config'
-import deleteIcon from '../../../assets/icons/ic-delete.svg'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
+import deleteIcon from '../../../assets/img/warning-medium.svg'
+import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
-import './DeployChart.scss';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
+import './DeployChart.scss';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -59,7 +59,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [selectedVersion, selectVersion] = useState(appStoreVersion)
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedTeam, selectTeam] = useState(teamId)
-    const [chartVersionsData, setChartVersionsData] = useState<{version: string, id: number}[]>([]);
+    const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);
     const [selectedEnvironment, selectEnvironment] = useState(environmentId)
     const [appName, setAppName] = useState(originalName)
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
@@ -92,7 +92,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const initialChartValuesFromParent = chartValuesFromParent;
     const [chartValues, setChartValues] = useState(chartValuesFromParent);
     const { push } = useHistory()
-    const { chartId, envId } = useParams<{chartId, envId}>()
+    const { chartId, envId } = useParams<{ chartId, envId }>()
     const [showCodeEditorError, setCodeEditorError] = useState(false);
     const deployChartForm = useRef(null);
     const deployChartEditor = useRef(null);
@@ -118,12 +118,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    async function getChartValuesList(id:number, installedAppVersionId=null) {
+    async function getChartValuesList(id: number, installedAppVersionId = null) {
         setLoading(true)
         try {
             const { result } = await getChartValuesCategorizedListParsed(id, installedAppVersionId);
             setChartValuesList(result);
-            if(installedAppVersionId) {
+            if (installedAppVersionId) {
                 setChartValues({
                     id: initialChartValuesFromParent.id,
                     kind: "EXISTING",
@@ -278,7 +278,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         push(url);
     }
 
-    async function fetchChartVersionsData(id:number, valueUpdateRequired=false) {
+    async function fetchChartVersionsData(id: number, valueUpdateRequired = false) {
         try {
             setLoading(true)
             const { result } = await getChartVersionsMin(id);
@@ -342,7 +342,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         )
     }
 
-    function repoChartSelectOptionLabel({chartRepoName, chartName}) {
+    function repoChartSelectOptionLabel({ chartRepoName, chartName }) {
         return <div>{chartRepoName}/{chartName}</div>
     }
 
@@ -391,20 +391,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 {environments && Array.from(environments).map(([envId, envData], idx) => <Select.Option key={envId} value={envId}>{envData.environment_name}</Select.Option>)}
                             </Select>
                         </div>
-                        {   isUpdate && deprecated && 
+                        {isUpdate && deprecated &&
                             <div className="info__container--update-chart">
-                                <div className="flex left"> 
-                                    <AlertTriangle className="icon-dim-24 update-chart"/>
-                                    <div className="info__container--update-chart-text">{chartName}/{name} is deprecated</div> 
+                                <div className="flex left">
+                                    <AlertTriangle className="icon-dim-24 update-chart" />
+                                    <div className="info__container--update-chart-text">{chartName}/{name} is deprecated</div>
                                 </div>
                                 <div className="info__container--update-chart-disclaimer">
                                     Selected chart has been deprecated. Please select another chart to continue receiving updates in future.
                                 </div>
                             </div>
                         }
-                        
+
                         {
-                            isUpdate && 
+                            isUpdate &&
                             <div className="form__row form__row--w-100">
                                 <span className="form__label">Repo/Chart</span>
                                 <AsyncSelect
@@ -437,9 +437,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     }}
                                 />
                                 {
-                                    repoChartValue.deprecated && 
+                                    repoChartValue.deprecated &&
                                     <div className="deprecated-text-image flex left">
-                                        <AlertTriangle className="icon-dim-16 update-chart"/>
+                                        <AlertTriangle className="icon-dim-16 update-chart" />
                                         <span className="deprecated-text">This chart has been deprecated. Select another chart.</span>
                                     </div>
                                 }
@@ -447,22 +447,22 @@ const DeployChart: React.FC<DeployChartProps> = ({
                         }
                         <div className="form__row form__row--flex form__row--w-100">
                             {
-                            isUpdate === null ? 
-                                <div className="w-50">
-                                    <span className="form__label">Chart Version</span>
-                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersion} onChange={event => selectVersion(event.target.value)}>
-                                        <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
-                                        {Array.from(versions).map(([versionId, versionData], idx) => <Select.Option key={versionId} value={versionId}>{versionData.version}</Select.Option>)}
-                                    </Select>
-                                </div>
-                                :
-                                <div className="w-50">
-                                    <span className="form__label">Chart Version</span>
-                                    <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersionUpdatePage.id} onChange={event => setSelectedVersionUpdatePage({id: event.target.value, version: event.target.innerText})}>
-                                        <Select.Button>{selectedVersionUpdatePage.version}</Select.Button>
-                                        {chartVersionsData.map(({version, id}) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
-                                    </Select>
-                                </div>
+                                isUpdate === null ?
+                                    <div className="w-50">
+                                        <span className="form__label">Chart Version</span>
+                                        <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersion} onChange={event => selectVersion(event.target.value)}>
+                                            <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
+                                            {Array.from(versions).map(([versionId, versionData], idx) => <Select.Option key={versionId} value={versionId}>{versionData.version}</Select.Option>)}
+                                        </Select>
+                                    </div>
+                                    :
+                                    <div className="w-50">
+                                        <span className="form__label">Chart Version</span>
+                                        <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersionUpdatePage.id} onChange={event => setSelectedVersionUpdatePage({ id: event.target.value, version: event.target.innerText })}>
+                                            <Select.Button>{selectedVersionUpdatePage.version}</Select.Button>
+                                            {chartVersionsData.map(({ version, id }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
+                                        </Select>
+                                    </div>
                             }
                             <span className="mr-16"></span>
                             <div className="w-50">
@@ -480,9 +480,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <CodeEditor.Header>
                                     <span className="bold">values.yaml</span>
                                 </CodeEditor.Header>
-                                {hasChartChanged() && 
-                                <CodeEditor.Information 
-                                    text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}/>}
+                                {hasChartChanged() &&
+                                    <CodeEditor.Information
+                                        text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`} />}
                             </CodeEditor>
                         </div>
                     </div>
@@ -498,10 +498,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 </button>
             </div>
             {confirmation &&
-                <ConfirmationDialog>
+                <ConfirmationDialog className="confirmation-dialog__body--w-360">
                     <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={`Delete '${originalName}'`} subtitle={`This will delete all resources associated with this application.`}>
-                        <p style={{ marginTop: '20px' }}>Deleted applications cannot be restored.</p>
+                    <ConfirmationDialog.Body title={`Delete '${originalName}' ?`} subtitle={`This will delete all resources associated with this application.`}>
+                        <p className="pt-10">Deleted applications cannot be restored.</p>
                     </ConfirmationDialog.Body>
                     <ConfirmationDialog.ButtonGroup>
                         <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>

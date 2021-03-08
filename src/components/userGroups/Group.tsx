@@ -296,10 +296,10 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">Cancel</button>
                 <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>{submitting ? <Progressing /> : 'Save'}</button>
             </div>
-            {deleteConfirmationModal && <ConfirmationDialog>
+            {deleteConfirmationModal && <ConfirmationDialog className="confirmation-dialog__body--w-360">
                 <ConfirmationDialog.Icon src={deleteIcon} />
                 <ConfirmationDialog.Body title={`Delete group '${name}'`}>
-                    <p style={{ marginTop: '16px' }}>Deleting this group will revoke permissions from users added to this group.</p>
+                    <p className="mt-16">Deleting this group will revoke permissions from users added to this group.</p>
                 </ConfirmationDialog.Body>
                 <ConfirmationDialog.ButtonGroup>
                     <button className="cta cancel" onClick={e => setDeleteConfirmationModal(false)}>Cancel</button>

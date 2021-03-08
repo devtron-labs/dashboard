@@ -10,7 +10,7 @@ import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, 
 import './UserGroup.scss';
 import { toast } from 'react-toastify'
 import {useUserGroupContext, DirectPermission, ChartPermission, GroupRow} from './UserGroup'
-import deleteIcon from '../../assets/icons/ic-delete.svg'
+import deleteIcon from '../../assets/img/warning-medium.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 
@@ -524,10 +524,10 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
                 </button>
             </div>
             {deleteConfirmationModal && (
-                <ConfirmationDialog>
+                <ConfirmationDialog className="confirmation-dialog__body--w-360">
                     <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={`Delete User '${emailState.emails[0]?.value || ''}'`}>
-                        <p style={{ marginTop: '16px' }}>
+                    <ConfirmationDialog.Body title={`Delete user '${emailState.emails[0]?.value || ''}'?`}>
+                        <p className="mt-10">
                             Deleting this user will remove the user and revoke all their permissions.
                         </p>
                     </ConfirmationDialog.Body>
