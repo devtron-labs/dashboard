@@ -51,9 +51,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
-            <div className="form__row form__row--two-third">
-                <label>
-                    <span className="form__label">Git Account*</span>
+            <div className="form__row form-row__material">
+              <div className="">
+                    <label className="form__label">Git Account*</label>
                     <ReactSelect className=""
                         tabIndex='1'
                         isMulti={false}
@@ -105,11 +105,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <img src={error} className="form__icon" />
                         {this.props.isError.gitProvider}
                     </span>}
-                </label>
-
-                <label >
-                    <span className="form__label">Git Repo URL*</span>
+                </div>
+                <div>
+                    <label className="form__label">Git Repo URL*</label>
                     <input className="form__input"
+                    name="Git Repo URL*"
                         type="text"
                         placeholder="e.g. https://gitlab.com/abc/xyz.git"
                         value={this.props.material.url}
@@ -119,7 +119,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             <img src={error} className="form__icon" />{this.props.isError.url}
                         </>}
                     </span>
-                </label>
+                </div>
+
             </div>
 
             <label className="form__row">

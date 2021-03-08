@@ -178,7 +178,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}> Learn more about Docker Build Config</a> </span></p>
             <div className="white-card white-card__docker-config">
                 <div className="fs-16 fw-6 pb-16">Image store</div>
-                <div className="form-row form-row__docker">
+                <div className="mb-4 form-row__docker">
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Docker registry*</label>
                         <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
@@ -198,7 +198,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                 </div>
                 <div className="fs-16 fw-6 pb-16">Checkout Path</div>
-                <div className="form-row form-row__docker">
+                <div className="mb-4 form-row__docker">
                     <div className="form__field">
                         <label className="form__label">Git checkout path*</label>
                         <Select onChange={handleOnChange} name='repository' value={repository.value} tabIndex={1}>
@@ -213,6 +213,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                     </div>
                 </div>
+                <hr className="mt-0 mb-20"/>
                 <div onClick={toggleCollapse} className="flex left">
                     <div>
                         <div className="fs-16 fw-6 pb-4">Advanced</div>
