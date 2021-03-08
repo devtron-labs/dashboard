@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { URLS } from '../../config';
 import { NavLink } from 'react-router-dom';
 import ReactSelect, { components } from 'react-select';
+import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import './CIConfig.scss';
@@ -63,7 +64,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             repository: { value: ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId).checkoutPath : Array.isArray(sourceConfig.material) && sourceConfig.material.length === 1 ? (sourceConfig.material[0].checkoutPath || "./") : "", error: "" },
-            dockerfile: { value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : "", error: "" },
+            dockerfile: { value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : "Dockerfile", error: "" },
             registry: { value: ciConfig ? ciConfig.dockerRegistry : (Array.isArray(dockerRegistries) ? dockerRegistries.find(reg => reg.isDefault).id || "" : ""), error: "" },
             repository_name: { value: ciConfig ? ciConfig.dockerRepository : "", error: "" },
         },
@@ -213,11 +214,16 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                 </div>
 
-                <div onClick={toggleCollapse}>
-                    <div className="fs-16 fw-6 pb-4">Advanced</div>
-                    <div className="form-row form-row__add-parameters">
-                        <label htmlFor="" className=" fs-14 fw-4 cn-7">Docker build arguments</label>
+                <div onClick={toggleCollapse} className="flex left">
+                    <div>
+                        <div className="fs-16 fw-6 pb-4">Advanced</div>
+                        <div className="form-row form-row__add-parameters">
+                            <label htmlFor="" className=" fs-14 fw-4 cn-7">Docker build arguments</label>
+                        </div>
                     </div>
+                    <span className="docker__dropdown ">
+                        <Dropdown className="icon-dim-32 rotate " style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }} />
+                    </span>
                 </div>
                 {isCollapsed ? <>
                     {args && args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={handleArgsChange} onDelete={e => { let argsTemp = [...args]; argsTemp.splice(idx, 1); setArgs(argsTemp) }} valueType="text" />)}
