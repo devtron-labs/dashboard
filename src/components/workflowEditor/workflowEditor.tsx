@@ -247,7 +247,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             return <Progressing pageLoader />
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
+            return <div className="loading-wrapper">
+                <ErrorScreenManager code={this.state.code} />
+            </div>
         }
         else if (this.state.view === ViewType.FORM && this.props.configStatus >= AppConfigStatus.LOADING && !this.state.workflows.length) {
             return <WorkflowEditorContext.Provider value={{
