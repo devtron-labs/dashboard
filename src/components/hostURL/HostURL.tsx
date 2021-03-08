@@ -151,10 +151,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 autoComplete="off" />
                         </div>
                         {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
-                        <div className="hosturl__autodetection flex left pt-4">
-                            <Warn className="icon-dim-16 mr-8 " />
+                        <div className="hosturl__autodetection flex fs-12 left pt-4">
+                            <Warn className="icon-dim-16 mr-4 " />
                         Auto-detected from your browser:
-                        <button type="button" onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url"> {window.location.origin}</button>
+                        <button type="button" onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url fw-4 cg-5"> {window.location.origin}</button>
                         </div>
                         <div className="form__buttons pt-20">
                             <button type="button"

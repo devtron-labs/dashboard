@@ -13,11 +13,9 @@
 
 .hosturl__autodetection{
     color: #6b778c;
-    font-size: 11px;
 }
 
 .hosturl__url{
-    color: var(--B500);
     background: none;
     border: none;
 }

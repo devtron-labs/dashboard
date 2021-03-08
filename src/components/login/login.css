@@ -257,4 +257,9 @@
 .login__btn{
     border: none;
     outline: none;
+    background: none;
+}
+
+.login__btn:focus{ 
+    outline:0; 
 }
