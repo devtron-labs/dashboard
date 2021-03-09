@@ -9,6 +9,8 @@ import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
 import { ReactComponent as GitLab } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
@@ -17,7 +19,9 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         if ((this.props.material).id) {
             return <div key={`${(this.props.material).id}`} className="white-card artifact-collapsed" tabIndex={0}
                 onClick={this.props.toggleCollapse}>
-                <span className="git__icon"><GitLab/></span>
+                <span className="mr-8">
+                    {this.props.material.url.includes("gitlab") ? <GitLab /> : this.props.material.url.includes("github") ? <GitHub /> : <BitBucket />}
+                </span>
                 <div className="">
                     <div className="git__provider">{(this.props.material).name}</div>
                     <p className="git__url">{this.props.material.url}</p>
@@ -34,7 +38,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
     renderForm() {
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
-                {(this.props.material).id ? "Edit Material" : "Add Git Material"}
+                {(this.props.material).id ? "Edit Git Material" : "Add Git Material"}
                 {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
@@ -100,7 +104,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         name="Git Repo URL*"
                         type="text"
                         placeholder="e.g. https://gitlab.com/abc/xyz.git"
-                        value={this.props.material.url}
+                        value={`${this.props.material.url}`}
                         onChange={this.props.handleUrlChange} />
                     <span className="form__error">
                         {this.props.isError.url && <>
