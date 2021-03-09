@@ -8,7 +8,8 @@ import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
-import { ReactComponent as GitLab } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 
@@ -20,7 +21,10 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             return <div key={`${(this.props.material).id}`} className="white-card artifact-collapsed" tabIndex={0}
                 onClick={this.props.toggleCollapse}>
                 <span className="mr-8">
-                    {this.props.material.url.includes("gitlab") ? <GitLab /> : this.props.material.url.includes("github") ? <GitHub /> : <BitBucket />}
+                    {this.props.material.url.includes("gitlab") ? <GitLab /> : null}
+                    {this.props.material.url.includes("github") ? <GitHub /> : null}
+                    {this.props.material.url.includes("bitbuclet") ? <BitBucket /> : null}
+                    {this.props.material.url.includes("gitlab") || this.props.material.url.includes("github") || this.props.material.url.includes("bitbuclet") ? null : <Git />}
                 </span>
                 <div className="">
                     <div className="git__provider">{(this.props.material).name}</div>
@@ -80,12 +84,12 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             Option: (props) => {
                                 return <components.Option {...props}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-                                    {<span className="mr-8">
-                                        {props.data.url.includes("gitlab") ? <GitLab /> : null}
-                                        {props.data.url.includes("github") ? <GitHub /> : null}
-                                        {props.data.url.includes("bitbucket") ? <BitBucket /> : null}
-                                        {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <GitLab />}
-                                    </span>}
+
+                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 vertical-align-middle icon-dim-20" />}
+
                                     {props.label}
                                 </components.Option>
                             },
@@ -100,8 +104,15 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             },
                             Control: (props) => {
                                 return <components.Control {...props}>
-                                    {console.log(props)}
-                                     {props.children}
+                                    {console.log(props.hasValue)}
+                                     {/*{(props.hasValue) ? props.options.map((e) => e.url.includes("github")) ?
+                                        <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+
+
+                                      {props.getValue().map((e)=>e.url.includes("github")) ? <GitHub className="mr-8 vertical-align-middle icon-dim-20"/> : null}
+                                    {props.getValue().map((e)=>e.url.includes("gitlab")) ? <GitLab className="mr-8 vertical-align-middle icon-dim-20"/> : null}
+                            {props.getValue().map((e)=>e.url.includes("bitbucket")) ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20"/> : null}*/}
+                                    {props.children}
                                 </components.Control>
                             }
                         }}

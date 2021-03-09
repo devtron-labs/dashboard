@@ -7,7 +7,8 @@ import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
-import { ReactComponent as GitLab } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 
@@ -66,8 +67,11 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className="">
                     <span className="mr-8">
-                        {url.includes("gitlab") ? <GitLab /> : url.includes("github") ? <GitHub /> : <BitBucket />}
-                    </span></div> :
+                        {url.includes("gitlab") ? <GitLab /> : null}
+                        {url.includes("github") ? <GitHub /> : null}
+                        {url.includes("bitbucket") ? <BitBucket /> : null}
+                        {url.includes("gitlab")  || url.includes("github")  ||  url.includes("bitbucket") ? null : <Git/>}
+                        </span></div> :
                     <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
