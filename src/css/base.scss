@@ -1223,6 +1223,9 @@ button.anchor {
     &:disabled {
         background: var(--N100);
     }
+    &:focus{
+        border-color: var(--B500);
+    }
 }
 
 .resizable-textarea__with-max-height {

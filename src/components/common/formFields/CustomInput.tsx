@@ -14,7 +14,7 @@ export interface CustomInputProps {
     helperText?: string;
     name?: string;
     tabIndex?: number;
-    autoComplete: string;
+    autoComplete?: string;
     onChange: (...args) => void;
 }
 
