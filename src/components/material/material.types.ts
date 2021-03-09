@@ -30,6 +30,7 @@ export interface CreateMaterialState {
         active: boolean;
     };
     isCollapsed: boolean;
+    isChecked: boolean;
     isLoading: boolean;
     isError: MaterialError;
 }
@@ -43,25 +44,24 @@ interface MaterialError {
 export interface UpdateMaterialState {
     material: GitMaterialType;
     isCollapsed: boolean;
+    isChecked: boolean;
     isLoading: boolean;
     isError: MaterialError;
 }
 
 export interface MaterialViewProps {
     isMultiGit: boolean;
+    isChecked: boolean;
     material: GitMaterialType;
     isCollapsed: boolean;
     isLoading: boolean;
     isError: MaterialError;
     providers: any[];
     handleProviderChange: (selected) => void;
+    handleCheckbox: (event) => void;
     handleUrlChange: (event) => void;
     handlePathChange: (event) => void;
     toggleCollapse: (event) => void;
     save: (event) => void;
     cancel: (event) => void;
-}
-
-export interface MaterialViewState{
-    isChecked: boolean
 }

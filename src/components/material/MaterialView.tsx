@@ -3,21 +3,14 @@ import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
-import { Progressing, Checkbox } from '../common';
-import { MaterialViewProps, MaterialViewState } from './material.types';
+import { Progressing, Checkbox} from '../common';
+import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
 
-export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            isChecked: false,
-        }
-        this.handleCheckbox = this.handleCheckbox.bind(this);
-    }
+export class MaterialView extends Component<MaterialViewProps,{}> {
+   
 
     renderCollapsedView() {
         if ((this.props.material).id) {
@@ -35,12 +28,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
             <span className="artifact__add">Add Git Material</span>
         </div>
-    }
-
-    handleCheckbox(event): void {
-        this.setState({
-            isChecked: !this.state.isChecked
-        });
     }
 
     renderForm() {
@@ -124,15 +111,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             </div>
 
             <label className="form__row">
-                <Checkbox
-                    isChecked={this.state.isChecked}
+             <Checkbox
+                    isChecked={this.props.isChecked}
                     value={"CHECKED"}
                     tabIndex={3}
-                    onChange={this.handleCheckbox} 
+                    onChange={this.props.handleCheckbox} 
                     rootClassName="form__label">
                     <span className="">Set Checkout Path(*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
-                {this.state.isChecked ? <input className="form__input"
+                {this.props.isChecked ? <input className="form__input"
                     type="text"
                     placeholder="e.g. /abc"
                     value={this.props.material.checkoutPath}

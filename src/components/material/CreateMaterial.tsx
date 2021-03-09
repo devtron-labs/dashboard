@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { showError } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
+
 interface CreateMaterialProps {
     appId: number;
     isMultiGit: boolean;
@@ -26,6 +27,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 active: true,
             },
             isCollapsed: this.props.isMultiGit ? true : false,
+            isChecked: false,
             isLoading: false,
             isError: {
                 gitProvider: undefined,
@@ -40,6 +42,14 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
+        this.handleCheckbox = this.handleCheckbox.bind(this);
+
+    }
+
+    handleCheckbox(event): void {
+        this.setState({
+            isChecked: !this.state.isChecked
+        });
     }
 
     handleProviderChange(selected) {
@@ -138,8 +148,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     render() {
         return <MaterialView
             isMultiGit={this.props.isMultiGit}
+            isChecked= {this.state.isChecked}
             material={this.state.material}
             isCollapsed={this.state.isCollapsed}
+            handleCheckbox= {this.handleCheckbox}
             isLoading={this.state.isLoading}
             isError={this.state.isError}
             providers={this.props.providers}
@@ -149,6 +161,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             toggleCollapse={this.toggleCollapse}
             save={this.save}
             cancel={this.cancel}
+
         />
     }
 }
