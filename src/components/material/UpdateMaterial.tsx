@@ -29,7 +29,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 active: this.props.material.active,
             },
             isCollapsed: true,
-            isChecked: false,
+            isChecked: true,
             isLoading: false,
             isError: {
                 gitProvider: undefined,
@@ -169,7 +169,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material={this.state.material}
             isError={this.state.isError}
             isCollapsed={this.state.isCollapsed}
-            isChecked={ this.state.isCollapsed}
+            isChecked={ this.state.isChecked}
             isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
