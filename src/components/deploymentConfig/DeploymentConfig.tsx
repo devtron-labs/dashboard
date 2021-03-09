@@ -250,11 +250,11 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                 </div>
             </div>
             <div className="flex left mb-8 mt-24">
-            <div className="fw-6 fs-14 mr-8">Container Port</div>
-            <Tippy className="default-tt" arrow={false} placement="top" content={
-                <span style={{ display: "block", width: "160px" }}> </span>}>
-                <Question className="icon-dim-20" />
-            </Tippy>
+                <div className="fw-6 fs-14 mr-8">Container Port</div>
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> </span>}>
+                    <Question className="icon-dim-20" />
+                </Tippy>
             </div>
             <div className="cn-7 fs-13 mb-6">Port</div>
             <input id="host"
@@ -340,11 +340,11 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     autoComplete="off" />
             </div>
             <div className="flex left mb-8 mt-24">
-            <div className="fw-6 fs-14 mr-8">Probe URLs</div>
-            <Tippy className="default-tt" arrow={false} placement="top" content={
-                <span style={{ display: "block", width: "160px" }}> </span>}>
-                <Question className="icon-dim-20" />
-            </Tippy>
+                <div className="fw-6 fs-14 mr-8">Probe URLs</div>
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> </span>}>
+                    <Question className="icon-dim-20" />
+                </Tippy>
             </div>
             <div className="flex left mb-12">
                 <div className="mr-16">
@@ -372,6 +372,11 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                         autoComplete="off" />
                 </div>
             </div>
+            <hr />
+            <div className="flex left">
+                <div className="cn-9 fs-16 fw-6 mb-6 cursor">Ingress and Service</div>
+            </div>
+            <hr />
 
         </>
     }
