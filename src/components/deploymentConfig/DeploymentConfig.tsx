@@ -8,7 +8,9 @@ import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
-import {  DOCUMENTATION } from '../../config';
+import { DOCUMENTATION } from '../../config';
+import Tippy from '@tippyjs/react';
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 
 export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
@@ -164,53 +166,209 @@ function DeploymentConfigForm({ respondOnSuccess }) {
         }
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
+    function codeEditor() {
+        return <> <div className="form__row">
+            <div className="form__label">Chart version</div>
+            <ReactSelect options={chartVersions}
+                isMulti={false}
+                getOptionLabel={option => `${option.version}`}
+                getOptionValue={option => `${option.id}`}
+                value={selectedChart}
+                components={{
+                    IndicatorSeparator: null
+                }}
+                styles={{
+                    control: (base, state) => ({
+                        ...base,
+                        boxShadow: 'none',
+                        border: `solid 1px var(--B500)`
+                    }),
+                    option: (base, state) => {
+                        return ({
+                            ...base,
+                            color: 'var(--N900)',
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                        })
+                    },
+                }}
+                onChange={(selected) => selectChart(selected as { id: number, version: string })}
+            />
+        </div>
+            <div className="form__row form__row--code-editor-container">
+                <CodeEditor
+                    value={template ? JSON.stringify(template, null, 2) : ""}
+                    onChange={resp => { setTempFormData(resp) }}
+                    mode="yaml"
+                    loading={chartConfigLoading}
+                >
+                    <CodeEditor.Header>
+                        <CodeEditor.LanguageChanger />
+                        <CodeEditor.ValidationError />
+                    </CodeEditor.Header>
+                </CodeEditor>
+            </div>
+
+        </>
+    }
+
+    function deploymentTemplateBasics() {
+        return <>
+            <div className="flex left mb-20">
+                <div>
+                    <span className="tertiary-tab form__basic-tab flex left ">
+                        <div className="mr-16">
+                            <input
+                                type="radio"
+                                value="google"
+                                checked={false}
+                                name="status"
+                            //onClick={this.handleSSOClick}
+                            />
+                        </div>
+                        <div>
+                            <aside className="cn-9 fs-13 fw-6">Wizard (Basic)</aside>
+                            <aside className="cn-7">You can configure only a subset of the available settings.</aside>
+                        </div>
+                    </span>
+                </div>
+                <div className="">
+                    <span className="tertiary-tab form__basic-tab flex left">
+                        <div className="mr-16">
+                            <input
+                                type="radio"
+                                value="google"
+                                checked={false}
+                                name="status"
+                            //onClick={this.handleSSOClick}
+                            />
+                        </div>
+                        <div>
+                            <aside className="cn-9 fs-13 fw-6">YAML Editor (Advanced)</aside>
+                            <aside className="cn-7">You can configure all available settings in YAML/JSON format.</aside>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div className="fw-6 fs-14 mb-8">Container Port</div>
+            <div className="cn-7 fs-13 mb-6">Port</div>
+            <input id="host"
+                value={"8080"}
+                autoFocus
+                tabIndex={1}
+                type="text"
+                className="form__input-w-200 "
+                placeholder={"Port"}
+                //onChange={(event) => this.handleChange(event)}
+                autoComplete="off" />
+            <div className="fw-6 fs-14 mt-24 mb-8">Resources (CPU & Memory)</div>
+            <div className="flex left mb-12">
+                <div className="mr-16">
+                    <div className="cn-7 fs-13 mb-6">CPU Request</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"CPU (cores) Count"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+                <div>
+                    <div className="cn-7 fs-13 mb-6">CPU Limit</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"CPU (cores) Count"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+            </div>
+            <div className="flex left mb-12">
+                <div className="mr-16">
+                    <div className="cn-7 fs-13 mb-6">Memory Request</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"CPU (cores) Count"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+                <div>
+                    <div className="cn-7 fs-13 mb-6">Memory Limit</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"CPU (cores) Count"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+            </div>
+            <div className="flex left mb-8 mt-24">
+                <div className="fw-6 fs-14 mr-8">Relicas</div>
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                    <Question className="icon-dim-20" />
+                </Tippy>
+
+            </div>
+            <div className="mb-24">
+            <div className="cn-7 fs-13 mb-6">Replica Count</div>
+            <input id="host"
+                value={1}
+                autoFocus
+                tabIndex={1}
+                type="text"
+                className="form__input-w-200 "
+                placeholder={"Port"}
+                //onChange={(event) => this.handleChange(event)}
+                autoComplete="off" />
+            </div>
+            <div className="fw-6 fs-14 mt-24 mb-8">Probe URLs</div>
+            <div className="flex left mb-12">
+                <div className="mr-16">
+                    <div className="cn-7 fs-13 mb-6">LivenessProbe/Path</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"Enter path"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+                <div>
+                    <div className="cn-7 fs-13 mb-6">ReadinessProbe/Path</div>
+                    <input id="host"
+                        //value={"8080"}
+                        placeholder={"Enter path"}
+                        autoFocus
+                        tabIndex={1}
+                        type="text"
+                        className="form__input-w-200 "
+                        //onChange={(event) => this.handleChange(event)}
+                        autoComplete="off" />
+                </div>
+            </div>
+
+        </>
+    }
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
-                <div className="form__row">
-                    <div className="form__label">Chart version</div>
-                    <ReactSelect options={chartVersions}
-                        isMulti={false}
-                        getOptionLabel={option => `${option.version}`}
-                        getOptionValue={option => `${option.id}`}
-                        value={selectedChart}
-                        components={{
-                            IndicatorSeparator: null
-                        }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                boxShadow: 'none',
-                                border: `solid 1px var(--B500)`
-                            }),
-                            option: (base, state) => {
-                                return ({
-                                    ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                })
-                            },
-                        }}
-                        onChange={(selected) => selectChart(selected as { id: number, version: string })}
-                    />
-                </div>
-                <div className="form__row form__row--code-editor-container">
-                    <CodeEditor
-                        value={template ? JSON.stringify(template, null, 2) : ""}
-                        onChange={resp => { setTempFormData(resp) }}
-                        mode="yaml"
-                        loading={chartConfigLoading}
-                    >
-                        <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
-                    </CodeEditor>
-                </div>
-                <div className="form__buttons">
-                    <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
-                </div>
+                {deploymentTemplateBasics()}
             </form>
+
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="Retain overrides and update" />
@@ -221,7 +379,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled && 
+            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
                     minimumSupportedVersion={"3.7.0"}
