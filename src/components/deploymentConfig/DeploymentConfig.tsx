@@ -249,7 +249,13 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     </span>
                 </div>
             </div>
-            <div className="fw-6 fs-14 mb-8">Container Port</div>
+            <div className="flex left mb-8 mt-24">
+            <div className="fw-6 fs-14 mr-8">Container Port</div>
+            <Tippy className="default-tt" arrow={false} placement="top" content={
+                <span style={{ display: "block", width: "160px" }}> </span>}>
+                <Question className="icon-dim-20" />
+            </Tippy>
+            </div>
             <div className="cn-7 fs-13 mb-6">Port</div>
             <input id="host"
                 value={"8080"}
@@ -316,24 +322,30 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             <div className="flex left mb-8 mt-24">
                 <div className="fw-6 fs-14 mr-8">Relicas</div>
                 <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                    <span style={{ display: "block", width: "160px" }}> </span>}>
                     <Question className="icon-dim-20" />
                 </Tippy>
 
             </div>
             <div className="mb-24">
-            <div className="cn-7 fs-13 mb-6">Replica Count</div>
-            <input id="host"
-                value={1}
-                autoFocus
-                tabIndex={1}
-                type="text"
-                className="form__input-w-200 "
-                placeholder={"Port"}
-                //onChange={(event) => this.handleChange(event)}
-                autoComplete="off" />
+                <div className="cn-7 fs-13 mb-6">Replica Count</div>
+                <input id="host"
+                    value={1}
+                    autoFocus
+                    tabIndex={1}
+                    type="text"
+                    className="form__input-w-200 "
+                    placeholder={"Port"}
+                    //onChange={(event) => this.handleChange(event)}
+                    autoComplete="off" />
             </div>
-            <div className="fw-6 fs-14 mt-24 mb-8">Probe URLs</div>
+            <div className="flex left mb-8 mt-24">
+            <div className="fw-6 fs-14 mr-8">Probe URLs</div>
+            <Tippy className="default-tt" arrow={false} placement="top" content={
+                <span style={{ display: "block", width: "160px" }}> </span>}>
+                <Question className="icon-dim-20" />
+            </Tippy>
+            </div>
             <div className="flex left mb-12">
                 <div className="mr-16">
                     <div className="cn-7 fs-13 mb-6">LivenessProbe/Path</div>
