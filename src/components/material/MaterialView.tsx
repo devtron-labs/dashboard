@@ -103,18 +103,23 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                 </components.MenuList>
                             },
                             Control: (props) => {
+                                let value = "";
+                                
+                                if (props.hasValue) {
+                                    value = props.getValue()[0].url;
+                                }
+                                let showGit = value && !value.includes("github") && !value.includes("gitlab") && !value.includes("bitbucket")
                                 return <components.Control {...props}>
-                                    {console.log(props.hasValue)}
-                                     {/*{(props.hasValue) ? props.options.map((e) => e.url.includes("github")) ?
-                                        <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
 
-
-                                      {props.getValue().map((e)=>e.url.includes("github")) ? <GitHub className="mr-8 vertical-align-middle icon-dim-20"/> : null}
-                                    {props.getValue().map((e)=>e.url.includes("gitlab")) ? <GitLab className="mr-8 vertical-align-middle icon-dim-20"/> : null}
-                            {props.getValue().map((e)=>e.url.includes("bitbucket")) ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20"/> : null}*/}
+                                    {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8"/> : null}
+                                    {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8"/> : null}
+                                    
+                                    {showGit ?  <Git className="icon-dim-20 ml-8"/> : null }
                                     {props.children}
                                 </components.Control>
-                            }
+                            
+                            },
                         }}
 
                         onChange={(selected) => { this.props.handleProviderChange(selected) }}
