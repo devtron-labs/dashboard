@@ -51,6 +51,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         isMulti={false}
                         isClearable={false}
                         options={this.props.providers}
+                        // options={this.props.providers}
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}
@@ -79,6 +80,12 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             Option: (props) => {
                                 return <components.Option {...props}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
+                                    {<span className="mr-8">
+                                        {props.data.url.includes("gitlab") ? <GitLab /> : null}
+                                        {props.data.url.includes("github") ? <GitHub /> : null}
+                                        {props.data.url.includes("bitbucket") ? <BitBucket /> : null}
+                                        {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <GitLab />}
+                                    </span>}
                                     {props.label}
                                 </components.Option>
                             },
@@ -91,8 +98,16 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                     </NavLink>
                                 </components.MenuList>
                             },
+                            Control: (props) => {
+                                return <components.Control {...props}>
+                                    {console.log(props)}
+                                     {props.children}
+                                </components.Control>
+                            }
                         }}
-                        onChange={(selected) => { this.props.handleProviderChange(selected) }} />
+
+                        onChange={(selected) => { this.props.handleProviderChange(selected) }}
+                    />
                     {this.props.isError.gitProvider && <span className="form__error">
                         <img src={error} className="form__icon" />
                         {this.props.isError.gitProvider}
