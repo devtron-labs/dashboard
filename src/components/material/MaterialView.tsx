@@ -3,20 +3,21 @@ import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
-import { Progressing, Checkbox} from '../common';
+import { Progressing, Checkbox } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { ReactComponent as GitLab } from '../../assets/icons/git/git.svg'
 
-export class MaterialView extends Component<MaterialViewProps,{}> {
-   
+export class MaterialView extends Component<MaterialViewProps, {}> {
+
 
     renderCollapsedView() {
         if ((this.props.material).id) {
             return <div key={`${(this.props.material).id}`} className="white-card artifact-collapsed" tabIndex={0}
                 onClick={this.props.toggleCollapse}>
-                <span className="git__icon"></span>
+                <span className="git__icon"><GitLab/></span>
                 <div className="">
                     <div className="git__provider">{(this.props.material).name}</div>
                     <p className="git__url">{this.props.material.url}</p>
@@ -33,13 +34,13 @@ export class MaterialView extends Component<MaterialViewProps,{}> {
     renderForm() {
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
-                {(this.props.material).id ? "Edit Material" : "Add Material"}
+                {(this.props.material).id ? "Edit Material" : "Add Git Material"}
                 {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
             <div className="form__row form-row__material">
-              <div className="">
+                <div className="">
                     <label className="form__label">Git Account*</label>
                     <ReactSelect className=""
                         tabIndex='1'
@@ -96,7 +97,7 @@ export class MaterialView extends Component<MaterialViewProps,{}> {
                 <div>
                     <label className="form__label">Git Repo URL*</label>
                     <input className="form__input"
-                    name="Git Repo URL*"
+                        name="Git Repo URL*"
                         type="text"
                         placeholder="e.g. https://gitlab.com/abc/xyz.git"
                         value={this.props.material.url}
@@ -111,11 +112,11 @@ export class MaterialView extends Component<MaterialViewProps,{}> {
             </div>
 
             <label className="form__row">
-             <Checkbox
+                <Checkbox
                     isChecked={this.props.isChecked}
                     value={"CHECKED"}
                     tabIndex={3}
-                    onChange={this.props.handleCheckbox} 
+                    onChange={this.props.handleCheckbox}
                     rootClassName="form__label">
                     <span className="">Set Checkout Path(*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
