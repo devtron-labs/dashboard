@@ -55,7 +55,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         isMulti={false}
                         isClearable={false}
                         options={this.props.providers}
-                        // options={this.props.providers}
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}
@@ -104,7 +103,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             },
                             Control: (props) => {
                                 let value = "";
-                                
+
                                 if (props.hasValue) {
                                     value = props.getValue()[0].url;
                                 }
@@ -112,13 +111,13 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                 return <components.Control {...props}>
 
                                     {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8"/> : null}
-                                    {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8"/> : null}
-                                    
-                                    {showGit ?  <Git className="icon-dim-20 ml-8"/> : null }
+                                    {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8" /> : null}
+
+                                    {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
                                     {props.children}
                                 </components.Control>
-                            
+
                             },
                         }}
 
