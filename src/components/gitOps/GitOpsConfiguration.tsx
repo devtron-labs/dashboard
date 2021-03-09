@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ViewType } from '../../config'
+import { ViewType, DOCUMENTATION } from '../../config'
 import { GitOpsState, GitOpsProps, GitOpsConfig } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
@@ -208,7 +208,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         }
         return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">GitOps</h2>
-            <h5 className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.</h5>
+            <p className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
                 <div className="login__sso-flex">
                     <label className="tertiary-tab__radio">
