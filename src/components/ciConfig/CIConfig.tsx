@@ -214,9 +214,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                 </div>
                 <hr className="mt-0 mb-20"/>
-                <div onClick={toggleCollapse} className="flex left">
+                <div onClick={toggleCollapse} className="flex left cursor">
                     <div>
-                        <div className="fs-16 fw-6 pb-4">Advanced</div>
+                        <div className="fs-16 fw-6 ">Advanced</div>
                         <div className="form-row form-row__add-parameters">
                             <label htmlFor="" className=" fs-14 fw-4 cn-7">Docker build arguments</label>
                         </div>
