@@ -99,6 +99,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     save(event): void {
         this.setState({
+            isChecked:true,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                 url: this.props.isGitUrlValid(this.state.material.url),
@@ -107,7 +108,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         }, () => {
             if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
-            this.setState({ isLoading: true });
+            this.setState({ 
+                isLoading: true ,
+            });
             let payload = {
                 appId: this.props.appId,
                 material: [{
