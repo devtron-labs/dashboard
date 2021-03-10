@@ -24,7 +24,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     {this.props.material.url.includes("gitlab") ? <GitLab /> : null}
                     {this.props.material.url.includes("github") ? <GitHub /> : null}
                     {this.props.material.url.includes("bitbucket") ? <BitBucket /> : null}
-                    {this.props.material.url.includes("gitlab") || this.props.material.url.includes("github") || this.props.material.url.includes("bitbuclet") ? null : <Git />}
+                    {this.props.material.url.includes("gitlab") || this.props.material.url.includes("github") || this.props.material.url.includes("bitbucket") ? null : <Git />}
                 </span>
                 <div className="">
                     <div className="git__provider">{(this.props.material).name}</div>
