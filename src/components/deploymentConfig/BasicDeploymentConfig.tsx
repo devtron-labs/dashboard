@@ -1,9 +1,19 @@
 import React, { Component } from 'react'
-import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import { BasicDeploymentConfigState } from './types';
+import { Progressing } from '../common';
 
-export default class BasicDeploymentConfig extends Component {
+
+export default class BasicDeploymentConfig extends Component <{}, BasicDeploymentConfigState> {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            loading: false,
+        }
+    }
+    
     render() {
         return (
             <div>
@@ -92,7 +102,7 @@ export default class BasicDeploymentConfig extends Component {
                     <div className="cn-7 fs-13 mb-6">Memory Request</div>
                     <input id="host"
                         //value={"8080"}
-                        placeholder={"CPU (cores) Count"}
+                        placeholder={"Memory (cores) Count"}
                         autoFocus
                         tabIndex={1}
                         type="text"
@@ -104,7 +114,7 @@ export default class BasicDeploymentConfig extends Component {
                     <div className="cn-7 fs-13 mb-6">Memory Limit</div>
                     <input id="host"
                         //value={"8080"}
-                        placeholder={"CPU (cores) Count"}
+                        placeholder={"Memory (cores) Count"}
                         autoFocus
                         tabIndex={1}
                         type="text"
@@ -172,7 +182,7 @@ export default class BasicDeploymentConfig extends Component {
             </div>
             <hr />
             <div className="form__buttons">
-             {  /* <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>*/}
+             <button className="cta" type="submit">{this.state.loading ? <Progressing /> : 'Save'}</button>
             </div>
             </div>
         )

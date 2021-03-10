@@ -71,3 +71,6 @@ export interface DeploymentConfigProps extends RouteComponentProps<DeploymentCon
     respondOnSuccess?: () => void;
 }
 
+export interface BasicDeploymentConfigState {
+    loading: boolean
+}
