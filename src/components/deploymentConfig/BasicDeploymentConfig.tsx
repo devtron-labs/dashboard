@@ -32,7 +32,7 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
     }
 
     render() {
-        return (
+        return (<>
             <div>
                 <div className="flex left mb-20">
                     <div>
@@ -200,84 +200,98 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                         <Dropdown className="icon-dim-32 rotate " style={{ ['--rotateBy' as any]: this.state.isCollapsed ? '180deg' : '0deg' }} />
                     </span>
                 </div>
-                <div className="flex left mb-8 mt-24">
-                    <div className="fw-6 fs-14 mr-8">Ingress (Enabled)</div>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
-                </div>
-                <div className="cn-7 fs-13 mb-6 mt-6">Annotation</div>
-                {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
-                <div className="form-row form-row__add-parameters mb-12">
-                    <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                        <span className="fa fa-plus mr-4"></span>Add parameter
+                {this.state.isCollapsed ? <>
+                    <div className="flex left mb-8 mt-24">
+                        <div className="fw-6 fs-14 mr-8">Ingress (Enabled)</div>
+                        <Tippy className="default-tt" arrow={false} placement="top" content={
+                            <span style={{ display: "block", width: "160px" }}> </span>}>
+                            <Question className="icon-dim-20" />
+                        </Tippy>
                     </div>
-                </div>
-                <div className="flex left mb-12">
-                    <div className="mr-16">
-                        <div className="cn-7 fs-13 mb-6">Host</div>
-                        <input id="host"
-                            value={"false"}
-                            placeholder={"Enter path"}
-                            autoFocus
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                    <div className="cn-7 fs-13 mb-6 mt-6">Annotation</div>
+                    {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
+                    <div className="form-row form-row__add-parameters mb-12">
+                        <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
+                            <span className="fa fa-plus mr-4"></span>Add parameter
                     </div>
-                    <div>
-                        <div className="cn-7 fs-13 mb-6">Path</div>
-                        <input id="host"
-                            value={"false"}
-                            placeholder={"Enter path"}
-                            autoFocus
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
                     </div>
-                </div>
-                <div className="cn-7 fs-13 mb-6">tls</div>
-                <div className="form-row form-row__add-parameters mb-24 mt-6">
-                    <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                        <span className="fa fa-plus mr-4"></span>Add parameter
+                    <div className="flex left mb-12">
+                        <div className="mr-16">
+                            <div className="cn-7 fs-13 mb-6">Host</div>
+                            <input id="host"
+                                value={"false"}
+                                placeholder={"Enter path"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                        <div>
+                            <div className="cn-7 fs-13 mb-6">Path</div>
+                            <input id="host"
+                                value={"false"}
+                                placeholder={"Enter path"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
                     </div>
-                </div>
-                <div className="flex left mb-8 mt-24">
-                    <div className="fw-6 fs-14 mr-8">Service</div>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
+                    <div className="cn-7 fs-13 mb-6">tls</div>
+                    <div className="form-row form-row__add-parameters mb-24 mt-6">
+                        <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
+                            <span className="fa fa-plus mr-4"></span>Add parameter
+                    </div>
+                    </div>
+                    <div className="flex left mb-8 mt-24">
+                        <div className="fw-6 fs-14 mr-8">Service</div>
+                        <Tippy className="default-tt" arrow={false} placement="top" content={
+                            <span style={{ display: "block", width: "160px" }}> </span>}>
+                            <Question className="icon-dim-20" />
+                        </Tippy>
 
-                </div>
-                <div className="mb-24">
-                    <div className="cn-7 fs-13 mb-6">type</div>
-                    <input id="host"
-                        value={1}
-                        autoFocus
-                        tabIndex={1}
-                        type="text"
-                        className="form__input-w-200 "
-                        placeholder={"Port"}
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-                <div className="cn-7 fs-13 mb-6">Annotation</div>
-                {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
-                <div className="form-row form-row__add-parameters">
-                    <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                        <span className="fa fa-plus mr-4 mt-6"></span>Add parameter
                     </div>
-                </div>
-                <hr />
+                    <div className="mb-24">
+                        <div className="cn-7 fs-13 mb-6">type</div>
+                        <input id="host"
+                            value={1}
+                            autoFocus
+                            tabIndex={1}
+                            type="text"
+                            className="form__input-w-200 "
+                            placeholder={"Port"}
+                            //onChange={(event) => this.handleChange(event)}
+                            autoComplete="off" />
+                    </div>
+                    <div className="cn-7 fs-13 mb-6">Annotation</div>
+                    {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
+                    <div className="form-row form-row__add-parameters">
+                        <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
+                            <span className="fa fa-plus mr-4 mt-6"></span>Add parameter
+                    </div>
+                    </div>
+                    <hr />
+                </> : ""}
                 <div className="form__buttons">
                     <button className="cta" type="submit">{this.state.loading ? <Progressing /> : 'Save'}</button>
                 </div>
+
             </div>
+
+            <div className="white-card white-card__deployment-config mt-16">
+                <div className="fw-6 mb-4 fs-14 ">Application metrics</div>
+                <div className="cn-6">
+                    View key application metrics (E.g. CPU usage; memory usage; status codes 2xx, 3xx, 5xx; throughput and latency).
+                </div>
+                <div className="cr-6 bcr-1">
+                Not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.
+                </div>
+            </div>
+        </>
         )
     }
 }
