@@ -206,7 +206,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 </div>
                 <div className="form-row form-row__add-parameters">
                     <label htmlFor="" className="form__label bold">Docker build arguments</label>
-                    <div className="add-parameter bold pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
+                    <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
                         <span className="fa fa-plus"></span>Add parameter
                     </div>
                 </div>

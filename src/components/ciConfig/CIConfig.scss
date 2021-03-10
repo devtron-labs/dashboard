@@ -8,18 +8,7 @@
         grid-template-columns: 50% 1fr;
         grid-column-gap: 16px;
     }
-    .form-row__add-parameters {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .add-parameter {
-            .fa.fa-plus {
-                margin-right: 4px;
-            }
-            color: var(--B500);
-            text-align: right;
-        }
-    }
+    
     .form-row__docker {
         display: grid;
         grid-template-columns: 240px 1fr;

@@ -72,5 +72,7 @@ export interface DeploymentConfigProps extends RouteComponentProps<DeploymentCon
 }
 
 export interface BasicDeploymentConfigState {
-    loading: boolean
+    loading: boolean;
+    isCollapsed: boolean;
+    args: []
 }

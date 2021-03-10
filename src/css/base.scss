@@ -1573,3 +1573,16 @@ button.anchor {
 .hosturl__review:hover {
     color: var(--B500)
 }
+.form-row__add-parameters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    .add-parameter {
+        .fa.fa-plus {
+            margin-right: 8px;
+        }
+        color: var(--B500);
+        text-align: right;
+    }
+}

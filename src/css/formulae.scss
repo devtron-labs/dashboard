@@ -239,3 +239,21 @@ $color-suffix: 00;
     align-items: center;
     justify-content: center;
 }
+
+//auto margin and padding
+$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+
+@each $margin,
+$style in $margins {
+     .m-auto{
+         margin: auto;
+     }
+     .p-auto{
+        padding: auto;
+    }
+    .m-auto-mr-0{
+        margin: auto;
+        margin-right: 0;
+
+    }
+}
