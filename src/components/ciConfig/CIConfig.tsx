@@ -193,7 +193,17 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Docker repository</label>
-                        <input tabIndex={4} type="text" className="form__input" placeholder="Enter repository name" name="repository_name" value={repository_name.value} onChange={handleOnChange} autoFocus/>
+                        <input
+                            tabIndex={4}
+                            type="text"
+                            className="form__input"
+                            placeholder="Enter repository name"
+                            name="repository_name"
+                            value={repository_name.value}
+                            onChange={handleOnChange}
+                            autoFocus
+                            autoComplete={"off"}
+                        />
                         {!ciConfig && <label className="form__error form__error--info">New repository will be created if not provided</label>}
                     </div>
                 </div>
@@ -209,11 +219,21 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Docker file path (relative)*</label>
-                        <input tabIndex={2} type="text" className="form__input" placeholder="Dockerfile" name="dockerfile" value={dockerfile.value} onChange={handleOnChange} autoFocus/>
+                        <input
+                            tabIndex={2}
+                            type="text"
+                            className="form__input"
+                            placeholder="Dockerfile"
+                            name="dockerfile"
+                            value={dockerfile.value}
+                            onChange={handleOnChange}
+                            autoFocus
+                            autoComplete={"off"}
+                        />
                         {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                     </div>
                 </div>
-                <hr className="mt-0 mb-20"/>
+                <hr className="mt-0 mb-20" />
                 <div onClick={toggleCollapse} className="flex left cursor">
                     <div>
                         <div className="fs-16 fw-6 ">Advanced</div>

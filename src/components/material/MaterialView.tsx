@@ -131,6 +131,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <div>
                     <label className="form__label">Git Repo URL*</label>
                     <input className="form__input"
+                        autoComplete={"off"}
                         autoFocus
                         name="Git Repo URL*"
                         type="text"
@@ -155,12 +156,14 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     rootClassName="form__label">
                     <span className="">Set Checkout Path(*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
-                {this.props.isChecked ? <input className="form__input"
-                    autoFocus
-                    type="text"
-                    placeholder="e.g. /abc"
-                    value={this.props.material.checkoutPath}
-                    onChange={this.props.handlePathChange} /> : ""}
+                {this.props.isChecked ?
+                    <input className="form__input"
+                        autoComplete={"off"}
+                        autoFocus
+                        type="text"
+                        placeholder="e.g. /abc"
+                        value={this.props.material.checkoutPath}
+                        onChange={this.props.handlePathChange} /> : ""}
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
