@@ -76,3 +76,9 @@ export interface BasicDeploymentConfigState {
     isCollapsed: boolean;
     args: []
 }
+
+export interface AdvanceDeploymentConfigState{
+    chartVersions: { id: number, version: string }[],
+    selectedChart: { id: number, version: string }
+    template: string;
+}
