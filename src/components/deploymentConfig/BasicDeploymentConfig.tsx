@@ -6,6 +6,7 @@ import { BasicDeploymentConfigState } from './types';
 import { Progressing } from '../common';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { KeyValueInput } from '../configMaps/ConfigMap'
+import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
 
 
 export default class BasicDeploymentConfig extends Component<{}, BasicDeploymentConfigState> {
@@ -193,13 +194,14 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                             autoComplete="off" />
                     </div>
                 </div>
-                <hr />
+                <hr className="divider" />
                 <div onClick={this.toggleCollapse} className="flex left cursor">
                     <div className="cn-9 fs-16 fw-6 mb-6 cursor">Ingress and Service</div>
                     <span className="m-auto-mr-0 ">
                         <Dropdown className="icon-dim-32 rotate " style={{ ['--rotateBy' as any]: this.state.isCollapsed ? '180deg' : '0deg' }} />
                     </span>
                 </div>
+                <hr className="divider" />
                 {this.state.isCollapsed ? <>
                     <div className="flex left mb-8 mt-24">
                         <div className="fw-6 fs-14 mr-8">Ingress (Enabled)</div>
@@ -274,7 +276,7 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                             <span className="fa fa-plus mr-4 mt-6"></span>Add parameter
                     </div>
                     </div>
-                    <hr />
+                    <hr className="divider" />
                 </> : ""}
                 <div className="form__buttons">
                     <button className="cta" type="submit">{this.state.loading ? <Progressing /> : 'Save'}</button>
@@ -287,8 +289,10 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                 <div className="cn-6">
                     View key application metrics (E.g. CPU usage; memory usage; status codes 2xx, 3xx, 5xx; throughput and latency).
                 </div>
-                <div className="cr-6 bcr-1">
-                Not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.
+                <div className="cr-6 bcr-1 flex left mt-8 mb-8 ">
+                    <div className="ml-16 mr-8"><Help className="icon-dim-16 fcr-5" /></div>
+                    <div>Not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.
+                </div>
                 </div>
             </div>
         </>

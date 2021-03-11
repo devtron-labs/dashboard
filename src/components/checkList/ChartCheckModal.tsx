@@ -77,7 +77,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                     chartStageCompleted={this.state.chartStageCompleted}
                     toggleChartChecklist={this.toggleChartChecklist}
                 />
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="divider mt-0 mb-0" />
                 <AppCheckList appChecklist={this.state.appChecklist}
                     showDivider={false}
                     isAppCollapsed={this.state.isAppCollapsed}
@@ -96,7 +96,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</div>
                 <div className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</div>
                 <AllChartsCheck />
-                <hr className="checklist__divider mt-8 mb-0" />
+                <hr className="divider mt-8 mb-0" />
                 <AppCheckList appChecklist={this.state.appChecklist}
                     showDivider={false}
                     isAppCollapsed={this.state.isAppCollapsed}
