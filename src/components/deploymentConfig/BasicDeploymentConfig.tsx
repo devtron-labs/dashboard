@@ -5,8 +5,6 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { BasicDeploymentConfigState } from './types';
 import { Progressing } from '../common';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
-import { KeyValueInput } from '../configMaps/ConfigMap'
-import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
 
 
 export default class BasicDeploymentConfig extends Component<{}, BasicDeploymentConfigState> {
@@ -211,7 +209,30 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                         </Tippy>
                     </div>
                     <div className="cn-7 fs-13 mb-6 mt-6">Annotation</div>
-                    {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
+                    <div className="flex left mb-12">
+                        <div className="mr-16">
+                            <input id="host"
+                                //value={"8080"}
+                                placeholder={"Key"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                        <div>
+                            <input id="host"
+                                //value={"8080"}
+                                placeholder={"Value"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                    </div>
                     <div className="form-row form-row__add-parameters mb-12">
                         <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
                             <span className="fa fa-plus mr-4"></span>Add parameter
@@ -270,7 +291,30 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
                             autoComplete="off" />
                     </div>
                     <div className="cn-7 fs-13 mb-6">Annotation</div>
-                    {this.state.args && this.state.args.map((arg, idx) => <KeyValueInput keyLabel={"Key"} valueLabel={"Value"}  {...arg} key={idx} index={idx} onChange={this.handleArgsChange} onDelete={e => { let argsTemp = [...arg]; argsTemp.splice(idx, 1); }} valueType="text" />)}
+                    <div className="flex left mb-12">
+                        <div className="mr-16">
+                            <input id="host"
+                                //value={"8080"}
+                                placeholder={"Key"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                        <div>
+                            <input id="host"
+                                //value={"8080"}
+                                placeholder={"Value"}
+                                autoFocus
+                                tabIndex={1}
+                                type="text"
+                                className="form__input-w-200 "
+                                //onChange={(event) => this.handleChange(event)}
+                                autoComplete="off" />
+                        </div>
+                    </div>
                     <div className="form-row form-row__add-parameters">
                         <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
                             <span className="fa fa-plus mr-4 mt-6"></span>Add parameter
@@ -284,17 +328,7 @@ export default class BasicDeploymentConfig extends Component<{}, BasicDeployment
 
             </div>
 
-            <div className="white-card white-card__deployment-config mt-16">
-                <div className="fw-6 mb-4 fs-14 ">Application metrics</div>
-                <div className="cn-6">
-                    View key application metrics (E.g. CPU usage; memory usage; status codes 2xx, 3xx, 5xx; throughput and latency).
-                </div>
-                <div className="cr-6 bcr-1 flex left mt-8 mb-8 ">
-                    <div className="ml-16 mr-8"><Help className="icon-dim-16 fcr-5" /></div>
-                    <div>Not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.
-                </div>
-                </div>
-            </div>
+         
         </>
         )
     }

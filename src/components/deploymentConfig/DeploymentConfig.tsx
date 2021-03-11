@@ -12,6 +12,8 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import BasicDeploymentConfig from './BasicDeploymentConfig';
+import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
+
 
 export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
@@ -217,6 +219,17 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
                 {<BasicDeploymentConfig />}
             </form>
+            <div className="white-card white-card__deployment-config mt-16">
+                <div className="fw-6 mb-4 fs-14 ">Application metrics</div>
+                <div className="cn-6">
+                    View key application metrics (E.g. CPU usage; memory usage; status codes 2xx, 3xx, 5xx; throughput and latency).
+                </div>
+                <div className="cr-6 bcr-1 flex left mt-8 mb-8 ">
+                    <div className="ml-16 mr-8"><Help className="icon-dim-16 fcr-5" /></div>
+                    <div>Not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.
+                </div>
+                </div>
+            </div>
 
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
