@@ -13,6 +13,7 @@ import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import BasicDeploymentConfig from './BasicDeploymentConfig';
 import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
+import ReadmeDeploymentTemplate from './ReadmeTemplateModal';
 
 
 export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
@@ -34,12 +35,32 @@ export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion,
 }
 
 export default function DeploymentConfig({ respondOnSuccess }) {
-    return <div className="form__app-compose">
-        <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
-        <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
+    return <div className="flex">
+      
+            <div className="form__app-compose">
+                <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
+                <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
             <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
-        </p>
-        <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
+                </p>
+                <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
+            </div>
+        
+        
+            <div className="bcn-0  description__wrap en-1 right white-card__deployment-config mt-16">
+                <div className="w-300">
+                    <div className="description__title fs-16 cn-9 fw-6 mb-16">Resources (CPU & Memory)</div>
+                    <div className="description__sub-title fs-13 cn-7"> These define minimum and maximum RAM and CPU available to the application. Resources are required to set CPU and memory usage.</div>
+                    <div>
+                        <div className="description__title cn-9 fs-13 fw-6 mt-12 mb-12">Limits</div>
+                        <div className="description__sub-title fs-13 cn-7">Limits make sure a container never goes above a certain value. The container is only allowed to go up to the limit, and then it is restricted.</div>
+                    </div>
+                    <div>
+                        <div className="description__title cn-9 fs-13 fw-6 mt-12 mb-12">Requests</div>
+                        <div className="description__sub-title fs-13 cn-7">Requests are what the container is guaranteed to get.</div>
+                    </div>
+                </div>
+            </div>
+        
     </div>
 }
 
@@ -219,10 +240,16 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             <div className="flex left">
                 <div>
                     <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
+                        {<ReadmeDeploymentTemplate />}
                         {<BasicDeploymentConfig />}
                     </form>
                     <div className="white-card white-card__deployment-config mt-16">
                         <div className="fw-6 mb-4 fs-14 ">Application metrics</div>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" >
+                            <span style={{ marginLeft: 'auto' }}>
+
+                            </span>
+                        </Tippy>
                         <div className="cn-6">
                             View key application metrics (E.g. CPU usage; memory usage; status codes 2xx, 3xx, 5xx; throughput and latency).
                          </div>
@@ -233,21 +260,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                         </div>
                     </div>
                 </div>
-                <div className="bcn-0  description__wrap en-1 right white-card__deployment-config mt-16">
-                    <div className="w-300">
-                        <div className="description__title fs-16 cn-9 fw-6 mb-16">Resources (CPU & Memory)</div>
-                        <div className="description__sub-title fs-13 cn-7"> These define minimum and maximum RAM and CPU available to the application. Resources are required to set CPU and memory usage.</div>
 
-                        <div>
-                            <div className="description__title cn-9 fs-13 fw-6 mt-12 mb-12">Limits</div>
-                            <div className="description__sub-title fs-13 cn-7">Limits make sure a container never goes above a certain value. The container is only allowed to go up to the limit, and then it is restricted.</div>
-                        </div>
-                        <div>
-                            <div className="description__title cn-9 fs-13 fw-6 mt-12 mb-12">Requests</div>
-                            <div className="description__sub-title fs-13 cn-7">Requests are what the container is guaranteed to get.</div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
 

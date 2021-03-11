@@ -66,3 +66,21 @@
     box-shadow: inset -1px 0 0 0 var(--N-200);
     height: 650px;
 }
+
+.readme{
+    height: 750px;
+}
+
+.readme__wrap{
+    width: 50%;
+    border: solid 1px #d6dbdf;
+}
+
+.readme__header{
+    border-bottom: solid 1px #d6dbdf;
+}
+
+.readme__overflow{
+    overflow-y: scroll;
+    height: 550px;
+}
