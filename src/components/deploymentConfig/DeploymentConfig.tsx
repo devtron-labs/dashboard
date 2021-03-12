@@ -41,6 +41,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
     const [chartConfig, setChartConfig] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [isIngressCollapsed, toggleIngressCollapse] = useState(false);
+    const [mapping, setMapping] = useState()
     const [advancedConfigTab, setAdvancedConfigTab] = useState<'json' | 'yaml'>('yaml');
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
@@ -71,7 +72,9 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
         try {
             const response = await getDeploymentTemplate(Number(appId), selectedChart.id);
             setDeploymentConfig(response.result.globalConfig);
-            setValuesOverride(response.result.globalConfig.defaultAppOverride)
+            setValuesOverride(response.result.globalConfig.defaultAppOverride);
+            setMapping(response.result.mapping);
+            setDeploymentConfigLoading(false);
         }
         catch (err) {
             // showError(err);
@@ -155,6 +158,10 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
         }
     }
 
+    if (deploymentConfigLoading) {
+        return <Progressing pageLoader />
+    }
+
     return <>
         <div className="form__app-compose">
             <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
@@ -163,7 +170,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
             </p>
             <form action="" className="white-card p-16 mb-16 br-8 bcn-0 bw-1 ecn" onSubmit={handleSubmit}>
                 <div className="flex left mb-20">
-                    <label className="tertiary-tab form__basic-tab flex left ">
+                    <label className="tertiary-tab form__basic-tab flex left mr-16" style={{ width: "250px" }}>
                         <div className="mr-16">
                             <input type="radio"
                                 value="google"
@@ -176,7 +183,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                             <aside className="cn-7">You can configure only a subset of the available settings.</aside>
                         </div>
                     </label>
-                    <label className="tertiary-tab form__basic-tab flex left">
+                    <label className="tertiary-tab form__basic-tab flex left" style={{ width: "250px" }}>
                         <div className="mr-16">
                             <input type="radio"
                                 value="google"
@@ -191,6 +198,8 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                     </label>
                 </div>
                 {configType === "basic" ? <BasicDeploymentConfig isIngressCollapsed={isIngressCollapsed}
+                    mapping={mapping}
+                    valuesOverride={deploymentConfig.defaultAppOverride}
                     toggleIngressCollapse={toggleIngressCollapse} /> : null}
                 {configType == "advanced" ? <AdvanceDeploymentConfig advancedConfigTab={advancedConfigTab}
                     valuesOverride={obj}
