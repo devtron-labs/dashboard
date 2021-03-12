@@ -53,7 +53,7 @@ export function updateConfigmap(appId: number, request: ConfigMapRequest) {
     })
 }
 
-export function toggleAppMetrics(appId, payload){
+export function updateAppMetrics(appId, payload){
     return post(`app/template/metrics/${appId}`, payload)
 }
 
