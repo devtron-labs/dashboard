@@ -25,6 +25,7 @@ export interface GraphModalProps {
     newPodHash: string;
     calendar: { startDate: Moment, endDate: Moment };
     calendarInputs: { startDate: string, endDate: string };
+    k8sVersion: string;
     tab: AppMetricsTabType;
     close: () => void;
 }
@@ -86,15 +87,15 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     getNewGraphs(tab: AppMetricsTabType) {
-        let cpu = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'cpu', this.props.newPodHash, this.state.calendarInputs, tab, false);
-        let ram = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'ram', this.props.newPodHash, this.state.calendarInputs, tab, false);
-        let latency = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'latency', this.props.newPodHash, this.state.calendarInputs, tab, false);
-        let status2xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, '2xx');
-        let status4xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, '4xx');
-        let status5xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, '5xx');
-        let status = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, 'Throughput');
-        let throughput = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, 'Throughput');
-        let mainChartUrl = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, this.state.mainChartName, this.props.newPodHash, this.state.calendarInputs, tab, true, this.state.statusCode);
+        let cpu = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'cpu', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion);
+        let ram = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'ram', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion);
+        let latency = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'latency', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion);
+        let status2xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion, '2xx');
+        let status4xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion, '4xx');
+        let status5xx = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion, '5xx');
+        let status = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion, 'Throughput');
+        let throughput = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, 'status', this.props.newPodHash, this.state.calendarInputs, tab, false, this.props.k8sVersion, 'Throughput');
+        let mainChartUrl = getIframeSrc(this.props.appId, this.props.envId, this.props.environmentName, this.state.mainChartName, this.props.newPodHash, this.state.calendarInputs, tab, true, this.props.k8sVersion, this.state.statusCode);
         return { cpu, ram, throughput, status2xx, status4xx, status5xx, status, latency, mainChartUrl };
     }
 

@@ -213,12 +213,30 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string):string {
-    let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    // rootUrl = 'http://demo.devtron.info:32080';
+export function isK8sVersionBelow115(k8sVersion: string): boolean {
+    let target = [1, 15, 0];
+    let version: string[] = []
+    try {
+        version = (k8sVersion.split("v")[1]).split(".");
+    } catch (error) {
+        version = ["0", "0", "0"];
+    }
+    let versionNum: number[] = version.map(item => Number(item));
+    for (let i = 0; i < target.length; i++) {
+        if (versionNum[i] <= target[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, k8sVersion: string, statusCode?: string): string {
+    // let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
+    // let rootUrl = 'http://cd.devtron.ai';
+    let rootUrl = '';
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
-    let url = ``;
+    let url = '';
     if (chartName !== 'status') {
         url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
     }
@@ -231,9 +249,15 @@ export function getIframeSrc(appId: string | number, envId: string | number, env
             break;
         case 'ram':
             url += `memory/memory-usage`;
+            if (isK8sVersionBelow115(k8sVersion)) {
+                url = `${url}-k8s15`;
+            }
             break;
         case 'cpu':
             url += `cpu/cpu-usage`;
+            if (isK8sVersionBelow115(k8sVersion)) {
+                url = `${url}-k8s15`;
+            }
             break;
         case 'status':
             if (statusCode.includes("xx")) url += ``;

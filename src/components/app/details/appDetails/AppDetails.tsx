@@ -320,7 +320,7 @@ export const Details: React.FC<{
             <SecurityVulnerabilitites imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
                 severityCount={lastExecutionDetail.severityCount}
                 onClick={() => { toggleScanDetailsModal(true) }} />
-            {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
+            {environment && <AppMetrics appName={appDetails.appName} environment={environment} k8sVersion={appDetails.k8sVersion} podMap={aggregatedNodes.nodes.Pod} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
                     nodes={aggregatedNodes}
