@@ -213,13 +213,13 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function isK8sVersionBelow115(k8sVersion: string): boolean {
+export function isK8sVersion115AndBelow(k8sVersion: string): boolean {
     let target = [1, 15, 0];
     let version: string[] = []
     try {
         version = (k8sVersion.split("v")[1]).split(".");
     } catch (error) {
-        version = ["0", "0", "0"];
+        
     }
     let versionNum: number[] = version.map(item => Number(item));
     for (let i = 0; i < target.length; i++) {
@@ -231,33 +231,38 @@ export function isK8sVersionBelow115(k8sVersion: string): boolean {
 }
 
 export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, k8sVersion: string, statusCode?: string): string {
-    // let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    // let rootUrl = 'http://cd.devtron.ai';
-    let rootUrl = '';
+    let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
     let url = '';
-    if (chartName !== 'status') {
-        url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
+    if (isK8sVersion115AndBelow(k8sVersion) && (chartName === 'cpu' || chartName === 'ram')) {
+        url = `${rootUrl}/grafana/d/devtron-app-metrics-`;
+        if (chartName === 'cpu') url = `${url}cpu-k8s15`;
+        if (chartName === 'ram') url = `${url}memory-k8s15`;
     }
     else {
-        url = `${rootUrl}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
+        if (chartName !== 'status') {
+            url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
+        }
+        else {
+            url = `${rootUrl}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
+        }
     }
     switch (chartName) {
         case 'latency':
             url += `latency/latency`;
             break;
         case 'ram':
-            url += `memory/memory-usage`;
-            if (isK8sVersionBelow115(k8sVersion)) {
-                url = `${url}-k8s15`;
+            if (isK8sVersion115AndBelow(k8sVersion)) {
+                url = `${url}/memory-usage-k8s15`;
             }
+            else url += `memory/memory-usage`;
             break;
         case 'cpu':
-            url += `cpu/cpu-usage`;
-            if (isK8sVersionBelow115(k8sVersion)) {
-                url = `${url}-k8s15`;
+            if (isK8sVersion115AndBelow(k8sVersion)) {
+                url = `${url}/cpu-usage-k8s15`;
             }
+            else url += `cpu/cpu-usage`;
             break;
         case 'status':
             if (statusCode.includes("xx")) url += ``;
