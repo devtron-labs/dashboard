@@ -12,6 +12,8 @@ export * from './formFields/Typeahead';
 export * from './formFields/ButtonWithLoader';
 export * from './formFields/Checkbox';
 export * from './formFields/DevtronSwitch';
+export * from './formFields/ResizableTextarea';
+export * from './formFields/KeyValueInput';
 export * from './modals/OpaqueModal';
 export * from './modals/VisibleModal';
 export * from './dialogs/DeleteDialog';
@@ -46,3 +48,4 @@ export * from './security/ScanVulnerabilitiesTable';
 export * from './security/ScanDetailsModal';
 export * from './DatePickers/Calender';
 export * from './DatePickers/DayPickerRangeController';
+

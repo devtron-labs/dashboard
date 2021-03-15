@@ -1,16 +1,18 @@
 import React, { Component } from 'react'
-import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { BasicDeploymentConfigState } from './types';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { CustomInput } from '../globalConfigurations/GlobalConfiguration';
+import { Toggle } from '../common';
+import Tippy from '@tippyjs/react';
 
 export interface BasicDeploymentConfigProps {
     isIngressCollapsed: boolean;
     valuesOverride: any;
     mapping: any;
-    toggleIngressCollapse: (flag) => void;
+    toggleIngressCollapse: () => void;
 }
-export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps, BasicDeploymentConfigState> {
+export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps, {}> {
 
 
     render() {
@@ -18,244 +20,121 @@ export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps,
         // let value = path.reduce(val, (item, s)=>{s
         //     return value = this.props.valuesOverride[val];
         // }, {})
-
         let containerPort = this.props.mapping.containerPort;
-        console.log(this.props.valuesOverride, this.props.mapping.containerPort);
-        return <div>
-            <div className="flex left mb-8 mt-24">
-                <div className="fw-6 fs-14 mr-8">Container Port</div>
-                {/* <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span className="block" style={{ width: "160px" }}> </span>}>
-                    <Question className="icon-dim-20" />
-                </Tippy> */}
-            </div>
-            <div className="cn-7 fs-13 mb-6">Port</div>
-            <input value={this.props.valuesOverride[containerPort]}
-                type="text"
-                className="form__input-w-200 "
-                placeholder={"Port"}
-                //onChange={(event) => this.handleChange(event)}
-                autoComplete="off" />
-            <div className="fw-6 fs-14 mt-24 mb-8">Resources (CPU & Memory)</div>
-            <div className="flex left mb-12">
-                <div className="mr-16">
-                    <div className="cn-7 fs-13 mb-6">CPU Request</div>
-                    <input value={"8080"}
-                        placeholder={"CPU (cores) Count"}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-                <div>
-                    <div className="cn-7 fs-13 mb-6">CPU Limit</div>
-                    <input value={"8080"}
-                        placeholder={"CPU (cores) Count"}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-            </div>
-            <div className="flex left mb-12">
-                <div className="mr-16">
-                    <div className="cn-7 fs-13 mb-6">Memory Request</div>
-                    <input value={"8080"}
-                        placeholder={"Memory (cores) Count"}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-                <div>
-                    <div className="cn-7 fs-13 mb-6">Memory Limit</div>
-                    <input value={"8080"}
-                        placeholder={"Memory (cores) Count"}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-            </div>
-            <div className="flex left mb-8 mt-24">
-                <div className="fw-6 fs-14 mr-8">Relicas</div>
-                <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span style={{ display: "block", width: "160px" }}> </span>}>
-                    <Question className="icon-dim-20" />
-                </Tippy>
 
-            </div>
-            <div className="mb-24">
-                <div className="cn-7 fs-13 mb-6">Replica Count</div>
-                <input id="host"
-                    value={1}
-                    tabIndex={1}
-                    type="text"
-                    className="form__input-w-200 "
-                    placeholder={"Port"}
-                    //onChange={(event) => this.handleChange(event)}
-                    autoComplete="off" />
-            </div>
-            <div className="flex left mb-8 mt-24">
-                <div className="fw-6 fs-14 mr-8">Probe URLs</div>
-                <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span className="block" style={{ width: "160px" }}> </span>}>
-                    <Question className="icon-dim-20" />
-                </Tippy>
-            </div>
+        return <div>
+            <p className="fw-6 fs-14 mt-20 mb-8">Container Port</p>
+            <CustomInput value={9090} label="Port" name="port" onChange={(event) => { }} error={[]} />
+            <p className="fw-6 fs-14 mt-20 mr-8 mb-8">Resources (CPU & Memory)</p>
             <div className="flex left mb-12">
                 <div className="mr-16">
-                    <div className="cn-7 fs-13 mb-6">LivenessProbe/Path</div>
-                    <input id="host"
-                        //value={"8080"}
-                        placeholder={"Enter path"}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
+                    <CustomInput value={9090} label="CPU Request" name="cpu-request" onChange={(event) => { }} error={[]} />
                 </div>
                 <div>
-                    <div className="cn-7 fs-13 mb-6">ReadinessProbe/Path</div>
-                    <input value={"8080"}
-                        placeholder={"Enter path"}
-                        tabIndex={1}
-                        type="text"
-                        className="form__input-w-200 "
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
+                    <CustomInput value={9090} label="CPU Limit" name="cpu-limit" onChange={(event) => { }} error={[]} />
+                </div>
+            </div>
+            <div className="flex left">
+                <div className="mr-16">
+                    <CustomInput value={9090} label="CPU Request" name="memory-request" onChange={(event) => { }} error={[]} />
+                </div>
+                <div>
+                    <CustomInput value={9090} label="CPU Limit" name="memory-limit" onChange={(event) => { }} error={[]} />
+                </div>
+            </div>
+
+            <div className="mb-8 mt-24">
+                <div className="flex left mb-8">
+                    <p className="fw-6 fs-14 mr-8 mb-0">Replicas</p>
+                    <Question className="icon-dim-20" />
+                </div>
+                <CustomInput value={1} label="Replica Count" name="memory-limit" onChange={(event) => { }} error={[]} />
+            </div>
+
+            <div className="mb-8 mt-24">
+                <div className="flex left mb-8">
+                    <p className="fw-6 fs-14 mr-8 mb-0">Probe URLs</p>
+                    <Question className="icon-dim-20" />
+                </div>
+                <div className="flex left">
+                    <div className="mr-16">
+                        <CustomInput value={1} label="LivenessProbe/Path" name="memory-limit" onChange={(event) => { }} error={[]} />
+                    </div>
+                    <div className="">
+                        <CustomInput value={1} label="ReadinessProbe/Path" name="memory-limit" onChange={(event) => { }} error={[]} />
+                    </div>
                 </div>
             </div>
             <hr className="divider" />
             <div onClick={this.props.toggleIngressCollapse} className="flex left cursor">
                 <div className="cn-9 fs-16 fw-6 mb-6 cursor">Ingress and Service</div>
                 <span className="m-auto-mr-0 ">
-                    <Dropdown className="icon-dim-32 rotate " style={{ ['--rotateBy' as any]: this.props.isIngressCollapsed ? '180deg' : '0deg' }} />
+                    <Dropdown className="icon-dim-24 rotate " style={{ ['--rotateBy' as any]: this.props.isIngressCollapsed ? '180deg' : '0deg' }} />
                 </span>
             </div>
-            <hr className="divider" />
             {this.props.isIngressCollapsed ? <>
                 <div className="flex left mb-8 mt-24">
-                    <div className="fw-6 fs-14 mr-8">Ingress (Enabled)</div>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
+                    <p className="fw-6 fs-14 mr-8 mb-0">Ingress (Enabled)</p>
+                    <div style={{ width: "20px", height: "15px" }}>
+                        <Toggle rootClassName="" />
+                    </div>
                 </div>
-                <div className="cn-7 fs-13 mb-6 mt-6">Annotation</div>
-                <div className="flex left mb-12">
+                <p className="cn-7 fs-13 mb-6">Annotation</p>
+                <div className="flex left">
                     <div className="mr-16">
-                        <input id="host"
-                            //value={"8080"}
-                            placeholder={"Key"}
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                        <CustomInput value={1} label="" name="annotation-k" onChange={(event) => { }} error={[]} />
                     </div>
-                    <div>
-                        <input id="host"
-                            value={"8080"}
-                            placeholder="Value"
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                    <div className="mr-16">
+                        <CustomInput value={1} label="" name="annotation-v" onChange={(event) => { }} error={[]} />
                     </div>
                 </div>
-                <div className="form-row form-row__add-parameters mb-12">
-                    {/* <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                            <span className="fa fa-plus mr-4"></span>Add parameter
-                        </div> */}
+
+                <div className="form-row mb-12">
+                    <div className="add-parameter pointer flex left cb-5 fs-14" onClick={(e) => { }}>
+                        <Add className="icon-dim-20 fcb-5 mr-8" />
+                        <span>Add parameter</span>
+                    </div>
                 </div>
                 <div className="flex left mb-12">
                     <div className="mr-16">
-                        <div className="cn-7 fs-13 mb-6">Host</div>
-                        <input id="host"
-                            value={"false"}
-                            placeholder={"Enter path"}
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                        <CustomInput value={1} label="Host" name="annotation-k" onChange={(event) => { }} error={[]} />
                     </div>
-                    <div>
-                        <div className="cn-7 fs-13 mb-6">Path</div>
-                        <input id="host"
-                            value={"false"}
-                            placeholder={"Enter path"}
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                    <div className="mr-16">
+                        <CustomInput value={1} label="Path" name="annotation-k" onChange={(event) => { }} error={[]} />
                     </div>
                 </div>
-                <div className="cn-7 fs-13 mb-6">tls</div>
-                <div className="form-row form-row__add-parameters mb-24 mt-6">
-                    {/* <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                            <span className="fa fa-plus mr-4"></span>Add parameter
-                    </div> */}
+                <div className="flex left bottom  mb-12">
+                    <div className="mr-16">
+                        <CustomInput value={1} label="tls" name="annotation-k" onChange={(event) => { }} error={[]} />
+                    </div>
+                    <div className="mr-16">
+                        <CustomInput value={1} label="" name="annotation-k" onChange={(event) => { }} error={[]} />
+                    </div>
                 </div>
                 <div className="flex left mb-8 mt-24">
-                    <div className="fw-6 fs-14 mr-8">Service</div>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
-
+                    <p className="fw-6 fs-14 mr-8">Service</p>
+                    <Question className="icon-dim-20" />
                 </div>
-                <div className="mb-24">
-                    <div className="cn-7 fs-13 mb-6">type</div>
-                    <input id="host"
-                        value={1}
-
-                        tabIndex={1}
-                        type="text"
-                        className="form__input-w-200 "
-                        placeholder={"Port"}
-                        //onChange={(event) => this.handleChange(event)}
-                        autoComplete="off" />
-                </div>
-                <div className="cn-7 fs-13 mb-6">Annotation</div>
-                <div className="flex left mb-12">
+                <CustomInput value={1} label="type" name="annotation-k" onChange={(event) => { }} error={[]} />
+                <p className="cn-7 fs-13 mt-6 mb-0">Annotation</p>
+                <div className="flex left">
                     <div className="mr-16">
-                        <input id="host"
-                            //value={"8080"}
-                            placeholder={"Key"}
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                        <CustomInput value={1} label="" name="annotation-k" onChange={(event) => { }} error={[]} />
                     </div>
-                    <div>
-                        <input id="host"
-                            //value={"8080"}
-                            placeholder={"Value"}
-
-                            tabIndex={1}
-                            type="text"
-                            className="form__input-w-200 "
-                            //onChange={(event) => this.handleChange(event)}
-                            autoComplete="off" />
+                    <div className="mr-16">
+                        <CustomInput value={1} label="" name="annotation-v" onChange={(event) => { }} error={[]} />
                     </div>
                 </div>
-                <div className="form-row form-row__add-parameters">
-                    {/* <div className="add-parameter pointer" onClick={e => setArgs(args => [{ k: "", v: '', keyError: '', valueError: '' }, ...args])}>
-                            <span className="fa fa-plus mr-4 mt-6"></span>Add parameter
-                    </div> */}
+
+                <div className="form-row mb-12">
+                    <div className="add-parameter pointer flex left cb-5 fs-14" onClick={(e) => { }}>
+                        <Add className="icon-dim-20 fcb-5 mr-8" />
+                        <span>Add parameter</span>
+                    </div>
                 </div>
                 <hr className="divider" />
             </> : ""}
-            <div className="form__buttons">
+            <div className="form__buttons mt-32">
                 <button className="cta" type="submit">{'Save'}</button>
             </div>
         </div>

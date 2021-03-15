@@ -1,11 +1,11 @@
 //@ts-nocheck
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput } from '../common'
+import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, KeyValueInput } from '../common'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service';
 import { overRideSecret, deleteSecret as deleteEnvironmentSecret, unlockEnvSecret } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify';
-import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
+import { useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import {  DOCUMENTATION, PATTERNS } from '../../config';

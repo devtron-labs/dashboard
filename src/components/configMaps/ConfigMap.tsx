@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput } from '../common'
+import { Progressing, showError, useAsync, Select, RadioGroup, not, Info, CustomInput, KeyValueInput } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
 import { getConfigMapList } from '../../services/service';
@@ -43,41 +43,6 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
     </div>
 }
 
-interface KeyValueInputInterface {
-    keyLabel: string;
-    valueLabel: string;
-    k: string;
-    v: string;
-    index: number;
-    onChange: any;
-    onDelete: any;
-    keyError?: string;
-    valueError?: string;
-    valueType?: string;
-}
-
-export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ keyLabel, valueLabel, k, v, index, onChange, onDelete, keyError = "", valueError = "", valueType = "textarea", ...rest }) => {
-    return (
-        <article className="form__key-value-inputs">
-            {typeof onDelete === 'function' && <Trash onClick={e => onDelete(e, index)} className="cursor icon-delete icon-n4" />}
-            <div className="form__field">
-                <label>{keyLabel}
-                    <input type="text" autoComplete="off" placeholder="" value={k} onChange={e => onChange(index, e.target.value, v)} className="form__input" disabled={typeof onChange !== 'function'} />
-                    {keyError ? <span className="form__error">{keyError}</span> : <div />}
-                </label>
-            </div>
-            <div className="form__field">
-                <label>{valueLabel}</label>
-                {valueType === 'textarea' ?
-                    <ResizableTextarea value={v} onChange={e => onChange(index, k, e.target.value)} disabled={typeof onChange !== 'function'} placeholder="" maxHeight={300} />
-                    : <input type="text" autoComplete="off" value={v} onChange={e => onChange(index, k, e.target.value)} className="form__input" disabled={typeof onChange !== 'function'} />
-                }
-                {valueError ? <span className="form__error">{valueError}</span> : <div />}
-            </div>
-        </article>
-    )
-})
-
 export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="config-map-container white-card">{collapsed
@@ -94,61 +59,6 @@ export function Tab({ title, active, onClick }) {
         </nav>
     )
 }
-
-interface ResizableTextareaProps {
-    minHeight?: number;
-    maxHeight?: number;
-    value?: string;
-    onChange?: (e) => void;
-    className?: string;
-    placeholder?: string;
-    lineHeight?: number;
-    padding?: number;
-    disabled?: boolean;
-    name?: string;
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({ minHeight, maxHeight, value, onChange = null, className = "", placeholder = "Enter your text here..", lineHeight = 14, padding = 12, disabled = false, ...props }) => {
-    const [text, setText] = useState("")
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist();
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    useThrottledEffect(() => {
-        _textRef.current.style.height = 'auto';
-        let nextHeight = _textRef.current.scrollHeight
-        if (minHeight && nextHeight < minHeight) {
-            nextHeight = minHeight
-        }
-        if (maxHeight && nextHeight > maxHeight) {
-            nextHeight = maxHeight
-        }
-        _textRef.current.style.height = nextHeight + 2 + 'px';
-    }, 500, [text])
-
-    return (
-        <textarea
-            ref={el => _textRef.current = el}
-            value={text}
-            placeholder={placeholder}
-            className={`resizable-textarea ${className}`}
-            onChange={handleChange}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    );
-}
-
 
 export function ListComponent({ title, name = "", subtitle = "", onClick, className = "", collapsible = false }) {
     return <article className={`configuration-list pointer ${className}`} onClick={typeof onClick === 'function' ? onClick : function () { }}>

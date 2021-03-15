@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import Select from '../common/Select/Select'
-import { Progressing, useForm, showError } from '../common'
+import { Progressing, useForm, showError, KeyValueInput } from '../common'
 import { DOCUMENTATION, PATTERNS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
 import { getSourceConfig, getCIConfig } from '../../services/service';
 import { useParams } from 'react-router'
-import { KeyValueInput } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify';
 import { URLS } from '../../config';
 import { NavLink } from 'react-router-dom';
-import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import './CIConfig.scss';
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {

@@ -245,15 +245,21 @@ $margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right,
 
 @each $margin,
 $style in $margins {
-     .m-auto{
-         margin: auto;
-     }
-     .p-auto{
+    .m-auto {
+        margin: auto;
+    }
+
+    .p-auto {
         padding: auto;
     }
-    .m-auto-mr-0{
+
+    .m-auto-mr-0 {
         margin: auto;
         margin-right: 0;
 
     }
+}
+
+.lh-1-33 {
+    line-height: 1.33;
 }

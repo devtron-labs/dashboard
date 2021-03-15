@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getChartReferences, updateAppMetrics } from './service';
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, CustomInput } from '../common';
+import { Toggle, Progressing, ConfirmationDialog, CustomInput } from '../common';
 import { showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
@@ -164,43 +164,39 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
 
     return <>
         <div className="form__app-compose">
-            <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
+            <h3 className="form__title">Deployment Template</h3>
             <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
                 <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
             </p>
-            <form action="" className="white-card p-16 mb-16 br-8 bcn-0 bw-1 ecn" onSubmit={handleSubmit}>
-                <div className="flex left mb-20">
-                    <label className="tertiary-tab form__basic-tab flex left mr-16" style={{ width: "250px" }}>
-                        <div className="mr-16">
-                            <input type="radio"
-                                value="google"
-                                checked={configType === 'basic'}
-                                name="status"
-                                onClick={(e) => setConfigType('basic')} />
-                        </div>
-                        <div>
+            <form action="" className="p-20 mb-16 br-8 bcn-0 bw-1 en-2" onSubmit={handleSubmit}>
+                <div className="flex left">
+                    <label className="tertiary-tab__radio mr-10 flex left" style={{ width: "250px" }}>
+                        <input type="radio"
+                            value="google"
+                            checked={configType === 'basic'}
+                            name="status"
+                            onClick={(e) => setConfigType('basic')} />
+                        <div className="tertiary-tab p-12">
                             <aside className="cn-9 fs-13 fw-6">Wizard (Basic)</aside>
-                            <aside className="cn-7">You can configure only a subset of the available settings.</aside>
+                            <aside className="cn-7 fs-12 lh-1-33 fw-5">You can configure only a subset of the available settings.</aside>
                         </div>
                     </label>
-                    <label className="tertiary-tab form__basic-tab flex left" style={{ width: "250px" }}>
-                        <div className="mr-16">
-                            <input type="radio"
-                                value="google"
-                                checked={configType === 'advanced'}
-                                name="status"
-                                onClick={(e) => setConfigType('advanced')} />
-                        </div>
-                        <div>
+                    <label className="tertiary-tab__radio flex left" style={{ width: "250px" }}>
+                        <input type="radio"
+                            value="google"
+                            checked={configType === 'advanced'}
+                            name="status"
+                            onClick={(e) => setConfigType('advanced')} />
+                        <div className="tertiary-tab p-12">
                             <aside className="cn-9 fs-13 fw-6">YAML Editor (Advanced)</aside>
-                            <aside className="cn-7">You can configure all available settings in YAML/JSON format.</aside>
+                            <aside className="cn-7 fs-12 lh-1-33 fw-5">You can configure all available settings in YAML/JSON format.</aside>
                         </div>
                     </label>
                 </div>
                 {configType === "basic" ? <BasicDeploymentConfig isIngressCollapsed={isIngressCollapsed}
                     mapping={mapping}
                     valuesOverride={deploymentConfig.defaultAppOverride}
-                    toggleIngressCollapse={toggleIngressCollapse} /> : null}
+                    toggleIngressCollapse={()=>toggleIngressCollapse(!isIngressCollapsed)} /> : null}
                 {configType == "advanced" ? <AdvanceDeploymentConfig advancedConfigTab={advancedConfigTab}
                     valuesOverride={obj}
                     setAdvancedConfigTab={setAdvancedConfigTab}

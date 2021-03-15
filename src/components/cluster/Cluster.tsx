@@ -1,9 +1,8 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, ResizableTextarea } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
-import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';

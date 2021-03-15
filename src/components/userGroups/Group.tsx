@@ -1,10 +1,8 @@
 
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing, ConfirmationDialog, removeItemsFromArray, mapByKey } from '../common'
-import {ResizableTextarea} from '../configMaps/ConfigMap'
+import { showError, Progressing, ConfirmationDialog, removeItemsFromArray, mapByKey, ResizableTextarea } from '../common'
 import deleteIcon from '../../assets/icons/ic-delete.svg'
 import { saveGroup, deleteGroup } from './userGroup.service';
-
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, APIRoleFilter, CreateGroup } from './userGroups.types'
 import './UserGroup.scss';
 import { toast } from 'react-toastify'

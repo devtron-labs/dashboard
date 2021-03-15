@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAsync, Drawer, Progressing, useDebouncedEffect, useThrottledEffect } from '../../../common/';
+import { useAsync, Drawer, Progressing, useDebouncedEffect } from '../../../common/';
 import { useParams } from 'react-router';
 import './TestRunDetails.scss';
 import List from './List';

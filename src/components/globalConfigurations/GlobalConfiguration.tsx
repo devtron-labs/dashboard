@@ -1,6 +1,6 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useRouteMatch, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
@@ -226,15 +226,17 @@ export function List({ children = null, className = "", ...props }) {
 
 export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off", labelClassName = "" }) {
     return <div className="flex column left top">
-        <label className={`form__label ${labelClassName}`} >{label}</label>
-        <input type={type}
-            name={name}
-            autoComplete="off"
-            className="form__input"
-            onChange={e => { e.persist(); onChange(e) }}
-            value={value}
-            disabled={disabled}
-        />
+        <label>
+            {label && <span className={`form__label ${labelClassName}`}>{label}</span>}
+            <input type={type}
+                name={name}
+                autoComplete="off"
+                className="form__input"
+                onChange={e => { e.persist(); onChange(e) }}
+                value={value}
+                disabled={disabled}
+            />
+        </label>
         {error && <div className="form__error">{error}</div>}
     </div>
 }
