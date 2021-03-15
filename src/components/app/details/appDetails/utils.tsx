@@ -213,15 +213,17 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function isK8sVersion115AndBelow(k8sVersion: string): boolean {
-    let target = [1, 15, 0];
-    let version: string[] = []
+export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
+    let target = [1, 15, 1000];
+    let version: string[] = [];
+    let versionNum: number[] = [];
     try {
         version = (k8sVersion.split("v")[1]).split(".");
+        versionNum = version.map(item => Number(item));
     } catch (error) {
-        
+        versionNum = [1, 16, 1000];
     }
-    let versionNum: number[] = version.map(item => Number(item));
+    
     for (let i = 0; i < target.length; i++) {
         if (versionNum[i] <= target[i]) {
             return true;
@@ -230,37 +232,50 @@ export function isK8sVersion115AndBelow(k8sVersion: string): boolean {
     return false;
 }
 
-export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, k8sVersion: string, statusCode?: string): string {
+export interface AppInfo {
+    appId: string | number;
+    envId: string | number;
+    environmentName: string;
+    newPodHash: string,
+    k8sVersion: string;
+}
+
+export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string): string {
+    let baseURL = getGrafanaBaseURL(appInfo.k8sVersion, chartName);
+    let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode);
+    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode)
+    return grafanaURL;
+}
+
+export function getGrafanaBaseURL(k8sVersion, chartName): string {
     let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    let startTime: string = calendarInputs.startDate;
-    let endTime: string = calendarInputs.endDate;
     let url = '';
-    if (isK8sVersion115AndBelow(k8sVersion) && (chartName === 'cpu' || chartName === 'ram')) {
+    if (isK8sVersion115OrBelow(k8sVersion) && (chartName === 'cpu' || chartName === 'ram')) {
         url = `${rootUrl}/grafana/d/devtron-app-metrics-`;
-        if (chartName === 'cpu') url = `${url}cpu-k8s15`;
-        if (chartName === 'ram') url = `${url}memory-k8s15`;
-    }
-    else {
+    } else {
         if (chartName !== 'status') {
             url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
-        }
-        else {
+        } else {
             url = `${rootUrl}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
         }
     }
+    return url;
+}
+
+export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: string, statusCode?: string): string {
     switch (chartName) {
         case 'latency':
             url += `latency/latency`;
             break;
         case 'ram':
-            if (isK8sVersion115AndBelow(k8sVersion)) {
-                url = `${url}/memory-usage-k8s15`;
+            if (isK8sVersion115OrBelow(k8sVersion)) {
+                url += `memory-k8s15/memory-usage-k8s15`;
             }
             else url += `memory/memory-usage`;
             break;
         case 'cpu':
-            if (isK8sVersion115AndBelow(k8sVersion)) {
-                url = `${url}/cpu-usage-k8s15`;
+            if (isK8sVersion115OrBelow(k8sVersion)) {
+                url += `cpu-k8s15/cpu-usage-k8s15`;
             }
             else url += `cpu/cpu-usage`;
             break;
@@ -271,6 +286,12 @@ export function getIframeSrc(appId: string | number, envId: string | number, env
         default:
             return '';
     }
+    return url;
+}
+
+export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string): string {
+    let startTime: string = calendarInputs.startDate;
+    let endTime: string = calendarInputs.endDate;
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`;
     url += `&refresh=10s`;
     url += `&var-app=${appId}`;

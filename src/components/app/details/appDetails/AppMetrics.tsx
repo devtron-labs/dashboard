@@ -18,7 +18,7 @@ import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
 
 
-export const AppMetrics: React.FC<{ k8sVersion, appName: string, environment, podMap: Map<string, any> }> = ({ k8sVersion, appName, environment, podMap }) => {
+export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion }> = ({ appName, environment, podMap, k8sVersion }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
     const [calendar, setDateRange] = useState<{ startDate: Moment, endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
@@ -117,7 +117,14 @@ export const AppMetrics: React.FC<{ k8sVersion, appName: string, environment, po
     }
 
     function handleStatusChange(selected): void {
-        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, tab, true, selected.value);
+        let appInfo = {
+            appId: appId,
+            envId: envId,
+            environmentName: environmentName,
+            newPodHash: newPodHash,
+            k8sVersion: k8sVersion,
+        }
+        let throughput = getIframeSrc(appInfo, 'status', calendarInputs, tab, true, selected.value);
         setStatusCode(selected.value);
         setGraphs({
             ...graphs,
@@ -126,10 +133,17 @@ export const AppMetrics: React.FC<{ k8sVersion, appName: string, environment, po
     }
 
     function getNewGraphs(newTab): void {
-        let cpu = getIframeSrc(appId, envId, environmentName, 'cpu', newPodHash, calendarInputs, newTab, true, k8sVersion);
-        let ram = getIframeSrc(appId, envId, environmentName, 'ram', newPodHash, calendarInputs, newTab, true, k8sVersion);
-        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, newTab, true, k8sVersion, 'Throughput');
-        let latency = getIframeSrc(appId, envId, environmentName, 'latency', newPodHash, calendarInputs, newTab, true, k8sVersion);
+        let appInfo = {
+            appId: appId,
+            envId: envId,
+            environmentName: environmentName,
+            newPodHash: newPodHash,
+            k8sVersion: k8sVersion,
+        }
+        let cpu = getIframeSrc(appInfo, 'cpu', calendarInputs, newTab, true);
+        let ram = getIframeSrc(appInfo, 'ram', calendarInputs, newTab, true);
+        let throughput = getIframeSrc(appInfo, 'status', calendarInputs, newTab, true, 'Throughput');
+        let latency = getIframeSrc(appInfo, 'latency', calendarInputs, newTab, true);
         setGraphs({
             cpu,
             ram,
@@ -175,7 +189,6 @@ export const AppMetrics: React.FC<{ k8sVersion, appName: string, environment, po
                                 <span className="tertiary-tab">Per Pod</span>
                             </label>
                             {chartName ? <GraphModal appId={appId}
-                                k8sVersion={k8sVersion}
                                 envId={envId}
                                 appName={appName}
                                 infraMetrics={environment.infraMetrics}
@@ -186,6 +199,7 @@ export const AppMetrics: React.FC<{ k8sVersion, appName: string, environment, po
                                 calendar={calendar}
                                 calendarInputs={calendarInputs}
                                 tab={tab}
+                                k8sVersion={k8sVersion}
                                 close={() => setChartName(null)} /> : null}
                         </div>
                         <DateRangePicker calendar={calendar}
