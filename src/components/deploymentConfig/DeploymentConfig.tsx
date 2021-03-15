@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getChartReferences, updateAppMetrics } from './service';
-import { Toggle, Progressing, ConfirmationDialog, CustomInput } from '../common';
+import { Toggle, Progressing, ConfirmationDialog } from '../common';
 import { showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
 import ReadmeDeploymentTemplate from './ReadmeTemplateModal';
 import Tippy from '@tippyjs/react';
+import YAML from 'yaml';
 
 
 export type DeploymentConfigType = "basic" | "advanced";
@@ -67,6 +68,18 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
     useEffect(() => {
         fetchDeploymentTemplate();
     }, [selectedChart])
+
+    function handleValuesOverride(value) {
+        try {
+            if (advancedConfigTab === 'json') setValuesOverride(value);
+            else {
+                let json = YAML.parse(value);
+                setValuesOverride(json);
+            }
+        } catch (error) {
+
+        }
+    }
 
     async function fetchDeploymentTemplate() {
         try {
@@ -196,14 +209,14 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                 {configType === "basic" ? <BasicDeploymentConfig isIngressCollapsed={isIngressCollapsed}
                     mapping={mapping}
                     valuesOverride={deploymentConfig.defaultAppOverride}
-                    toggleIngressCollapse={()=>toggleIngressCollapse(!isIngressCollapsed)} /> : null}
+                    toggleIngressCollapse={() => toggleIngressCollapse(!isIngressCollapsed)} /> : null}
                 {configType == "advanced" ? <AdvanceDeploymentConfig advancedConfigTab={advancedConfigTab}
                     valuesOverride={obj}
                     setAdvancedConfigTab={setAdvancedConfigTab}
                     chartVersions={chartVersions}
                     selectedChart={selectedChart}
                     selectChart={selectChart}
-                    handleValuesOverride={() => { }}
+                    handleValuesOverride={handleValuesOverride}
                 /> : null}
             </form>
         </div>

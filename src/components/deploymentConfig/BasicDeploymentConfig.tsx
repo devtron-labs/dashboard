@@ -4,7 +4,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { Toggle } from '../common';
-import Tippy from '@tippyjs/react';
 
 export interface BasicDeploymentConfigProps {
     isIngressCollapsed: boolean;
@@ -113,7 +112,7 @@ export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps,
                 </div>
                 <div className="flex left mb-8 mt-24">
                     <p className="fw-6 fs-14 mr-8">Service</p>
-                    <Question className="icon-dim-20" />
+                    {/* <Question className="icon-dim-20" /> */}
                 </div>
                 <CustomInput value={1} label="type" name="annotation-k" onChange={(event) => { }} error={[]} />
                 <p className="cn-7 fs-13 mt-6 mb-0">Annotation</p>

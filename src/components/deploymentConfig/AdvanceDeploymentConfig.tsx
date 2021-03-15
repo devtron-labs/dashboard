@@ -20,8 +20,9 @@ interface AdvanceDeploymentConfigProps {
     handleValuesOverride: (str) => void;
 }
 export class AdvanceDeploymentConfig extends Component<AdvanceDeploymentConfigProps, {}> {
-
     render() {
+        let valuesOverride = (this.props.advancedConfigTab === 'json') ? this.props.valuesOverride : YAML.stringify(this.props.valuesOverride, { indent: 2 });
+
         return <div>
             <div className="form__row">
                 <div className="form__label">Chart version</div>
@@ -50,19 +51,10 @@ export class AdvanceDeploymentConfig extends Component<AdvanceDeploymentConfigPr
                     onChange={this.props.selectChart}
                 />
             </div>
-            {console.log(this.props.valuesOverride)}
             <div className="form__row form__row--code-editor-container">
-                {/* <CodeEditor value={YAML.parse(this.props.valuesOverride, { indent: 2 })}
-                    onChange={this.props.handleValuesOverride}
-                    mode="yaml">
-                    <CodeEditor.Header>
-                        <CodeEditor.LanguageChanger />
-                        <CodeEditor.ValidationError />
-                    </CodeEditor.Header>
-                </CodeEditor> */}
-                <CodeEditor value={YAML.stringify(this.props.valuesOverride, { indent: 2 })}
+                <CodeEditor value={valuesOverride}
                     height={300}
-                    mode='json'
+                    mode={this.props.advancedConfigTab}
                     onChange={this.props.handleValuesOverride}>
                     <CodeEditor.Header >
                         <Switch value={this.props.advancedConfigTab} name="advanced-config" onChange={(event) => { this.props.setAdvancedConfigTab(event.target.value) }}>
@@ -73,7 +65,6 @@ export class AdvanceDeploymentConfig extends Component<AdvanceDeploymentConfigPr
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
-
         </div>
     }
 }
