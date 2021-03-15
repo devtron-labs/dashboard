@@ -13,24 +13,42 @@ export interface BasicDeploymentConfigProps {
 }
 export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps, {}> {
 
+    getValues() {
+        let cpuLimitPath = this.props.mapping.cpuLimit.split('.');
+        let portPath = this.props.mapping.port.split('.');
+
+
+        let port = this.props.valuesOverride;
+        let cpuRequest = this.props.valuesOverride;
+        let cpuLimit = this.props.valuesOverride;
+        let memoryRequest = this.props.valuesOverride;
+        let memoryLimit = this.props.valuesOverride;
+
+        for (let i = 0; i < portPath.length; i++) {
+            cpuLimit = portPath[portPath[i]];
+        }
+
+        for (let i = 0; i < cpuLimitPath.length; i++) {
+            cpuLimit = cpuLimit[cpuLimitPath[i]];
+        }
+
+        return { port, cpuRequest, cpuLimit }
+    }
 
     render() {
-        let path = this.props.mapping.cpuLimit.split('.');
-        // let value = path.reduce(val, (item, s)=>{s
-        //     return value = this.props.valuesOverride[val];
-        // }, {})
-        let containerPort = this.props.mapping.containerPort;
 
+        let { port, cpuRequest, cpuLimit, } = this.getValues();
         return <div>
             <p className="fw-6 fs-14 mt-20 mb-8">Container Port</p>
-            <CustomInput value={9090} label="Port" name="port" onChange={(event) => { }} error={[]} />
+            <CustomInput value={port} label="Port" name="port" onChange={(event) => { }} error={[]} />
+
             <p className="fw-6 fs-14 mt-20 mr-8 mb-8">Resources (CPU & Memory)</p>
             <div className="flex left mb-12">
                 <div className="mr-16">
-                    <CustomInput value={9090} label="CPU Request" name="cpu-request" onChange={(event) => { }} error={[]} />
+                    <CustomInput value={cpuRequest} label="CPU Request" name="cpu-request" onChange={(event) => { }} error={[]} />
                 </div>
                 <div>
-                    <CustomInput value={9090} label="CPU Limit" name="cpu-limit" onChange={(event) => { }} error={[]} />
+                    <CustomInput value={cpuLimit} label="CPU Limit" name="cpu-limit" onChange={(event) => { }} error={[]} />
                 </div>
             </div>
             <div className="flex left">
