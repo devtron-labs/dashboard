@@ -37,7 +37,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
     return <div className="form__app-compose">
         <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
         <p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
-            <a rel="noreferrer noopener" className="learn-more__href"  href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
         </p>
         {Array.isArray(configData) && configData.filter(cm => cm).map((cm, idx) => <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }} appId={appId} id={id} update={reload} index={idx} />)}
     </div>
@@ -383,7 +383,14 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-
+            <div>
+                <div className="flex left">
+                    <input
+                        type="checkbox"
+                    />
+                Set subPath (Required for sharing one volume for multiple uses in a single pod)
+            </div>
+            </div>
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
@@ -422,8 +429,8 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         </div>
                         : <>
                             {externalValues.map((data, idx) => <KeyValueInput keyLabel={selectedTab == "Data Volume" ? "File Name" : "Key"} valueLabel={selectedTab == "Data Volume" ? "File Content" : "Value"} {...data} key={idx} index={idx} onChange={handleChange} onDelete={handleDeleteParam} />)}
-                            <div className="add-parameter bold pointer" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
-                                <Add />Add parameter
+                            <div className="add-parameter bold pointer flex left" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
+                                <Add className="fcb-5 icon-dim-20 mr-8" />Add parameter
                             </div>
                         </>
                     }
