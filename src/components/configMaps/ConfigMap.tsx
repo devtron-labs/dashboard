@@ -14,6 +14,7 @@ import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import './ConfigMap.scss'
+import { Checkbox } from '../common';
 
 const EXTERNAL_TYPES = {
     "": "Kubernetes ConfigMap",
@@ -334,6 +335,11 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         }
         toggleYamlMode(not)
     }
+
+    function handleCheckBox(){
+
+    }
+
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
 
 
@@ -383,14 +389,29 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            <div>
-                <div className="flex left">
-                    <input
-                        type="checkbox"
-                    />
-                Set subPath (Required for sharing one volume for multiple uses in a single pod)
+            <div className="mb-16">
+                <Checkbox
+                    isChecked={true}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value={"CHECKED"}
+                    onChange={handleCheckBox} 
+                >
+                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                </Checkbox>
             </div>
+            <div className="mb-16">
+                <Checkbox
+                    isChecked={true}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value={"CHECKED"}
+                    onChange={handleCheckBox} 
+                >
+                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                </Checkbox>
             </div>
+
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
