@@ -199,7 +199,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm , permissionNumber="" }) {
+export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, permissionNumber = "" }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
@@ -212,7 +212,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     const tempArray = useRef([])
     const [isSubPathChecked, setIsSubPathChecked] = useState(false)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
-    const [filePermission, setFilePermission] = useState({ value: permissionNumber , error: ""})
+    const [filePermission, setFilePermission] = useState({ value: permissionNumber, error: "" })
 
 
     function setKeyValueArray(arr) {
@@ -340,7 +340,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         toggleYamlMode(not)
     }
 
-    
+
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
 
 
@@ -390,39 +390,39 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            { !isExternalValues && selectedTab === 'Data Volume'  ? 
-             <div className="mb-16">
-              <Checkbox
-                    isChecked={isSubPathChecked}
-                    onClick={(e) => { e.stopPropagation() }}
-                    rootClassName="form__checkbox-label--ignore-cache"
-                    value={"CHECKED"}
-                    onChange={(e)=> setIsSubPathChecked(!isSubPathChecked)} 
-                >
-                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
-                </Checkbox>
-            </div> : "" }
-            {selectedTab === 'Data Volume'   ? <div className="mb-16">
+            { !isExternalValues && selectedTab === 'Data Volume' ?
+                <div className="mb-16">
+                    <Checkbox
+                        isChecked={isSubPathChecked}
+                        onClick={(e) => { e.stopPropagation() }}
+                        rootClassName="form__checkbox-label--ignore-cache"
+                        value={"CHECKED"}
+                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
+                    >
+                        <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                    </Checkbox>
+                </div> : ""}
+            {selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox
                     isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
-                    onChange={(e)=> setIsFilePermissionChecked(!isFilePermissionChecked)}  
+                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                 >
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
             {isFilePermissionChecked ? <div className="mb-16">
-                <CustomInput 
+                <CustomInput
                     value={filePermission.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 0400"}
                     error={filePermission.error}
-                    onChange={e => setFilePermission({ value: e.target.value, error: "" })} 
-                    />
+                    onChange={e => setFilePermission({ value: e.target.value, error: "" })}
+                />
             </div> : ""}
 
             {!isExternalValues && <div className="flex left mb-16">
@@ -470,6 +470,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     }
                 </>
             }
+            <hr/>
             <div className="form__buttons">
                 <button type="button" className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}</button>
             </div>

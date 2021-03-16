@@ -16,6 +16,7 @@ import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import '../configMaps/ConfigMap.scss';
+import { Checkbox } from '../common';
 
 let sampleJSON = [{
     "key": "service/credentials",
@@ -175,6 +176,7 @@ interface SecretFormProps {
     update: (...args) => void;
     collapse: (...args) => void;
     initialise?: () => void;
+    permissionNumber: number;
 
 }
 
@@ -192,6 +194,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const tempArray = useRef([])
+    const [isSubPathChecked, setIsSubPathChecked] = useState(false)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
+    const [filePermission, setFilePermission] = useState({ value: props.permissionNumber, error: "" })
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -508,6 +513,40 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
+        { !isExternalValues && selectedTab === 'Data Volume' ?
+                <div className="mb-16">
+                    <Checkbox
+                        isChecked={isSubPathChecked}
+                        onClick={(e) => { e.stopPropagation() }}
+                        rootClassName="form__checkbox-label--ignore-cache"
+                        value={"CHECKED"}
+                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
+                    >
+                        <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                    </Checkbox>
+                </div> : ""}
+            {selectedTab === 'Data Volume' ? <div className="mb-16">
+                <Checkbox
+                    isChecked={isFilePermissionChecked}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value={"CHECKED"}
+                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
+                >
+                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                </Checkbox>
+            </div> : ""}
+            {isFilePermissionChecked ? <div className="mb-16">
+                <CustomInput
+                    value={filePermission.value}
+                    autoComplete="off"
+                    tabIndex={5}
+                    label={""}
+                    placeholder={"eg. 0400"}
+                    error={filePermission.error}
+                    onChange={e => setFilePermission({ value: e.target.value, error: "" })}
+                />
+            </div> : ""}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
             autoComplete="off"
