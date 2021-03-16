@@ -210,6 +210,9 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_KEY}`)
     const tempArray = useRef([])
+    const [isSubPathChecked, setIsSubPathChecked] = useState(false)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
+
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -336,10 +339,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         toggleYamlMode(not)
     }
 
-    function handleCheckBox(){
-
-    }
-
+    
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
 
 
@@ -391,26 +391,29 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             </div> : null}
             <div className="mb-16">
                 <Checkbox
-                    isChecked={true}
+                    isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
-                    onChange={handleCheckBox} 
+                    onChange={(e)=> setIsSubPathChecked(!isSubPathChecked)} 
                 >
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>
             </div>
             <div className="mb-16">
                 <Checkbox
-                    isChecked={true}
+                    isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
-                    onChange={handleCheckBox} 
+                    onChange={(e)=> setIsFilePermissionChecked(!isFilePermissionChecked)}  
                 >
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div>
+            {isFilePermissionChecked ? <div>
+                hi
+            </div> : ""}
 
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
