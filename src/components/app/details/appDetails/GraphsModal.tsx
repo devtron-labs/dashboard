@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-import { VisibleModal, DatePickerType2 as DateRangePicker, DayPickerRangeControllerPresets } from '../../../common';
+import { VisibleModal, DatePickerType2 as DateRangePicker } from '../../../common';
 import { AppMetricsTabType, ChartTypes } from './appDetails.type';
-import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
+import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue } from './utils';
 import { Moment } from 'moment';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
+import { toast } from 'react-toastify';
 
 export const ChartNames = {
     'cpu': 'CPU Usage',
@@ -87,12 +88,21 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     getNewGraphs(tab: AppMetricsTabType) {
+        let k8sVersion = this.props.k8sVersion;
+        let defaultK8sVersion = 'v16.1.10';
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = defaultK8sVersion;
+            toast.warn(<div className="toast">
+                <div className="toast__title">Error Parsing K8sVersion</div>
+                <div className="toast__subtitle">Showing Graphs for {defaultK8sVersion} and above</div>
+            </div>)
+        }
         let appInfo = {
             appId: this.props.appId,
             envId: this.props.envId,
             environmentName: this.props.environmentName,
             newPodHash: this.props.newPodHash,
-            k8sVersion: this.props.k8sVersion,
+            k8sVersion: k8sVersion,
         }
 
         let cpu = getIframeSrc(appInfo, 'cpu', this.state.calendarInputs, tab, false);
@@ -169,6 +179,16 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleChartChange(chartName: ChartTypes, status?: string): void {
+        let k8sVersion = this.props.k8sVersion;
+        let defaultK8sVersion = 'v16.1.10';
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = defaultK8sVersion;
+            toast.warn(<div className="toast">
+                <div className="toast__title">Error Parsing K8sVersion</div>
+                <div className="toast__subtitle">Showing Graphs for {defaultK8sVersion} and above</div>
+            </div>)
+        }
+
         let appInfo = {
             appId: this.props.appId,
             envId: this.props.envId,
@@ -195,7 +215,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
     render() {
         let iframeClasses = "app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12";
-        
+
         return <VisibleModal className="" close={this.props.close}>
             <div className="modal__body modal__body--full-screen" onClick={e => e.stopPropagation()}>
                 <div className="modal__header p-24 m-0">

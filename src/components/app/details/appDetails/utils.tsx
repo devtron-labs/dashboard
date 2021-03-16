@@ -13,6 +13,7 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
+import { ServerErrors } from '../../../../modals/commonTypes';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -213,17 +214,27 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
+export function isK8sVersionValid(k8sVersion: string): boolean {
+    try {
+        let version = (k8sVersion.split("v")[1]).split(".");
+        let versionNum = version.map(item => Number(item));
+        let sum = versionNum.reduce((sum, item) => {
+            return sum += item;
+        }, 0)
+        if (isNaN(sum)) return false;
+    } catch (error) {
+        return false
+    }
+    return true;
+}
+
 export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
     let target = [1, 15, 1000];
     let version: string[] = [];
     let versionNum: number[] = [];
-    try {
-        version = (k8sVersion.split("v")[1]).split(".");
-        versionNum = version.map(item => Number(item));
-    } catch (error) {
-        versionNum = [1, 16, 1000];
-    }
-    
+    version = (k8sVersion.split("v")[1]).split(".");
+    versionNum = version.map(item => Number(item));
+
     for (let i = 0; i < target.length; i++) {
         if (versionNum[i] <= target[i]) {
             return true;
