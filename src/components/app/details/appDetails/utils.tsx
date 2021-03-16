@@ -215,6 +215,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
 }
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
+    if(!k8sVersion) return false;
     try {
         let version = (k8sVersion.split("v")[1]).split(".");
         let versionNum = version.map(item => Number(item));

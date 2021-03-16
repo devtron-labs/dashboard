@@ -92,10 +92,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         let defaultK8sVersion = 'v16.1.10';
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = defaultK8sVersion;
-            toast.warn(<div className="toast">
-                <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {defaultK8sVersion} and above</div>
-            </div>)
         }
         let appInfo = {
             appId: this.props.appId,
@@ -183,18 +179,14 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         let defaultK8sVersion = 'v16.1.10';
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = defaultK8sVersion;
-            toast.warn(<div className="toast">
-                <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {defaultK8sVersion} and above</div>
-            </div>)
         }
-
+        
         let appInfo = {
             appId: this.props.appId,
             envId: this.props.envId,
             environmentName: this.props.environmentName,
             newPodHash: this.props.newPodHash,
-            k8sVersion: this.props.k8sVersion,
+            k8sVersion: k8sVersion,
         }
         let mainChartUrl = getIframeSrc(appInfo, chartName, this.state.calendarInputs, this.state.tab, true, this.state.statusCode);
         this.setState({
