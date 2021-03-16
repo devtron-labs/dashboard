@@ -199,7 +199,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm }) {
+export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm , permissionNumber="" }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
@@ -212,6 +212,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     const tempArray = useRef([])
     const [isSubPathChecked, setIsSubPathChecked] = useState(false)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
+    const [filePermission, setFilePermission] = useState({ value: permissionNumber , error: ""})
 
 
     function setKeyValueArray(arr) {
@@ -389,8 +390,9 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            <div className="mb-16">
-                <Checkbox
+            { !isExternalValues && !(type === "environment") ? 
+             <div className="mb-16">
+              <Checkbox
                     isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
@@ -399,8 +401,8 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 >
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>
-            </div>
-            <div className="mb-16">
+            </div> : "" }
+            {!(type === "environment")  ? <div className="mb-16">
                 <Checkbox
                     isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
@@ -410,9 +412,17 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 >
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
-            </div>
-            {isFilePermissionChecked ? <div>
-                hi
+            </div> : ""}
+            {isFilePermissionChecked ? <div className="mb-16">
+                <CustomInput 
+                    value={filePermission.value}
+                    autoComplete="off"
+                    tabIndex={5}
+                    label={""}
+                    placeholder={"eg. 0400"}
+                    error={filePermission.error}
+                    onChange={e => setFilePermission({ value: e.target.value, error: "" })} 
+                    />
             </div> : ""}
 
             {!isExternalValues && <div className="flex left mb-16">
