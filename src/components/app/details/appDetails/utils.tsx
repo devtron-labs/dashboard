@@ -260,15 +260,14 @@ export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarIn
 }
 
 export function getGrafanaBaseURL(k8sVersion, chartName): string {
-    let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    let url = '';
+    let url = '';   
     if (isK8sVersion115OrBelow(k8sVersion) && (chartName === 'cpu' || chartName === 'ram')) {
-        url = `${rootUrl}/grafana/d/devtron-app-metrics-`;
+        url = `${url}/grafana/d-solo/devtron-app-metrics-`;
     } else {
         if (chartName !== 'status') {
-            url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
+            url = `${url}/grafana/d-solo/devtron-app-metrics-`;
         } else {
-            url = `${rootUrl}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
+            url = `${url}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
         }
     }
     return url;
