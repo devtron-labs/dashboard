@@ -390,7 +390,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            { !isExternalValues && !(type === "environment") ? 
+            { !isExternalValues && selectedTab === 'Data Volume'  ? 
              <div className="mb-16">
               <Checkbox
                     isChecked={isSubPathChecked}
@@ -402,7 +402,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>
             </div> : "" }
-            {!(type === "environment")  ? <div className="mb-16">
+            {selectedTab === 'Data Volume'   ? <div className="mb-16">
                 <Checkbox
                     isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
