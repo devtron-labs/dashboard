@@ -138,6 +138,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function getNewGraphs(newTab): void {
+        if (!datasource.isHealthy) return;
+
         let defaultK8sVersion = 'v16.1.10';
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = defaultK8sVersion;
@@ -168,9 +170,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
-        getNewGraphs(tab);
         checkDatasource();
-    }, [])
+    }, [appName])
+
+    useEffect(() => {
+        getNewGraphs(tab);
+    }, [datasource])
 
     useEffect(() => {
         getNewGraphs(tab);
@@ -354,4 +359,3 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
         </article>
     </div>
 }
-
