@@ -4,6 +4,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { Toggle } from '../common';
+import JSONPath from 'jsonpath';
 
 export interface BasicDeploymentConfigProps {
     isIngressCollapsed: boolean;
@@ -14,33 +15,41 @@ export interface BasicDeploymentConfigProps {
 export class BasicDeploymentConfig extends Component<BasicDeploymentConfigProps, {}> {
 
     getValues() {
-        let cpuLimitPath = this.props.mapping.cpuLimit.split('.');
-        let portPath = this.props.mapping.port.split('.');
+        let ports: string[],
+            cpuRequest: string, cpuLimit: string, memoryLimit: string, memoryRequest: string,
+            replicaCount: number, replicas: number,
+            ingressAnnotation: string, ingressHost: string, ingressTls: string,
+            livenessPath: string, readinessPath: string, serviceAnnotation: string,
+            serviceType: string;
 
+        // autoScalingEnabled: boolean, ingressEnabled: boolean;
+        ports = JSONPath.query(this.props.valuesOverride, this.props.mapping.containerPort);
+        cpuLimit = JSONPath.query(this.props.valuesOverride, this.props.mapping.cpuLimit);
+        cpuRequest = JSONPath.query(this.props.valuesOverride, this.props.mapping.cpuRequest);
+        ingressAnnotation = JSONPath.query(this.props.valuesOverride, this.props.mapping.ingressAnnotation);
+        ingressHost = JSONPath.query(this.props.valuesOverride, this.props.mapping.ingressHost);
+        ingressTls = JSONPath.query(this.props.valuesOverride, this.props.mapping.ingressTls);
+        livenessPath = JSONPath.query(this.props.valuesOverride, this.props.mapping.livenessPath);
+        memoryLimit = JSONPath.query(this.props.valuesOverride, this.props.mapping.memoryLimit);
+        memoryRequest = JSONPath.query(this.props.valuesOverride, this.props.mapping.memoryRequest);
+        readinessPath = JSONPath.query(this.props.valuesOverride, this.props.mapping.readinessPath);
+        replicaCount = JSONPath.query(this.props.valuesOverride, this.props.mapping.replicaCount);
+        replicas = JSONPath.query(this.props.valuesOverride, this.props.mapping.replicas);
 
-        let port = this.props.valuesOverride;
-        let cpuRequest = this.props.valuesOverride;
-        let cpuLimit = this.props.valuesOverride;
-        let memoryRequest = this.props.valuesOverride;
-        let memoryLimit = this.props.valuesOverride;
-
-        for (let i = 0; i < portPath.length; i++) {
-            cpuLimit = portPath[portPath[i]];
-        }
-
-        for (let i = 0; i < cpuLimitPath.length; i++) {
-            cpuLimit = cpuLimit[cpuLimitPath[i]];
-        }
-
-        return { port, cpuRequest, cpuLimit }
+        return { ports, cpuRequest, cpuLimit, memoryLimit, memoryRequest, replicaCount }
     }
 
     render() {
-
-        let { port, cpuRequest, cpuLimit, } = this.getValues();
+        let { ports, cpuRequest, cpuLimit, } = this.getValues();
         return <div>
             <p className="fw-6 fs-14 mt-20 mb-8">Container Port</p>
-            <CustomInput value={port} label="Port" name="port" onChange={(event) => { }} error={[]} />
+            {ports.map((port) => <CustomInput value={port} label="Port" name="port" onChange={(event) => { }} error={[]} />)}
+            <div className="form-row mb-12">
+                <div className="add-parameter pointer flex left cb-5 fs-14" onClick={(e) => { }}>
+                    <Add className="icon-dim-20 fcb-5 mr-8" />
+                    <span>Add parameter</span>
+                </div>
+            </div>
 
             <p className="fw-6 fs-14 mt-20 mr-8 mb-8">Resources (CPU & Memory)</p>
             <div className="flex left mb-12">
