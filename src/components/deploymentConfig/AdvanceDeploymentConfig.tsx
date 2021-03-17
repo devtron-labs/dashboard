@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
 import CodeEditor from '../CodeEditor/CodeEditor';
-import YAML from 'yaml';
-import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
 
 interface AdvanceDeploymentConfigProps {
-    advancedConfigTab: 'json' | 'yaml';
     valuesOverride: any;
     chartVersions: {
         id: number;
@@ -16,13 +13,10 @@ interface AdvanceDeploymentConfigProps {
         version: string;
     }
     selectChart: (chart) => void;
-    setAdvancedConfigTab: (value: 'json' | 'yaml') => void;
     handleValuesOverride: (str) => void;
 }
 export class AdvanceDeploymentConfig extends Component<AdvanceDeploymentConfigProps, {}> {
     render() {
-        let valuesOverride = (this.props.advancedConfigTab === 'json') ? this.props.valuesOverride : YAML.stringify(this.props.valuesOverride, { indent: 2 });
-
         return <div>
             <div className="form__row">
                 <div className="form__label">Chart version</div>
@@ -52,15 +46,12 @@ export class AdvanceDeploymentConfig extends Component<AdvanceDeploymentConfigPr
                 />
             </div>
             <div className="form__row form__row--code-editor-container">
-                <CodeEditor value={valuesOverride}
-                    height={300}
-                    mode={this.props.advancedConfigTab}
+                <CodeEditor value={this.props.valuesOverride}
+                    height={500}
+                    mode={'yaml'}
                     onChange={this.props.handleValuesOverride}>
                     <CodeEditor.Header >
-                        <Switch value={this.props.advancedConfigTab} name="advanced-config" onChange={(event) => { this.props.setAdvancedConfigTab(event.target.value) }}>
-                            <SwitchItem value={'json'}> JSON  </SwitchItem>
-                            <SwitchItem value={'yaml'}>  YAML</SwitchItem>
-                        </Switch>
+                        <CodeEditor.LanguageChanger />
                         <CodeEditor.ValidationError />
                     </CodeEditor.Header>
                 </CodeEditor>

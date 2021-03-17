@@ -8,11 +8,8 @@ import warningIcon from '../../assets/icons/ic-info-filled.svg';
 import { DOCUMENTATION } from '../../config';
 import { BasicDeploymentConfig } from './BasicDeploymentConfig';
 import { AdvanceDeploymentConfig } from './AdvanceDeploymentConfig'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { ReactComponent as Help } from '../../assets/icons/ic-info-outline.svg';
-import ReadmeDeploymentTemplate from './ReadmeTemplateModal';
-import Tippy from '@tippyjs/react';
 import YAML from 'yaml';
+import JSONPath from 'jsonpath';
 
 
 export type DeploymentConfigType = "basic" | "advanced";
@@ -36,14 +33,12 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
     const [chartVersions, setChartVersions] = useState<{ id: number, version: string; }[]>(null)
     const [deploymentConfigLoading, setDeploymentConfigLoading] = useState(true);
     const [deploymentConfig, setDeploymentConfig] = useState<DeploymentConfig>();
-    // const [obj, json, yaml, error] = useJsonYaml(deploymentConfig?.defaultAppOverride, 4, 'yaml', true);
-    const [obj, setValuesOverride] = useState({})
+    const [valuesOverride, setValuesOverride] = useState<string>("")
     const [appMetricsLoading, setAppMetricsLoading] = useState(false)
-    const [chartConfig, setChartConfig] = useState(null)
+    // const [chartConfig, setChartConfig] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [isIngressCollapsed, toggleIngressCollapse] = useState(false);
     const [mapping, setMapping] = useState()
-    const [advancedConfigTab, setAdvancedConfigTab] = useState<'json' | 'yaml'>('yaml');
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
     useEffect(() => {
@@ -69,13 +64,17 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
         fetchDeploymentTemplate();
     }, [selectedChart])
 
-    function handleValuesOverride(value) {
+    function handleValuesOverride(value): void {
+        setValuesOverride(value);
+    }
+
+    function handleBasicDeploymentConfig(value, path): void {
+        if (!value) value = "";
         try {
-            if (advancedConfigTab === 'json') setValuesOverride(value);
-            else {
-                let json = YAML.parse(value);
-                setValuesOverride(json);
-            }
+            let json = YAML.parse(valuesOverride);
+            JSONPath.value(json, path, value);
+            let newValuesOverride = YAML.stringify(json);
+            setValuesOverride(newValuesOverride)
         } catch (error) {
 
         }
@@ -85,7 +84,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
         try {
             const response = await getDeploymentTemplate(Number(appId), selectedChart.id);
             setDeploymentConfig(response.result.globalConfig);
-            setValuesOverride(response.result.globalConfig.defaultAppOverride);
+            setValuesOverride(YAML.stringify(response.result.globalConfig.defaultAppOverride, { indent: 4 }));
             setMapping(response.result.mapping);
             setDeploymentConfigLoading(false);
         }
@@ -113,15 +112,15 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (!obj) {
+        if (!valuesOverride) {
             toast.error("Invalid JSON/YAML");
             return
         }
-        if (chartConfig.id) {
-            //update flow, might have overridden
-            toggleConfirmation(true);
-        }
-        else save()
+        // if (chartConfig.id) {
+        //     //update flow, might have overridden
+        //     toggleConfirmation(true);
+        // }
+        else save();
     }
 
     async function save() {
@@ -133,7 +132,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                     appId: deploymentConfig.appId,
                     chartRefId: selectedChart.id,
                     defaultAppOverride: deploymentConfig.defaultAppOverride,
-                    valuesOverride: obj,
+                    valuesOverride: YAML.parse(valuesOverride),
                 }
             }
             else {
@@ -146,7 +145,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                     refChartTemplatteVersion: deploymentConfig.refChartTemplateVersion,
                     isAppMetricsEnabled: deploymentConfig.isAppMetricsEnabled,
                     defaultAppOverride: deploymentConfig.defaultAppOverride,
-                    valuesOverride: obj,
+                    valuesOverride: YAML.parse(valuesOverride),
                 }
             }
 
@@ -208,11 +207,10 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
                 </div>
                 {configType === "basic" ? <BasicDeploymentConfig isIngressCollapsed={isIngressCollapsed}
                     mapping={mapping}
-                    valuesOverride={deploymentConfig.defaultAppOverride}
+                    valuesOverride={valuesOverride}
+                    handleBasicDeploymentConfig={handleBasicDeploymentConfig}
                     toggleIngressCollapse={() => toggleIngressCollapse(!isIngressCollapsed)} /> : null}
-                {configType == "advanced" ? <AdvanceDeploymentConfig advancedConfigTab={advancedConfigTab}
-                    valuesOverride={obj}
-                    setAdvancedConfigTab={setAdvancedConfigTab}
+                {configType == "advanced" ? <AdvanceDeploymentConfig valuesOverride={valuesOverride}
                     chartVersions={chartVersions}
                     selectedChart={selectedChart}
                     selectChart={selectChart}
@@ -228,7 +226,7 @@ export default function DeploymentConfigForm({ respondOnSuccess }) {
             <p>Environments using overriden configurations will not be updated.</p>
             <ConfirmationDialog.ButtonGroup>
                 <button type="button" className="cta cancel" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                <button type="button" className="cta" onClick={e => save()}>{deploymentConfigLoading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
+                <button type="button" className="cta" onClick={e => save()}>{deploymentConfigLoading ? <Progressing /> : deploymentConfig.id ? 'Update' : 'Save'}</button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>}
         {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
