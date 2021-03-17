@@ -100,14 +100,14 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             k8sVersion: k8sVersion,
         }
 
-        let cpu = getIframeSrc(appInfo, 'cpu', this.state.calendarInputs, tab, false);
-        let ram = getIframeSrc(appInfo, 'ram', this.state.calendarInputs, tab, false);
-        let latency = getIframeSrc(appInfo, 'latency', this.state.calendarInputs, tab, false);
-        let status2xx = getIframeSrc(appInfo, 'status', this.state.calendarInputs, tab, false, '2xx');
-        let status4xx = getIframeSrc(appInfo, 'status', this.state.calendarInputs, tab, false, '4xx');
-        let status5xx = getIframeSrc(appInfo, 'status', this.state.calendarInputs, tab, false, '5xx');
-        let status = getIframeSrc(appInfo, 'status', this.state.calendarInputs, tab, false, 'Throughput');
-        let throughput = getIframeSrc(appInfo, 'status', this.state.calendarInputs, tab, false, 'Throughput');
+        let cpu = getIframeSrc(appInfo, ChartType.Cpu, this.state.calendarInputs, tab, false);
+        let ram = getIframeSrc(appInfo, ChartType.Ram, this.state.calendarInputs, tab, false);
+        let latency = getIframeSrc(appInfo, ChartType.Latency, this.state.calendarInputs, tab, false);
+        let status2xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status2xx);
+        let status4xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status4xx);
+        let status5xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status5xx);
+        let status = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
+        let throughput = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, tab, true, this.state.statusCode);
 
         return { cpu, ram, throughput, status2xx, status4xx, status5xx, status, latency, mainChartUrl };
