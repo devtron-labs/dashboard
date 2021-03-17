@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid } from './utils';
-import { ChartTypes, AppMetricsTab, AppMetricsTabType } from './appDetails.type';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION } from '../../../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
@@ -118,9 +118,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleStatusChange(selected): void {
-        let defaultK8sVersion = 'v16.1.10';
         if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = defaultK8sVersion;
+            k8sVersion = DEFAULTK8SVERSION;
         }
         let appInfo = {
             appId: appId,
@@ -140,12 +139,11 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     function getNewGraphs(newTab): void {
         if (!datasource.isHealthy) return;
 
-        let defaultK8sVersion = 'v16.1.10';
         if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = defaultK8sVersion;
+            k8sVersion = DEFAULTK8SVERSION;
             toast.warn(<div className="toast">
                 <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {defaultK8sVersion} and above</div>
+                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
             </div>)
         }
         let appInfo = {
@@ -155,10 +153,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             newPodHash: newPodHash,
             k8sVersion: k8sVersion,
         }
-        let cpu = getIframeSrc(appInfo, 'cpu', calendarInputs, newTab, true);
-        let ram = getIframeSrc(appInfo, 'ram', calendarInputs, newTab, true);
-        let throughput = getIframeSrc(appInfo, 'status', calendarInputs, newTab, true, 'Throughput');
-        let latency = getIframeSrc(appInfo, 'latency', calendarInputs, newTab, true);
+        let cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true);
+        let ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true);
+        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, 'Throughput');
+        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true);
         setGraphs({
             cpu,
             ram,
@@ -240,10 +238,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 arrow={false}
                                 placement="bottom"
                                 content="Fullscreen">
-                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('cpu') }} />
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Cpu) }} />
                             </Tippy>
                         </div>
-                        <iframe title={'cpu'} src={graphs.cpu} className="app-metrics-graph__iframe" />
+                        <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
                     </div>
                     <div className={`app-metrics-graph chart`}>
                         <div className="app-metrics-graph__title flexbox flex-justify">Memory Usage
@@ -251,10 +249,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 arrow={false}
                                 placement="bottom"
                                 content="Fullscreen">
-                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('ram') }} />
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Ram) }} />
                             </Tippy>
                         </div>
-                        <iframe title={'ram'} src={graphs.ram} className="app-metrics-graph__iframe" />
+                        <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
                     </div>
                 </> : <PrometheusError />}
                 {appMetrics ? <>
@@ -267,7 +265,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 arrow={false}
                                 placement="bottom"
                                 content="Fullscreen">
-                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('status') }} />
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Status) }} />
                             </Tippy>
                         </div>
                         <iframe title={'throughput'} src={graphs.throughput} className="app-metrics-graph__iframe" />
@@ -278,10 +276,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 arrow={false}
                                 placement="bottom"
                                 content="Fullscreen">
-                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('latency') }} />
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Latency) }} />
                             </Tippy>
                         </div>
-                        <iframe title={'latency'} src={graphs.latency} className="app-metrics-graph__iframe" />
+                        <iframe title={ChartType.Latency} src={graphs.latency} className="app-metrics-graph__iframe" />
                     </div>
                 </> : <EnableAppMetrics />}
             </div>

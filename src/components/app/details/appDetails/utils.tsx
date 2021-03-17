@@ -10,10 +10,9 @@ import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps } from './appDetails.type';
+import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
-import { ServerErrors } from '../../../../modals/commonTypes';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -215,7 +214,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
 }
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
-    if(!k8sVersion) return false;
+    if (!k8sVersion) return false;
     try {
         let version = (k8sVersion.split("v")[1]).split(".");
         let versionNum = version.map(item => Number(item));
@@ -252,28 +251,25 @@ export interface AppInfo {
     k8sVersion: string;
 }
 
-export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string): string {
-    let baseURL = getGrafanaBaseURL(appInfo.k8sVersion, chartName);
+export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+    let baseURL = getGrafanaBaseURL(chartName);
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode);
     grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode)
     return grafanaURL;
 }
 
-export function getGrafanaBaseURL(k8sVersion, chartName): string {
-    let url = '';   
-    if (isK8sVersion115OrBelow(k8sVersion) && (chartName === 'cpu' || chartName === 'ram')) {
-        url = `${url}/grafana/d-solo/devtron-app-metrics-`;
-    } else {
-        if (chartName !== 'status') {
-            url = `${url}/grafana/d-solo/devtron-app-metrics-`;
-        } else {
-            url = `${url}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
-        }
+export function getGrafanaBaseURL(chartName: ChartTypes): string {
+    let url = '/grafana/d-solo';
+    if (chartName === 'status') {
+        url = `${url}/NnFpQOKGk/res_status_per_pod`;
+    }
+    else {
+        url = `${url}/devtron-app-metrics-`;
     }
     return url;
 }
 
-export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: string, statusCode?: string): string {
+export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
     switch (chartName) {
         case 'latency':
             url += `latency/latency`;
