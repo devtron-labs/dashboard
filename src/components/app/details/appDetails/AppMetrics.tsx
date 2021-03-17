@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid } from './utils';
-import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType } from './appDetails.type';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
@@ -34,12 +34,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         isConfigured: false,
         isHealthy: false,
     });
-    const [focusedInput, setFocusedInput] = useState('startDate')
+    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate);
     const [chartName, setChartName] = useState<ChartTypes>(null);
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
-    const [statusCode, setStatusCode] = useState('Throughput');
+    const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
     const [hostURLConfig, setHostURLConfig] = useState(undefined);
     const [graphs, setGraphs] = useState({
         cpu: "",
@@ -67,7 +67,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
-    function handleDateInput(key: 'startDate' | 'endDate', value: string): void {
+    function handleDateInput(key: CalendarFocusInputType, value: string): void {
         setCalendarInput({
             ...calendarInputs,
             [key]: value
@@ -75,7 +75,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleFocusChange(focusedInput): void {
-        setFocusedInput(focusedInput || 'startDate');
+        setFocusedInput(focusedInput || CalendarFocusInput.StartDate);
     }
 
     function handleApply(): void {
@@ -128,7 +128,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             newPodHash: newPodHash,
             k8sVersion: k8sVersion,
         }
-        let throughput = getIframeSrc(appInfo, 'status', calendarInputs, tab, true, selected.value);
+        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value);
         setStatusCode(selected.value);
         setGraphs({
             ...graphs,
@@ -155,8 +155,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
         let cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true);
         let ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true);
-        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, 'Throughput');
         let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true);
+        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput);
         setGraphs({
             cpu,
             ram,
@@ -268,7 +268,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Status) }} />
                             </Tippy>
                         </div>
-                        <iframe title={'throughput'} src={graphs.throughput} className="app-metrics-graph__iframe" />
+                        <iframe title={StatusType.Throughput} src={graphs.throughput} className="app-metrics-graph__iframe" />
                     </div>
                     <div className={`app-metrics-graph chart`}>
                         <div className="app-metrics-graph__title flexbox flex-justify">Latency
