@@ -61,6 +61,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 })
             }
             setList(result)
+            {console.log(result)}
         }
         catch (err) {
             showError(err)
@@ -113,7 +114,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
 
 export default Secret
 
-export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "", ...rest }) {
+export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "",filePermission, subPath, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="config-map-container white-card">{collapsed
         ? <ListComponent title={name || title} onClick={e => toggleCollapse(!collapsed)} icon={title ? addIcon : keyIcon} collapsible={!title} className={title ? 'create-new' : ''} />
@@ -133,6 +134,8 @@ export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [],
             keyValueEditable={false}
             initialise={initialise}
             externalType={externalType}
+            subPath= {subPath}
+            filePermission={filePermission}
         />}
     </section>
 }
@@ -176,8 +179,8 @@ interface SecretFormProps {
     update: (...args) => void;
     collapse: (...args) => void;
     initialise?: () => void;
-    permissionNumber: number;
-
+    filePermission: number;
+    subPath: boolean;
 }
 
 export const SecretForm: React.FC<SecretFormProps> = function (props) {
@@ -194,9 +197,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const tempArray = useRef([])
-    const [isSubPathChecked, setIsSubPathChecked] = useState(false)
-    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
-    const [filePermission, setFilePermission] = useState({ value: props.permissionNumber, error: "" })
+    const [isSubPathChecked, setIsSubPathChecked] = useState(!!props.subPath)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
+    const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
+
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -348,7 +352,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 external: !!externalType,
                 roleARN: isHashiOrAWS ? roleARN.value : "",
                 externalType,
-                ...(volumeMountPath.value && { mountPath: volumeMountPath.value })
+                ...(volumeMountPath.value && { mountPath: volumeMountPath.value }),
+                filePermission: filePermissionValue.value,
+                subPath: isSubPathChecked
             }
             //Adding conditional fields
             if (isHashiOrAWS) {
@@ -513,7 +519,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        { !isExternalValues && selectedTab === 'Data Volume' ?
+        { isExternalValues && selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
@@ -538,13 +544,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             </div> : ""}
             {isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput
-                    value={filePermission.value}
+                    value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 0400"}
-                    error={filePermission.error}
-                    onChange={e => setFilePermission({ value: e.target.value, error: "" })}
+                    error={filePermissionValue.error}
+                    onChange={e => setFilePermissionValue({ value: e.target.value, error: "" })}
                 />
             </div> : ""}
         {isHashiOrAWS ? <div className="form__row">

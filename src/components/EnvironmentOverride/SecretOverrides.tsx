@@ -84,7 +84,7 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
 export function OverrideSecretForm({ name, toggleCollapse }) {
     const { secrets, id, reload } = useSecretContext()
-    const { data = null, defaultData = null, type = "environment", external = false, mountPath = "", defaultMountPath = "", global: isGlobal = false, externalType = "" , defaultPermissionNumber="" , permissionNumber= ""} = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: "" }
+    const { data = null, defaultData = null, type = "environment", external = false, mountPath = "", defaultMountPath = "", global: isGlobal = false, externalType = "" , defaultPermissionNumber="" , filePermission= "", subPath= false} = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: "" }
     const { appId, envId } = useParams()
 
     function reducer(state, action) {
@@ -550,7 +550,8 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     }
                 }}
                 initialise={() => { }}
-                permissionNumber={permissionNumber}
+                filePermission={filePermission}
+                subPath= {subPath}
             />
         }
         {state.dialog && <ConfirmationDialog>
