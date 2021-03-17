@@ -79,11 +79,11 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
     )
 })
 
-export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, ...rest }) {
+export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, subPath= false, filePermission= "", ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="config-map-container white-card">{collapsed
         ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'create-new' : ''} />
-        : <ConfigMapForm {...{ name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, ...rest }} />}
+        : <ConfigMapForm {...{ name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, filePermission, subPath, ...rest }} />}
     </section>
 }
 
@@ -199,7 +199,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, permissionNumber = "" }) {
+export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath ,filePermission= ""}) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
@@ -210,9 +210,9 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_KEY}`)
     const tempArray = useRef([])
-    const [isSubPathChecked, setIsSubPathChecked] = useState(false)
-    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(false)
-    const [filePermission, setFilePermission] = useState({ value: permissionNumber, error: "" })
+    const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
+    const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" })
 
 
     function setKeyValueArray(arr) {
@@ -289,8 +289,11 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 data,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: isExternalValues,
-                ...(volumeMountPath.value && { mountPath: volumeMountPath.value })
+                ...(volumeMountPath.value && { mountPath: volumeMountPath.value }),
+                filePermission: filePermissionValue.value,
+                subPath: isSubPathChecked
             }
+            {console.log(payload)}
             if (!envId) {
                 const { result } = await updateConfig(id, +appId, payload)
                 toast.success(
@@ -306,6 +309,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             }
             else {
                 await overRideConfigMap(id, +appId, +envId, [payload])
+              // payload.subPath ? isSubPathChecked === true : ""
                 toast.success(
                     <div className="toast">
                         <div className="toast__title">Overridden</div>
@@ -415,13 +419,13 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             </div> : ""}
             {isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput
-                    value={filePermission.value}
+                    value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 0400"}
-                    error={filePermission.error}
-                    onChange={e => setFilePermission({ value: e.target.value, error: "" })}
+                    error={filePermissionValue.error}
+                    onChange={e => setFilePermissionValue({ value: e.target.value, error: "" })}
                 />
             </div> : ""}
 

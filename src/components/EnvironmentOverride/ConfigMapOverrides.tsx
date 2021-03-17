@@ -85,7 +85,7 @@ interface ConfigMapProps {
 
 const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, toggleCollapse }) {
     const { configMaps, id, reload } = useConfigMapContext()
-    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
+    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission="", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
     function reducer(state, action) {
         switch (action.type) {
             case 'createDuplicate':
@@ -217,7 +217,9 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 "type": type,
                 "external": external,
                 mountPath: state.mountPath,
-                "data": dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || "" }), {})
+                "data": dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || "" }), {}),
+                "subPath": subPath,
+                "filePermission": filePermission
             }
             dispatch({ type: 'submitLoading' })
             const { result } = await overRideConfigMap(id, +appId, +envId, [payload])
@@ -266,6 +268,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         overridden={!!state.duplicate}
                         onClick={handleOverride}
                         loading={state.overrideLoading}
+                        
                     />
                     <div className="form__row">
                         <label className="form__label">Data type</label>
@@ -347,6 +350,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     collapse={e => toggleCollapse(isCollapsed => !isCollapsed)}
                     index={null}
                     update={(isSuccess) => reload()}
+                    subPath={subPath}
+                    filePermission= {filePermission}
                 />}
             {state.dialog && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
