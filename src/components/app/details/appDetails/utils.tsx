@@ -297,7 +297,7 @@ export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, 
     return url;
 }
 
-export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string): string {
+export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`;
