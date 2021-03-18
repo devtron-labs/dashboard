@@ -504,16 +504,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     <p>Deleted applications cannot be restored.</p>
                 </DeleteDialog.Description>
             </DeleteDialog>
-                // <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                //     <ConfirmationDialog.Icon src={deleteIcon} />
-                //     <ConfirmationDialog.Body title={`Delete '${originalName}' ?`} subtitle={`This will delete all resources associated with this application.`}>
-                //         <p className="pt-10">Deleted applications cannot be restored.</p>
-                //     </ConfirmationDialog.Body>
-                //     <ConfirmationDialog.ButtonGroup>
-                //         <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                //         <button className="cta delete" type="button" disabled={deleting} onClick={handleDelete}>{deleting ? <Progressing /> : 'Delete'}</button>
-                //     </ConfirmationDialog.ButtonGroup>
-                // </ConfirmationDialog>
             }
         </div>
     </>
