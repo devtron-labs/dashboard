@@ -550,6 +550,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     label={""}
                     placeholder={"eg. 0400"}
                     error={filePermissionValue.error}
+                    maxlength="4"
                     onChange={e => setFilePermissionValue({ value: e.target.value, error: "" })}
                 />
             </div> : ""}

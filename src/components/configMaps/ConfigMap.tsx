@@ -79,7 +79,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
     )
 })
 
-export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, subPath= false, filePermission= "", ...rest }) {
+export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, subPath = false, filePermission = "", ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="config-map-container white-card">{collapsed
         ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'create-new' : ''} />
@@ -199,7 +199,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath ,filePermission= ""}) {
+export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission = "" }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
@@ -254,7 +254,49 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         }
     }
 
+    function handleFilePermission(e) {
+        let permissionValue = e.target.value
+        var my_string = '' + permissionValue;
+        // while (my_string.length == 0 ) {
+        //     my_string = '0' + my_string;
+        // }
+        setFilePermissionValue(
+            {
+                value: my_string,
+                error: ""
+            }
+        )
+    }
+        // let letters = /^[A-Za-z]+$/
+        // if (isFilePermissionChecked) {
+        //     if (filePermissionValue.value.length == 4) {
+        //         { console.log(filePermissionValue.value.length) }
+        //         setFilePermissionValue(
+        //             {
+        //                 value: permissionValue,
+        //                 error: "Exceeding"
+        //             }
+        //         )
+        //     }
+        // }
+        
+    
+
     async function handleSubmit(e) {
+        if (isFilePermissionChecked) {
+            if (!filePermissionValue.value) {
+                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: "Mandatory" })
+                return
+            }
+            if (filePermissionValue.value.length > 3 || filePermissionValue.value.length <3) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "Should be of 3 digits" })
+                return
+            }
+            if (!/^[-.0-9]+$/.test(filePermissionValue.value)) {
+                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: 'Must contain digits only' })
+                return
+            }
+        }
         if (!configName.value) {
             setName({ value: "", error: 'Field is manadatory' })
             return
@@ -293,7 +335,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 filePermission: filePermissionValue.value,
                 subPath: isSubPathChecked
             }
-            {console.log(payload)}
+            { console.log(payload) }
             if (!envId) {
                 const { result } = await updateConfig(id, +appId, payload)
                 toast.success(
@@ -309,7 +351,6 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             }
             else {
                 await overRideConfigMap(id, +appId, +envId, [payload])
-              // payload.subPath ? isSubPathChecked === true : ""
                 toast.success(
                     <div className="toast">
                         <div className="toast__title">Overridden</div>
@@ -424,8 +465,11 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 0400"}
+                    maxLength="4"
                     error={filePermissionValue.error}
-                    onChange={e => setFilePermissionValue({ value: e.target.value, error: "" })}
+                    onChange={handleFilePermission}
+                    pattern="^0[1-9]|[1-9]$" 
+                    required
                 />
             </div> : ""}
 
@@ -474,7 +518,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     }
                 </>
             }
-            <hr/>
+            <hr />
             <div className="form__buttons">
                 <button type="button" className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}</button>
             </div>
