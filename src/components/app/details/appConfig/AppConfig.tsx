@@ -214,19 +214,14 @@ export default function AppConfig() {
     function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
             if (state.canDeleteApp)
-                return <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                    <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={state.appName} >
+                return <DeleteDialog title={`Delete '${state.appName}'?`}
+                    delete={deleteAppHandler}
+                    closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>
+                    <DeleteDialog.Description>
                         <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application.</p>
                         <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <div className="flex right">
-                            <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
-                            <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={deleteAppHandler}>Delete</button>
-                        </div>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog >
+                    </DeleteDialog.Description>
+                </DeleteDialog>
             else {
                 return <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
