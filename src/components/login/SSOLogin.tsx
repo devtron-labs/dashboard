@@ -441,7 +441,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             {this.state.showToggling ? <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
                 <div className="modal__title sso__warn-title">Use '{this.state.sso}' instead of '{this.state.lastActiveSSO?.name}' for login?</div>
-                <p className="modal__description fs-14">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
+                <p className="fs-13 cn-7 lh-1-54">This will end all active user sessions. Users would have to login again using updated SSO service.</p><ConfirmationDialog.ButtonGroup>
                     <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleWarningModal}>Cancel</button>
                     <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>Confirm</button>
                 </ConfirmationDialog.ButtonGroup>

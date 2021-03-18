@@ -42,7 +42,7 @@ export class ValuesYamlConfirmDialog extends Component<{
                     </div>
                     <div className="modal__body-content">
                         <h1 className="modal__title">{this.props.title}</h1>
-                        <p className="modal__description">{this.props.description}</p>
+                        <p className="fs-13 cn-7 lh-1-54">{this.props.description}</p>
                     </div>
                     <div className="flex right">
                         <button type="button" className="cta cancel mr-16" onClick={this.props.copyYamlToClipboard}>Copy edited yaml</button>

@@ -213,16 +213,19 @@ export default function AppConfig() {
     function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
             if (state.canDeleteApp)
-                return <DeleteDialog title={`${state.appName}`}
-                    description={"This will delete all resources associated with this application. Deleted applications cannot be restored."}
-                    closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}
+                return <DeleteDialog title={`Delete '${state.appName}'?`}
                     delete={deleteAppHandler}
-                />
+                    closeDelete={() => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>
+                    <DeleteDialog.Description>
+                        <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application.</p>
+                        <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+                    </DeleteDialog.Description>
+                </DeleteDialog>
             else {
                 return <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <ConfirmationDialog.Body title="Cannot Delete application" />
-                    <p className="modal__description">Delete all pipelines and workflows before deleting this application.</p>
+                    <p className="fs-13 cn-7 lh-1-54">Delete all pipelines and workflows before deleting this application.</p>
                     <ConfirmationDialog.ButtonGroup>
                         <button type="button" className="cta cancel" onClick={e => { setState(state => ({ ...state, showDeleteConfirm: false })) }}>Cancel</button>
                         <Link onClick={e => setState(state => ({ ...state, showDeleteConfirm: false }))} to={redirectToWorkflowEditor()} className="cta ml-12 no-decor">
