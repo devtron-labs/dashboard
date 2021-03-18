@@ -3,17 +3,15 @@ import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap } from '../common';
+import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
-import { ConfirmationDialog } from '../common';
 import { Link } from 'react-router-dom';
 import { Info } from '../common/icons/Icons'
 import { getWorkflowList } from './../../services/service';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import git from '../../assets/icons/git/git.svg';
 import Tippy from '@tippyjs/react';
-import deleteIcon from '../../assets/img/warning-medium.svg';
 import './ciPipeline.css';
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
@@ -141,18 +139,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderDeleteCI() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                <ConfirmationDialog.Icon src={deleteIcon} />
-                <ConfirmationDialog.Body title={`Delete '${this.state.form.name}' ?`} >
-                    <p className="fs-13 cn-7 lh-1-54">{`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <div className="flex right">
-                        <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={this.closeCIDeleteModal}>Cancel</button>
-                        <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={this.deletePipeline}>Delete</button>
-                    </div>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog >
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
+                closeDelete={this.closeCIDeleteModal}
+                delete={this.deletePipeline} />
         }
         return null;
     }
