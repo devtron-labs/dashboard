@@ -19,6 +19,7 @@ export interface CustomInputProps {
     maxLength?;
     pattern?;
     required?: boolean;
+    type?: string;
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -29,7 +30,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <div>
             <label className={labelClasses}>{this.props.label}</label>
-            <input type="text"
+            <input type={`text`}
                 autoFocus={this.props.autoFocus}
                 maxLength={this.props.maxLength}
                 autoComplete={this.props.autoComplete}

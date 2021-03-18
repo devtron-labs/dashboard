@@ -256,39 +256,12 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
 
     function handleFilePermission(e) {
         let permissionValue = e.target.value
-        var my_string = '' + permissionValue;
+        //var my_string = '' + permissionValue;
         // while (my_string.length == 0 ) {
         //     my_string = '0' + my_string;
         // }
-        setFilePermissionValue(
-            {
-                value: my_string,
-                error: ""
-            }
-        )
-    }
-        // let letters = /^[A-Za-z]+$/
-        // if (isFilePermissionChecked) {
-        //     if (filePermissionValue.value.length == 4) {
-        //         { console.log(filePermissionValue.value.length) }
-        //         setFilePermissionValue(
-        //             {
-        //                 value: permissionValue,
-        //                 error: "Exceeding"
-        //             }
-        //         )
-        //     }
-        // }
-        
-    
-
-    async function handleSubmit(e) {
         if (isFilePermissionChecked) {
-            if (!filePermissionValue.value) {
-                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: "Mandatory" })
-                return
-            }
-            if (filePermissionValue.value.length > 3 || filePermissionValue.value.length <3) {
+            if (filePermissionValue.value.length > 3) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: "Should be of 3 digits" })
                 return
             }
@@ -297,6 +270,55 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 return
             }
         }
+        setFilePermissionValue(
+            {
+                value: permissionValue,
+                error: ""
+            }
+        )
+      
+        
+    }
+    // let letters = /^[A-Za-z]+$/
+    // if (isFilePermissionChecked) {
+    //     if (filePermissionValue.value.length == 4) {
+    //         { console.log(filePermissionValue.value.length) }
+    //         setFilePermissionValue(
+    //             {
+    //                 value: permissionValue,
+    //                 error: "Exceeding"
+    //             }
+    //         )
+    //     }
+    // }
+
+
+
+    async function handleSubmit(e) {
+        // var unicodeRe = /U\+(\d+)/;
+        // var ch = e.key || e.keyIdentifier;
+        // var match = ch.match(unicodeRe);
+        // if (match) {
+        //     ch = String.fromCharCode(Number.parseInt(match[1], 16));
+        // }
+        if (isFilePermissionChecked) {
+            if (!filePermissionValue.value) {
+                setFilePermissionValue({ value: "", error: "Field is manadatory" })
+                return
+            }
+            if (filePermissionValue.value.length > 3 || filePermissionValue.value.length < 3) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "Should be of 3 digits" })
+                return
+            }
+            if (!/^[-.0-9]+$/.test(filePermissionValue.value)) {
+                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: 'Must contain digits only' })
+                return
+            }
+        } else {
+            setFilePermissionValue({ value: "", error: "" })
+
+        }
+
         if (!configName.value) {
             setName({ value: "", error: 'Field is manadatory' })
             return
@@ -458,21 +480,37 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
-            {isFilePermissionChecked ? <div className="mb-16">
+             {isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput
                     value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
-                    placeholder={"eg. 0400"}
-                    maxLength="4"
+                    placeholder={"eg. 400"}
+                    maxLength="3"
                     error={filePermissionValue.error}
                     onChange={handleFilePermission}
-                    pattern="^0[1-9]|[1-9]$" 
+                    pattern="\d{4}" 
                     required
                 />
-            </div> : ""}
+                
+            </div> : ""} 
+{/*
+            {isFilePermissionChecked ? <div className="mb-16">
+                <input
+                    type="text"
+                    value={filePermissionValue.value}
+                    autoComplete="off"
+                    tabIndex={5}
+                    maxLength={3}
+                    placeholder={"eg. 400"}
+                    onChange={handleFilePermission}
+                    pattern="^0[1-9]|[1-9]$"
+                     required
+                />
 
+            </div> : ""}
+            */}
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
