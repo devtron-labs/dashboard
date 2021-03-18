@@ -118,24 +118,7 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
                 <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application</p>
                 <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
             </DeleteDialog.Description>
-        </DeleteDialog>
-            // <ConfirmationDialog className="confirmation-dialog__body--w-360">
-            //     <ConfirmationDialog.Icon src={deleteIcon} />
-            //     <ConfirmationDialog.Body title={`Delete '${candidateChart.chartName}' ?`} >
-            //         <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application</p>
-            //         <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
-            //     </ConfirmationDialog.Body>
-            //     <ConfirmationDialog.ButtonGroup>
-            //         <div className="flex right">
-            //             <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={() => { setCandidateChart(defaultInstalledChart) }}>Cancel</button>
-            //             <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={() => {
-            //                 props.deleteInstalledChart(candidateChart.installedAppId);
-            //                 setCandidateChart(defaultInstalledChart);
-            //             }}>Delete</button>
-            //         </div>
-            //     </ConfirmationDialog.ButtonGroup>
-            // </ConfirmationDialog> 
-            : null}
+        </DeleteDialog> : null}
     </React.Fragment>
 }
 
