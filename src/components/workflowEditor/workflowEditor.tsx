@@ -2,12 +2,11 @@ import React, { Component, createContext } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config';
-import { Progressing, showError, ErrorScreenManager } from '../common';
+import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common';
 import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service';
 import { deleteWorkflow } from './service';
-import { DeleteWorkflow } from './modals/deleteWorkflow';
 import AddWorkflow from './modals/CreateWorkflow';
 import add from '../../assets/icons/misc/addWhite.svg';
 import CIPipeline from '../ciPipeline/CIPipeline';
@@ -132,10 +131,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     renderDeleteDialog = () => {
         let wf = this.state.workflows.find(wf => wf.id === this.state.workflowId);
         if (this.state.showDeleteDialog) {
-            return <DeleteWorkflow workflowName={wf ? wf.name : ""}
+            return <DeleteDialog title={`Delete '${wf?.name}' ?`}
+                description={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
                 closeDelete={() => this.setState({ showDeleteDialog: false })}
-                description={`Are you sure you want to delete this workflow from '${this.state.appName}'`}
-                deleteWorkflow={this.deleteWorkflow} />
+                delete={this.deleteWorkflow} />
         }
     }
     //TODO: dynamic routes for ci-pipeline
@@ -247,7 +246,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             return <Progressing pageLoader />
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
+            return <div className="loading-wrapper">
+                <ErrorScreenManager code={this.state.code} />
+            </div>
         }
         else if (this.state.view === ViewType.FORM && this.props.configStatus >= AppConfigStatus.LOADING && !this.state.workflows.length) {
             return <WorkflowEditorContext.Provider value={{

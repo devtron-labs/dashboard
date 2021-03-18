@@ -76,7 +76,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
                     {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
                             <span style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />

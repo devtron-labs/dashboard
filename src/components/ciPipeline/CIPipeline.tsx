@@ -3,10 +3,9 @@ import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle } from '../common';
+import { Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
-import { DeletePipeline } from '../common/DeletePipeline';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import git from '../../assets/icons/git/git.svg';
@@ -323,14 +322,10 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     renderDeleteCI() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.form.name}
-                appName={this.props.appName}
-                shouldDeleteApp={false}
-                setDeleteApp={() => { }}
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deletePipeline} />
-
+                delete={this.deletePipeline} />
         }
         return null;
     }
