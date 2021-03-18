@@ -253,46 +253,26 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             showError(err)
         }
     }
-
-    function handleFilePermission(e) {
-        let permissionValue = e.target.value
-        //var my_string = '' + permissionValue;
-        // while (my_string.length == 0 ) {
+//var my_string = permissionValue;
+        // if(my_string.length == 0 ) {
         //     my_string = '0' + my_string;
         // }
+    function handleFilePermission(e) {
+        let permissionValue = e.target.value
+        setFilePermissionValue({ value: permissionValue, error: "" })
+
         if (isFilePermissionChecked) {
-            if (filePermissionValue.value.length > 3) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: "Should be of 3 digits" })
-                return
-            }
-            if (!/^[-.0-9]+$/.test(filePermissionValue.value)) {
-                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: 'Must contain digits only' })
-                return
-            }
+            // if (!/^[0-9]*$/.test(permissionValue)) {
+            //     setFilePermissionValue({ value: permissionValue, error: 'Only numbers allowed' })
+            //     return
+            // }
+            // if (permissionValue.length < 3) {
+            //     setFilePermissionValue({ value: permissionValue, error: "should be 3 digit" })
+            //     return
+            // }
         }
-        setFilePermissionValue(
-            {
-                value: permissionValue,
-                error: ""
-            }
-        )
-      
-        
     }
-    // let letters = /^[A-Za-z]+$/
-    // if (isFilePermissionChecked) {
-    //     if (filePermissionValue.value.length == 4) {
-    //         { console.log(filePermissionValue.value.length) }
-    //         setFilePermissionValue(
-    //             {
-    //                 value: permissionValue,
-    //                 error: "Exceeding"
-    //             }
-    //         )
-    //     }
-    // }
-
-
+   
 
     async function handleSubmit(e) {
         // var unicodeRe = /U\+(\d+)/;
@@ -304,14 +284,6 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         if (isFilePermissionChecked) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: "", error: "Field is manadatory" })
-                return
-            }
-            if (filePermissionValue.value.length > 3 || filePermissionValue.value.length < 3) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: "Should be of 3 digits" })
-                return
-            }
-            if (!/^[-.0-9]+$/.test(filePermissionValue.value)) {
-                setFilePermissionValue({ value: `${filePermissionValue.value}`, error: 'Must contain digits only' })
                 return
             }
         } else {
@@ -487,7 +459,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 400"}
-                    maxLength="3"
+                    maxLength="4"
                     error={filePermissionValue.error}
                     onChange={handleFilePermission}
                     pattern="\d{4}" 
