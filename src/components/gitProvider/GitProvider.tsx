@@ -7,6 +7,10 @@ import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 
 export default function GitProvider({ ...props }) {
     const location = useLocation();
@@ -21,11 +25,11 @@ export default function GitProvider({ ...props }) {
 
     return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
         <h2 className="form__title">Git accounts</h2>
-        <h5 className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+        <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
                 Learn more about git accounts
             </a>
-        </h5>
+        </div>
         {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
     </section>
     )
@@ -61,11 +65,18 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     return (
         <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo>{id ? <div className={`${url.split(".")[0]} list__logo git-logo`}></div> : <div className="add-icon" />}</List.Logo>
+                <List.Logo>{id ? <div className="">
+                    <span className="mr-8">
+                        {url.includes("gitlab") ? <GitLab /> : null}
+                        {url.includes("github") ? <GitHub /> : null}
+                        {url.includes("bitbucket") ? <BitBucket /> : null}
+                        {url.includes("gitlab")  || url.includes("github")  ||  url.includes("bitbucket") ? null : <Git/>}
+                        </span></div> :
+                    <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
                     {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
                             <span style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />

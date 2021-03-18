@@ -102,7 +102,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         else return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-                <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
             {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
