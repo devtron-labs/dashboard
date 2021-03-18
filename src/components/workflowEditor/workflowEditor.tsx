@@ -2,7 +2,7 @@ import React, { Component, createContext } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config';
-import { Progressing, showError, ErrorScreenManager } from '../common';
+import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common';
 import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service';
@@ -20,8 +20,6 @@ import { NavLink } from 'react-router-dom';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { isGitopsConfigured } from '../../services/service';
 import { getHostURLConfiguration } from '../../services/service';
-import { ConfirmationDialog } from '../common';
-import deleteIcon from '../../assets/img/warning-medium.svg';
 import './workflowEditor.css';
 
 export const WorkflowEditorContext = createContext({
@@ -133,18 +131,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     renderDeleteDialog = () => {
         let wf = this.state.workflows.find(wf => wf.id === this.state.workflowId);
         if (this.state.showDeleteDialog) {
-            return <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                <ConfirmationDialog.Icon src={deleteIcon} />
-                <ConfirmationDialog.Body title={`Delete '${wf?.name}' ?`} >
-                    <p className="fs-13 cn-7 lh-1-54">{`Are you sure you want to delete this workflow from '${this.state.appName}'`}</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <div className="flex right">
-                        <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={() => this.setState({ showDeleteDialog: false })}>Cancel</button>
-                        <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={this.deleteWorkflow}>Delete</button>
-                    </div>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
+            return <DeleteDialog title={`Delete '${wf?.name}' ?`}
+                description={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
+                closeDelete={() => this.setState({ showDeleteDialog: false })}
+                delete={this.deleteWorkflow} />
         }
     }
     //TODO: dynamic routes for ci-pipeline

@@ -6,7 +6,7 @@ export interface DeleteDialogProps {
     title: string;
     description?: string;
     closeDelete: () => void;
-    delete: () => void;
+    delete: () => any;
 }
 
 export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.FC<any>; } = function (props) {

@@ -8,7 +8,6 @@ import { deleteApp } from './appConfig.service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { ReactComponent as Dropdown } from '../../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
-import deleteIcon from '../../../../assets/img/warning-medium.svg';
 import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';

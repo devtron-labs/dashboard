@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { OpaqueModal, Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox, DeleteDialog } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
-import { ErrorScreenManager, ConfirmationDialog } from '../common';
+import { ErrorScreenManager } from '../common';
 import { getDeploymentStrategyList, saveCDPipeline, getCDPipelineConfig, updateCDPipeline, deleteCDPipeline, getConfigMapAndSecrets } from './service';
 import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './types';
 import { ValidationRules } from './validationRules';
@@ -18,7 +18,6 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { getEnvironmentListMinPublic } from '../../services/service';
-import deleteIcon from '../../assets/img/warning-medium.svg';
 import './cdPipeline.css';
 
 export const SwitchItemValues = {

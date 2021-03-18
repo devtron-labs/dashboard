@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Page, DropdownIcon, Progressing, ConfirmationDialog, showError, useJsonYaml } from '../../common';
+import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog } from '../../common';
 import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
@@ -10,7 +10,6 @@ import { URLS } from '../../../config'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
-import deleteIcon from '../../../assets/img/warning-medium.svg'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
@@ -257,7 +256,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, [chartValuesFromParent])
 
-    async function handleDelete(e) {
+    async function handleDelete() {
         setDeleting(true)
         try {
             await deleteInstalledChart(installedAppId)
@@ -497,17 +496,24 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     {loading ? <Progressing /> : isUpdate ? 'update and deploy' : 'deploy chart'}
                 </button>
             </div>
-            {confirmation &&
-                <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                    <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={`Delete '${originalName}' ?`} subtitle={`This will delete all resources associated with this application.`}>
-                        <p className="pt-10">Deleted applications cannot be restored.</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                        <button className="cta delete" type="button" disabled={deleting} onClick={handleDelete}>{deleting ? <Progressing /> : 'Delete'}</button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
+            {confirmation && <DeleteDialog title={`Delete '${originalName}' ?`}
+                delete={handleDelete}
+                closeDelete={() => toggleConfirmation(false)}>
+                <DeleteDialog.Description >
+                    <p>This will delete all resources associated with this application.</p>
+                    <p>Deleted applications cannot be restored.</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+                // <ConfirmationDialog className="confirmation-dialog__body--w-360">
+                //     <ConfirmationDialog.Icon src={deleteIcon} />
+                //     <ConfirmationDialog.Body title={`Delete '${originalName}' ?`} subtitle={`This will delete all resources associated with this application.`}>
+                //         <p className="pt-10">Deleted applications cannot be restored.</p>
+                //     </ConfirmationDialog.Body>
+                //     <ConfirmationDialog.ButtonGroup>
+                //         <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
+                //         <button className="cta delete" type="button" disabled={deleting} onClick={handleDelete}>{deleting ? <Progressing /> : 'Delete'}</button>
+                //     </ConfirmationDialog.ButtonGroup>
+                // </ConfirmationDialog>
             }
         </div>
     </>
