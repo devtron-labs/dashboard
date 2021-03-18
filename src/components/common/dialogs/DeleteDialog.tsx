@@ -15,8 +15,8 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
         <ConfirmationDialog.Icon src={warn} />
         <ConfirmationDialog.Body title={props.title}>
             <div className="fs-13 cn-7 lh-1-54">
-                {props.description && props.description}
-                {props.children && props.children}
+                {props.description ? props.description : null}
+                {props.children}
             </div>
         </ConfirmationDialog.Body>
         <ConfirmationDialog.ButtonGroup>
