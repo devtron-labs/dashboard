@@ -3,7 +3,7 @@ import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle } from '../common';
+import { VisibleModal, Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import { DeletePipeline } from '../common/DeletePipeline';
@@ -16,6 +16,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules;
@@ -257,13 +258,13 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         this.setState({ showError: true, loadingData: true });
-        let errObj = this.validationRules.name(this.state.form.name);
+        /*let errObj = this.validationRules.name(this.state.form.name);*/
         let self = this;
         let valid = this.state.form.materials.reduce((isValid, mat) => {
             isValid = isValid && self.validationRules.sourceValue(mat.value).isValid;
             return isValid;
         }, true);
-        valid = valid && errObj.isValid;
+        /*valid = valid && errObj.isValid;*/
         if (!valid) {
             this.setState({ loadingData: false })
             toast.error("Some Required Fields are missing");
@@ -337,16 +338,16 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     renderMaterials() {
         return <div className="form__row">
-            <span className="form__label">Materials*</span>
             {this.state.form.materials.map((mat, index) => {
                 let errorObj = this.validationRules.sourceValue(mat.value);
-                return <div className="ci-artifact" key={mat.gitMaterialId}>
-                    <div className="ci-artifact__header">
+                return <div className="" key={mat.gitMaterialId}>
+                    <div className="">
                         <img src={git} alt="" className="ci-artifact__icon" />
                         {mat.name}
                     </div>
-                    <div className="ci-artifact__body">
-                        <div className="flex-1 mr-16">
+                    { /* <div className="ci-artifact__body">*/}
+                    <div className="flex mt-10">
+                        <div className="flex-1 mr-16 ">
                             <label className="form__label">Source Type*</label>
                             <Select rootClassName="popup-body--source-info"
                                 disabled={!!mat.id} onChange={(event) => this.selectSourceType(event, mat.gitMaterialId)} >
@@ -501,17 +502,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             </ConditionalWrap>
         }
     }
-
-    render() {
+    renderAdvanceCI() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         let errorObj = this.validationRules.name(this.state.form.name);
-        if (this.state.view == ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
-        }
-        else {
-            return <OpaqueModal onHide={this.props.close}>
+        return <>
+            <OpaqueModal onHide={this.props.close}>
                 <div className="modal__body modal__body--ci">
                     {this.renderHeader()}
                     <label className="form__row">
@@ -549,6 +544,46 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </div>
                 </div>
             </OpaqueModal >
+        </>
+    }
+
+    render() {
+        let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+        if (this.state.view == ViewType.LOADING) {
+            return <OpaqueModal onHide={this.props.close}>
+                <Progressing pageLoader />
+            </OpaqueModal>
+        }
+        else {
+            return <VisibleModal className="">
+                <div className="modal__body br-0 modal__body--w-600 modal__body--p-0">
+                    <div className="modal__header m-20">
+                        <div className="modal__title fs-16">Create build pipeline</div>
+                        <button type="button" className="transparent" >
+                            <Close className="icon-dim-24" />
+                        </button>
+                    </div>
+                    <hr style={{ borderTop: "1px solid #d0d4d9" }} />
+                    <div className="m-20">
+                        <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
+                        {this.renderMaterials()}
+                    </div>
+                    <hr className="mb-12" style={{ borderTop: "1px solid #d0d4d9" }} />
+                    <div className="flex left mb-12">
+                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }}>
+                            Advanced options
+                        </div>
+                        <div className="m-auto-mr-0" style={{ width: "155px" }}>
+                            <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                                onClick={this.savePipeline}
+                                isLoading={this.state.loadingData}>
+                                {text}
+                            </ButtonWithLoader>
+                        </div>
+                    </div>
+
+                </div>
+            </VisibleModal>
         }
     }
 }

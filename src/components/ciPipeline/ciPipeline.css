@@ -31,9 +31,9 @@
     }
     
     .ci-artifact__icon {
-        width: 24px;
-        height: 24px;
-        margin: 0 8px;
+        width: 20px;
+        height: 20px;
+        margin: 0 8px 0 0;
     }
     
     .ci-artifact {
@@ -172,4 +172,9 @@
     .script-container .shebang {
         padding: 0 60px;
         color: #e00000;
+    }
+
+    .m-auto-mr-0{
+        margin: auto;
+        margin-right: -20px;
     }
