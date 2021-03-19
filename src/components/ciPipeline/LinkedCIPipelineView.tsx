@@ -48,7 +48,9 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             showDockerArgs: false,
             loadingData: true,
             sourcePipelineURL: "",
-            showPreBuild:false
+            showPreBuild:false,
+            showPostBuild: false,
+            showDocker: false,
         }
         this.deletePipeline = this.deletePipeline.bind(this);
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);

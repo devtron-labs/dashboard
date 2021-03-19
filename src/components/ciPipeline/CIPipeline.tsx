@@ -56,8 +56,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDockerArgs: false,
             loadingData: true,
             showPreBuild: false,
-           // showDocker: false,
-           // showPostBuild: false,
+            showDocker: false,
+            showPostBuild: false,
         }
         this.handlePipelineName = this.handlePipelineName.bind(this);
         this.handleTriggerChange = this.handleTriggerChange.bind(this);
@@ -67,13 +67,13 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
         this.handleScanToggle = this.handleScanToggle.bind(this);
         this.validationRules = new ValidationRules();
-        // this.handleShowDocker = this.handleShowDocker.bind(this);
-        // this.handleShowPostBuild = this.handleShowPostBuild.bind(this);
+        this.handleDocker = this.handleDocker.bind(this);
+       // this.handleShowPostBuild = this.handleShowPostBuild.bind(this);
         this.handlePreBuild = this.handlePreBuild.bind(this);
 
 
     }
-   
+
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
             getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
@@ -97,20 +97,27 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             })
         }
     }
-    // handleShowDocker(){
-    //     this.setState({ showDocker: !this.state.showDocker})
-    //  }
-    //  handleShowPostBuild(){
-    //      this.setState({ showPostBuild: !this.state.showPostBuild})
-    //   }
-      handlePreBuild(prev){
-         this.setState({
+    handleDocker() {
+        this.setState({
             view: ViewType.FORM,
-           
-                showPreBuild: !this.state.showPreBuild
-            },
-         )
-      }
+            showDocker: !this.state.showDocker
+        },
+        )
+    }
+    handlePostBuild() {
+        this.setState({
+            view: ViewType.FORM,
+            showPreBuild: !this.state.showPreBuild
+        },
+        )
+    }
+    handlePreBuild() {
+        this.setState({
+            view: ViewType.FORM,
+            showPreBuild: !this.state.showPreBuild
+        },
+        )
+    }
 
     handleDockerArgChange(event, index: number, key: 'key' | 'value') {
         let { form } = { ...this.state };
@@ -417,14 +424,14 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             description = " These stages are run in sequence after the docker image is built";
         }
         return <>
-            <div className="flex left pb-20 cursor" onClick={(e)=>this.handlePreBuild(e)}>
+            <div className="flex left pb-20 cursor" onClick={(e) => this.handlePreBuild()}>
                 <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
                 <div>
                     <div className="ci-stage__title">{title}</div>
                     <div className="ci-stage__description">{description}</div>
                 </div>
             </div>
-            
+
             {this.state.form[key].map((stage, index) => {
                 if (stage.isCollapsed) {
                     return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mb-16" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>
@@ -434,7 +441,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </div>
                 }
                 else {
-                    return  <div key={`${key}-${index}`} className="white-card mb-16">
+                    return <div key={`${key}-${index}`} className="white-card mb-16">
                         <div className="white-card__header" >
                             {stage.id ? "Edit Stage" : "Add Stage"}
                             {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.deleteStage(stage.id, key, index)} />}
@@ -465,21 +472,23 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                             <button type="button" className="cta tertiary mr-16" onClick={(event) => this.discardChanges(stage.id, key, index)}>Cancel</button>
                             <button type="button" className="cta ghosted" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>Done</button>
                         </div>
-                    </div> 
+                    </div>
                 }
             })}
-           {this.state.showPreBuild ?<> {this.renderAddStage(key)} </>: ""}
+            {this.state.showPreBuild ? <> {this.renderAddStage(key)} </> : ""}
         </>
     }
 
     renderDockerArgs() {
-        return <> <div className=" flex left pb-20">
-                <div className="sqr-44"><Docker /></div>
-              <div>
-            <div className="ci-stage__title">Docker build</div>
-            <div className="ci-stage__description ">Override docker build configurations for this pipeline.</div>
+        return <> <div className=" flex left pb-20 " onClick={()=> this.handleDocker()}>
+            <div className="sqr-44"><Docker /></div>
+            <div>
+                <div className="ci-stage__title">Docker build</div>
+                <div className="ci-stage__description ">Override docker build configurations for this pipeline.</div>
             </div>
-            </div>
+        </div>
+        {this.state.showDocker ? 
+
             <div className="docker-build-args">
                 <div className="docker-build-args__header"
                     onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
@@ -508,7 +517,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         Add parameter
                     </button>
                 </div> : null}
-            </div>
+            </div> : null }
         </>
     }
 
@@ -561,11 +570,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         </div>
                         <hr className="divider" />
                         {this.renderStages('beforeDockerBuildScripts')}
-                        <hr className="divider"/>
+                        <hr className="divider" />
                         {this.renderDockerArgs()}
-                        <hr className="divider"/>
+                        <hr className="divider" />
                         {this.renderStages('afterDockerBuildScripts')}
-                        <hr className="divider"/>
+                        <hr className="divider" />
                         <div className="white-card flexbox flex-justify mb-40">
                             <div>
                                 <p className="ci-stage__title">Scan for vulnerabilities</p>

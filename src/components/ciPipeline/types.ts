@@ -68,8 +68,8 @@ export interface CIPipelineState {
     showDeleteModal: boolean;
     showDockerArgs: boolean;
     showPreBuild: boolean;
-    // showDocker: boolean;
-    // showPostBuild: boolean;
+    showDocker: boolean;
+    showPostBuild: boolean;
 }
 
 
