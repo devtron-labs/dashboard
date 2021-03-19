@@ -1,6 +1,7 @@
 export const RequestTimeout = 60000;
 export const DEFAULT_STATUS = 'Checking Status...';
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+export const DEFAULTK8SVERSION = 'v1.16.0';
 
 export const Routes = {
     LOGIN: 'api/v1/session',
