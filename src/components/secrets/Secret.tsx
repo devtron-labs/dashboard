@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useState, useEffect, useRef } from 'react'
 import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput } from '../common'
 import { useParams } from 'react-router'
@@ -8,7 +7,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import {  DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -47,7 +46,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
     useEffect(() => {
         initialise()
     }, [])
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
 
     async function initialise() {
         try {
@@ -61,7 +60,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 })
             }
             setList(result)
-            {console.log(result)}
+            { console.log(result) }
         }
         catch (err) {
             showError(err)
@@ -104,19 +103,18 @@ const Secret = ({ respondOnSuccess, ...props }) => {
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
-            <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains small amount of sensitive data such as passwords, OAuth tokens, and SSH keys. 
-            <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION. APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
+            <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains small amount of sensitive data such as passwords, OAuth tokens, and SSH keys.
+            <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
             {list && <CollapsedSecretForm appId={appId} id={list.id || 0} title="Add Secret" update={update} initialise={initialise} />}
             {list && Array.isArray(list.configData) && list.configData.filter(cs => cs).map((cs, idx) => <CollapsedSecretForm key={cs.name} {...cs} appId={appId} id={list.id} update={update} index={idx} initialise={initialise} />)}
         </div>
     )
 }
 
-export default Secret
 
-export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "",filePermission, subPath, ...rest }) {
+export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "", filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
-    return <section className="config-map-container white-card">{collapsed
+    return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
         ? <ListComponent title={name || title} onClick={e => toggleCollapse(!collapsed)} icon={title ? addIcon : keyIcon} collapsible={!title} className={title ? 'create-new' : ''} />
         : <SecretForm name={name}
             secretData={secretData}
@@ -134,7 +132,7 @@ export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [],
             keyValueEditable={false}
             initialise={initialise}
             externalType={externalType}
-            subPath= {subPath}
+            subPath={subPath}
             filePermission={filePermission}
         />}
     </section>
@@ -176,11 +174,11 @@ interface SecretFormProps {
     isUpdate: boolean;
     mountPath: string;
     keyValueEditable?: boolean;
+    filePermission: string;
+    subPath: boolean;
     update: (...args) => void;
     collapse: (...args) => void;
     initialise?: () => void;
-    filePermission: number;
-    subPath: boolean;
 }
 
 export const SecretForm: React.FC<SecretFormProps> = function (props) {
@@ -192,7 +190,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [loading, setLoading] = useState(false)
     const [secretMode, toggleSecretMode] = useState(props.isUpdate)
     const [externalType, setExternalType] = useState(props.externalType)
-    const { envId } = useParams()
+    const { envId } = useParams<{ envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
@@ -299,6 +297,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     async function handleSubmit(e) {
+        const secretNameRegex = new RegExp(/^[-.a-zA-Z0-9]+$/);
+
         if (secretMode) {
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             return
@@ -308,7 +308,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             return
         }
 
-        if (!/^[-.a-zA-Z0-9]+$/.test(configName.value)) {
+        if (!secretNameRegex.test(configName.value)) {
             setName({ value: configName.value, error: 'Name must be of format /^[-.a-zA-Z0-9]+$/' })
             return
         }
@@ -316,6 +316,24 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         if (selectedTab === 'Data Volume' && !volumeMountPath.value) {
             setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is manadatory' })
             return
+        }
+        if (isFilePermissionChecked) {
+            if (!filePermissionValue.value) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
+                return
+            }
+            if (filePermissionValue.value.startsWith("0")) { //Octal Format
+                if (filePermissionValue.value.length !== 4) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: "4 characters are required for octal format" });
+                    return
+                }
+            }
+            else {
+                if (filePermissionValue.value.length !== 3) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: "At least 3 characters are required" });
+                    return;
+                }
+            }
         }
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
@@ -493,13 +511,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </Select>
             </div>
         </div>
-        {externalType === "KubernetesSecret" ?<div className="info__container mb-24">
-                <Info />
-                <div className="flex column left">
-                    <div className="info__title">Using External Secrets</div>
-                    <div className="info__subtitle">Secret will not be created by system. However, they will be used inside the pod. Please make sure that secret with the same name is present in the environment.</div>
-                </div>
-            </div> : null}
+        {externalType === "KubernetesSecret" ? <div className="info__container mb-24">
+            <Info />
+            <div className="flex column left">
+                <div className="info__title">Using External Secrets</div>
+                <div className="info__subtitle">Secret will not be created by system. However, they will be used inside the pod. Please make sure that secret with the same name is present in the environment.</div>
+            </div>
+        </div> : null}
         <div className="form-row">
             <label className="form__label">Name*</label>
             <input value={configName.value} autoComplete="off" onChange={props.isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-secret`} disabled={props.isUpdate} />
@@ -519,44 +537,38 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        { isExternalValues && selectedTab === 'Data Volume' ?
-                <div className="mb-16">
-                    <Checkbox
-                        isChecked={isSubPathChecked}
-                        onClick={(e) => { e.stopPropagation() }}
-                        rootClassName="form__checkbox-label--ignore-cache"
-                        value={"CHECKED"}
-                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
-                    >
-                        <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
-                    </Checkbox>
-                </div> : ""}
-            {selectedTab === 'Data Volume' ? <div className="mb-16">
-                <Checkbox
-                    isChecked={isFilePermissionChecked}
+        {isExternalValues && selectedTab === 'Data Volume' ?
+            <div className="mb-16">
+                <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
-                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
-                >
-                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                    onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
+                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>
             </div> : ""}
-            {isFilePermissionChecked ? <div className="mb-16">
-                <CustomInput
-                    value={filePermissionValue.value}
-                    autoComplete="off"
-                    tabIndex={5}
-                    label={""}
-                    placeholder={"eg. 0400"}
-                    error={filePermissionValue.error}
-                    maxlength="4"
-                    onChange={e => setFilePermissionValue({ value: e.target.value, error: "" })}
-                />
-            </div> : ""}
+        {selectedTab === 'Data Volume' ? <div className="mb-16">
+            <Checkbox isChecked={isFilePermissionChecked}
+                onClick={(e) => { e.stopPropagation() }}
+                rootClassName="form__checkbox-label--ignore-cache"
+                value={"CHECKED"}
+                onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
+                <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+            </Checkbox>
+        </div> : ""}
+        {isFilePermissionChecked ? <div className="mb-16">
+            <CustomInput value={filePermissionValue.value}
+                autoComplete="off"
+                tabIndex={5}
+                label={""}
+                placeholder={"eg. 0400"}
+                error={filePermissionValue.error}
+                onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}
+            />
+        </div> : ""}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
-            autoComplete="off"
+                autoComplete="off"
                 tabIndex={4}
                 label={"Role ARN"}
                 placeholder={"Enter Role ARN"}
@@ -655,3 +667,5 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         </div>
     </div >
 }
+
+export default Secret

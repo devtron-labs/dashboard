@@ -279,13 +279,13 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             }
             if (filePermissionValue.value.startsWith("0")) { //Octal Format
                 if (filePermissionValue.value.length !== 4) {
-                    setFilePermissionValue({ value: filePermissionValue, error: "4 characters are required for octal format" });
+                    setFilePermissionValue({ value: filePermissionValue.value, error: "4 characters are required for octal format" });
                     return
                 }
             }
             else {
                 if (filePermissionValue.value.length !== 3) {
-                    setFilePermissionValue({ value: filePermissionValue, error: "At least 3 characters are required" });
+                    setFilePermissionValue({ value: filePermissionValue.value, error: "At least 3 characters are required" });
                     return;
                 }
             }
