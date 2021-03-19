@@ -68,7 +68,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.handleScanToggle = this.handleScanToggle.bind(this);
         this.validationRules = new ValidationRules();
         this.handleDocker = this.handleDocker.bind(this);
-       // this.handleShowPostBuild = this.handleShowPostBuild.bind(this);
+        // this.handleShowPostBuild = this.handleShowPostBuild.bind(this);
         this.handlePreBuild = this.handlePreBuild.bind(this);
 
 
@@ -406,7 +406,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        return <div className="white-card flex left cursor mb-16"
+        return <div className="white-card flex left cursor mb-16 pt-20"
             onClick={() => { this.addEmptyStage(key) }}>
             <Add className="icon-dim-24 fcb-5 vertical-align-middle mr-16" />
             <span className="artifact__add">Add Stage</span>
@@ -424,7 +424,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             description = " These stages are run in sequence after the docker image is built";
         }
         return <>
-            <div className="flex left pb-20 cursor" onClick={(e) => this.handlePreBuild()}>
+            <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
                 <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
                 <div>
                     <div className="ci-stage__title">{title}</div>
@@ -480,44 +480,44 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderDockerArgs() {
-        return <> <div className=" flex left pb-20 " onClick={()=> this.handleDocker()}>
+        return <> <div className=" flex left pb-20 " onClick={() => this.handleDocker()}>
             <div className="sqr-44"><Docker /></div>
             <div>
                 <div className="ci-stage__title">Docker build</div>
                 <div className="ci-stage__description ">Override docker build configurations for this pipeline.</div>
             </div>
         </div>
-        {this.state.showDocker ? 
+            {this.state.showDocker ?
 
-            <div className="docker-build-args">
-                <div className="docker-build-args__header"
-                    onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
-                    <span className="docker-build-args__text">Docker Arguments Override</span>
-                    <img src={dropdown} alt="dropDown" style={{ "transform": this.state.showDockerArgs ? "rotate(180deg)" : "rotate(0)" }} />
-                </div>
-                {this.state.showDockerArgs ? <div className="docker-build-args__wrapper">
-                    {this.state.form.args.map((arg, index) => {
-                        return <div key={index} className="form__key-value-inputs form__key-value-inputs--docker-build docker-build-args__body">
-                            <img src={trash} onClick={(event) => { this.removeDockerArgs(index) }} />
-                            <div className="form__field">
-                                <label className="form__label">Key</label>
-                                <input className="form__input w-50" autoComplete="off" placeholder="Name" type="text"
-                                    value={arg.key} onChange={(event) => { this.handleDockerArgChange(event, index, 'key'); }} />
+                <div className="docker-build-args">
+                    <div className="docker-build-args__header"
+                        onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
+                        <span className="docker-build-args__text">Docker Arguments Override</span>
+                        <img src={dropdown} alt="dropDown" style={{ "transform": this.state.showDockerArgs ? "rotate(180deg)" : "rotate(0)" }} />
+                    </div>
+                    {this.state.showDockerArgs ? <div className="docker-build-args__wrapper">
+                        {this.state.form.args.map((arg, index) => {
+                            return <div key={index} className="form__key-value-inputs form__key-value-inputs--docker-build docker-build-args__body">
+                                <img src={trash} onClick={(event) => { this.removeDockerArgs(index) }} />
+                                <div className="form__field">
+                                    <label className="form__label">Key</label>
+                                    <input className="form__input w-50" autoComplete="off" placeholder="Name" type="text"
+                                        value={arg.key} onChange={(event) => { this.handleDockerArgChange(event, index, 'key'); }} />
+                                </div>
+                                <div className="form__field">
+                                    <label className="form__label">Value</label>
+                                    <textarea value={arg.value} onChange={(event) => { this.handleDockerArgChange(event, index, 'value') }}
+                                        placeholder="Enter Your Text here" />
+                                </div>
                             </div>
-                            <div className="form__field">
-                                <label className="form__label">Value</label>
-                                <textarea value={arg.value} onChange={(event) => { this.handleDockerArgChange(event, index, 'value') }}
-                                    placeholder="Enter Your Text here" />
-                            </div>
-                        </div>
-                    })}
-                    <button type="button" onClick={(event) => { this.addDockerArg() }}
-                        className="form__add-parameter form__add-parameter--docker-build">
-                        <span className="fa fa-plus"></span>
+                        })}
+                        <button type="button" onClick={(event) => { this.addDockerArg() }}
+                            className="form__add-parameter form__add-parameter--docker-build">
+                            <span className="fa fa-plus"></span>
                         Add parameter
                     </button>
+                    </div> : null}
                 </div> : null}
-            </div> : null }
         </>
     }
 
@@ -598,12 +598,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             </VisibleModal >
         </>
     }
-    render() {
-        return <> hi
-            {this.renderAdvanceCI()}</>
-    }
-/*
-    render() {
+    renderBasicPipeline() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         if (this.state.view == ViewType.LOADING) {
             return <OpaqueModal onHide={this.props.close}>
@@ -619,16 +614,16 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <hr className=""divider"/>
+                    <hr className="divider" />
                     <div className="m-20">
                         <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
                         {this.renderMaterials()}
                     </div>
                     <hr className="mb-12 divider" />
                     <div className="flex left mb-12">
-                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }}>
+                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={this.renderAdvanceCI}>
                             Advanced options
-                        </div>
+                    </div>
                         <div className="m-auto-mr-0" style={{ width: "155px" }}>
                             <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
                                 onClick={this.savePipeline}
@@ -642,4 +637,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             </VisibleModal>
         }
     }
-}*/}
+
+
+    render() {
+        return <> 
+            {/*{this.renderAdvanceCI()}*/}
+            {this.renderBasicPipeline()}
+            </>
+    }
+}
