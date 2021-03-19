@@ -234,10 +234,15 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
 }
 
 export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
-    let target = [1, 15, 1000];
+    //Comparing with v1.15.xxx
+    let target = [1, 15];
     let versionNum = getK8sVersionArr(k8sVersion);
     for (let i = 0; i < target.length; i++) {
-        if (versionNum[i] <= target[i]) {
+        if (versionNum[i] === target[i]) {
+            if (i === target.length - 1) return true;
+            continue
+        }
+        else if (versionNum[i] < target[i]) {
             return true;
         }
     }
