@@ -6,8 +6,7 @@ import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { mapByKey, showError, Progressing, Info, ConfirmationDialog, useAsync, Select, RadioGroup, not } from '../common'
-import './environmentOverride.scss'
+import { mapByKey, showError, Progressing, Info, ConfirmationDialog, useAsync, Select, RadioGroup, not, CustomInput, Checkbox } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -15,6 +14,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config';
+import './environmentOverride.scss';
 
 const ConfigMapContext = React.createContext(null)
 
@@ -29,7 +29,7 @@ function useConfigMapContext() {
 }
 
 export default function ConfigMapOverrides({ parentState, setParentState, ...props }) {
-    const { appId, envId } = useParams()
+    const { appId, envId } = useParams<{ appId, envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId])
     useEffect(() => {
         if (!loading && result) {
@@ -85,7 +85,7 @@ interface ConfigMapProps {
 
 const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, toggleCollapse }) {
     const { configMaps, id, reload } = useConfigMapContext()
-    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission="", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
+    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission = "", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
     function reducer(state, action) {
         switch (action.type) {
             case 'createDuplicate':
@@ -96,6 +96,10 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 return { ...state, duplicate: state.duplicate.concat([{ k: "", v: "", keyError: "", valueError: "" }]) }
             case 'mountPath':
                 return { ...state, mountPath: action.value }
+            case 'filePermission':
+                return { ...state, filePermission: action.value }
+            case 'subPath':
+                return { ...state, subPath: action.value }
             case 'key-value-change':
                 let duplicate = state.duplicate
                 duplicate[action.value.index] = { k: action.value.k, v: action.value.v, keyError: '', valueError: '' }
@@ -141,16 +145,19 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
         mountPath: mountPath,
         loading: false,
         dialog: false,
+        subPath: subPath,
+        filePermission: { value: filePermission, error: "" },
         duplicate: data ? Object.keys(data).map(k => ({ k, v: data[k], keyError: "", valueError: "" })) : null
     }
     const [state, dispatch] = useReducer(memoizedReducer, initialState)
-    const { appId, envId } = useParams()
+    const { appId, envId } = useParams<{ appId, envId }>()
     const tempArr = useRef([])
     function setKeyValueArray(arr) {
         tempArr.current = arr
     }
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_KEY}`)
     const [yamlMode, toggleYamlMode] = useState(true)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
 
     function changeEditorMode(e) {
         if (yamlMode) {
@@ -207,22 +214,40 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             }
             return
         }
+        if (isFilePermissionChecked) {
+            if (!state.filePermission.value) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "Field is mandatory" } })
+                return
+            }
+            if (state.filePermission.value.startsWith("0")) { //Octal Format
+                if (state.filePermission.value.length !== 4) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "4 characters are required for octal format" } })
+                    return
+                }
+            }
+            else {
+                if (state.filePermission.value.length !== 3) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "At least 3 characters are required" } })
+                    return;
+                }
+            }
+        }
         if (dataArray.length === 0 && !external) {
             toast.error('Configmaps without any data are not allowed.')
             return
         }
         try {
             let payload = {
-                "name": name,
-                "type": type,
-                "external": external,
+                name: name,
+                type: type,
+                external: external,
                 mountPath: state.mountPath,
-                "data": dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || "" }), {}),
-                "subPath": subPath,
-                "filePermission": filePermission
+                data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || "" }), {}),
+                subPath: state.subPath,
+                filePermission: state.filePermission.value,
             }
-            dispatch({ type: 'submitLoading' })
-            const { result } = await overRideConfigMap(id, +appId, +envId, [payload])
+            dispatch({ type: 'submitLoading' });
+            await overRideConfigMap(id, +appId, +envId, [payload])
             await reload();
             toast.success(
                 <div className="toast">
@@ -231,7 +256,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 </div>
             )
             toggleCollapse(collapse => !collapse)
-            dispatch({ type: 'success' })
+            dispatch({ type: 'success' });
         }
         catch (err) {
             showError(err)
@@ -258,111 +283,128 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             dispatch({ type: 'toggleDialog' })
         }
     }
-    return (
-        <>
-            {name && isGlobal
-                ?
-                <form onSubmit={handleSubmit} className="override-config-map-form">
-                    <Override
-                        external={external && type === 'environment'}
-                        overridden={!!state.duplicate}
-                        onClick={handleOverride}
-                        loading={state.overrideLoading}
-                        
-                    />
-                    <div className="form__row">
-                        <label className="form__label">Data type</label>
-                        <div className="form-row__select-external-type">
-                            <Select disabled onChange={e => { }} >
-                                <Select.Button>{external ? 'Kubernetes External ConfigMap' : "Kubernetes ConfigMap"}</Select.Button>
-                            </Select>
-                        </div>
+    return <>
+        {name && isGlobal ?
+            <form onSubmit={handleSubmit} className="override-config-map-form">
+                <Override
+                    external={external && type === 'environment'}
+                    overridden={!!state.duplicate}
+                    onClick={handleOverride}
+                    loading={state.overrideLoading} />
+                <div className="form__row">
+                    <label className="form__label">Data type</label>
+                    <div className="form-row__select-external-type">
+                        <Select disabled onChange={e => { }} >
+                            <Select.Button>{external ? 'Kubernetes External ConfigMap' : "Kubernetes ConfigMap"}</Select.Button>
+                        </Select>
                     </div>
-                    {!name && external ? <div className="info__container mb-24">
-                        <Info />
-                        <div className="flex column left">
-                            <div className="info__title">Using External Configmaps</div>
-                            <div className="info__subtitle">Configmap will not be created by system. However, they will be used inside the pod. Please make sure that configmap with the same name is present in the environment.</div>
-                        </div>
-                    </div> : null}
-                    <div className="form__row">
-                        <label className="form__label">Usage type</label>
-                        <input type="text" autoComplete="off" className="form__input half" value={type === 'volume' ? 'Data volume' : 'Environment variable'} disabled />
+                </div>
+                {!name && external ? <div className="info__container mb-24">
+                    <Info />
+                    <div className="flex column left">
+                        <div className="info__title">Using External Configmaps</div>
+                        <div className="info__subtitle">Configmap will not be created by system. However, they will be used inside the pod. Please make sure that configmap with the same name is present in the environment.</div>
                     </div>
-                    {type === 'volume' && <div className="form__row">
-                        <label className="form__label">Volume mount path</label>
-                        <div className="flex left">
-                            <input type="text" autoComplete="off" className="form__input half" value={defaultMountPath} disabled />
-                            <span style={{ width: '16px' }} />
-                            {state.duplicate && <input type="text" autoComplete="off" className="form__input half" value={state.mountPath} onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />}
+                </div> : null}
+                <div className="form__row">
+                    <label className="form__label">Usage type</label>
+                    <input type="text" autoComplete="off" className="form__input half" value={type === 'volume' ? 'Data volume' : 'Environment variable'} disabled />
+                </div>
+                {type === 'volume' && <div className="form__row">
+                    <label className="form__label">Volume mount path</label>
+                    <div className="flex left">
+                        <input type="text" autoComplete="off" className="form__input half"
+                            value={state.duplicate ? state.mountPath : defaultMountPath}
+                            disabled={!state.duplicate}
+                            onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />
+                    </div>
+                </div>}
+                {!external && type === "volume" && <Checkbox isChecked={state.subPath}
+                    onClick={(e) => { e.stopPropagation(); }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value="CHECKED"
+                    onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
+                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                </Checkbox>}
+                {!external && type === "volume" && <div className="mb-16">
+                    <Checkbox isChecked={isFilePermissionChecked}
+                        onClick={(e) => { e.stopPropagation() }}
+                        rootClassName="form__checkbox-label--ignore-cache"
+                        value={"CHECKED"}
+                        onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
+                        <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                    </Checkbox>
+                </div>}
+                {!external && type === "volume" && isFilePermissionChecked ? <div className="mb-16">
+                    <CustomInput value={state.filePermission.value}
+                        autoComplete="off"
+                        label={""}
+                        placeholder={"eg. 0400"}
+                        error={state.filePermission.error}
+                        onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />
+                </div> : null}
+                {!external && <div className="flex left mb-16">
+                    <b className="mr-5 bold">Data*</b>
+                    <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
+                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                    </RadioGroup>
+                </div>}
+                {!external && <>
+                    {yamlMode
+                        ? <div className="yaml-container">
+                            <CodeEditor
+                                value={state.duplicate ? yaml : YAML.stringify(defaultData, { indent: 4 })}
+                                mode="yaml"
+                                inline
+                                height={350}
+                                onChange={handleYamlChange}
+                                readOnly={!state.duplicate}
+                                shebang="#key: value">
+                                <CodeEditor.Header>
+                                    <CodeEditor.ValidationError />
+                                    <CodeEditor.Clipboard />
+                                </CodeEditor.Header>
+                                {error &&
+                                    <div className="validation-error-block">
+                                        <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                                        <div>{error}</div>
+                                    </div>
+                                }
+                            </CodeEditor>
                         </div>
-                    </div>}
-                    {!external && <div className="flex left mb-16">
-                        <b className="mr-5 bold">Data*</b>
-                        <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
-                            <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                            <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                        </RadioGroup>
-                    </div>}
-                    {!external && <>
-                        {yamlMode
-                            ? <div className="yaml-container">
-                                <CodeEditor
-                                    value={state.duplicate ? yaml : YAML.stringify(defaultData, { indent: 4 })}
-                                    mode="yaml"
-                                    inline
-                                    height={350}
-                                    onChange={handleYamlChange}
-                                    readOnly={!state.duplicate}
-                                    shebang="#key: value">
-                                    <CodeEditor.Header>
-                                        <CodeEditor.ValidationError />
-                                        <CodeEditor.Clipboard />
-                                    </CodeEditor.Header>
-                                    {error &&
-                                        <div className="validation-error-block">
-                                            <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                                            <div>{error}</div>
-                                        </div>
-                                    }
-                                </CodeEditor>
-                            </div>
-                            : state.duplicate
-                                ? state.duplicate.map((config, idx) => <KeyValueInput keyLabel={type === 'volume' ? "File Name" : "Key"} valueLabel={type === 'volume' ? "File Content" : "Value"} {...config} index={idx} key={idx} onChange={(index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })} onDelete={memoisedRemove} />)
-                                : Object.keys(defaultData).map((config, idx) => <KeyValueInput keyLabel={type === 'volume' ? "File Name" : "Key"} valueLabel={type === 'volume' ? "File Content" : "Value"} k={config} v={stringify(defaultData[config])} index={idx} onChange={null} onDelete={null} />)
-                        }
-                    </>}
-                    {state.duplicate && !yamlMode && <span className="bold anchor pointer" onClick={e => dispatch({ type: 'add-param' })}>+Add params</span>}
-                    {!(external && type === 'environment') && <div className="form__buttons">
-                        <button disabled={!state.duplicate} className="cta" type="submit">{state.submitLoading ? <Progressing /> : 'Save'}</button>
-                    </div>}
-                </form>
-                :
-                <ConfigMapForm
-                    id={id}
-                    appId={appId}
-                    name={name}
-                    external={external}
-                    data={data}
-                    type={type}
-                    mountPath={mountPath}
-                    isUpdate={!!name}
-                    collapse={e => toggleCollapse(isCollapsed => !isCollapsed)}
-                    index={null}
-                    update={(isSuccess) => reload()}
-                    subPath={subPath}
-                    filePermission= {filePermission}
-                />}
-            {state.dialog && <ConfirmationDialog className="confirmation-dialog__body--w-360">
-                <ConfirmationDialog.Icon src={warningIcon} />
-                <ConfirmationDialog.Body title="Delete override ?" subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone." />
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta cancel" onClick={e => dispatch({ type: 'toggleDialog' })}>Cancel</button>
-                    <button type="button" className="cta delete" onClick={handleDelete}>Confirm</button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>}
-        </>
-    )
+                        : state.duplicate
+                            ? state.duplicate.map((config, idx) => <KeyValueInput keyLabel={type === 'volume' ? "File Name" : "Key"} valueLabel={type === 'volume' ? "File Content" : "Value"} {...config} index={idx} key={idx} onChange={(index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })} onDelete={memoisedRemove} />)
+                            : Object.keys(defaultData).map((config, idx) => <KeyValueInput keyLabel={type === 'volume' ? "File Name" : "Key"} valueLabel={type === 'volume' ? "File Content" : "Value"} k={config} v={stringify(defaultData[config])} index={idx} onChange={null} onDelete={null} />)}
+                </>}
+                {state.duplicate && !yamlMode && <span className="bold anchor pointer" onClick={e => dispatch({ type: 'add-param' })}>+Add params</span>}
+                {!(external && type === 'environment') && <div className="form__buttons">
+                    <button disabled={!state.duplicate} className="cta" type="submit">{state.submitLoading ? <Progressing /> : 'Save'}</button>
+                </div>}
+            </form> : <ConfigMapForm
+                id={id}
+                appId={appId}
+                name={name}
+                external={external}
+                data={data}
+                type={type}
+                mountPath={mountPath}
+                isUpdate={!!name}
+                collapse={e => toggleCollapse(isCollapsed => !isCollapsed)}
+                index={null}
+                update={(isSuccess) => reload()}
+                subPath={subPath}
+                filePermission={filePermission}
+            />}
+        {state.dialog && <ConfirmationDialog className="confirmation-dialog__body--w-360">
+            <ConfirmationDialog.Icon src={warningIcon} />
+            <ConfirmationDialog.Body title="Delete override ?" subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone." />
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" className="cta cancel" onClick={e => dispatch({ type: 'toggleDialog' })}>Cancel</button>
+                <button type="button" className="cta delete" onClick={handleDelete}>Confirm</button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>}
+    </>
 })
 
 

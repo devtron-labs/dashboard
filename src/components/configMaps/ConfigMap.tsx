@@ -421,7 +421,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                     </Checkbox>
                 </div> : ""}
-            {selectedTab === 'Data Volume' ? <div className="mb-16">
+            {!isExternalValues && selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
@@ -430,7 +430,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
-            {isFilePermissionChecked ? <div className="mb-16">
+            {!isExternalValues &&  selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
