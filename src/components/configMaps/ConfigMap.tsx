@@ -411,7 +411,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            {!isExternalValues && selectedTab === 'Data Volume' ?
+            {selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
@@ -421,7 +421,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                     </Checkbox>
                 </div> : ""}
-            {!isExternalValues && selectedTab === 'Data Volume' ? <div className="mb-16">
+            {selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
@@ -430,7 +430,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
-            {!isExternalValues &&  selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+            {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
@@ -439,7 +439,6 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={filePermissionValue.error}
                     onChange={handleFilePermission} />
             </div> : ""}
-
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>

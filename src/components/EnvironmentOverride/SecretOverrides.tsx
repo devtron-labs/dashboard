@@ -3,7 +3,7 @@ import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
 import { getEnvironmentSecrets, } from '../../services/service';
 import { useParams } from 'react-router'
 import { ListComponent, Override } from './ConfigMapOverrides'
-import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput } from '../common'
+import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -84,8 +84,8 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
 export function OverrideSecretForm({ name, toggleCollapse }) {
     const { secrets, id, reload } = useSecretContext()
-    const { data = null, defaultData = null, type = "environment", external = false, mountPath = "", defaultMountPath = "", global: isGlobal = false, externalType = "" , defaultPermissionNumber="" , filePermission= "", subPath= false} = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: "" }
-    const { appId, envId } = useParams()
+    const { data = null, defaultData = null, type = "environment", external = false, mountPath = "", defaultMountPath = "", global: isGlobal = false, externalType = "", defaultPermissionNumber = "", filePermission = "", subPath = false } = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: "" }
+    const { appId, envId } = useParams<{ appId, envId }>()
 
     function reducer(state, action) {
         switch (action.type) {
@@ -95,6 +95,10 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 return { ...state, duplicate: (state.duplicate || []).concat([{ k: "", v: "", keyError: "", valueError: "" }]) }
             case 'mountPath':
                 return { ...state, mountPath: action.value }
+            case 'filePermission':
+                return { ...state, filePermission: action.value }
+            case 'subPath':
+                return { ...state, subPath: action.value }
             case 'key-value-change':
                 let duplicate = state.duplicate
                 duplicate[action.value.index] = { k: action.value.k, v: action.value.v, keyError: '', valueError: '' }
@@ -158,18 +162,20 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
     const isHashiOrAWS = (externalType === "AWSSecretsManager" || externalType === "AWSSystemManager" || externalType === "HashiCorpVault");
     const memoisedReducer = React.useCallback(reducer, [appId, envId])
     const initialState = {
-        mountPath: defaultMountPath,
+        mountPath: mountPath ? mountPath : defaultMountPath,
         loading: false,
-        locked: true,
+        locked: !mountPath,
         dialog: false,
+        subPath: subPath,
+        filePermission: { value: filePermission, error: "" },
         duplicate: data ? (name && isGlobal ? Object.keys(data).map(k => ({ k, v: data[k], keyError: "", valueError: "" })) : data) : null,
         permissionNumber: defaultPermissionNumber
     }
-
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const tempArr = useRef([])
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
     const [yamlMode, toggleYamlMode] = useState(true)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
 
     function setKeyValueArray(arr) {
         tempArr.current = arr
@@ -265,6 +271,8 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 external: !!externalType,
                 externalType,
                 mountPath: state.mountPath,
+                subPath: state.subPath,
+                filePermission: state.filePermission.value,
             }
             if (isHashiOrAWS) {
                 payload['secretData'] = secretData.map((s) => {
@@ -420,11 +428,36 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 <div className="form__row">
                     <label className="form__label">Volume mount path</label>
                     <div className="flex left">
-                        <input type="text" autoComplete="off" className="form__input half" value={defaultMountPath} disabled />
-                        <span style={{ width: '16px' }} />
-                        {state.duplicate && <input type="text" className="form__input half" value={state.mountPath} onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />}
+                        <input type="text" autoComplete="off" className="form__input half"
+                            value={state.mountPath}
+                            disabled={!state.duplicate}
+                            onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />
                     </div>
                 </div>}
+            {type === "volume" && <Checkbox isChecked={state.subPath}
+                onClick={(e) => { e.stopPropagation(); }}
+                rootClassName="form__checkbox-label--ignore-cache"
+                value="CHECKED"
+                onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
+                <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+            </Checkbox>}
+            {type === "volume" && <div className="mb-16">
+                <Checkbox isChecked={isFilePermissionChecked}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value={"CHECKED"}
+                    onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
+                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                </Checkbox>
+            </div>}
+            {type === "volume" && isFilePermissionChecked ? <div className="mb-16">
+                <CustomInput value={state.filePermission.value}
+                    autoComplete="off"
+                    label={""}
+                    placeholder={"eg. 0400"}
+                    error={state.filePermission.error}
+                    onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />
+            </div> : null}
             {isHashiOrAWS ? <div className="form__row form__row--flex">
                 <div className="w-50">
                     <CustomInput value={roleARN}
@@ -551,7 +584,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 }}
                 initialise={() => { }}
                 filePermission={filePermission}
-                subPath= {subPath}
+                subPath={subPath}
             />
         }
         {state.dialog && <ConfirmationDialog>

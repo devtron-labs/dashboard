@@ -319,14 +319,14 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                             onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />
                     </div>
                 </div>}
-                {!external && type === "volume" && <Checkbox isChecked={state.subPath}
+                {type === "volume" && <Checkbox isChecked={state.subPath}
                     onClick={(e) => { e.stopPropagation(); }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value="CHECKED"
                     onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>}
-                {!external && type === "volume" && <div className="mb-16">
+                {type === "volume" && <div className="mb-16">
                     <Checkbox isChecked={isFilePermissionChecked}
                         onClick={(e) => { e.stopPropagation() }}
                         rootClassName="form__checkbox-label--ignore-cache"
@@ -335,7 +335,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                     </Checkbox>
                 </div>}
-                {!external && type === "volume" && isFilePermissionChecked ? <div className="mb-16">
+                {type === "volume" && isFilePermissionChecked ? <div className="mb-16">
                     <CustomInput value={state.filePermission.value}
                         autoComplete="off"
                         label={""}
