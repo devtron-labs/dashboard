@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { OpaqueModal, Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox, DeleteDialog } from '../common';
+import { OpaqueModal, Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox, DeleteDialog, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
 import { ErrorScreenManager } from '../common';
@@ -19,6 +19,8 @@ import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { getEnvironmentListMinPublic } from '../../services/service';
 import './cdPipeline.css';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -683,6 +685,105 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return null;
     }
 
+    renderAdvanceCDPipeline() {
+        let envId = this.state.pipelineConfig.environmentId;
+        let selectedEnv = this.state.environments.find(env => env.id == envId);
+        let namespaceEditable = false;
+        let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace);
+        let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name);
+        let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId);
+        if (!selectedEnv || selectedEnv.namespace && selectedEnv.namespace.length > 0) {
+            namespaceEditable = false;
+        }
+        else {
+            namespaceEditable = true;
+        }
+        return <>
+            <OpaqueModal onHide={this.props.close}>
+
+            </OpaqueModal>
+            {this.renderDeleteCD()}
+        </>
+
+    }
+    renderBasicCDPipelin() {
+        let envId = this.state.pipelineConfig.environmentId;
+        let selectedEnv = this.state.environments.find(env => env.id == envId);
+        let namespaceEditable = false;
+        let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace);
+        let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name);
+        let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId);
+        if (!selectedEnv || selectedEnv.namespace && selectedEnv.namespace.length > 0) {
+            namespaceEditable = false;
+        }
+        else {
+            namespaceEditable = true;
+        }
+        return <><VisibleModal className="">
+            <div className="modal__body br-0 modal__body--w-600 modal__body--p-0">
+                <div className="modal__header m-20">
+                    <div className="modal__title fs-16">Create build pipeline</div>
+                    <button type="button" className="transparent" >
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                <hr className="divider" />
+                <div className="m-20">
+                    <div className="cn-9 fw-6 fs-14 mb-18">Select Environment</div>
+                    <div className="form__row form__row--flex">
+                        <div className={`typeahead w-50 `}>
+                            <DevtronTypeahead name="environment" label={"Deploy to Environment*"} labelKey='name' multi={false}
+                                defaultSelections={selectedEnv ? [selectedEnv] : []}
+                                disabled={!!this.state.pipelineConfig.id} onChange={this.selectEnvironment}>
+                                {this.state.environments.map((env) => {
+                                    return <TypeaheadOption key={env.id} item={env} id={env.id}>
+                                        {env.name}
+                                    </TypeaheadOption>
+                                })}
+                            </DevtronTypeahead >
+                            {this.state.showError && !envErrorObj.isValid ? <span className="form__error">
+                                <img src={error} className="form__icon" />
+                                {envErrorObj.message}
+                            </span> : null}
+                        </div>
+                        <label className="flex-1 ml-16">
+                            <span className="form__label">Namespace*</span>
+                            <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
+                                disabled={!namespaceEditable}
+                                value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.state.pipelineConfig.namespace}
+                                onChange={(event) => { this.handleNamespaceChange(event, selectedEnv) }} />
+                            {this.state.showError && !namespaceErroObj.isValid ? <span className="form__error">
+                                <img src={error} className="form__icon" />
+                                {namespaceErroObj.message}
+                            </span> : null}
+                        </label>
+                    </div>
+
+                </div>
+                <hr className="mb-12 divider" />
+                <div className="pl-20 pr-20">
+                    <div className="cn-9 fw-6 fs-14 mb-4">Deployment strategy</div>
+                    <span className="form__label">To add and configure strategies switch to advanced options.</span>
+                </div>
+                <hr className="" />
+                <div className="flex left mb-12">
+                    <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }}>
+                        Advanced options
+                    </div>
+                    <div className="m-auto-mr-0" style={{ width: "155px" }}>
+                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                            onClick={this.savePipeline}
+                            isLoading={this.state.loadingData}>
+
+                        </ButtonWithLoader>
+                    </div>
+                </div>
+
+            </div></VisibleModal>
+        </>
+
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <OpaqueModal onHide={this.props.close}>
@@ -707,10 +808,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             else {
                 namespaceEditable = true;
             }
-            return <>
-                <OpaqueModal onHide={this.props.close}>
-                    <form className="modal__body modal__body--ci" onSubmit={this.savePipeline}>
-                        {this.renderHeader()}
+            return <><VisibleModal className="">
+                <form className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43" onSubmit={this.savePipeline}>
+                    <div className="pt-20 pl-20">{this.renderHeader()}</div>
+                    <hr className="divider mb-0" />
+                    <div className="p-20">
                         <div className="form__row">
                             <label className="form__label">Pipeline Name*</label>
                             <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
@@ -768,15 +870,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <div className="form__row form__row--flex">
                             {this.props.match.params.cdPipelineId ? <button type="button" className="cta delete mr-16"
                                 onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
-                        </button> : null}
+                    </button> : null}
                             <ButtonWithLoader rootClassName="cta flex-1" onClick={this.savePipeline} isLoading={this.state.loadingData}
                                 loaderColor="white">
                                 {this.props.match.params.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
                             </ButtonWithLoader>
                         </div>
-                    </form>
-                </OpaqueModal>
-                {this.renderDeleteCD()}
+                    </div>
+                </form>
+            </VisibleModal>
             </>
         }
     }

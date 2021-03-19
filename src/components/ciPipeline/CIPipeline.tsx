@@ -3,7 +3,7 @@ import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { VisibleModal,Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
+import { VisibleModal, Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
@@ -617,7 +617,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </div>
                     <hr className="mb-12 divider" />
                     <div className="flex left mb-12">
-                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={this.renderAdvanceCI}>
+                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={() => this.renderAdvanceCI()}>
                             Advanced options
                     </div>
                         <div className="m-auto-mr-0" style={{ width: "155px" }}>
@@ -636,9 +636,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
 
     render() {
-        return <> 
+        return <>
             {/*{this.renderAdvanceCI()}
-            {this.renderBasicPipeline()}
+            
             < BasicCIPipeline
             view = {this.state.view}
             close= {this.props.close}
@@ -647,6 +647,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             savePipeline= {this.savePipeline}
             renderAdvanceCI= {this.renderAdvanceCI}
              />*/}
-            </>
+            {this.renderBasicPipeline()}
+        </>
     }
 }

@@ -3,7 +3,7 @@ import { saveLinkedCIPipeline } from './ciPipeline.service';
 import { ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, LinkedCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError } from '../common';
+import { Progressing, OpaqueModal, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader';
@@ -160,9 +160,10 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             </OpaqueModal>
         }
         else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
+            return <VisibleModal className="">
+                <div className="modal__body br-0 modal__body--ci">
                     {this.renderHeader()}
+                    <hr className="divider"/>
                     {this.renderInfoDialog()}
                     <div className="typeahead form__row">
                         <Typeahead labelKey={'name'} name='app' label={'Filter By Application'} disabled={false}
@@ -195,7 +196,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         </ButtonWithLoader>
                     </div>
                 </div>
-            </OpaqueModal >
+            </VisibleModal >
         }
     }
 }
