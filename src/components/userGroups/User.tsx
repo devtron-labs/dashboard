@@ -1,20 +1,20 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { showError, Progressing, ConfirmationDialog, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles} from '../common'
+import { showError, Progressing, ConfirmationDialog, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog } from '../common'
 
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable'
-import Select, {components} from 'react-select';
+import Select, { components } from 'react-select';
 
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType, APIRoleFilter } from './userGroups.types'
 import './UserGroup.scss';
 import { toast } from 'react-toastify'
-import {useUserGroupContext, DirectPermission, ChartPermission, GroupRow} from './UserGroup'
-import deleteIcon from '../../assets/icons/ic-delete.svg'
+import { useUserGroupContext, DirectPermission, ChartPermission, GroupRow } from './UserGroup'
+import deleteIcon from '../../assets/img/warning-medium.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 
-const MultiValueContainer = ({validator, ...props}) => {
+const MultiValueContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
     const isValidEmail = validator ? validator(value) : true
@@ -49,70 +49,70 @@ const CreatableStyle = {
     }),
 }
 
-export default function UserForm({ id = null, userData=null,index,  updateCallback, deleteCallback, createCallback, cancelCallback }) {
+export default function UserForm({ id = null, userData = null, index, updateCallback, deleteCallback, createCallback, cancelCallback }) {
     // id null is for create
     const emptyDirectPermission: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
         environment: [],
-        team:null,
+        team: null,
         action:
         {
             label: "",
             value: ActionTypes.VIEW
         }
     }
-    const { userGroupsList, appsList, projectsList, fetchAppList, environmentsList, superAdmin  } = useUserGroupContext()
+    const { userGroupsList, appsList, projectsList, fetchAppList, environmentsList, superAdmin } = useUserGroupContext()
     const userGroupsMap = mapByKey(userGroupsList, 'name')
     const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false)
-    const [emailState, setEmailState] = useState<{ emails: OptionType[], inputEmailValue: string, emailError : string }>({ emails: [], inputEmailValue: '', emailError: '' })
+    const [emailState, setEmailState] = useState<{ emails: OptionType[], inputEmailValue: string, emailError: string }>({ emails: [], inputEmailValue: '', emailError: '' })
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({ entity: EntityTypes.CHART_GROUP, action: ActionTypes.VIEW, entityName: [] })
     const [userGroups, setUserGroups] = useState<OptionType[]>([])
     const [submitting, setSubmitting] = useState(false)
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
-    const creatableRef=useRef(null)
+    const creatableRef = useRef(null)
     const groupPermissionsRef = useRef(null)
 
 
-    useEffect(()=>{
-        if(creatableRef.current){
+    useEffect(() => {
+        if (creatableRef.current) {
             creatableRef.current.focus()
         }
-        else if(groupPermissionsRef.current){
+        else if (groupPermissionsRef.current) {
             groupPermissionsRef.current.focus()
         }
-    },[])
+    }, [])
 
-    function validateForm():boolean{
-        if(emailState.emails.length === 0){
-            setEmailState(emailState=>({...emailState, emailError: 'Emails are mandatory.'}))
+    function validateForm(): boolean {
+        if (emailState.emails.length === 0) {
+            setEmailState(emailState => ({ ...emailState, emailError: 'Emails are mandatory.' }))
             return false
         }
 
-        if(emailState.emails.length !== emailState.emails.map(email=>email.value).filter(email=>validateEmail(email)).length){
-            setEmailState(emailState=>({...emailState, emailError: 'One or more emails could not be verified to be correct.'}))
+        if (emailState.emails.length !== emailState.emails.map(email => email.value).filter(email => validateEmail(email)).length) {
+            setEmailState(emailState => ({ ...emailState, emailError: 'One or more emails could not be verified to be correct.' }))
             return false
         }
         return true
     }
 
-    function isFormComplete():boolean{
-        let isComplete: boolean=true
-        const tempPermissions = directPermission.reduce((agg, curr)=>{
-            if( curr.team &&  curr.entityName.length === 0){
+    function isFormComplete(): boolean {
+        let isComplete: boolean = true
+        const tempPermissions = directPermission.reduce((agg, curr) => {
+            if (curr.team && curr.entityName.length === 0) {
                 isComplete = false
                 curr.entityNameError = 'Applications are mandatory'
             }
-            if( curr.team && curr.environment.length === 0){
+            if (curr.team && curr.environment.length === 0) {
                 isComplete = false
                 curr.environmentError = 'Environments are mandatory'
-            } 
+            }
             agg.push(curr)
             return agg
-        },[])
+        }, [])
 
-        if(!isComplete){
+        if (!isComplete) {
             setDirectPermission(tempPermissions)
         }
 
@@ -120,11 +120,11 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
     }
 
     async function handleSubmit(e) {
-        const validForm  = validateForm()
-        if(!validForm){
+        const validForm = validateForm()
+        if (!validForm) {
             return
         }
-        if(!isFormComplete()){
+        if (!isFormComplete()) {
             return
         }
         setSubmitting(true)
@@ -134,14 +134,14 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
             groups: userGroups.map(group => group.value),
             roleFilters: [
                 ...directPermission
-                .filter(permission=>(permission.team?.value && permission.environment.length && permission.entityName.length))
-                .map(permission => ({
-                    ...permission,
-                    action: permission.action.value,
-                    team: permission.team.value,
-                    environment: permission.environment.find(env=>env.value === '*') ? '' : permission.environment.map(env => env.value).join(","),
-                    entityName: permission.entityName.find(entity=>entity.value === '*') ? '' : permission.entityName.map(entity => entity.value).join(",")
-                })),
+                    .filter(permission => (permission.team?.value && permission.environment.length && permission.entityName.length))
+                    .map(permission => ({
+                        ...permission,
+                        action: permission.action.value,
+                        team: permission.team.value,
+                        environment: permission.environment.find(env => env.value === '*') ? '' : permission.environment.map(env => env.value).join(","),
+                        entityName: permission.entityName.find(entity => entity.value === '*') ? '' : permission.entityName.map(entity => entity.value).join(",")
+                    })),
                 {
                     ...chartPermission,
                     team: "",
@@ -172,14 +172,14 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
     }
 
     useEffect(() => {
-        if (!userData){
+        if (!userData) {
             setDirectPermission([emptyDirectPermission])
             return
         }
         populateDataFromAPI(userData)
     }, [userData])
 
-    async function populateDataFromAPI(data: CreateUser){
+    async function populateDataFromAPI(data: CreateUser) {
         const { email_id, roleFilters, groups = [], superAdmin } = data
         const allProjects = roleFilters.map((roleFilter) => roleFilter.team).filter(Boolean);
         const projectsMap = mapByKey(projectsList, 'name');
@@ -199,18 +199,18 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
                     entityName: directRolefilter?.entityName
                         ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: entity }))
                         : [
-                              { label: 'All applications', value: '*' },
-                              ...(appsList.get(projectId)?.result || []).map((app) => ({ label: app.name, value: app.name })),
-                          ],
-                    environment: directRolefilter.environment ? 
+                            { label: 'All applications', value: '*' },
+                            ...(appsList.get(projectId)?.result || []).map((app) => ({ label: app.name, value: app.name })),
+                        ],
+                    environment: directRolefilter.environment ?
                         directRolefilter.environment
-                        .split(',')
-                        .map((directRole) => ({ value: directRole, label: directRole }))
+                            .split(',')
+                            .map((directRole) => ({ value: directRole, label: directRole }))
                         : [
-                            {label: 'All environments', value: '*'},
+                            { label: 'All environments', value: '*' },
                             ...environmentsList.map((env) => ({ label: env.environment_name, value: env.environment_name }))
                         ]
-                        ,
+                    ,
                 } as DirectPermissionsRoleFilter;
             })
         setUserGroups(groups?.map(group => ({ label: group, value: group })) || [])
@@ -221,7 +221,7 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
         else {
             setDirectPermission([emptyDirectPermission])
         }
-        if(superAdmin){
+        if (superAdmin) {
             setSuperAdmin(superAdmin)
         }
 
@@ -241,37 +241,37 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
         setEmailState(emailState => ({ ...emailState, inputEmailValue, emailError: '' }))
     }
 
-    function handleEmailChange(newValue: any, actionMeta: any){
-        setEmailState(emailState=>({...emailState, emails: newValue || [], emailError: ''}))
+    function handleEmailChange(newValue: any, actionMeta: any) {
+        setEmailState(emailState => ({ ...emailState, emails: newValue || [], emailError: '' }))
     };
 
     function handleDirectPermissionChange(index, selectedValue, actionMeta) {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
-        
-        if(name === "entityName"){
-            const {label, value} = option
-            if(value === '*'){
-                if(action === 'select-option'){
+
+        if (name === "entityName") {
+            const { label, value } = option
+            if (value === '*') {
+                if (action === 'select-option') {
                     // check all applications
                     const projectId = projectsList.find(
                         (project) => project.name === tempPermissions[index]['team'].value,
                     ).id;
-                    tempPermissions[index][name] = [{label:'All applications', value: '*'}, ...(appsList.get(projectId).result).map(app=>({label: app.name, value: app.name}))]
+                    tempPermissions[index][name] = [{ label: 'All applications', value: '*' }, ...(appsList.get(projectId).result).map(app => ({ label: app.name, value: app.name }))]
                     tempPermissions[index]['entityNameError'] = null;
                 }
-                else{
+                else {
                     // uncheck all applications
                     tempPermissions[index][name] = [];
-                    }
+                }
             }
-            else{
+            else {
                 tempPermissions[index]['entityNameError'] = null;
-                tempPermissions[index][name] = selectedValue.filter(({value, label})=>value !== '*')
+                tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*')
             }
         }
 
-        else if(name === 'environment'){
+        else if (name === 'environment') {
             const { label, value } = option;
             if (value === '*') {
                 if (action === 'select-option') {
@@ -290,14 +290,14 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
                 tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*');
             }
         }
-        else if(name === 'team'){
+        else if (name === 'team') {
             tempPermissions[index][name] = selectedValue;
             tempPermissions[index]['entityName'] = []
             tempPermissions[index]['environment'] = []
             const projectId = projectsList.find((project) => project.name === selectedValue.value).id;
             fetchAppList([projectId])
         }
-        else{
+        else {
             tempPermissions[index][name] = selectedValue
         }
         setDirectPermission(tempPermissions)
@@ -316,44 +316,44 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
             case 'Tab':
             case ',':
             case ' ': // space
-                if(inputEmailValue){
+                if (inputEmailValue) {
                     setEmailState({
                         inputEmailValue: '',
                         emails: [...emails, createOption(inputEmailValue)],
                         emailError: '',
                     });
                 }
-                if(event.key !== 'Tab'){
+                if (event.key !== 'Tab') {
                     event.preventDefault();
                 }
                 break
         }
-    },[emailState])
+    }, [emailState])
 
-    async function handleDelete(e){
+    async function handleDelete() {
         setSubmitting(true)
-        try{
+        try {
             await deleteUser(id)
             deleteCallback(index)
             toast.success('Deleted user successfully.')
         }
-        catch(err){
+        catch (err) {
             showError(err)
         }
-        finally{
+        finally {
             setSubmitting(false)
         }
     }
 
-    function formatChartGroupOptionLabel({ value, label }){
+    function formatChartGroupOptionLabel({ value, label }) {
         return <div className="flex left column"><span>{label}</span><small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small></div>
     }
 
-    function removeDirectPermissionRow(index){
-        if(index  === 0 && directPermission.length === 1){
+    function removeDirectPermissionRow(index) {
+        if (index === 0 && directPermission.length === 1) {
             setDirectPermission([emptyDirectPermission])
         }
-        else{
+        else {
             setDirectPermission(permission => removeItemsFromArray(permission, index, 1))
         }
     }
@@ -361,7 +361,7 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
     function handleCreatableBlur(e) {
         let { emails, inputEmailValue } = emailState
         inputEmailValue = inputEmailValue.trim()
-        if(!inputEmailValue) return
+        if (!inputEmailValue) return
         setEmailState({
             inputEmailValue: '',
             emails: [...emails, createOption(e.target.value)],
@@ -369,16 +369,16 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
         });
     };
 
-    const CreatableComponents = useMemo(()=>({
+    const CreatableComponents = useMemo(() => ({
         DropdownIndicator: () => null,
         ClearIndicator,
         MultiValueRemove,
-        MultiValueContainer: ({...props})=><MultiValueContainer {...props} validator={validateEmail}/>,
+        MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateEmail} />,
         IndicatorSeparator: () => null,
         Menu: () => null
-    }),[])
+    }), [])
 
-    const creatableOptions = useMemo(()=>([]), [])
+    const creatableOptions = useMemo(() => ([]), [])
 
     const availableGroups = userGroupsList?.map(group => ({ value: group.name, label: group.name }))
     return (
@@ -523,23 +523,10 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>
-            {deleteConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={`Delete User '${emailState.emails[0]?.value || ''}'`}>
-                        <p style={{ marginTop: '16px' }}>
-                            Deleting this user will remove the user and revoke all their permissions.
-                        </p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" onClick={(e) => setDeleteConfirmationModal(false)}>
-                            Cancel
-                        </button>
-                        <button className="cta delete" disabled={submitting} onClick={handleDelete}>
-                            {submitting ? <Progressing /> : 'Delete'}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
+            {deleteConfirmationModal && (<DeleteDialog title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
+                description={'Deleting this user will remove the user and revoke all their permissions.'}
+                delete={handleDelete}
+                closeDelete={() => setDeleteConfirmationModal(false)} />
             )}
         </div>
     );
@@ -547,7 +534,8 @@ export default function UserForm({ id = null, userData=null,index,  updateCallba
 
 const SuperAdmin: React.FC<{
     superAdmin: boolean;
-    setSuperAdmin: (checked: boolean) => any}> = ({ superAdmin, setSuperAdmin }) => {
+    setSuperAdmin: (checked: boolean) => any
+}> = ({ superAdmin, setSuperAdmin }) => {
     return (
         <div className="flex left column top bcn-1 br-4 p-16 mb-24">
             <div className="flex left">
@@ -555,7 +543,7 @@ const SuperAdmin: React.FC<{
                     type="checkbox"
                     checked={!!superAdmin}
                     onChange={(e) => setSuperAdmin(e.target.checked)}
-                    style={{height:'13px', width:'13px'}}
+                    style={{ height: '13px', width: '13px' }}
                 />
                 <span className="fs-14 fw-6 cn-9 ml-16">Assign superadmin permissions</span>
             </div>

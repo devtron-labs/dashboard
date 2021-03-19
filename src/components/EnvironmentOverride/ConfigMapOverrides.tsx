@@ -348,7 +348,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     index={null}
                     update={(isSuccess) => reload()}
                 />}
-            {state.dialog && <ConfirmationDialog>
+            {state.dialog && <ConfirmationDialog className="confirmation-dialog__body--w-360">
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="Delete override ?" subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone." />
                 <ConfirmationDialog.ButtonGroup>

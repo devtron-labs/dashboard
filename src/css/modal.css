@@ -49,12 +49,6 @@
     vertical-align: middle;
 }
 
-.modal__description {
-    font-size: 13px;
-    line-height: 1.54;
-    color: var(--N700);
-}
-
 .full-screen-modal__body-container {
     flex: 1;
     overflow: auto;
@@ -137,13 +131,15 @@
 .confirmation-dialog__body {
     margin: 0 auto;
     width: 450px;
-    padding: 32px 24px;
+    padding: 24px;
     background: white;
     border-radius: 8px;
     margin-top: 40px;
     position: relative;
 }
-
+.confirmation-dialog__body--w-360{
+    width: 360px;
+}
 .confirmation-dialog__icon {
     width: 48px;
     margin-bottom: 16px;
