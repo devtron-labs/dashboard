@@ -16,10 +16,6 @@ export interface CustomInputProps {
     tabIndex?: number;
     autoComplete: string;
     onChange: (...args) => void;
-    maxLength?;
-    pattern?;
-    required?: boolean;
-    type?: string;
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -32,7 +28,6 @@ export class CustomInput extends Component<CustomInputProps, any> {
             <label className={labelClasses}>{this.props.label}</label>
             <input type={`text`}
                 autoFocus={this.props.autoFocus}
-                maxLength={this.props.maxLength}
                 autoComplete={this.props.autoComplete}
                 tabIndex={this.props.tabIndex}
                 name={this.props.name}
@@ -40,9 +35,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 className={isError ? "form__input" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
-                disabled={this.props.disabled}
-                pattern= {this.props.pattern} 
-                required= {this.props.required}/>
+                disabled={this.props.disabled} />
             {this.props.error && <div className="form__error">
                 <Error className="form__icon form__icon--error" />
                 {this.props.error}

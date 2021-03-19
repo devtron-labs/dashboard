@@ -52,7 +52,7 @@ function useSecretContext() {
 }
 
 export default function SecretOverrides({ parentState, setParentState, ...props }) {
-    const { appId, envId } = useParams()
+    const { appId, envId } = useParams<{ appId, envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     useEffect(() => {
         if (!loading && result) {

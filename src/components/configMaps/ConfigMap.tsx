@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput } from '../common'
+import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
 import { getConfigMapList } from '../../services/service';
@@ -14,7 +14,6 @@ import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import './ConfigMap.scss'
-import { Checkbox } from '../common';
 
 const EXTERNAL_TYPES = {
     "": "Kubernetes ConfigMap",
@@ -22,7 +21,7 @@ const EXTERNAL_TYPES = {
 }
 
 const ConfigMap = ({ respondOnSuccess, ...props }) => {
-    const { appId } = useParams<{appId}>()
+    const { appId } = useParams<{ appId }>()
     const [loading, result, error, reload, setResult] = useAsync(() => getConfigMapList(appId), [appId])
 
     if (loading && !result) {
@@ -79,10 +78,10 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
     )
 })
 
-export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, subPath = false, filePermission = "", ...rest }) {
+export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
-    return <section className="config-map-container white-card">{collapsed
-        ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'create-new' : ''} />
+    return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
+        ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'fw-6 cb-5 fs-14' : 'fw-5 cn-9 fs-14'} />
         : <ConfigMapForm {...{ name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, filePermission, subPath, ...rest }} />}
     </section>
 }
@@ -199,21 +198,20 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission = "" }) {
+export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
     const [configName, setName] = useState({ value: name, error: "" })
     const [volumeMountPath, setVolumeMountPath] = useState({ value: mountPath, error: "" })
     const [loading, setLoading] = useState(false)
-    const { envId } = useParams()
+    const { envId } = useParams<{ envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_KEY}`)
     const tempArray = useRef([])
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" })
-
+    const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -238,71 +236,61 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     async function handleDelete() {
         try {
             if (!envId) {
-                const { result } = await deleteConfig(id, appId, name)
+                await deleteConfig(id, appId, name)
                 toast.success('Successfully deleted')
                 updateForm(listIndex, null)
             }
             else {
-                const { result } = await deleteEnvironmentConfig(id, appId, envId, name);
+                await deleteEnvironmentConfig(id, appId, envId, name);
                 toast.success('Successfully deleted')
                 updateForm(true)
             }
-
         }
         catch (err) {
             showError(err)
         }
     }
-//var my_string = permissionValue;
-        // if(my_string.length == 0 ) {
-        //     my_string = '0' + my_string;
-        // }
-    function handleFilePermission(e) {
-        let permissionValue = e.target.value
-        setFilePermissionValue({ value: permissionValue, error: "" })
 
-        if (isFilePermissionChecked) {
-            // if (!/^[0-9]*$/.test(permissionValue)) {
-            //     setFilePermissionValue({ value: permissionValue, error: 'Only numbers allowed' })
-            //     return
-            // }
-            // if (permissionValue.length < 3) {
-            //     setFilePermissionValue({ value: permissionValue, error: "should be 3 digit" })
-            //     return
-            // }
-        }
+    function handleFilePermission(e): void {
+        let permissionValue = e.target.value;
+        setFilePermissionValue({ value: permissionValue, error: "" });
     }
-   
 
     async function handleSubmit(e) {
-        // var unicodeRe = /U\+(\d+)/;
-        // var ch = e.key || e.keyIdentifier;
-        // var match = ch.match(unicodeRe);
-        // if (match) {
-        //     ch = String.fromCharCode(Number.parseInt(match[1], 16));
-        // }
-        if (isFilePermissionChecked) {
-            if (!filePermissionValue.value) {
-                setFilePermissionValue({ value: "", error: "Field is manadatory" })
-                return
-            }
-        } else {
-            setFilePermissionValue({ value: "", error: "" })
-
-        }
+        const configmapNameRegex = new RegExp(/^[-.a-zA-Z0-9]+$/);
 
         if (!configName.value) {
             setName({ value: "", error: 'Field is manadatory' })
             return
         }
-        if (!/^[-.a-zA-Z0-9]+$/.test(configName.value)) {
+        if (!configmapNameRegex.test(configName.value)) {
             setName({ value: configName.value, error: 'Name must be of format /^[-.a-zA-Z0-9]+$/' })
             return
         }
         if (selectedTab === 'Data Volume' && !volumeMountPath.value) {
-            setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is manadatory' })
+            setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is mandatory' })
             return
         }
+
+        if (isFilePermissionChecked) {
+            if (!filePermissionValue.value) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
+                return
+            }
+            if (filePermissionValue.value.startsWith("0")) { //Octal Format
+                if (filePermissionValue.value.length !== 4) {
+                    setFilePermissionValue({ value: filePermissionValue, error: "4 characters are required for octal format" });
+                    return
+                }
+            }
+            else {
+                if (filePermissionValue.value.length !== 3) {
+                    setFilePermissionValue({ value: filePermissionValue, error: "At least 3 characters are required" });
+                    return;
+                }
+            }
+        }
+
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
@@ -329,7 +317,6 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 filePermission: filePermissionValue.value,
                 subPath: isSubPathChecked
             }
-            { console.log(payload) }
             if (!envId) {
                 const { result } = await updateConfig(id, +appId, payload)
                 toast.success(
@@ -378,10 +365,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         }
         toggleYamlMode(not)
     }
-
-
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
-
 
     return (
         <div className="white-card__config-map">
@@ -410,15 +394,13 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             </div> : null}
             <div className="form__row">
                 <label className="form__label">Name*</label>
-                <input value={configName.value} autoComplete="off" onChange={isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
+                <input value={configName.value} autoComplete="off" autoFocus onChange={(e) => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
-
             <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
             <div className={`form__row form-row__tab`}>
                 {tabs.map((data, idx) => <Tab {...data} key={idx} onClick={title => selectTab(title)} />)}
             </div>
-
             {selectedTab === 'Data Volume' ? <div className="form__row">
                 <CustomInput value={volumeMountPath.value}
                     autoComplete="off"
@@ -429,60 +411,35 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            { !isExternalValues && selectedTab === 'Data Volume' ?
+            {!isExternalValues && selectedTab === 'Data Volume' ?
                 <div className="mb-16">
-                    <Checkbox
-                        isChecked={isSubPathChecked}
-                        onClick={(e) => { e.stopPropagation() }}
+                    <Checkbox isChecked={isSubPathChecked}
+                        onClick={(e) => { e.stopPropagation(); }}
                         rootClassName="form__checkbox-label--ignore-cache"
                         value={"CHECKED"}
-                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
-                    >
+                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
                         <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                     </Checkbox>
                 </div> : ""}
             {selectedTab === 'Data Volume' ? <div className="mb-16">
-                <Checkbox
-                    isChecked={isFilePermissionChecked}
+                <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
-                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
-                >
+                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
-             {isFilePermissionChecked ? <div className="mb-16">
-                <CustomInput
-                    value={filePermissionValue.value}
+            {isFilePermissionChecked ? <div className="mb-16">
+                <CustomInput value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
                     placeholder={"eg. 400"}
-                    maxLength="4"
                     error={filePermissionValue.error}
-                    onChange={handleFilePermission}
-                    pattern="\d{4}" 
-                    required
-                />
-                
-            </div> : ""} 
-{/*
-            {isFilePermissionChecked ? <div className="mb-16">
-                <input
-                    type="text"
-                    value={filePermissionValue.value}
-                    autoComplete="off"
-                    tabIndex={5}
-                    maxLength={3}
-                    placeholder={"eg. 400"}
-                    onChange={handleFilePermission}
-                    pattern="^0[1-9]|[1-9]$"
-                     required
-                />
-
+                    onChange={handleFilePermission} />
             </div> : ""}
-            */}
+
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
@@ -521,14 +478,12 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         </div>
                         : <>
                             {externalValues.map((data, idx) => <KeyValueInput keyLabel={selectedTab == "Data Volume" ? "File Name" : "Key"} valueLabel={selectedTab == "Data Volume" ? "File Content" : "Value"} {...data} key={idx} index={idx} onChange={handleChange} onDelete={handleDeleteParam} />)}
-                            <div className="add-parameter bold pointer flex left" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
-                                <Add className="fcb-5 icon-dim-20 mr-8" />Add parameter
+                            <div className="add-parameter bold pointer" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
+                                <Add />Add parameter
                             </div>
                         </>
                     }
-                </>
-            }
-            <hr />
+                </>}
             <div className="form__buttons">
                 <button type="button" className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}</button>
             </div>
