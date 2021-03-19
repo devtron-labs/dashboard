@@ -133,9 +133,9 @@
     }
     
     .ci-stage__title {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
-        line-height: 1.43;
+        line-height: 1.25;
         letter-spacing: normal;
         color: var(--N900);
         margin-bottom: 4px;

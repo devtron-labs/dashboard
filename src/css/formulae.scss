@@ -239,3 +239,21 @@ $color-suffix: 00;
     align-items: center;
     justify-content: center;
 }
+
+.lh-1-43{
+    line-height: 1.43;
+}
+
+.divider{
+    border-top: 1px solid #d0d4d9;
+}
+
+.sqr-44{
+    width: 44px;
+    height: 44px;
+    background-color: var(--N100);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+}

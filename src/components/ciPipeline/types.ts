@@ -67,6 +67,9 @@ export interface CIPipelineState {
     gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
+    showPreBuild: boolean;
+    // showDocker: boolean;
+    // showPostBuild: boolean;
 }
 
 
