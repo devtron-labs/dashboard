@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
-import { not } from '../common'
+import { DeleteDialog, not } from '../common'
 import moment from 'moment'
 import EmptyState from '../EmptyState/EmptyState';
 import NoDeploymentImg from '../../assets/img/app-not-configured.png';
 import { InstalledChartGroup, InstalledChart } from './charts.types';
 import { Link } from 'react-router-dom'
-import { DeleteDialog } from '../common';
 import placeHolder from '../../assets/icons/ic-plc-chart.svg';
 
 interface ChartGroupDeploymentsProps {
@@ -109,15 +108,17 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
                 </Link>
             })}
         </div>
-        {candidateChart.installedAppId ? <DeleteDialog
-            title={candidateChart.chartName}
-            description={"This will delete all resources associated with this application. Deleted applications cannot be restored."}
-            closeDelete={() => { setCandidateChart(defaultInstalledChart) }}
+        {candidateChart.installedAppId ? <DeleteDialog title={`Delete '${candidateChart.chartName}' ?`}
             delete={() => {
                 props.deleteInstalledChart(candidateChart.installedAppId);
                 setCandidateChart(defaultInstalledChart);
             }}
-        /> : null}
+            closeDelete={() => { setCandidateChart(defaultInstalledChart) }}>
+            <DeleteDialog.Description>
+                <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application</p>
+                <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+            </DeleteDialog.Description>
+        </DeleteDialog> : null}
     </React.Fragment>
 }
 

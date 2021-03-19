@@ -33,7 +33,6 @@ export * from './helpers/git';
 export * from './helpers/UseWindowSize';
 export * from './helpers/util';
 export * from './helpers/time';
-export * from './DeletePipeline';
 export * from './ToastBody';
 export { BreadCrumb, useBreadcrumb } from './BreadCrumb/BreadCrumb'
 export { default as BreadcrumbStore } from './BreadCrumb/BreadcrumbStore'

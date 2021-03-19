@@ -270,7 +270,9 @@ export class AppListView extends Component<AppListViewProps>{
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
                 {this.renderPageHeader()}
-                <ErrorScreenManager code={this.props.code} />
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={this.props.code} />
+                </div>
             </React.Fragment>
         }
         else {
