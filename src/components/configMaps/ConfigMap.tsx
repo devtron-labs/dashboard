@@ -435,7 +435,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
-                    placeholder={"eg. 400"}
+                    placeholder={"eg. 0400 or 400"}
                     error={filePermissionValue.error}
                     onChange={handleFilePermission} />
             </div> : ""}

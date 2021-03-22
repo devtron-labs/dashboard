@@ -561,7 +561,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 autoComplete="off"
                 tabIndex={5}
                 label={""}
-                placeholder={"eg. 0400"}
+                placeholder={"eg. 0400 or 400"}
                 error={filePermissionValue.error}
                 onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}
             />

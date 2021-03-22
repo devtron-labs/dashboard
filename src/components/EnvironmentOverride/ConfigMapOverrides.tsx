@@ -342,7 +342,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         autoComplete="off"
                         label={""}
                         disabled={!state.duplicate}
-                        placeholder={"eg. 0400"}
+                        placeholder={"eg. 0400 or 400"}
                         error={state.filePermission.error}
                         onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />
                 </div> : null}
