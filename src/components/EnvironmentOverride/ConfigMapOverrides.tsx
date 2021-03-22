@@ -214,22 +214,25 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             }
             return
         }
+
         if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "Field is mandatory" } })
                 return
             }
-            if (state.filePermission.value.startsWith("0")) { //Octal Format
-                if (state.filePermission.value.length !== 4) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "4 characters are required for octal format" } })
-                    return
-                }
+            else if (state.filePermission.value.length > 4) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "More than 4 characters are not allowed" } })
+                return
             }
-            else {
-                if (state.filePermission.value.length !== 3) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "At least 3 characters are required" } })
+            else if (state.filePermission.value.length === 4) {
+                if (!state.filePermission.value.startsWith("0")) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "This is Octal format, please enter 4 characters" } })
                     return;
                 }
+            }
+            else if (state.filePermission.value.length < 3) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "At least 3 characters are required" } })
+                return;
             }
         }
         if (dataArray.length === 0 && !external) {
