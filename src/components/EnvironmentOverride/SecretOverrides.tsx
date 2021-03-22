@@ -289,8 +289,6 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 external: !!externalType,
                 externalType,
                 mountPath: state.mountPath,
-                subPath: state.subPath,
-                filePermission: state.filePermission.value,
             }
             if (isHashiOrAWS) {
                 payload['secretData'] = secretData.map((s) => {
@@ -309,7 +307,13 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     return agg
                 }, {})
             }
-            dispatch({ type: 'loadingSubmit' })
+            if (type === 'volume') {
+                payload['subPath'] = state.subPath;
+                if (isFilePermissionChecked) {
+                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermissionValue.value}` : `${state.filePermissionValue.value}`;
+                }
+            }
+            dispatch({ type: 'loadingSubmit' });
             const { result } = await overRideSecret(id, +appId, +envId, [payload])
             await reload()
             toast.success(

@@ -275,19 +275,21 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
         if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
-                return
+                return;
             }
-            if (filePermissionValue.value.startsWith("0")) { //Octal Format
-                if (filePermissionValue.value.length !== 4) {
-                    setFilePermissionValue({ value: filePermissionValue.value, error: "4 characters are required for octal format" });
-                    return
-                }
+            else if (filePermissionValue.value.length > 4) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "More than 4 characters are not allowed" });
+                return;
             }
-            else {
-                if (filePermissionValue.value.length !== 3) {
-                    setFilePermissionValue({ value: filePermissionValue.value, error: "At least 3 characters are required" });
+            else if (filePermissionValue.value.length === 4) {
+                if (!filePermissionValue.value.startsWith("0")) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: "This is Octal format, please enter 4 characters" });
                     return;
                 }
+            }
+            else if (filePermissionValue.value.length < 3) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: "At least 3 characters are required" });
+                return;
             }
         }
 
@@ -314,8 +316,12 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: isExternalValues,
                 ...(volumeMountPath.value && { mountPath: volumeMountPath.value }),
-                filePermission: filePermissionValue.value,
-                subPath: isSubPathChecked
+            }
+            if (selectedTab === 'Data Volume') {
+                payload['subPath'] = isSubPathChecked;
+                if (isFilePermissionChecked) {
+                    payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
+                }
             }
             if (!envId) {
                 const { result } = await updateConfig(id, +appId, payload)
