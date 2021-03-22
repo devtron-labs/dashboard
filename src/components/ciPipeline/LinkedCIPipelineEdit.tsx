@@ -68,7 +68,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             })
         });
     }
-    
+
     handleName(event): void {
         let { form, isValid } = { ...this.state };
         form.name = event.target.value;
@@ -114,7 +114,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     renderHeader() {
         return <>
-            <h1 className="modal__form-title">Create linked build pipeline</h1>
+            <h1 className="modal__form-title pl-20">Create linked build pipeline</h1>
             <p className="form__subtitle"></p>
         </>
     }
@@ -161,39 +161,41 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         }
         else {
             return <VisibleModal className="">
-                <div className="modal__body br-0 modal__body--ci">
+                <div className="modal__body pl-0 pr-0 br-0 modal__body--ci">
                     {this.renderHeader()}
-                    <hr className="divider"/>
-                    {this.renderInfoDialog()}
-                    <div className="typeahead form__row">
-                        <Typeahead labelKey={'name'} name='app' label={'Filter By Application'} disabled={false}
-                            onChange={(event) => { this.selectApp(event) }} multi={false} defaultSelections={app ? [app] : []} >
-                            {this.state.apps.map((app) => {
-                                return <TypeaheadOption key={app.id} id={app.id} item={app}>{app.name}</TypeaheadOption>
-                            })}
-                        </Typeahead>
-                        {(this.state.showError && !this.state.isValid.parentAppId) ? <span className="form__error">
-                            <img src={error} alt="" className="form__icon" />
+                    <hr className="divider" />
+                    <div className="pl-20 pr-20">
+                        {this.renderInfoDialog()}
+                        <div className="typeahead form__row">
+                            <Typeahead labelKey={'name'} name='app' label={'Filter By Application'} disabled={false}
+                                onChange={(event) => { this.selectApp(event) }} multi={false} defaultSelections={app ? [app] : []} >
+                                {this.state.apps.map((app) => {
+                                    return <TypeaheadOption key={app.id} id={app.id} item={app}>{app.name}</TypeaheadOption>
+                                })}
+                            </Typeahead>
+                            {(this.state.showError && !this.state.isValid.parentAppId) ? <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
                             This is a required Field
                         </span> : null}
-                    </div>
-                    {this.renderCIPipelinesDropdown(app)}
-                    {this.state.form.parentCIPipelineId
-                        ? <label className="form__row">
-                            <span className="form__label">Name*</span>
-                            <input className="form__input" placeholder="Enter pipeline name" type="text" value={this.state.form.name} onChange={this.handleName} />
-                            {(!this.state.isValid.name) ? <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
+                        </div>
+                        {this.renderCIPipelinesDropdown(app)}
+                        {this.state.form.parentCIPipelineId
+                            ? <label className="form__row">
+                                <span className="form__label">Name*</span>
+                                <input className="form__input" placeholder="Enter pipeline name" type="text" value={this.state.form.name} onChange={this.handleName} />
+                                {(!this.state.isValid.name) ? <span className="form__error">
+                                    <img src={error} alt="" className="form__icon" />
                                 You cannot use same name for pipeline within an app.
                         </span> : null}
-                        </label>
-                        : null}
-                    <div className="form__row form__row--flex">
-                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
-                            onClick={this.savePipeline}
-                            isLoading={this.state.loadingData}>
-                            Create Linked CI Pipeline
+                            </label>
+                            : null}
+                        <div className="form__row form__row--flex">
+                            <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                                onClick={this.savePipeline}
+                                isLoading={this.state.loadingData}>
+                                Create Linked CI Pipeline
                         </ButtonWithLoader>
+                        </div>
                     </div>
                 </div>
             </VisibleModal >
