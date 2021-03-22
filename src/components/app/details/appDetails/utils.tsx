@@ -213,10 +213,13 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-function getK8sVersionArr(k8sVersion): number[] {
-    let version: string[] = (k8sVersion.split("v")[1]).split(".");
-    let versionNum: number[] = version.map(item => Number(item));
-    return versionNum;
+function getK8sVersionArr(k8sVersion: string): number[] {
+    let k8sVersionMod = k8sVersion;
+    if (k8sVersionMod.includes("v")) {
+        k8sVersionMod = k8sVersion.split("v")[1];
+    }
+    let version: string[] = k8sVersionMod.split(".");
+    return [Number(version[0]), Number(version[1])];
 }
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
@@ -228,7 +231,7 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
         }, 0)
         if (isNaN(sum)) return false;
     } catch (error) {
-        return false
+        return false;
     }
     return true;
 }
