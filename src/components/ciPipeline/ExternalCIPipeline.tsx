@@ -321,7 +321,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             </OpaqueModal>
         }
         else {
-            return <VisibleModal className="">
+            return <VisibleModal className="" close={this.props.close}>
                 <div className="modal__body br-0 modal__body--ci">
                     {this.renderHeader()}
                     {this.renderHostErrorMessage()}

@@ -160,7 +160,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             </OpaqueModal>
         }
         else {
-            return <VisibleModal className="">
+            return <VisibleModal className="" close={this.props.close}>
                 <div className="modal__body pl-0 pr-0 br-0 modal__body--ci">
                     {this.renderHeader()}
                     <hr className="divider" />
