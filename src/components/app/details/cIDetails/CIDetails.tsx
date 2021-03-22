@@ -497,7 +497,7 @@ const ProgressingStatus: React.FC<{ triggerDetails: History, abort?: () => Promi
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <ConfirmationDialog.Body title={type === 'CD' ? `Abort ${triggerDetails.stage.toLowerCase()}-deployment?` : 'Abort build?'} />
-                    <p className="modal__description">{type === 'CD' ? 'Are you sure you want to abort this stage?' : 'Are you sure you want to abort this build?'}</p>
+                    <p className="fs-13 cn-7 lh-1-54">{type === 'CD' ? 'Are you sure you want to abort this stage?' : 'Are you sure you want to abort this build?'}</p>
                     <ConfirmationDialog.ButtonGroup>
                         <button type="button" className="cta cancel" onClick={e => setAbortConfiguration(false)}>Cancel</button>
                         <button type="button" className="cta delete" onClick={abortRunning}>{aborting ? <Progressing /> : 'Yes, Abort'}</button>

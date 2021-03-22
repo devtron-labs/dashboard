@@ -160,10 +160,10 @@ export const Details: React.FC<{
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
-    //     //@ts-ignore
-    //     prefix = `${location.protocol}//${location.host}`; 
+        //     //@ts-ignore
+        //     prefix = `${location.protocol}//${location.host}`; 
     }
-    
+
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
@@ -320,7 +320,10 @@ export const Details: React.FC<{
             <SecurityVulnerabilitites imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
                 severityCount={lastExecutionDetail.severityCount}
                 onClick={() => { toggleScanDetailsModal(true) }} />
-            {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
+            {environment && <AppMetrics appName={appDetails.appName}
+                environment={environment}
+                podMap={aggregatedNodes.nodes.Pod}
+                k8sVersion={appDetails.k8sVersion} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
                     nodes={aggregatedNodes}
@@ -392,8 +395,8 @@ export const Details: React.FC<{
                             ) : hibernateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -1202,8 +1205,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>

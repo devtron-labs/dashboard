@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
 import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common';
-import { AppConfigStatus, ViewType } from '../../config';
+import { AppConfigStatus, ViewType,  DOCUMENTATION, } from '../../config';
 import { withRouter } from 'react-router';
 import { CreateMaterial } from './CreateMaterial';
 import { UpdateMaterial } from './UpdateMaterial';
@@ -107,7 +107,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return <>
             <h1 className="form__title form__title--artifacts">Git Materials</h1>
-            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application.</p>
+            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application. 
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more about Git Material</a> </span></p>
         </>
     }
 

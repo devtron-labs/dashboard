@@ -1,6 +1,7 @@
 export const RequestTimeout = 60000;
 export const DEFAULT_STATUS = 'Checking Status...';
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+export const DEFAULTK8SVERSION = 'v1.16.0';
 
 export const Routes = {
     LOGIN: 'api/v1/session',
@@ -176,7 +177,8 @@ export const DOCUMENTATION = {
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
 
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
-
+    
+    GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
     GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
     GLOBAL_CONFIG_CLUSTER: 'https://docs.devtron.ai/user-guide/global-configurations/cluster-and-environments',

@@ -3,10 +3,9 @@ import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap } from '../common';
+import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
-import { DeletePipeline } from '../common';
 import { Link } from 'react-router-dom';
 import { Info } from '../common/icons/Icons'
 import { getWorkflowList } from './../../services/service';
@@ -140,14 +139,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderDeleteCI() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.form.name}
-                appName={this.props.appName}
-                shouldDeleteApp={false}
-                setDeleteApp={() => { }}
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deletePipeline} />
-
+                delete={this.deletePipeline} />
         }
         return null;
     }

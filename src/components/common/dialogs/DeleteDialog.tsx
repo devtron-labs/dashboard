@@ -1,46 +1,38 @@
-import React, { Component } from 'react';
-import { VisibleModal } from '../modals/VisibleModal';
+import React from 'react';
 import warn from '../../../assets/img/warning-medium.svg';
+import ConfirmationDialog from './ConfirmationDialog';
 
 export interface DeleteDialogProps {
     title: string;
-    description: string;
+    description?: string;
     closeDelete: () => void;
-    delete: () => void;
+    delete: () => any;
 }
 
-export class DeleteDialog extends Component<DeleteDialogProps> {
-    render() {
-        return <VisibleModal className="">
-            <div className="modal__body">
-                <DialogTitle title={this.props.title} description={this.props.description}> {this.props.children} </DialogTitle>
-                <DialogBody>{this.props.children}</DialogBody>
-                <div className="flex right">
-                    <button type="button" className="cta cancel cta-cd-delete-modal mr-16" onClick={this.props.closeDelete}>Cancel</button>
-                    <button type="button" className="cta delete cta-cd-delete-modal" onClick={this.props.delete}>Delete</button>
-                </div>
+export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.FC<any>; } = function (props) {
+
+    return <ConfirmationDialog className="confirmation-dialog__body--w-360">
+        <ConfirmationDialog.Icon src={warn} />
+        <ConfirmationDialog.Body title={props.title}>
+            <div className="fs-13 cn-7 lh-1-54">
+                {props.description ? props.description : null}
+                {props.children}
             </div>
-        </VisibleModal >
-    }
-}
-
-class DialogTitle extends Component<{ title: string; description: string }> {
-    render() {
-        return < >
-            <img src={warn} alt="warn" className="modal__main-img" />
-            <div className="modal__body-content">
-                <h1 className="modal__title">Delete '{`${this.props.title}`}' ?</h1>
-                <p className="modal__description">{this.props.description}</p>
+        </ConfirmationDialog.Body>
+        <ConfirmationDialog.ButtonGroup>
+            <div className="flex right">
+                <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={props.closeDelete}>Cancel</button>
+                <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={props.delete}>Delete</button>
             </div>
-        </ >
-    }
+        </ConfirmationDialog.ButtonGroup>
+    </ConfirmationDialog >
 }
 
-export class DialogBody extends Component<{}> {
-    render() {
-        return < >
-            {this.props.children}
-        </ >
-    }
+function DeleteDialogDescription(props) {
+
+    return <>
+        {props.children}
+    </>
 }
 
+DeleteDialog.Description = DeleteDialogDescription;

@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing, ConfirmationDialog, removeItemsFromArray, mapByKey } from '../common'
-import {ResizableTextarea} from '../configMaps/ConfigMap'
-import deleteIcon from '../../assets/icons/ic-delete.svg'
+import { showError, Progressing, removeItemsFromArray, mapByKey, DeleteDialog } from '../common'
+import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { saveGroup, deleteGroup } from './userGroup.service';
 
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, APIRoleFilter, CreateGroup } from './userGroups.types'
@@ -11,13 +10,13 @@ import { toast } from 'react-toastify'
 import { DirectPermission, ChartPermission, useUserGroupContext } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 
-export default function GroupForm({ id = null,index=null,  groupData=null, updateCallback, deleteCallback, createCallback, cancelCallback }) {
+export default function GroupForm({ id = null, index = null, groupData = null, updateCallback, deleteCallback, createCallback, cancelCallback }) {
     // id null is for create
     const emptyDirectPermission: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
         environment: [],
-        team:null,
+        team: null,
         action:
         {
             label: "",
@@ -28,26 +27,26 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({ entity: EntityTypes.CHART_GROUP, action: ActionTypes.VIEW, entityName: [] })
     const [submitting, setSubmitting] = useState(false)
-    const [name, setName] = useState({value: "", error: ""})
+    const [name, setName] = useState({ value: "", error: "" })
     const [description, setDescription] = useState("")
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
 
-    function isFormComplete():boolean{
-        let isComplete: boolean=true
-        const tempPermissions = directPermission.reduce((agg, curr)=>{
-            if( curr.team &&  curr.entityName.length === 0){
+    function isFormComplete(): boolean {
+        let isComplete: boolean = true
+        const tempPermissions = directPermission.reduce((agg, curr) => {
+            if (curr.team && curr.entityName.length === 0) {
                 isComplete = false
                 curr.entityNameError = 'Applications are mandatory'
             }
-            if( curr.team && curr.environment.length === 0){
+            if (curr.team && curr.environment.length === 0) {
                 isComplete = false
                 curr.environmentError = 'Environments are mandatory'
-            } 
+            }
             agg.push(curr)
             return agg
-        },[])
+        }, [])
 
-        if(!isComplete){
+        if (!isComplete) {
             setDirectPermission(tempPermissions)
         }
 
@@ -55,8 +54,8 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
     }
 
     async function handleSubmit(e) {
-        if(!name.value){
-            setName(name=>({...name, error: 'Group name is mandatory'}))
+        if (!name.value) {
+            setName(name => ({ ...name, error: 'Group name is mandatory' }))
             return
         }
         if (!isFormComplete()) {
@@ -94,11 +93,11 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
         };
 
         try {
-            const {result}= await saveGroup(payload)
-            if(id){
+            const { result } = await saveGroup(payload)
+            if (id) {
                 updateCallback(index, result)
             }
-            else{
+            else {
                 createCallback(result)
             }
 
@@ -112,18 +111,18 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
         }
     }
     useEffect(() => {
-        if (!groupData){
+        if (!groupData) {
             setDirectPermission([emptyDirectPermission])
             return
         }
         populateDataFromAPI(groupData)
     }, [groupData])
 
-    async function populateDataFromAPI(data: CreateGroup){
+    async function populateDataFromAPI(data: CreateGroup) {
         const { roleFilters, id, name, description } = (data)
-        const allProjects = roleFilters.map(roleFilter=>roleFilter.team).filter(Boolean)
+        const allProjects = roleFilters.map(roleFilter => roleFilter.team).filter(Boolean)
         const projectsMap = mapByKey(projectsList, 'name')
-        const allProjectIds = allProjects.map(p=>projectsMap.get(p).id)
+        const allProjectIds = allProjects.map(p => projectsMap.get(p).id)
         const uniqueProjectIds = Array.from(new Set(allProjectIds))
         await fetchAppList(uniqueProjectIds)
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
@@ -138,23 +137,23 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
                     entityName: directRolefilter?.entityName
                         ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: entity }))
                         : [
-                              { label: 'All applications', value: '*' },
-                              ...(appsList.get(projectId)?.result || []).map((app) => ({
-                                  label: app.name,
-                                  value: app.name,
-                              })),
-                          ],
+                            { label: 'All applications', value: '*' },
+                            ...(appsList.get(projectId)?.result || []).map((app) => ({
+                                label: app.name,
+                                value: app.name,
+                            })),
+                        ],
                     environment: directRolefilter.environment
                         ? directRolefilter.environment
-                              .split(',')
-                              .map((directRole) => ({ value: directRole, label: directRole }))
+                            .split(',')
+                            .map((directRole) => ({ value: directRole, label: directRole }))
                         : [
-                              { label: 'All environments', value: '*' },
-                              ...environmentsList.map((env) => ({
-                                  label: env.environment_name,
-                                  value: env.environment_name,
-                              })),
-                          ],
+                            { label: 'All environments', value: '*' },
+                            ...environmentsList.map((env) => ({
+                                label: env.environment_name,
+                                value: env.environment_name,
+                            })),
+                        ],
                 } as DirectPermissionsRoleFilter;
             })
         if (directPermissions.length > 0) {
@@ -164,7 +163,7 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
             setDirectPermission([emptyDirectPermission])
         }
 
-        setName({value: name, error: ""})
+        setName({ value: name, error: "" })
         setDescription(description)
 
         const tempChartPermission: APIRoleFilter = roleFilters?.find(roleFilter => roleFilter.entity === EntityTypes.CHART_GROUP)
@@ -234,7 +233,7 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
         setDirectPermission(tempPermissions)
     }
 
-    async function handleDelete(e) {
+    async function handleDelete() {
         setSubmitting(true)
         try {
             await deleteGroup(id)
@@ -262,50 +261,44 @@ export default function GroupForm({ id = null,index=null,  groupData=null, updat
         <div className="user-form">
             <label className="form__label">Group name*</label>
             {name.error && <label className="form__error">{name.error}</label>}
-            <input type="text" className="form__input mb-16" disabled={!!id} value={name.value} onChange={e=>setName({value:e.target.value, error: ''})}/>
+            <input type="text" className="form__input mb-16" disabled={!!id} value={name.value} onChange={e => setName({ value: e.target.value, error: '' })} />
             <label htmlFor="" className="form__label">Description</label>
             <ResizableTextarea
                 name=""
                 maxHeight={300}
                 className="w-100"
                 value={description}
-                onChange={e=>setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
             />
             <fieldset>
                 <legend>Direct permissions</legend>
-                <div className="w-100 mb-26" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 24px', gridGap: '16px', alignItems:'center' }}>
+                <div className="w-100 mb-26" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 24px', gridGap: '16px', alignItems: 'center' }}>
                     <label className="bold">Project</label>
                     <label className="bold">Environment</label>
                     <label className="bold">Application</label>
                     <label className="bold">Role</label>
                     <span />
-                    {directPermission.map((permission, idx) => 
-                        <DirectPermission 
+                    {directPermission.map((permission, idx) =>
+                        <DirectPermission
                             index={idx}
-                            key={idx} 
-                            permission={permission} 
+                            key={idx}
+                            permission={permission}
                             removeRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={(value, actionMeta) => handleDirectPermissionChange(idx, value, actionMeta)} 
+                            handleDirectPermissionChange={(value, actionMeta) => handleDirectPermissionChange(idx, value, actionMeta)}
                         />)}
                 </div>
-                <b className="anchor pointer flex left" style={{width: '90px'}} onClick={e => setDirectPermission(permission => [...permission, emptyDirectPermission])}><AddIcon className="add-svg mr-12"/> Add row</b>
+                <b className="anchor pointer flex left" style={{ width: '90px' }} onClick={e => setDirectPermission(permission => [...permission, emptyDirectPermission])}><AddIcon className="add-svg mr-12" /> Add row</b>
             </fieldset>
             <ChartPermission chartPermission={chartPermission} setChartPermission={setChartPermission} />
             <div className="flex right mt-32">
-                {id && <button className="cta delete" style={{marginRight:'auto'}} onClick={e=>setDeleteConfirmationModal(true)}>Delete</button>}
+                {id && <button className="cta delete" style={{ marginRight: 'auto' }} onClick={e => setDeleteConfirmationModal(true)}>Delete</button>}
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">Cancel</button>
                 <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>{submitting ? <Progressing /> : 'Save'}</button>
             </div>
-            {deleteConfirmationModal && <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={deleteIcon} />
-                <ConfirmationDialog.Body title={`Delete group '${name}'`}>
-                    <p style={{ marginTop: '16px' }}>Deleting this group will revoke permissions from users added to this group.</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button className="cta cancel" onClick={e => setDeleteConfirmationModal(false)}>Cancel</button>
-                    <button className="cta delete" disabled={submitting} onClick={handleDelete}>{submitting ? <Progressing /> : 'Delete'}</button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>}
+            {deleteConfirmationModal && <DeleteDialog title={`Delete group '${name.value}'?`}
+                description={'Deleting this group will revoke permissions from users added to this group.'}
+                closeDelete={() => setDeleteConfirmationModal(false)}
+                delete={handleDelete} />}
         </div>
     )
 }

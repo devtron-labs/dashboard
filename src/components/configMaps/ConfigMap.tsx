@@ -21,7 +21,7 @@ const EXTERNAL_TYPES = {
 }
 
 const ConfigMap = ({ respondOnSuccess, ...props }) => {
-    const { appId } = useParams()
+    const { appId } = useParams<{appId}>()
     const [loading, result, error, reload, setResult] = useAsync(() => getConfigMapList(appId), [appId])
 
     if (loading && !result) {

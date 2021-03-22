@@ -7,6 +7,8 @@ import { saveChartProviderConfig, updateChartProviderConfig } from './service'
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
+import { DOCUMENTATION } from '../../config';
+
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -19,8 +21,8 @@ export default function ChartRepo() {
     return (
         <section className="global-configuration__component">
             <h2 className="form__title">Chart Repository</h2>
-            <h5 className="form__subtitle">Manage your organization’s chart repositories. &nbsp;
-                </h5>
+            <p className="form__subtitle">Manage your organization’s chart repositories.
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more about Git Material</a> </span></p>
             {[{ id: null, default: true, url: "", name: "", active: true, authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
         </section>
     );
@@ -60,7 +62,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
                             <span style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />

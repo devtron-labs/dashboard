@@ -29,6 +29,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 active: this.props.material.active,
             },
             isCollapsed: true,
+            isChecked: true,
             isLoading: false,
             isError: {
                 gitProvider: undefined,
@@ -42,6 +43,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
+        this.handleCheckbox = this.handleCheckbox.bind(this);
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -59,6 +62,12 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 isLoading: false,
             })
         }
+    }
+
+    handleCheckbox(event): void {
+        this.setState({
+            isChecked: !this.state.isChecked
+        });
     }
 
     handleProviderChange(selected) {
@@ -116,7 +125,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         }, () => {
             if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
-            this.setState({ isLoading: true });
+            this.setState({ isLoading: true,  isChecked: true });
             let payload = {
                 appId: this.props.appId,
                 material: {
@@ -160,9 +169,11 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material={this.state.material}
             isError={this.state.isError}
             isCollapsed={this.state.isCollapsed}
+            isChecked={ this.state.isChecked}
             isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
+            handleCheckbox= {this.handleCheckbox}
             handleProviderChange={this.handleProviderChange}
             handleUrlChange={this.handleUrlChange}
             handlePathChange={this.handlePathChange}

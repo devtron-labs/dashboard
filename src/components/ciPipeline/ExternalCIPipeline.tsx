@@ -3,7 +3,7 @@ import { getCIPipelineParsed, saveCIPipeline, deleteCIPipeline, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, DeletePipeline, CopyButton, showError, ConditionalWrap } from '../common';
+import { Progressing, OpaqueModal, Select, CopyButton, showError, ConditionalWrap, DeleteDialog } from '../common';
 import { toast } from 'react-toastify';
 import git from '../../assets/icons/git/git.svg';
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -206,14 +206,10 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
 
     renderDeleteCI() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.form.name}
-                appName={this.props.appName}
-                shouldDeleteApp={false}
-                setDeleteApp={() => { }}
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deletePipeline} />
-
+                delete={this.deletePipeline} />
         }
         return null;
     }
