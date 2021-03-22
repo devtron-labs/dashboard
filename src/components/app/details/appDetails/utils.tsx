@@ -220,7 +220,7 @@ function getK8sVersionArr(k8sVersion: string): number[] {
     let versionStr: string = k8sVersion.substring(startIndex + 1, endIndex);
 
     let version: string[] = (versionStr).split(".");
-    let versionNum: number[] = version.map((item) => parseInt(item));
+    let versionNum: number[] = version.map((item) => Number(item));
     return versionNum;
 }
 
