@@ -321,6 +321,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 </div>}
                 {type === "volume" && <Checkbox isChecked={state.subPath}
                     onClick={(e) => { e.stopPropagation(); }}
+                    disabled={!state.duplicate}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value="CHECKED"
                     onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
@@ -328,7 +329,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 </Checkbox>}
                 {type === "volume" && <div className="mb-16">
                     <Checkbox isChecked={isFilePermissionChecked}
-                        onClick={(e) => { e.stopPropagation() }}
+                        onClick={(e) => { e.stopPropagation(); }}
+                        disabled={!state.duplicate}
                         rootClassName="form__checkbox-label--ignore-cache"
                         value={"CHECKED"}
                         onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
@@ -339,6 +341,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     <CustomInput value={state.filePermission.value}
                         autoComplete="off"
                         label={""}
+                        disabled={!state.duplicate}
                         placeholder={"eg. 0400"}
                         error={state.filePermission.error}
                         onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />

@@ -454,6 +454,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 </div>}
             {type === "volume" && <Checkbox isChecked={state.subPath}
                 onClick={(e) => { e.stopPropagation(); }}
+                disabled={!state.duplicate}
                 rootClassName="form__checkbox-label--ignore-cache"
                 value="CHECKED"
                 onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
@@ -462,6 +463,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             {type === "volume" && <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
+                    disabled={!state.duplicate}
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={"CHECKED"}
                     onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
@@ -472,6 +474,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 <CustomInput value={state.filePermission.value}
                     autoComplete="off"
                     label={""}
+                    disabled={!state.duplicate}
                     placeholder={"eg. 0400"}
                     error={state.filePermission.error}
                     onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />
