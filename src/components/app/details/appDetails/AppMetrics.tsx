@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { getIframeSrc, ThroughputSelect, getCalendarValue } from './utils';
-import { ChartTypes, AppMetricsTab, AppMetricsTabType } from './appDetails.type';
+import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid } from './utils';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION } from '../../../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
@@ -16,9 +16,10 @@ import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
 import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
+import { toast } from 'react-toastify'
 
 
-export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any> }> = ({ appName, environment, podMap }) => {
+export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion }> = ({ appName, environment, podMap, k8sVersion }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
     const [calendar, setDateRange] = useState<{ startDate: Moment, endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
@@ -33,12 +34,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         isConfigured: false,
         isHealthy: false,
     });
-    const [focusedInput, setFocusedInput] = useState('startDate')
+    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate);
     const [chartName, setChartName] = useState<ChartTypes>(null);
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
-    const [statusCode, setStatusCode] = useState('Throughput');
+    const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
     const [hostURLConfig, setHostURLConfig] = useState(undefined);
     const [graphs, setGraphs] = useState({
         cpu: "",
@@ -66,7 +67,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         });
     }
 
-    function handleDateInput(key: 'startDate' | 'endDate', value: string): void {
+    function handleDateInput(key: CalendarFocusInputType, value: string): void {
         setCalendarInput({
             ...calendarInputs,
             [key]: value
@@ -74,7 +75,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleFocusChange(focusedInput): void {
-        setFocusedInput(focusedInput || 'startDate');
+        setFocusedInput(focusedInput || CalendarFocusInput.StartDate);
     }
 
     function handleApply(): void {
@@ -117,7 +118,17 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function handleStatusChange(selected): void {
-        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, tab, true, selected.value);
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = DEFAULTK8SVERSION;
+        }
+        let appInfo = {
+            appId: appId,
+            envId: envId,
+            environmentName: environmentName,
+            newPodHash: newPodHash,
+            k8sVersion: k8sVersion,
+        }
+        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value);
         setStatusCode(selected.value);
         setGraphs({
             ...graphs,
@@ -126,10 +137,26 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function getNewGraphs(newTab): void {
-        let cpu = getIframeSrc(appId, envId, environmentName, 'cpu', newPodHash, calendarInputs, newTab, true);
-        let ram = getIframeSrc(appId, envId, environmentName, 'ram', newPodHash, calendarInputs, newTab, true);
-        let throughput = getIframeSrc(appId, envId, environmentName, 'status', newPodHash, calendarInputs, newTab, true, 'Throughput');
-        let latency = getIframeSrc(appId, envId, environmentName, 'latency', newPodHash, calendarInputs, newTab, true);
+        if (!datasource.isHealthy) return;
+
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = DEFAULTK8SVERSION;
+            toast.warn(<div className="toast">
+                <div className="toast__title">Error Parsing K8sVersion</div>
+                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
+            </div>)
+        }
+        let appInfo = {
+            appId: appId,
+            envId: envId,
+            environmentName: environmentName,
+            newPodHash: newPodHash,
+            k8sVersion: k8sVersion,
+        }
+        let cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true);
+        let ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true);
+        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true);
+        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput);
         setGraphs({
             cpu,
             ram,
@@ -141,9 +168,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
-        getNewGraphs(tab);
         checkDatasource();
-    }, [])
+    }, [appName])
+
+    useEffect(() => {
+        getNewGraphs(tab);
+    }, [datasource])
 
     useEffect(() => {
         getNewGraphs(tab);
@@ -156,102 +186,105 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             isHealthy={datasource.isHealthy}
             hostURLConfig={hostURLConfig} />
     }
-    else return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
-        style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
-        {(appMetrics || infraMetrics) && (
-            <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
-                <span className="fs-14 fw-6 cn-7 flex left mr-9">
-                    <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
+    else {
+        return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
+            style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
+            {(appMetrics || infraMetrics) && (
+                <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
+                    <span className="fs-14 fw-6 cn-7 flex left mr-9">
+                        <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
                 </span>
-                <div className="flex">
-                    <div className="mr-16">
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
-                            <span className="tertiary-tab">Aggregate</span>
-                        </label>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
-                            <span className="tertiary-tab">Per Pod</span>
-                        </label>
-                        {chartName ? <GraphModal appId={appId}
-                            envId={envId}
-                            appName={appName}
-                            infraMetrics={environment.infraMetrics}
-                            appMetrics={environment.appMetrics}
-                            environmentName={environmentName}
-                            chartName={chartName}
-                            newPodHash={newPodHash}
-                            calendar={calendar}
+                    <div className="flex">
+                        <div className="mr-16">
+                            <label className="tertiary-tab__radio">
+                                <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
+                                <span className="tertiary-tab">Aggregate</span>
+                            </label>
+                            <label className="tertiary-tab__radio">
+                                <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
+                                <span className="tertiary-tab">Per Pod</span>
+                            </label>
+                            {chartName ? <GraphModal appId={appId}
+                                envId={envId}
+                                appName={appName}
+                                infraMetrics={environment.infraMetrics}
+                                appMetrics={environment.appMetrics}
+                                environmentName={environmentName}
+                                chartName={chartName}
+                                newPodHash={newPodHash}
+                                calendar={calendar}
+                                calendarInputs={calendarInputs}
+                                tab={tab}
+                                k8sVersion={k8sVersion}
+                                close={() => setChartName(null)} /> : null}
+                        </div>
+                        <DateRangePicker calendar={calendar}
                             calendarInputs={calendarInputs}
-                            tab={tab}
-                            close={() => setChartName(null)} /> : null}
+                            focusedInput={focusedInput}
+                            calendarValue={calendarValue}
+                            handlePredefinedRange={handlePredefinedRange}
+                            handleDatesChange={handleDatesChange}
+                            handleFocusChange={handleFocusChange}
+                            handleDateInput={handleDateInput}
+                            handleApply={handleApply} />
                     </div>
-                    <DateRangePicker calendar={calendar}
-                        calendarInputs={calendarInputs}
-                        focusedInput={focusedInput}
-                        calendarValue={calendarValue}
-                        handlePredefinedRange={handlePredefinedRange}
-                        handleDatesChange={handleDatesChange}
-                        handleFocusChange={handleFocusChange}
-                        handleDateInput={handleDateInput}
-                        handleApply={handleApply} />
                 </div>
+            )}
+            <div className={`chart-containers`}>
+                {infraMetrics ? <>
+                    <div className={`app-metrics-graph chart`}>
+                        <div className="app-metrics-graph__title flexbox flex-justify">CPU Usage
+                    <Tippy className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content="Fullscreen">
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Cpu) }} />
+                            </Tippy>
+                        </div>
+                        <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
+                    </div>
+                    <div className={`app-metrics-graph chart`}>
+                        <div className="app-metrics-graph__title flexbox flex-justify">Memory Usage
+                        <Tippy className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content="Fullscreen">
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Ram) }} />
+                            </Tippy>
+                        </div>
+                        <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
+                    </div>
+                </> : <PrometheusError />}
+                {appMetrics ? <>
+                    <div className={`app-metrics-graph chart`}>
+                        <div className="flexbox flex-justify">
+                            <h3 className="app-details-graph__title flexbox m-0">
+                                <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
+                            </h3>
+                            <Tippy className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content="Fullscreen">
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Status) }} />
+                            </Tippy>
+                        </div>
+                        <iframe title={StatusType.Throughput} src={graphs.throughput} className="app-metrics-graph__iframe" />
+                    </div>
+                    <div className={`app-metrics-graph chart`}>
+                        <div className="app-metrics-graph__title flexbox flex-justify">Latency
+                    <Tippy className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content="Fullscreen">
+                                <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName(ChartType.Latency) }} />
+                            </Tippy>
+                        </div>
+                        <iframe title={ChartType.Latency} src={graphs.latency} className="app-metrics-graph__iframe" />
+                    </div>
+                </> : <EnableAppMetrics />}
             </div>
-        )}
-        <div className={`chart-containers`}>
-            {infraMetrics ? <>
-                <div className={`app-metrics-graph chart`}>
-                    <div className="app-metrics-graph__title flexbox flex-justify">CPU Usage
-                    <Tippy className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('cpu') }} />
-                        </Tippy>
-                    </div>
-                    <iframe title={'cpu'} src={graphs.cpu} className="app-metrics-graph__iframe" />
-                </div>
-                <div className={`app-metrics-graph chart`}>
-                    <div className="app-metrics-graph__title flexbox flex-justify">Memory Usage
-                        <Tippy className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('ram') }} />
-                        </Tippy>
-                    </div>
-                    <iframe title={'ram'} src={graphs.ram} className="app-metrics-graph__iframe" />
-                </div>
-            </> : <PrometheusError />}
-            {appMetrics ? <>
-                <div className={`app-metrics-graph chart`}>
-                    <div className="flexbox flex-justify">
-                        <h3 className="app-details-graph__title flexbox m-0">
-                            <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
-                        </h3>
-                        <Tippy className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('status') }} />
-                        </Tippy>
-                    </div>
-                    <iframe title={'throughput'} src={graphs.throughput} className="app-metrics-graph__iframe" />
-                </div>
-                <div className={`app-metrics-graph chart`}>
-                    <div className="app-metrics-graph__title flexbox flex-justify">Latency
-                    <Tippy className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content="Fullscreen">
-                            <Fullscreen className="icon-dim-16 cursor fcn-5" onClick={(e) => { setChartName('latency') }} />
-                        </Tippy>
-                    </div>
-                    <iframe title={'latency'} src={graphs.latency} className="app-metrics-graph__iframe" />
-                </div>
-            </> : <EnableAppMetrics />}
-        </div>
-    </section>
+        </section>
+    }
 }
 
 function PrometheusError() {
@@ -324,4 +357,3 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
         </article>
     </div>
 }
-

@@ -3,7 +3,7 @@ import { getCIPipelineParsed, saveCIPipeline, deleteCIPipeline, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, CopyButton, showError, ConditionalWrap, DeleteDialog } from '../common';
+import { Progressing, OpaqueModal, Select, CopyButton, showError, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import git from '../../assets/icons/git/git.svg';
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -321,8 +321,8 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             </OpaqueModal>
         }
         else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
+            return <VisibleModal className="">
+                <div className="modal__body br-0 modal__body--ci">
                     {this.renderHeader()}
                     {this.renderHostErrorMessage()}
                     <div className="form__row">
@@ -348,7 +348,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     </div>
                     {this.renderExternalCIConfig()}
                 </div>
-            </OpaqueModal >
+            </VisibleModal  >
         }
     }
 }
