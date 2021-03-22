@@ -317,7 +317,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is manadatory' })
             return
         }
-        if (isFilePermissionChecked) {
+        if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
                 return
@@ -556,7 +556,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
             </Checkbox>
         </div> : ""}
-        {isFilePermissionChecked ? <div className="mb-16">
+        {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
             <CustomInput value={filePermissionValue.value}
                 autoComplete="off"
                 tabIndex={5}

@@ -272,7 +272,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             return
         }
 
-        if (isFilePermissionChecked) {
+        if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
                 return

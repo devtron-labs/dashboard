@@ -247,6 +247,24 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             dispatch({ type: 'createErrors' })
             return
         }
+        if (type === 'volume' && isFilePermissionChecked) {
+            if (!state.filePermission.value) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "Field is mandatory" } })
+                return
+            }
+            if (state.filePermission.value.startsWith("0")) { //Octal Format
+                if (state.filePermission.value.length !== 4) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "4 characters are required for octal format" } })
+                    return
+                }
+            }
+            else {
+                if (state.filePermission.value.length !== 3) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "At least 3 characters are required" } })
+                    return;
+                }
+            }
+        }
         try {
             let dataArray = yamlMode ? tempArr.current : state.duplicate
             if ((externalType === "" && dataArray.length == 0)) {

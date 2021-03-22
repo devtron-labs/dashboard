@@ -214,7 +214,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             }
             return
         }
-        if (isFilePermissionChecked) {
+        if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "Field is mandatory" } })
                 return
