@@ -5,6 +5,16 @@
     margin-bottom: 24px;
 }
 
+.modal__title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--N900);
+    margin: 0px;
+    margin-bottom: 4px;
+
+}
+
 .modal__body {
     display: block;
     width: 400px;

@@ -114,13 +114,13 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     renderHeader() {
         return <>
-            <h1 className="form__title">Linked CI Pipeline</h1>
+            <h1 className="modal__form-title">Create linked build pipeline</h1>
             <p className="form__subtitle"></p>
         </>
     }
 
     renderInfoDialog() {
-        return <div className="info__container info__container--linked-ci">
+        return <div className="info__container fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
             <Info />
             <div className="flex column left">
                 <div className="info__title">Info</div>
