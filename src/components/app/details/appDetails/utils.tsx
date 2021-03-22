@@ -213,9 +213,14 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-function getK8sVersionArr(k8sVersion): number[] {
-    let version: string[] = (k8sVersion.split("v")[1]).split(".");
-    let versionNum: number[] = version.map(item => Number(item));
+function getK8sVersionArr(k8sVersion: string): number[] {
+    let startIndex: number = k8sVersion.indexOf("v");
+    let endIndex: number = k8sVersion.indexOf("-");
+    if (endIndex < 0) endIndex = k8sVersion.length - 1;
+    let versionStr: string = k8sVersion.substring(startIndex + 1, endIndex);
+
+    let version: string[] = (versionStr).split(".");
+    let versionNum: number[] = version.map((item) => parseInt(item));
     return versionNum;
 }
 
@@ -228,7 +233,7 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
         }, 0)
         if (isNaN(sum)) return false;
     } catch (error) {
-        return false
+        return false;
     }
     return true;
 }
