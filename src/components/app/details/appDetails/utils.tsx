@@ -215,6 +215,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
 
 function getK8sVersionArr(k8sVersion: string): number[] {
     let startIndex: number = k8sVersion.indexOf("v");
+    if (startIndex < 0) startIndex = 0;
     let endIndex: number = k8sVersion.indexOf("-");
     if (endIndex < 0) endIndex = k8sVersion.length - 1;
     let versionStr: string = k8sVersion.substring(startIndex + 1, endIndex);
