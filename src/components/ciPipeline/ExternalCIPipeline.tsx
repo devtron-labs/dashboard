@@ -15,6 +15,8 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { getHostURLConfiguration } from '../../services/service';
 import { URLS } from '../../config';
 import './ciPipeline.css';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+
 
 export default class ExternalCIPipeline extends Component<CIPipelineProps, ExternalCIPipelineState> {
     validationRules;
@@ -255,8 +257,13 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
 
     renderHeader() {
         return <>
-            <h1 className="form__title">External CI Pipeline</h1>
-            <p className="form__subtitle"></p>
+            <div className="flex left">
+                <h1 className="modal__form-title pl-20">External CI Pipeline</h1>
+                <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                    <Close className="icon-dim-24" />
+                </button>
+                <p className="form__subtitle"></p>
+            </div>
         </>
     }
 
@@ -321,32 +328,35 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             </OpaqueModal>
         }
         else {
-            return <VisibleModal className="" close={this.props.close}>
-                <div className="modal__body br-0 modal__body--ci">
+            return <VisibleModal className="" >
+                <div className="modal__body pl-0 pr-0 br-0 modal__body--ci">
                     {this.renderHeader()}
-                    {this.renderHostErrorMessage()}
-                    <div className="form__row">
-                        <span className="form__label">Pipeline Name*</span>
-                        <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
-                            onChange={this.handlePipelineName} />
-                        {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                            <img src={error} alt="" className="form__icon" />
-                            {this.validationRules.name(this.state.form.name).message}
-                        </span> : null}
-                    </div>
-                    {this.renderMaterials()}
-                    {this.renderDeleteCI()}
-                    <div className="form__row form__row--flex">
-                        {this.renderDeleteCIButton()}
-                        <ButtonWithLoader rootClassName="cta flex-1"
-                            loaderColor="white"
-                            onClick={this.savePipeline}
-                            // disabled={!!this.props.match.params.ciPipelineId}
-                            isLoading={this.state.loadingData}>
-                            Save and Generate URL
+                    <hr className="divider" />
+                    <div className="pl-20 pr-20">
+                        {this.renderHostErrorMessage()}
+                        <div className="form__row">
+                            <span className="form__label">Pipeline Name*</span>
+                            <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
+                                onChange={this.handlePipelineName} />
+                            {this.state.showError && !errorObj.isValid ? <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
+                                {this.validationRules.name(this.state.form.name).message}
+                            </span> : null}
+                        </div>
+                        {this.renderMaterials()}
+                        {this.renderDeleteCI()}
+                        <div className="form__row form__row--flex">
+                            {this.renderDeleteCIButton()}
+                            <ButtonWithLoader rootClassName="cta flex-1"
+                                loaderColor="white"
+                                onClick={this.savePipeline}
+                                // disabled={!!this.props.match.params.ciPipelineId}
+                                isLoading={this.state.loadingData}>
+                                Save and Generate URL
                         </ButtonWithLoader>
+                        </div>
+                        {this.renderExternalCIConfig()}
                     </div>
-                    {this.renderExternalCIConfig()}
                 </div>
             </VisibleModal  >
         }
