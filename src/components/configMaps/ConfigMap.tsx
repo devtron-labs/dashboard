@@ -315,9 +315,9 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 data,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: isExternalValues,
-                ...(volumeMountPath.value && { mountPath: volumeMountPath.value }),
             }
             if (selectedTab === 'Data Volume') {
+                payload['mountPath'] = volumeMountPath.value;
                 payload['subPath'] = isSubPathChecked;
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;

@@ -244,11 +244,11 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 name: name,
                 type: type,
                 external: external,
-                mountPath: state.mountPath,
                 data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || "" }), {}),
             }
-
+            
             if (type === 'volume') {
+                payload['mountPath']= state.mountPath;
                 payload['subPath'] = state.subPath;
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermissionValue.value}` : `${state.filePermissionValue.value}`;

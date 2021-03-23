@@ -290,7 +290,6 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 roleARN: isHashiOrAWS ? roleARN : "",
                 external: !!externalType,
                 externalType,
-                mountPath: state.mountPath,
             }
             if (isHashiOrAWS) {
                 payload['secretData'] = secretData.map((s) => {
@@ -310,6 +309,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 }, {})
             }
             if (type === 'volume') {
+                payload['mountPath'] = state.mountPath;
                 payload['subPath'] = state.subPath;
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermissionValue.value}` : `${state.filePermissionValue.value}`;

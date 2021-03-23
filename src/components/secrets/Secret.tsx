@@ -371,8 +371,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 external: !!externalType,
                 roleARN: isHashiOrAWS ? roleARN.value : "",
                 externalType,
-                ...(volumeMountPath.value && { mountPath: volumeMountPath.value }),
-
             }
             //Adding conditional fields
             if (isHashiOrAWS) {
@@ -391,6 +389,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             }
 
             if (selectedTab === 'Data Volume') {
+                payload['mountPath'] = volumeMountPath.value;
                 payload['subPath'] = isSubPathChecked;
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
