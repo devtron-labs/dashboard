@@ -3,7 +3,7 @@ import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog } from '../common';
+import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -13,6 +13,8 @@ import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import git from '../../assets/icons/git/git.svg';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
     constructor(props) {
@@ -47,7 +49,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             showDockerArgs: false,
             loadingData: true,
             sourcePipelineURL: "",
-            showPreBuild:false,
+            showPreBuild: false,
             showPostBuild: false,
             showDocker: false,
         }
@@ -264,8 +266,12 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderHeader() {
         return <>
-            <h1 className="form__title">Linked CI Pipeline</h1>
-            <p className="form__subtitle"></p>
+            <div className="flex left pl-20 pr-20 pt-20">
+                <div className="fs-16 fw-6 ">Linked CI Pipeline</div>
+                <button type="button" className="transparent m-auto-mr-0" onClick={this.props.close}>
+                    <Close className="icon-dim-24" />
+                </button>
+            </div>
         </>
     }
 
@@ -296,28 +302,31 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             </OpaqueModal>
         }
         else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
+            return <VisibleModal className="">
+                <div className="modal__body p-0 br-0 modal__body--ci">
                     {this.renderHeader()}
-                    {this.renderInfoDialog()}
-                    <label className="form__row">
-                        <span className="form__label">Pipeline Name*</span>
-                        <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={name} />
-                    </label>
-                    {this.renderTriggerType()}
-                    {this.renderMaterials()}
-                    {this.renderDockerArgs()}
-                    {this.renderStages('beforeDockerBuildScripts')}
-                    {this.renderStages('afterDockerBuildScripts')}
-                    {this.renderDeleteCI()}
-                    <div className="form__row form__row--flex">
-                        {this.renderDeleteCIButton()}
-                        <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
-                            View Source Pipeline
+                    <hr className="divider" />
+                    <div className="pl-20 pr-20">
+                        {this.renderInfoDialog()}
+                        <label className="form__row">
+                            <span className="form__label">Pipeline Name*</span>
+                            <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={name} />
+                        </label>
+                        {this.renderTriggerType()}
+                        {this.renderMaterials()}
+                        {this.renderDockerArgs()}
+                        {this.renderStages('beforeDockerBuildScripts')}
+                        {this.renderStages('afterDockerBuildScripts')}
+                        {this.renderDeleteCI()}
+                        <div className="form__row form__row--flex">
+                            {this.renderDeleteCIButton()}
+                            <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
+                                View Source Pipeline
                         </Link>
+                        </div>
                     </div>
                 </div>
-            </OpaqueModal >
+            </VisibleModal >
         }
     }
 }
