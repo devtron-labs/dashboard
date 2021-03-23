@@ -19,6 +19,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import PreBuild from '../../assets/img/preBuildStage.png';
 import BasicCIPipeline from './BasicCIPipeline';
+import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
@@ -412,11 +413,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     renderStages(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
         let description, title;
         if (key == 'beforeDockerBuildScripts') {
-            title = "Pre-build";
+            title = "Pre-build Stages";
             description = " These stages are run in sequence before the docker image is built";
         }
         else {
-            title = "Post-build";
+            title = "Post-build Stages";
             description = " These stages are run in sequence after the docker image is built";
         }
         return <>
@@ -426,6 +427,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     <div className="ci-stage__title">{title}</div>
                     <div className="ci-stage__description">{description}</div>
                 </div>
+                <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
             </div>
 
             {this.state.form[key].map((stage, index) => {
@@ -482,6 +484,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 <div className="ci-stage__title">Docker build</div>
                 <div className="ci-stage__description ">Override docker build configurations for this pipeline.</div>
             </div>
+            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
+
         </div>
             {this.state.showDocker ?
 
