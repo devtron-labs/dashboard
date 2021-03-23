@@ -247,6 +247,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             dispatch({ type: 'createErrors' })
             return
         }
+        
         if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
@@ -254,21 +255,26 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             }
             else if (state.filePermission.value.length > 4) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'More than 4 characters are not allowed' } })
-                return
+                return;
             }
-            else if (state.filePermission.value.startsWith('0')) {
-                if (state.filePermission.value.length !== 4) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is Octal format, please enter 4 characters' } })
+            else if (state.filePermission.value.length === 4) {
+                if (!state.filePermission.value.startsWith('0')) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: '4 characters are allowed in octal format only, first character should be 0' } });
                     return;
                 }
             }
-            else if (!state.filePermission.value.startsWith('0')) {
-                if (state.filePermission.value.length !== 3) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is not octal format, only 3 characters are allowed' } })
+            if (state.filePermission.value.length === 3) {
+                if (state.filePermission.value.startsWith('0')) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is octal format, please enter 4 characters' } });
                     return;
                 }
+            }
+            else if (state.filePermission.value.length < 3) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'Atleast 3 character are required' } });
+                return;
             }
         }
+
         try {
             let dataArray = yamlMode ? tempArr.current : state.duplicate
             if ((externalType === "" && dataArray.length == 0)) {
