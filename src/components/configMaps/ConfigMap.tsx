@@ -288,7 +288,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     return;
                 }
             }
-            if (filePermissionValue.value.length === 3) {
+            else if (filePermissionValue.value.length === 3) {
                 if (filePermissionValue.value.startsWith('0')) {
                     setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal format, please enter 4 characters' });
                     return;
@@ -296,6 +296,10 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             }
             else if (filePermissionValue.value.length < 3) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
+                return;
+            }
+            if (!new RegExp(PATTERNS.FILE_PERMISSION).test(filePermissionValue.value)) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
                 return;
             }
         }

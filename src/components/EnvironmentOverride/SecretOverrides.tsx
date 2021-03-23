@@ -247,7 +247,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             dispatch({ type: 'createErrors' })
             return
         }
-        
+
         if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
@@ -263,7 +263,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     return;
                 }
             }
-            if (state.filePermission.value.length === 3) {
+            else if (state.filePermission.value.length === 3) {
                 if (state.filePermission.value.startsWith('0')) {
                     dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is octal format, please enter 4 characters' } });
                     return;
@@ -273,8 +273,11 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'Atleast 3 character are required' } });
                 return;
             }
+            if (!new RegExp(PATTERNS.FILE_PERMISSION).test(state.filePermission.value)) {
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is octal number, use numbers between 0 to 7' } });
+                return;
+            }
         }
-
         try {
             let dataArray = yamlMode ? tempArr.current : state.duplicate
             if ((externalType === "" && dataArray.length == 0)) {
@@ -491,7 +494,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     disabled={!state.duplicate}
                     placeholder={"eg. 0400 or 400"}
                     error={state.filePermission.error}
-                    onChange={(e) => dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } })} />
+                    onChange={(e) => { dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } }) }} />
             </div> : null}
             {isHashiOrAWS ? <div className="form__row form__row--flex">
                 <div className="w-50">
