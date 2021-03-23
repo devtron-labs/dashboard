@@ -44,7 +44,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
-    
+
     HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
     NOTIFIER: 'notification',
@@ -165,7 +165,7 @@ export const TagOptions = [
 ];
 
 
-export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";
+export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
 
 export const DOCUMENTATION = {
     APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
@@ -177,13 +177,13 @@ export const DOCUMENTATION = {
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
 
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
-    
+
     GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
     GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
     GLOBAL_CONFIG_CLUSTER: 'https://docs.devtron.ai/user-guide/global-configurations/cluster-and-environments',
     GLOBAL_CONFIG_CHART: 'https://docs.devtron.ai/user-guide/global-configurations/chart-repo',
     GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/global-configurations/manage-notification',
-    GLOBAL_CONFIG_PROJECT:   'https://docs.devtron.ai/global-configurations/projects',
+    GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }

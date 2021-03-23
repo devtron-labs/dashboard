@@ -3,7 +3,7 @@ import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
 import { getEnvironmentSecrets, } from '../../services/service';
 import { useParams } from 'react-router'
 import { ListComponent, Override } from './ConfigMapOverrides'
-import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox } from '../common'
+import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -462,7 +462,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 onClick={(e) => { e.stopPropagation(); }}
                 disabled={!state.duplicate}
                 rootClassName="form__checkbox-label--ignore-cache"
-                value="CHECKED"
+                value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
                 <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
             </Checkbox>}
@@ -471,7 +471,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     onClick={(e) => { e.stopPropagation() }}
                     disabled={!state.duplicate}
                     rootClassName="form__checkbox-label--ignore-cache"
-                    value={"CHECKED"}
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>

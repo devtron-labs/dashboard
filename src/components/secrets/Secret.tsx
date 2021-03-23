@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput } from '../common'
+import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service';
 import { overRideSecret, deleteSecret as deleteEnvironmentSecret, unlockEnvSecret } from '../EnvironmentOverride/service'
@@ -15,7 +15,6 @@ import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import '../configMaps/ConfigMap.scss';
-import { Checkbox } from '../common';
 
 let sampleJSON = [{
     "key": "service/credentials",
@@ -550,7 +549,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
-                    value={"CHECKED"}
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>
@@ -559,7 +558,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}
                 rootClassName="form__checkbox-label--ignore-cache"
-                value={"CHECKED"}
+                value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
                 <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
             </Checkbox>

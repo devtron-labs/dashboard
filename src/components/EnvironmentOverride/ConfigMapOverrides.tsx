@@ -6,7 +6,7 @@ import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { mapByKey, showError, Progressing, Info, ConfirmationDialog, useAsync, Select, RadioGroup, not, CustomInput, Checkbox } from '../common'
+import { mapByKey, showError, Progressing, Info, ConfirmationDialog, useAsync, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -332,7 +332,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     onClick={(e) => { e.stopPropagation(); }}
                     disabled={!state.duplicate}
                     rootClassName="form__checkbox-label--ignore-cache"
-                    value="CHECKED"
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
                     <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                 </Checkbox>}
@@ -341,7 +341,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         onClick={(e) => { e.stopPropagation(); }}
                         disabled={!state.duplicate}
                         rootClassName="form__checkbox-label--ignore-cache"
-                        value={"CHECKED"}
+                        value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
                         <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                     </Checkbox>

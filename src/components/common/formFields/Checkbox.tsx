@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 
+export enum CHECKBOX_VALUE {
+    CHECKED = 'CHECKED',
+    INTERMEDIATE = 'INTERMEDIATE',
+}
 interface CheckboxProps {
     onChange: (event) => void;
     isChecked: boolean;

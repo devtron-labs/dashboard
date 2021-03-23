@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox } from '../common'
+import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
 import { getConfigMapList } from '../../services/service';
@@ -422,7 +422,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
                         rootClassName="form__checkbox-label--ignore-cache"
-                        value={"CHECKED"}
+                        value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
                         <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
                     </Checkbox>
@@ -431,7 +431,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName="form__checkbox-label--ignore-cache"
-                    value={"CHECKED"}
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
                     <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
                 </Checkbox>
