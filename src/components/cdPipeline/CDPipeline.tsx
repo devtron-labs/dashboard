@@ -22,6 +22,7 @@ import './cdPipeline.css';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import PreBuild from '../../assets/img/preBuildStage.png';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
+import BasicCDPipelineModal from './BasicCDPipelineModal';
 
 
 export const SwitchItemValues = {
@@ -31,7 +32,7 @@ export const SwitchItemValues = {
 
 export default class CDPipeline extends Component<CDPipelineProps, CDPipelineState> {
     allStrategies: { [key: string]: any } = {};
-    validationRules;;
+    validationRules;
     preStage;
     postStage;
     configMapAndSecrets = [];
@@ -735,7 +736,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             namespaceEditable = true;
         }
-        return <><VisibleModal className="" >
+        return <>
             <form className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43" onSubmit={this.savePipeline}>
                 <div className="pt-20 pl-20">{this.renderHeader()}</div>
                 <hr className="divider mb-0" />
@@ -822,7 +823,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
             </form>
-        </VisibleModal>
         </>
     }
 
@@ -841,7 +841,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             namespaceEditable = true;
         }
-        return <><VisibleModal className="" close={this.props.close}>
+        return <>
             <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
                 {this.renderHeader}
                 <hr className="divider" />
@@ -895,7 +895,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
 
-            </div></VisibleModal>
+            </div>
         </>
 
     }
@@ -907,9 +907,20 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             </VisibleModal>
         }
         else {
-          return<> 
-          {this.renderAdvanceCDPipeline()}
-           </>
+            return <>
+                <VisibleModal className="" >
+                    <BasicCDPipelineModal 
+                    view = {this.state.view}
+                    pipelineConfig= {this.state.pipelineConfig}
+                    environments= {this.state.environments}
+                    selectEnvironment= {this.selectEnvironment}
+                    savePipeline= {this.savePipeline}
+                    loadingData= {this.state.loadingData}
+                    showError= {this.state.showError}
+                    handleNamespaceChange= {this.handleNamespaceChange}
+                    />
+                </VisibleModal>
+            </>
         }
     }
 }

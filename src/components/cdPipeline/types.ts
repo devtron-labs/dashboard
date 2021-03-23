@@ -81,3 +81,39 @@ export interface CDPipelineState {
     showPostBuild: boolean;
 }
 
+
+export interface PipelineConfig{
+        id: number;
+        environmentId: number;
+        ciPipelineId: number;
+        triggerType: string;
+        name: string;
+        preStage: CDStageType & { switch: string };
+        postStage: CDStageType & { switch: string };
+        strategies: SavedDeploymentStrategy[];
+        namespace: string;
+        preStageConfigMapSecretNames: {
+            configMaps: string[];
+            secrets: string[];
+        },
+        postStageConfigMapSecretNames: {
+            configMaps: string[];
+            secrets: string[];
+        },
+        runPreStageInEnv: boolean;
+        runPostStageInEnv: boolean;
+        isClusterCdActive: boolean;
+    };
+
+
+export interface BasicCDPipelineModalProps {
+view: string;
+pipelineConfig: PipelineConfig;
+environments: Environment[];
+selectEnvironment: (selection: Environment[]) => void;
+savePipeline: () => void;
+loadingData: boolean;
+showError: boolean;
+handleNamespaceChange: (event: any, environment: any) => void
+}
+
