@@ -3,7 +3,7 @@ import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { VisibleModal, Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
+import { VisibleModal, Progressing, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
@@ -104,7 +104,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         },
         )
     }
-    
+
     handlePostBuild() {
         this.setState({
             view: ViewType.FORM,
@@ -550,15 +550,14 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             </ConditionalWrap>
         }
     }
-    renderAdvanceCI() {
+    renderAdvanceCI(...props) {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         let errorObj = this.validationRules.name(this.state.form.name);
         return <>
-
-            <VisibleModal className="" >
                 <div className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43">
                     <div className=" pl-20 ">{this.renderHeader()}</div>
                     <hr className="divider" style={{ marginBottom: "0" }} />
+
                     <div className="p-20">
                         <label className="form__row">
                             <span className="form__label">Pipeline Name*</span>
@@ -601,58 +600,62 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         </div>
                     </div>
                 </div>
-            </VisibleModal >
+           
         </>
     }
     renderBasicPipeline() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         if (this.state.view == ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
+            return <Progressing pageLoader />
         }
         else {
-            return <VisibleModal className="">
-                <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
-                    <div className=" pl-20 ">{this.renderHeader()}</div>
-                    <hr className="divider" />
-                    <div className="m-20">
-                        <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
-                        {this.renderMaterials()}
-                    </div>
-                    <hr className="mb-12 divider" />
-                    <div className="flex left mb-12">
-                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={() => this.renderAdvanceCI()}>
-                            Advanced options
-                    </div>
-                        <div className="m-auto-mr-0" style={{ width: "155px" }}>
-                            <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
-                                onClick={this.savePipeline}
-                                isLoading={this.state.loadingData}>
-                                {text}
-                            </ButtonWithLoader>
-                        </div>
-                    </div>
-
+            return <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
+                <div className=" pl-20 ">{this.renderHeader()}</div>
+                <hr className="divider" />
+                <div className="m-20">
+                    <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
+                    {this.renderMaterials()}
                 </div>
-            </VisibleModal>
+                <hr className="mb-12 divider" />
+                <div className="flex left mb-12">
+                    <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={this.renderAdvanceCI}>
+                        Advanced options
+                    </div>
+                    <div className="m-auto-mr-0" style={{ width: "155px" }}>
+                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                            onClick={this.savePipeline}
+                            isLoading={this.state.loadingData}>
+                            {text}
+                        </ButtonWithLoader>
+                    </div>
+                </div>
+
+            </div>
         }
     }
 
 
     render() {
+        let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+        let errorObj = this.validationRules.name(this.state.form.name);
         return <>
-            {/*{this.renderAdvanceCI()}
-            {this.renderBasicPipeline()}
-            < BasicCIPipeline
-            view = {this.state.view}
-            close= {this.props.close}
-            loadingData= {this.state.loadingData}
-            renderMaterials= {this.renderMaterials}
-            savePipeline= {this.savePipeline}
-            renderAdvanceCI= {this.renderAdvanceCI}
-             />*/}
-            {this.renderBasicPipeline()}
+            <VisibleModal className="" >
+                <div className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43">
+                    <div className=" pl-20 ">{this.renderHeader()}</div>
+                    <hr className="divider" style={{ marginBottom: "0" }} />
+                    {/*{this.renderAdvanceCI()}
+                        {this.renderBasicPipeline()}
+                        < BasicCIPipeline
+                        view = {this.state.view}
+                        close= {this.props.close}
+                        loadingData= {this.state.loadingData}
+                        renderMaterials= {this.renderMaterials}
+                        savePipeline= {this.savePipeline}
+                        renderAdvanceCI= {this.renderAdvanceCI}
+                        />*/}
+                    {this.renderBasicPipeline()}
+                </div>
+            </VisibleModal>
         </>
     }
 }
