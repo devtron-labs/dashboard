@@ -918,6 +918,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     loadingData= {this.state.loadingData}
                     showError= {this.state.showError}
                     handleNamespaceChange= {this.handleNamespaceChange}
+                    close= {this.props.close}
                     />
                 </VisibleModal>
             </>

@@ -27,7 +27,7 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                 <div className="modal__header m-20">
                     <div className="modal__title fs-16">Create build pipeline</div>
                     <button type="button" className="transparent" >
-                        <Close className="icon-dim-24" />
+                        <Close className="icon-dim-24" onClick={this.props.close} />
                     </button>
                 </div>
                 <hr className="divider" />
