@@ -7,7 +7,7 @@ import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '.
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { CONFIGMAP_SECRET_LABEL, DOCUMENTATION, PATTERNS } from '../../config';
 import Reload from '../Reload/Reload'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -435,7 +435,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         rootClassName="form__checkbox-label--ignore-cache"
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
-                        <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                        <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
                     </Checkbox>
                 </div> : ""}
             {selectedTab === 'Data Volume' ? <div className="mb-16">

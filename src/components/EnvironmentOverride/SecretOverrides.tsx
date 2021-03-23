@@ -11,7 +11,7 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
+import { CONFIGMAP_SECRET_LABEL, PATTERNS } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import './environmentOverride.scss'
 
@@ -475,7 +475,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 rootClassName="form__checkbox-label--ignore-cache"
                 value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
-                <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
             </Checkbox>}
             {type === "volume" && <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}

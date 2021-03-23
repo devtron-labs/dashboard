@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
+import { CONFIGMAP_SECRET_LABEL, PATTERNS } from '../../config';
 import './environmentOverride.scss';
 
 const ConfigMapContext = React.createContext(null)
@@ -344,7 +344,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
-                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                    <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
                 </Checkbox>}
                 {type === "volume" && <div className="mb-16">
                     <Checkbox isChecked={isFilePermissionChecked}

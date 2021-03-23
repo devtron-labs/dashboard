@@ -3,6 +3,10 @@ export const DEFAULT_STATUS = 'Checking Status...';
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 export const DEFAULTK8SVERSION = 'v1.16.0';
 
+export const CONFIGMAP_SECRET_LABEL = {
+    SUBPATH: 'Set subPath (Required for sharing one volume for multiple uses in a single pod)',
+}
+
 export const Routes = {
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
@@ -131,7 +135,7 @@ export const PATTERNS = {
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z][a-z0-9-.]+[a-z]$/,
-    FILE_PERMISSION: /^[0-7][0-7]+[0-7]$/
+    FILE_PERMISSION: /[0-7]*$/
 };
 
 export const TriggerType = {

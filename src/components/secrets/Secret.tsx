@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { CONFIGMAP_SECRET_LABEL, DOCUMENTATION, PATTERNS } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -562,7 +562,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
-                    <span className="mr-5"> Set subPath (Required for sharing one volume for multiple uses in a single pod)</span>
+                    <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
                 </Checkbox>
             </div> : ""}
         {selectedTab === 'Data Volume' ? <div className="mb-16">
