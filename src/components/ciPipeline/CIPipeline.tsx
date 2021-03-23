@@ -112,7 +112,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         },
         )
     }
-    
+
     handlePreBuild() {
         this.setState({
             view: ViewType.FORM,
@@ -652,7 +652,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             savePipeline= {this.savePipeline}
             renderAdvanceCI= {this.renderAdvanceCI}
              />*/}
-            {this.renderAdvanceCI()}
+            {this.renderBasicPipeline()}
         </>
     }
 }
