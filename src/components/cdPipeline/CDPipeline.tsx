@@ -20,6 +20,8 @@ import ReactSelect from 'react-select';
 import { getEnvironmentListMinPublic } from '../../services/service';
 import './cdPipeline.css';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import PreBuild from '../../assets/img/preBuildStage.png';
+import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 
 
 export const SwitchItemValues = {
@@ -77,14 +79,44 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage: false,
             showDeleteModal: false,
             shouldDeleteApp: true,
+            showPreBuild: false,
+            showDocker: false,
+            showPostBuild: false,
         }
         this.validationRules = new ValidationRules();
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this);
         this.savePipeline = this.savePipeline.bind(this);
+        this.handleDocker = this.handleDocker.bind(this);
+        this.handlePostBuild = this.handlePostBuild.bind(this);
+        this.handlePreBuild = this.handlePreBuild.bind(this);
     }
 
     componentDidMount() {
         this.getDeploymentStrategies();
+    }
+
+    handleDocker() {
+        this.setState({
+            view: ViewType.FORM,
+            showDocker: !this.state.showDocker
+        },
+        )
+    }
+
+    handlePostBuild() {
+        this.setState({
+            view: ViewType.FORM,
+            showPostBuild: !this.state.showPostBuild
+        },
+        )
+    }
+
+    handlePreBuild() {
+        this.setState({
+            view: ViewType.FORM,
+            showPreBuild: !this.state.showPreBuild
+        },
+        )
     }
 
     getDeploymentStrategies(): void {
@@ -528,8 +560,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderHeader() {
         return <>
-            <h1 className="form__title">Deployment Pipeline</h1>
-            <p className="form__subtitle"></p>
+            <div className="flex left">
+                <div className="fs-16 fw-6 ">Create deployment pipeline</div>
+                <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                    <Close className="icon-dim-24" />
+                </button>
+                <p className="form__subtitle"></p>
+            </div>
         </>
     }
 
@@ -647,7 +684,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderAddStage(key: 'preStage' | 'postStage') {
-        return <div className="white-card white-card--add-new-item" onClick={(event) => this.deleteStage(key)}>
+        return <div className="white-card white-card--add-new-item mb-20 mt-20" onClick={(event) => this.deleteStage(key)}>
             <Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
             <span className="artifact__add">Add Stage</span>
         </div>
@@ -808,7 +845,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             else {
                 namespaceEditable = true;
             }
-            return <><VisibleModal className="" close={this.props.close}>
+            return <><VisibleModal className="" >
                 <form className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43" onSubmit={this.savePipeline}>
                     <div className="pt-20 pl-20">{this.renderHeader()}</div>
                     <hr className="divider mb-0" />
@@ -851,22 +888,39 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             </label>
                         </div>
                         {this.renderNamespaceInfo(namespaceEditable)}
-                        <div className="form__row">
-                            <div className="form__input-header">Pre-deployment Stage</div>
-                            <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
-                            {this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}
+                        <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
+                            <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
+                            <div>
+                                <div className="form__input-header">Pre-deployment Stage</div>
+                                <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
-                        <div>
-                            <div className="form__input-header">Deployment Stage</div>
-                            <p>Configure deployment preferences for this pipeline</p>
+                        {!this.state.showPreBuild ? "" : <>{this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
+                        <hr className="divider" />
+                        <div className=" flex left " onClick={() => this.handleDocker()}>
+                            <div className="sqr-44"><div className="icon-dim-20 workflow-node__icon-common  workflow-node__CD-icon"></div></div>
+                            <div>
+                                <div className="form__input-header">Deployment Stage</div>
+                                <p>Configure deployment preferences for this pipeline</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
-                        {this.renderTriggerType()}
-                        {this.renderDeploymentStrategy()}
-                        <div className="form__row">
-                            <div className="form__input-header">Post-deployment Stage</div>
-                            <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
-                            {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : this.renderAddStage('postStage')}
+                        {this.state.showDocker ? <div className="mt-20">
+                            {this.renderTriggerType()}
+                            {this.renderDeploymentStrategy()} </div> : ""}
+                        <hr className="divider" />
+                        <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
+                            <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
+                            <div>
+                                <div className="form__input-header">Post-deployment Stage</div>
+                                <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
+                        {this.state.showPostBuild ? <>
+                            {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : this.renderAddStage('postStage')} </> : ""}
+                        <hr className="divider" />
                         <div className="form__row form__row--flex">
                             {this.props.match.params.cdPipelineId ? <button type="button" className="cta delete mr-16"
                                 onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline

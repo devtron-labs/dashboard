@@ -76,5 +76,8 @@ export interface CDPipelineState {
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
     showError: boolean;
+    showPreBuild: boolean;
+    showDocker: boolean;
+    showPostBuild: boolean;
 }
 

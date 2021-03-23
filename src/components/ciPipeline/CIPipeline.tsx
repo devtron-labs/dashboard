@@ -19,7 +19,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import PreBuild from '../../assets/img/preBuildStage.png';
 import BasicCIPipeline from './BasicCIPipeline';
-import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
 
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
@@ -105,13 +104,15 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         },
         )
     }
+    
     handlePostBuild() {
         this.setState({
             view: ViewType.FORM,
-            showPreBuild: !this.state.showPreBuild
+            showPostBuild: !this.state.showPostBuild
         },
         )
     }
+    
     handlePreBuild() {
         this.setState({
             view: ViewType.FORM,
