@@ -553,12 +553,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     renderAdvanceCI(...props) {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         let errorObj = this.validationRules.name(this.state.form.name);
-        return <>
-                <div className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43">
-                    <div className=" pl-20 ">{this.renderHeader()}</div>
-                    <hr className="divider" style={{ marginBottom: "0" }} />
-
-                    <div className="p-20">
+        if (this.state.view == ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        else {
+        return <> <div className="p-20">
                         <label className="form__row">
                             <span className="form__label">Pipeline Name*</span>
                             <input className="form__input" autoComplete="off" disabled={!!this.state.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.state.form.name}
@@ -599,9 +598,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                             </ButtonWithLoader>
                         </div>
                     </div>
-                </div>
-           
         </>
+        }
     }
     renderBasicPipeline() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
@@ -609,10 +607,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return <Progressing pageLoader />
         }
         else {
-            return <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
-                <div className=" pl-20 ">{this.renderHeader()}</div>
-                <hr className="divider" />
-                <div className="m-20">
+            return<> <div className="m-20">
                     <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
                     {this.renderMaterials()}
                 </div>
@@ -630,7 +625,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </div>
                 </div>
 
-            </div>
+           </>
         }
     }
 
