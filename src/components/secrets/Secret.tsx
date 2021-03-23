@@ -114,7 +114,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
 export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "", filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
-        ? <ListComponent title={name || title} onClick={e => toggleCollapse(!collapsed)} icon={title ? addIcon : keyIcon} collapsible={!title} className={title ? 'create-new' : ''} />
+        ? <ListComponent title={name || title} onClick={e => toggleCollapse(!collapsed)} icon={title ? addIcon : keyIcon} collapsible={!title} className={title ? 'fw-5 cb-5 fs-14' : 'fw-5 cn-9 fs-14'} />
         : <SecretForm name={name}
             secretData={secretData}
             mountPath={mountPath}
@@ -149,9 +149,9 @@ export function Tab({ title, active, onClick }) {
 export function ListComponent({ icon = "", title, subtitle = "", onClick, className = "", collapsible = false }) {
     return (
         <article className={`configuration-list pointer ${className}`} onClick={typeof onClick === 'function' ? onClick : function () { }}>
-            <img src={icon} className="configuration-list__logo" />
+            <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
             <div className="configuration-list__info">
-                <div className="configuration-list__title">{title}</div>
+                <div className="">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
             {collapsible && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
