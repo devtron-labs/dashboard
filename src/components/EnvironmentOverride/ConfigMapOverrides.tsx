@@ -214,7 +214,6 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             }
             return
         }
-
         if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
@@ -257,7 +256,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 payload['mountPath'] = state.mountPath;
                 payload['subPath'] = state.subPath;
                 if (isFilePermissionChecked) {
-                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermissionValue.value}` : `${state.filePermissionValue.value}`;
+                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
 
@@ -274,6 +273,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             dispatch({ type: 'success' });
         }
         catch (err) {
+            console.log(err)
             showError(err)
             dispatch({ type: 'error' })
         }

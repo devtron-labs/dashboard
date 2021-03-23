@@ -320,7 +320,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 payload['mountPath'] = state.mountPath;
                 payload['subPath'] = state.subPath;
                 if (isFilePermissionChecked) {
-                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermissionValue.value}` : `${state.filePermissionValue.value}`;
+                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
             dispatch({ type: 'loadingSubmit' });
