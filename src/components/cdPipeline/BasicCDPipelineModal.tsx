@@ -75,6 +75,7 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                     </div>
                         <div className="m-auto-mr-0" style={{ width: "155px" }}>
                             <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white" onClick={this.props.savePipeline} isLoading={this.props.loadingData}>
+                            {this.props.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
                             </ButtonWithLoader>
                         </div>
                     </div>

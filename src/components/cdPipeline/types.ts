@@ -116,5 +116,6 @@ loadingData: boolean;
 showError: boolean;
 handleNamespaceChange: (event: any, environment: any) => void
 close: () => void;
+cdPipelineId: string;
 }
 
