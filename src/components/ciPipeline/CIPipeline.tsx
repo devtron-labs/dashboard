@@ -402,7 +402,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        return <div className="white-card flex left cursor mb-16 pt-20"
+        return <div className="white-card flex left cursor mt-20 mb-16 "
             onClick={() => { this.addEmptyStage(key) }}>
             <Add className="icon-dim-24 fcb-5 vertical-align-middle mr-16" />
             <span className="artifact__add">Add Stage</span>
@@ -476,7 +476,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderDockerArgs() {
-        return <> <div className=" flex left pb-20 " onClick={() => this.handleDocker()}>
+        return <> <div className=" flex left " onClick={() => this.handleDocker()}>
             <div className="sqr-44"><Docker /></div>
             <div>
                 <div className="ci-stage__title">Docker build</div>
@@ -485,7 +485,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         </div>
             {this.state.showDocker ?
 
-                <div className="docker-build-args">
+                <div className="docker-build-args  mt-20">
                     <div className="docker-build-args__header"
                         onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
                         <span className="docker-build-args__text">Docker Arguments Override</span>
@@ -519,7 +519,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     renderHeader() {
         return <>
-            <div className="fs-16 fw-6 mt-20">Create build pipeline</div>
+            <div className="flex left mt-20">
+                <div className="fs-16 fw-6 ">Create build pipeline</div>
+                <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                    <Close className="icon-dim-24" />
+                </button>
+            </div>
         </>
     }
 
@@ -545,9 +550,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         let errorObj = this.validationRules.name(this.state.form.name);
         return <>
 
-            <VisibleModal className="" close={this.props.close}>
+            <VisibleModal className="" >
                 <div className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43">
-                    <div className=" pl-20">{this.renderHeader()}</div>
+                    <div className=" pl-20 ">{this.renderHeader()}</div>
                     <hr className="divider" style={{ marginBottom: "0" }} />
                     <div className="p-20">
                         <label className="form__row">
@@ -602,14 +607,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             </OpaqueModal>
         }
         else {
-            return <VisibleModal className="" close={this.props.close}>
+            return <VisibleModal className="">
                 <div className="modal__body br-0 modal__body--w-600 modal__body--p-0">
-                    <div className="modal__header m-20">
-                        <div className="modal__title fs-16">Create build pipeline</div>
-                        <button type="button" className="transparent" >
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
+                    <div className=" pl-20 ">{this.renderHeader()}</div>
                     <hr className="divider" />
                     <div className="m-20">
                         <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
@@ -638,7 +638,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     render() {
         return <>
             {/*{this.renderAdvanceCI()}
-            
+            {this.renderBasicPipeline()}
             < BasicCIPipeline
             view = {this.state.view}
             close= {this.props.close}
@@ -647,7 +647,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             savePipeline= {this.savePipeline}
             renderAdvanceCI= {this.renderAdvanceCI}
              />*/}
-            {this.renderBasicPipeline()}
+            {this.renderAdvanceCI()}
         </>
     }
 }

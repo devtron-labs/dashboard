@@ -11,6 +11,8 @@ import { Info } from '../common/icons/Icons'
 import { getAppListMin, getCIConfig } from '../../services/service';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import './ciPipeline.css';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+
 
 export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
     validationRules;
@@ -113,10 +115,13 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderHeader() {
-        return <>
+        return <div className="flex left">
             <h1 className="modal__form-title pl-20">Create linked build pipeline</h1>
+            <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                <Close className="icon-dim-24" />
+            </button>
             <p className="form__subtitle"></p>
-        </>
+        </div>
     }
 
     renderInfoDialog() {
@@ -160,7 +165,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             </OpaqueModal>
         }
         else {
-            return <VisibleModal className="" close={this.props.close}>
+            return <VisibleModal className="">
                 <div className="modal__body pl-0 pr-0 br-0 modal__body--ci">
                     {this.renderHeader()}
                     <hr className="divider" />
@@ -190,11 +195,12 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             </label>
                             : null}
                         <div className="form__row form__row--flex">
+                            <div className="cta cancel mr-16" onClick={this.props.close}>Cancel</div>
                             <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
                                 onClick={this.savePipeline}
                                 isLoading={this.state.loadingData}>
                                 Create Linked CI Pipeline
-                        </ButtonWithLoader>
+                           </ButtonWithLoader>
                         </div>
                     </div>
                 </div>
