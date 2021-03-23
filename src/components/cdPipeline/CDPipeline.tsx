@@ -757,7 +757,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             namespaceEditable = true;
         }
         return <><VisibleModal className="" close={this.props.close}>
-            <div className="modal__body br-0 modal__body--w-600 modal__body--p-0">
+            <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
                 <div className="modal__header m-20">
                     <div className="modal__title fs-16">Create build pipeline</div>
                     <button type="button" className="transparent" >

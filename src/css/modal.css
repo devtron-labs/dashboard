@@ -45,6 +45,10 @@
     width: 600px;
 }
 
+.modal__body--w-800 {
+    width: 800px;
+}
+
 .modal__title {
     font-size: 20px;
     font-weight: 600;

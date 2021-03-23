@@ -613,7 +613,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
         else {
             return <VisibleModal className="">
-                <div className="modal__body br-0 modal__body--w-600 modal__body--p-0">
+                <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
                     <div className=" pl-20 ">{this.renderHeader()}</div>
                     <hr className="divider" />
                     <div className="m-20">
