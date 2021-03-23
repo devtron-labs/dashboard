@@ -125,7 +125,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     ...state, duplicate: state.duplicate.reduce((agg, dup) => {
                         return [...agg, {
                             ...dup,
-                            keyError: typeof dup.v === 'string' && !/^[-_.a-zA-Z0-9]+$/.test(dup.k) ? "Key must be of format /^[-_.a-zA-Z0-9]+$" : "",
+                            keyError: typeof dup.v === 'string' && !(new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY)).test(dup.k) ? "Key must be of format /^[-_.a-zA-Z0-9]+$" : "",
                             valueError: dup.v !== 'string' && dup.k ? "Both key value pairs are required" : ""
                         }]
                     }, [])
@@ -173,7 +173,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
     }
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const tempArr = useRef([])
-    const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
+    const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY}`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
 
@@ -242,28 +242,28 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const isInvalid = state.duplicate.some(dup => ((!/^[-_.a-zA-Z0-9]+$/.test(dup.k))))
+        const isInvalid = state.duplicate.some(dup => ((!(new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY)).test(dup.k))));
         if (isInvalid) {
             dispatch({ type: 'createErrors' })
             return
         }
         if (type === 'volume' && isFilePermissionChecked) {
             if (!state.filePermission.value) {
-                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "Field is mandatory" } })
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
                 return
             }
             else if (state.filePermission.value.length > 4) {
-                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "More than 4 characters are not allowed" } })
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'More than 4 characters are not allowed' } })
                 return
             }
             else if (state.filePermission.value.length === 4) {
-                if (!state.filePermission.value.startsWith("0")) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "This is Octal format, please enter 4 characters" } })
+                if (!state.filePermission.value.startsWith('0')) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is Octal format, please enter 4 characters' } })
                     return;
                 }
             }
             else if (state.filePermission.value.length < 3) {
-                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: "At least 3 characters are required" } })
+                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'At least 3 characters are required' } })
                 return;
             }
         }

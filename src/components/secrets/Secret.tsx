@@ -167,7 +167,6 @@ interface SecretFormProps {
     external: boolean;
     externalType: string;
     secretData: { key: string; name: string; property: string; isBinary: boolean }[];
-    // type: "environment" | "volume";
     type: string;
     data: { k: string; v: string; }[];
     isUpdate: boolean;
@@ -191,8 +190,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [externalType, setExternalType] = useState(props.externalType)
     const { envId } = useParams<{ envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
-    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
-    const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.SECRET_KEY, `key must be of format ${PATTERNS.SECRET_KEY}`)
+    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY}`)
+    const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY}`)
     const tempArray = useRef([])
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!props.subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
@@ -296,43 +295,46 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     async function handleSubmit(e) {
-        const secretNameRegex = new RegExp(/^[-.a-zA-Z0-9]+$/);
+        const secretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME);
 
         if (secretMode) {
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             return
         }
         if (!configName.value) {
-            setName({ value: "", error: 'Field is manadatory' })
+            setName({ value: "", error: 'This is a required field' })
             return
         }
-
+        if (configName.value.length > 253) {
+            setName({ value: configName.value, error: 'More than 253 characters are not allowed' })
+            return
+        }
         if (!secretNameRegex.test(configName.value)) {
-            setName({ value: configName.value, error: 'Name must be of format /^[-.a-zA-Z0-9]+$/' })
+            setName({ value: configName.value, error: `Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'` })
             return
         }
 
         if (selectedTab === 'Data Volume' && !volumeMountPath.value) {
-            setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is manadatory' })
+            setVolumeMountPath({ value: volumeMountPath.value, error: 'This is a required field' })
             return
         }
         if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
             if (!filePermissionValue.value) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: "Field is mandatory" });
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is a required field' });
                 return;
             }
             else if (filePermissionValue.value.length > 4) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: "More than 4 characters are not allowed" });
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'More than 4 characters are not allowed' });
                 return;
             }
             else if (filePermissionValue.value.length === 4) {
-                if (!filePermissionValue.value.startsWith("0")) {
-                    setFilePermissionValue({ value: filePermissionValue.value, error: "This is Octal format, please enter 4 characters" });
+                if (!filePermissionValue.value.startsWith('0')) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: 'This is Octal format, please enter 4 characters' });
                     return;
                 }
             }
             else if (filePermissionValue.value.length < 3) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: "At least 3 characters are required" });
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'At least 3 characters are required' });
                 return;
             }
         }
