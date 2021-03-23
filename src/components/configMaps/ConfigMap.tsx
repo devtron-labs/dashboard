@@ -282,15 +282,17 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'More than 4 characters are not allowed' });
                 return;
             }
-            else if (filePermissionValue.value.length === 4) {
-                if (!filePermissionValue.value.startsWith("0")) {
+            else if (filePermissionValue.value.startsWith("0")) {
+                if (filePermissionValue.value.length !== 4) {
                     setFilePermissionValue({ value: filePermissionValue.value, error: 'This is Octal format, please enter 4 characters' });
                     return;
                 }
             }
-            else if (filePermissionValue.value.length < 3) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: 'At least 3 characters are required' });
-                return;
+            else if (!filePermissionValue.value.startsWith("0")) {
+                if (filePermissionValue.value.length !== 3) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: 'This is not octal format, only 3 Characters are allowed' });
+                    return;
+                }
             }
         }
 

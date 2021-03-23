@@ -5,6 +5,7 @@ import './customInput.css';
 
 export interface CustomInputProps {
     label: string;
+    type?: 'text' | 'number';
     value: string | number;
     labelClassName?: string;
     autoFocus?: boolean;
@@ -22,11 +23,12 @@ export class CustomInput extends Component<CustomInputProps, any> {
 
     render() {
         let isError: boolean = !!this.props.error;
+        let type = this.props.type || 'text';
         let labelClasses = `form__label`;
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <div>
             <label className={labelClasses}>{this.props.label}</label>
-            <input type={`text`}
+            <input type={type}
                 autoFocus={this.props.autoFocus}
                 autoComplete={this.props.autoComplete}
                 tabIndex={this.props.tabIndex}

@@ -256,15 +256,17 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'More than 4 characters are not allowed' } })
                 return
             }
-            else if (state.filePermission.value.length === 4) {
-                if (!state.filePermission.value.startsWith('0')) {
+            else if (state.filePermission.value.startsWith('0')) {
+                if (state.filePermission.value.length !== 4) {
                     dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is Octal format, please enter 4 characters' } })
                     return;
                 }
             }
-            else if (state.filePermission.value.length < 3) {
-                dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'At least 3 characters are required' } })
-                return;
+            else if (!state.filePermission.value.startsWith('0')) {
+                if (state.filePermission.value.length !== 3) {
+                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is not octal format, only 3 characters are allowed' } })
+                    return;
+                }
             }
         }
         try {
