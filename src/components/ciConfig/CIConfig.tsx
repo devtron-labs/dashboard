@@ -89,8 +89,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 }
             },
             repository_name: {
-                required: true,
-                
+                required: false,
             }
 
         }, onValidation);
