@@ -278,12 +278,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     async function handleDelete() {
         try {
             if (!envId) {
-                const { result } = await deleteSecret(props.id, props.appId, props.name)
+                await deleteSecret(props.id, props.appId, props.name)
                 toast.success('Successfully deleted')
                 props.update(props.index, null)
             }
             else {
-                const { result } = await deleteEnvironmentSecret(props.id, props.appId, +envId, props.name)
+                await deleteEnvironmentSecret(props.id, props.appId, +envId, props.name)
                 toast.success('Successfully deleted')
                 props.update(props.index, null)
             }
@@ -396,7 +396,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                payload['subPath'] = isSubPathChecked;
+                if (isExternalValues) {
+                    payload['subPath'] = isSubPathChecked;
+                }
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
@@ -549,7 +551,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        {selectedTab === 'Data Volume' ?
+        {isExternalValues && selectedTab === 'Data Volume' ?
             <div className="mb-16">
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}

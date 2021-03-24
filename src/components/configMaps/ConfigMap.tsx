@@ -323,7 +323,9 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             }
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                payload['subPath'] = isSubPathChecked;
+                if (!isExternalValues) {
+                    payload['subPath'] = isSubPathChecked;
+                }
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
@@ -422,7 +424,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            {selectedTab === 'Data Volume' ?
+            {!isExternalValues && selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
