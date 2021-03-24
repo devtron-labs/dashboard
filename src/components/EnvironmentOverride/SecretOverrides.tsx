@@ -315,7 +315,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             }
             if (type === 'volume') {
                 payload['mountPath'] = state.mountPath;
-                if(externalType !== "KubernetesSecret") {
+                if (externalType !== "KubernetesSecret") {
                     payload['subPath'] = state.subPath;
                 }
                 if (isFilePermissionChecked) {
@@ -471,7 +471,13 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 rootClassName="form__checkbox-label--ignore-cache"
                 value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
-                <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
+                <span className="mr-5">
+                    Set SubPath (same as
+                    <a href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                        subPath
+                    </a>for volume mount)<br></br>
+                    {state.subPath ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                </span>
             </Checkbox>}
             {type === "volume" && <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}

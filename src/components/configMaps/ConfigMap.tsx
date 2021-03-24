@@ -428,19 +428,25 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
-                        rootClassName="form__checkbox-label--ignore-cache"
+                        rootClassName="top"
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
-                        <span className="mr-5"> {CONFIGMAP_SECRET_LABEL.SUBPATH}</span>
+                        <span className="mb-0">Set SubPath (same as
+                            <a href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                                subPath
+                            </a>
+                            for volume mount)<br></br>
+                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                        </span>
                     </Checkbox>
                 </div> : ""}
             {selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
-                    rootClassName="form__checkbox-label--ignore-cache"
+                    rootClassName=""
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
-                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                    <p className="mb-0"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</p>
                 </Checkbox>
             </div> : ""}
             {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
