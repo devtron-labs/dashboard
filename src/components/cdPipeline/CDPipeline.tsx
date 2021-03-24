@@ -560,15 +560,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
-        return <div className=" header">
-            <div className="flex left ">
-                <div className="fs-16 fw-6  ">Create deployment pipeline</div>
-                <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
-                    <Close className="icon-dim-24" />
-                </button>
-                <p className="form__subtitle"></p>
-            </div>
+        return <>
+        <div className="flex left mt-20">
+            <div className="fs-16 fw-6 pl-20 ">Create deployment pipeline</div>
+            <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                <Close className="icon-dim-24" />
+            </button>
         </div>
+    </>
     }
 
     renderDeploymentStrategy() {
@@ -738,21 +737,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         return <>
             <form className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43" onSubmit={this.savePipeline}>
-                <div className="pt-20  modal__top-fixed">
-                    <div className=" header">
-                        <div className="flex left ">
-                            <div className="fs-16 fw-6 pl-20 ">Create deployment pipeline</div>
-                            <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
-                                <Close className="icon-dim-24" />
-                            </button>
-                            <p className="form__subtitle"></p>
-                        </div>
-                        <hr className="divider mb-0" />
-                    </div>
-
-                </div>
-                <div className="mt-50">
-                    
+                {this.renderHeader()}
+                    <hr className="divider mb-0"/>
                     <div className="p-20 ">
                         <div className="form__row">
                             <label className="form__label">Pipeline Name*</label>
@@ -796,31 +782,35 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                             <div>
                                 <div className="form__input-header">Pre-deployment Stage</div>
-                                <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
+                                <div className=" form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</div>
                             </div>
                             <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
                         {!this.state.showPreBuild ? "" : <>{this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
+
                         <hr className="divider" />
+
                         <div className=" flex left " onClick={() => this.handleDocker()}>
                             <div className="sqr-44"><div className="icon-dim-24 workflow-node__icon-common workflow-node__CD-icon"></div></div>
                             <div>
                                 <div className="form__input-header">Deployment Stage</div>
-                                <p>Configure deployment preferences for this pipeline</p>
+                                <div>Configure deployment preferences for this pipeline</div>
                             </div>
                             <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
                         {this.state.showDocker ? <div className="mt-20">
                             {this.renderTriggerType()}
                             {this.renderDeploymentStrategy()} </div> : ""}
+
                         <hr className="divider" />
+
                         <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
                             <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                             <div>
                                 <div className="form__input-header">Post-deployment Stage</div>
-                                <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
+                                <div className="form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</div>
                             </div>
-                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
                         {this.state.showPostBuild ? <>
                             {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : this.renderAddStage('postStage')} </> : ""}
@@ -835,7 +825,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             </ButtonWithLoader>
                         </div>
                     </div>
-                </div>
             </form>
         </>
     }
