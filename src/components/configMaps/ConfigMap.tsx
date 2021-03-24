@@ -7,7 +7,7 @@ import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '.
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { CONFIGMAP_SECRET_LABEL, DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import Reload from '../Reload/Reload'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -446,7 +446,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     rootClassName=""
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
-                     <span className="mr-5"> Set File Permission (same as
+                    <span className="mr-5"> Set File Permission (same as
                         <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                             defaultMode
                         </a>
