@@ -23,6 +23,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import PreBuild from '../../assets/img/preBuildStage.png';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import BasicCDPipelineModal from './BasicCDPipelineModal';
+import Deploy from '../../assets/icons/ic-CD.svg';
 
 
 export const SwitchItemValues = {
@@ -578,7 +579,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             </p>
             <Select rootClassName="mb-16 dashed" onChange={(e) => this.selectStrategy(e.target.value)} >
                 <Select.Button rootClassName="select-button--deployment-strategy " >
-                    <span><Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
+                    <span className="artifact__add"><Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
                         Add Deployment Strategy
                     </span>
                 </Select.Button>
@@ -686,7 +687,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderAddStage(key: 'preStage' | 'postStage') {
         return <div className="white-card white-card--add-new-item dashed mb-20 mt-20" onClick={(event) => this.deleteStage(key)}>
             <Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
-            <span className="artifact__add">Add Stage</span>
+            <span className="artifact__add cb-5">Add Stage</span>
         </div>
     }
 
@@ -779,7 +780,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                         {this.renderNamespaceInfo(namespaceEditable)}
                         <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
-                            <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
+                            <div className="sqr-44 "><img className="workflow-node__icon-common" src={PreBuild} /></div>
                             <div>
                                 <div className="form__input-header">Pre-deployment Stage</div>
                                 <div className=" form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</div>
@@ -790,8 +791,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
                         <hr className="divider" />
 
-                        <div className=" flex left " onClick={() => this.handleDocker()}>
-                            <div className="sqr-44"><div className="icon-dim-24 workflow-node__icon-common workflow-node__CD-icon"></div></div>
+                        <div className="flex left cursor" onClick={() => this.handleDocker()}>
+                            <div className="sqr-44"><img className="icon-dim-24" src={Deploy}/></div>
                             <div>
                                 <div className="form__input-header">Deployment Stage</div>
                                 <div>Configure deployment preferences for this pipeline</div>
@@ -805,7 +806,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <hr className="divider" />
 
                         <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
-                            <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
+                            <div className="sqr-44"><img className="workflow-node__icon-common" src={PreBuild} /></div>
                             <div>
                                 <div className="form__input-header">Post-deployment Stage</div>
                                 <div className="form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</div>
