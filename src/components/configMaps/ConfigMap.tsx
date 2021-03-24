@@ -189,7 +189,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
             isValid = false
         }
         if (typeof v === 'string' && !PATTERNS.CONFIG_MAP_AND_SECRET_KEY.test(k)) {
-            keyError = `Key '${k}' must be of ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY} format`
+            keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
             isValid = false
         }
         return [...agg, { k, v, keyError, valueError }]
@@ -206,7 +206,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     const [loading, setLoading] = useState(false)
     const { envId } = useParams<{ envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
-    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY}`)
+    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const tempArray = useRef([])
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)

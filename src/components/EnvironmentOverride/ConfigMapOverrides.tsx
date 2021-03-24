@@ -118,7 +118,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         if (!!dup.k && typeof dup.v === 'string') return agg
                         return [...agg, {
                             ...dup,
-                            keyError: typeof dup.v === 'string' && !(new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY)).test(dup.k) ? "Key must be of format /^[-_.a-zA-Z0-9]+$" : "",
+                            keyError: typeof dup.v === 'string' && !(new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY)).test(dup.k) ? "Key must consist of alphanumeric characters, '.', '-' and '_'" : "",
                             valueError: dup.v !== 'string' && dup.k ? "Both key value pairs are required" : ""
                         }]
                     }, [])
@@ -155,7 +155,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     function setKeyValueArray(arr) {
         tempArr.current = arr
     }
-    const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_AND_SECRET_KEY}`)
+    const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
 
