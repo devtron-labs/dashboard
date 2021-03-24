@@ -252,14 +252,16 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
 
             if (type === 'volume') {
                 payload['mountPath'] = state.mountPath;
-                payload['subPath'] = state.subPath;
+                if (!external) {
+                    payload['subPath'] = state.subPath;
+                }
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
 
             dispatch({ type: 'submitLoading' });
-            await overRideConfigMap(id, +appId, +envId, [payload])
+            await overRideConfigMap(id, +appId, +envId, [payload]);
             await reload();
             toast.success(
                 <div className="toast">
@@ -271,7 +273,6 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             dispatch({ type: 'success' });
         }
         catch (err) {
-            console.log(err)
             showError(err)
             dispatch({ type: 'error' })
         }
@@ -332,7 +333,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                             onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />
                     </div>
                 </div>}
-                {type === "volume" && <Checkbox isChecked={state.subPath}
+                {!external && type === "volume" && <Checkbox isChecked={state.subPath}
                     onClick={(e) => { e.stopPropagation(); }}
                     disabled={!state.duplicate}
                     rootClassName="form__checkbox-label--ignore-cache"

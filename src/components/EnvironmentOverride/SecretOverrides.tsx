@@ -315,13 +315,15 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
             }
             if (type === 'volume') {
                 payload['mountPath'] = state.mountPath;
-                payload['subPath'] = state.subPath;
+                if(externalType !== "KubernetesSecret") {
+                    payload['subPath'] = state.subPath;
+                }
                 if (isFilePermissionChecked) {
                     payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
             dispatch({ type: 'loadingSubmit' });
-            const { result } = await overRideSecret(id, +appId, +envId, [payload])
+            await overRideSecret(id, +appId, +envId, [payload])
             await reload()
             toast.success(
                 <div className="toast">
@@ -463,7 +465,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                             onChange={e => dispatch({ type: 'mountPath', value: e.target.value })} />
                     </div>
                 </div>}
-            {type === "volume" && <Checkbox isChecked={state.subPath}
+            {externalType !== "KubernetesSecret" && type === "volume" && <Checkbox isChecked={state.subPath}
                 onClick={(e) => { e.stopPropagation(); }}
                 disabled={!state.duplicate}
                 rootClassName="form__checkbox-label--ignore-cache"
