@@ -8,9 +8,6 @@ import error from '../../assets/icons/misc/errorInfo.svg';
 
 export default class BasicCDPipelineModal extends Component<BasicCDPipelineModalProps, {}>{
     render() {
-        if (this.props.view == ViewType.LOADING) {
-            return <Progressing pageLoader />
-        }
         let envId = this.props.pipelineConfig.environmentId;
         let selectedEnv = this.props.environments.find(env => env.id == envId);
         let namespaceEditable = false;
@@ -23,7 +20,12 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
         else {
             namespaceEditable = true;
         }
-        return <><div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
+
+        if (this.props.view == ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        else {
+            return <><div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
                 <div className="modal__header m-20">
                     <div className="modal__title fs-16">Create build pipeline</div>
                     <button type="button" className="transparent" >
@@ -75,12 +77,13 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                     </div>
                         <div className="m-auto-mr-0" style={{ width: "155px" }}>
                             <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white" onClick={this.props.savePipeline} isLoading={this.props.loadingData}>
-                            {this.props.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
+                                {this.props.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
                             </ButtonWithLoader>
                         </div>
                     </div>
                 </div>
             </div>
             </>
+        }
     }
 }

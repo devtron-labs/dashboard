@@ -276,3 +276,15 @@ $color-suffix: 00;
 .dashed{
     border-style: dashed;
 }
+
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    margin-top: 45px;
+    width: 800px
+  }
+
+  .modal__top-fixed{
+      height: 50px;
+  }

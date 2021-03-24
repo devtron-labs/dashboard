@@ -560,15 +560,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
-        return <>
-            <div className="flex left">
-                <div className="fs-16 fw-6 ">Create deployment pipeline</div>
+        return <div className=" header">
+            <div className="flex left ">
+                <div className="fs-16 fw-6  ">Create deployment pipeline</div>
                 <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
                     <Close className="icon-dim-24" />
                 </button>
                 <p className="form__subtitle"></p>
             </div>
-        </>
+        </div>
     }
 
     renderDeploymentStrategy() {
@@ -738,88 +738,102 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         return <>
             <form className="modal__body modal__body--ci br-0 modal__body--p-0 lh-1-43" onSubmit={this.savePipeline}>
-                <div className="pt-20 pl-20">{this.renderHeader()}</div>
-                <hr className="divider mb-0" />
-                <div className="p-20">
-                    <div className="form__row">
-                        <label className="form__label">Pipeline Name*</label>
-                        <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
-                            onChange={this.handlePipelineName} />
-                        {this.state.showError && !nameErrorObj.isValid ? <span className="form__error">
-                            <img src={error} className="form__icon" />
-                            {nameErrorObj.message}
-                        </span> : null}
+                <div className="pt-20  modal__top-fixed">
+                    <div className=" header">
+                        <div className="flex left ">
+                            <div className="fs-16 fw-6 pl-20 ">Create deployment pipeline</div>
+                            <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
+                                <Close className="icon-dim-24" />
+                            </button>
+                            <p className="form__subtitle"></p>
+                        </div>
+                        <hr className="divider mb-0" />
                     </div>
-                    <div className="form__row form__row--flex">
-                        <div className={`typeahead w-50 `}>
-                            <DevtronTypeahead name="environment" label={"Deploy to Environment*"} labelKey='name' multi={false}
-                                defaultSelections={selectedEnv ? [selectedEnv] : []}
-                                disabled={!!this.state.pipelineConfig.id} onChange={this.selectEnvironment}>
-                                {this.state.environments.map((env) => {
-                                    return <TypeaheadOption key={env.id} item={env} id={env.id}>
-                                        {env.name}
-                                    </TypeaheadOption>
-                                })}
-                            </DevtronTypeahead >
-                            {this.state.showError && !envErrorObj.isValid ? <span className="form__error">
+
+                </div>
+                <div className="mt-50">
+                    
+                    <div className="p-20 ">
+                        <div className="form__row">
+                            <label className="form__label">Pipeline Name*</label>
+                            <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
+                                onChange={this.handlePipelineName} />
+                            {this.state.showError && !nameErrorObj.isValid ? <span className="form__error">
                                 <img src={error} className="form__icon" />
-                                {envErrorObj.message}
+                                {nameErrorObj.message}
                             </span> : null}
                         </div>
-                        <label className="flex-1 ml-16">
-                            <span className="form__label">Namespace*</span>
-                            <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
-                                disabled={!namespaceEditable}
-                                value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.state.pipelineConfig.namespace}
-                                onChange={(event) => { this.handleNamespaceChange(event, selectedEnv) }} />
-                            {this.state.showError && !namespaceErroObj.isValid ? <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {namespaceErroObj.message}
-                            </span> : null}
-                        </label>
-                    </div>
-                    {this.renderNamespaceInfo(namespaceEditable)}
-                    <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
-                        <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
-                        <div>
-                            <div className="form__input-header">Pre-deployment Stage</div>
-                            <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
+                        <div className="form__row form__row--flex">
+                            <div className={`typeahead w-50 `}>
+                                <DevtronTypeahead name="environment" label={"Deploy to Environment*"} labelKey='name' multi={false}
+                                    defaultSelections={selectedEnv ? [selectedEnv] : []}
+                                    disabled={!!this.state.pipelineConfig.id} onChange={this.selectEnvironment}>
+                                    {this.state.environments.map((env) => {
+                                        return <TypeaheadOption key={env.id} item={env} id={env.id}>
+                                            {env.name}
+                                        </TypeaheadOption>
+                                    })}
+                                </DevtronTypeahead >
+                                {this.state.showError && !envErrorObj.isValid ? <span className="form__error">
+                                    <img src={error} className="form__icon" />
+                                    {envErrorObj.message}
+                                </span> : null}
+                            </div>
+                            <label className="flex-1 ml-16">
+                                <span className="form__label">Namespace*</span>
+                                <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
+                                    disabled={!namespaceEditable}
+                                    value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.state.pipelineConfig.namespace}
+                                    onChange={(event) => { this.handleNamespaceChange(event, selectedEnv) }} />
+                                {this.state.showError && !namespaceErroObj.isValid ? <span className="form__error">
+                                    <img src={error} className="form__icon" />
+                                    {namespaceErroObj.message}
+                                </span> : null}
+                            </label>
                         </div>
-                        <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
-                    </div>
-                    {!this.state.showPreBuild ? "" : <>{this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
-                    <hr className="divider" />
-                    <div className=" flex left " onClick={() => this.handleDocker()}>
-                        <div className="sqr-44"><div className="icon-dim-24 workflow-node__icon-common workflow-node__CD-icon"></div></div>
-                        <div>
-                            <div className="form__input-header">Deployment Stage</div>
-                            <p>Configure deployment preferences for this pipeline</p>
+                        {this.renderNamespaceInfo(namespaceEditable)}
+                        <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
+                            <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
+                            <div>
+                                <div className="form__input-header">Pre-deployment Stage</div>
+                                <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
-                        <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
-                    </div>
-                    {this.state.showDocker ? <div className="mt-20">
-                        {this.renderTriggerType()}
-                        {this.renderDeploymentStrategy()} </div> : ""}
-                    <hr className="divider" />
-                    <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
-                        <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
-                        <div>
-                            <div className="form__input-header">Post-deployment Stage</div>
-                            <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
+                        {!this.state.showPreBuild ? "" : <>{this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
+                        <hr className="divider" />
+                        <div className=" flex left " onClick={() => this.handleDocker()}>
+                            <div className="sqr-44"><div className="icon-dim-24 workflow-node__icon-common workflow-node__CD-icon"></div></div>
+                            <div>
+                                <div className="form__input-header">Deployment Stage</div>
+                                <p>Configure deployment preferences for this pipeline</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
-                        <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
-                    </div>
-                    {this.state.showPostBuild ? <>
-                        {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : this.renderAddStage('postStage')} </> : ""}
-                    <hr className="divider" />
-                    <div className="form__row form__row--flex">
-                        {this.props.match.params.cdPipelineId ? <button type="button" className="cta delete mr-16"
-                            onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
+                        {this.state.showDocker ? <div className="mt-20">
+                            {this.renderTriggerType()}
+                            {this.renderDeploymentStrategy()} </div> : ""}
+                        <hr className="divider" />
+                        <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
+                            <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
+                            <div>
+                                <div className="form__input-header">Post-deployment Stage</div>
+                                <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
+                            </div>
+                            <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
+                        </div>
+                        {this.state.showPostBuild ? <>
+                            {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : this.renderAddStage('postStage')} </> : ""}
+                        <hr className="divider" />
+                        <div className="form__row form__row--flex">
+                            {this.props.match.params.cdPipelineId ? <button type="button" className="cta delete mr-16"
+                                onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
                     </button> : null}
-                        <ButtonWithLoader rootClassName="cta flex-1" onClick={this.savePipeline} isLoading={this.state.loadingData}
-                            loaderColor="white">
-                            {this.props.match.params.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
-                        </ButtonWithLoader>
+                            <ButtonWithLoader rootClassName="cta flex-1" onClick={this.savePipeline} isLoading={this.state.loadingData}
+                                loaderColor="white">
+                                {this.props.match.params.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
+                            </ButtonWithLoader>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -843,7 +857,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         return <>
             <div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
-                {this.renderHeader}
+                <div className="">{this.renderHeader}</div>
                 <hr className="divider" />
                 <div className="m-20">
                     <div className="cn-9 fw-6 fs-14 mb-18">Select Environment</div>
