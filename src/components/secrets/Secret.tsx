@@ -333,12 +333,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     return;
                 }
             }
-            else if (filePermissionValue.value.length === 3) {
-                if (filePermissionValue.value.startsWith('0')) {
-                    setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal format, please enter 4 characters' });
-                    return;
-                }
-            }
             else if (filePermissionValue.value.length < 3) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
                 return;

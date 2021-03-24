@@ -263,12 +263,6 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     return;
                 }
             }
-            else if (state.filePermission.value.length === 3) {
-                if (state.filePermission.value.startsWith('0')) {
-                    dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is octal format, please enter 4 characters' } });
-                    return;
-                }
-            }
             else if (state.filePermission.value.length < 3) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'Atleast 3 character are required' } });
                 return;
