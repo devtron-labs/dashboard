@@ -267,7 +267,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'Atleast 3 character are required' } });
                 return;
             }
-            if (!new RegExp(PATTERNS.FILE_PERMISSION).test(state.filePermission.value)) {
+            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(state.filePermission.value)) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is octal number, use numbers between 0 to 7' } });
                 return;
             }
@@ -319,7 +319,7 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     payload['subPath'] = state.subPath;
                 }
                 if (isFilePermissionChecked) {
-                    payload['filePermission'] = state.filePermission.value.length <= 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
+                    payload['filePermission'] = state.filePermission.value.length == 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
             dispatch({ type: 'loadingSubmit' });

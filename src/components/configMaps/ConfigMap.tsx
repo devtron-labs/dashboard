@@ -292,7 +292,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
                 return;
             }
-            if (!new RegExp(PATTERNS.FILE_PERMISSION).test(filePermissionValue.value)) {
+            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
                 return;
             }
@@ -327,7 +327,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     payload['subPath'] = isSubPathChecked;
                 }
                 if (isFilePermissionChecked) {
-                    payload['filePermission'] = filePermissionValue.value.length <= 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
+                    payload['filePermission'] = filePermissionValue.value.length === 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
             }
             if (!envId) {
