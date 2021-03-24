@@ -577,8 +577,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <p className="deployment-strategy">Add one or more deployment strategies.
             You can choose from selected strategy while deploying manually to this environment.
             </p>
-            <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)} >
-                <Select.Button rootClassName="select-button--deployment-strategy" >
+            <Select rootClassName="mb-16 dashed" onChange={(e) => this.selectStrategy(e.target.value)} >
+                <Select.Button rootClassName="select-button--deployment-strategy " >
                     <span><Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
                         Add Deployment Strategy
                     </span>
@@ -685,7 +685,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderAddStage(key: 'preStage' | 'postStage') {
-        return <div className="white-card white-card--add-new-item mb-20 mt-20" onClick={(event) => this.deleteStage(key)}>
+        return <div className="white-card white-card--add-new-item dashed mb-20 mt-20" onClick={(event) => this.deleteStage(key)}>
             <Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
             <span className="artifact__add">Add Stage</span>
         </div>
@@ -909,7 +909,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             return <>
                 <VisibleModal className="" >
-                    <BasicCDPipelineModal 
+                    {/* <BasicCDPipelineModal 
                     view = {this.state.view}
                     pipelineConfig= {this.state.pipelineConfig}
                     environments= {this.state.environments}
@@ -920,7 +920,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     handleNamespaceChange= {this.handleNamespaceChange}
                     close= {this.props.close}
                     cdPipelineId= {this.props.match.params.cdPipelineId}
-                    />
+                    /> */}
+                    {this.renderAdvanceCDPipeline()}
                 </VisibleModal>
             </>
         }
