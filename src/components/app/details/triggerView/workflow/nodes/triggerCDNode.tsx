@@ -34,7 +34,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
                                     <span className="ellipsis-right" >{this.props.environmentName}</span>
                                 </Tippy>
                             </div>
-                            <div className="workflow-node__icon-common  workflow-node__CD-icon"/>
+                            <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon"/>
                         </div>
                         {this.renderStatus()}
                         <div className="workflow-node__btn-grp">

@@ -780,7 +780,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                     {this.renderNamespaceInfo(namespaceEditable)}
                     <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
-                        <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
+                        <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                         <div>
                             <div className="form__input-header">Pre-deployment Stage</div>
                             <p className="form__label form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</p>
@@ -790,7 +790,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     {!this.state.showPreBuild ? "" : <>{this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
                     <hr className="divider" />
                     <div className=" flex left " onClick={() => this.handleDocker()}>
-                        <div className="sqr-44"><div className="icon-dim-20 workflow-node__icon-common  workflow-node__CD-icon"></div></div>
+                        <div className="sqr-44"><div className="icon-dim-24 workflow-node__icon-common workflow-node__CD-icon"></div></div>
                         <div>
                             <div className="form__input-header">Deployment Stage</div>
                             <p>Configure deployment preferences for this pipeline</p>
@@ -802,7 +802,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderDeploymentStrategy()} </div> : ""}
                     <hr className="divider" />
                     <div className="flex left cursor" onClick={(e) => this.handlePostBuild()}>
-                        <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
+                        <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                         <div>
                             <div className="form__input-header">Post-deployment Stage</div>
                             <p className="form__label form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</p>

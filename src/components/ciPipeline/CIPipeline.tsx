@@ -423,7 +423,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
         return <>
             <div className="flex left cursor" onClick={(e) => this.handlePreBuild()}>
-                <div className="sqr-44"><img className="icon-dim-20" src={PreBuild} /></div>
+                <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                 <div>
                     <div className="ci-stage__title">{title}</div>
                     <div className="ci-stage__description">{description}</div>

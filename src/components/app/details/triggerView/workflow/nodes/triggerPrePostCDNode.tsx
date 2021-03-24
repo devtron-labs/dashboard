@@ -48,7 +48,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                             <span className="workflow-node__text-light">Stage</span>
                             <span className="">{stage}</span>
                         </div>
-                        <div className="workflow-node__icon-common workflow-node__CD-pre-post-icon"/>
+                        <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon"/>
                     </div>
                     {this.renderStatus(isClickable, status)}
                     <div className="workflow-node__btn-grp">
