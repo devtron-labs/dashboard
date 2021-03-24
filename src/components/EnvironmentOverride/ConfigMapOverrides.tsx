@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { CONFIGMAP_SECRET_LABEL, PATTERNS } from '../../config';
+import { PATTERNS } from '../../config';
 import './environmentOverride.scss';
 
 const ConfigMapContext = React.createContext(null)
@@ -342,7 +342,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     <span className="mr-5">
                         Set SubPath (same as
                         <a href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
-                        subPath
+                            subPath
                         </a>for volume mount)<br></br>
                         {state.subPath ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
                     </span>
@@ -354,7 +354,11 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         rootClassName=""
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
-                        <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                        <span className="mr-5"> Set File Permission (same as
+                        <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                                defaultMode
+                        </a>for secrets in kubernetes)
+                        </span>
                     </Checkbox>
                 </div>}
                 {type === "volume" && isFilePermissionChecked ? <div className="mb-16">

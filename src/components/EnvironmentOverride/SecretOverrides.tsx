@@ -11,7 +11,7 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { CONFIGMAP_SECRET_LABEL, PATTERNS } from '../../config';
+import { PATTERNS } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import './environmentOverride.scss'
 
@@ -486,7 +486,11 @@ export function OverrideSecretForm({ name, toggleCollapse }) {
                     rootClassName="form__checkbox-label--ignore-cache"
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
-                    <span className="mr-5"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</span>
+                    <span className="mr-5"> Set File Permission (same as
+                        <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                            defaultMode
+                        </a>
+                     for secrets in kubernetes)</span>
                 </Checkbox>
             </div>}
             {type === "volume" && isFilePermissionChecked ? <div className="mb-16">

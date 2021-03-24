@@ -446,7 +446,11 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     rootClassName=""
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
-                    <p className="mb-0"> Set File Permission (Corresponds to defaultMode specified in kubernetes)</p>
+                     <span className="mr-5"> Set File Permission (same as
+                        <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                            defaultMode
+                        </a>
+                     for secrets in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
             {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
