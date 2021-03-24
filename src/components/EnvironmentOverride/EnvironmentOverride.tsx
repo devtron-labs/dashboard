@@ -54,8 +54,8 @@ export default function EnvironmentOverride() {
     return <ErrorBoundary>
         {loading && <Progressing pageLoader />}
         <div className="environment-override mb-24">
-            <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
             {environments.size && !loading && <>
+                <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
                 <div className="form__title">{environments.has(+params.envId) ? environments.get(+params.envId).environment_name : ''}</div>
                 <div className="form__subtitle">Manage environment configurations for this application.&nbsp;
                         <a className="learn-more__href" rel="noreferre noopener" href={DOCUMENTATION.APP_CREATE_ENV} target="blank">Learn about Environment Overrides</a>
