@@ -4,6 +4,7 @@ import { TriggerType, ViewType } from '../../config';
 import { Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox, DeleteDialog, VisibleModal } from '../common';
 import { BasicCDPipelineModalProps } from './types'
 import error from '../../assets/icons/misc/errorInfo.svg';
+import AdvanceCDPipelineModal from './AdvanceCDPipelineModal';
 
 
 export default class BasicCDPipelineModal extends Component<BasicCDPipelineModalProps, {}>{
@@ -72,7 +73,7 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                     </div>
                     <hr className="" />
                     <div className="flex left mb-12">
-                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }}>
+                        <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onChange={()=>AdvanceCDPipelineModal}>
                             Advanced options
                     </div>
                         <div className="m-auto-mr-0" style={{ width: "155px" }}>

@@ -909,7 +909,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             return <>
                 <VisibleModal className="" >
-                    {/* <BasicCDPipelineModal 
+                    <BasicCDPipelineModal 
                     view = {this.state.view}
                     pipelineConfig= {this.state.pipelineConfig}
                     environments= {this.state.environments}
@@ -920,8 +920,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     handleNamespaceChange= {this.handleNamespaceChange}
                     close= {this.props.close}
                     cdPipelineId= {this.props.match.params.cdPipelineId}
-                     /> */}
-                     {/* {this.renderAdvanceCDPipeline()} */}
+                     /> 
+                     {/* {this.renderAdvanceCDPipeline()}
                       <AdvanceCDPipelineModal 
                      close= {this.props.close}
                      pipelineConfig= {this.state.pipelineConfig}
@@ -953,7 +953,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                      selectStrategy= {this.selectStrategy}
                      deleteStage= {this.deleteStage}
                      renderAddStage= {this.renderAddStage}
-                     /> 
+        /> */}
                 </VisibleModal>
             </>
         }

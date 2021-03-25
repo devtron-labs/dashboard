@@ -54,8 +54,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     handleAddCDPipeline = () => {
-        if (this.props.isGitOpsConfigAvailable) {
-            this.toggleCDMenu();
+        if (this.props.isGitOpsConfigAvailable) {///67/ci-pipeline/67/cd-pipeline
+          //  this.toggleCDMenu();
+            let url = this.props.match.url
+            let URL = this.props.history.push(`${url}/${this.props.id}/ci-pipeline/${this.props.id}/cd-pipeline`);
+            {console.log(URL)}
         }
         else {
             this.toggleGitOpsWarningModal();
@@ -207,6 +210,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderWorkflow() {
         let ciPipelineId = 0;
         let ciPipeline = this.props.nodes.find(nd => nd.type == 'CI');
+        {console.log(this.props.nodes)}
         ciPipelineId = (ciPipeline) ? +ciPipeline.id : ciPipelineId;
         return <WorkflowEditorContext.Consumer>
             {(context) => {

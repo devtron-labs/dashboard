@@ -259,7 +259,7 @@ export default class AdvanceCDPipelineModal extends Component<AdvanceCDPipelineM
                             </div>
                             <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
                         </div>
-                        {!this.props.showPreBuild ? "" : <>{this.props.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.props.renderAddStage('preStage')}</>}
+                        {!this.props.showPreBuild ? "" : <>{this.props.showPreStage ? this.renderDeploymentStageDetails('preStage') : this.renderAddStage('preStage')}</>}
                         <hr className="divider" />
 
                         <div className="flex left cursor" onClick={() => this.props.handleDocker()}>
