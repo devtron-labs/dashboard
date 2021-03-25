@@ -14,6 +14,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config';
+import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
 
 const ConfigMapContext = React.createContext(null)
@@ -30,38 +31,80 @@ function useConfigMapContext() {
 
 export default function ConfigMapOverrides({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId, envId }>()
-    const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId])
+    // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
+    const [configmapList, setConfigmapList] = useState<{ id: number, configData: any[], appId: number }>()
+    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
+
     useEffect(() => {
-        if (!loading && result) {
+        if (!configmapLoading && configmapList) {
             setParentState('loaded')
         }
-    }, [loading])
-    if (loading && !result) {
-        return null
+    }, [configmapLoading])
+
+    // if (loading && !result) {
+    //     return null
+    // }
+    // if (error) {
+    //     setParentState('failed')
+    //     showError(error)
+    //     if (!result) return null
+    // }
+
+    useEffect(() => {
+        async function initialise() {
+            try {
+                const appChartRefRes = await getAppChartRef(appId);
+                const configmapRes = await getEnvironmentConfigs(appId, envId);
+                setConfigmapList({
+                    appId: configmapRes.result.appId,
+                    id: configmapRes.result.id,
+                    configData: configmapRes.result.configData || [],
+                })
+                setAppChartRef(appChartRefRes.result);
+            } catch (error) {
+                setParentState('failed');
+                showError(error);
+            } finally {
+                setConfigmapLoading(false);
+            }
+        }
+        initialise();
+    }, [appId])
+
+    async function reload() {
+        try {
+            const configmapRes = await getEnvironmentConfigs(appId, envId);
+            setConfigmapList({
+                appId: configmapRes.result.appId,
+                id: configmapRes.result.id,
+                configData: configmapRes.result.configData || [],
+            })
+        } catch (error) {
+
+        }
     }
-    if (error) {
-        setParentState('failed')
-        showError(error)
-        if (!result) return null
-    }
-    if (parentState === 'loading' || !result) return null
-    let { result: { configData, id } } = result
-    configData = [{ name: "" }].concat(configData)
-    const configMaps = mapByKey(configData, 'name');
-    return (
-        <section className="config-map-overrides">
-            <label className="form__label bold">ConfigMaps</label>
-            <ConfigMapContext.Provider value={{ configMaps, id, reload }}>
-                {configMaps && Array.from(configMaps).sort((a, b) => a[0].localeCompare(b[0])).map(
-                    ([name, { data, defaultData, ...rest }]) =>
-                        <ListComponent name={name} key={name || Math.random().toString(36).substr(2, 5)} type="config-map" label={defaultData ? data ? 'modified' : null : 'env'} />
-                )}
-            </ConfigMapContext.Provider>
-        </section>
-    )
+    if (parentState === 'loading' || !configmapList) return null;
+
+    let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(configmapList?.configData);
+    // let { result: { configData, id } } = result
+    // configData = [{ name: "" }].concat(configData)
+    // const configMaps = mapByKey(configData, 'name');
+
+    return <section className="config-map-overrides">
+        <label className="form__label bold">ConfigMaps</label>
+        <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
+            {configData.map(({ name, defaultData, data }) => <ListComponent key={name || Math.random().toString(36).substr(2, 5)}
+                name={name}
+                appChartRef={appChartRef}
+                type="config-map"
+                label={defaultData ? data ? 'modified' : null : 'env'} />
+            )}
+        </ConfigMapContext.Provider>
+    </section>
 }
 
-export function ListComponent({ name = "", type, label = "", reload = null }) {
+export function ListComponent({ name = "", type, label = "", appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
     return (
         <div className="white-card white-card--list">
@@ -71,21 +114,23 @@ export function ListComponent({ name = "", type, label = "", reload = null }) {
                 {label && <div className="flex tag">{label}</div>}
                 <img className={`pointer rotate`} style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }} src={arrowTriangle} alt="arrow" />
             </div>
-            {!isCollapsed && type !== 'config-map' && <OverrideSecretForm name={name} toggleCollapse={toggleCollapse} />}
-            {!isCollapsed && type !== 'secret' && <OverrideConfigMapForm name={name} toggleCollapse={toggleCollapse} reload={reload} />}
+            {!isCollapsed && type !== 'config-map' && <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />}
+            {!isCollapsed && type !== 'secret' && <OverrideConfigMapForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} reload={reload} />}
         </div>
     )
 }
 
 interface ConfigMapProps {
     name?: string;
+    appChartRef: { id: number; version: string; };
     toggleCollapse: any;
     reload: any;
 }
 
-const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, toggleCollapse }) {
-    const { configMaps, id, reload } = useConfigMapContext()
-    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission = "", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
+const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, appChartRef, toggleCollapse }) {
+    const { configmapList, id, reload } = useConfigMapContext();
+    const configmap = configmapList.configData.find(cm => cm.name === name);
+    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission = "", global: isGlobal = false } = configmap ? configmap : { type: 'environment', mountPath: '', external: false }
     function reducer(state, action) {
         switch (action.type) {
             case 'createDuplicate':
@@ -263,12 +308,10 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             dispatch({ type: 'submitLoading' });
             await overRideConfigMap(id, +appId, +envId, [payload]);
             await reload();
-            toast.success(
-                <div className="toast">
-                    <div className="toast__title">Overridden</div>
-                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                </div>
-            )
+            toast.success(<div className="toast">
+                <div className="toast__title">Overridden</div>
+                <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
+            </div>);
             toggleCollapse(collapse => !collapse)
             dispatch({ type: 'success' });
         }
@@ -408,7 +451,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 {!(external && type === 'environment') && <div className="form__buttons">
                     <button disabled={!state.duplicate} className="cta" type="submit">{state.submitLoading ? <Progressing /> : 'Save'}</button>
                 </div>}
-            </form> : <ConfigMapForm
+            </form> : <ConfigMapForm appChartRef={appChartRef}
                 id={id}
                 appId={appId}
                 name={name}

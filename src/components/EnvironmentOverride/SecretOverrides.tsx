@@ -1,19 +1,20 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
 import { getEnvironmentSecrets, } from '../../services/service';
-import { useParams } from 'react-router'
+import { useParams } from 'react-router';
 import { ListComponent, Override } from './ConfigMapOverrides'
 import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
-import { toast } from 'react-toastify'
-import { Progressing } from '../common'
+import { toast } from 'react-toastify';
+import { Progressing } from '../common';
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import YAML from 'yaml'
+import YAML from 'yaml';
 import { PATTERNS } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
-import './environmentOverride.scss'
+import { getAppChartRef } from '../../services/service';
+import './environmentOverride.scss';
 
 const sampleJSON = [
     {
@@ -54,11 +55,23 @@ function useSecretContext() {
 export default function SecretOverrides({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId, envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
+
+    useEffect(() => {
+        async function callGetAppChartRef() {
+            const { result } = await getAppChartRef(appId);
+            setAppChartRef(result);
+        }
+        callGetAppChartRef();
+    }, [appId])
+
     useEffect(() => {
         if (!loading && result) {
             setParentState('loaded')
         }
     }, [loading])
+
+
     if (loading && !result) return null
     if (error) {
         setParentState('failed')
@@ -75,14 +88,14 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
             <label htmlFor="" className="form__label bold">Secrets</label>
             <SecretContext.Provider value={{ secrets, id, reload }}>
                 {secrets && Array.from(secrets).sort((a, b) => a[0].localeCompare(b[0])).map(([name, { data, defaultData, global, ...rest }]) => {
-                    return <ListComponent key={name || Math.random().toString(36).substr(2, 5)} name={name} type="secret" label={global ? data ? 'modified' : '' : 'env'} />
+                    return <ListComponent key={name || Math.random().toString(36).substr(2, 5)} appChartRef={appChartRef} name={name} type="secret" label={global ? data ? 'modified' : '' : 'env'} />
                 })}
             </SecretContext.Provider>
         </section>
     )
 }
 
-export function OverrideSecretForm({ name, toggleCollapse }) {
+export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const { secrets, id, reload } = useSecretContext()
     const { data = null, defaultData = null, type = "environment", external = false, mountPath = "", defaultMountPath = "", global: isGlobal = false, externalType = "", defaultPermissionNumber = "", filePermission = "", subPath = false } = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: "" }
     const { appId, envId } = useParams<{ appId, envId }>()

@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
+import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { useParams } from 'react-router'
-import { updateConfig, deleteConfig } from './service'
-import { getConfigMapList } from '../../services/service';
+import { updateConfig, deleteConfig } from './service';
+import { getAppChartRef, getConfigMapList } from '../../services/service';
 import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS } from '../../config';
-import Reload from '../Reload/Reload'
-import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Reload from '../Reload/Reload';
+import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as File } from '../../assets/icons/ic-file.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import './ConfigMap.scss'
 
@@ -22,24 +22,60 @@ const EXTERNAL_TYPES = {
 
 const ConfigMap = ({ respondOnSuccess, ...props }) => {
     const { appId } = useParams<{ appId }>()
-    const [loading, result, error, reload, setResult] = useAsync(() => getConfigMapList(appId), [appId])
+    const [configmap, setConfigmap] = useState<{ id: number, configData: any[], appId: number }>()
+    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
 
-    if (loading && !result) {
+    useEffect(() => {
+        async function initialise() {
+            try {
+                const appChartRefRes = await getAppChartRef(appId);
+                const configmapRes = await getConfigMapList(appId);
+                setConfigmap({
+                    appId: configmapRes.result.appId,
+                    id: configmapRes.result.id,
+                    configData: configmapRes.result.configData || [],
+                })
+                setAppChartRef(appChartRefRes.result);
+            } catch (error) {
+
+            } finally {
+                setConfigmapLoading(false);
+            }
+        }
+        initialise();
+    }, [appId])
+
+    async function reload() {
+        try {
+            const configmapRes = await getConfigMapList(appId);
+            setConfigmap({
+                appId: configmapRes.result.appId,
+                id: configmapRes.result.id,
+                configData: configmapRes.result.configData || [],
+            })
+        } catch (error) {
+
+        }
+    }
+
+    if (configmapLoading) {
         return <Progressing pageLoader />
     }
-    if (error) {
-        showError(error)
-        if (!result) return <Reload />
-    }
-    if (!result) return null
-    let { result: { configData, id } } = result
-    configData = [{ id: id }].concat(configData)
+
+    let configData = [{ id: null, name: null }].concat(configmap?.configData);
     return <div className="form__app-compose">
         <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
         <p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
             <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
         </p>
-        {Array.isArray(configData) && configData.filter(cm => cm).map((cm, idx) => <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }} appId={appId} id={id} update={reload} index={idx} />)}
+        {configData.map((cm, idx) => {
+            return <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
+                appChartRef={appChartRef}
+                appId={appId} id={configmap.id}
+                update={reload}
+                index={idx} />
+        })}
     </div>
 }
 
@@ -78,11 +114,11 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
     )
 })
 
-export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, filePermission = "", subPath = false, ...rest }) {
+export function CollapsedConfigMapForm({ appChartRef, title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
         ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'fw-5 cb-5 fs-14' : 'fw-5 cn-9 fs-14'} />
-        : <ConfigMapForm {...{ name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, filePermission, subPath, ...rest }} />}
+        : <ConfigMapForm {...{ appChartRef, name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, filePermission, subPath, ...rest }} />}
     </section>
 }
 
@@ -197,7 +233,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission }) {
+export function ConfigMapForm({ appChartRef, id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
@@ -217,6 +253,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     }
 
     useEffect(() => {
+
         if (data) {
             setExternalValues(Object.keys(data).map(k => ({ k, v: typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k], keyError: "", valueError: "" })))
         }
@@ -424,7 +461,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            {!isExternalValues && selectedTab === 'Data Volume' ?
+            {appChartRef?.version >= "3.10.0" && !isExternalValues && selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
@@ -440,7 +477,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                         </span>
                     </Checkbox>
                 </div> : ""}
-            {selectedTab === 'Data Volume' ? <div className="mb-16">
+            {appChartRef?.version >= "3.10.0" && selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName=""
@@ -453,7 +490,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                      for secrets in kubernetes)</span>
                 </Checkbox>
             </div> : ""}
-            {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+            {appChartRef?.version >= "3.10.0" && selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}

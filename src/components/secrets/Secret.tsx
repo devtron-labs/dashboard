@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service';
+import { getAppChartRef } from '../../services/service';
 import { overRideSecret, deleteSecret as deleteEnvironmentSecret, unlockEnvSecret } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
@@ -40,8 +41,10 @@ let dataHeader = <div>
 const sample = YAML.stringify(sampleJSON);
 
 const Secret = ({ respondOnSuccess, ...props }) => {
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
     const [list, setList] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [secretLoading, setSecretLoading] = useState(true)
+
     useEffect(() => {
         initialise()
     }, [])
@@ -49,7 +52,8 @@ const Secret = ({ respondOnSuccess, ...props }) => {
 
     async function initialise() {
         try {
-            const { result } = await getSecretList(appId)
+            const appChartRefRes = await getAppChartRef(appId);
+            const { result } = await getSecretList(appId);
             if (Array.isArray(result.configData)) {
                 result.configData = result.configData.map(config => {
                     if (config.data) {
@@ -58,14 +62,14 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                     return config
                 })
             }
-            setList(result)
-            { console.log(result) }
+            setAppChartRef(appChartRefRes.result);
+            setList(result);
         }
         catch (err) {
             showError(err)
         }
         finally {
-            setLoading(false)
+            setSecretLoading(false)
         }
     }
 
@@ -98,24 +102,31 @@ const Secret = ({ respondOnSuccess, ...props }) => {
     function decode(data) {
         return Object.keys(data).map(m => ({ key: m, value: data[m] ? atob(data[m]) : data[m] })).reduce((agg, curr) => { agg[curr.key] = curr.value; return agg }, {})
     }
-    if (loading) return <Progressing pageLoader />
+    if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
             <p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
             <a className="learn-more__href" rel="noreferer noopener" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank"> Learn more about Secrets</a></p>
-            {list && <CollapsedSecretForm appId={appId} id={list.id || 0} title="Add Secret" update={update} initialise={initialise} />}
-            {list && Array.isArray(list.configData) && list.configData.filter(cs => cs).map((cs, idx) => <CollapsedSecretForm key={cs.name} {...cs} appId={appId} id={list.id} update={update} index={idx} initialise={initialise} />)}
+            <CollapsedSecretForm appId={appId} id={list.id || 0} title="Add Secret" appChartRef={appChartRef} update={update} initialise={initialise} />
+            {list && Array.isArray(list.configData) && list.configData.filter(cs => cs).map((cs, idx) => <CollapsedSecretForm key={cs.name}
+                {...cs}
+                appChartRef={appChartRef}
+                appId={appId} id={list.id}
+                update={update}
+                index={idx}
+                initialise={initialise} />)}
         </div>
     )
 }
 
 
-export function CollapsedSecretForm({ title = "", roleARN = "", secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "", filePermission = "", subPath = false, ...rest }) {
+export function CollapsedSecretForm({ title = "", roleARN = "", appChartRef, secretData = [], mountPath = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, initialise = null, externalType = "", filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
         ? <ListComponent title={name || title} onClick={e => toggleCollapse(!collapsed)} icon={title ? addIcon : keyIcon} collapsible={!title} className={title ? 'fw-5 cb-5 fs-14' : 'fw-5 cn-9 fs-14'} />
         : <SecretForm name={name}
+            appChartRef={appChartRef}
             secretData={secretData}
             mountPath={mountPath}
             roleARN={roleARN}
@@ -160,6 +171,7 @@ export function ListComponent({ icon = "", title, subtitle = "", onClick, classN
 }
 interface SecretFormProps {
     id: number;
+    appChartRef: { id: number; version: string };
     appId: number;
     roleARN: string;
     name: string;
@@ -188,7 +200,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [loading, setLoading] = useState(false)
     const [secretMode, toggleSecretMode] = useState(props.isUpdate)
     const [externalType, setExternalType] = useState(props.externalType)
-    const { envId } = useParams<{ envId }>()
+    const { appId, envId } = useParams<{ appId, envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const { yaml: lockedYaml } = useKeyValueYaml(externalValues.map(({ k, v }) => ({ k, v: Array(8).fill("*").join("") })), setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
@@ -287,7 +299,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 toast.success('Successfully deleted')
                 props.update(props.index, null)
             }
-
         }
         catch (err) {
             showError(err)
@@ -574,7 +585,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 rootClassName=""
                 value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
-                 <span className="mr-5"> Set File Permission (same as
+                <span className="mr-5"> Set File Permission (same as
                     <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                         defaultMode
                     </a>
