@@ -909,6 +909,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             return <>
                 <VisibleModal className="" >
+                    
                     <BasicCDPipelineModal 
                     view = {this.state.view}
                     pipelineConfig= {this.state.pipelineConfig}
