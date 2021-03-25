@@ -26,59 +26,59 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
             return <Progressing pageLoader />
         }
         else {
-        return <div className="m-20">
-            <div className="cn-9 fw-6 fs-14 mb-18">Select Environment</div>
-            <div className="form__row form__row--flex">
-                <div className={`typeahead w-50 `}>
-                    <DevtronTypeahead name="environment" label={"Deploy to Environment*"} labelKey='name' multi={false}
-                        defaultSelections={selectedEnv ? [selectedEnv] : []}
-                        disabled={!!this.props.pipelineConfig.id}
-                        onChange={this.props.selectEnvironment} >
-                        {this.props.environments.map((env) => {
-                            return <TypeaheadOption key={env.id} item={env} id={env.id}>
-                                {env.name}
-                            </TypeaheadOption>
-                        })}
-                    </DevtronTypeahead >
-                    {/* {this.props.showError && !envErrorObj.isValid ? <span className="form__error">
+            return <div className="m-20">
+                <div className="cn-9 fw-6 fs-14 mb-18">Select Environment</div>
+                <div className="form__row form__row--flex">
+                    <div className={`typeahead w-50 `}>
+                        <DevtronTypeahead name="environment" label={"Deploy to Environment*"} labelKey='name' multi={false}
+                            defaultSelections={selectedEnv ? [selectedEnv] : []}
+                            disabled={!!this.props.pipelineConfig.id}
+                            onChange={this.props.selectEnvironment} >
+                            {this.props.environments.map((env) => {
+                                return <TypeaheadOption key={env.id} item={env} id={env.id}>
+                                    {env.name}
+                                </TypeaheadOption>
+                            })}
+                        </DevtronTypeahead >
+                        {/* {this.props.showError && !envErrorObj.isValid ? <span className="form__error">
                     <img src={error} className="form__icon" />
                     {envErrorObj.message}
                 </span> : null} */}
-                </div>
-                <label className="flex-1 ml-16">
-                    <span className="form__label">Namespace*</span>
-                    <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
-                        disabled={!namespaceEditable}
-                        value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.props.pipelineConfig.namespace}
-                        onChange={(event) => { this.props.handleNamespaceChange(event, selectedEnv) }}
-                    />
-                    {/* {this.state.showError && !namespaceErroObj.isValid ? <span className="form__error">
+                    </div>
+                    <label className="flex-1 ml-16">
+                        <span className="form__label">Namespace*</span>
+                        <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
+                            disabled={!namespaceEditable}
+                            value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : this.props.pipelineConfig.namespace}
+                            onChange={(event) => { this.props.handleNamespaceChange(event, selectedEnv) }}
+                        />
+                        {/* {this.state.showError && !namespaceErroObj.isValid ? <span className="form__error">
                     <img src={error} className="form__icon" />
                     {namespaceErroObj.message}
                 </span> : null} */}
-                </label>
-            </div>
-            <hr className="mb-12 divider" />
-            <div className="">
-                <div className="cn-9 fw-6 fs-14 mb-4">Deployment strategy</div>
-                <span className="form__label">To add and configure strategies switch to advanced options.</span>
-            </div>
-            <hr className="" />
-            <div className="flex left mb-12">
-                <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onChange={() => AdvanceCDPipelineModal}>
-                    Advanced options
-        </div>
-                <div className="m-auto-mr-0" style={{ width: "155px" }}>
-                    <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white" onClick={this.props.savePipeline} isLoading={this.props.loadingData}>
-                        {this.props.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
-                    </ButtonWithLoader>
+                    </label>
+                </div>
+                <hr className="mb-12 divider" />
+                <div className="">
+                    <div className="cn-9 fw-6 fs-14 mb-4">Deployment strategy</div>
+                    <span className="form__label">To add and configure strategies switch to advanced options.</span>
+                </div>
+                <hr className="" />
+                <div className="flex left mb-12">
+                    <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onChange={() => AdvanceCDPipelineModal}>
+                        Advanced options
+                   </div>
+                    <div className="m-auto-mr-0" style={{ width: "155px" }}>
+                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white" onClick={this.props.savePipeline} isLoading={this.props.loadingData}>
+                            {this.props.cdPipelineId ? "Update Pipeline" : "Create Pipeline"}
+                        </ButtonWithLoader>
+                    </div>
                 </div>
             </div>
-        </div>
         }
     }
+
     render() {
-        
         return <><div className="modal__body br-0 modal__body--w-800 modal__body--p-0">
             <div className="modal__header m-20">
                 <div className="modal__title fs-16">Create build pipeline</div>
@@ -88,7 +88,6 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
             </div>
             <hr className="divider" />
             {this.renderCDAdvanceModal()}
-
         </div>
 
         </>
