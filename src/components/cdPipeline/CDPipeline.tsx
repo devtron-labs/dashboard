@@ -921,6 +921,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     handleNamespaceChange= {this.handleNamespaceChange}
                     close= {this.props.close}
                     cdPipelineId= {this.props.match.params.cdPipelineId}
+                    strategies={ this.state.strategies}
+                    selectStrategy= {this.selectStrategy}
+
                      /> 
                      {/* {this.renderAdvanceCDPipeline()}
                       <AdvanceCDPipelineModal 

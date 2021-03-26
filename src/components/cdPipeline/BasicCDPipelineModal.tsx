@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { TriggerType, ViewType } from '../../config';
 import { Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, DeleteDialog, } from '../common';
 import { BasicCDPipelineModalProps } from './types'
 import error from '../../assets/icons/misc/errorInfo.svg';
 import AdvanceCDPipelineModal from './AdvanceCDPipelineModal';
-
+import { DropdownIndicator, Option } from './cdpipeline.util';
+import ReactSelect from 'react-select';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
 export default class BasicCDPipelineModal extends Component<BasicCDPipelineModalProps, {}>{
 
@@ -63,6 +65,37 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                     <div className="cn-9 fw-6 fs-14 mb-4">Deployment strategy</div>
                     <span className="form__label">To add and configure strategies switch to advanced options.</span>
                 </div>
+                <div className={`typeahead w-50 `}>
+                    <ReactSelect name="environment"
+                        label={""}
+                        labelKey='name'
+                        multi={false}
+                        defaultSelections={selectedEnv ? [selectedEnv] : []}
+                        disabled={!!this.props.pipelineConfig.id}
+                        placeholder={this.props.strategies[0].deploymentTemplate}
+                        onChange={(e) => this.props.selectStrategy(e.value)}>
+                        {/* {this.props.strategies.map((strategy) => {
+                            return <TypeaheadOption key={strategy.deploymentTemplate} item={strategy.deploymentTemplate} id={strategy.config.id}>
+                                {strategy.deploymentTemplate}
+                            </TypeaheadOption> 
+                        })}*/}
+                        </ReactSelect>
+
+                    {/* {this.props.showError && !envErrorObj.isValid ? <span className="form__error">
+                    <img src={error} className="form__icon" />
+                    {envErrorObj.message}
+                </span> : null} */}
+                </div>
+                {/* <Select rootClassName="mb-16 dashed w-50" onChange={(e) => this.props.selectStrategy(e.target.value)} >
+                    <Select.Button rootClassName="select-button--deployment-strategy " >
+                        Add Deployment Strategy
+                    </Select.Button>
+                    {this.props.strategies.map((strategy) => {
+                        return <Select.Option rootClassName="select-option--deployment-strategy" key={strategy.deploymentTemplate} value={strategy.deploymentTemplate} >
+                            {strategy.deploymentTemplate}
+                        </Select.Option>
+                    })}
+                </Select> */}
                 <hr className="" />
                 <div className="flex left mb-12">
                     <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onChange={() => AdvanceCDPipelineModal}>

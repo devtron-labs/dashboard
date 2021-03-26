@@ -117,6 +117,9 @@ loadingData: boolean;
 showError: boolean;
 close: () => void;
 cdPipelineId: string;
+strategies: DeploymentStrategy[]
+selectStrategy :(selection: string) => void;
+
 }
 
 export interface AdvanceCDPipelineModalProps{
