@@ -151,7 +151,7 @@ export default function DeploymentTemplateOverride({parentState, setParentState,
         <section className="deployment-template-override white-card white-card--list">
             <div className="environment-override-list pointer flex left" onClick={e => dispatch({type:'toggleCollapse'})}>
                 <img src={ fileIcon} alt="file-icon"/>
-                <div className={`flex left bold`}>{`Deployment template`}</div>
+                <div className="flex left fs-14 cn-9 fw-5">Deployment template</div>
                 { state.data && state.data.IsOverride && <div className="flex tag">modified</div>}
                 <img alt="arrow" className={`pointer rotate`} style={{ ['--rotateBy' as any]: `${state.collapsed ? '0' : '180'}deg` }} src={arrowTriangle} />
             </div>

@@ -24,6 +24,7 @@ import PreBuild from '../../assets/img/preBuildStage.png';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import BasicCDPipelineModal from './BasicCDPipelineModal';
 import Deploy from '../../assets/icons/ic-CD.svg';
+import AdvanceCDPipelineModal from './AdvanceCDPipelineModal';
 
 
 export const SwitchItemValues = {
@@ -562,12 +563,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderHeader() {
         return <>
-        <div className="flex left mt-20">
-            <div className="fs-16 fw-6 pl-20 ">Create deployment pipeline</div>
-            <button type="button" className="transparent m-auto-mr-20" onClick={this.props.close}>
-                <Close className="icon-dim-24" />
-            </button>
-        </div>
+        
     </>
     }
 
@@ -913,7 +909,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             return <>
                 <VisibleModal className="" >
-                    {/* <BasicCDPipelineModal 
+                    
+                    <BasicCDPipelineModal 
                     view = {this.state.view}
                     pipelineConfig= {this.state.pipelineConfig}
                     environments= {this.state.environments}
@@ -924,8 +921,43 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     handleNamespaceChange= {this.handleNamespaceChange}
                     close= {this.props.close}
                     cdPipelineId= {this.props.match.params.cdPipelineId}
-                    /> */}
-                    {this.renderAdvanceCDPipeline()}
+                    strategies={ this.state.strategies}
+                    selectStrategy= {this.selectStrategy}
+
+                     /> 
+                     {/* {this.renderAdvanceCDPipeline()}
+                      <AdvanceCDPipelineModal 
+                     close= {this.props.close}
+                     pipelineConfig= {this.state.pipelineConfig}
+                     environments= {this.state.environments}
+                     selectEnvironment= {this.selectEnvironment}
+                     handleNamespaceChange= {this.handleNamespaceChange}
+                     handlePipelineName= {this.handlePipelineName}
+                     handlePreBuild= {this.handlePreBuild}
+                     showPreBuild= {this.state.showPreBuild}
+                     showPreStage= {this.state.showPreStage}
+                     showPostStage= {this.state.showPostStage}
+                     showPostBuild= {this.state.showPostBuild}
+                     handleStageConfigChange= {this.handleStageConfigChange}
+                     configMapAndSecrets= {this.configMapAndSecrets}
+                     handleConfigmapAndSecretsChange={this.handleConfigmapAndSecretsChange}
+                     handleRunInEnvCheckbox= {this.handleRunInEnvCheckbox}
+                     handleDocker= {this.handleDocker}
+                     showDocker= {this.state.showDocker}
+                     handlePostBuild={this.handlePostBuild}
+                     cdPipelineId= {this.props.match.params.cdPipelineId}
+                     savePipeline={this.savePipeline}
+                     loadingData= {this.state.loadingData}
+                     strategies={ this.state.strategies}
+                     allStrategies= {this.allStrategies}
+                     setDefaultStrategy={this.setDefaultStrategy}
+                     toggleStrategy= {this.toggleStrategy}
+                     deleteStrategy= {this.deleteStrategy}
+                     handleStrategyChange= {this.handleStrategyChange}
+                     selectStrategy= {this.selectStrategy}
+                     deleteStage= {this.deleteStage}
+                     renderAddStage= {this.renderAddStage}
+        /> */}
                 </VisibleModal>
             </>
         }

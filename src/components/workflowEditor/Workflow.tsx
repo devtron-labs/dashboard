@@ -55,7 +55,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleAddCDPipeline = () => {
         if (this.props.isGitOpsConfigAvailable) {
-            this.toggleCDMenu();
+            //  this.toggleCDMenu();
+            let url = this.props.match.url
+            this.props.history.push(`${url}/${this.props.id}/ci-pipeline/${this.props.id}/cd-pipeline`);
+
         }
         else {
             this.toggleGitOpsWarningModal();

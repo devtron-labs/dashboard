@@ -111,11 +111,48 @@ view: string;
 pipelineConfig: PipelineConfig;
 environments: Environment[];
 selectEnvironment: (selection: Environment[]) => void;
+handleNamespaceChange: (event: any, environment: any) => void
 savePipeline: () => void;
 loadingData: boolean;
 showError: boolean;
-handleNamespaceChange: (event: any, environment: any) => void
 close: () => void;
 cdPipelineId: string;
+strategies: DeploymentStrategy[]
+selectStrategy :(selection: string) => void;
+
 }
+
+export interface AdvanceCDPipelineModalProps{
+    close: ()=> void;
+    pipelineConfig: PipelineConfig;
+    environments: Environment[];
+    selectEnvironment: (selection: Environment[]) => void;
+    handleNamespaceChange: (event: any, environment: any) => void
+    handlePipelineName:(event: any) => void
+    handlePreBuild:() => void
+    showPreBuild: boolean;
+    showPreStage: boolean;
+    showPostStage: boolean;
+    showPostBuild: boolean;
+    handleStageConfigChange: (value: string, stageType: 'preStage' | 'postStage', key: 'triggerType' | 'config' | 'switch') => void
+    configMapAndSecrets: any[];
+    handleConfigmapAndSecretsChange: (selection: any, stage: any)=> void;
+    handleRunInEnvCheckbox: (event, key) => void
+    handleDocker: () => void;
+    showDocker: boolean;
+    handlePostBuild: ()=> void;
+    cdPipelineId: string;
+    savePipeline: ()=> void;
+    loadingData: boolean;
+    strategies: DeploymentStrategy[]
+    allStrategies: { [key: string]: any; }
+    toggleStrategy: (selection: string)=> void;
+    deleteStrategy:(selection: string)=> void;
+    handleStrategyChange: (event: any, selection: string, key: "json" | "yaml")=> void;
+    setDefaultStrategy :(selection: string) => void;
+    selectStrategy :(selection: string) => void;
+    deleteStage: (key: "preStage" | "postStage") => void
+    renderAddStage: (key: "preStage" | "postStage") => void;
+}
+
 

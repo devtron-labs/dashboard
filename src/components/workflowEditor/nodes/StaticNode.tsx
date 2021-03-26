@@ -35,6 +35,8 @@ export class StaticNode extends Component<StaticNodeProps>{
     render() {
         return <foreignObject className="data-hj-whitelist" key={`static-${this.props.id}`} x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
             {this.renderCardContent()}
+        { console.log(this.props) }
+
         </foreignObject>
     }
 }
