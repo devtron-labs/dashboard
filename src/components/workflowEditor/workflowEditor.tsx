@@ -22,12 +22,6 @@ import { isGitopsConfigured } from '../../services/service';
 import { getHostURLConfiguration } from '../../services/service';
 import './workflowEditor.css';
 
-export const WorkflowEditorContext = createContext({
-    handleCISelect: (workflowId: string, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => { },
-    handleCDSelect: (workflowId: string, cdPipelineId: string) => { },
-});
-
-
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
 
     constructor(props) {
@@ -70,7 +64,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         })
     }
 
-    showDeleteDialog = (workflowId) => {
+    showDeleteDialog = (workflowId: number) => {
         this.setState({ workflowId, showDeleteDialog: true })
     }
 
@@ -230,6 +224,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                     height={wf.height}
                     nodes={wf.nodes}
                     handleCDSelect={this.handleCDSelect}
+                    handleCISelect={this.handleCISelect}
                     openEditWorkflow={this.openEditWorkflow}
                     showDeleteDialog={this.showDeleteDialog}
                     isGitOpsConfigAvailable={this.state.isGitOpsConfigAvailable}
@@ -251,22 +246,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             </div>
         }
         else if (this.state.view === ViewType.FORM && this.props.configStatus >= AppConfigStatus.LOADING && !this.state.workflows.length) {
-            return <WorkflowEditorContext.Provider value={{
-                handleCISelect: this.handleCISelect,
-                handleCDSelect: this.handleCDSelect,
-            }}>
+            return <>
                 {this.renderRouter()}
-                <div className="mt-16 ml-20 mr-20 mb-16">
+                <div className="mt-16 ml-20 mr-20 mb-16" >
                     {this.renderHostErrorMessage()}
-                </div>
+                </div >
                 {this.renderEmptyState()}
-            </WorkflowEditorContext.Provider>
+            </>
         }
-        else return <WorkflowEditorContext.Provider value={{
-            handleCISelect: this.handleCISelect,
-            handleCDSelect: this.handleCDSelect,
-        }}>
-            <div className="workflow-editor">
+        else {
+            return <div className="workflow-editor">
                 <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                 <p>Workflow consist of pipelines from buid to deployment stages of an application.&nbsp;
                     <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_WORKFLOW} target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
@@ -279,7 +268,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 {this.renderWorkflows()}
                 {this.renderDeleteDialog()}
             </div>
-        </WorkflowEditorContext.Provider>
+        }
     }
 }
 

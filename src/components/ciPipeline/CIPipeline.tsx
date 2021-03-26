@@ -102,16 +102,14 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({
             view: ViewType.FORM,
             showDocker: !this.state.showDocker
-        },
-        )
+        })
     }
 
     handlePostBuild() {
         this.setState({
             view: ViewType.FORM,
             showPostBuild: !this.state.showPostBuild
-        },
-        )
+        })
     }
 
     handlePreBuild() {
@@ -541,53 +539,47 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     renderAdvanceCI() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         let errorObj = this.validationRules.name(this.state.form.name);
-        if (this.state.view == ViewType.LOADING) {
-            return <Progressing pageLoader />
-        }
-        else {
-            return <div className="p-20">
-                <label className="form__row">
-                    <span className="form__label">Pipeline Name*</span>
-                    <input className="form__input" autoComplete="off" disabled={!!this.state.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.state.form.name}
-                        onChange={this.handlePipelineName} />
-                    {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {this.validationRules.name(this.state.form.name).message}
-                    </span> : null}
-                </label>
-                {this.renderTriggerType()}
-                <div className="">
-                    <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
-                    {this.renderMaterials()}
+        return <div className="p-20">
+            <label className="form__row">
+                <span className="form__label">Pipeline Name*</span>
+                <input className="form__input" autoComplete="off" disabled={!!this.state.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.state.form.name}
+                    onChange={this.handlePipelineName} />
+                {this.state.showError && !errorObj.isValid ? <span className="form__error">
+                    <img src={error} className="form__icon" />
+                    {this.validationRules.name(this.state.form.name).message}
+                </span> : null}
+            </label>
+            {this.renderTriggerType()}
+            <div className="">
+                <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
+                {this.renderMaterials()}
+            </div>
+            <hr className="divider" />
+            {this.renderStages('beforeDockerBuildScripts')}
+            <hr className="divider" />
+            {this.renderDockerArgs()}
+            <hr className="divider" />
+            {this.renderStages('afterDockerBuildScripts')}
+            <hr className="divider" />
+            <div className="white-card flexbox flex-justify mb-40">
+                <div>
+                    <p className="ci-stage__title">Scan for vulnerabilities</p>
+                    <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
                 </div>
-                <hr className="divider" />
-                {this.renderStages('beforeDockerBuildScripts')}
-                <hr className="divider" />
-                {this.renderDockerArgs()}
-                <hr className="divider" />
-                {this.renderStages('afterDockerBuildScripts')}
-                <hr className="divider" />
-                <div className="white-card flexbox flex-justify mb-40">
-                    <div>
-                        <p className="ci-stage__title">Scan for vulnerabilities</p>
-                        <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
-                    </div>
-                    <div className="" style={{ width: "32px", height: "20px" }}>
-                        <Toggle selected={this.state.form.scanEnabled} onSelect={this.handleScanToggle} />
-                    </div>
-                </div>
-                {this.renderDeleteCI()}
-                <div className="form__row form__row--flex">
-                    {this.renderDeleteCIButton()}
-                    <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
-                        onClick={this.savePipeline}
-                        isLoading={this.state.loadingData}>
-                        {text}
-                    </ButtonWithLoader>
+                <div className="" style={{ width: "32px", height: "20px" }}>
+                    <Toggle selected={this.state.form.scanEnabled} onSelect={this.handleScanToggle} />
                 </div>
             </div>
-
-        }
+            {this.renderDeleteCI()}
+            <div className="form__row form__row--flex">
+                {this.renderDeleteCIButton()}
+                <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                    onClick={this.savePipeline}
+                    isLoading={this.state.loadingData}>
+                    {text}
+                </ButtonWithLoader>
+            </div>
+        </div>
     }
 
     render() {

@@ -37,6 +37,6 @@ export interface PipelineSelectProps {
     workflowId: number;
     left: number;
     top: number;
-    type: 'CI' | 'CD';
     toggleMenu: () => void;
+    handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
 }
