@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import { CINode } from './nodes/CINode';
 import { CDNode } from './nodes/CDNode';
 import { StaticNode } from './nodes/StaticNode';
-import { RectangularEdge as Edge, getLinkedCIPipelineURL, ConfirmationDialog } from '../common';
+import { RectangularEdge as Edge, getLinkedCIPipelineURL, ConfirmationDialog, getCIPipelineURL, getCDPipelineURL, getExCIPipelineURL } from '../common';
 import { RouteComponentProps } from 'react-router';
 import { NodeAttr } from '../../components/app/details/triggerView/types';
-import { PipelineSelect } from './modals/PipelineSelect';
+import { PipelineSelect } from './PipelineSelect';
 import { WorkflowCreate } from '../app/details/triggerView/config';
-import { getCIPipelineURL, getCDPipelineURL, getExCIPipelineURL } from '../common';
+import { Link, NavLink } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
-import { Link, NavLink } from 'react-router-dom'
 import warn from '../../assets/icons/ic-warning.svg';
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {

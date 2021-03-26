@@ -1,4 +1,4 @@
-import React, { Component, createContext } from 'react';
+import React, { Component } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config';
@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service';
 import { deleteWorkflow } from './service';
-import AddWorkflow from './modals/CreateWorkflow';
+import AddWorkflow from './CreateWorkflow';
 import add from '../../assets/icons/misc/addWhite.svg';
 import CIPipeline from '../ciPipeline/CIPipeline';
 import CDPipeline from '../cdPipeline/CDPipeline';
@@ -18,8 +18,7 @@ import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { isGitopsConfigured } from '../../services/service';
-import { getHostURLConfiguration } from '../../services/service';
+import { isGitopsConfigured, getHostURLConfiguration } from '../../services/service';
 import './workflowEditor.css';
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
@@ -237,7 +236,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     }
 
     render() {
-        if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view == ViewType.LOADING) {
+        if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
         else if (this.state.view === ViewType.ERROR) {

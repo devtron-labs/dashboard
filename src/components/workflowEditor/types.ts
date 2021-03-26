@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router';
-import {HostURLConfig} from '../../services/service.types';
+import { HostURLConfig } from '../../services/service.types';
 
 export interface WorkflowEditState {
     view: string;

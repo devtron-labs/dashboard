@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { PipelineSelectProps } from '../types'
-import ci from '../../../assets/img/ic-pipeline-ci@2x.png';
-import linkedPipeline from '../../../assets/icons/ic-pipeline-linked.svg';
-import webhook from '../../../assets/img/webhook.svg';
-import { Modal } from '../../common';
+import { PipelineSelectProps } from './types'
+import { Modal } from '../common';
+import ci from '../../assets/img/ic-pipeline-ci@2x.png';
+import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg';
+import webhook from '../../assets/img/webhook.svg';
+
 export class PipelineSelect extends Component<PipelineSelectProps>  {
 
     renderCIMenu() {
