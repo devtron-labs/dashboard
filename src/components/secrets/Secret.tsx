@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
+import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service';
 import { getAppChartRef } from '../../services/service';
@@ -208,6 +208,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!props.subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
+    const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(props.appChartRef.version, [3, 9]);
 
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
@@ -329,7 +330,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             setVolumeMountPath({ value: volumeMountPath.value, error: 'This is a required field' })
             return
         }
-        if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
+        if (selectedTab === 'Data Volume' && isFilePermissionChecked && !isChartVersion309OrBelow) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'This is a required field' });
                 return;
@@ -407,10 +408,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                if (isExternalValues) {
+                if (isExternalValues && !isChartVersion309OrBelow) {
                     payload['subPath'] = isSubPathChecked;
                 }
-                if (isFilePermissionChecked) {
+                if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = filePermissionValue.value.length == 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
             }
@@ -567,6 +568,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName=""
+                    disabled={isChartVersion309OrBelow}
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
                     <span className="mr-5">
@@ -576,6 +578,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         </a>
                         for volume mount)<br></br>
                         {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                        </span> : null}
                     </span>
                 </Checkbox>
             </div> : ""}
@@ -584,12 +591,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 onClick={(e) => { e.stopPropagation() }}
                 rootClassName=""
                 value={CHECKBOX_VALUE.CHECKED}
+                disabled={isChartVersion309OrBelow}
                 onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
                 <span className="mr-5"> Set File Permission (same as
                     <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                         defaultMode
                     </a>
-                    for secrets in kubernetes)
+                    for secrets in kubernetes)<br></br>
+                    {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                        <span className="cn-7 ml-5">Learn more about </span>
+                        <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                    </span> : null}
                 </span>
             </Checkbox>
         </div> : ""}
@@ -598,6 +611,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 autoComplete="off"
                 tabIndex={5}
                 label={""}
+                disabled={isChartVersion309OrBelow}
                 placeholder={"eg. 0400 or 400"}
                 error={filePermissionValue.error}
                 onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
+import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service';
 import { getAppChartRef, getConfigMapList } from '../../services/service';
@@ -247,6 +247,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -310,7 +311,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
             setVolumeMountPath({ value: volumeMountPath.value, error: 'This is a required field' })
             return
         }
-        if (selectedTab === 'Data Volume' && isFilePermissionChecked) {
+        if (selectedTab === 'Data Volume' && isFilePermissionChecked && !isChartVersion309OrBelow) {
             if (!filePermissionValue.value) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'This is a required field' });
                 return;
@@ -360,10 +361,10 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
             }
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                if (!isExternalValues) {
+                if (!isExternalValues && !isChartVersion309OrBelow) {
                     payload['subPath'] = isSubPathChecked;
                 }
-                if (isFilePermissionChecked) {
+                if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = filePermissionValue.value.length === 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
             }
@@ -461,11 +462,12 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            {appChartRef?.version >= "3.10.0" && !isExternalValues && selectedTab === 'Data Volume' ?
+            {!isExternalValues && selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
                         rootClassName="top"
+                        disabled={isChartVersion309OrBelow}
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
                         <span className="mb-0">Set SubPath (same as
@@ -474,27 +476,40 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                             </a>
                             for volume mount)<br></br>
                             {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                            {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                                <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                <span className="cn-7 ml-5">Learn more about </span>
+                                <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                            </span> : null}
                         </span>
                     </Checkbox>
                 </div> : ""}
-            {appChartRef?.version >= "3.10.0" && selectedTab === 'Data Volume' ? <div className="mb-16">
+            {selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
                     rootClassName=""
+                    disabled={isChartVersion309OrBelow}
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
                     <span className="mr-5"> Set File Permission (same as
                         <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                             defaultMode
                         </a>
-                     for secrets in kubernetes)</span>
+                     for secrets in kubernetes)<br></br>
+                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                        </span> : null}
+                    </span>
                 </Checkbox>
             </div> : ""}
-            {appChartRef?.version >= "3.10.0" && selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+            {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput value={filePermissionValue.value}
                     autoComplete="off"
                     tabIndex={5}
                     label={""}
+                    disabled={isChartVersion309OrBelow}
                     placeholder={"eg. 0400 or 400"}
                     error={filePermissionValue.error}
                     onChange={handleFilePermission} />

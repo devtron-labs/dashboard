@@ -3,7 +3,7 @@ import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
 import { getEnvironmentSecrets, } from '../../services/service';
 import { useParams } from 'react-router';
 import { ListComponent, Override } from './ConfigMapOverrides'
-import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
+import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify';
@@ -189,6 +189,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
 
     function setKeyValueArray(arr) {
         tempArr.current = arr
@@ -261,7 +262,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             return
         }
 
-        if (type === 'volume' && isFilePermissionChecked) {
+        if (type === 'volume' && isFilePermissionChecked && !isChartVersion309OrBelow) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
                 return
@@ -328,10 +329,10 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             }
             if (type === 'volume') {
                 payload['mountPath'] = state.mountPath;
-                if (externalType !== "KubernetesSecret") {
+                if (externalType !== "KubernetesSecret" && !isChartVersion309OrBelow) {
                     payload['subPath'] = state.subPath;
                 }
-                if (isFilePermissionChecked) {
+                if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = state.filePermission.value.length == 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
@@ -480,8 +481,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 </div>}
             {externalType !== "KubernetesSecret" && type === "volume" && <Checkbox isChecked={state.subPath}
                 onClick={(e) => { e.stopPropagation(); }}
-                disabled={!state.duplicate}
-                rootClassName="form__checkbox-label--ignore-cache"
+                disabled={!state.duplicate || isChartVersion309OrBelow}
+                rootClassName=""
                 value={CHECKBOX_VALUE.CHECKED}
                 onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
                 <span className="mr-5">
@@ -490,27 +491,38 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         subPath
                     </a>for volume mount)<br></br>
                     {state.subPath ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                    {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                        <span className="cn-7 ml-5">Learn more about </span>
+                        <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                    </span> : null}
                 </span>
             </Checkbox>}
             {type === "volume" && <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
-                    disabled={!state.duplicate}
-                    rootClassName="form__checkbox-label--ignore-cache"
+                    disabled={!state.duplicate || isChartVersion309OrBelow}
+                    rootClassName=""
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
                     <span className="mr-5"> Set File Permission (same as
                         <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                             defaultMode
                         </a>
-                     for secrets in kubernetes)</span>
+                     for secrets in kubernetes)<br></br>
+                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                        </span> : null}
+                    </span>
                 </Checkbox>
             </div>}
             {type === "volume" && isFilePermissionChecked ? <div className="mb-16">
                 <CustomInput value={state.filePermission.value}
                     autoComplete="off"
                     label={""}
-                    disabled={!state.duplicate}
+                    disabled={!state.duplicate || isChartVersion309OrBelow}
                     placeholder={"eg. 0400 or 400"}
                     error={state.filePermission.error}
                     onChange={(e) => { dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } }) }} />
@@ -615,8 +627,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 <button className="cta" type="submit" disabled={state.locked}>{state.submitLoading ? <Progressing /> : 'Save'}</button>
             </div>}
         </form>
-            : <SecretForm
-                id={id}
+            : <SecretForm id={id}
+                appChartRef={appChartRef}
                 appId={Number(appId)}
                 name={name}
                 external={external}
