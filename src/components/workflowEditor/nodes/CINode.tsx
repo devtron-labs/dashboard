@@ -23,7 +23,6 @@ export interface CINodeProps {
     downstreams: NodeAttr[];
     to: string;
     toggleCDMenu: () => void;
-    setPosition: (top, left) => void;
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -57,7 +56,6 @@ export class CINode extends Component<CINodeProps> {
                         let { top, left } = event.target.getBoundingClientRect();
                         top = top + 25;
                         this.props.toggleCDMenu();
-                        this.props.setPosition(top, left);
                     }} />
                 </Tippy>
             </button>

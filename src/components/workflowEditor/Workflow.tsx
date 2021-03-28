@@ -23,15 +23,15 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     isGitOpsConfigAvailable: boolean;
     showDeleteDialog: (workflowId: number) => void;
     handleCDSelect: (workflowId: string | number, cdPipelineId) => void;
-    handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
     openEditWorkflow: (event, workflowId: number) => string;
+    handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
+    addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
 }
 
 interface WorkflowState {
-    showCDMenu: boolean;
-    showCIMenu: boolean;
     top: number
-    left: number
+    left: number;
+    showCIMenu: boolean;
     showGitOpsWarningModal: boolean;
 }
 
@@ -40,7 +40,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     constructor(props) {
         super(props)
         this.state = {
-            showCDMenu: false,
             showCIMenu: false,
             top: 0,
             left: 0,
@@ -55,7 +54,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     setPosition = (top: number, left: number) => {
         this.setState({ top, left });
     }
-
     renderNodes() {
         let ci = this.props.nodes.find(node => node.type == 'CI');
         if (ci)
@@ -90,7 +88,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 </button>
         </foreignObject>
     }
-
     renderSourceNode(node) {
         return <StaticNode
             x={node.x}
@@ -140,7 +137,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             isLinkedCI={node.isLinkedCI}
             linkedCount={node.linkedCount}
             toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, node.id); }}
-            setPosition={this.setPosition}
             to={this.openCIPipeline(node)}
         />
     }
@@ -208,12 +204,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     {this.renderNodes()}
                 </svg>
                 <PipelineSelect showMenu={this.state.showCIMenu}
-                    ciPipelineId={ciPipelineId}
                     left={this.state.left}
                     top={this.state.top}
-                    workflowId={this.props.id}
-                    handleCISelect={this.props.handleCISelect}
-                    toggleMenu={() => { this.setState({ showCIMenu: !this.state.showCIMenu }) }}
+                    addCIPipeline={this.props.addCIPipeline}
+                    toggleCIMenu={() => { this.setState({ showCIMenu: !this.state.showCIMenu }) }}
                 />
             </div>
         </div>

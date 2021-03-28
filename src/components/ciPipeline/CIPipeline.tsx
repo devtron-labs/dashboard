@@ -3,13 +3,13 @@ import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigP
 import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { VisibleModal, Progressing, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle, DeleteDialog } from '../common';
+import { VisibleModal, Progressing, showError } from '../common';
 import { toast } from 'react-toastify';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import './ciPipeline.css';
 import { AdvancedCIPipeline } from './AdvancedCIPipeline';
+import './ciPipeline.css';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules;
@@ -295,7 +295,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, 0, false).then((response) => {
             if (response) {
                 toast.success(msg);
                 this.setState({ loadingData: false });
@@ -309,7 +309,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
