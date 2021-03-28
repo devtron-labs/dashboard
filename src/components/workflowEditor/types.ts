@@ -1,11 +1,12 @@
 import { RouteComponentProps } from 'react-router';
 import { HostURLConfig } from '../../services/service.types';
+import { NodeAttr } from '../app/details/triggerView/types';
 
 export interface WorkflowEditState {
     view: string;
     code: number;
     workflows: any[];
-    allCINodeMap: any;
+    allCINodeMap: Map<string, NodeAttr>;
     workflowId: number;
     appName: string;
     showDeleteDialog: boolean;

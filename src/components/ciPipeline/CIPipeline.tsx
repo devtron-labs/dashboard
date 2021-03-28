@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigParsed, getCIPipelineNameSuggestion } from './ciPipeline.service';
-import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
+import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { VisibleModal, Progressing, showError } from '../common';
+import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDialog, showError } from '../common';
 import { toast } from 'react-toastify';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { AdvancedCIPipeline } from './AdvancedCIPipeline';
+import { SourceMaterials } from './SourceMaterials';
+import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
@@ -48,9 +49,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showPreBuild: false,
             showDocker: false,
             showPostBuild: false,
+            isAdvanced: false,
         }
         this.validationRules = new ValidationRules();
         this.handlePipelineName = this.handlePipelineName.bind(this);
+        this.addEmptyStage = this.addEmptyStage.bind(this);
         this.handleTriggerChange = this.handleTriggerChange.bind(this);
         this.savePipeline = this.savePipeline.bind(this);
         this.selectSourceType = this.selectSourceType.bind(this);
@@ -58,14 +61,19 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
         this.handleScanToggle = this.handleScanToggle.bind(this);
         this.handleDocker = this.handleDocker.bind(this);
-        // this.handleShowPostBuild = this.handleShowPostBuild.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handlePreBuild = this.handlePreBuild.bind(this);
+        this.handlePostBuild = this.handlePostBuild.bind(this);
+        this.discardChanges = this.discardChanges.bind(this);
+        this.handleSourceChange = this.handleSourceChange.bind(this);
+        this.toggleCollapse = this.toggleCollapse.bind(this);
+        this.toggleCIPipelineView = this.toggleCIPipelineView.bind(this);
     }
 
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
             getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
-                this.setState({ ...response, loadingData: false });
+                this.setState({ ...response, loadingData: false, isAdvanced: true });
             }).catch((error: ServerErrors) => {
                 showError(error);
                 this.setState({ loadingData: false });
@@ -73,7 +81,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
         else {
             getCIPipelineNameSuggestion(this.props.match.params.appId).then((response) => {
-                console.log(response);
+                this.setState({
+                    form: {
+                        ...this.state.form,
+                        name: response.result
+                    },
+                })
             }).catch((error) => {
 
             })
@@ -86,28 +99,33 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     },
                     gitMaterials: response.result.gitMaterials,
                     loadingData: false,
+                    isAdvanced: false,
                 });
             })
         }
     }
-    handleDocker() {
+
+    toggleCIPipelineView(): void {
         this.setState({
-            view: ViewType.FORM,
-            showDocker: !this.state.showDocker
+            isAdvanced: !this.state.isAdvanced
         })
     }
 
-    handlePostBuild() {
+    handlePreBuild(): void {
         this.setState({
-            view: ViewType.FORM,
+            showPreBuild: !this.state.showPreBuild
+        })
+    }
+
+    handlePostBuild(): void {
+        this.setState({
             showPostBuild: !this.state.showPostBuild
         })
     }
 
-    handlePreBuild() {
+    handleDocker(): void {
         this.setState({
-            view: ViewType.FORM,
-            showPreBuild: !this.state.showPreBuild
+            showDocker: !this.state.showDocker
         })
     }
 
@@ -178,7 +196,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     //invoked on Done, Discard, collapse icon
-    toggleCollapse(stageId, stageIndex: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
+    toggleCollapse(stageId, stageIndex: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts'): void {
         let stage = this.state.form[key].find(s => s.id == stageId);
         if (stage.name.length && stage.script.length) {
             let { form } = { ...this.state };
@@ -192,7 +210,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
     }
 
-    addEmptyStage(stageType: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
+    addEmptyStage(stageType: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts'): void {
         let { form } = this.state
         let { length, [length - 1]: last } = form[stageType]
         let stage = {
@@ -207,7 +225,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
-    deleteStage = (stageId: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts', stageIndex: number) => {
+    deleteStage = (stageId: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts', stageIndex: number): void => {
         let stages = this.state.form[key]
         stages.splice(stageIndex, 1)
         this.setState(form => ({ ...form, [key]: stages }))
@@ -282,13 +300,13 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         this.setState({ showError: true, loadingData: true });
-        /*let errObj = this.validationRules.name(this.state.form.name);*/
+        let errObj = this.validationRules.name(this.state.form.name);
         let self = this;
         let valid = this.state.form.materials.reduce((isValid, mat) => {
             isValid = isValid && self.validationRules.sourceValue(mat.value).isValid;
             return isValid;
         }, true);
-        /*valid = valid && errObj.isValid;*/
+        valid = valid && errObj.isValid;
         if (!valid) {
             this.setState({ loadingData: false })
             toast.error("Some Required Fields are missing");
@@ -322,7 +340,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
-    closeCIDeleteModal() {
+    closeCIDeleteModal(): void {
         this.setState({ showDeleteModal: false });
     }
 
@@ -336,6 +354,60 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
+    renderDeleteCIModal() {
+        if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
+                closeDelete={this.closeCIDeleteModal}
+                delete={this.deletePipeline} />
+        }
+        return null;
+    }
+
+    renderSecondaryButtton() {
+        if (this.props.match.params.ciPipelineId) {
+            let canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0;
+            let message = this.props.connectCDPipelines > 0 ? "This Pipeline cannot be deleted as it has connected CD pipeline" : "This pipeline has linked CI pipelines";
+            return <ConditionalWrap condition={!canDeletePipeline}
+                wrap={children => <Tippy className="default-tt"
+                    content={message}>
+                    <div>{children}</div>
+                </Tippy>}>
+                <button type="button"
+                    className={`cta cta--workflow delete mr-16`}
+                    disabled={!canDeletePipeline}
+                    onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
+                </button>
+            </ConditionalWrap>
+        }
+        else {
+            if (!this.state.isAdvanced) {
+                return <button type="button"
+                    className={`cta cta--workflow cancel mr-16`}
+                    onClick={() => { this.setState({ isAdvanced: true }) }}>
+                    Advanced options
+                </button>
+            }
+            else {
+
+                return <button type="button"
+                    className={`cta cta--workflow cancel mr-16`}
+                    onClick={this.props.close}>Cancel
+                </button>
+            }
+        }
+    }
+
+    renderBasicCI() {
+        return <SourceMaterials
+            showError={this.state.showError}
+            validationRules={this.validationRules}
+            materials={this.state.form.materials}
+            selectSourceType={this.selectSourceType}
+            handleSourceChange={this.handleSourceChange}
+        />
+    }
+
     renderAdvanceCI() {
         return <AdvancedCIPipeline {...this.props}
             {...this.state}
@@ -343,7 +415,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             closeCIDeleteModal={this.closeCIDeleteModal}
             deletePipeline={this.deletePipeline}
             handlePreBuild={this.handlePreBuild}
-            handlePotrBuild={this.handlePostBuild}
+            handlePostBuild={this.handlePostBuild}
             addEmptyStage={this.addEmptyStage}
             toggleCollapse={this.toggleCollapse}
             deleteStage={this.deleteStage}
@@ -361,23 +433,47 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         />
     }
 
-    render() {
+    renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
-        else {
-            return <VisibleModal className="" >
-                <div className="modal__body modal__body--ci br-0 modal__body--p-0 ">
-                    <div className="p-20 flex flex-justify">
-                        <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
-                        <button type="button" className="transparent icon-dim-24" onClick={this.props.close}>
-                            <Close className="" />
-                        </button>
-                    </div>
-                    <hr className="divider m-0" />
-                    {this.renderAdvanceCI()}
-                </div>
-            </VisibleModal>
+        else if (this.state.isAdvanced) {
+            return this.renderAdvanceCI()
         }
+        else {
+            return <>
+                {this.renderBasicCI()}
+            </>
+        }
+    }
+
+    render() {
+        let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+        return <VisibleModal className="" >
+            <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                <div className="p-20 flex flex-align-center flex-justify">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                <hr className="divider m-0" />
+                <div className="pl-20 pr-20 pt-20" style={{ height: "calc(100vh - 164px)", overflowY: "scroll" }}>
+                    {this.renderCIPipelineBody()}
+                </div>
+                {this.state.view !== ViewType.LOADING && <>
+                    <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        {this.renderSecondaryButtton()}
+                        <ButtonWithLoader rootClassName="cta cta--workflow"
+                            loaderColor="white"
+                            onClick={this.savePipeline}
+                            isLoading={this.state.loadingData}>
+                            {text}
+                        </ButtonWithLoader>
+                    </div>
+                </>}
+                {this.renderDeleteCIModal()}
+            </div>
+        </VisibleModal>
     }
 }

@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { TriggerType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
-import { Select, ButtonWithLoader, Trash, Page, ConditionalWrap, Toggle, DeleteDialog } from '../common';
+import { Select, Trash, Page, Toggle } from '../common';
 import PreBuild from '../../assets/img/preBuildStage.png';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import git from '../../assets/icons/git/git.svg';
@@ -10,24 +9,14 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import Tippy from '@tippyjs/react';
 import trash from '../../assets/icons/misc/delete.svg';
+import { SourceMaterials } from './SourceMaterials';
 
-interface AdvancedCIPipelineProps extends RouteComponentProps<{ ciPipelineId }> {
+interface AdvancedCIPipelineProps {
 
 }
 
 export class AdvancedCIPipeline extends Component<any, {}> {
-
-    renderDeleteCI() {
-        if (this.props.match.params.ciPipelineId && this.props.showDeleteModal) {
-            return <DeleteDialog title={`Delete '${this.props.form.name}' ?`}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
-                closeDelete={this.props.closeCIDeleteModal}
-                delete={this.props.deletePipeline} />
-        }
-        return null;
-    }
 
     renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
         return <div className="white-card flex left cursor mt-20 mb-16 "
@@ -48,7 +37,10 @@ export class AdvancedCIPipeline extends Component<any, {}> {
             description = " These stages are run in sequence after the docker image is built";
         }
         return <>
-            <div className="flex left cursor" onClick={(e) => this.props.handlePreBuild()}>
+            <div className="flex left cursor" onClick={(event) => {
+                if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild();
+                else this.props.handlePostBuild();
+            }}>
                 <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
                 <div>
                     <div className="ci-stage__title">{title}</div>
@@ -99,7 +91,8 @@ export class AdvancedCIPipeline extends Component<any, {}> {
                     </div>
                 }
             })}
-            {this.props.showPreBuild ? <> {this.renderAddStage(key)} </> : ""}
+            {key === 'beforeDockerBuildScripts' && this.props.showPreBuild ? this.renderAddStage(key) : ""}
+            {key === 'afterDockerBuildScripts' && this.props.showPostBuild ? this.renderAddStage(key) : ""}
         </>
     }
 
@@ -125,7 +118,7 @@ export class AdvancedCIPipeline extends Component<any, {}> {
 
             </div>
             {this.props.showDocker ?
-                <div className="docker-build-args  mt-20">
+                <div className="docker-build-args mt-20">
                     <div className="docker-build-args__header"
                         onClick={(event) => { this.setState({ showDockerArgs: !this.props.showDockerArgs }) }}>
                         <span className="docker-build-args__text">Docker Arguments Override</span>
@@ -156,65 +149,19 @@ export class AdvancedCIPipeline extends Component<any, {}> {
         </>
     }
 
-    renderDeleteCIButton() {
-        if (this.props.match.params.ciPipelineId) {
-            let canDeletePipeline = this.props.connectCDPipelines === 0 && this.props.ciPipeline.linkedCount === 0;
-            let message = this.props.connectCDPipelines > 0 ? "This Pipeline cannot be deleted as it has connected CD pipeline" : "This pipeline has linked CI pipelines";
-            return <ConditionalWrap condition={!canDeletePipeline}
-                wrap={children => <Tippy className="default-tt"
-                    content={message}>
-                    <div>{children}</div>
-                </Tippy>}>
-                <button type="button"
-                    className={`cta delete mr-16`}
-                    disabled={!canDeletePipeline}
-                    onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
-                </button>
-            </ConditionalWrap>
-        }
-    }
-
     renderMaterials() {
-        return <div className="form__row">
-            {this.props.form.materials.map((mat, index) => {
-                let errorObj = this.props.validationRules.sourceValue(mat.value);
-                return <div className="" key={mat.gitMaterialId}>
-                    <div className="mb-10">
-                        <img src={git} alt="" className="ci-artifact__icon" />
-                        {mat.name}
-                    </div>
-                    <div className="flex mt-10">
-                        <div className="flex-1 mr-16 ">
-                            <label className="form__label">Source Type*</label>
-                            <Select rootClassName="popup-body--source-info"
-                                disabled={!!mat.id} onChange={(event) => this.props.selectSourceType(event, mat.gitMaterialId)} >
-                                <Select.Button rootClassName="select-button default" >{SourceTypeReverseMap[mat.type] || "Select Source Type"}</Select.Button>
-                                {TagOptions.map((tag) => {
-                                    return <Select.Option key={tag.value} value={tag.value}>{tag.label}</Select.Option>
-                                })}
-                            </Select>
-                        </div>
-                        <div className="flex-1">
-                            <label className="form__label">
-                                {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : "Source Value*"}
-                            </label>
-                            <input className="form__input" autoComplete="off" placeholder="Name" type="text" value={mat.value}
-                                onChange={(event) => { this.props.handleSourceChange(event, mat.gitMaterialId) }} />
-                            {this.props.showError && !errorObj.isValid ? <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.props.validationRules.sourceValue(this.props.form.materials[index].value).message}
-                            </span> : null}
-                        </div>
-                    </div>
-                </div>
-            })}
-        </div>
+        return <SourceMaterials
+            showError={this.props.showError}
+            validationRules={this.props.validationRules}
+            materials={this.props.form.materials}
+            selectSourceType={this.props.selectSourceType}
+            handleSourceChange={this.props.handleSourceChange}
+        />
     }
 
     render() {
-        let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         let errorObj = this.props.validationRules.name(this.props.form.name);
-        return <div className="p-20">
+        return <div className="" >
             <label className="form__row">
                 <span className="form__label">Pipeline Name*</span>
                 <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}
@@ -225,10 +172,7 @@ export class AdvancedCIPipeline extends Component<any, {}> {
                 </span> : null}
             </label>
             {this.renderTriggerType()}
-            <div className="">
-                <div className="cn-9 fw-6 fs-14 mb-18">Select code source</div>
-                {this.renderMaterials()}
-            </div>
+            {this.renderMaterials()}
             <hr className="divider" />
             {this.renderStages('beforeDockerBuildScripts')}
             <hr className="divider" />
@@ -244,15 +188,6 @@ export class AdvancedCIPipeline extends Component<any, {}> {
                 <div className="" style={{ width: "32px", height: "20px" }}>
                     <Toggle selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
                 </div>
-            </div>
-            {this.renderDeleteCI()}
-            <div className="form__row form__row--flex">
-                {this.renderDeleteCIButton()}
-                <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
-                    onClick={this.props.savePipeline}
-                    isLoading={this.props.loadingData}>
-                    {text}
-                </ButtonWithLoader>
             </div>
         </div>
     }

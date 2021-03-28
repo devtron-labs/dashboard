@@ -31,7 +31,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             view: ViewType.LOADING,
             workflows: [],
             appName: "",
-            allCINodeMap: undefined,
+            allCINodeMap: new Map(),
             showDeleteDialog: false,
             showCIMenu: false,
             isGitOpsConfigAvailable: false,

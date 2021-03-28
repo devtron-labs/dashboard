@@ -54,6 +54,10 @@
     flex-wrap: nowrap;
 }
 
+.flex-align-center {
+    align-items: center;
+}
+
 // margins and paddings from 0-40
 $margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
 
@@ -298,7 +302,7 @@ $color-suffix: 00;
     margin-right: 20px;
 }
 
-.dashed{
+.dashed {
     border-style: dashed;
 }
 
@@ -308,8 +312,8 @@ $color-suffix: 00;
     z-index: 999;
     margin-top: 45px;
     width: 800px
-  }
+}
 
-  .modal__top-fixed{
-      height: 50px;
-  }
+.modal__top-fixed {
+    height: 50px;
+}

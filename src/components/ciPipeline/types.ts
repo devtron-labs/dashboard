@@ -70,6 +70,7 @@ export interface CIPipelineState {
     showPreBuild: boolean;
     showDocker: boolean;
     showPostBuild: boolean;
+    isAdvanced?: boolean; //required for CIPipeline
 }
 
 
