@@ -271,6 +271,23 @@ export function isGitopsConfigured(): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getChartReferences(appId: number): Promise<ResponseType> {
+    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`;
+    return get(URL);
+}
+
+export function getAppChartRef(appId: number): Promise<ResponseType> {
+    return getChartReferences(appId).then((response) => {
+        const { result: { chartRefs, latestAppChartRef } } = response;
+        let selectedChartId = latestAppChartRef;
+        let chart = chartRefs.find(chart => selectedChartId === chart.id);
+        return {
+            code: response.code,
+            status: response.status,
+            result: chart
+        }
+    })
+}
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
@@ -284,4 +301,4 @@ export function getAppCheckList(): Promise<any> {
     //         }
     //     })
     // })
-} 
+}

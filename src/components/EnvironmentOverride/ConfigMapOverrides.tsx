@@ -6,7 +6,7 @@ import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { mapByKey, showError, Progressing, Info, ConfirmationDialog, useAsync, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE } from '../common'
+import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -14,6 +14,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config';
+import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
 
 const ConfigMapContext = React.createContext(null)
@@ -30,38 +31,77 @@ function useConfigMapContext() {
 
 export default function ConfigMapOverrides({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId, envId }>()
-    const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId])
+    // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
+    const [configmapList, setConfigmapList] = useState<{ id: number, configData: any[], appId: number }>()
+    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
+
     useEffect(() => {
-        if (!loading && result) {
+        if (!configmapLoading && configmapList) {
             setParentState('loaded')
         }
-    }, [loading])
-    if (loading && !result) {
+    }, [configmapLoading])
+
+
+
+    useEffect(() => {
+        async function initialise() {
+            try {
+                const appChartRefRes = await getAppChartRef(appId);
+                const configmapRes = await getEnvironmentConfigs(appId, envId);
+                setConfigmapList({
+                    appId: configmapRes.result.appId,
+                    id: configmapRes.result.id,
+                    configData: configmapRes.result.configData || [],
+                })
+                setAppChartRef(appChartRefRes.result);
+            } catch (error) {
+                setParentState('failed');
+                showError(error);
+            } finally {
+                setConfigmapLoading(false);
+            }
+        }
+        initialise();
+    }, [appId])
+
+    async function reload() {
+        try {
+            const configmapRes = await getEnvironmentConfigs(appId, envId);
+            setConfigmapList({
+                appId: configmapRes.result.appId,
+                id: configmapRes.result.id,
+                configData: configmapRes.result.configData || [],
+            })
+        } catch (error) {
+
+        }
+    }
+    if (parentState === 'loading' || !configmapList) return null;
+
+    if (configmapLoading && !configmapList) {
         return null
     }
-    if (error) {
-        setParentState('failed')
-        showError(error)
-        if (!result) return null
-    }
-    if (parentState === 'loading' || !result) return null
-    let { result: { configData, id } } = result
-    configData = [{ name: "" }].concat(configData)
-    const configMaps = mapByKey(configData, 'name');
-    return (
-        <section className="config-map-overrides">
-            <label className="form__label bold">ConfigMaps</label>
-            <ConfigMapContext.Provider value={{ configMaps, id, reload }}>
-                {configMaps && Array.from(configMaps).sort((a, b) => a[0].localeCompare(b[0])).map(
-                    ([name, { data, defaultData, ...rest }]) =>
-                        <ListComponent name={name} key={name || Math.random().toString(36).substr(2, 5)} type="config-map" label={defaultData ? data ? 'modified' : null : 'env'} />
-                )}
-            </ConfigMapContext.Provider>
-        </section>
-    )
+
+    let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(configmapList?.configData);
+    // let { result: { configData, id } } = result
+    // configData = [{ name: "" }].concat(configData)
+    // const configMaps = mapByKey(configData, 'name');
+
+    return <section className="config-map-overrides">
+        <label className="form__label bold">ConfigMaps</label>
+        <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
+            {configData.map(({ name, defaultData, data }) => <ListComponent key={name || Math.random().toString(36).substr(2, 5)}
+                name={name}
+                appChartRef={appChartRef}
+                type="config-map"
+                label={defaultData ? data ? 'modified' : null : 'env'} />
+            )}
+        </ConfigMapContext.Provider>
+    </section>
 }
 
-export function ListComponent({ name = "", type, label = "", reload = null }) {
+export function ListComponent({ name = "", type, label = "", appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
     return (
         <div className="white-card white-card--list">
@@ -71,21 +111,23 @@ export function ListComponent({ name = "", type, label = "", reload = null }) {
                 {label && <div className="flex tag">{label}</div>}
                 <img className={`pointer rotate`} style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }} src={arrowTriangle} alt="arrow" />
             </div>
-            {!isCollapsed && type !== 'config-map' && <OverrideSecretForm name={name} toggleCollapse={toggleCollapse} />}
-            {!isCollapsed && type !== 'secret' && <OverrideConfigMapForm name={name} toggleCollapse={toggleCollapse} reload={reload} />}
+            {!isCollapsed && type !== 'config-map' && <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />}
+            {!isCollapsed && type !== 'secret' && <OverrideConfigMapForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} reload={reload} />}
         </div>
     )
 }
 
 interface ConfigMapProps {
     name?: string;
+    appChartRef: { id: number; version: string; };
     toggleCollapse: any;
     reload: any;
 }
 
-const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, toggleCollapse }) {
-    const { configMaps, id, reload } = useConfigMapContext()
-    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission = "", global: isGlobal = false } = configMaps.has(name) ? configMaps.get(name) : { type: 'environment', mountPath: '', external: false }
+const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({ name, appChartRef, toggleCollapse }) {
+    const { configmapList, id, reload } = useConfigMapContext();
+    const configmap = configmapList.configData.find(cm => cm.name === name);
+    const { data = null, defaultData = {}, type = "environment", mountPath = "", external = false, externalType = "", defaultMountPath = "", subPath = false, filePermission = "", global: isGlobal = false } = configmap ? configmap : { type: 'environment', mountPath: '', external: false }
     function reducer(state, action) {
         switch (action.type) {
             case 'createDuplicate':
@@ -158,6 +200,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
 
     function changeEditorMode(e) {
         if (yamlMode) {
@@ -214,7 +257,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             }
             return
         }
-        if (type === 'volume' && isFilePermissionChecked) {
+        if (type === 'volume' && isFilePermissionChecked && !isChartVersion309OrBelow) {
             if (!state.filePermission.value) {
                 dispatch({ type: 'filePermission', value: { value: state.filePermission.value, error: 'This is a required field' } })
                 return
@@ -252,10 +295,10 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
 
             if (type === 'volume') {
                 payload['mountPath'] = state.mountPath;
-                if (!external) {
+                if (!external && !isChartVersion309OrBelow) {
                     payload['subPath'] = state.subPath;
                 }
-                if (isFilePermissionChecked) {
+                if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = state.filePermission.value.length == 3 ? `0${state.filePermission.value}` : `${state.filePermission.value}`;
                 }
             }
@@ -263,12 +306,10 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             dispatch({ type: 'submitLoading' });
             await overRideConfigMap(id, +appId, +envId, [payload]);
             await reload();
-            toast.success(
-                <div className="toast">
-                    <div className="toast__title">Overridden</div>
-                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                </div>
-            )
+            toast.success(<div className="toast">
+                <div className="toast__title">Overridden</div>
+                <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
+            </div>);
             toggleCollapse(collapse => !collapse)
             dispatch({ type: 'success' });
         }
@@ -335,7 +376,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 </div>}
                 {!external && type === "volume" && <Checkbox isChecked={state.subPath}
                     onClick={(e) => { e.stopPropagation(); }}
-                    disabled={!state.duplicate}
+                    disabled={!state.duplicate || isChartVersion309OrBelow}
                     rootClassName=""
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={(e) => { dispatch({ type: 'subPath', value: !state.subPath }) }}>
@@ -345,19 +386,29 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                             subPath
                         </a>for volume mount)<br></br>
                         {state.subPath ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                        </span> : null}
                     </span>
                 </Checkbox>}
                 {type === "volume" && <div className="mb-16">
                     <Checkbox isChecked={isFilePermissionChecked}
                         onClick={(e) => { e.stopPropagation(); }}
-                        disabled={!state.duplicate}
+                        disabled={!state.duplicate || isChartVersion309OrBelow}
                         rootClassName=""
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => { setIsFilePermissionChecked(!isFilePermissionChecked) }}>
                         <span className="mr-5"> Set File Permission (same as
                         <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
                                 defaultMode
-                        </a>for secrets in kubernetes)
+                        </a>for secrets in kubernetes)<br></br>
+                            {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                                <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                <span className="cn-7 ml-5">Learn more about </span>
+                                <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                            </span> : null}
                         </span>
                     </Checkbox>
                 </div>}
@@ -365,7 +416,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     <CustomInput value={state.filePermission.value}
                         autoComplete="off"
                         label={""}
-                        disabled={!state.duplicate}
+                        disabled={!state.duplicate || isChartVersion309OrBelow}
                         placeholder={"eg. 0400 or 400"}
                         error={state.filePermission.error}
                         onChange={(e) => { dispatch({ type: 'filePermission', value: { value: e.target.value, error: "" } }) }} />
@@ -408,7 +459,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 {!(external && type === 'environment') && <div className="form__buttons">
                     <button disabled={!state.duplicate} className="cta" type="submit">{state.submitLoading ? <Progressing /> : 'Save'}</button>
                 </div>}
-            </form> : <ConfigMapForm
+            </form> : <ConfigMapForm appChartRef={appChartRef}
                 id={id}
                 appId={appId}
                 name={name}
