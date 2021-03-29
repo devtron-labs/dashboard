@@ -3,7 +3,7 @@ import { saveLinkedCIPipeline } from './ciPipeline.service';
 import { ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, LinkedCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError, VisibleModal } from '../common';
+import { Progressing, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader';
@@ -160,9 +160,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     render() {
         let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId);
         if (this.state.view === ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
+            return <VisibleModal className="">
                 <Progressing pageLoader />
-            </OpaqueModal>
+            </VisibleModal>
         }
         else {
             return <VisibleModal className="">

@@ -180,7 +180,7 @@ export class AdvancedCIPipeline extends Component<any, {}> {
             <hr className="divider" />
             {this.renderStages('afterDockerBuildScripts')}
             <hr className="divider" />
-            <div className="white-card flexbox flex-justify mb-40">
+            <div className="white-card flexbox flex-justify mb-20">
                 <div>
                     <p className="ci-stage__title">Scan for vulnerabilities</p>
                     <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>

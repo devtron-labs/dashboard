@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
 import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
-import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, URLS } from '../../config';
+import { TriggerType, ViewType, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, Page, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
+import { Progressing, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import { Info } from '../common/icons/Icons'
+import { Info } from '../common';
 import { getWorkflowList } from './../../services/service';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
-import git from '../../assets/icons/git/git.svg';
 import Tippy from '@tippyjs/react';
-import './ciPipeline.css';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-
+import { SourceMaterials } from './SourceMaterials';
+import './ciPipeline.css';
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
     constructor(props) {
@@ -142,7 +140,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         </div>
     }
 
-    renderDeleteCI() {
+    renderDeleteCIModal() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
             return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
                 description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
@@ -153,115 +151,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     renderMaterials() {
-        return <div className="form__row">
-            <span className="form__label">Materials*</span>
-            {this.state.form.materials.map((mat, index) => {
-                return <div className="ci-artifact" key={mat.gitMaterialId}>
-                    <div className="ci-artifact__header">
-                        <img src={git} alt="" className="ci-artifact__icon" />
-                        {mat.name}
-                    </div>
-                    {mat.isSelected ? <div className="ci-artifact__body">
-                        <div className="flex-1 mr-16">
-                            <label className="form__label">Source Type*</label>
-                            <Select rootClassName="popup-body--source-info" disabled={!!this.props.match.params.ciPipelineId} onChange={(event) => { }} >
-                                <Select.Button rootClassName="select-button default">{SourceTypeReverseMap[mat.type] || "Select Source Type"}</Select.Button>
-                                {TagOptions.map((tag) => {
-                                    return <Select.Option key={tag.value} value={tag.value}>{tag.label}</Select.Option>
-                                })}
-                            </Select>
-                        </div>
-                        <div className="flex-1">
-                            <label className="form__label">Branch Name*</label>
-                            <input className="form__input" placeholder="Name" type="text" value={mat.value} disabled={true}
-                                onChange={(event) => { }} />
-                        </div>
-                    </div> : null}
-                </div>
-            })}
-        </div>
-    }
-
-    renderStages(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        if (!(this.state.form[key] && this.state.form[key].length)) return null;
-
-        let description, title;
-        if (key == 'beforeDockerBuildScripts') {
-            title = "Pre-build Stages";
-            description = " These stages are run in sequence before the docker image is built";
-        }
-        else {
-            title = "Post-build Stages";
-            description = " These stages are run in sequence after the docker image is built";
-        }
-        return <>
-            <h3 className="ci-stage__title">{title}</h3>
-            <p className="ci-stage__description">{description}</p>
-            {this.state.form[key].map((stage, index) => {
-                if (stage.isCollapsed) {
-                    return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>
-                        <Page className="ci-file-icon" />
-                        <div className="ci-stage-name">{stage.name}</div>
-                        <img src={dropdown} className="collapsed__icon" alt="collapsed" />
-                    </div>
-                }
-                else {
-                    return <div key={`${key}-${index}`} className="white-card">
-                        <div className="white-card__header white-card__header--artifact" >
-                            Stage
-                            <button type="button" className="transparent collapse-button" >
-                                <img src={dropdown} className="collapsed__icon" style={{ transform: 'rotateX(180deg)' }} alt="collapsed" onClick={(event) => this.toggleCollapse(stage.id, index, key)} />
-                            </button>
-                        </div>
-                        <label className="form__row">
-                            <span className="form__label">Stage Name*</span>
-                            <input className="form__input" placeholder="Enter stage name" type="text" value={stage.name} disabled={true} />
-                        </label>
-                        <label className="form__row">
-                            <span className="form__label">Script to execute*</span>
-                            <textarea className="code-textarea code-textarea--cd-pipeline" value={stage.script} disabled={true} />
-                        </label>
-                        <label className="form__row">
-                            <span className="form__label">Report Directory</span>
-                            <input className="form__input" placeholder="Enter directory path" type="text" disabled={true} value={stage.outputLocation} />
-                        </label>
-                        <div className="form__buttons">
-                            <button type="button" className="cta ghosted" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>Done</button>
-                        </div>
-                    </div>
-                }
-            })}
-        </>
-    }
-
-    renderDockerArgs() {
-        if (!this.state.form.args.length) return null
-        return <>
-            <div className="form__label">Advanced Configuration</div>
-            <div className="docker-build-args">
-                <div className="docker-build-args__header"
-                    onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
-                    <span className="docker-build-args__text">Docker Build Arguments</span>
-                    <img src={dropdown} alt="dropDown" style={{ "transform": this.state.showDockerArgs ? "rotate(180deg)" : "rotate(0)" }} />
-                </div>
-                <div className="docker-build-args__wrapper">
-                    {this.state.form.args.map((arg, index) => {
-                        return <div key={index} className="form__key-value-inputs form__key-value-inputs--docker-build docker-build-args__body">
-                            <div className="form__field">
-                                <label className="form__label">Key</label>
-                                <input className="form__input w-50" placeholder="Name" type="text" disabled={true}
-                                    value={arg.key} onChange={(event) => { }} />
-                            </div>
-                            <div className="form__field">
-                                <label className="form__label">Value</label>
-                                <textarea value={arg.value} onChange={(event) => { }} disabled={true}
-                                    placeholder="Enter Your Text here" />
-                            </div>
-                        </div>
-                    })}
-                </div>
-            </div>
-        </>
+        return <SourceMaterials materials={this.state.form.materials}
+            showError={this.state.showError} />
     }
 
     renderHeader() {
@@ -275,7 +166,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         </>
     }
 
-    renderDeleteCIButton() {
+    renderSecondaryButtton() {
         if (this.props.match.params.ciPipelineId) {
             let canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0;
             return <ConditionalWrap condition={!canDeletePipeline}
@@ -293,40 +184,42 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         }
     }
 
-    render() {
+    renderCIPipelineBody() {
         let l = this.state.ciPipeline.name.lastIndexOf('-');
         let name = this.state.ciPipeline.name.substring(0, l);
         if (this.state.view == ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
+            return <Progressing pageLoader />
         }
         else {
-            return <VisibleModal className="">
-                <div className="modal__body p-0 br-0 modal__body--ci">
-                    {this.renderHeader()}
-                    <hr className="divider" />
-                    <div className="pl-20 pr-20">
-                        {this.renderInfoDialog()}
-                        <label className="form__row">
-                            <span className="form__label">Pipeline Name*</span>
-                            <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={name} />
-                        </label>
-                        {this.renderTriggerType()}
-                        {this.renderMaterials()}
-                        {this.renderDockerArgs()}
-                        {this.renderStages('beforeDockerBuildScripts')}
-                        {this.renderStages('afterDockerBuildScripts')}
-                        {this.renderDeleteCI()}
-                        <div className="form__row form__row--flex">
-                            {this.renderDeleteCIButton()}
-                            <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
-                                View Source Pipeline
-                        </Link>
-                        </div>
-                    </div>
+            return <>
+                <label className="form__row">
+                    <span className="form__label">Pipeline Name*</span>
+                    <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text"
+                        value={name} />
+                </label>
+                {this.renderTriggerType()}
+                {this.renderMaterials()}
+                {this.renderDeleteCIModal()}
+                <div className="ci-button-container bcn-0 pt-12 pb-12 flex flex-justify">
+                    {this.renderSecondaryButtton()}
+                    <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
+                        View Source Pipeline
+                    </Link>
                 </div>
-            </VisibleModal >
+            </>
         }
+    }
+
+    render() {
+        return <VisibleModal className="" >
+            <div className="modal__body p-0 br-0 modal__body--ci">
+                {this.renderHeader()}
+                <hr className="divider" />
+                <div className="pl-20 pr-20">
+                    {this.renderInfoDialog()}
+                    {this.renderCIPipelineBody()}
+                </div>
+            </div>
+        </VisibleModal>
     }
 }

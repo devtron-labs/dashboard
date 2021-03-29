@@ -441,9 +441,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return this.renderAdvanceCI()
         }
         else {
-            return <>
-                {this.renderBasicCI()}
-            </>
+            return this.renderBasicCI()
         }
     }
 

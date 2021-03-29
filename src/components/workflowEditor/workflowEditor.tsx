@@ -222,17 +222,29 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         </Switch>
     }
 
+    renderNewBuildPipelineButton() {
+        return <>
+            <button type="button" className="cta no-decor flex mb-20" style={{ width: '170px' }} onClick={this.toggleCIMenu}>
+                <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />New Build Pipeline
+            </button>
+            <PipelineSelect showMenu={this.state.showCIMenu}
+                top={this.state.cIMenuPosition.top}
+                left={this.state.cIMenuPosition.left}
+                addCIPipeline={this.addCIPipeline}
+                toggleCIMenu={this.toggleCIMenu}
+            />
+        </>
+    }
+
     renderEmptyState() {
         return <div className="create-here">
             <img src={emptyWorkflow} alt="create-workflow" height="200" />
             <h1 className="form__title form__title--workflow-editor">Workflows</h1>
             <p className="form__subtitle form__subtitle--workflow-editor">
-                Workflows consist of pipelines from build to deployment stages of an application.&nbsp;
+                Workflows consist of pipelines from build to deployment stages of an application. <br></br>
                 <a className="learn-more__href" href="" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
             </p>
-            <Link className="no-decor" to={this.openCreateWorkflow()}>
-                <button type="button" className="cta">Create Workflow</button>
-            </Link>
+            {this.renderNewBuildPipelineButton()}
         </div>
     }
 
@@ -296,15 +308,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 </p>
                 {this.renderRouter()}
                 {this.renderHostErrorMessage()}
-                <button type="button" className="cta no-decor flex mb-20" style={{ width: '170px' }} onClick={this.toggleCIMenu}>
-                    <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />New Build Pipeline
-                </button>
-                <PipelineSelect showMenu={this.state.showCIMenu}
-                    top={this.state.cIMenuPosition.top}
-                    left={this.state.cIMenuPosition.left}
-                    addCIPipeline={this.addCIPipeline}
-                    toggleCIMenu={this.toggleCIMenu}
-                />
+                {this.renderNewBuildPipelineButton()}
                 {this.renderWorkflows()}
                 {this.renderDeleteDialog()}
             </div>
