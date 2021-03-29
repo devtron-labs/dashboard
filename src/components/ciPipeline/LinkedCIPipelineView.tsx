@@ -159,7 +159,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     renderHeader() {
         return <>
             <div className="flex left pl-20 pr-20 pt-20">
-                <div className="fs-16 fw-6 ">Linked CI Pipeline</div>
+                <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
                 <button type="button" className="transparent m-auto-mr-0" onClick={this.props.close}>
                     <Close className="icon-dim-24" />
                 </button>
@@ -176,11 +176,11 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                     <div>{children}</div>
                 </Tippy>}>
                 <button type="button"
-                    className={`cta delete mr-16`}
+                    className='cta cta--workflow delete mr-16'
                     disabled={!canDeletePipeline}
                     onClick={() => { this.setState({ showDeleteModal: true }) }}>
                     Delete Pipeline
-                    </button>
+                </button>
             </ConditionalWrap>
         }
     }
@@ -218,7 +218,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.state.view !== ViewType.LOADING &&
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderSecondaryButtton()}
-                        <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
+                        <Link to={this.state.sourcePipelineURL} target="_blank" className="cta cta--workflow flex flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
                             View Source Pipeline
                         </Link>
                     </div>}
