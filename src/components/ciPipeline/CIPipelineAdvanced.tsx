@@ -1,22 +1,21 @@
 import React, { Component } from 'react'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { TriggerType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
-import { Select, Trash, Page, Toggle } from '../common';
-import PreBuild from '../../assets/img/preBuildStage.png';
-import CodeEditor from '../CodeEditor/CodeEditor';
-import git from '../../assets/icons/git/git.svg';
-import error from '../../assets/icons/misc/errorInfo.svg'
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { TriggerType } from '../../config';
+import { Trash, Page, Toggle } from '../common';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import PreBuild from '../../assets/img/preBuildStage.png';
+import CodeEditor from '../CodeEditor/CodeEditor';
+import error from '../../assets/icons/misc/errorInfo.svg'
+import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import { SourceMaterials } from './SourceMaterials';
 
-interface AdvancedCIPipelineProps {
+interface CIPipelineAdvancedProps {
 
 }
 
-export class AdvancedCIPipeline extends Component<any, {}> {
+export class CIPipelineAdvanced extends Component<any, {}> {
 
     renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
         return <div className="white-card flex left cursor mt-20 mb-16 "

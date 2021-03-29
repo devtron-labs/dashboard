@@ -7,7 +7,7 @@ import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDia
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { AdvancedCIPipeline } from './AdvancedCIPipeline';
+import { CIPipelineAdvanced } from './CIPipelineAdvanced';
 import { SourceMaterials } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
@@ -389,7 +389,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 </button>
             }
             else {
-
                 return <button type="button"
                     className={`cta cta--workflow cancel mr-16`}
                     onClick={this.props.close}>Cancel
@@ -399,8 +398,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderBasicCI() {
-        return <SourceMaterials
-            showError={this.state.showError}
+        return <SourceMaterials showError={this.state.showError}
             validationRules={this.validationRules}
             materials={this.state.form.materials}
             selectSourceType={this.selectSourceType}
@@ -409,7 +407,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAdvanceCI() {
-        return <AdvancedCIPipeline {...this.props}
+        return <CIPipelineAdvanced {...this.props}
             {...this.state}
             validationRules={this.validationRules}
             closeCIDeleteModal={this.closeCIDeleteModal}
@@ -456,7 +454,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="pl-20 pr-20 pt-20" style={{ height: "calc(100vh - 164px)", overflowY: "scroll" }}>
+                <div className="pl-20 pr-20 pt-20 pb-20" style={{ maxHeight: "calc(100vh - 164px)", overflowY: "scroll" }}>
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>

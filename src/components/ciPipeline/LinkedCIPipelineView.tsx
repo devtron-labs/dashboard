@@ -9,12 +9,13 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { Info } from '../common';
 import { getWorkflowList } from './../../services/service';
-import Tippy from '@tippyjs/react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { SourceMaterials } from './SourceMaterials';
+import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -200,12 +201,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.renderTriggerType()}
                 {this.renderMaterials()}
                 {this.renderDeleteCIModal()}
-                <div className="ci-button-container bcn-0 pt-12 pb-12 flex flex-justify">
-                    {this.renderSecondaryButtton()}
-                    <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
-                        View Source Pipeline
-                    </Link>
-                </div>
+
             </>
         }
     }
@@ -215,10 +211,17 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             <div className="modal__body p-0 br-0 modal__body--ci">
                 {this.renderHeader()}
                 <hr className="divider" />
-                <div className="pl-20 pr-20">
+                <div className="pl-20 pr-20 pb-20">
                     {this.renderInfoDialog()}
                     {this.renderCIPipelineBody()}
                 </div>
+                {this.state.view !== ViewType.LOADING &&
+                    <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        {this.renderSecondaryButtton()}
+                        <Link to={this.state.sourcePipelineURL} target="_blank" className="cta flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
+                            View Source Pipeline
+                        </Link>
+                    </div>}
             </div>
         </VisibleModal>
     }
