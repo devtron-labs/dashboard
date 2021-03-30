@@ -283,7 +283,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
 
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
-            return <div className="br-4 bw-1 er-2 pt-10 mt-20 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
+            return <div className="br-4 bw-1 er-2 pt-10 mt-20 pb-10 pl-16 pr-16 bcr-1 flex left">
                 <Error className="icon-dim-20 mr-8" />
                 <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
                 <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
@@ -309,7 +309,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     <div className="pl-20 pr-20">
                         {this.renderHostErrorMessage()}
                         <div className="form__row">
-                            <span className="form__label">Pipeline Name*</span>
+                            <span className="form__label  mt-16">Pipeline Name*</span>
                             <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
                                 onChange={this.handlePipelineName} />
                             {this.state.showError && !errorObj.isValid ? <span className="form__error">
