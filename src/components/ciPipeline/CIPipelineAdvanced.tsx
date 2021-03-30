@@ -155,7 +155,7 @@ export class CIPipelineAdvanced extends Component<any, {}> {
             {this.props.showDocker ?
                 <div className="docker-build-args mt-20">
                     <div className="docker-build-args__header"
-                        onClick={(event) => { this.setState({ showDockerArgs: !this.props.showDockerArgs }) }}>
+                        onClick={(event) => {this.props.handleDockerArgs() }}>
                         <span className="docker-build-args__text">Docker Arguments Override</span>
                         <img src={dropdown} alt="dropDown" style={{ "transform": this.props.showDockerArgs ? "rotate(180deg)" : "rotate(0)" }} />
                     </div>

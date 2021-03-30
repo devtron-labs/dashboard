@@ -63,6 +63,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.handleDocker = this.handleDocker.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handlePreBuild = this.handlePreBuild.bind(this);
+        this.handleDockerArgs = this.handleDockerArgs.bind(this);
         this.handlePostBuild = this.handlePostBuild.bind(this);
         this.discardChanges = this.discardChanges.bind(this);
         this.handleSourceChange = this.handleSourceChange.bind(this);
@@ -114,6 +115,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     handlePreBuild(): void {
         this.setState({
             showPreBuild: !this.state.showPreBuild
+        })
+    }
+
+    handleDockerArgs(): void {
+        this.setState({
+            showDockerArgs: !this.state.showDockerArgs
         })
     }
 
@@ -414,6 +421,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             deletePipeline={this.deletePipeline}
             handlePreBuild={this.handlePreBuild}
             handlePostBuild={this.handlePostBuild}
+            handleDockerArgs= {this.handleDockerArgs}
             addEmptyStage={this.addEmptyStage}
             toggleCollapse={this.toggleCollapse}
             deleteStage={this.deleteStage}
