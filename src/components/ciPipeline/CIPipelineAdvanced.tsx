@@ -57,7 +57,9 @@ export class CIPipelineAdvanced extends Component<any, {}> {
                     </div>
                 }
                 else {
-                    return <div key={`${key}-${index}`} className="white-card mb-16">
+                   if (key === 'beforeDockerBuildScripts' && this.props.showPreBuild) {
+                    return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
+                        
                         <div className="white-card__header" >
                             {stage.id ? "Edit Stage" : "Add Stage"}
                             {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
@@ -87,7 +89,41 @@ export class CIPipelineAdvanced extends Component<any, {}> {
                             <button type="button" className="cta tertiary mr-16" onClick={(event) => this.props.discardChanges(stage.id, key, index)}>Cancel</button>
                             <button type="button" className="cta ghosted" onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}>Done</button>
                         </div>
-                    </div>
+                    </div> }
+                    else if (key === 'afterDockerBuildScripts' && this.props.showPostBuild){
+                        return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
+                        
+                        <div className="white-card__header" >
+                            {stage.id ? "Edit Stage" : "Add Stage"}
+                            {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                        </div>
+                        <label className="form__row">
+                            <span className="form__label">Stage Name*</span>
+                            <input className="form__input" autoComplete="off" placeholder="Enter stage name" type="text" value={stage.name} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'name')} />
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Script to execute*</span>
+                            <div className="script-container">
+                                <CodeEditor
+                                    value={stage.script}
+                                    mode="shell"
+                                    onChange={(value) => this.props.handleChange({ target: { value } }, stage.id, key, index, 'script')}
+                                    shebang="#!/bin/sh"
+                                    inline
+                                    height={300}>
+                                </CodeEditor>
+                            </div>
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Report Directory</span>
+                            <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
+                        </label>
+                        <div className="form__buttons">
+                            <button type="button" className="cta tertiary mr-16" onClick={(event) => this.props.discardChanges(stage.id, key, index)}>Cancel</button>
+                            <button type="button" className="cta ghosted" onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}>Done</button>
+                        </div>
+                    </div>  
+                    }
                 }
             })}
             {key === 'beforeDockerBuildScripts' && this.props.showPreBuild ? this.renderAddStage(key) : ""}
