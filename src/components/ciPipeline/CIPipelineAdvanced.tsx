@@ -45,9 +45,10 @@ export class CIPipelineAdvanced extends Component<any, {}> {
                     <div className="ci-stage__title">{title}</div>
                     <div className="ci-stage__description">{description}</div>
                 </div>
-                <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} />
+                {key === 'beforeDockerBuildScripts' ?
+                <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} /> :
+                <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} /> }
             </div>
-
             {this.props.form[key].map((stage, index) => {
                 if (stage.isCollapsed) {
                     return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mb-16" onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}>
