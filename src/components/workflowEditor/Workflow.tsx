@@ -204,8 +204,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     {this.renderNodes()}
                 </svg>
                 <PipelineSelect showMenu={this.state.showCIMenu}
-                    left={this.state.left}
-                    top={this.state.top}
+                    styles={{
+                        left: `${this.state.left}px`,
+                        top: `${this.state.top}px`
+                    }}
                     addCIPipeline={this.props.addCIPipeline}
                     toggleCIMenu={() => { this.setState({ showCIMenu: !this.state.showCIMenu }) }}
                 />

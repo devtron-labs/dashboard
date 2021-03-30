@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { VisibleModal, Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, TypeaheadOption, Checkbox, DeleteDialog } from '../common';
+import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
 import { ErrorScreenManager } from '../common';
-import { getDeploymentStrategyList, saveCDPipeline, getCDPipelineConfig, updateCDPipeline, deleteCDPipeline, getCDPipelineNameSuggestion, getConfigMapAndSecrets } from './service';
-import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './types';
+import { getDeploymentStrategyList, saveCDPipeline, getCDPipelineConfig, updateCDPipeline, deleteCDPipeline, getCDPipelineNameSuggestion, getConfigMapAndSecrets } from './cdPipeline.service';
+import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './cdPipeline.types';
 import { ValidationRules } from './validationRules';
 import { getEnvironmentListMinPublic } from '../../services/service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -787,18 +787,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             return <ErrorScreenManager code={this.state.code} />
         }
         else {
-            let envId = this.state.pipelineConfig.environmentId;
-            let selectedEnv = this.state.environments.find(env => env.id == envId);
-            let namespaceEditable = false;
             let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name);
             let strategyMenu = Object.keys(this.allStrategies).map(option => { return { label: option, value: option } });
             let strategy = this.state.pipelineConfig.strategies[0] ? { label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate, value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate } : undefined;
-            if (!selectedEnv || selectedEnv.namespace && selectedEnv.namespace.length > 0) {
-                namespaceEditable = false;
-            }
-            else {
-                namespaceEditable = true;
-            }
             if (this.state.isAdvanced) {
                 return <>
                     <div className="form__row">
@@ -845,7 +836,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderDeploymentStrategy()}
                     </> : null}
                     <div className="divider mt-12 mb-12"></div>
-
                     <div className="flex left" onClick={() => { this.setState({ showPostStage: !this.state.showPostStage }) }}>
                         <div className="icon-dim-44 bcn-1 flex">
                             <PrePostCD className="icon-dim-24" />

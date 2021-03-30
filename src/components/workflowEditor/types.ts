@@ -1,3 +1,4 @@
+import { string } from 'prop-types';
 import { RouteComponentProps } from 'react-router';
 import { HostURLConfig } from '../../services/service.types';
 import { NodeAttr } from '../app/details/triggerView/types';
@@ -41,8 +42,9 @@ export interface AddWorkflowProps extends RouteComponentProps<{ appId: string, w
 
 export interface PipelineSelectProps {
     showMenu: boolean;
-    left: number;
-    top: number;
+    // left: number;
+    // top: number;
+    styles: { left: string; top: string; };
     toggleCIMenu: (event) => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
 }

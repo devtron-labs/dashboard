@@ -52,7 +52,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
     render() {
         if (!this.props.showMenu) return null;
         else return <Modal onClick={this.props.toggleCIMenu}
-            style={{ top: `${this.props.top}px`, left: `${this.props.left}px`, borderRadius: `8px` }} >
+            style={{ ...this.props.styles }} >
             {this.renderCIMenu()}
         </Modal>
     }
