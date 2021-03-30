@@ -190,27 +190,28 @@ export default function App() {
 					<Progressing pageLoader />
 				</div>
 			) : (
-					<>
-						{errorPage ? (
-							<div style={{ height: '100vh', width: '100vw' }}>
-								<Reload />
-							</div>
-						) : (
-								<BreadcrumbStore>
-									<Switch>
-										<Route path={`/login`} component={Login} />
-										<Route path="/" render={() => <NavigationRoutes />} />
-										<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
-									</Switch>
-									<div id="full-screen-modal"></div>
-									<div id="visible-modal"></div>
-									{process.env.NODE_ENV === 'production' && window._env_ && window._env_.HOTJAR_ENABLED && (
-										<Hotjar />
-									)}
-								</BreadcrumbStore>
+				<>
+					{errorPage ? (
+						<div style={{ height: '100vh', width: '100vw' }}>
+							<Reload />
+						</div>
+					) : (
+						<BreadcrumbStore>
+							<Switch>
+								<Route path={`/login`} component={Login} />
+								<Route path="/" render={() => <NavigationRoutes />} />
+								<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
+							</Switch>
+							<div id="full-screen-modal"></div>
+							<div id="visible-modal"></div>
+							<div id="visible-modal-2"></div>
+							{process.env.NODE_ENV === 'production' && window._env_ && window._env_.HOTJAR_ENABLED && (
+								<Hotjar />
 							)}
-					</>
-				)}
+						</BreadcrumbStore>
+					)}
+				</>
+			)}
 		</Suspense>
 	);
 }
