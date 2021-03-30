@@ -65,6 +65,8 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.validationRules = new ValidationRules();
+        this.handleSourceChange = this.handleSourceChange.bind(this);
+
     }
 
     componentDidMount() {
@@ -121,6 +123,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     handleSourceChange(event, gitMaterialId: number): void {
         let { form } = { ...this.state };
         let allMaterials = form.materials.map((mat) => {
+            {console.log(this.state.form)}
             if (mat.gitMaterialId === gitMaterialId) {
                 return {
                     ...mat,
