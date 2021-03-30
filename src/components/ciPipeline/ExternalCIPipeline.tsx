@@ -123,7 +123,6 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     handleSourceChange(event, gitMaterialId: number): void {
         let { form } = { ...this.state };
         let allMaterials = form.materials.map((mat) => {
-            {console.log(this.state.form)}
             if (mat.gitMaterialId === gitMaterialId) {
                 return {
                     ...mat,
