@@ -10,8 +10,10 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
 export default class BasicCDPipelineModal extends Component<BasicCDPipelineModalProps, {}>{
-
+       
     renderCDAdvanceModal() {
+     let deploymentStrategies = this.props.strategies.map(strategy => {return {value: strategy.deploymentTemplate , label: strategy.deploymentTemplate } })
+
         let envId = this.props.pipelineConfig.environmentId;
         let selectedEnv = this.props.environments.find(env => env.id == envId);
         let namespaceEditable = false;
@@ -65,6 +67,7 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                     <div className="cn-9 fw-6 fs-14 mb-4">Deployment strategy</div>
                     <span className="form__label">To add and configure strategies switch to advanced options.</span>
                 </div>
+                
                 <div className={`typeahead w-50 `}>
                     <ReactSelect name="environment"
                         label={""}
@@ -73,14 +76,13 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                         defaultSelections={selectedEnv ? [selectedEnv] : []}
                         disabled={!!this.props.pipelineConfig.id}
                         placeholder={this.props.strategies[0].deploymentTemplate}
-                        onChange={(e) => this.props.selectStrategy(e.value)}>
-                        {/* {this.props.strategies.map((strategy) => {
-                            return <TypeaheadOption key={strategy.deploymentTemplate} item={strategy.deploymentTemplate} id={strategy.config.id}>
-                                {strategy.deploymentTemplate}
-                            </TypeaheadOption> 
-                        })}*/}
-                        </ReactSelect>
-
+                        onChange={(e) => this.props.selectStrategy(e.value)}
+                        components={{
+                            DropdownIndicator,
+                        }}
+                        options={deploymentStrategies}
+                        />
+                        {console.log(this.props.strategies)}
                     {/* {this.props.showError && !envErrorObj.isValid ? <span className="form__error">
                     <img src={error} className="form__icon" />
                     {envErrorObj.message}
@@ -98,7 +100,7 @@ export default class BasicCDPipelineModal extends Component<BasicCDPipelineModal
                 </Select> */}
                 <hr className="" />
                 <div className="flex left mb-12">
-                    <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onChange={() => AdvanceCDPipelineModal}>
+                    <div className={"cursor br-4 pt-8 pb-8 pl-16 pr-16 ml-20 cn-7 fs-14 fw-6"} style={{ border: "1px solid #d0d4d9", width: "155px" }} onClick={() => AdvanceCDPipelineModal}>
                         Advanced options
                    </div>
                     <div className="m-auto-mr-0" style={{ width: "155px" }}>
