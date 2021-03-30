@@ -71,14 +71,13 @@ export interface CDPipelineState {
         runPostStageInEnv: boolean;
         isClusterCdActive: boolean;
     };
-    showPreStage: boolean;
-    showPostStage: boolean;
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
     showError: boolean;
-    showPreBuild: boolean;
-    showDocker: boolean;
-    showPostBuild: boolean;
+    showPreStage: boolean;
+    showDeploymentStage: boolean;
+    showPostStage: boolean;
+    isAdvanced: boolean;
 }
 
 

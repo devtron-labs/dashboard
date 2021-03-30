@@ -4,7 +4,7 @@ import { TriggerType } from '../../config';
 import { Trash, Page, Toggle } from '../common';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import PreBuild from '../../assets/img/preBuildStage.png';
+import { ReactComponent as PreBuild } from '../../assets/icons/ic-cd-stage.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
@@ -40,7 +40,7 @@ export class CIPipelineAdvanced extends Component<any, {}> {
                 if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild();
                 else this.props.handlePostBuild();
             }}>
-                <div className="sqr-44"><img className="icon-dim-24" src={PreBuild} /></div>
+                <div className="sqr-44"><PreBuild className="icon-dim-24" /></div>
                 <div>
                     <div className="ci-stage__title">{title}</div>
                     <div className="ci-stage__description">{description}</div>

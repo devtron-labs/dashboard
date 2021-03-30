@@ -9,10 +9,10 @@ import { Select, Typeahead as DevtronTypeahead, Progressing, ButtonWithLoader, s
 import { AdvanceCDPipelineModalProps } from './types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { Info } from '../common/icons/Icons'
-import PreBuild from '../../assets/img/preBuildStage.png';
 import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { ReactComponent as PreBuild } from '../../assets/icons/ic-cd-stage.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import Deploy from '../../assets/icons/ic-CD.svg';
 import settings from '../../assets/icons/ic-settings.svg';
@@ -252,7 +252,7 @@ export default class AdvanceCDPipelineModal extends Component<AdvanceCDPipelineM
                         </div>
                         {this.renderNamespaceInfo(namespaceEditable)}
                         <div className="flex left cursor" onClick={(e) => this.props.handlePreBuild()}>
-                            <div className="sqr-44 "><img className="workflow-node__icon-common" src={PreBuild} /></div>
+                            <div className="sqr-44"><PreBuild className="workflow-node__icon-common" /></div>
                             <div>
                                 <div className="form__input-header">Pre-deployment Stage</div>
                                 <div className=" form__label--sentence">Configure actions like DB migration, that you want to run before the deployment.</div>
@@ -277,7 +277,7 @@ export default class AdvanceCDPipelineModal extends Component<AdvanceCDPipelineM
                         <hr className="divider" />
 
                         <div className="flex left cursor" onClick={(e) => this.props.handlePostBuild()}>
-                            <div className="sqr-44"><img className="workflow-node__icon-common" src={PreBuild} /></div>
+                            <div className="sqr-44"><PreBuild className="workflow-node__icon-common" /></div>
                             <div>
                                 <div className="form__input-header">Post-deployment Stage</div>
                                 <div className="form__label--sentence">Configure actions like Jira ticket close, that you want to run after the deployment.</div>
