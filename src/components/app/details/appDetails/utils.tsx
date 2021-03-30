@@ -5,7 +5,7 @@ import {
     AggregatedNodes,
     PodMetadatum,
 } from '../../types';
-import { mapByKey } from '../../../common';
+import { getVersionArr, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
 import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
@@ -213,19 +213,10 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-function getK8sVersionArr(k8sVersion: string): number[] {
-    let k8sVersionMod = k8sVersion;
-    if (k8sVersionMod.includes("v")) {
-        k8sVersionMod = k8sVersion.split("v")[1];
-    }
-    let version: string[] = k8sVersionMod.split(".");
-    return [Number(version[0]), Number(version[1])];
-}
-
 export function isK8sVersionValid(k8sVersion: string): boolean {
     if (!k8sVersion) return false;
     try {
-        let versionNum = getK8sVersionArr(k8sVersion);
+        let versionNum = getVersionArr(k8sVersion);
         let sum = versionNum.reduce((sum, item) => {
             return sum += item;
         }, 0)
@@ -239,17 +230,7 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
 export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
     //Comparing with v1.15.xxx
     let target = [1, 15];
-    let versionNum = getK8sVersionArr(k8sVersion);
-    for (let i = 0; i < target.length; i++) {
-        if (versionNum[i] === target[i]) {
-            if (i === target.length - 1) return true;
-            continue
-        }
-        else if (versionNum[i] < target[i]) {
-            return true;
-        }
-    }
-    return false;
+    return isVersionLessThanOrEqualToTarget(k8sVersion, target);
 }
 
 export interface AppInfo {
