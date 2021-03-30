@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { AddWorkflowProps, AddWorkflowState } from '../types';
-import { DialogForm, DialogFormSubmit, showError } from '../../common';
-import { createWorkflow, updateWorkflow } from '../service';
+import { AddWorkflowProps, AddWorkflowState } from './types';
+import { DialogForm, DialogFormSubmit, showError } from '../common';
+import { createWorkflow, updateWorkflow } from './service';
 import { toast } from 'react-toastify';
-import { getWorkflowList } from '../../../services/service';
-import { ServerErrors } from '../../../modals/commonTypes';
-import error from '../../../assets/icons/misc/errorInfo.svg';
+import { getWorkflowList } from '../../services/service';
+import { ServerErrors } from '../../modals/commonTypes';
+import error from '../../assets/icons/misc/errorInfo.svg';
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState>  {
     _inputName: HTMLInputElement;

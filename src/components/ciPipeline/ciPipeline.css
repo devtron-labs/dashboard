@@ -1,179 +1,171 @@
-    .modal__body--ci {
-        width: 800px;
-        margin-top: 24px;
-    }
-    
-    .repo-name {
-        font-size: 12px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.67;
-        letter-spacing: normal;
-        color: var(--N900);
-    }
-    
-    .select-button--source-info {
-        height: 40px;
-        padding: 12px 10px;
-        background-color: var(--white);
-    }
-    
-    .disabled .select-button--source-info {
-        background-color: var(--N100);
-    }
-    
-    .ci-artifact__select-label {
-        display: flex;
-        align-items: center;
-        margin: 0px;
-        position: relative;
-    }
-    
-    .ci-artifact__icon {
-        width: 20px;
-        height: 20px;
-        margin: 0 8px 0 0;
-    }
-    
-    .ci-artifact {
-        border: solid 1px #d5dbdf;
-        margin-bottom: 12px;
-        border-radius: 4px;
-    }
-    
-    .ci-artifact__header {
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-    }
-    
-    .ci-artifact__body {
-        padding: 14px 16px;
-        display: flex;
-        background-blend-mode: multiply;
-        background-image: linear-gradient(to bottom, #f2f4f7, #f2f4f7);
-        border-top: solid 1px #d5dbdf;
-        border-radius: 0 0 4px 4px;
-    }
-    
-    .docker-build-args {
-        border: solid 1px #d5dbdf;
-        border-radius: 4px;
-        margin-bottom: 24px;
-    }
-    
-    .docker-build-args__header {
-        padding: 12px 16px;
-        display: flex;
-        justify-content: space-between;
-        cursor: pointer;
-    }
-    
-    .docker-build-args__wrapper {
-        border-top: solid 1px #d5dbdf;
-    }
-    
-    .docker-build-args__text {
-        line-height: 24px;
-    }
-    
-    .form__key-value-inputs--docker-build {
-        margin: 16px;
-    }
-    
-    .form__add-parameter--docker-build {
-        margin: 16px;
-    }
-    
-    .ext-ci-config {
-        border-radius: 8px;
-        border: solid 1px var(--N200);
-        background-color: var(--window-bg);
-        padding: 16px 20px;
-        border-style: dashed;
-    }
-    
-    .ext-ci-config__title {
-        height: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.43;
-        letter-spacing: normal;
-        color: var(--N900);
-        margin-bottom: 4px;
-    }
-    
-    .ext-ci-config__description {
-        font-size: 12px;
-        font-weight: 500;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.67;
-        letter-spacing: normal;
-        color: var(--N700);
-        margin-bottom: 24px;
-    }
-    
-    .copy-button--ext-ci {
-        position: absolute;
-        top: 32px;
-        right: 5px;
-    }
-    
-    .ci-artifact:last-child {
-        margin-bottom: 0px;
-    }
-    
-    .cta.button {
-        background-color: var(--B500);
-        color: var(--white);
-        border: none;
-        padding: 0 16px;
-    }
-    
-    .ci-stage__title {
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 1.25;
-        letter-spacing: normal;
-        color: var(--N900);
-        margin-bottom: 4px;
-    }
-    
-    .ci-stage__description {
-        font-size: 12px;
-        font-weight: normal;
-        line-height: 1.67;
-        letter-spacing: normal;
-        color: var(--N700);
-    }
-    
-    .ci-file-icon {
-        transform: rotate(+90deg);
-        margin-right: 10px;
-    }
-    
-    .info__container.info__container--linked-ci {
-        margin-bottom: 16px;
-    }
-    
-    .script-container {
-        border: 1px solid #d6dbdf;
-        padding: 8px 0;
-        border-radius: 4px;
-    }
-    
-    .script-container .react-monaco-editor-container {
-        min-height: 300px;
-    }
-    
-    .script-container .shebang {
-        padding: 0 60px;
-        color: #e00000;
-    }
+.modal__body--ci {
+    width: 800px;
+    margin-top: 24px;
+}
 
-    .m-auto-mr--20{
-        margin: auto;
-        margin-right: -20px;
-    }
+.ci-button-container {
+    border-top: solid 1px var(--N100);
+}
+
+.repo-name {
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: var(--N900);
+}
+
+.select-button--source-info {
+    height: 40px;
+    padding: 12px 10px;
+    background-color: var(--white);
+}
+
+.disabled .select-button--source-info {
+    background-color: var(--N100);
+}
+
+.ci-artifact__select-label {
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    position: relative;
+}
+
+.ci-artifact__icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 8px 0 0;
+}
+
+.ci-artifact {
+    border: solid 1px #d5dbdf;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.ci-artifact__header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.ci-artifact__body {
+    padding: 14px 16px;
+    display: flex;
+    background-blend-mode: multiply;
+    background-image: linear-gradient(to bottom, #f2f4f7, #f2f4f7);
+    border-top: solid 1px #d5dbdf;
+    border-radius: 0 0 4px 4px;
+}
+
+.docker-build-args {
+    border: solid 1px #d5dbdf;
+    border-radius: 4px;
+    margin-bottom: 24px;
+}
+
+.docker-build-args__header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.docker-build-args__wrapper {
+    border-top: solid 1px #d5dbdf;
+}
+
+.docker-build-args__text {
+    line-height: 24px;
+}
+
+.form__key-value-inputs--docker-build {
+    margin: 16px;
+}
+
+.form__add-parameter--docker-build {
+    margin: 16px;
+}
+
+.ext-ci-config {
+    border-radius: 8px;
+    border: solid 1px var(--N200);
+    background-color: var(--window-bg);
+    padding: 16px 20px;
+    border-style: dashed;
+}
+
+.ext-ci-config__title {
+    height: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 4px;
+}
+
+.ext-ci-config__description {
+    font-size: 12px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: var(--N700);
+    margin-bottom: 24px;
+}
+
+.copy-button--ext-ci {
+    position: absolute;
+    top: 32px;
+    right: 5px;
+}
+
+.ci-artifact:last-child {
+    margin-bottom: 0px;
+}
+
+.ci-stage__title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 4px;
+}
+
+.ci-stage__description {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: var(--N700);
+}
+
+.ci-file-icon {
+    transform: rotate(+90deg);
+    margin-right: 10px;
+}
+
+.info__container.info__container--linked-ci {
+    margin-bottom: 16px;
+}
+
+.script-container {
+    border: 1px solid #d6dbdf;
+    padding: 8px 0;
+    border-radius: 4px;
+}
+
+.script-container .react-monaco-editor-container {
+    min-height: 300px;
+}
+
+.script-container .shebang {
+    padding: 0 60px;
+    color: #e00000;
+}

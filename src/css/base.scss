@@ -257,30 +257,6 @@ a:focus {
     padding-right: 20px
 }
 
-.flexbox {
-    display: flex;
-}
-
-.flexbox-col {
-    display: flex;
-    flex-direction: column;
-}
-
-.flex-1 {
-    flex: 1;
-}
-
-.flex-justify {
-    justify-content: space-between;
-}
-
-.flex-wrap {
-    flex-wrap: wrap;
-}
-
-.flex-nowrap {
-    flex-wrap: nowrap;
-}
 
 .loading-wrapper {
     height: calc(100vh - 172px);
