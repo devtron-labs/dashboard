@@ -11,6 +11,7 @@ import { CIPipelineAdvanced } from './CIPipelineAdvanced';
 import { SourceMaterials } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
+import { classNames } from 'react-select/src/utils';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules;
@@ -441,7 +442,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div style={{minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
         }
         else if (this.state.isAdvanced) {
             return this.renderAdvanceCI()

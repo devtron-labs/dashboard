@@ -189,7 +189,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         let l = this.state.ciPipeline.name.lastIndexOf('-');
         let name = this.state.ciPipeline.name.substring(0, l);
         if (this.state.view == ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div style={{minHeight: "380px" }} className="flex"><Progressing pageLoader /></div>
         }
         else {
             return <>

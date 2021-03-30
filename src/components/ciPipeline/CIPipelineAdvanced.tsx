@@ -144,7 +144,7 @@ export class CIPipelineAdvanced extends Component<any, {}> {
 
     renderDockerArgs() {
         return <>
-            <div className=" flex left " onClick={() => this.props.handleDocker()}>
+            <div className=" flex left cursor" onClick={() => this.props.handleDocker()}>
                 <div className="sqr-44"><Docker /></div>
                 <div>
                     <div className="ci-stage__title">Docker build</div>

@@ -298,8 +298,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             return <VisibleModal className="">
                 <div className="modal__body modal__body--ci br-0 modal__body--p-0">
                     {this.renderHeader()}
-                    <hr className="divider" />
-                    <Progressing pageLoader />
+                    <div style={{minHeight: "385px"}} className="flex"><Progressing pageLoader /></div>
                 </div>
             </VisibleModal>
         }
