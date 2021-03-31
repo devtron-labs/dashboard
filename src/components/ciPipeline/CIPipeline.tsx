@@ -468,7 +468,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 {this.state.view !== ViewType.LOADING && <>
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderSecondaryButtton()}
-                        <ButtonWithLoader rootClassName="cta cta--workflow"
+                        <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
                             loaderColor="white"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}>

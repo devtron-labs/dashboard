@@ -897,7 +897,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 </div>
                 {this.state.view !== ViewType.LOADING && <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                     {this.renderSecondaryButton()}
-                    <ButtonWithLoader rootClassName="cta cta--workflow"
+                    <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
                         onClick={this.savePipeline}
                         isLoading={this.state.loadingData}
                         loaderColor="white">
