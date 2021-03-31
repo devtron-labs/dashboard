@@ -414,14 +414,13 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAdvanceCI() {
-        return <CIPipelineAdvanced {...this.props}
-            {...this.state}
+        return <CIPipelineAdvanced {...this.state}
             validationRules={this.validationRules}
             closeCIDeleteModal={this.closeCIDeleteModal}
             deletePipeline={this.deletePipeline}
             handlePreBuild={this.handlePreBuild}
             handlePostBuild={this.handlePostBuild}
-            handleDockerArgs= {this.handleDockerArgs}
+            handleDockerArgs={this.handleDockerArgs}
             addEmptyStage={this.addEmptyStage}
             toggleCollapse={this.toggleCollapse}
             deleteStage={this.deleteStage}
