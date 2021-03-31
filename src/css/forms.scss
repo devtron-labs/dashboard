@@ -45,7 +45,7 @@
 
 .form__row {
     display: block;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     position: relative;
 }
 
@@ -546,4 +546,14 @@ p.sentence-case:first-letter {
 
 .form__label.form__label--sentence::first-letter {
     text-transform: capitalize;
+}
+
+.modal__form-title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--N900);
+    margin: 0px;
+    margin-bottom: 4px;
+
 }

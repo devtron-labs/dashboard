@@ -90,7 +90,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
             parentCiPipeline: pipeline.parentCiPipeline,
             height: ciNodeHeight,
             width: dimensions.cINodeSizes.nodeWidth,
-            title: isLinkedCI ? pipeline.name.substring(0, l) : pipeline.name, //show parent CI name if Linked CI
+            title: isLinkedCI ? pipeline.name.substring(0, l) || pipeline.name : pipeline.name, //show parent CI name if Linked CI
             triggerType: TriggerTypeMap[trigger],
             status: DEFAULT_STATUS,
             type: 'CI',

@@ -29,7 +29,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
             </div>
         }
         else {
-            return <div className="material-last-update">Last Updated<span className="fw-600 ml-5"> {material.lastFetchTime}</span></div>
+            return <div className="material-last-update">Last Updated<span className="fw-6 ml-5"> {material.lastFetchTime}</span></div>
         }
     }
 

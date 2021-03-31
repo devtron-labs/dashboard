@@ -14,6 +14,7 @@ export * from './formFields/Checkbox';
 export * from './formFields/DevtronSwitch';
 export * from './modals/OpaqueModal';
 export * from './modals/VisibleModal';
+export * from './modals/VisibleModal2';
 export * from './dialogs/DeleteDialog';
 export * from './modals/Modal';
 export * from './dialogs/DialogForm';

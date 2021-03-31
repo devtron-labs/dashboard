@@ -1,12 +1,12 @@
 import React from 'react'
-import { VisibleModal } from '../modals/VisibleModal'
+import { VisibleModal2 } from '../modals/VisibleModal2';
 function ConfirmationDialog({ className = "", children }) {
     return (
-        <VisibleModal className="confirmation-dialog">
+        <VisibleModal2 className="confirmation-dialog">
             <div className={`confirmation-dialog__body ${className}`}>
                 {children}
             </div>
-        </VisibleModal>
+        </VisibleModal2>
     )
 }
 
