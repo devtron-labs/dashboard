@@ -70,7 +70,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 allCINodeMap: allCINodeMap,
                 view: ViewType.FORM
             });
-            console.log(result.workflows);
         }).catch((errors) => {
             showError(errors);
             this.setState({ view: ViewType.ERROR, code: errors.code });

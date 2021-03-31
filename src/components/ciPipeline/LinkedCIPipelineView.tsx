@@ -158,12 +158,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderHeader() {
         return <>
-            <div className="flex left pl-20 pr-20 pt-20">
+            <div className="flex left pt-15 pb-15 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
                 <button type="button" className="transparent ml-auto" onClick={this.props.close}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
+            <hr className="divider mt-0" />
         </>
     }
 
@@ -189,7 +190,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         let l = this.state.ciPipeline.name.lastIndexOf('-');
         let name = this.state.ciPipeline.name.substring(0, l) || this.state.ciPipeline.name;
         if (this.state.view == ViewType.LOADING) {
-            return <div style={{minHeight: "380px" }} className="flex"><Progressing pageLoader /></div>
+            return <div style={{ minHeight: "380px" }} className="flex"><Progressing pageLoader /></div>
         }
         else {
             return <>
@@ -209,7 +210,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         return <VisibleModal className="" >
             <div className="modal__body p-0 br-0 modal__body--ci">
                 {this.renderHeader()}
-                <hr className="divider" />
                 <div className="pl-20 pr-20 pb-20">
                     {this.renderInfoDialog()}
                     {this.renderCIPipelineBody()}
