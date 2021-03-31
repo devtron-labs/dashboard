@@ -158,7 +158,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     renderCIPipelineBody() {
         let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId);
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div style={{minHeight: "250px"}} className="flex"><Progressing pageLoader /></div>
         }
         else {
             return <>

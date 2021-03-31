@@ -38,7 +38,7 @@ interface CIPipelineAdvancedProps extends CIPipelineState {
 export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
 
     renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        return <div className="white-card flex left cursor mt-20 mb-16 "
+        return <div className="white-card flex left cursor mt-20 mb-16 dashed"
             onClick={() => { this.props.addEmptyStage(key) }}>
             <Add className="icon-dim-24 fcb-5 vertical-align-middle mr-16" />
             <span className="artifact__add">Add Stage</span>
@@ -165,7 +165,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
 
     renderDockerArgs() {
         return <>
-            <div className=" flex left " onClick={() => this.props.handleDocker()}>
+            <div className=" flex left cursor" onClick={() => this.props.handleDocker()}>
                 <div className="sqr-44"><Docker /></div>
                 <div>
                     <div className="ci-stage__title">Docker build</div>
