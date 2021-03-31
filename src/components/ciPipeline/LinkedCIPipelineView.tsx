@@ -187,7 +187,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderCIPipelineBody() {
         let l = this.state.ciPipeline.name.lastIndexOf('-');
-        let name = this.state.ciPipeline.name.substring(0, l);
+        let name = this.state.ciPipeline.name.substring(0, l) || this.state.ciPipeline.name;
         if (this.state.view == ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -217,7 +217,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.state.view !== ViewType.LOADING &&
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderSecondaryButtton()}
-                        <Link to={this.state.sourcePipelineURL} target="_blank" className="cta cta--workflow flex flex-1 no-decor" onClick={(event) => this.generateSourceUrl()}>
+                        <Link to={this.state.sourcePipelineURL}
+                            target="_blank"
+                            className="cta cta--workflow flex flex-1 no-decor"
+                            onClick={(event) => this.generateSourceUrl()}>
                             View Source Pipeline
                         </Link>
                     </div>}
