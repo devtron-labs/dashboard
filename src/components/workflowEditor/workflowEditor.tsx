@@ -15,7 +15,6 @@ import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png';
 import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline';
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit';
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView';
-import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { isGitopsConfigured, getHostURLConfiguration } from '../../services/service';
@@ -71,6 +70,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 allCINodeMap: allCINodeMap,
                 view: ViewType.FORM
             });
+            console.log(result.workflows);
         }).catch((errors) => {
             showError(errors);
             this.setState({ view: ViewType.ERROR, code: errors.code });
@@ -97,7 +97,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 top: top,
                 left: left,
             },
-            showCIMenu: !this.state.showCIMenu
+            showCIMenu: !this.state.showCIMenu,
         });
     }
 

@@ -19,18 +19,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
         {props.materials.map((mat, index) => {
             let errorObj = props.validationRules?.sourceValue(mat.value);
-            return <div className="" key={mat.gitMaterialId}>
-                <div className="mb-10">
+            return <div className="mt-20" key={mat.gitMaterialId}>
+                <div className="mb-10 fs-14 cn-9 fw-5 lh-1-43">
                     <img src={git} alt="" className="ci-artifact__icon" />
                     {mat.name}
                 </div>
-                <div className="flex mt-10">
+                <div className="flex">
                     <div className="flex-1 mr-16 ">
-                        <label className="form__label">Source Type*</label>
-                        {/* <ReactSelect options={TagOptions}
-                            isMulti={false}
-                            isSearchable={false}
-                        /> */}
+                        <label className="form__label mb-6">Source Type*</label>
                         <Select rootClassName="popup-body--source-info"
                             disabled={!!mat.id} onChange={(event) => props?.selectSourceType(event, mat.gitMaterialId)} >
                             <Select.Button rootClassName="select-button default" disabled={!props.selectSourceType}>{SourceTypeReverseMap[mat.type] || "Select Source Type"}</Select.Button>
@@ -40,7 +36,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         </Select>
                     </div>
                     <div className="flex-1">
-                        <label className="form__label">
+                        <label className="form__label mb-6">
                             {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : "Source Value*"}
                         </label>
                         <input className="form__input" autoComplete="off" placeholder="Name" type="text"
