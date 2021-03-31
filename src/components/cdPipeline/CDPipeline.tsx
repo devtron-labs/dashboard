@@ -621,7 +621,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let selections = this.getSelectedConfigMapAndSecrets(configmapKey);
         let codeEditorBody = this.state.pipelineConfig[key].switch === SwitchItemValues.Config ? this.state.pipelineConfig[key].config : yamlJsParser.stringify(config[key], { indent: 2 });
         let runInEnv = key === 'preStage' ? this.state.pipelineConfig.runPreStageInEnv : this.state.pipelineConfig.runPostStageInEnv;
-        return <div className="cd-stage">
+        return <div className="cd-stage mt-12">
             <div className="form__row">
                 <img src={trash} alt="delete" className="delete-stage-icon cursor" onClick={(e) => this.deleteStage(key)} />
                 <label className="form__label form__label--sentence bold">When do you want this stage to trigger?</label>
@@ -739,7 +739,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace);
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId);
         return <>
-            <div className="form__row form__row--flex">
+            <div className="form__row form__row--flex mt-12">
                 <div className={`w-50`}>
                     <div className="form__label">Deploy to environment</div>
                     <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
@@ -799,7 +799,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 </div>
                 <div className="ml-16 mr-16 flex-1">
                     <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Pre-deployment Stage</h4>
-                    <p className="form__label form__label--sentence m-0">Configure actions like DB migration, that you want to run before the deployment.</p>
+                    <div className="form__label form__label--sentence m-0">Configure actions like DB migration, that you want to run before the deployment.</div>
                 </div>
                 <div className="icon-dim-44 flex">
                     <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPreStage ? '0deg' : '180deg' }} />
