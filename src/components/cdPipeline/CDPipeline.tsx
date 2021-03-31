@@ -24,6 +24,7 @@ import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
+import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -802,7 +803,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="form__label form__label--sentence m-0">Configure actions like DB migration, that you want to run before the deployment.</div>
                 </div>
                 <div className="icon-dim-44 flex">
-                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPreStage ? '0deg' : '180deg' }} />
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPreStage ? "rotate(180deg)" : "rotate(0)" }} />
                 </div>
             </div>
             {this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : null}
@@ -817,7 +818,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <p className="form__label form__label--sentence m-0">Configure deployment preferences for this pipeline.</p>
                 </div>
                 <div className="icon-dim-44 flex">
-                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showDeploymentStage ? '0deg' : '180deg' }} />
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showDeploymentStage ? "rotate(180deg)" : "rotate(0)" }} />
                 </div>
             </div>
             {this.state.showDeploymentStage ? <>
@@ -835,7 +836,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <p className="form__label form__label--sentence m-0">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
                 </div>
                 <div className="icon-dim-44 flex">
-                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPostStage ? '0deg' : '180deg' }} />
+                   <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostStage ? "rotate(180deg)" : "rotate(0)" }} />
+
                 </div>
             </div>
             {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : null}
