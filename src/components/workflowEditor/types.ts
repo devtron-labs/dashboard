@@ -42,9 +42,8 @@ export interface AddWorkflowProps extends RouteComponentProps<{ appId: string, w
 
 export interface PipelineSelectProps {
     showMenu: boolean;
-    // left: number;
-    // top: number;
+    workflowId?: number | string;
     styles: { left: string; top: string; };
     toggleCIMenu: (event) => void;
-    addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
+    addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
 }

@@ -201,7 +201,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.renderTriggerType()}
                 {this.renderMaterials()}
                 {this.renderDeleteCIModal()}
-
             </>
         }
     }

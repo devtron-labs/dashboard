@@ -130,8 +130,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         this.props.history.push(link);
     }
 
-    addCIPipeline = (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => {
-        this.handleCISelect(0, type);
+    addCIPipeline = (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => {
+        this.handleCISelect(workflowId || 0, type);
     }
 
     handleCDSelect = (workflowId, ciPipelineId) => {
@@ -233,7 +233,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 onClick={this.toggleCIMenu}>
                 <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />New Build Pipeline
             </button>
-            <PipelineSelect showMenu={this.state.showCIMenu}
+            <PipelineSelect workflowId={0}
+                showMenu={this.state.showCIMenu}
                 addCIPipeline={this.addCIPipeline}
                 toggleCIMenu={this.toggleCIMenu}
                 styles={{
