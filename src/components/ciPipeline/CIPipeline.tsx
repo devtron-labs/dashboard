@@ -321,7 +321,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, 0, false).then((response) => {
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
             if (response) {
                 toast.success(msg);
                 this.setState({ loadingData: false });

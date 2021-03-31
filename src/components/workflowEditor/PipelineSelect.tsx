@@ -12,7 +12,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
             <div className="white-card__header white-card__header--pipeline-webhook">Select Pipeline</div>
             <div className="pipeline-webhook__item" onClick={(event) => {
                 this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('CI')
+                this.props.addCIPipeline('CI', this.props.workflowId)
             }}>
                 <div className="pipeline-webhook__icon">
                     <img src={ci} className="pipeline-webhook__icon" alt="ci" />
@@ -24,7 +24,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
             </div>
             <div className="pipeline-webhook__item" onClick={(event) => {
                 this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('LINKED-CI')
+                this.props.addCIPipeline('LINKED-CI', this.props.workflowId)
             }}>
                 <div className="pipeline-webhook__icon">
                     <img src={linkedPipeline} className="pipeline-webhook__icon" alt="linked-ci" />
@@ -36,7 +36,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
             </div>
             <div className="pipeline-webhook__item" onClick={(event) => {
                 this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('EXTERNAL-CI')
+                this.props.addCIPipeline('EXTERNAL-CI', this.props.workflowId)
             }}>
                 <div className="pipeline-webhook__icon">
                     <img src={webhook} className="pipeline-webhook__icon" alt="external-ci" />

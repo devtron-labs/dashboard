@@ -66,8 +66,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     <div className="ci-stage__description">{description}</div>
                 </div>
                 {key === 'beforeDockerBuildScripts' ?
-                    <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} /> :
-                    <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} />}
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPreBuild ? "rotate(180deg)" : "rotate(0)" }} /> :
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} />}
             </div>
             {this.props.form[key].map((stage, index) => {
                 if (stage.isCollapsed) {
@@ -171,7 +171,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     <div className="ci-stage__title">Docker build</div>
                     <div className="ci-stage__description ">Override docker build configurations for this pipeline.</div>
                 </div>
-                <img className="icon-dim-32 m-auto-mr-0" src={dropdown} alt="dropDown" style={{ "transform": this.props.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
+                <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.props.showDocker ? "rotate(180deg)" : "rotate(0)" }} />
 
             </div>
             {this.props.showDocker ?

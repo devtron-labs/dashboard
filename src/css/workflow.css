@@ -312,6 +312,4 @@
 .cta.cta--workflow {
     height: 36px;
     line-height: unset;
-    position: sticky;
-    bottom: 0px;
 }
