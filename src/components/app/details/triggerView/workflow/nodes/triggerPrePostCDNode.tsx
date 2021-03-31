@@ -22,14 +22,15 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
         this.props.history.push(LINK);
     }
 
-    renderStatus(isClickable: boolean, status: string, ) {
+    renderStatus(isClickable: boolean, status: string,) {
         const url = this.getCDDetailsURL();
-        if (isClickable)
+        if (isClickable) {
             return <div className="cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 <span>{this.props.status}</span>
                 <span className="mr-5 ml-5">/</span>
                 <Link to={url} className="workflow-node__details-link">Details</Link>
             </div>
+        }
         else return <div className="cd-trigger-status" style={{ color: TriggerStatus[status] }}>
             <span>{this.props.status}</span>
         </div>
@@ -48,7 +49,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                             <span className="workflow-node__text-light">Stage</span>
                             <span className="">{stage}</span>
                         </div>
-                        <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon"/>
+                        <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
                     </div>
                     {this.renderStatus(isClickable, status)}
                     <div className="workflow-node__btn-grp">

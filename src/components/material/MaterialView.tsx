@@ -153,7 +153,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={"CHECKED"}
                     tabIndex={3}
                     onChange={this.props.handleCheckbox}
-                    rootClassName="form__label">
+                    rootClassName="fs-12 cn-7 mb-8 flex left">
                     <span className="">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
                 {this.props.isChecked ?

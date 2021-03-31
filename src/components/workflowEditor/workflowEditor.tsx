@@ -222,16 +222,24 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         </Switch>
     }
 
-    renderNewBuildPipelineButton() {
+    renderNewBuildPipelineButton(openAtTop: boolean) {
+        let top = this.state.cIMenuPosition.top;
+        if (openAtTop) {
+            top = top - 382 + 100;
+        }
         return <>
-            <button type="button" className="cta no-decor flex mb-20" style={{ width: '170px' }} onClick={this.toggleCIMenu}>
+            <button type="button" className="cta no-decor flex mb-20"
+                style={{ width: '170px' }}
+                onClick={this.toggleCIMenu}>
                 <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />New Build Pipeline
             </button>
             <PipelineSelect showMenu={this.state.showCIMenu}
-                top={this.state.cIMenuPosition.top}
-                left={this.state.cIMenuPosition.left}
                 addCIPipeline={this.addCIPipeline}
                 toggleCIMenu={this.toggleCIMenu}
+                styles={{
+                    left: `${this.state.cIMenuPosition.left}px`,
+                    top: `${top}px`,
+                }}
             />
         </>
     }
@@ -244,7 +252,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 Workflows consist of pipelines from build to deployment stages of an application. <br></br>
                 <a className="learn-more__href" href="" target="blank" rel="noreferrer noopener">Learn about creating workflows</a>
             </p>
-            {this.renderNewBuildPipelineButton()}
+            {this.renderNewBuildPipelineButton(true)}
         </div>
     }
 
@@ -296,7 +304,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 {this.renderRouter()}
                 <div className="mt-16 ml-20 mr-20 mb-16" >
                     {this.renderHostErrorMessage()}
-                </div >
+                </div>
                 {this.renderEmptyState()}
             </>
         }
@@ -308,7 +316,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 </p>
                 {this.renderRouter()}
                 {this.renderHostErrorMessage()}
-                {this.renderNewBuildPipelineButton()}
+                {this.renderNewBuildPipelineButton(false)}
                 {this.renderWorkflows()}
                 {this.renderDeleteDialog()}
             </div>
