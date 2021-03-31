@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog } from '../common';
+import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog, CHECKBOX_VALUE } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
 import { ErrorScreenManager } from '../common';
@@ -669,7 +669,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             </div>
             <div className={this.state.pipelineConfig.isClusterCdActive ? "position-rel cd-checkbox" : "position-rel cd-checkbox cd-checkbox-tooltip"}>
                 <Checkbox isChecked={runInEnv}
-                    value={"CHECKED"}
+                    value={CHECKBOX_VALUE.CHECKED}
                     disabled={!this.state.pipelineConfig.isClusterCdActive}
                     onChange={(event) => { this.handleRunInEnvCheckbox(event, key); }} >
                     <span className="mr-5">Execute in application Environment</span>
@@ -779,6 +779,98 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         </>
     }
 
+    renderAdvancedCD() {
+        let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name);
+        return <>
+            <div className="form__row">
+                <label className="form__label">Pipeline Name*</label>
+                <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
+                    onChange={this.handlePipelineName} />
+                {this.state.showError && !nameErrorObj.isValid ? <span className="form__error">
+                    <img src={error} className="form__icon" />
+                    {nameErrorObj.message}
+                </span> : null}
+            </div>
+            <div className="divider mt-12 mb-12"></div>
+
+            <div className="flex left" onClick={() => { this.setState({ showPreStage: !this.state.showPreStage }) }}>
+                <div className="icon-dim-44 bcn-1 flex">
+                    <PrePostCD className="icon-dim-24" />
+                </div>
+                <div className="ml-16 mr-16 flex-1">
+                    <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Pre-deployment Stage</h4>
+                    <p className="form__label form__label--sentence m-0">Configure actions like DB migration, that you want to run before the deployment.</p>
+                </div>
+                <div className="icon-dim-44 flex">
+                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPreStage ? '0deg' : '180deg' }} />
+                </div>
+            </div>
+            {this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : null}
+
+            <div className="divider mt-12 mb-12"></div>
+            <div className="flex left" onClick={() => { this.setState({ showDeploymentStage: !this.state.showDeploymentStage }) }}>
+                <div className="icon-dim-44 bcn-1 flex">
+                    <CD className="icon-dim-24" />
+                </div>
+                <div className="ml-16 mr-16 flex-1">
+                    <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Deployment Stage</h4>
+                    <p className="form__label form__label--sentence m-0">Configure deployment preferences for this pipeline.</p>
+                </div>
+                <div className="icon-dim-44 flex">
+                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showDeploymentStage ? '0deg' : '180deg' }} />
+                </div>
+            </div>
+            {this.state.showDeploymentStage ? <>
+                {this.renderEnvAndNamespace()}
+                {this.renderTriggerType()}
+                {this.renderDeploymentStrategy()}
+            </> : null}
+            <div className="divider mt-12 mb-12"></div>
+            <div className="flex left" onClick={() => { this.setState({ showPostStage: !this.state.showPostStage }) }}>
+                <div className="icon-dim-44 bcn-1 flex">
+                    <PrePostCD className="icon-dim-24" />
+                </div>
+                <div className="ml-16 mr-16 flex-1">
+                    <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Post-deployment Stage</h4>
+                    <p className="form__label form__label--sentence m-0">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
+                </div>
+                <div className="icon-dim-44 flex">
+                    <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPostStage ? '0deg' : '180deg' }} />
+                </div>
+            </div>
+            {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : null}
+            <div className="divider mt-12 mb-12"></div>
+        </>
+    }
+
+    renderBasicCD() {
+        let strategyMenu = Object.keys(this.allStrategies).map(option => { return { label: option, value: option } });
+        let strategy = this.state.pipelineConfig.strategies[0] ? { label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate, value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate } : undefined;
+        return <>
+            <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
+            {this.renderEnvAndNamespace()}
+            <div className="divider mt-0 mb-0"></div>
+            <p className="fs-14 fw-6 cn-9 mb-16 mt-20">Deployment Strategy</p>
+            <p className="fs-13 fw-5 cn-7">Configure deployment preferences for this pipeline</p>
+            <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
+                closeMenuOnScroll={true}
+                isSearchable={false}
+                isClearable={false}
+                isMulti={false}
+                placeholder="Select Strategy"
+                options={strategyMenu}
+                value={strategy}
+                onChange={(selected: any) => { this.handleStrategy(selected.value) }}
+                components={{
+                    IndicatorSeparator: null,
+                    DropdownIndicator,
+                    Option,
+                }}
+                styles={{ ...styles }}
+            />
+        </>
+    }
+
     renderCDPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -786,97 +878,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else if (this.state.view == ViewType.ERROR) {
             return <ErrorScreenManager code={this.state.code} />
         }
+        else if (this.state.isAdvanced) {
+            return this.renderAdvancedCD()
+        }
         else {
-            let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name);
-            let strategyMenu = Object.keys(this.allStrategies).map(option => { return { label: option, value: option } });
-            let strategy = this.state.pipelineConfig.strategies[0] ? { label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate, value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate } : undefined;
-            if (this.state.isAdvanced) {
-                return <>
-                    <div className="form__row">
-                        <label className="form__label">Pipeline Name*</label>
-                        <input className="form__input" autoComplete="off" disabled={!!this.state.pipelineConfig.id} placeholder="Pipeline name" type="text" value={this.state.pipelineConfig.name}
-                            onChange={this.handlePipelineName} />
-                        {this.state.showError && !nameErrorObj.isValid ? <span className="form__error">
-                            <img src={error} className="form__icon" />
-                            {nameErrorObj.message}
-                        </span> : null}
-                    </div>
-                    <div className="divider mt-12 mb-12"></div>
-
-                    <div className="flex left" onClick={() => { this.setState({ showPreStage: !this.state.showPreStage }) }}>
-                        <div className="icon-dim-44 bcn-1 flex">
-                            <PrePostCD className="icon-dim-24" />
-                        </div>
-                        <div className="ml-16 mr-16 flex-1">
-                            <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Pre-deployment Stage</h4>
-                            <p className="form__label form__label--sentence m-0">Configure actions like DB migration, that you want to run before the deployment.</p>
-                        </div>
-                        <div className="icon-dim-44 flex">
-                            <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPreStage ? '0deg' : '180deg' }} />
-                        </div>
-                    </div>
-                    {this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : null}
-
-                    <div className="divider mt-12 mb-12"></div>
-                    <div className="flex left" onClick={() => { this.setState({ showDeploymentStage: !this.state.showDeploymentStage }) }}>
-                        <div className="icon-dim-44 bcn-1 flex">
-                            <CD className="icon-dim-24" />
-                        </div>
-                        <div className="ml-16 mr-16 flex-1">
-                            <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Deployment Stage</h4>
-                            <p className="form__label form__label--sentence m-0">Configure deployment preferences for this pipeline.</p>
-                        </div>
-                        <div className="icon-dim-44 flex">
-                            <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showDeploymentStage ? '0deg' : '180deg' }} />
-                        </div>
-                    </div>
-                    {this.state.showDeploymentStage ? <>
-                        {this.renderEnvAndNamespace()}
-                        {this.renderTriggerType()}
-                        {this.renderDeploymentStrategy()}
-                    </> : null}
-                    <div className="divider mt-12 mb-12"></div>
-                    <div className="flex left" onClick={() => { this.setState({ showPostStage: !this.state.showPostStage }) }}>
-                        <div className="icon-dim-44 bcn-1 flex">
-                            <PrePostCD className="icon-dim-24" />
-                        </div>
-                        <div className="ml-16 mr-16 flex-1">
-                            <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Post-deployment Stage</h4>
-                            <p className="form__label form__label--sentence m-0">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
-                        </div>
-                        <div className="icon-dim-44 flex">
-                            <Arrow className="icon-dim-22 fcn-4 rotate" style={{ ['--rotateBy' as any]: this.state.showPostStage ? '0deg' : '180deg' }} />
-                        </div>
-                    </div>
-                    {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : null}
-                    <div className="divider mt-12 mb-12"></div>
-                </>
-            }
-            else {
-                return <>
-                    <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
-                    {this.renderEnvAndNamespace()}
-                    <div className="divider mt-0 mb-0"></div>
-                    <p className="fs-14 fw-6 cn-9 mb-16 mt-20">Deployment Strategy</p>
-                    <p className="fs-13 fw-5 cn-7">Configure deployment preferences for this pipeline</p>
-                    <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
-                        closeMenuOnScroll={true}
-                        isSearchable={false}
-                        isClearable={false}
-                        isMulti={false}
-                        placeholder="Select Strategy"
-                        options={strategyMenu}
-                        value={strategy}
-                        onChange={(selected: any) => { this.handleStrategy(selected.value) }}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        styles={{ ...styles }}
-                    />
-                </>
-            }
+            return this.renderBasicCD()
         }
     }
 
