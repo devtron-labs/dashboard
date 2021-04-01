@@ -10,7 +10,7 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
-export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails = null, environments, showCommitInfo = null, showHibernateModal = null }) {
+export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
     const status = appDetails?.resourceTree?.status || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
@@ -26,6 +26,7 @@ export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails =
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message;
     }
+
     return (<>
         <div className="flex left w-100 pb-10 ">
             <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
@@ -71,12 +72,13 @@ export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails =
             </div>
         </div>
         {console.log(appDetails)}
+
         <div className="flex">
             <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16"
             >
                 <div className="cn-9 fw-6">Deployment</div>
                 {appDetails?.deploymentStatus && (
-                    <div style={{ maxWidth: '50%' }} onClick={deploymentDetails ? (e) => deploymentDetails(true) : () => { }} className="pointer flex left">
+                    <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="pointer flex left">
                         {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
                         <div className="flex left column" style={{ maxWidth: '100%' }}>
                             <div>
@@ -84,13 +86,13 @@ export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails =
                                     {status}
                                 </span>
                                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                                    <div style={{ marginLeft: 'auto' }} className="flex fs-12 cn-9">
+                                    <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
                                         <span>Deployed</span>
-                                        <span className="fw-6 ml-4 mr-4">
+                                        <div className="fw-6 ml-4 mr-4">
                                             {appDetails?.lastDeployedTime
                                                 ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
                                                 : ''}
-                                        </span>
+                                        </div>
                                          by
                                         <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
                                         {showCommitInfo && (

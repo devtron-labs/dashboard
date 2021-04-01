@@ -1302,6 +1302,7 @@ table.pod__table td:last-child {
     .modal-content {
         border: unset;
     }
+
 }
 
 .poup-body--app-switch:focus,
@@ -1348,7 +1349,6 @@ table.pod__table td:last-child {
     .app-status-detai {
         background: white;
         max-width: 760px;
-        padding: 24px;
         height: 100%;
         min-height: 300px;
         display: grid;
@@ -1418,6 +1418,11 @@ table.pod__table td:last-child {
             margin-left: auto;
             cursor: pointer;
         }
+    }
+
+    .deployment-status{
+        min-width: 800px;
+        height: 100%;
     }
 }
 
@@ -1732,3 +1737,4 @@ table.resource-tree {
     height: 28px;
     align-items: center;
 }
+

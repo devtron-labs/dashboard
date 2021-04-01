@@ -27,6 +27,10 @@
         @include flex(align-items, justify-content);
         flex-direction: column;
     }
+
+    &.wrap{
+        flex-wrap: wrap;
+    }
 }
 
 .flexbox {

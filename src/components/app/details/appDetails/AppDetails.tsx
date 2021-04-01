@@ -145,6 +145,7 @@ export const Details: React.FC<{
     const { url, path } = useRouteMatch();
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
+    const [deploymentStatus, toggleDeploymentStatus] = useState(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
@@ -314,6 +315,7 @@ export const Details: React.FC<{
                     environments={environments}
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                    showDeploymentModal={toggleDeploymentStatus}
                 />
             </div>
             <SyncError appStreamData={streamData} />
@@ -346,6 +348,11 @@ export const Details: React.FC<{
                     environmentName={appDetails.environmentName}
                 />
             )}
+
+            {deploymentStatus && (
+                <DeploymentModal
+                />)}
+
             {showScanDetailsModal ? <ScanDetailsModal
                 showAppInfo={false}
                 uniqueId={{
@@ -395,8 +402,8 @@ export const Details: React.FC<{
                             ) : hibernateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                'Restore App'
-                            )}
+                                        'Restore App'
+                                    )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -1072,6 +1079,7 @@ const MaterialCard: React.FC<{
     appDetails: AppDetails;
     streamData: AppStreamData;
 }> = ({ Rollout, nodes, appDetails, streamData }) => {
+    const [deploymentStatus, toggleDeploymentStatus] = useState<boolean>(false);
     const status = appDetails.resourceTree.status;
     const lastDeployedBy = appDetails.lastDeployedBy;
     const lastDeployedTime = appDetails.lastDeployedTime;
@@ -1147,7 +1155,7 @@ const MaterialCard: React.FC<{
                 <div className="material-sync-card--message">
                     <div className="ellipsis-right">
                         Deployed{' '}
-                        <span className="fw-6 fs-12">{moment(lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</span>{' '}
+                        <div className="fw-6 flex fs-12">{moment(lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</div>{' '}
                         by <span className="fw-6 fs-12">{lastDeployedBy}</span>
                     </div>
                     <Link to={getAppCDURL(appId, envId)} type="button" className="anchor fs-12 fw-6 p-0">
@@ -1171,6 +1179,8 @@ const MaterialCard: React.FC<{
                     environmentName={appDetails.environmentName}
                 />
             )}
+
+
             {hiberbateConfirmationModal && (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon
@@ -1205,8 +1215,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                'Restore App'
-                            )}
+                                        'Restore App'
+                                    )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -1265,7 +1275,7 @@ export const ProgressStatus: React.FC<{
                                         </th>
                                     ))}
                                 </tr>
-                            {/* <div className="divider"/> */}
+                                {/* <div className="divider"/> */}
                             </thead>
                             <tbody>
                                 {nodes &&
@@ -1321,6 +1331,39 @@ export const ProgressStatus: React.FC<{
     );
 };
 
+export const DeploymentModal: React.FC<{
+
+}> = ({ }) => {
+    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
+
+    return (
+        <VisibleModal className="app-status__material-modal flex right ">
+            <div className="bcn-0 deployment-status">
+                <div className="pl-20 pr-20 pt-10 pb-10">
+                    <div className="fs-20 fw-6 flex left">
+                        Deployment status
+                    <div className="fa fa-close right" />
+                    </div>
+                    <div className="fs-14 cn-7">Executing deployment: Blue-Green (Step 3/5)</div>
+                </div>
+                <div className="divider"></div>
+                <div>
+                    <div className="ml-24 mr-24 mt-10">
+                        <div className="flex left">
+                            <div>1/6</div>
+                            <figure className="app-summary__icon mr-8 icon-dim-20"></figure>
+                            <span>
+                                <div className="fs-14 cn-9">Push to git</div>
+                                <div className="cn-7" >Configuration pushed to git</div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </VisibleModal>
+    );
+};
 const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
     if (
