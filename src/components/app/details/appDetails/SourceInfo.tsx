@@ -71,7 +71,6 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                 )}
             </div>
         </div>
-        {console.log(appDetails)}
 
         <div className="flex">
             <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16"

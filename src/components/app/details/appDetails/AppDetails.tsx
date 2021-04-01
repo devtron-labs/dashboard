@@ -49,6 +49,10 @@ import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-ale
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
+import { ReactComponent as Loader } from '../../../../assets/icons/appstatus/progressing.svg';
+import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
+import { ReactComponent as Failed } from '../../../../assets/appstatus/ic-appstatus-failed.svg';
+import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import Select, { components } from 'react-select';
@@ -65,7 +69,6 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
-import Check from '../../../../assets/icons/ic-outline-check.svg';
 
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
@@ -177,6 +180,7 @@ export const Details: React.FC<{
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
+
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
@@ -192,6 +196,7 @@ export const Details: React.FC<{
             }
         }
     }
+
 
     function describeNode(name: string, containerName: string) {
         setDetailedNode({ name, containerName });
@@ -354,6 +359,9 @@ export const Details: React.FC<{
 
             {deploymentStatus && (
                 <DeploymentModal
+                    key={params.appId + "-" + params.envId}
+                    appDetailsAPI={fetchAppDetailsInTime}
+
                 />)}
 
             {showScanDetailsModal ? <ScanDetailsModal
@@ -1335,10 +1343,30 @@ export const ProgressStatus: React.FC<{
 };
 
 export const DeploymentModal: React.FC<{
+    appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
 
-}> = ({ }) => {
-    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
+}> = ({ appDetailsAPI }) => {
+    const params = useParams<{ appId: string; envId: string }>();
+    const [appDetailsResult, setAppDetailsResult] = useState(undefined);
+    const appDetails = appDetailsResult?.result;
+    let status = appDetails?.deploymentStatus?.gitPullStep
+    { console.log(status) }
+    useEffect(() => {
+        callAppDetailsAPI();
+    }, appDetailsResult)
 
+
+    async function callAppDetailsAPI() {
+        try {
+            let response = await appDetailsAPI(params.appId, params.envId, 25000);
+            setAppDetailsResult(response);
+        } catch (error) {
+            if (!appDetailsResult) {
+                // setAppDetailsError(error);
+            }
+        }
+    }
+    { console.log(appDetails) }
     return (
         <VisibleModal className="app-status__material-modal flex right ">
             <div className="bcn-0 deployment-status">
@@ -1353,10 +1381,12 @@ export const DeploymentModal: React.FC<{
                 <div>
                     <div className="ml-24 mr-24 mt-10">
                         <div className="flex left ">
-                            <div className="pt-13 pb-13 fs-14 cn-9">1/4</div>
+                            <div className="pt-8 pb-13 fs-14 cn-9">1/4</div>
                             <div className="mr-18 ml-17 ">
                                 <div className="no-line" />
-                                <img src={Check} />
+                                {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13">
@@ -1365,24 +1395,33 @@ export const DeploymentModal: React.FC<{
                             </span>
                         </div>
                         <div className="flex left ">
-                            <div className="pt-13 pb-13 fs-14 cn-9">2/4</div>
-                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="line" /></div>
+                            <div className="pt-8 pb-13 fs-14 cn-9">2/4</div>
+                            <div className="mr-18 ml-17"><div className="line" />
+                                {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Pull by argocd</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
                             </span>
                         </div>
                         <div className="flex left ">
-                            <div className="pt-13 pb-13 fs-14 cn-9">3/4</div>
-                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="line" /></div>
+                            <div className="pt-8 pb-13 fs-14 cn-9">3/4</div>
+                            <div className="mr-18 ml-17"><div className="line" />
+                                {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Config apply</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
                             </span>
                         </div>
                         <div className="flex left">
-                            <div className=" pt-13 pb-13 fs-14 cn-9">4/4</div>
-                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="no-line" /></div>
+                            <div className="pt-8 pb-13 fs-14 cn-9">4/4</div>
+                            <div className="mr-18 ml-17"><div className="line" />
+                                {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="no-line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Replicas updated</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
@@ -1395,6 +1434,7 @@ export const DeploymentModal: React.FC<{
         </VisibleModal>
     );
 };
+
 const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
     if (
