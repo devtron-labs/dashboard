@@ -1347,12 +1347,9 @@ table.pod__table td:last-child {
 .visible-modal__body.app-status__material-modal {
     .app-status-detai {
         background: white;
-        margin: 80px auto 120px auto;
-        max-width: 1200px;
-        min-width: 800px;
+        max-width: 760px;
         padding: 24px;
-        border-radius: 8px;
-        height: calc(100% - 200px);
+        height: 100%;
         min-height: 300px;
         display: grid;
         grid-template-rows: 45px auto 1fr;

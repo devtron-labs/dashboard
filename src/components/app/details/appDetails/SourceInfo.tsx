@@ -84,8 +84,8 @@ export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails =
                                     {status}
                                 </span>
                                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                                    <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                        Deployed
+                                    <div style={{ marginLeft: 'auto' }} className="flex fs-12 cn-9">
+                                        <span>Deployed</span>
                                         <span className="fw-6 ml-4 mr-4">
                                             {appDetails?.lastDeployedTime
                                                 ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()

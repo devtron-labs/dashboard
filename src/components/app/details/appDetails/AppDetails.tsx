@@ -1245,7 +1245,7 @@ export const ProgressStatus: React.FC<{
     }
 
     return (
-        <VisibleModal className="app-status__material-modal">
+        <VisibleModal className="app-status__material-modal flex right">
             <div className="app-status-detai">
                 <div className="title flex left">
                     App status detail
@@ -1260,10 +1260,12 @@ export const ProgressStatus: React.FC<{
                         <table>
                             <thead>
                                 <tr>
-                                    {['name', 'status', 'message'].map((n) => (
-                                        <th>{n}</th>
+                                    {['NAME', 'STATUS', 'MESSGAE'].map((n) => (
+                                        <th>{n}
+                                        </th>
                                     ))}
                                 </tr>
+                            {/* <div className="divider"/> */}
                             </thead>
                             <tbody>
                                 {nodes &&
