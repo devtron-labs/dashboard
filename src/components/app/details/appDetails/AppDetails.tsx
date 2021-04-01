@@ -53,6 +53,7 @@ import { ReactComponent as Loader } from '../../../../assets/icons/appstatus/pro
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
 import { ReactComponent as Failed } from '../../../../assets/appstatus/ic-appstatus-failed.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
+import Uncheck from '../../../../assets/img/ic-success@2x.png';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import Select, { components } from 'react-select';
@@ -1090,7 +1091,6 @@ const MaterialCard: React.FC<{
     appDetails: AppDetails;
     streamData: AppStreamData;
 }> = ({ Rollout, nodes, appDetails, streamData }) => {
-    const [deploymentStatus, toggleDeploymentStatus] = useState<boolean>(false);
     const status = appDetails.resourceTree.status;
     const lastDeployedBy = appDetails.lastDeployedBy;
     const lastDeployedTime = appDetails.lastDeployedTime;
@@ -1387,6 +1387,7 @@ export const DeploymentModal: React.FC<{
                                 {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13">
@@ -1399,7 +1400,9 @@ export const DeploymentModal: React.FC<{
                             <div className="mr-18 ml-17"><div className="line" />
                                 {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
-                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="line" /></div>
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                <div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Pull by argocd</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
@@ -1410,23 +1413,29 @@ export const DeploymentModal: React.FC<{
                             <div className="mr-18 ml-17"><div className="line" />
                                 {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
-                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="line" /></div>
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                <div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Config apply</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
                             </span>
                         </div>
-                        <div className="flex left">
+
+                        <div className="flex left ">
                             <div className="pt-8 pb-13 fs-14 cn-9">4/4</div>
                             <div className="mr-18 ml-17"><div className="line" />
                                 {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
-                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}<div className="no-line" /></div>
+                                {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
-                                <div className="fs-14 cn-9">Replicas updated</div>
+                                <div className="fs-14 cn-9">Config apply</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
                             </span>
                         </div>
+                       
                     </div>
                 </div>
 
