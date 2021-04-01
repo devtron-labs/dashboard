@@ -10,7 +10,7 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
-export function SourceInfo({ appDetails, setDetailed = null, environments, showCommitInfo = null, showHibernateModal = null }) {
+export function SourceInfo({ appDetails, setDetailed = null, deploymentDetails = null, environments, showCommitInfo = null, showHibernateModal = null }) {
     const status = appDetails?.resourceTree?.status || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
@@ -29,23 +29,7 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
     return (<>
         <div className="flex left w-100 pb-10 ">
             <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-            {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                    Deployed
-                    <span className="fw-6 ml-4 mr-4">
-                        {appDetails?.lastDeployedTime
-                            ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                            : ''}
-                    </span>
-                        by
-                    <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
-                    {showCommitInfo && (
-                        <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
-                            Details
-                        </Link>
-                    )}
-                </div>
-            )}
+
             <div style={{ marginLeft: 'auto' }} className="flex right">
                 {appDetails?.appStoreChartId && (
                     <>
@@ -86,10 +70,46 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                 )}
             </div>
         </div>
+        {console.log(appDetails)}
         <div className="flex">
-            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16" 
+            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16"
             >
                 <div className="cn-9 fw-6">Deployment</div>
+                {appDetails?.deploymentStatus && (
+                    <div style={{ maxWidth: '50%' }} onClick={deploymentDetails ? (e) => deploymentDetails(true) : () => { }} className="pointer flex left">
+                        {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
+                        <div className="flex left column" style={{ maxWidth: '100%' }}>
+                            <div>
+                                <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                    {status}
+                                </span>
+                                {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
+                                    <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                                        Deployed
+                                        <span className="fw-6 ml-4 mr-4">
+                                            {appDetails?.lastDeployedTime
+                                                ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                                : ''}
+                                        </span>
+                                         by
+                                        <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
+                                        {showCommitInfo && (
+                                            <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
+                                                Details
+                                            </Link>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+            </div>
+            <div
+                className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50"
+            >
+                <div className="cn-9 fw-6">App Status</div>
                 {appDetails?.resourceTree && (
                     <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
                         {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
@@ -106,28 +126,6 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                         </div>
                     </div>
                 )}
-
-            </div>
-            <div
-                className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50"
-                 >
-                    <div className="cn-9 fw-6">App Status</div>
-                    {appDetails?.resourceTree && (
-                        <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
-                            {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
-                            <div className="flex left column" style={{ maxWidth: '100%' }}>
-                                <div>
-                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                        {status}
-                                    </span>
-                                    <span
-                                        className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                    ></span>
-                                </div>
-                                {message && <span className="ellipsis-right w-100">{message}</span>}
-                            </div>
-                        </div>
-                    )}
             </div>
         </div>
     </>
