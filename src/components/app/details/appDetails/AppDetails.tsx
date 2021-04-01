@@ -51,7 +51,7 @@ import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-d
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import { ReactComponent as Loader } from '../../../../assets/icons/appstatus/progressing.svg';
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
-import { ReactComponent as Failed } from '../../../../assets/appstatus/ic-appstatus-failed.svg';
+import { ReactComponent as Failed } from '../../../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
 import Uncheck from '../../../../assets/img/ic-success@2x.png';
 import Tippy from '@tippyjs/react';
@@ -362,7 +362,7 @@ export const Details: React.FC<{
                 <DeploymentModal
                     key={params.appId + "-" + params.envId}
                     appDetailsAPI={fetchAppDetailsInTime}
-
+                    close={(e) => toggleDeploymentStatus(false)}
                 />)}
 
             {showScanDetailsModal ? <ScanDetailsModal
@@ -1344,8 +1344,10 @@ export const ProgressStatus: React.FC<{
 
 export const DeploymentModal: React.FC<{
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
+    close: (...args) => void;
 
-}> = ({ appDetailsAPI }) => {
+
+}> = ({ appDetailsAPI, close }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const appDetails = appDetailsResult?.result;
@@ -1373,7 +1375,7 @@ export const DeploymentModal: React.FC<{
                 <div className="pl-20 pr-20 pt-10 pb-10">
                     <div className="fs-20 fw-6 flex left">
                         Deployment status
-                    <div className="fa fa-close right" />
+                    <div className="fa fa-close " onClick={close}/>
                     </div>
                     <div className="fs-14 cn-7">Executing deployment: Blue-Green (Step 3/5)</div>
                 </div>
@@ -1387,12 +1389,18 @@ export const DeploymentModal: React.FC<{
                                 {status?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "in_progress" ? <Loader className="icon-dim-20" /> : ""}
                                 {status?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
-                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                {status?.status.toLowerCase() === "failed" ? <Failed className="icon-dim-20" /> : ""}
+                                {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") || status?.status.toLowerCase() === "failed" ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Push to git</div>
-                                <div className="cn-7" >Configuration pushed to git</div>
+                                <div className="cn-7" >
+                                {status?.status.toLowerCase() === "failed" ? "Failed to apply Configuration to git." : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? "Applying configuration to git." : ""}
+                                {status?.status.toLowerCase() === "success" ? "Configuration pushed to git." : ""}
+                                {!(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "failed") ? "Configuration will be pushed to git." : null}
+                                </div>
                             </span>
                         </div>
                         <div className="flex left ">
@@ -1405,7 +1413,11 @@ export const DeploymentModal: React.FC<{
                                 <div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Pull by argocd</div>
-                                <div className="cn-7" >Configuration pushed to git</div>
+                                <div className="cn-7" > {status?.status.toLowerCase() === "failed" ? "Failed to apply configuration pulled by argocd to be applied to kubernetes.." : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? "Applying configuration pulled by argocd to be applied to kubernetes.." : ""}
+                                {status?.status.toLowerCase() === "success" ? "Configuration pulled by argocd to be applied to kubernetes." : ""}
+                                {!(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "failed") ? "Configuration will be pulled by argocd to be applied to kubernetes." : null}
+                                </div>
                             </span>
                         </div>
                         <div className="flex left ">
@@ -1418,7 +1430,11 @@ export const DeploymentModal: React.FC<{
                                 <div className="line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Config apply</div>
-                                <div className="cn-7" >Configuration pushed to git</div>
+                                <div className="cn-7" > {status?.status.toLowerCase() === "failed" ? "Failed to apply Configuration to kubernetes." : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? "Applying configuration to kubernetes." : ""}
+                                {status?.status.toLowerCase() === "success" ? "Configuration pushed to kubernetes" : ""}
+                                {!(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "failed") ? "Configuration will be pushed to kubernetes." : null}
+                                </div>
                             </span>
                         </div>
 
@@ -1431,8 +1447,12 @@ export const DeploymentModal: React.FC<{
                                 {(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
-                                <div className="fs-14 cn-9">Config apply</div>
-                                <div className="cn-7" >Configuration pushed to git</div>
+                                <div className="fs-14 cn-9">Finish rollout</div>
+                                <div className="cn-7" > {status?.status.toLowerCase() === "failed" ? "Failed to apply Configuration to git." : ""}
+                                {status?.status.toLowerCase() === "in_progress" ? "Applying configuration to git." : ""}
+                                {status?.status.toLowerCase() === "success" ? "Configuration pushed to git." : ""}
+                                {!(status?.status.toLowerCase() === "success" || status?.status.toLowerCase() === "in_progress" || status?.status.toLowerCase() === "failed") ? "Old replicas will be terminated." : null}
+                                </div>
                             </span>
                         </div>
                        
