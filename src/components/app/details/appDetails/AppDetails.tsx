@@ -65,6 +65,9 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+import Check from '../../../../assets/icons/ic-outline-check.svg';
+
+
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
@@ -1349,11 +1352,39 @@ export const DeploymentModal: React.FC<{
                 <div className="divider"></div>
                 <div>
                     <div className="ml-24 mr-24 mt-10">
-                        <div className="flex left">
-                            <div>1/6</div>
-                            <figure className="app-summary__icon mr-8 icon-dim-20"></figure>
-                            <span>
+                        <div className="flex left ">
+                            <div className="pt-13 pb-13 fs-14 cn-9">1/4</div>
+                            <div className="mr-18 ml-17 ">
+                                <div className="no-line" />
+                                <img src={Check} />
+                                <div className="line" />
+                            </div>
+                            <span className="pt-13 pb-13">
                                 <div className="fs-14 cn-9">Push to git</div>
+                                <div className="cn-7" >Configuration pushed to git</div>
+                            </span>
+                        </div>
+                        <div className="flex left ">
+                            <div className="pt-13 pb-13 fs-14 cn-9">2/4</div>
+                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="line" /></div>
+                            <span className="pt-13 pb-13">
+                                <div className="fs-14 cn-9">Pull by argocd</div>
+                                <div className="cn-7" >Configuration pushed to git</div>
+                            </span>
+                        </div>
+                        <div className="flex left ">
+                            <div className="pt-13 pb-13 fs-14 cn-9">3/4</div>
+                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="line" /></div>
+                            <span className="pt-13 pb-13">
+                                <div className="fs-14 cn-9">Config apply</div>
+                                <div className="cn-7" >Configuration pushed to git</div>
+                            </span>
+                        </div>
+                        <div className="flex left">
+                            <div className=" pt-13 pb-13 fs-14 cn-9">4/4</div>
+                            <div className="mr-18 ml-17"><div className="line" /><img src={Check} /><div className="no-line" /></div>
+                            <span className="pt-13 pb-13">
+                                <div className="fs-14 cn-9">Replicas updated</div>
                                 <div className="cn-7" >Configuration pushed to git</div>
                             </span>
                         </div>
