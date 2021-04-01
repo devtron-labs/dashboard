@@ -26,12 +26,8 @@ export function SourceInfo({ appDetails, setDetailed=null, environments, showCom
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message;
     }
-    return (
-        <div
-            className="flex left w-100 column bcn-0 pt-16 pb-16 br-8 w-100"
-            style={{ border: '1px solid var(--N200)' }}
-        >
-            <div className="flex left w-100 pl-20 pr-20 pb-10">
+    return (<>
+        <div className="flex left w-100 pl-20 pr-20 pb-10 ">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
                     <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
@@ -51,7 +47,12 @@ export function SourceInfo({ appDetails, setDetailed=null, environments, showCom
                     </div>
                 )}
             </div>
-            <div className="flex left w-100 pt-16 pl-20 pr-20" style={{ borderTop: '1px solid var(--N200)' }}>
+        <div
+            className="flex left w-100 column bcn-0 pt-16 pb-16 br-8 w-100"
+            style={{ border: '1px solid var(--N200)' }}
+        >
+            
+            <div className="flex left w-100 pl-20 pr-20 w-50" >
                 {appDetails?.resourceTree && (
                     <div style={{maxWidth:'50%'}} onClick={setDetailed ? (e) => setDetailed(true) : () => {}} className="pointer flex left">
                         <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure>
@@ -109,5 +110,6 @@ export function SourceInfo({ appDetails, setDetailed=null, environments, showCom
                 </div>
             </div>
         </div>
+        </>
     );
 }
