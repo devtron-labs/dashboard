@@ -1269,22 +1269,23 @@ export const ProgressStatus: React.FC<{
     return (
         <VisibleModal className="app-status__material-modal flex right">
             <div className="app-status-detai">
-                <div className="title flex left">
-                    App status detail
-                    <div className="fa fa-close" onClick={close} />
+                <div className="title flex left pl-20 pr-20 pt-12 flex-align-center flex-justify">
+                    <div>App status detail</div>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
+                        <Close className="icon-dim-24" />
+                    </button>
                 </div>
-                <div className="flex left">
+                <div className="flex left pl-20 pr-20  pb-12">
                     <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
                     {message && <div>{message}</div>}
                 </div>
                 {status.toLowerCase() !== 'missing' && (
                     <div>
-                        <table>
-                            <thead>
-                                <tr>
+                        <table style={{ borderCollapse: "collapse" }}>
+                            <thead >
+                                <tr >
                                     {['NAME', 'STATUS', 'MESSGAE'].map((n) => (
-                                        <th>{n}
-                                        </th>
+                                        <th style={{ width: "40%", borderBottom: "1px solid #d0d4d9" }} className="cnn-7 pl-15">{n}</th>
                                     ))}
                                 </tr>
                                 {/* <div className="divider"/> */}
@@ -1296,15 +1297,15 @@ export const ProgressStatus: React.FC<{
                                         .map((kind) =>
                                             Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
                                                 <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                                    <td valign="top">
+                                                    <td valign="top" className="pt-15 pl-15">
                                                         <div className="kind-name">
                                                             <div>{nodeDetails.kind}/</div>
                                                             <div className="ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
-                                                    <td
+                                                    <td 
                                                         valign="top"
-                                                        className={`app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
+                                                        className={`pt-15 pl-15 app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
                                                             ? nodeDetails.health.status.toLowerCase()
                                                             : ''
                                                             }`}
@@ -1315,7 +1316,7 @@ export const ProgressStatus: React.FC<{
                                                                 ? nodeDetails.health.status
                                                                 : ''}
                                                     </td>
-                                                    <td valign="top">
+                                                    <td valign="top" className="pt-15 pl-15">
                                                         <div
                                                             style={{
                                                                 display: 'grid',
@@ -1454,7 +1455,7 @@ export const DeploymentModal: React.FC<{
                         </div>
 
                         <div className="flex left ">
-                            {!(k8sDeploy?.status.toLowerCase() === "in_progress") ? <div className="pt-8 pb-13 fs-14 cn-9">4/4</div> :  <div className="pt-8 pb-13 fs-14 cn-9 fw-6">4/4</div>}
+                            {!(k8sDeploy?.status.toLowerCase() === "in_progress") ? <div className="pt-8 pb-13 fs-14 cn-9">4/4</div> : <div className="pt-8 pb-13 fs-14 cn-9 fw-6">4/4</div>}
                             <div className="mr-18 ml-17"><div className="line" />
                                 {k8sDeploy?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {k8sDeploy?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
