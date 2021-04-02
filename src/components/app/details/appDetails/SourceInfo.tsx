@@ -11,7 +11,7 @@ import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
 export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
-    const status = appDetails?.resourceTree?.status || ""
+    const status = appDetails?.lastDeploymentStatus || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
     let message = null;
@@ -27,8 +27,8 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
         message = Rollout[0].health.message;
     }
 
-    return (<>
-        <div className="flex left w-100 pb-10 ">
+    return (<div >
+        <div className="flex left w-100 pb-10 pl-24 pr-24" >
             <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
 
             <div style={{ marginLeft: 'auto' }} className="flex right">
@@ -71,10 +71,9 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                 )}
             </div>
         </div>
-
-        <div className="flex">
-            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16"
-            >
+        <div className="pl-8 pr-8">
+        <div className="flex w-100" style={{display: "table", borderSpacing: "16px"}}>
+            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16" style={{display: "table-cell"}}>
                 <div className="cn-9 fw-6">Deployment Status</div>
                 {appDetails?.deploymentStatus && (
                     <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="pointer flex left">
@@ -107,9 +106,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                 )}
 
             </div>
-            <div
-                className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50"
-            >
+            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50" style={{display: "table-cell"}}>
                 <div className="cn-9 fw-6">Application Status</div>
                 {appDetails?.resourceTree && (
                     <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
@@ -129,6 +126,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                 )}
             </div>
         </div>
-    </>
+        </div>
+    </div>
     );
 }

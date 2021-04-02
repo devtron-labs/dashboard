@@ -318,7 +318,7 @@ export const Details: React.FC<{
                 />}
                 <AppSyncDetails streamData={streamData} />
             </div> */}
-            <div className="w-100 pt-16 pr-24 pb-20 pl-24">
+            <div className="w-100 pt-16 pb-20">
                 <SourceInfo
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
