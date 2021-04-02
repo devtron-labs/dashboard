@@ -1269,18 +1269,18 @@ export const ProgressStatus: React.FC<{
     return (
         <VisibleModal className="app-status__material-modal flex right">
             <div className="app-status-detai">
-                
-                    <div className="title flex pl-20 pr-20 pt-12 flex-align-center flex-justify" >
-                        <div>App status detail</div>
-                        <button type="button" className="transparent flex icon-dim-24" onClick={close}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    <div className="flex left pl-20 pr-20  pb-12" style={{ borderBottom: "1px solid #d0d4d9" }}>
-                        <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
-                        {message && <div>{message}</div>}
-                    </div>
-            
+
+                <div className="title flex pl-20 pr-20 pt-12 flex-align-center flex-justify" >
+                    <div>App status detail</div>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                <div className="flex left pl-20 pr-20  pb-12" style={{ borderBottom: "1px solid #d0d4d9" }}>
+                    <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
+                    {message && <div>{message}</div>}
+                </div>
+
                 {status.toLowerCase() !== 'missing' && (
                     <div>
                         <table className="mt-20" style={{ borderCollapse: "collapse" }}>
@@ -1383,7 +1383,7 @@ export const DeploymentModal: React.FC<{
                         <div className="fs-20 fw-6 ">
                             <div>Deployment status</div>
                         </div>
-                        <div className="fs-14 cn-7">Executing deployment: Blue-Green (Step 3/5)</div>
+                        {/* <div className="fs-14 cn-7">Executing deployment: Blue-Green (Step 3/5)</div> */}
                     </div>
                     <button type="button" className="transparent flex icon-dim-24" onClick={close}>
                         <Close className="icon-dim-24" />
@@ -1396,46 +1396,46 @@ export const DeploymentModal: React.FC<{
                             <div className="pt-8 pb-13 fs-14 cn-9">1/4</div>
                             <div className="mr-18 ml-17 ">
                                 <div className="no-line" />
-                                {gitPullStep?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
-                                {gitPullStep?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
-                                {gitPullStep?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
-                                {gitPullStep?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
-                                {(gitPullStep?.status.toLowerCase() === "success" || gitPullStep?.status.toLowerCase() === "in_progress" || gitPullStep?.status.toLowerCase() === "waiting") || gitPullStep?.status.toLowerCase() === "error" ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                {gitPushStep?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {gitPushStep?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
+                                {gitPushStep?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {gitPushStep?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
+                                {(gitPushStep?.status.toLowerCase() === "success" || gitPushStep?.status.toLowerCase() === "in_progress" || gitPushStep?.status.toLowerCase() === "waiting") || gitPushStep?.status.toLowerCase() === "error" ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13" >
-                                {(gitPullStep?.status.toLowerCase() === "in_progress") ? <div className="fs-14 fw-6 cn-9">Push to git</div> : "" }
-                                {(gitPullStep?.status.toLowerCase() === "waiting") ? <div className="fs-14 cn-9" style={{ opacity: 0.5 }}>Push to git</div> : "" }
-                                {(gitPullStep?.status.toLowerCase() === "error") ? <div className="fs-14 ch-3">Push to git</div> : "" }
-                                {!(gitPullStep?.status.toLowerCase() === "in_progress" || gitPullStep?.status.toLowerCase() === "waiting" || gitPullStep?.status.toLowerCase() === "error") ? <div className="fs-14 fw-6 cn-9">Push to git</div> : "" }
-
+                                <div className={(gitPushStep?.status.toLowerCase() === "error") ? "fs-14 cr-5" : gitPushStep?.status.toLowerCase() === "in_progress" ? "fs-14 cn-9 fw-6" : (gitPushStep?.status.toLowerCase() === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    Push to git
+                                    </div>
                                 <div className="cn-7">
-                                    {gitPullStep?.status.toLowerCase() === "error" ? <div style={{ opacity: 0.5 }}>Failed to apply Configuration to git.</div> : ""}
-                                    {gitPullStep?.status.toLowerCase() === "in_progress" ? <div >Applying configuration to git.</div> : ""}
-                                    {gitPullStep?.status.toLowerCase() === "success" ? <div >Configuration pushed to git.</div> : ""}
-                                    {gitPullStep?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : ""}
-                                    {!(gitPullStep?.status.toLowerCase() === "success" || gitPullStep?.status.toLowerCase() === "in_progress" || gitPullStep?.status.toLowerCase() === "error" || gitPullStep?.status.toLowerCase() === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : null}
+                                    {gitPushStep?.status.toLowerCase() === "error" ? <div >Failed to apply Configuration to git.</div> : ""}
+                                    {gitPushStep?.status.toLowerCase() === "in_progress" ? <div >Applying configuration to git.</div> : ""}
+                                    {gitPushStep?.status.toLowerCase() === "success" ? <div >Configuration pushed to git.</div> : ""}
+                                    {gitPushStep?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : ""}
+                                    {!(gitPushStep?.status.toLowerCase() === "success" || gitPushStep?.status.toLowerCase() === "in_progress" || gitPushStep?.status.toLowerCase() === "error" || gitPushStep?.status.toLowerCase() === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : null}
                                 </div>
                             </span>
                         </div>
                         <div className="flex left ">
                             <div className="pt-8 pb-13 fs-14 cn-9">2/4</div>
                             <div className="mr-18 ml-17"><div className="line" />
-                                {gitPushStep?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
-                                {gitPushStep?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
-                                {gitPushStep?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
-                                {gitPushStep?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
-                                {(gitPushStep?.status.toLowerCase() === "success" || gitPushStep?.status.toLowerCase() === "in_progress" || gitPushStep?.status.toLowerCase() === "waiting") ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                {gitPullStep?.status.toLowerCase() === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
+                                {gitPullStep?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
+                                {gitPullStep?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
+                                {gitPullStep?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
+                                {(gitPullStep?.status.toLowerCase() === "success" || gitPullStep?.status.toLowerCase() === "in_progress" || gitPullStep?.status.toLowerCase() === "waiting" || gitPullStep?.status.toLowerCase() === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13" >
-                                {!(gitPushStep?.status.toLowerCase() === "in_progress") ? <div className="fs-14 cn-9">Pull by argocd</div> : <div className="fs-14 cn-9 fw-6" style={{ opacity: 1 }}>Pull by argocd</div>}
+                                <div className={(gitPullStep?.status.toLowerCase() === "error") ? "fs-14 cr-5" : (gitPullStep?.status.toLowerCase() === "in_progress") ? "fs-14 cn-9 fw-6" : (gitPullStep?.status.toLowerCase() === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    Pull by argocd
+                                </div>
                                 <div className="cn-7" >
-                                    {gitPushStep?.status.toLowerCase() === "error" ? <div style={{ opacity: 0.5 }}>Failed to apply configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPushStep?.status.toLowerCase() === "in_progress" ? <div >Applying configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPushStep?.status.toLowerCase() === "success" ? <div >Configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPushStep?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {!(gitPushStep?.status.toLowerCase() === "success" || gitPushStep?.status.toLowerCase() === "in_progress" || gitPushStep?.status.toLowerCase() === "error" || gitPushStep?.status.toLowerCase() === "waiting") ? "Configuration will be pulled by argocd to be applied to kubernetes." : null}
+                                    {gitPullStep?.status.toLowerCase() === "error" ? <div >Failed to apply configuration pulled by argocd to be applied to kubernetes.</div> : ""}
+                                    {gitPullStep?.status.toLowerCase() === "in_progress" ? <div >Applying configuration pulled by argocd to be applied to kubernetes.</div> : ""}
+                                    {gitPullStep?.status.toLowerCase() === "success" ? <div >Configuration pulled by argocd to be applied to kubernetes.</div> : ""}
+                                    {gitPullStep?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pulled by argocd to be applied to kubernetes.</div> : ""}
+                                    {!(gitPullStep?.status.toLowerCase() === "success" || gitPullStep?.status.toLowerCase() === "in_progress" || gitPullStep?.status.toLowerCase() === "error" || gitPullStep?.status.toLowerCase() === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pulled by argocd to be applied to kubernetes.</div> : null}
                                 </div>
                             </span>
                         </div>
@@ -1451,9 +1451,11 @@ export const DeploymentModal: React.FC<{
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13">
-                                {!(configApplyStep?.status.toLowerCase() === "in_progress") ? <div className="fs-14 cn-9">Config apply</div> : <div className="fs-14 cn-9 fw-6">Config apply</div>}
+                                <div className={(configApplyStep?.status.toLowerCase() === "error") ? "fs-14 cr-5" : (configApplyStep?.status.toLowerCase() === "in_progress") ? "fs-14 cn-9 fw-6" : (configApplyStep?.status.toLowerCase() === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    Config apply
+                                </div>
                                 <div className="cn-7" >
-                                    {configApplyStep?.status.toLowerCase() === "error" ? <div style={{ opacity: 0.5 }}>Failed to apply configuration to kubernetes.</div> : ""}
+                                    {configApplyStep?.status.toLowerCase() === "error" ? <div >Failed to apply configuration to kubernetes.</div> : ""}
                                     {configApplyStep?.status.toLowerCase() === "in_progress" ? <div>Applying configuration to kubernetes.</div> : ""}
                                     {configApplyStep?.status.toLowerCase() === "success" ? <div>Configuration pushed to kubernetes.</div> : ""}
                                     {configApplyStep?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to kubernetes.</div> : ""}
@@ -1472,12 +1474,14 @@ export const DeploymentModal: React.FC<{
                                 {(k8sDeploy?.status.toLowerCase() === "success" || k8sDeploy?.status.toLowerCase() === "in_progress" || k8sDeploy?.status.toLowerCase() === "waiting" || k8sDeploy?.status.toLowerCase() === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
-                                <div className="fs-14 cn-9">Finish rollout</div>
+                                <div className={(k8sDeploy?.status.toLowerCase() === "error") ? "fs-14 cr-5" : (k8sDeploy?.status.toLowerCase() === "in_progress") ? "fs-14 cn-9 fw-6" : (k8sDeploy?.status.toLowerCase() === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    Finish rollout
+                                </div>
                                 <div className="cn-7" >
-                                    {k8sDeploy?.status.toLowerCase() === "error" ? <div style={{ opacity: 0.5 }}>Failed to apply Configuration to git.</div> : ""}
-                                    {k8sDeploy?.status.toLowerCase() === "in_progress" ? <div>Applying configuration to git.</div> : ""}
-                                    {k8sDeploy?.status.toLowerCase() === "success" ? <div>Configuration pushed to git.</div> : ""}
-                                    {k8sDeploy?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : ""}
+                                    {k8sDeploy?.status.toLowerCase() === "error" ? <div >Old replicas will be terminated.</div> : ""}
+                                    {k8sDeploy?.status.toLowerCase() === "in_progress" ? <div>Applying configuration to Old replicas.</div> : ""}
+                                    {k8sDeploy?.status.toLowerCase() === "success" ? <div>Old replicas terminated.</div> : ""}
+                                    {k8sDeploy?.status.toLowerCase() === "waiting" ? <div style={{ opacity: 0.5 }}>Old replicas will be terminated.</div> : ""}
                                     {!(k8sDeploy?.status.toLowerCase() === "success" || k8sDeploy?.status.toLowerCase() === "in_progress" || k8sDeploy?.status.toLowerCase() === "error" || k8sDeploy?.status.toLowerCase() === "waiting") ? <div>Old replicas will be terminated.</div> : null}
                                 </div>
                             </span>

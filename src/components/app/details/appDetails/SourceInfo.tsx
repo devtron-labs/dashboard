@@ -75,7 +75,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
         <div className="flex">
             <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16"
             >
-                <div className="cn-9 fw-6">Deployment</div>
+                <div className="cn-9 fw-6">Deployment Status</div>
                 {appDetails?.deploymentStatus && (
                     <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="pointer flex left">
                         {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
@@ -110,7 +110,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
             <div
                 className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50"
             >
-                <div className="cn-9 fw-6">App Status</div>
+                <div className="cn-9 fw-6">Application Status</div>
                 {appDetails?.resourceTree && (
                     <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
                         {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
