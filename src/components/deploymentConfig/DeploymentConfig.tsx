@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getChartReferences, toggleAppMetrics as updateAppMetrics } from './service';
+import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
+import { getChartReferences} from '../../services/service';
 import { Toggle, Progressing, ConfirmationDialog, useJsonYaml } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
-import './deploymentConfig.scss';
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
-import {  DOCUMENTATION } from '../../config';
+import { DOCUMENTATION } from '../../config';
+import './deploymentConfig.scss';
 
 export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
@@ -66,12 +67,12 @@ function DeploymentConfigForm({ respondOnSuccess }) {
         // initialise()
     }, [selectedChart])
 
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
             setAppMetricsLoading(true)
-            const { result } = await updateAppMetrics(+appId, {
+            await updateAppMetrics(+appId, {
                 isAppMetricsEnabled: appMetricsEnabled
             })
             toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null })
@@ -199,8 +200,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                         value={template ? JSON.stringify(template, null, 2) : ""}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
-                        loading={chartConfigLoading}
-                    >
+                        loading={chartConfigLoading}>
                         <CodeEditor.Header>
                             <CodeEditor.LanguageChanger />
                             <CodeEditor.ValidationError />
@@ -221,7 +221,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled && 
+            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
                     minimumSupportedVersion={"3.7.0"}
