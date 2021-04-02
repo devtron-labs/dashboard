@@ -1269,15 +1269,17 @@ export const ProgressStatus: React.FC<{
     return (
         <VisibleModal className="app-status__material-modal flex right">
             <div className="app-status-detai">
-                <div className="title flex left pl-20 pr-20 pt-12 flex-align-center flex-justify">
-                    <div>App status detail</div>
-                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-                <div className="flex left pl-20 pr-20  pb-12">
-                    <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
-                    {message && <div>{message}</div>}
+                <div style={{ borderBottom: "1px solid #d0d4d9" }}>
+                    <div className="title flex pl-20 pr-20 pt-12 flex-align-center flex-justify" >
+                        <div>App status detail</div>
+                        <button type="button" className="transparent flex icon-dim-24" onClick={close}>
+                            <Close className="icon-dim-24" />
+                        </button>
+                    </div>
+                    <div className="flex left pl-20 pr-20  pb-12">
+                        <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
+                        {message && <div>{message}</div>}
+                    </div>
                 </div>
                 {status.toLowerCase() !== 'missing' && (
                     <div>
@@ -1285,7 +1287,7 @@ export const ProgressStatus: React.FC<{
                             <thead >
                                 <tr >
                                     {['NAME', 'STATUS', 'MESSGAE'].map((n) => (
-                                        <th style={{ width: "40%", borderBottom: "1px solid #d0d4d9" }} className="cnn-7 pl-15">{n}</th>
+                                        <th style={{ width: "40%", borderBottom: "1px solid #edf1f5" }} className="cnn-7 pl-15">{n}</th>
                                     ))}
                                 </tr>
                                 {/* <div className="divider"/> */}
@@ -1299,11 +1301,11 @@ export const ProgressStatus: React.FC<{
                                                 <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
                                                     <td valign="top" className="pt-15 pl-15">
                                                         <div className="kind-name">
-                                                            <div>{nodeDetails.kind}/</div>
+                                                            <div className="fw-6 cn-9"> {nodeDetails.kind}/</div>
                                                             <div className="ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
-                                                    <td 
+                                                    <td
                                                         valign="top"
                                                         className={`pt-15 pl-15 app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
                                                             ? nodeDetails.health.status.toLowerCase()
