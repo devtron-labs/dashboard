@@ -81,6 +81,12 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
     handleInputChange = (event, key): void => {
         const value = event.target.value;
         let errors = [];
+        switch (key) {
+            case 'cluster_name': errors = this.handleNameValdation(value); break;
+            case 'bearer_token': break;
+            default: break;
+        }
+
         this.setState({
             ...this.state,
             form: {
@@ -93,6 +99,23 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
             }
         });
     };
+
+    handleNameValdation(name: string): any[] {
+        if (!name.length) return [{ name: "Cluster name cannot be empty" }];
+
+        let errors = [];
+        let allLowercaseAlphanumeric = new RegExp(/[a-z0-9_-]+/); 
+        let startAndEndsWithLowercase = new RegExp(/^[a-z]$/);
+        if (!allLowercaseAlphanumeric.test(name)) {
+            errors.push({ name: "Must start with lowercase alphabet only" })
+        }
+        if (!startAndEndsWithLowercase.test(name)) {
+            errors.push({ name: "Must start and end with lowercase alphabet only" })
+        }
+
+
+        return errors;
+    }
 
     handleSubmit(event): void {
         event.preventDefault();
@@ -220,7 +243,7 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
                     onChange={(e) => this.handleInputChange(e, 'tlsClientCert')} />
             </div>
             <div className="form__buttons">
-                <button className="cta cancel" type="button" onClick={(e) => this.props.toggleEditMode(true)}>
+                <button className="cta cancel" type="button" onClick={(e) => this.props.toggleEditMode(false)}>
                     Cancel
                 </button>
                 <button type="submit" className="cta">{this.state.saveLoading ? <Progressing /> : 'Save cluster'}</button>
