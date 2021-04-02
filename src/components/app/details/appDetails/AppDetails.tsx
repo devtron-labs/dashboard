@@ -1383,7 +1383,6 @@ export const DeploymentModal: React.FC<{
                         <div className="fs-20 fw-6 ">
                             <div>Deployment status</div>
                         </div>
-                        {/* <div className="fs-14 cn-7">Executing deployment: Blue-Green (Step 3/5)</div> */}
                     </div>
                     <button type="button" className="transparent flex icon-dim-24" onClick={close}>
                         <Close className="icon-dim-24" />
@@ -1447,6 +1446,7 @@ export const DeploymentModal: React.FC<{
                                 {configApplyStep?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
                                 {configApplyStep?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
                                 {configApplyStep?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
+                                {/* {gitPushStep?.status.toLowerCase() === "error" || gitPullStep?.status.toLowerCase() === "error" ? <img src={Uncheck} className="icon-dim-20" /> : null } */}
                                 {(configApplyStep?.status.toLowerCase() === "success" || configApplyStep?.status.toLowerCase() === "in_progress" || configApplyStep?.status.toLowerCase() === "waiting" || configApplyStep?.status.toLowerCase() === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
@@ -1471,6 +1471,7 @@ export const DeploymentModal: React.FC<{
                                 {k8sDeploy?.status.toLowerCase() === "in_progress" ? <Progressing /> : ""}
                                 {k8sDeploy?.status.toLowerCase() === "success" ? <Success className="icon-dim-20" /> : ""}
                                 {k8sDeploy?.status.toLowerCase() === "error" ? <Failed className="icon-dim-20" /> : ""}
+
                                 {(k8sDeploy?.status.toLowerCase() === "success" || k8sDeploy?.status.toLowerCase() === "in_progress" || k8sDeploy?.status.toLowerCase() === "waiting" || k8sDeploy?.status.toLowerCase() === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
