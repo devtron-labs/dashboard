@@ -71,6 +71,7 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+import { DeploymentModal }from './DeploymentModal';
 
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
@@ -360,11 +361,18 @@ export const Details: React.FC<{
             )}
 
             {deploymentStatus && (
+                // <DeploymentModal
+                //     key={params.appId + "-" + params.envId}
+                //     appDetailsAPI={fetchAppDetailsInTime}
+                //     close={(e) => toggleDeploymentStatus(false)}
+                // />)
                 <DeploymentModal
-                    key={params.appId + "-" + params.envId}
-                    appDetailsAPI={fetchAppDetailsInTime}
-                    close={(e) => toggleDeploymentStatus(false)}
-                />)}
+                deploymentStatus= { appDetails?.deploymentStatus}
+                 close={(e) => toggleDeploymentStatus(false)}
+                 lastDeploymentStatus = {appDetails?.lastDeploymentStatus}
+
+                />)
+            }
 
             {showScanDetailsModal ? <ScanDetailsModal
                 showAppInfo={false}
@@ -1346,7 +1354,7 @@ export const ProgressStatus: React.FC<{
     );
 };
 
-export const DeploymentModal: React.FC<{
+export const DeploymentModals: React.FC<{
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>;
     close: (...args) => void;
 
