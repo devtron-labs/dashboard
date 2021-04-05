@@ -200,8 +200,8 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
     }
 
     render() {
-        return <form onSubmit={this.handleSubmit} className="cluster-form">
-            <h2 className="form__title">{this.state.form.id ? "Edit Cluster" : "Add Cluster"}</h2>
+        return <form onSubmit={this.handleSubmit} className="pl-24 pr-24 pb-24 pt-0 cluster-form">
+            <h2 className="fs-16 fw-6 cn-9 mt-22 mb-22 lh-1-25">{this.state.form.id ? "Edit Cluster" : "Add Cluster"}</h2>
             <div className="form__row">
                 <CustomInput
                     name="cluster_name"

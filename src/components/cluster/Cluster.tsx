@@ -1,8 +1,7 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, VisibleModal, sortCallback } from '../common';
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
-import { getClusterList, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import { showError, Pencil, Progressing, sortCallback } from '../common';
+import { List } from '../globalConfigurations/GlobalConfiguration'
+import { getClusterList, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg';
