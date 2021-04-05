@@ -28,7 +28,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
     }
 
     return (<div >
-        <div className="flex left w-100 pb-10 pl-24 pr-24" >
+        <div className="flex left w-100 pl-24 pr-24" >
             <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
 
             <div style={{ marginLeft: 'auto' }} className="flex right">
@@ -72,63 +72,65 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
             </div>
         </div>
         <div className="pl-8 pr-8">
-        <div className="flex w-100" style={{display: "table", borderSpacing: "16px"}}>
-            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16" style={{display: "table-cell"}}>
-                <div className="cn-9 fw-6">Deployment Status</div>
-                {appDetails?.deploymentStatus && (
-                    <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="pointer flex left">
-                        {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
-                        <div className="flex left column" style={{ maxWidth: '100%' }}>
-                            <div>
-                                <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                    {status}
-                                </span>
-                                <span
-                                    className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                ></span>
-                                {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                                    <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
-                                        <span>Deployed</span>
-                                        <div className="fw-6 ml-4 mr-4">
-                                            {appDetails?.lastDeployedTime
-                                                ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                                : ''}
-                                        </div>
-                                         by
-                                        <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
-                                        {showCommitInfo && (
-                                            <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
-                                                Details
-                                            </Link>
-                                        )}
+            <div className="flex w-100" style={{ display: "table", borderSpacing: "16px" }}>
+                <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16 en-1" style={{ display: "table-cell" }}>
+                    <div className="cn-9 fw-6">Deployment Status</div>
+                    {appDetails?.deploymentStatus && (
+                        <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="flex left">
+                            {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
+                            <div className="flex left column" style={{ maxWidth: '100%' }}>
+                                <div >
+                                    <div className="pointer">
+                                        <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                            {status}
+                                        </span>
+                                        <span
+                                            className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
+                                        ></span>
                                     </div>
-                                )}
+                                    {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
+                                        <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
+                                            <span>Deployed</span>
+                                            <div className="fw-6 ml-4 mr-4">
+                                                {appDetails?.lastDeployedTime
+                                                    ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                                    : ''}
+                                            </div>
+                                         by
+                                            <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
+                                            {showCommitInfo && (
+                                                <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
+                                                    Details
+                                                </Link>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-            </div>
-            <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50" style={{display: "table-cell"}}>
-                <div className="cn-9 fw-6">Application Status</div>
-                {appDetails?.resourceTree && (
-                    <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
-                        {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
-                        <div className="flex left column" style={{ maxWidth: '100%' }}>
-                            <div>
-                                <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                    {status}
-                                </span>
-                                <span
-                                    className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                ></span>
+                </div>
+                <div className="en-1 flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50" style={{ display: "table-cell" }}>
+                    <div className="cn-9 fw-6">Application Status</div>
+                    {appDetails?.resourceTree && (
+                        <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="flex left">
+                            {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
+                            <div className="flex left column" style={{ maxWidth: '100%' }}>
+                                <div className="pointer">
+                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                        {status}
+                                    </span>
+                                    <span
+                                        className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
+                                    ></span>
+                                </div>
+                                {message && <span className="ellipsis-right w-100">{message}</span>}
                             </div>
-                            {message && <span className="ellipsis-right w-100">{message}</span>}
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
         </div>
     </div>
     );

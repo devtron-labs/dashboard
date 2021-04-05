@@ -318,7 +318,7 @@ export const Details: React.FC<{
                 />}
                 <AppSyncDetails streamData={streamData} />
             </div> */}
-            <div className="w-100 pt-16 pb-20">
+            <div className="w-100 pt-16">
                 <SourceInfo
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
@@ -604,7 +604,7 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", marginTop: "-8px", maxHeight: "32px"}),
                         singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
                     }}
                     isDisabled={disabled}
@@ -1359,8 +1359,12 @@ export const DeploymentModal: React.FC<{
     let gitPullStep = appDetails?.deploymentStatus?.gitPullStep?.status.toLowerCase()
     let configApplyStep = appDetails?.deploymentStatus?.configApplyStep?.status.toLowerCase()
     let k8sDeploy = appDetails?.deploymentStatus?.k8sDeploy?.status.toLowerCase()
+    const status = appDetails?.lastDeploymentStatus || ""
     let message= {
-        error: "Error"
+        status:{ 
+            error: "Error"
+        },
+        description:"Push to git"
     }
     useEffect(() => {
         callAppDetailsAPI();
@@ -1385,6 +1389,9 @@ export const DeploymentModal: React.FC<{
                         <div className="fs-20 fw-6 ">
                             <div>Deployment status</div>
                         </div>
+                      <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                    {status}
+                                </span>
                     </div>
                     <button type="button" className="transparent flex icon-dim-24" onClick={close}>
                         <Close className="icon-dim-24" />
@@ -1404,9 +1411,8 @@ export const DeploymentModal: React.FC<{
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13" >
-                                <div className={(gitPushStep === "error") ? "fs-14 cr-5" : gitPushStep === "in_progress" ? "fs-14 cn-9 fw-6" : (gitPushStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                    {gitPushStep === "error" ? `${message.error}: ` :  null}
-                                    Push to git
+                                <div className={(gitPushStep === "error") ? "fs-14 cr-5" : gitPushStep === "in_progress" ? "fs-14 cn-9 fw-`6" : (gitPushStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    {gitPushStep === "error" ? `${message.status.error}: ${message.description}` :  `${message.description}`}
                                     </div>
                                 <div className="cn-7">
                                     {gitPushStep === "error" ? <div >Error in pushing configuration to git.</div> : ""}
@@ -1425,7 +1431,7 @@ export const DeploymentModal: React.FC<{
                             </div>
                             <span className="pt-13 pb-13" >
                                 <div className={(gitPullStep === "error") ? "fs-14 cr-5" : (gitPullStep === "in_progress") ? "fs-14 cn-9 fw-6" : (gitPullStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                   {gitPullStep === "error" ? `${message.error}: ` :  null}
+                                   {gitPullStep === "error" ? `${message.status.error}: ` :  null}
                                     Pull from git
                                 </div>
                                 <div className="cn-7" >
@@ -1447,7 +1453,7 @@ export const DeploymentModal: React.FC<{
                             </div>
                             <span className="pt-13 pb-13">
                                 <div className={(configApplyStep === "error") ? "fs-14 cr-5" : (configApplyStep === "in_progress") ? "fs-14 cn-9 fw-6" : (configApplyStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                  {configApplyStep === "error" ? `${message.error}: ` :  null}
+                                  {configApplyStep === "error" ? `${message.status.error}: ` :  null}
                                     Apply configuration
                                 </div>
                                 <div className="cn-7" >
@@ -1468,7 +1474,7 @@ export const DeploymentModal: React.FC<{
                                 <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className={(k8sDeploy === "error") ? "fs-14 cr-5" : (k8sDeploy === "in_progress") ? "fs-14 cn-9 fw-6" : (k8sDeploy === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                   {k8sDeploy === "error" ? `${message.error}: ` :  null}
+                                   {k8sDeploy === "error" ? `${message.status.error}: ` :  null}
                                     Rollout
                                 </div>
                                 <div className="cn-7" >
