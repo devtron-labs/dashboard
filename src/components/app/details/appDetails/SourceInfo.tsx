@@ -79,7 +79,6 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                         <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="flex left">
                             {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
                             <div className="flex left column" style={{ maxWidth: '100%' }}>
-                                <div >
                                     <div className="pointer">
                                         <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
                                             {status}
@@ -96,17 +95,16 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                                                     ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
                                                     : ''}
                                             </div>
-                                         by
-                                            <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
+                                            <span className="mr-4">by</span>
+                                            <span className="fw-6 mr-8">{appDetails?.lastDeployedBy}</span>
                                             {showCommitInfo && (
-                                                <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
+                                                <Link className=" pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
                                                     Details
                                                 </Link>
                                             )}
                                         </div>
                                     )}
                                 </div>
-                            </div>
                         </div>
                     )}
 
@@ -133,5 +131,5 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
             </div>
         </div>
     </div>
-    );
+     );
 }
