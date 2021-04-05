@@ -83,7 +83,13 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
         let errors = [];
         switch (key) {
             case 'cluster_name': errors = this.handleNameValdation(value); break;
-            case 'bearer_token': break;
+            case 'server_url': errors = this.handleServerUrlValidation(value); break;
+            case 'bearer_token': errors = this.handleBearerTokenValidation(value); break;
+            case 'prometheus_url': errors = this.handlePrometheusUrlValidation(value); break;
+            case 'userName': errors = this.handleUsernameValidation(this.state.form.authType, value); break;
+            case 'password': errors = this.handlePasswordValidation(this.state.form.authType, value); break;
+            case 'tlsClientKey': errors = this.handleTlsClientKeyValidation(value); break;
+            case 'tlsClientCert': errors = this.handleTlsClientCertValidation(value); break;
             default: break;
         }
 
@@ -100,20 +106,56 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
         });
     };
 
-    handleNameValdation(name: string): any[] {
-        if (!name.length) return [{ name: "Cluster name cannot be empty" }];
+    handleNameValdation(name: string): { name: string }[] {
+        if (!name.length) return [{ name: "This is a required field" }];
+        if (name.length <= 5) {
+            return [{ name: "Atleast 5 characters required" }];
+        }
+        if (name.length >= 16) {
+            return [{ name: "More than 16 characters are not allowed" }];
+        }
 
         let errors = [];
-        let allLowercaseAlphanumeric = new RegExp(/[a-z0-9_-]+/); 
+        let allLowercaseAlphanumeric = new RegExp(/[a-z0-9._-]+/);
         let startAndEndsWithLowercase = new RegExp(/^[a-z]$/);
+
         if (!allLowercaseAlphanumeric.test(name)) {
-            errors.push({ name: "Must start with lowercase alphabet only" })
+            errors.push({ name: "Use only lowercase alphabet, '_', '-' and '.' " });
         }
         if (!startAndEndsWithLowercase.test(name)) {
-            errors.push({ name: "Must start and end with lowercase alphabet only" })
+            errors.push({ name: "Must start and end with lowercase alphabet only" });
         }
 
+        return errors;
+    }
 
+    handleServerUrlValidation(serverUrl: string): { name: string }[] {
+        if (!serverUrl.length) return [{ name: "This is a required field" }];
+    }
+
+    handleBearerTokenValidation(token: string): { name: string }[] {
+        if (!token.length) return [{ name: "This is a required field" }];
+    }
+
+    handlePrometheusUrlValidation(prometheusUrl: string): { name: string }[] {
+        if (!prometheusUrl.length) return [{ name: "This is a required field" }];
+    }
+
+    handleUsernameValidation(authType, username: string): { name: string }[] {
+        if (authType === AuthenticationType.BASIC && !username.length) return [{ name: "This is a required field" }];
+    }
+
+    handlePasswordValidation(authType, password: string): { name: string }[] {
+        if (authType === AuthenticationType.BASIC && !password.length) return [{ name: "This is a required field" }];
+    }
+
+    handleTlsClientKeyValidation(tlsClientKey: string): { name: string }[] {
+        let errors = [];
+        return errors;
+    }
+
+    handleTlsClientCertValidation(tlsClientCert: string): { name: string }[] {
+        let errors = [];
         return errors;
     }
 
@@ -159,11 +201,11 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
 
     render() {
         return <form onSubmit={this.handleSubmit} className="cluster-form">
-            <h2 className="form__title">Edit cluster</h2>
+            <h2 className="form__title">{this.state.form.id ? "Edit Cluster" : "Add Cluster"}</h2>
             <div className="form__row">
                 <CustomInput
-                    autoComplete="off"
                     name="cluster_name"
+                    autoComplete="off"
                     value={this.state.form.cluster_name}
                     error={this.state.isError.cluster_name}
                     onChange={(e) => this.handleInputChange(e, 'cluster_name')}
@@ -172,9 +214,8 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
             <hr></hr>
             <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
             <div className="form__row">
-                <CustomInput
+                <CustomInput name="server_url"
                     autoComplete="off"
-                    name="server_url"
                     value={this.state.form.server_url}
                     error={this.state.isError.server_url}
                     onChange={(e) => this.handleInputChange(e, 'server_url')}
@@ -192,9 +233,8 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
             <hr></hr>
             <div className="form__input-header mb-8">Prometheus Info</div>
             <div className="form__row">
-                <CustomInput
+                <CustomInput name="endpoint"
                     autoComplete="off"
-                    name="endpoint"
                     value={this.state.form.prometheus_url}
                     error={this.state.isError.prometheus_url}
                     onChange={(e) => this.handleInputChange(e, 'prometheus_url')}
@@ -202,7 +242,8 @@ export class ClusterForm extends Component<ClusterFormProps, ClusterFormState> {
             </div>
             <div className="form__row">
                 <span className="form__label">Authentication Type*</span>
-                <RadioGroup value={this.state.form.authType} name={`authType`} onChange={(e) => this.handleInputChange(e, 'authType')}>
+                <RadioGroup value={this.state.form.authType} name={`authType`}
+                    onChange={(e) => this.handleInputChange(e, 'authType')}>
                     <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
                     <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
                 </RadioGroup>
