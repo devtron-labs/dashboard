@@ -1359,7 +1359,9 @@ export const DeploymentModal: React.FC<{
     let gitPullStep = appDetails?.deploymentStatus?.gitPullStep?.status.toLowerCase()
     let configApplyStep = appDetails?.deploymentStatus?.configApplyStep?.status.toLowerCase()
     let k8sDeploy = appDetails?.deploymentStatus?.k8sDeploy?.status.toLowerCase()
-
+    let message= {
+        error: "Error"
+    }
     useEffect(() => {
         callAppDetailsAPI();
     }, appDetailsResult)
@@ -1395,23 +1397,22 @@ export const DeploymentModal: React.FC<{
                             <div className="pt-8 pb-13 fs-14 cn-9">1/4</div>
                             <div className="mr-18 ml-17 ">
                                 <div className="no-line" />
-                                {gitPushStep === "waiting" ? <Waiting className="icon-dim-20" /> : ""}
                                 {gitPushStep === "in_progress" ? <Progressing /> : ""}
                                 {gitPushStep === "success" ? <Success className="icon-dim-20" /> : ""}
                                 {gitPushStep === "error" ? <Failed className="icon-dim-20" /> : ""}
-                                {(gitPushStep === "success" || gitPushStep === "in_progress" || gitPushStep === "waiting") || gitPushStep === "error" ? null : <img src={Uncheck} className="icon-dim-20" />}
+                                {(gitPushStep === "success" || gitPushStep === "in_progress" || gitPushStep === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                                 <div className="line" />
                             </div>
                             <span className="pt-13 pb-13" >
                                 <div className={(gitPushStep === "error") ? "fs-14 cr-5" : gitPushStep === "in_progress" ? "fs-14 cn-9 fw-6" : (gitPushStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                                    {gitPushStep === "error" ? `${message.error}: ` :  null}
                                     Push to git
                                     </div>
                                 <div className="cn-7">
-                                    {gitPushStep === "error" ? <div >Failed to apply Configuration to git.</div> : ""}
-                                    {gitPushStep === "in_progress" ? <div >Applying configuration to git.</div> : ""}
+                                    {gitPushStep === "error" ? <div >Error in pushing configuration to git.</div> : ""}
+                                    {gitPushStep === "in_progress" ? <div >Pushing configuration to git.</div> : ""}
                                     {gitPushStep === "success" ? <div >Configuration pushed to git.</div> : ""}
-                                    {gitPushStep === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : ""}
-                                    {!(gitPushStep === "success" || gitPushStep === "in_progress" || gitPushStep === "error" || gitPushStep === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : null}
+                                    {!(gitPushStep === "success" || gitPushStep === "in_progress" || gitPushStep === "error") ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to git.</div> : null}
                                 </div>
                             </span>
                         </div>
@@ -1424,14 +1425,15 @@ export const DeploymentModal: React.FC<{
                             </div>
                             <span className="pt-13 pb-13" >
                                 <div className={(gitPullStep === "error") ? "fs-14 cr-5" : (gitPullStep === "in_progress") ? "fs-14 cn-9 fw-6" : (gitPullStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                    Pull by argocd
+                                   {gitPullStep === "error" ? `${message.error}: ` :  null}
+                                    Pull from git
                                 </div>
                                 <div className="cn-7" >
-                                    {gitPullStep === "error" ? <div >Failed to apply configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPullStep === "in_progress" ? <div >Applying configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPullStep === "success" ? <div >Configuration pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {gitPullStep === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pulled by argocd to be applied to kubernetes.</div> : ""}
-                                    {!(gitPullStep === "success" || gitPullStep === "in_progress" || gitPullStep === "error" || gitPullStep === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pulled by argocd to be applied to kubernetes.</div> : null}
+                                    {gitPullStep === "error" ? <div >Error while pulling configuration from git .</div> : ""}
+                                    {gitPullStep === "in_progress" ? <div >Pulling configuration from git.</div> : ""}
+                                    {gitPullStep === "success" ? <div > Configuration pulled from git.</div> : ""}
+                                    {gitPullStep === "waiting" ? <div style={{ opacity: 0.5 }}>Waiting for previous steps to complete.</div> : ""}
+                                    {!(gitPullStep === "success" || gitPullStep === "in_progress" || gitPullStep === "error" || gitPullStep === "waiting") ? <div style={{ opacity: 0.5 }}>Configuration will be pulled from git.</div> : null}
                                 </div>
                             </span>
                         </div>
@@ -1445,14 +1447,15 @@ export const DeploymentModal: React.FC<{
                             </div>
                             <span className="pt-13 pb-13">
                                 <div className={(configApplyStep === "error") ? "fs-14 cr-5" : (configApplyStep === "in_progress") ? "fs-14 cn-9 fw-6" : (configApplyStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                    Config apply
+                                  {configApplyStep === "error" ? `${message.error}: ` :  null}
+                                    Apply configuration
                                 </div>
                                 <div className="cn-7" >
-                                    {configApplyStep === "error" ? <div >Failed to apply configuration to kubernetes.</div> : ""}
+                                    {configApplyStep === "error" ? <div >Error in applying configuration to kubernetes.</div> : ""}
                                     {configApplyStep === "in_progress" ? <div>Applying configuration to kubernetes.</div> : ""}
-                                    {configApplyStep === "success" ? <div>Configuration pushed to kubernetes.</div> : ""}
-                                    {configApplyStep === "waiting" ? <div style={{ opacity: 0.5 }}>Configuration will be pushed to kubernetes.</div> : ""}
-                                    {!(configApplyStep === "success" || configApplyStep === "in_progress" || configApplyStep === "error" || configApplyStep === "waiting") ? <div style={{ opacity: 0.5 }}> Configuration will be pushed to kubernetes.</div> : null}
+                                    {configApplyStep === "success" ? <div>Configuration  applied to kubernetes.</div> : ""}
+                                    {configApplyStep === "waiting" ? <div style={{ opacity: 0.5 }}>Waiting for previous steps to complete</div> : ""}
+                                    {!(configApplyStep === "success" || configApplyStep === "in_progress" || configApplyStep === "error" || configApplyStep === "waiting") ? <div style={{ opacity: 0.5 }}> Configuration will be applied to kubernetes.</div> : null}
                                 </div>
                             </span>
                         </div>
@@ -1465,14 +1468,16 @@ export const DeploymentModal: React.FC<{
                                 <div className="no-line" /></div>
                             <span className="pt-13 pb-13">
                                 <div className={(k8sDeploy === "error") ? "fs-14 cr-5" : (k8sDeploy === "in_progress") ? "fs-14 cn-9 fw-6" : (k8sDeploy === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
-                                    Finish rollout
+                                   {k8sDeploy === "error" ? `${message.error}: ` :  null}
+                                    Rollout
                                 </div>
                                 <div className="cn-7" >
-                                    {k8sDeploy === "error" ? <div >Old replicas will be terminated.</div> : ""}
-                                    {k8sDeploy === "in_progress" ? <div>Applying configuration to Old replicas.</div> : ""}
-                                    {k8sDeploy === "success" ? <div>Old replicas terminated.</div> : ""}
-                                    {k8sDeploy === "waiting" ? <div style={{ opacity: 0.5 }}>Old replicas will be terminated.</div> : ""}
-                                    {!(k8sDeploy === "success" || k8sDeploy === "in_progress" || k8sDeploy === "error" || k8sDeploy === "waiting") ? <div>Old replicas will be terminated.</div> : null}
+                                    {k8sDeploy === "error" ? <div >Error encountered during deployment.</div> : ""}
+                                    {k8sDeploy === "in_progress" ? <div>Deployment is in progress.</div> : ""}
+                                    {k8sDeploy === "success" ? <div>Deployment completed successfully.</div> : ""}
+                                    {k8sDeploy === "waiting" ? <div style={{ opacity: 0.5 }}>Waiting for previous steps to complete.</div> : ""}
+                                    {k8sDeploy === "unknown" ? <div style={{ opacity: 0.5 }}>Unable to ascertain the current status of Deployment, please check back in sometime (fix errors mentioned below).</div> : ""}
+                                    {!(k8sDeploy === "success" || k8sDeploy === "in_progress" || k8sDeploy === "error" || k8sDeploy === "waiting") ? <div>Deployment will be completed.</div> : null}
                                 </div>
                             </span>
                         </div>
