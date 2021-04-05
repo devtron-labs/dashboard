@@ -83,6 +83,9 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                                 <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
                                     {status}
                                 </span>
+                                <span
+                                    className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
+                                ></span>
                                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
                                     <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
                                         <span>Deployed</span>
