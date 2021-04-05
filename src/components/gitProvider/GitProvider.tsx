@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { useLocation, useHistory, useRouteMatch } from 'react-router'
-import { getGitProviderList, saveGitProviderConfig, updateGitProviderConfig } from './service'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common'
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { toast } from 'react-toastify'
+import { getGitProviderList, saveGitProviderConfig, updateGitProviderConfig } from './service';
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common';
+import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
+import { toast } from 'react-toastify';
 import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 
 export default function GitProvider({ ...props }) {
-    const location = useLocation();
-    const match = useRouteMatch();
-    const history = useHistory();
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
@@ -23,16 +19,19 @@ export default function GitProvider({ ...props }) {
         if (!result) return null
     }
 
-    return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+    let list = result.result && Array.isArray(result.result) ? result.result : [];
+    list = list.sort((a, b) => a.name.localeCompare(b.name));
+    list = [{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(list);
+
+    return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
         <h2 className="form__title">Git accounts</h2>
         <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
                 Learn more about git accounts
             </a>
         </div>
-        {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+        {list.map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
     </section>
-    )
 }
 
 function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
@@ -62,36 +61,48 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         update()
     }, [enabled])
 
-    return (
-        <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
-            <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo>{id ? <div className="">
-                    <span className="mr-8">
-                        {url.includes("gitlab") ? <GitLab /> : null}
-                        {url.includes("github") ? <GitHub /> : null}
-                        {url.includes("bitbucket") ? <BitBucket /> : null}
-                        {url.includes("gitlab")  || url.includes("github")  ||  url.includes("bitbucket") ? null : <Git/>}
-                        </span></div> :
-                    <div className="add-icon" />}</List.Logo>
-                <div className="flex left">
-                    <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
-                    {id &&
+    if (collapsed) {
+        if (id) {
+            return <article className="bcn-0 br-8 mb-16 bw-1 en-2">
+                <List className="list--git" onClick={(e) => toggleCollapse(t => !t)}>
+                    <List.Logo>
+                        <div className="">
+                            {url.includes("gitlab") ? <GitLab className="icon-dim-24" /> : null}
+                            {url.includes("github") ? <GitHub className="icon-dim-24" /> : null}
+                            {url.includes("bitbucket") ? <BitBucket className="icon-dim-24" /> : null}
+                            {url.includes("gitlab") || url.includes("github") || url.includes("bitbucket") ? null : <Git className="icon-dim-24" />}
+                        </div>
+                    </List.Logo>
+                    <List.Title title='Edit git account' subtitle={url} />
+                    <div className="flex left">
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
-                            <span style={{ marginLeft: 'auto' }}>
-                                {loading ? (
-                                    <Progressing />
-                                ) : (
-                                        <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                    )}
+                            <span className="ml-auto">
+                                {loading ? <Progressing /> : <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />}
                             </span>
                         </Tippy>
-                    }
-                </div>
-                {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
-            </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+                        <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
+                    </div>
+                </List>
+            </article>
+        }
+        else {
+            return <article className="bcn-0 br-8 mb-16 bw-1 en-2">
+                <List onClick={e => toggleCollapse(t => !t)}>
+                    <List.Logo><Add className="icon-dim-24 fcb-5" /></List.Logo>
+                    <h3 className="fw-6 cb-5 fs-14 m-0">Add git account</h3>
+                    <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
+                </List>
+            </article>
+        }
+    }
+    else {
+        return <article className="bcn-0 br-8 mb-16 bw-1 en-2 pt-24 pb-24">
+            <h3 className="fw-6 cn-9 fs-16 m-0 pb-24 pl-24 pr-24">
+                {id ? "Edit git account" : "Add git account"}
+            </h3>
+            <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />
         </article>
-    )
+    }
 }
 
 function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
@@ -156,37 +167,33 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
             setLoading(false);
         }
     }
+
     return (
-        <>
-            <form onSubmit={handleOnSubmit} className="git-form">
-                <div className="form__row form__row--two-third">
-                    <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                    <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
-                </div>
-                <div className="form__label">Authentication type*</div>
-                <div className="form__row form__row--auth-type pointer">
-                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
-                        .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-
-                            <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                        </label>)}
-
-                </div>
-                {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-                {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                    <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                    <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
-                </div>}
-                {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
-                    <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-                </div>}
-                <div className="form__row form__buttons">
-                    <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                    <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
-                </div>
-
-            </form>
-        </>
+        <form onSubmit={handleOnSubmit} className="git-form">
+            <div className="form__row form__row--two-third">
+                <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+            </div>
+            <div className="form__label">Authentication type*</div>
+            <div className="form__row form__row--auth-type pointer">
+                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }]
+                    .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                    </label>)}
+            </div>
+            {state.auth.error && <div className="form__error">{state.auth.error}</div>}
+            {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
+                <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
+            </div>}
+            {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
+                <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
+            </div>}
+            <div className="form__buttons">
+                <button className="cta cancel mr-16" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
+                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+            </div>
+        </form>
     )
 }
 

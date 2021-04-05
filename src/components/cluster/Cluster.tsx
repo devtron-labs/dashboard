@@ -165,7 +165,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
 
     return <>
-        <article className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'}`}>
+        <article className={`cluster-list ${clusterId ? '' : 'cluster-list--create collapsed-list collapsed-list--create'}`}>
             {!editMode ? <>
                 <List key={clusterId} onClick={clusterId ? () => { } : e => toggleEditMode(t => !t)}>
                     {!clusterId && <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}

@@ -64,13 +64,13 @@
         }
     }
 
-    .protected-input__toggle{
+    .protected-input__toggle {
         position: absolute;
         right: 10px;
         top: 50%;
         transform: translateY(-50%);
     }
-    
+
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
@@ -115,6 +115,9 @@
     background: white;
     grid-column-gap: 8px;
     cursor: pointer;
+    grid-gap: 16px;
+    border-radius: inherit;
+
 
     .toggle__switch,
     .tooltip-button {
@@ -171,6 +174,12 @@
     }
 }
 
+.list--git {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 24px 1fr auto;
+}
+
 .list__add-item {
     color: var(--B500);
     font-weight: 600;
@@ -188,7 +197,7 @@
         border: unset;
         margin-bottom: unset;
         grid-template-columns: 1fr 24px;
-        align-items: center;
+        grid-gap: 16px;
     }
 
     &.cluster-list--create {
@@ -215,8 +224,7 @@
         padding: 0 24px 24px 24px;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        grid-row-gap: 16px;
-        grid-column-gap: 16px;
+        grid-gap: 16px;
 
         .list {
             border-radius: 4px;
@@ -227,10 +235,6 @@
             border: 1px #d6dbdf dashed;
         }
     }
-}
-
-.cluster-list--create {
-    border-style: dashed;
 }
 
 .collapsed-list {
@@ -244,8 +248,6 @@
 }
 
 .collapsed-list {
-
-    &.collapsed-list--git,
     &.collapsed-list--docker {
         border: 1px solid #d6dbdf;
         margin-bottom: 16px;
