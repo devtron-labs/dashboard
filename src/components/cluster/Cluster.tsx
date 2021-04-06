@@ -167,14 +167,26 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
     return <>
         <article className={`cluster-list ${clusterId ? '' : 'cluster-list--create collapsed-list collapsed-list--create'}`}>
             {!editMode ? <>
-                <List key={clusterId} onClick={clusterId ? () => { } : e => toggleEditMode(t => !t)}>
+                {/* <List key={clusterId} onClick={clusterId ? () => { } : e => toggleEditMode(t => !t)}>
                     {!clusterId && <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
                     <div className="flex left">
                         {clusterId ? <ClusterIcon className="icon-dim-24 vertical-align-middle mr-16" /> : null}
-                        <List.Title title={cluster_name || "Add cluster"} subtitle={server_url} className="fw-6" />
+                        <List.Title title={cluster_name || "Add cluster"} subtitle={server_url} className="fw-6 cb-5" />
                     </div>
                     {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                 </List>
+            */}
+                {clusterId ? <List onClick={(e) => toggleEditMode(t => !t)}>
+                    <div className="flex left">
+                        <List.Logo><ClusterIcon className="icon-dim-24 vertical-align-middle mr-16" /></List.Logo>
+                        <List.Title title={cluster_name} subtitle={server_url} className="fw-6 cb-5" />
+                    </div>
+                    <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
+                </List>
+                    : <List >
+                        <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>
+                        <List.Title title="Add cluster" subtitle={server_url} className="fw-6 cb-5" />
+                    </List>}
                 {clusterId ? <hr className="mt-0 mb-16" /> : null}
                 {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
                     envName={envName}
