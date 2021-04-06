@@ -1274,7 +1274,7 @@ export const ProgressStatus: React.FC<{
             <div className="app-status-detai">
 
                 <div className="title flex pl-20 pr-20 pt-12 flex-align-center flex-justify" >
-                    <div>App status detail</div>
+                    <div>App status detail: {appName} / {environmentName}</div>
                     <button type="button" className="transparent flex icon-dim-24" onClick={close}>
                         <Close className="icon-dim-24" />
                     </button>
@@ -1285,7 +1285,7 @@ export const ProgressStatus: React.FC<{
                 </div>
 
                 {status.toLowerCase() !== 'missing' && (
-                    <div>
+                    <div style={{overflow: "auto",position: "relative"}}>
                         <table className="mt-20" style={{ borderCollapse: "collapse" }}>
                             <thead >
                                 <tr >
