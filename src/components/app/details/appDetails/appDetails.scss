@@ -726,11 +726,6 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
-        font-weight: 600;
-        font-size: 12px;
-    }
-
-    .app-summary__status-name {
 
         &.f-healthy,
         &.f-scalingreplicasetdown {
@@ -1294,6 +1289,15 @@ table.pod__table td:last-child {
     }
 }
 
+.app-status__material-modal .modal-dialog {
+    min-width: 900px;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .modal-content {
+        border: unset;
+    }
+}
 
 .poup-body--app-switch:focus,
 .poup-body--app-switch:hover {
@@ -1335,77 +1339,61 @@ table.pod__table td:last-child {
     width: 218px;
 }
 
-.visible-modal__body.app-status__material-modal {
-    .app-status-detai {
-        background: white;
-        height: 100%;
-        min-height: 300px;
+.app-details-status-modal {
+    position: fixed;
+    width: 800px;
+    right: 0;
+    top: 0;
+    height: 100%;
+}
+
+.app-status__material-modal {
+    .kind-name {
+        width: 100%;
         display: grid;
-        grid-template-rows: 45px auto 1fr;
-        position: sticky;
-        top: 0;
-        transition: width 3s ;
-        z-index: 10;
-        width: 760px;
-        
-        .title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: 1fr;
+
+        .ellipsis-left {
+            text-align: left;
         }
+    }
 
-        .kind-name {
-            width: 100%;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-template-rows: 1fr;
+    table {
+        width: 100%;
+        table-layout: fixed;
 
-            .ellipsis-left {
-                text-align: left;
-            }
-        }
+        thead {
+            height: 44px;
 
-        table {
-            width: 100%;
-            table-layout: fixed;
-
-            thead {
-                height: 44px;
-
-                th {
-                    background: white;
-                    position: sticky;
-                    top: 0;
-                }
-            }
-
-            border-collapse: separate;
-            border-spacing: 15px;
-
-            tr,
             th {
-                height: 44px;
-            }
-
-            th:nth-child(1),
-            td:nth-child(1) {
-                width: 20%;
-            }
-
-            th:nth-child(2),
-            td:nth-child(2) {
-                width: 15%;
-            }
-
-            th:nth-child(3),
-            td:nth-child(3) {
-                width: 65%;
+                background: white;
+                position: sticky;
+                top: 0;
             }
         }
 
-        .fa.fa-close {
-            margin-left: auto;
-            cursor: pointer;
+        border-collapse: separate;
+        border-spacing: 15px;
+
+        tr,
+        th {
+            height: 44px;
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 20%;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 65%;
         }
     }
 }
@@ -1721,4 +1709,3 @@ table.resource-tree {
     height: 28px;
     align-items: center;
 }
-

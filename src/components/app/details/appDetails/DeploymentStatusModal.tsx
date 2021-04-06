@@ -5,9 +5,8 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
 import { ReactComponent as Failed } from '../../../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
-import './deploymentStatusModal.css';
 
-export function DeploymentModal({ deploymentStatus, lastDeploymentStatus, close, appDetails }) {
+export function DeploymentStatusModal({ deploymentStatus, lastDeploymentStatus, close }) {
     let gitPushStep = deploymentStatus?.gitPushStep?.status.toLowerCase()
     let gitPullStep = deploymentStatus?.gitPullStep?.status.toLowerCase()
     let configApplyStep = deploymentStatus?.configApplyStep?.status.toLowerCase()
@@ -21,7 +20,7 @@ export function DeploymentModal({ deploymentStatus, lastDeploymentStatus, close,
     }
 
     return <VisibleModal className="">
-        <div className="bcn-0 modal__body--ci-material deployment-status-modal">
+        <div className="bcn-0 app-details-status-modal">
             <div className="pl-20 pr-20 pt-10 pb-10 flex flex-align-center flex-justify">
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">
@@ -97,7 +96,7 @@ export function DeploymentModal({ deploymentStatus, lastDeploymentStatus, close,
                     </div>
                     {configApplyStep === "error" ? <div className="flex left ml-38">
                         <div className="w-100 cr-5 bcr-1 ml-24 p-12 br-4"><div className="cn-9 fw-6">Error Message:</div>
-                            {appDetails?.deploymentStatus?.configApplyStep?.errorMessage}</div>
+                            {deploymentStatus?.configApplyStep?.errorMessage}</div>
                     </div> : null}
                 </div>
 

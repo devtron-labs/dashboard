@@ -34,7 +34,6 @@ import EventsLogs from '../../EventsLogs';
 import ResponsiveDrawer from '../../ResponsiveDrawer';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
-//@ts-check
 import moment from 'moment';
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png';
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png';
@@ -49,7 +48,6 @@ import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-ale
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import Select, { components } from 'react-select';
@@ -66,7 +64,8 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
-import { DeploymentModal }from './DeploymentModal';
+import { DeploymentStatusModal } from './DeploymentStatusModal';
+import { AppStatusModal } from './AppStatusModal';
 
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
@@ -149,7 +148,7 @@ export const Details: React.FC<{
     const { url, path } = useRouteMatch();
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
-    const [deploymentStatus, toggleDeploymentStatus] = useState(false);
+    const [showDeploymentStatusModal, toggleDeploymentStatusModal] = useState(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
@@ -243,7 +242,6 @@ export const Details: React.FC<{
         }
     }, [appDetailsError]);
 
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI();
@@ -321,7 +319,7 @@ export const Details: React.FC<{
                     environments={environments}
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    showDeploymentModal={toggleDeploymentStatus}
+                    showDeploymentModal={toggleDeploymentStatusModal}
                 />
             </div>
             <SyncError appStreamData={streamData} />
@@ -344,7 +342,7 @@ export const Details: React.FC<{
             </Route>
 
             {detailedStatus && (
-                <ProgressStatus
+                <AppStatusModal
                     message={message}
                     nodes={aggregatedNodes}
                     streamData={streamData}
@@ -355,17 +353,11 @@ export const Details: React.FC<{
                 />
             )}
 
-            {deploymentStatus && (
-                // <DeploymentModal
-                //     key={params.appId + "-" + params.envId}
-                //     appDetailsAPI={fetchAppDetailsInTime}
-                //     close={(e) => toggleDeploymentStatus(false)}
-                // />)
-                <DeploymentModal
-                 deploymentStatus= { appDetails?.deploymentStatus}
-                 close={(e) => toggleDeploymentStatus(false)}
-                 lastDeploymentStatus = {appDetails?.lastDeploymentStatus}
-                 appDetails= {appDetails}
+            {showDeploymentStatusModal && (
+                <DeploymentStatusModal
+                    deploymentStatus={appDetails?.deploymentStatus}
+                    lastDeploymentStatus={appDetails?.lastDeploymentStatus}
+                    close={(e) => toggleDeploymentStatusModal(false)}
                 />)
             }
 
@@ -418,8 +410,8 @@ export const Details: React.FC<{
                             ) : hibernateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -519,8 +511,7 @@ const NodeDetails: React.FC<{
                 className="events-logs"
                 isDetailedView={!!params.tab}
                 onHeightChange={(height) => (document.getElementById('dummy-div').style.height = `${height}px`)}
-                anchor={params.kind ? <EventsLogsTabSelector /> : null}
-            >
+                anchor={params.kind ? <EventsLogsTabSelector /> : null}>
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
                     <NodeSelectors showOldOrNewSuffix={isAppDeployment}
                         logsPaused={logsPaused}
@@ -607,8 +598,8 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", maxHeight: "32px"}),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c'}),
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", maxHeight: "32px" }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                         indicatorsContainer: (base, state) => ({ ...base, height: "32px" })
 
                     }}
@@ -1186,7 +1177,7 @@ const MaterialCard: React.FC<{
                 </VisibleModal>
             )}
             {detailedStatus && (
-                <ProgressStatus
+                <AppStatusModal
                     message={message}
                     nodes={nodes}
                     streamData={streamData}
@@ -1232,8 +1223,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -1241,116 +1232,6 @@ const MaterialCard: React.FC<{
         </>
     );
 };
-
-export const ProgressStatus: React.FC<{
-    streamData: AppStreamData;
-    nodes: AggregatedNodes;
-    appName: string;
-    environmentName: string;
-    status: any;
-    close: (...args) => void;
-    message: string;
-}> = ({ streamData, nodes, status, close, message, appName, environmentName }) => {
-    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
-    useEffect(() => {
-        const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
-            (agg, curr) => {
-                agg.set(`${curr.kind}/${curr.name}`, curr);
-                return agg;
-            },
-            new Map(),
-        );
-        setNodeStatusMap(stats);
-    }, [streamData]);
-
-    function getNodeMessage(kind, name) {
-        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
-            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
-        }
-        return '';
-    }
-
-    return (
-        <VisibleModal className="app-status__material-modal flex right">
-            <div className="app-status-detai">
-
-                <div className="title flex pl-20 pr-20 pt-12 flex-align-center flex-justify" >
-                    <div>App status detail: {appName} / {environmentName}</div>
-                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-                <div className="flex left pl-20 pr-20  pb-12" style={{ borderBottom: "1px solid #d0d4d9" }}>
-                    <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
-                    {message && <div>{message}</div>}
-                </div>
-
-                {status.toLowerCase() !== 'missing' && (
-                    <div>
-                        <table className="mt-20" style={{ borderCollapse: "collapse" }}>
-                            <thead >
-                                <tr >
-                                    {['NAME', 'STATUS', 'MESSGAE'].map((n) => (
-                                        <th style={{ width: "40%", borderBottom: "1px solid #edf1f5" }} className="cnn-7 pl-15 pt-28">{n}</th>
-                                    ))}
-                                </tr>
-                                {/* <div className="divider"/> */}
-                            </thead>
-                            <tbody>
-                                {nodes &&
-                                    Object.keys(nodes.nodes)
-                                        .filter((kind) => kind.toLowerCase() !== 'rollout')
-                                        .map((kind) =>
-                                            Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
-                                                <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                                    <td valign="top" className="pt-15 pl-15">
-                                                        <div className="kind-name">
-                                                            <div className="fw-6 cn-9"> {nodeDetails.kind}/</div>
-                                                            <div className="ellipsis-left">{nodeDetails.name}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        valign="top"
-                                                        className={`pt-15 pl-15 app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
-                                                            ? nodeDetails.health.status.toLowerCase()
-                                                            : ''
-                                                            }`}
-                                                    >
-                                                        {nodeDetails.status
-                                                            ? nodeDetails.status
-                                                            : nodeDetails.health
-                                                                ? nodeDetails.health.status
-                                                                : ''}
-                                                    </td>
-                                                    <td valign="top" className="pt-15 pl-15">
-                                                        <div
-                                                            style={{
-                                                                display: 'grid',
-                                                                gridAutoColumns: '1fr',
-                                                                gridRowGap: '8px',
-                                                            }}
-                                                        >
-                                                            {getNodeMessage(kind, nodeDetails.name) && (
-                                                                <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                            )}
-                                                            {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message}</div>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )),
-                                        )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        </VisibleModal>
-    );
-};
-
 
 const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
