@@ -308,6 +308,10 @@ a:focus {
     position: relative;
 }
 
+.position-abs {
+    position: absolute;
+}
+
 .vertical-align-middle {
     vertical-align: middle;
 }
@@ -566,7 +570,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,

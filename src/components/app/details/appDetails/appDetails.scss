@@ -1294,16 +1294,6 @@ table.pod__table td:last-child {
     }
 }
 
-.app-status__material-modal .modal-dialog {
-    min-width: 900px;
-    border-radius: 8px;
-    overflow: hidden;
-
-    .modal-content {
-        border: unset;
-    }
-
-}
 
 .poup-body--app-switch:focus,
 .poup-body--app-switch:hover {
@@ -1418,11 +1408,6 @@ table.pod__table td:last-child {
             margin-left: auto;
             cursor: pointer;
         }
-    }
-
-    .deployment-status{
-        min-width: 800px;
-        height: 100%;
     }
 }
 
