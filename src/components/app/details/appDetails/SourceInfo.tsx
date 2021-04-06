@@ -10,7 +10,7 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
-export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
+export function SourceInfo({ appDetails, showDeploymentModal = null, showApplicationModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
     const status = appDetails?.lastDeploymentStatus || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
@@ -73,6 +73,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
         </div>
         <div className="pl-8 pr-8">
             <div className="flex w-100" style={{ display: "table", borderSpacing: "16px" }}>
+                {showDeploymentModal && (
                 <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16 en-1" style={{ display: "table-cell" }}>
                     <div className="cn-9 fw-6">Deployment Status</div>
                     {appDetails?.deploymentStatus && (
@@ -109,10 +110,12 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                     )}
 
                 </div>
+                )}
+                { showApplicationModal &&(
                 <div className="en-1 flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50" style={{ display: "table-cell" }}>
                     <div className="cn-9 fw-6">Application Status</div>
                     {appDetails?.resourceTree && (
-                        <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="flex left">
+                        <div style={{ maxWidth: '50%' }} onClick={showApplicationModal ? (e) => showApplicationModal(true) : () => { }} className="flex left">
                             {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
                             <div className="flex left column" style={{ maxWidth: '100%' }}>
                                 <div className="pointer">
@@ -128,6 +131,7 @@ export function SourceInfo({ appDetails, setDetailed = null, showDeploymentModal
                         </div>
                     )}
                 </div>
+                )}
             </div>
         </div>
     </div>

@@ -317,7 +317,7 @@ export const Details: React.FC<{
             <div className="w-100 pt-16">
                 <SourceInfo
                     appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
+                    showApplicationModal={toggleDetailedStatus}
                     environments={environments}
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
