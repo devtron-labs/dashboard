@@ -1348,21 +1348,20 @@ table.pod__table td:last-child {
 .visible-modal__body.app-status__material-modal {
     .app-status-detai {
         background: white;
-        max-width: 760px;
         height: 100%;
         min-height: 300px;
         display: grid;
         grid-template-rows: 45px auto 1fr;
-
+        position: sticky;
+        top: 0;
+        transition: width 3s ;
+        z-index: 10;
+        width: 760px;
+        
         .title {
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 8px;
-        }
-
-        &>div {
-            overflow: auto;
-            position: relative;
         }
 
         .kind-name {
