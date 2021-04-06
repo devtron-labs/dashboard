@@ -607,8 +607,10 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", marginTop: "-8px", maxHeight: "32px"}),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", maxHeight: "32px"}),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c'}),
+                        indicatorsContainer: (base, state) => ({ ...base, height: "32px" })
+
                     }}
                     isDisabled={disabled}
                     isSearchable={false}
@@ -1285,7 +1287,7 @@ export const ProgressStatus: React.FC<{
                 </div>
 
                 {status.toLowerCase() !== 'missing' && (
-                    <div style={{overflow: "auto",position: "relative"}}>
+                    <div>
                         <table className="mt-20" style={{ borderCollapse: "collapse" }}>
                             <thead >
                                 <tr >
