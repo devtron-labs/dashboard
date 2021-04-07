@@ -566,10 +566,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
-    //text-transform: uppercase;
-}
 
-.app-summary__status-name {
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -1561,8 +1558,4 @@ button.anchor {
     letter-spacing: normal;
     color: var(--B500);
     font-size: 14px;
-}
-
-.drawer-right{
-    position: right;
 }

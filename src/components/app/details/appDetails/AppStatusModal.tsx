@@ -37,7 +37,7 @@ export const AppStatusModal: React.FC<{
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">App status detail: {appName} / {environmentName}</h2>
-                    <p className={`fs-12 fw-6 m-0 app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
+                    <p className={`fs-12 fw-6 m-0 capitalize app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
                     {message && <div className="fs-12 fw-5 lh-1-5">{message}</div>}
                 </div>
                 <button type="button" className="transparent flex icon-dim-24" onClick={close}>
@@ -69,7 +69,7 @@ export const AppStatusModal: React.FC<{
                                             </td>
                                             <td
                                                 valign="top"
-                                                className={`pt-12 pl-15 app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
+                                                className={`pt-12 pl-15 capitalize app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
                                                     ? nodeDetails.health.status.toLowerCase()
                                                     : ''
                                                     }`}

@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import React from 'react'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -10,7 +8,7 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
-export function SourceInfo({ appDetails, showDeploymentModal = null, showApplicationModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
+export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatusModal = null, toggleDeploymentStatusModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
     const status = appDetails?.lastDeploymentStatus || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
@@ -27,113 +25,94 @@ export function SourceInfo({ appDetails, showDeploymentModal = null, showApplica
         message = Rollout[0].health.message;
     }
 
-    return (<div >
-        <div className="flex left w-100 pl-24 pr-24" >
+    return <div className="mb-16">
+        <div className="flex left w-100 pl-24 pr-24 mb-16">
             <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-
             <div style={{ marginLeft: 'auto' }} className="flex right">
                 {appDetails?.appStoreChartId && (
                     <>
                         <span className="mr-8 fs-12 cn-7">Chart:</span>
-                        <Link
-                            className="cb-5 fw-6"
-                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                        >
+                        <Link className="cb-5 fw-6"
+                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}>
                             {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
                                 {appDetails.appStoreAppVersion})
-                            </Link>
+                        </Link>
                     </>
                 )}
                 {showCommitInfo && (
-                    <button
-                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                        onClick={(e) => showCommitInfo(true)}
-                    >
+                    <button className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                        onClick={(e) => showCommitInfo(true)}>
                         <CommitIcon className="icon-dim-16 mr-6" />
-                            commit info
+                        commit info
                     </button>
                 )}
                 {showHibernateModal && (
-                    <button
-                        className="cta cta-with-img small cancel fs-12 fw-6"
+                    <button className="cta cta-with-img small cancel fs-12 fw-6"
                         onClick={(e) =>
                             showHibernateModal(status.toLowerCase() === 'hibernating' ? 'resume' : 'hibernate')
-                        }
-                    >
-                        <ScaleDown
-                            className={`icon-dim-16 mr-6 rotate`}
+                        }>
+                        <ScaleDown className={`icon-dim-16 mr-6 rotate`}
                             style={{
                                 ['--rotateBy' as any]: status.toLowerCase() === 'hibernating' ? '180deg' : '0deg',
-                            }}
-                        />
+                            }} />
                         {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
                     </button>
                 )}
             </div>
         </div>
-        <div className="pl-8 pr-8">
-            <div className="flex w-100" style={{ display: "table", borderSpacing: "16px" }}>
-                {showDeploymentModal && (
-                <div className="flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50 mr-16 en-1" style={{ display: "table-cell" }}>
+        <div className="w-100 pl-24 pr-24" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "16px" }}>
+            {isAppDeployment && (
+                <div className="flex left top column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 en-1 bw-1" >
                     <div className="cn-9 fw-6">Deployment Status</div>
                     {appDetails?.deploymentStatus && (
-                        <div style={{ maxWidth: '50%' }} onClick={showDeploymentModal ? (e) => showDeploymentModal(true) : () => { }} className="flex left">
-                            {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
-                            <div className="flex left column" style={{ maxWidth: '100%' }}>
-                                    <div className="pointer">
-                                        <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                            {status}
-                                        </span>
-                                        <span
-                                            className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                        ></span>
-                                    </div>
-                                    {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                                        <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
-                                            <span>Deployed</span>
-                                            <div className="fw-6 ml-4 mr-4">
-                                                {appDetails?.lastDeployedTime
-                                                    ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                                    : ''}
-                                            </div>
-                                            <span className="mr-4">by</span>
-                                            <span className="fw-6 mr-8">{appDetails?.lastDeployedBy}</span>
-                                            {showCommitInfo && (
-                                                <Link className=" pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
-                                                    Details
-                                                </Link>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                        </div>
-                    )}
-
-                </div>
-                )}
-                { showApplicationModal &&(
-                <div className="en-1 flex left column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 w-50" style={{ display: "table-cell" }}>
-                    <div className="cn-9 fw-6">Application Status</div>
-                    {appDetails?.resourceTree && (
-                        <div style={{ maxWidth: '50%' }} onClick={showApplicationModal ? (e) => showApplicationModal(true) : () => { }} className="flex left">
-                            {/* <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure> */}
+                        <div style={{ maxWidth: '50%' }} onClick={(e) => toggleDeploymentStatusModal(true)} className="flex left">
                             <div className="flex left column" style={{ maxWidth: '100%' }}>
                                 <div className="pointer">
-                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
                                         {status}
                                     </span>
-                                    <span
-                                        className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                    ></span>
+                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${status.toLowerCase()}`}></span>
+                                </div>
+                                {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
+                                    <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
+                                        <span>Deployed</span>
+                                        <div className="fw-6 ml-4 mr-4">
+                                            {appDetails?.lastDeployedTime
+                                                ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                                : ''}
+                                        </div>
+                                        <span className="mr-4">by</span>
+                                        <span className="fw-6 mr-8">{appDetails?.lastDeployedBy}</span>
+                                        {showCommitInfo && (
+                                            <Link className=" pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
+                                                Details
+                                            </Link>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+            {isAppDeployment && (
+                <div className="flex left top column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 en-1 bw-1" >
+                    <div className="cn-9 fw-6">Application Status</div>
+                    {appDetails?.resourceTree && (
+                        <div style={{ maxWidth: '50%' }} onClick={(e) => toggleAppStatusModal(true)} className="flex left">
+                            <div className="flex left column" style={{ maxWidth: '100%' }}>
+                                <div className="pointer">
+                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
+                                        {status}
+                                    </span>
+                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${status.toLowerCase()}`}></span>
                                 </div>
                                 {message && <span className="ellipsis-right w-100">{message}</span>}
                             </div>
                         </div>
                     )}
                 </div>
-                )}
-            </div>
+            )}
         </div>
     </div>
-     );
 }

@@ -1707,3 +1707,23 @@ table.resource-tree {
     height: 28px;
     align-items: center;
 }
+
+.add-line::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    left: 48px;
+    top: 0px;
+    background-color: #959ba1;
+}
+
+.add-line:first-of-type::before {
+    height: calc(100% - 44px);
+    top: unset;
+    bottom: 0px;
+}
+
+.add-line:last-of-type::before {
+    height: calc(100% - 44px);
+}

@@ -147,7 +147,7 @@ export const Details: React.FC<{
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const { url, path } = useRouteMatch();
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
-    const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
+    const [showAppStatusModal, toggleAppStatusModal] = useState<boolean>(false);
     const [showDeploymentStatusModal, toggleDeploymentStatusModal] = useState(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
@@ -315,11 +315,12 @@ export const Details: React.FC<{
             <div className="w-100 pt-16">
                 <SourceInfo
                     appDetails={appDetails}
-                    showApplicationModal={toggleDetailedStatus}
                     environments={environments}
+                    isAppDeployment={isAppDeployment}
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    showDeploymentModal={toggleDeploymentStatusModal}
+                    toggleAppStatusModal={toggleAppStatusModal}
+                    toggleDeploymentStatusModal={toggleDeploymentStatusModal}
                 />
             </div>
             <SyncError appStreamData={streamData} />
@@ -341,13 +342,13 @@ export const Details: React.FC<{
                 />
             </Route>
 
-            {detailedStatus && (
+            {showAppStatusModal && (
                 <AppStatusModal
                     message={message}
                     nodes={aggregatedNodes}
                     streamData={streamData}
                     status={appDetails?.resourceTree?.status}
-                    close={(e) => toggleDetailedStatus(false)}
+                    close={(e) => toggleAppStatusModal(false)}
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
                 />
@@ -355,7 +356,7 @@ export const Details: React.FC<{
 
             {showDeploymentStatusModal && (
                 <DeploymentStatusModal
-                    appName= {appDetails.appName}
+                    appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
                     deploymentStatus={appDetails?.deploymentStatus}
                     lastDeploymentStatus={appDetails?.lastDeploymentStatus}
@@ -574,7 +575,7 @@ export function EnvSelector({ environments, disabled }) {
 
     return (
         <>
-            <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
+            <div className="" style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
                 <svg
                     viewBox="0 0 200 40"
                     preserveAspectRatio="none"
@@ -1095,7 +1096,7 @@ const MaterialCard: React.FC<{
     const lastDeployedTime = appDetails.lastDeployedTime;
     const conditions = appDetails.resourceTree.conditions;
     const [detailed, toggleDetailed] = React.useState(false);
-    const [detailedStatus, toggleDetailedStatus] = useState(false);
+    const [showAppStatusModal, toggleAppStatusModal] = useState(false);
     const [hibernating, setHibernating] = useState(false);
     const { appId, envId } = useParams<{ appId, envId }>();
     const [hiberbateConfirmationModal, setHibernateConfirmationModal] = useState('');
@@ -1131,7 +1132,7 @@ const MaterialCard: React.FC<{
                         <span className="fs-12 cn-9">Application Status</span>
                         <b
                             className={`fs-14 fw-6 pointer flex left app-summary__status-name f-${status.toLowerCase()}`}
-                            onClick={status.toLowerCase() !== 'missing' ? (e) => toggleDetailedStatus(true) : (e) => { }}
+                            onClick={status.toLowerCase() !== 'missing' ? (e) => toggleAppStatusModal(true) : (e) => { }}
                         >
                             {status}
                             {status.toLowerCase() !== 'missing' && <div className="fa fa-angle-right fw-6 ml-6"></div>}
@@ -1178,13 +1179,13 @@ const MaterialCard: React.FC<{
                     <CommitInfo onHide={() => toggleDetailed(false)} material={appDetails?.materialInfo} />
                 </VisibleModal>
             )}
-            {detailedStatus && (
+            {showAppStatusModal && (
                 <AppStatusModal
                     message={message}
                     nodes={nodes}
                     streamData={streamData}
                     status={status}
-                    close={(e) => toggleDetailedStatus(false)}
+                    close={(e) => toggleAppStatusModal(false)}
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
                 />
