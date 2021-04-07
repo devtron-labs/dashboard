@@ -20,7 +20,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
     }
 
     return <VisibleModal className="drawer--container" close={close}>
-        <aside className={`drawer right bcn-0 app-details-status-modal`}>
+        <aside className={`drawer bcn-0 app-details-status-modal`}>
             <div className="">
                 <div className="pl-20 pr-20 pt-10 pb-10 flex flex-align-center flex-justify">
                     <div>
