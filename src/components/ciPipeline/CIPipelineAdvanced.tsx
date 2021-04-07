@@ -55,6 +55,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             title = "Post-build Stages";
             description = " These stages are run in sequence after the docker image is built";
         }
+        let showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild;
+
         return <>
             <div className="flex left cursor" onClick={(event) => {
                 if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild();
@@ -70,7 +72,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} />}
             </div>
             {this.props.form[key].map((stage, index) => {
-                if (stage.isCollapsed) {
+                if (showBuild && stage.isCollapsed) {
                     return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mt-16" onClick={(event) => { event.stopPropagation(); this.props.toggleCollapse(stage.id, index, key) }}>
                         <Page className="ci-file-icon" />
                         <div className="ci-stage-name">{stage.name}</div>
@@ -82,7 +84,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
                             <div className="white-card__header  flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
@@ -114,9 +116,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     else if (key === 'afterDockerBuildScripts' && this.props.showPostBuild) {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
 
-                            <div className="white-card__header" >
+                            <div className="white-card__header flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
