@@ -355,6 +355,8 @@ export const Details: React.FC<{
 
             {showDeploymentStatusModal && (
                 <DeploymentStatusModal
+                    appName= {appDetails.appName}
+                    environmentName={appDetails.environmentName}
                     deploymentStatus={appDetails?.deploymentStatus}
                     lastDeploymentStatus={appDetails?.lastDeploymentStatus}
                     close={(e) => toggleDeploymentStatusModal(false)}

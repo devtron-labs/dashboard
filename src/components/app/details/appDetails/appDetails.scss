@@ -1340,10 +1340,8 @@ table.pod__table td:last-child {
 }
 
 .app-details-status-modal {
-    position: fixed;
+    position: sticky;
     width: 800px;
-    right: 0;
-    top: 0;
     height: 100%;
 }
 
