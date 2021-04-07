@@ -224,7 +224,9 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials: { gitMa
                 scanEnabled: ciPipeline.scanEnabled,
             },
             loadingData: false,
-            gitMaterials
+            gitMaterials,
+            showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
+            showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
         };
     }
 }
