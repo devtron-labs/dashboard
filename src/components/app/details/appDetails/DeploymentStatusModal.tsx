@@ -19,7 +19,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
         description: "Push to git"
     }
 
-    return <VisibleModal className="app-status__material-modal flex right" close={close}>
+    return <VisibleModal className="flex right" close={close}>
         <aside className={`app-details-status-modal bcn-0`}>
             <div>
                 <div className="pl-20 pr-20 pt-10 pb-10 flex flex-align-center flex-justify">

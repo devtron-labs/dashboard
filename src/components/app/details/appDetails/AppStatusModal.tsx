@@ -32,7 +32,7 @@ export const AppStatusModal: React.FC<{
         return '';
     }
 
-    return <VisibleModal className="app-status__material-modal flex right">
+    return <VisibleModal className="flex right">
         <div className="app-details-status-modal bcn-0">
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
@@ -79,6 +79,21 @@ export const AppStatusModal: React.FC<{
                                                     : nodeDetails.health
                                                         ? nodeDetails.health.status
                                                         : ''}
+                                            </td>
+                                            <td valign="top" className="pt-12 pl-15">
+                                                <div
+                                                    style={{
+                                                        display: 'grid',
+                                                        gridAutoColumns: '1fr',
+                                                        gridRowGap: '8px',
+                                                    }}
+                                                >
+                                                    {nodeDetails.status
+                                                        ? nodeDetails.status
+                                                        : nodeDetails.health
+                                                            ? nodeDetails.health.status
+                                                            : ''}
+                                                </div>
                                             </td>
                                             <td valign="top" className="pt-12 pl-15">
                                                 <div
