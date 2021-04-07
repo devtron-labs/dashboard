@@ -84,7 +84,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
                             <div className="white-card__header  flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
@@ -116,9 +116,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     else if (key === 'afterDockerBuildScripts' && this.props.showPostBuild) {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
 
-                            <div className="white-card__header" >
+                            <div className="white-card__header flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
