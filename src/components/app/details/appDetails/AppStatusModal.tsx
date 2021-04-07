@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { AppStreamData, AggregatedNodes } from '../../types';
-import { VisibleModal } from '../../../common';
+import { Drawer } from '../../../common';
 
 export const AppStatusModal: React.FC<{
     streamData: AppStreamData;
@@ -32,8 +32,8 @@ export const AppStatusModal: React.FC<{
         return '';
     }
 
-    return <VisibleModal className="app-status__material-modal flex right">
-        <div className="app-details-status-modal bcn-0">
+    return <Drawer position="right" width="800px" onClose={close}>
+        <div className="app-details-status-modal bcn-0" onClick={(e) => e.stopPropagation()}>
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">App status detail: {appName} / {environmentName}</h2>
@@ -114,5 +114,5 @@ export const AppStatusModal: React.FC<{
                 </table>
             )}
         </div>
-    </VisibleModal>
+    </Drawer>
 };

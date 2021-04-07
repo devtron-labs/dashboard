@@ -1,5 +1,5 @@
 import React from 'react';
-import { Progressing, VisibleModal } from '../../../common';
+import { Progressing, VisibleModal, Drawer } from '../../../common';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
 import { ReactComponent as Failed } from '../../../../assets/icons/appstatus/ic-appstatus-failed.svg';
@@ -19,8 +19,8 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
         description: "Push to git"
     }
 
-    return <VisibleModal className="flex right" close={close}>
-        <aside className="app-details-status-modal bcn-0">
+    return <Drawer position="right" width="800px" onClose={close}>
+        <div className="app-details-status-modal bcn-0" onClick={(e) => e.stopPropagation()}>
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">Deployment status: {appName} / {environmentName}</h2>
@@ -137,8 +137,8 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                     </div> : null}
                 </div>
             </div>
-        </aside>
-    </VisibleModal>
+        </div>
+    </Drawer>
 }
 
 
