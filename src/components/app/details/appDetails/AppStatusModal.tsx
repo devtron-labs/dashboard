@@ -32,7 +32,7 @@ export const AppStatusModal: React.FC<{
         return '';
     }
 
-    return <Drawer position="right" width="800px" onClose={close}>
+    return <Drawer position="right" width="1100px" onClose={close}>
         <div className="app-details-status-modal bcn-0" onClick={(e) => e.stopPropagation()}>
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
@@ -71,27 +71,12 @@ export const AppStatusModal: React.FC<{
                                                 className={`pt-12 pb-12 pl-20 pr-20 capitalize app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
                                                     ? nodeDetails.health.status.toLowerCase()
                                                     : ''
-                                                    }`}
-                                            >
+                                                    }`}>
                                                 {nodeDetails.status
                                                     ? nodeDetails.status
                                                     : nodeDetails.health
                                                         ? nodeDetails.health.status
                                                         : ''}
-                                            </td>
-                                            <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
-                                                <div
-                                                    style={{
-                                                        display: 'grid',
-                                                        gridAutoColumns: '1fr',
-                                                        gridRowGap: '8px',
-                                                    }}>
-                                                    {nodeDetails.status
-                                                        ? nodeDetails.status
-                                                        : nodeDetails.health
-                                                            ? nodeDetails.health.status
-                                                            : ''}
-                                                </div>
                                             </td>
                                             <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
                                                 <div style={{
@@ -108,7 +93,7 @@ export const AppStatusModal: React.FC<{
                                                 </div>
                                             </td>
                                         </tr>
-                                    )),
+                                    ))
                                 )}
                     </tbody>
                 </table>
