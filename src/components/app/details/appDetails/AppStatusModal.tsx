@@ -37,7 +37,7 @@ export const AppStatusModal: React.FC<{
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">App status detail: {appName} / {environmentName}</h2>
-                    <p className={`m-0 capitalize app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
+                    <p className={`m-0 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
                     {message && <div className="fs-12 fw-5 lh-1-5">{message}</div>}
                 </div>
                 <button type="button" className="transparent flex icon-dim-24" onClick={close}>
@@ -49,9 +49,9 @@ export const AppStatusModal: React.FC<{
                 <table className="mt-7" style={{ borderCollapse: "collapse" }}>
                     <thead>
                         <tr>
-                            {['NAME', 'STATUS', 'MESSGAE'].map((n) => (
-                                <th style={{ width: "40%", borderBottom: "1px solid #edf1f5" }} className="cn-7 pt-20 pb-8 pl-20 pr-20">{n}</th>
-                            ))}
+                            <th style={{ width: "36%", borderBottom: "1px solid #edf1f5" }} className="cn-7 pt-20 pb-8 pl-20 pr-20">NAME</th>
+                            <th style={{ width: "180px", borderBottom: "1px solid #edf1f5" }} className="cn-7 pt-20 pb-8 pl-20 pr-20">STATUS</th>
+                            <th style={{ borderBottom: "1px solid #edf1f5" }} className="cn-7 pt-20 pb-8 pl-20 pr-20">MESSAGE</th>
                         </tr>
                     </thead>
                     <tbody>

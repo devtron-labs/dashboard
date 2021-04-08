@@ -22,7 +22,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">Deployment status: {appName} / {environmentName}</h2>
-                    <p className={`m-0 capitalize app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>
+                    <p className={`m-0 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>
                         {status}
                     </p>
                 </div>
@@ -146,6 +146,5 @@ function AppDeploymentStageStatusIcon({ status }) {
         {status === "waiting" ? <Waiting className="icon-dim-20" /> : null}
         {status === "error" ? <Failed className="icon-dim-20" /> : null}
         {status === "unknown" ? <Unknown className="icon-dim-20" /> : null}
-
     </>
 }
