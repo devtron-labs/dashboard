@@ -1,9 +1,10 @@
 import React from 'react';
-import { Progressing, VisibleModal, Drawer } from '../../../common';
+import { Progressing, Drawer } from '../../../common';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
 import { ReactComponent as Failed } from '../../../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
+import { ReactComponent as Unknown } from '../../../../assets/icons/appstatus/unknown.svg';
 import Uncheck from '../../../../assets/img/ic-success@2x.png';
 
 export function DeploymentStatusModal({ appName, environmentName, deploymentStatus, lastDeploymentStatus, close }) {
@@ -53,7 +54,6 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                             </div>
                         </div>
                     </div>
-
                     {gitPushStep === "error" ? <div className="flex left ml-38">
                         <div className="w-100 cr-5 bcr-1 ml-24 p-12 br-4"><div className="cn-9 fw-6">Error Message:</div>
                             {deploymentStatus?.gitPushStep?.errorMessage}</div>
@@ -126,7 +126,6 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                                 {k8sDeploy === "in_progress" ? <div>Deployment is in progress.</div> : ""}
                                 {k8sDeploy === "success" ? <div>Deployment completed successfully.</div> : ""}
                                 {k8sDeploy === "waiting" ? <div style={{ opacity: 0.5 }}>Waiting for previous steps to complete.</div> : ""}
-                                {k8sDeploy === "unknown" ? <div style={{ opacity: 0.5 }}>Unable to ascertain the current status of Deployment, please check back in sometime (fix errors mentioned below).</div> : ""}
                                 {!(k8sDeploy === "success" || k8sDeploy === "in_progress" || k8sDeploy === "error" || k8sDeploy === "waiting") ? <div>Deployment will be completed.</div> : null}
                             </div>
                         </div>
@@ -143,11 +142,13 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
 
 
 function AppDeploymentStageStatusIcon({ status }) {
-
+    status = status?.toLowerCase();
     return <>
         {status === "success" ? <Success className="icon-dim-20" /> : null}
         {status === "in_progress" ? <Progressing /> : null}
         {status === "waiting" ? <Waiting className="icon-dim-20" /> : null}
         {status === "error" ? <Failed className="icon-dim-20" /> : null}
+        {status === "unknown" ? <Unknown className="icon-dim-20" /> : null}
+
     </>
 }
