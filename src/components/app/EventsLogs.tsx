@@ -77,7 +77,7 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
         <>   {params.tab.toLowerCase() === NodeDetailTabs.SUMMARY.toLowerCase() && (
             <>
                 <span style={{ background: '#2c3354' }} />
-                <EventsView nodeName={nodeName} appDetails={appDetails} nodes={nodes} />
+                <SummaryView nodeName={nodeName} appDetails={appDetails} nodes={nodes} />
             </>
         )
         }
@@ -128,6 +128,93 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
         </>
     );
 })
+
+export const SummaryView: React.FC<{}> = ({ }) => {
+    return <>
+        <div>
+            <div className="w-100 pt-20 pl-20 pr-20" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
+                <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
+                    <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
+                    <div className="cn-0 ">
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Priority</div>
+                            <div>0</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Node</div>
+                            <div className="" style={{ color: "#62aceb" }}>ip-172-31-25-102.us-east-2.compute.internal</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Selector</div>
+                            <div style={{ color: "#62aceb" }}>monitoring-grafana</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex left top column pt-16 pb-16 pl-20 pr-20 br-4 en-7 bw-1">
+                    <div className="cn-0 o-1 fw-6 fs-14">Status</div>
+                    <div className="cn-0">
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05 cn-0">QoS</div>
+                            <div className="">BestEffort</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Phase</div>
+                            <div className="cg-5">Running</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Pod IP</div>
+                            <div>100.121.233.57</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Host IP</div>
+                            <div>172.31.25.102</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="w-100 pt-20 pr-20 pl-20" style={{ display: "grid" }}>
+                <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
+                    <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
+                    <div className="cn-0 ">
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Priority</div>
+                            <div>0</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Node</div>
+                            <div className="" style={{ color: "#62aceb" }}>ip-172-31-25-102.us-east-2.compute.internal</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Selector</div>
+                            <div style={{ color: "#62aceb" }}>monitoring-grafana</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="w-100 pt-20 pr-20 pl-20" style={{ display: "grid" }}>
+                <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
+                    <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
+                    <div className="cn-0 ">
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Priority</div>
+                            <div>0</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Node</div>
+                            <div className="" style={{ color: "#62aceb" }}>ip-172-31-25-102.us-east-2.compute.internal</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Selector</div>
+                            <div style={{ color: "#62aceb" }}>monitoring-grafana</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </>
+}
+
 
 export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNodes, appName: string, environmentName: string }> = ({ nodeName, nodes, appName, environmentName }) => {
     const { queryParams, searchParams } = useSearchString()
@@ -207,6 +294,7 @@ export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNod
         </div>}
     </AutoSizer>
 }
+
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
     const { searchParams } = useSearchString()
