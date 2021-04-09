@@ -499,6 +499,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                 <div className="flex left column">
                     <div className="flex left">
                         {nodeDetails?.name}
+                        {console.log(nodeDetails)}
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -522,8 +523,16 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                         </span>
                     )}
                 </div>
+                {console.log(Nodes)}
                 {nodeDetails.kind !== Nodes.Containers && (
                     <>
+                     <span
+                            data-testid={`${nodeDetails.name}-summary`}
+                            className="hover-only fw-6 anchor pointer ml-6"
+                            onClick={(e) => showManifest(NodeDetailTabs.SUMMARY)}
+                        >
+                            SUMMARY
+                        </span>
                         <span
                             data-testid={`${nodeDetails.name}-manifest`}
                             className="hover-only fw-6 anchor pointer ml-6"

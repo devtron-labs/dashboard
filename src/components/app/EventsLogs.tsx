@@ -74,7 +74,13 @@ export function getGrepTokens(expression) {
 const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
-        <>
+        <>   {params.tab.toLowerCase() === NodeDetailTabs.SUMMARY.toLowerCase() && (
+            <>
+                <span style={{ background: '#2c3354' }} />
+                <EventsView nodeName={nodeName} appDetails={appDetails} nodes={nodes} />
+            </>
+        )
+        }
             {params.tab.toLowerCase() === NodeDetailTabs.EVENTS.toLowerCase() && (
                 <>
                     <span style={{ background: '#2c3354' }} />

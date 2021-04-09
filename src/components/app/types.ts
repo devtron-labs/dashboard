@@ -327,6 +327,7 @@ export interface AggregatedNodes {
 
 
 export enum NodeDetailTabs {
+    SUMMARY = 'SUMMARY',
     EVENTS = 'EVENTS',
     LOGS = 'LOGS',
     MANIFEST = 'MANIFEST',

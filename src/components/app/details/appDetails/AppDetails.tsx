@@ -694,7 +694,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
             }
         >
             <div className={`pl-20 flex left tab-container ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                {[NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
+                {[NodeDetailTabs.SUMMARY,NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
                 ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
                     <div key={idx}
