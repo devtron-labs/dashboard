@@ -38,14 +38,13 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 
     useEffect(() => {
         if (!configmapLoading && configmapList) {
-            setParentState('loaded')
+            setParentState('loaded');
         }
     }, [configmapLoading])
 
-
-
     useEffect(() => {
         async function initialise() {
+            setConfigmapLoading(true);
             try {
                 const appChartRefRes = await getAppChartRef(appId);
                 const configmapRes = await getEnvironmentConfigs(appId, envId);
@@ -63,7 +62,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
             }
         }
         initialise();
-    }, [appId])
+    }, [appId, envId])
 
     async function reload() {
         try {
@@ -84,9 +83,6 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
     }
 
     let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(configmapList?.configData);
-    // let { result: { configData, id } } = result
-    // configData = [{ name: "" }].concat(configData)
-    // const configMaps = mapByKey(configData, 'name');
 
     return <section className="config-map-overrides">
         <label className="form__label bold">ConfigMaps</label>
