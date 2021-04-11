@@ -125,7 +125,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return <div className="white-card white-card--add-new-item mb-16"
                 onClick={this.addProject}>
                 <Add className="icon-dim-24 fcb-5 mr-16" />
-                <span className="list__add-item">Add Project</span>
+                <span className="fs-14 cb-5 fw-6">Add Project</span>
             </div>
         }
     }

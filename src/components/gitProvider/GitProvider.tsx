@@ -61,48 +61,34 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         update()
     }, [enabled])
 
-    if (collapsed) {
-        if (id) {
-            return <article className="bcn-0 br-8 mb-16 bw-1 en-2">
-                <List className="list--git" onClick={(e) => toggleCollapse(t => !t)}>
-                    <List.Logo>
-                        <div className="">
-                            {url.includes("gitlab") ? <GitLab className="icon-dim-24" /> : null}
-                            {url.includes("github") ? <GitHub className="icon-dim-24" /> : null}
-                            {url.includes("bitbucket") ? <BitBucket className="icon-dim-24" /> : null}
-                            {url.includes("gitlab") || url.includes("github") || url.includes("bitbucket") ? null : <Git className="icon-dim-24" />}
-                        </div>
-                    </List.Logo>
-                    <List.Title title='Edit git account' subtitle={url} />
-                    <div className="flex left">
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
-                            <span className="ml-auto">
-                                {loading ? <Progressing /> : <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />}
-                            </span>
-                        </Tippy>
-                        <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
+
+    return <article className="bcn-0 br-8 mb-16 bw-1 en-2">
+        <List className={id ? collapsed ? "list--edit-collapsed" : "list--edit-expanded" : collapsed ? "" : "list--create-expanded"}
+            onClick={(event) => toggleCollapse(t => !t)}>
+            <List.Logo>
+                {id && collapsed ?
+                    <div className="">
+                        {url.includes("gitlab") ? <GitLab className="icon-dim-24" /> : null}
+                        {url.includes("github") ? <GitHub className="icon-dim-24" /> : null}
+                        {url.includes("bitbucket") ? <BitBucket className="icon-dim-24" /> : null}
+                        {url.includes("gitlab") || url.includes("github") || url.includes("bitbucket") ? null : <Git className="icon-dim-24" />}
                     </div>
-                </List>
-            </article>
-        }
-        else {
-            return <article className="bcn-0 br-8 mb-16 bw-1 en-2">
-                <List onClick={e => toggleCollapse(t => !t)}>
-                    <List.Logo><Add className="icon-dim-24 fcb-5" /></List.Logo>
-                    <h3 className="fw-6 cb-5 fs-14 m-0">Add git account</h3>
-                    <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
-                </List>
-            </article>
-        }
-    }
-    else {
-        return <article className="bcn-0 br-8 mb-16 bw-1 en-2 pt-24 pb-24">
-            <h3 className="fw-6 cn-9 fs-16 m-0 pb-24 pl-24 pr-24">
-                {id ? "Edit git account" : "Add git account"}
-            </h3>
-            <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />
-        </article>
-    }
+                    : null}
+                {!id && collapsed ? <Add className="icon-dim-24 fcb-5 vertical-align-middle" /> : null}
+            </List.Logo>
+            {id && collapsed ? <List.Title className="" title={name} subtitle={url} /> : null}
+            {!id && collapsed ? <h3 className="fw-6 cb-5 fs-14 m-0">Add git account</h3> : null}
+            {id && !collapsed ? <List.Title className="fw-6" title="Edit git account" /> : null}
+            {!id && !collapsed ? <List.Title className="fw-6" title="Add git account" /> : null}
+            {id ? <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
+                <span>
+                    {loading ? <Progressing /> : <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />}
+                </span>
+            </Tippy> : null}
+            {id ? <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} /> : null}
+        </List>
+        {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+    </article>
 }
 
 function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
@@ -168,32 +154,29 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
         }
     }
 
-    return (
-        <form onSubmit={handleOnSubmit} className="git-form">
-            <div className="form__row form__row--two-third">
-                <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
-            </div>
-            <div className="form__label">Authentication type*</div>
-            <div className="form__row form__row--auth-type pointer">
-                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }]
-                    .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                    </label>)}
-            </div>
-            {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-            {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
-            </div>}
-            {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
-                <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-            </div>}
-            <div className="form__buttons">
-                <button className="cta cancel mr-16" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
-            </div>
-        </form>
-    )
+    return <form onSubmit={handleOnSubmit} className="git-form">
+        <div className="form__row form__row--two-third">
+            <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+            <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+        </div>
+        <div className="form__label">Authentication type*</div>
+        <div className="form__row form__row--auth-type pointer">
+            {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }]
+                .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+                    <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                </label>)}
+        </div>
+        {state.auth.error && <div className="form__error">{state.auth.error}</div>}
+        {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
+            <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+            <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
+        </div>}
+        {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
+            <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
+        </div>}
+        <div className="form__row form__buttons">
+            <button className="cta cancel mr-16" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
+            <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+        </div>
+    </form>
 }
-
