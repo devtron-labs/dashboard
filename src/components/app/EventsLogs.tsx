@@ -31,10 +31,6 @@ import summarylist from './summarylist.json'
 
 const commandLineParser = require('command-line-parser')
 
-let summaryViewMap = summarylist.reduce((agg, curr) => {
-    agg.set(curr.value, curr.name)
-    return agg
-}, new Map())
 const subject: Subject<string> = new Subject()
 
 interface EventsLogsProps {
@@ -141,10 +137,10 @@ export const SummaryView: React.FC<{}> = ({ }) => {
                 <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
                     <div className="cn-0 ">
-                        {Array.from(summaryViewMap).map(([value, name]) =>
+                        {summarylist.configuration.map((configuration) =>
                             <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                                <div className="pt-6 o-05">{name}</div>
-                                <div className="pt-6">{value}</div>
+                                <div className="pt-6 o-05">{configuration.Priority}</div>
+                                <div className="pt-6">{configuration.Selector}</div>
                             </div>)}
                     </div>
                 </div>
@@ -174,22 +170,25 @@ export const SummaryView: React.FC<{}> = ({ }) => {
 
             <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pb-16 pl-16 pr-16 br-4 en-7 bw-1" >
                 <div className="cn-0 mb-8 fw-6 fs-14">Pod Conditions</div>
-                <table className="w-100">
-                    <th className="w-100 mt-7 mb-7" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
-                        <td className="pt-7 pb-7 cn-0">Type</td>
-                        <td className="pt-7 pb-7 cn-0">Status</td>
-                        <td className="pt-7 pb-7 cn-0">Last Transition Time</td>
-                        <td className="pt-7 pb-7 cn-0">Message</td>
-                        <td className="pt-7 pb-7 cn-0">Reason</td>
-                    </th>
-                    <tr className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
-                        <td className="pt-3 pb-3 cn-0 o-05">Initialized</td>
-                        <td className="pt-3 pb-3 cn-0">True</td>
-                        <td className="pt-3 pb-3 cn-0">7d</td>
-                        <td className="pt-3 pb-3 cn-0">-</td>
-                        <td className="pt-3 pb-3 cn-0">-</td>
-                    </tr>
-                </table>
+                <div className="w-100">
+                    <div className="w-100 mt-7 mb-7" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
+                        <div className="pt-7 pb-7 cn-0">Type</div>
+                        <div className="pt-7 pb-7 cn-0">Status</div>
+                        <div className="pt-7 pb-7 cn-0">Last Transition Time</div>
+                        <div className="pt-7 pb-7 cn-0">Message</div>
+                        <div className="pt-7 pb-7 cn-0">Reason</div>
+                    </div>
+                    {summarylist.podConditions.map((pod)=>{
+                      return  <div className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
+                        <div className="pt-3 pb-3 cn-0 o-05">{pod.type}</div>
+                        <div className="pt-3 pb-3 cn-0">{pod.status}</div>
+                        <div className="pt-3 pb-3 cn-0">{pod.lastTransitionTime}</div>
+                        <div className="pt-3 pb-3 cn-0">{pod.message}</div>
+                        <div className="pt-3 pb-3 cn-0">{pod.reason}</div>
+                    </div>
+                    })}
+                    
+                </div>
             </div>
             <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pb-16 pl-16 pr-16 br-4 en-7 bw-1" >
                 <div className="cn-0 mb-8 fw-6 fs-14">Init Container init-chown-data</div>

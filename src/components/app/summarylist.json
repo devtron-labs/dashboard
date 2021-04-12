@@ -1,15 +1,39 @@
-[
-    {
-      "name": "Priority",
-      "value": "0"
-    },
-    {
-      "name": "node",
-      "value": "ip-172-31-25-102.us-east-2.compute.internal"
-    },
-    {
-      "name": "Selector",
-      "value": "monitoring-grafana"
-    }
-  ]
-  
+{
+    "configuration": [
+        {
+            "Priority": "0",
+            "node": "ip-172-31-25-102.us-east-2.compute.internal",
+            "Selector": "monitoring-grafana"
+        }
+    ],
+    "podConditions": [
+        {
+            "type": "Initialised",
+            "status": "True",
+            "lastTransitionTime": "7d",
+            "message": "-",
+            "reason": "-"
+        },
+        {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "7d",
+            "message": "-",
+            "reason": "-"
+        },
+        {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "7d",
+            "message": "-",
+            "reason": "-"
+        },
+        {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "7d",
+            "message": "-",
+            "reason": "-"
+        }
+    ]
+}
