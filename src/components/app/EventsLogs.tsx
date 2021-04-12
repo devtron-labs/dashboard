@@ -26,10 +26,15 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
+import summarylist from './summarylist.json'
+
 
 const commandLineParser = require('command-line-parser')
 
-
+let summaryViewMap = summarylist.reduce((agg, curr) => {
+    agg.set(curr.value, curr.name)
+    return agg
+}, new Map())
 const subject: Subject<string> = new Subject()
 
 interface EventsLogsProps {
@@ -136,18 +141,12 @@ export const SummaryView: React.FC<{}> = ({ }) => {
                 <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
                     <div className="cn-0 ">
+                    {Array.from(summaryViewMap).map(([value, name]) =>
                         <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                            <div className="pt-6 o-05">Priority</div>
-                            <div>0</div>
-                        </div>
-                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                            <div className="pt-6 o-05">Node</div>
-                            <div className="" style={{ color: "#62aceb" }}>ip-172-31-25-102.us-east-2.compute.internal</div>
-                        </div>
-                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                            <div className="pt-6 o-05">Selector</div>
-                            <div style={{ color: "#62aceb" }}>monitoring-grafana</div>
-                        </div>
+                     <div className="pt-6 o-05">{name}</div>
+                     <div className="">{value}</div>
+
+                        </div> )} 
                     </div>
                 </div>
                 <div className="flex left top column pt-16 pb-16 pl-20 pr-20 br-4 en-7 bw-1">
@@ -304,7 +303,8 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
     const [loading, eventsResult, error, reload] = useAsync(() => get(eventsUrl), [eventsUrl, pod?.name], !!pod)
     const events: { reason: string; message: string; count: number; lastTimestamp: string }[] = eventsResult?.result?.items || []
     if (!pod) return null
-    return <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
+    return <div className="">
+        <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
         {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
             <div className="events-logs__events-table-row header">
                 {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
@@ -326,6 +326,7 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
             {!loading && events.filter(event => event).length === 0 && <NoEvents />}
         </div>}
         {!nodeName && <NoPod />}
+    </div>
     </div>
 }
 

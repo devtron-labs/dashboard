@@ -1,0 +1,22 @@
+[
+    {
+      "name": "US East (Ohio)",
+      "value": "us-east-2"
+    },
+    {
+      "name": "US East (N. Virginia)",
+      "value": "us-east-1"
+    },
+    {
+      "name": "US West (N. California)",
+      "value": "us-west-1"
+    },
+    {
+      "name": "US West (Oregon)",
+      "value": "us-west-2"
+    },
+    {
+      "name": "Asia Pacific (Hong Kong)",
+      "value": "ap-east-1"
+    }
+  ]
