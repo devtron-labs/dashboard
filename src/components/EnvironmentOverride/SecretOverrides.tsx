@@ -67,7 +67,7 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     useEffect(() => {
         if (!loading && result) {
-            setParentState('loaded')
+            setParentState('loaded');
         }
     }, [loading])
 

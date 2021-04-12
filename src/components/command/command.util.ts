@@ -298,7 +298,7 @@ function getChartArguments(args, options): Promise<CommandSuggestionType> {
     }
     else if (args.length === 2) {
         if (args[1].value === 'discover') {
-            return getAvailableCharts(options).then((response) => {
+            return getAvailableCharts("", options).then((response) => {
                 let list = response?.result?.map((chart) => {
                     return {
                         value: `${chart.chart_name}/${chart.name}`,
@@ -493,7 +493,7 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                         isEOC: false,
                     }
                 }
-            ],
+                ],
                 groups: []
             })
         });

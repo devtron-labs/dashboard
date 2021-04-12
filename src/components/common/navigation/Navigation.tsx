@@ -239,7 +239,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					})}
 					<div></div>
 					{NavigationListBottom.map(((item) => {
-						return <a href={item.href} rel="noreferrer noopener" className="" target="_blank"
+						return <a href={item.href} rel="noreferrer noopener" className="" key={item.title} target="_blank"
 							onClick={(event) => {
 								ReactGA.event({
 									category: 'Main Navigation',
@@ -289,7 +289,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					toggleCommandBar={this.toggleCommandBar}
 				/>
 			</CommandErrorBoundary>
-
 		</>
 	}
 }
