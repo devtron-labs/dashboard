@@ -136,17 +136,16 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
 
 export const SummaryView: React.FC<{}> = ({ }) => {
     return <>
-        <div>
+        <div style={{gridColumn: '1 / span 2', overflow: "scroll", height:"400px"}}>
             <div className="w-100 pt-20 pl-20 pr-20" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
                 <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
                     <div className="cn-0 ">
-                    {Array.from(summaryViewMap).map(([value, name]) =>
-                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                     <div className="pt-6 o-05">{name}</div>
-                     <div className="">{value}</div>
-
-                        </div> )} 
+                        {Array.from(summaryViewMap).map(([value, name]) =>
+                            <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                                <div className="pt-6 o-05">{name}</div>
+                                <div className="pt-6">{value}</div>
+                            </div>)}
                     </div>
                 </div>
                 <div className="flex left top column pt-16 pb-16 pl-20 pr-20 br-4 en-7 bw-1">
@@ -169,8 +168,30 @@ export const SummaryView: React.FC<{}> = ({ }) => {
                             <div>172.31.25.102</div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
+            <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pb-16 pl-20 pr-20 br-4 en-7 bw-1" style={{ display: "grid" }}>
+                    <div className="cn-0 o-1 fw-6 fs-14">Status</div>
+                    <div className="cn-0">
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05 cn-0">QoS</div>
+                            <div className="">BestEffort</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Phase</div>
+                            <div className="cg-5">Running</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Pod IP</div>
+                            <div>100.121.233.57</div>
+                        </div>
+                        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                            <div className="pt-6 o-05">Host IP</div>
+                            <div>172.31.25.102</div>
+                        </div>
+                    </div>
+                    </div>
             <div className="w-100 pt-20 pr-20 pl-20" style={{ display: "grid" }}>
                 <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
@@ -305,28 +326,28 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
     if (!pod) return null
     return <div className="">
         <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
-        {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
-            <div className="events-logs__events-table-row header">
-                {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
-                    <span className="events-logs__event" key={idx}>{head}</span>)}
-            </div>
-            {events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
-                <span className="events-logs__event">{event.reason}</span>
-                <span className="events-logs__event">{event.message}</span>
-                <span className="events-logs__event">{event.count}</span>
-                <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
-            </div>)
-            }
-        </div>}
-        {nodeName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
-            {loading && <div style={{ width: '100%', textAlign: 'center' }}>
-                <Spinner loading></Spinner>
-                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+            {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
+                <div className="events-logs__events-table-row header">
+                    {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
+                        <span className="events-logs__event" key={idx}>{head}</span>)}
+                </div>
+                {events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
+                    <span className="events-logs__event">{event.reason}</span>
+                    <span className="events-logs__event">{event.message}</span>
+                    <span className="events-logs__event">{event.count}</span>
+                    <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
+                </div>)
+                }
             </div>}
-            {!loading && events.filter(event => event).length === 0 && <NoEvents />}
-        </div>}
-        {!nodeName && <NoPod />}
-    </div>
+            {nodeName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
+                {loading && <div style={{ width: '100%', textAlign: 'center' }}>
+                    <Spinner loading></Spinner>
+                    <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                </div>}
+                {!loading && events.filter(event => event).length === 0 && <NoEvents />}
+            </div>}
+            {!nodeName && <NoPod />}
+        </div>
     </div>
 }
 
