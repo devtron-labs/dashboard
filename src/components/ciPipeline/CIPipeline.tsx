@@ -67,6 +67,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.handleDockerArgs = this.handleDockerArgs.bind(this);
         this.handlePostBuild = this.handlePostBuild.bind(this);
         this.discardChanges = this.discardChanges.bind(this);
+        this.handleDockerArgChange=this.handleDockerArgChange.bind(this);
+        this.addDockerArg=this.addDockerArg.bind(this);
+        this.removeDockerArgs=this.removeDockerArgs.bind(this);
         this.handleSourceChange = this.handleSourceChange.bind(this);
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.toggleCIPipelineView = this.toggleCIPipelineView.bind(this);
