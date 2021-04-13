@@ -362,6 +362,13 @@
     text-decoration: underline;
 }
 
+.app-list-card{
+    width: 348px;
+    position: fixed;
+    top: 60px;
+    z-index: 1000;
+}
+
 @media(min-width: 1024px) {
     .search-filter-section {
         flex-direction: row;
