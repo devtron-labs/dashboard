@@ -132,7 +132,7 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
 
 export const SummaryView: React.FC<{}> = ({ }) => {
     return <>
-        <div style={{ gridColumn: '1 / span 2', overflow: "scroll", height: "400px" }}>
+        <div className=" pb-20" style={{ gridColumn: '1 / span 2', overflow: "scroll", height: "100%" }}>
             <div className="w-100 pt-20 pl-20 pr-20" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
                 <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
@@ -190,7 +190,7 @@ export const SummaryView: React.FC<{}> = ({ }) => {
                     
                 </div>
             </div>
-            <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pb-16 pl-16 pr-16 br-4 en-7 bw-1" >
+            <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pl-16 pr-16 br-4 en-7 bw-1" >
                 <div className="cn-0 mb-8 fw-6 fs-14">Init Container init-chown-data</div>
                 <div className="cn-0  w-100">
                         <div className="" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
@@ -223,7 +223,7 @@ export const SummaryView: React.FC<{}> = ({ }) => {
                         </div>
                     </div>
             </div>
-            <div className="w-100 pt-20 pr-20 pl-20" style={{ display: "grid" }}>
+            <div className="w-100 pt-16 pr-20 pl-20" style={{ display: "grid" }}>
                 <div className="w-100 flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1" style={{}} >
                     <div className="cn-0 o-1 fw-6 fs-14" style={{}}>Configuration</div>
                     <div className="cn-0 w-100">
