@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
+import { ReactComponent as Error } from '../../../../assets/icons/ic-error.svg';
 import { AppStreamData, AggregatedNodes } from '../../types';
 import { Drawer } from '../../../common';
 
@@ -9,10 +10,14 @@ export const AppStatusModal: React.FC<{
     appName: string;
     environmentName: string;
     status: any;
-    close: (...args) => void;
     message: string;
+    close: (...args) => void;
 }> = ({ streamData, nodes, status, close, message, appName, environmentName }) => {
+
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
+    const [rows, setRows] = useState([]);
+    const [showMore, toggleShowMore] = useState(false);
+
     useEffect(() => {
         const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
             (agg, curr) => {
@@ -24,6 +29,24 @@ export const AppStatusModal: React.FC<{
         setNodeStatusMap(stats);
     }, [streamData]);
 
+    useEffect(() => {
+        let allRows = [];
+        let arr = Object.values(nodes.nodes).map(nodeMap => { return [...(nodeMap as Map<any, any>).values()] });
+        allRows = arr.reduce((acc, array) => {
+            acc = acc.concat(array)
+            return acc;
+        }, [])
+        allRows = allRows.filter(node => node.kind.toLowerCase() !== "rollout");
+        let knownStatus = ["failed", "error", "progressing", "running", "healthy"];
+        let failed = allRows.filter(node => node?.status?.toLowerCase() === "failed" || node?.health?.status?.toLowerCase() === "failed" || node?.status?.toLowerCase() === "error" || node?.health?.status?.toLowerCase() === "error");
+        let progressing = allRows.filter(node => node?.status?.toLowerCase() === "progressing" || node?.health?.status?.toLowerCase() === "progressing");
+        let running = allRows.filter(node => node?.status?.toLowerCase() === "running" || node?.health?.status?.toLowerCase() === "running");
+        let healthy = allRows.filter(node => node?.status?.toLowerCase() === "healthy" || node?.health?.status?.toLowerCase() === "healthy");
+        let unknown = allRows.filter(node => !knownStatus.includes(node?.status?.toLowerCase() || node?.health?.status?.toLowerCase()));
+        let sortedRows = failed.concat(progressing, running, healthy, unknown);
+        setRows(sortedRows);
+    }, [appName]);
+
     function getNodeMessage(kind, name) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
             const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
@@ -34,17 +57,29 @@ export const AppStatusModal: React.FC<{
 
     return <Drawer position="right" width="1100px" onClose={close}>
         <div className="app-details-status-modal bcn-0" onClick={(e) => e.stopPropagation()}>
-            <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
-                <div>
-                    <h2 className="fs-16 lh-1-5 fw-6 m-0">App status detail: {appName} / {environmentName}</h2>
-                    <p className={`m-0 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
-                    {message && <div className="fs-12 fw-5 lh-1-5">{message}</div>}
+            <div className="" style={{ borderBottom: "1px solid #d0d4d9" }}>
+                <div className="flex flex-align-center flex-justify" >
+                    <div className="">
+                        <h2 className="mt-12 mb-0 pl-20 pr-20 fs-16 lh-1-5 fw-6">App status detail: {appName} / {environmentName}</h2>
+                        <p className={`m-0 pl-20 pr-20 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
+                        {message && status?.toLowerCase() !== "degraded" && <div className="mt-4 mb-12 pl-20 pr-20 fs-12 fw-5 lh-1-5">{message}</div>}
+                    </div>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
+                        <Close className="icon-dim-24" />
+                    </button>
                 </div>
-                <button type="button" className="transparent flex icon-dim-24" onClick={close}>
-                    <Close className="icon-dim-24" />
-                </button>
+                {message && status?.toLowerCase() === "degraded" && <div className="bcr-1 pl-20 pr-20 pt-12 pb-12 mt-12">
+                    <div className={`cn-9 app-status__error-msg-container`}>
+                        <Error className="icon-dim-20" />
+                        <p className={`m-0 ${showMore ? '' : 'app-status__error-msg'} fs-13 fw-5 lh-1-54`}>
+                            <span className="fw-6">Error</span>: {message}
+                        </p>
+                    </div>
+                    {<button type="button" className="m-0 cb-5 fw-6 transparent" onClick={(e) => toggleShowMore(!showMore)}>
+                        {showMore ? "Show more" : "Show less"}
+                    </button>}
+                </div>}
             </div>
-
             {status.toLowerCase() !== 'missing' && (
                 <table className="mt-7" style={{ borderCollapse: "collapse" }}>
                     <thead>
@@ -55,46 +90,35 @@ export const AppStatusModal: React.FC<{
                         </tr>
                     </thead>
                     <tbody>
-                        {nodes &&
-                            Object.keys(nodes.nodes)
-                                .filter((kind) => kind.toLowerCase() !== 'rollout')
-                                .map((kind) =>
-                                    Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
-                                        <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                            <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
-                                                <div className="kind-name">
-                                                    <span className="fw-6 cn-9"> {nodeDetails.kind}/</span>
-                                                    <span className="ellipsis-left">{nodeDetails.name}</span>
-                                                </div>
-                                            </td>
-                                            <td valign="top"
-                                                className={`pt-12 pb-12 pl-20 pr-20 capitalize app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
-                                                    ? nodeDetails.health.status.toLowerCase()
-                                                    : ''
-                                                    }`}>
-                                                {nodeDetails.status
-                                                    ? nodeDetails.status
-                                                    : nodeDetails.health
-                                                        ? nodeDetails.health.status
-                                                        : ''}
-                                            </td>
-                                            <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
-                                                <div style={{
-                                                    display: 'grid',
-                                                    gridAutoColumns: '1fr',
-                                                    gridRowGap: '8px',
-                                                }}>
-                                                    {getNodeMessage(kind, nodeDetails.name) && (
-                                                        <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                    )}
-                                                    {nodeDetails.health && nodeDetails.health.message && (
-                                                        <div>{nodeDetails.health.message}</div>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
+                        {rows.map((node) => {
+                            return <tr key={`${node.kind}/${node.name}`}>
+                                <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
+                                    <div className="kind-name">
+                                        <span className="fw-6 cn-9"> {node.kind}/</span>
+                                        <span className="ellipsis-left">{node.name}</span>
+                                    </div>
+                                </td>
+                                <td valign="top"
+                                    className={`pt-12 pb-12 pl-20 pr-20 capitalize app-summary__status-name f-${node.health && node.health.status
+                                        ? node.health.status.toLowerCase() : ''}`}>
+                                    {node.status ? node.status : node.health ? node.health.status : ''}
+                                </td>
+                                <td valign="top" className="pt-12 pb-12 pl-20 pr-20">
+                                    <div style={{
+                                        display: 'grid',
+                                        gridAutoColumns: '1fr',
+                                        gridRowGap: '8px',
+                                    }}>
+                                        {getNodeMessage(node.kind, node.name) && (
+                                            <div>{getNodeMessage(node.kind, node.name)}</div>
+                                        )}
+                                        {node.health && node.health.message && (
+                                            <div>{node.health.message}</div>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        })}
                     </tbody>
                 </table>
             )}

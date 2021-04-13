@@ -343,7 +343,7 @@ export const Details: React.FC<{
             </Route>
 
             {showAppStatusModal && (
-                <AppStatusModal
+                < AppStatusModal
                     message={message}
                     nodes={aggregatedNodes}
                     streamData={streamData}
@@ -361,8 +361,7 @@ export const Details: React.FC<{
                     deploymentStatus={appDetails?.deploymentStatus}
                     lastDeploymentStatus={appDetails?.lastDeploymentStatus}
                     close={(e) => toggleDeploymentStatusModal(false)}
-                />)
-            }
+                />)}
 
             {showScanDetailsModal ? <ScanDetailsModal
                 showAppInfo={false}

@@ -1361,6 +1361,7 @@ table.pod__table td:last-child {
 
         thead {
             height: 44px;
+
             th {
                 background: white;
                 position: sticky;
@@ -1723,4 +1724,15 @@ table.resource-tree {
 
 .add-line:last-of-type::before {
     height: calc(100% - 44px);
+}
+
+.app-status__error-msg-container {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 12px;
+}
+
+.app-status__error-msg {
+    max-height: 40px;
+    overflow: hidden;
 }
