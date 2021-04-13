@@ -43,6 +43,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             chartChecklist: undefined,
             appStageCompleted: 0,
             chartStageCompleted: 0,
+            collapsed: false
         }
     }
 
@@ -275,6 +276,10 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ expandedRow: false, appData: null });
     }
 
+    toggleHeaderName =()=>{
+        this.setState({ collapsed: !this.state.collapsed})
+    }
+
     getAppList = (request): void => {
         let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {
@@ -397,6 +402,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             changePageSize={this.changePageSize}
             closeModal={this.closeModal}
             openTriggerInfoModal={this.openTriggerInfoModal}
+            toggleHeaderName={this.toggleHeaderName}
         />
     }
 }

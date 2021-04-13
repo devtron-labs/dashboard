@@ -30,6 +30,7 @@ export interface AppListState {
     chartStageCompleted: number;
     appChecklist: AppCheckList;
     chartChecklist: ChartCheckList;
+    collapsed: boolean;
 }
 
 export interface App {

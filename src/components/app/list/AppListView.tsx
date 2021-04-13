@@ -12,6 +12,7 @@ import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
 
@@ -36,6 +37,7 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
+    toggleHeaderName: () => void;
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -61,7 +63,10 @@ export class AppListView extends Component<AppListViewProps>{
     renderPageHeader() {
         return <div className="app-header">
             <div className="app-header__title">
-                <h1 className="app-header__text">Applications({this.props.size})</h1>
+                <h1 className="app-header__text">Applications({this.props.size})
+                <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]:  this.props.collapsed ? '180deg' : '0deg'  }} />
+                </h1>
+                {this.props.collapsed? "hi" : ""}
                 {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
