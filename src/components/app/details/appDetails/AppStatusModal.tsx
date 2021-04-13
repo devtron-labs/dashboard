@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error.svg';
 import { AppStreamData, AggregatedNodes } from '../../types';
@@ -17,6 +17,7 @@ export const AppStatusModal: React.FC<{
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
     const [rows, setRows] = useState([]);
     const [showMore, toggleShowMore] = useState(false);
+    const errorMessageRef = useRef(null)
 
     useEffect(() => {
         const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
@@ -69,14 +70,17 @@ export const AppStatusModal: React.FC<{
                     </button>
                 </div>
                 {message && status?.toLowerCase() === "degraded" && <div className="bcr-1 pl-20 pr-20 pt-12 pb-12 mt-12">
-                    <div className={`cn-9 app-status__error-msg-container`}>
+                    <div className={`cn-9 app-status__error-msg ${showMore ? "app-status__error-msg--auto-height" : ""}`}>
                         <Error className="icon-dim-20" />
-                        <p className={`m-0 ${showMore ? '' : 'app-status__error-msg'} fs-13 fw-5 lh-1-54`}>
+                        <p ref={errorMessageRef} className={`m-0 fs-13 fw-5 lh-1-54`}>
                             <span className="fw-6">Error</span>: {message}
+                            {message}{message}{message}
+
                         </p>
                     </div>
-                    {<button type="button" className="m-0 cb-5 fw-6 transparent" onClick={(e) => toggleShowMore(!showMore)}>
-                        {showMore ? "Show more" : "Show less"}
+                    {console.log(errorMessageRef?.current?.clientHeight)}
+                    {errorMessageRef?.current?.clientHeight > 40 && <button type="button" className="ml-32 cb-5 fw-6 transparent" onClick={(e) => toggleShowMore(!showMore)}>
+                        {showMore ? "Show less" : "Show more"}
                     </button>}
                 </div>}
             </div>

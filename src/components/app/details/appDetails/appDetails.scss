@@ -1726,13 +1726,14 @@ table.resource-tree {
     height: calc(100% - 44px);
 }
 
-.app-status__error-msg-container {
+.app-status__error-msg {
     display: grid;
     grid-template-columns: 20px auto;
     gap: 12px;
+    height: 40px;
+    overflow: hidden;
 }
 
-.app-status__error-msg {
-    max-height: 40px;
-    overflow: hidden;
+.app-status__error-msg--auto-height {
+    height: auto;
 }
