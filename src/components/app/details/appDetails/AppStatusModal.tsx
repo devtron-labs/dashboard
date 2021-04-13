@@ -74,11 +74,8 @@ export const AppStatusModal: React.FC<{
                         <Error className="icon-dim-20" />
                         <p ref={errorMessageRef} className={`m-0 fs-13 fw-5 lh-1-54`}>
                             <span className="fw-6">Error</span>: {message}
-                            {message}{message}{message}
-
                         </p>
                     </div>
-                    {console.log(errorMessageRef?.current?.clientHeight)}
                     {errorMessageRef?.current?.clientHeight > 40 && <button type="button" className="ml-32 cb-5 fw-6 transparent" onClick={(e) => toggleShowMore(!showMore)}>
                         {showMore ? "Show less" : "Show more"}
                     </button>}
