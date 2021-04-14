@@ -5,10 +5,6 @@ import { AppStreamData, AggregatedNodes } from '../../types';
 import { Drawer } from '../../../common';
 
 export const NodeStatusSortOrder = {
-    "failed": 1,
-    "error": 2,
-    "degraded": 3,
-    "imagepullbackoff": 4,
     "progressing": 5,
     "running": 6,
     "healthy": 7,
@@ -47,10 +43,13 @@ export const AppStatusModal: React.FC<{
         }, [])
         allRows = allRows.filter(node => node.kind.toLowerCase() !== "rollout");
         allRows = allRows.map(node => {
-            let nodeStatus = node?.status?.toLowerCase() || node?.health?.status?.toLowerCase()
+            let nodeStatus = node?.status?.toLowerCase() || node?.health?.status?.toLowerCase();
+            let nodeStatusSortOrder = 1;
+            if (!nodeStatus) nodeStatusSortOrder = 100;
+            else nodeStatusSortOrder = NodeStatusSortOrder[nodeStatus] || 1;
             return {
                 ...node,
-                nodeStatusSortOrder: NodeStatusSortOrder[nodeStatus] || 100,
+                nodeStatusSortOrder: nodeStatusSortOrder,
             }
         })
         let sortedRows = allRows.sort((a, b) => {
@@ -74,7 +73,7 @@ export const AppStatusModal: React.FC<{
                     <div className="">
                         <h2 className="mt-12 mb-0 pl-20 pr-20 fs-16 lh-1-5 fw-6">App status detail: {appName} / {environmentName}</h2>
                         <p className={`m-0 pl-20 pr-20 text-uppercase app-summary__status-name mb-4 fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
-                        {message && status?.toLowerCase() !== "degraded" && <div className="mb-12 pl-20 pr-20 fs-12 fw-5 lh-1-5">{message}</div>}
+                        {message && status?.toLowerCase() !== "degraded" ? <div className="mb-8 pl-20 pr-20 fs-12 fw-5 lh-1-5">{message}</div > :<div className="mb-8"></div>}
                     </div>
                     <button type="button" className="transparent flex icon-dim-24 mr-20" onClick={close}>
                         <Close className="icon-dim-24" />

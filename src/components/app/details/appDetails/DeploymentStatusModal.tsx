@@ -30,15 +30,15 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                     <Close className="icon-dim-24" />
                 </button>
             </div>
-            <div className="ml-24 mr-24 mt-10">
+            <div className="p-20">
                 <div className="position-rel add-line">
                     <div className="flex left ">
-                        <div className="pt-8 pb-13 fs-14 cn-9">1/4</div>
+                        <div className="pt-8 pb-8 fs-14 cn-9">1/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={gitPushStep} />
                         </div>
-                        <div className="pt-13 pb-13" >
-                            <div className={(gitPushStep === "error") ? "fs-14 cr-5" : gitPushStep === "in_progress" ? "fs-14 cn-9 fw-`6" : (gitPushStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
+                        <div className="pt-12 pb-12" >
+                            <div className={(gitPushStep === "error") ? " lh-1-5 fs-14 cr-5" : gitPushStep === "in_progress" ? " lh-1-5 fs-14 cn-9 fw-`6" : (gitPushStep === "success") ? "lh-1-5 fs-14 cn-9 " : "lh-1-5 fs-14 o-5"}>
                                 {gitPushStep === "error" ? `${message.error}: ` : null}Push to git
                             </div>
                             <div className="cn-7">
@@ -56,11 +56,11 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </div>
                 <div className="position-rel add-line">
                     <div className="flex left ">
-                        <div className="pt-8 pb-13 fs-14 cn-9">2/4</div>
+                        <div className="pt-8 pb-8 fs-14 cn-9">2/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={gitPullStep} />
                         </div>
-                        <div className="pt-13 pb-13" >
+                        <div className="pt-12 pb-12" >
                             <div className={(gitPullStep === "error") ? "fs-14 cr-5" : (gitPullStep === "in_progress") ? "fs-14 cn-9 fw-6" : (gitPullStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
                                 {gitPullStep === "error" ? `${message.error}: ` : null}Pull from git
                         </div>
@@ -80,11 +80,11 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </div>
                 <div className="position-rel add-line">
                     <div className="flex left">
-                        <div className="pt-8 pb-13 fs-14 cn-9">3/4</div>
+                        <div className="pt-8 pb-8 fs-14 cn-9">3/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={configApplyStep} />
                         </div>
-                        <div className="pt-13 pb-13">
+                        <div className="pt-12 pb-12">
                             <div className={(configApplyStep === "error") ? "fs-14 cr-5" : (configApplyStep === "in_progress") ? "fs-14 cn-9 fw-6" : (configApplyStep === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
                                 {configApplyStep === "error" ? `${message.error}: ` : null}Apply configuration
                             </div>
@@ -104,12 +104,12 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </div>
                 <div className="position-rel add-line">
                     <div className="flex left">
-                        {!(k8sDeploy === "in_progress") ? <div className="pt-8 pb-13 fs-14 cn-9">4/4</div> : <div className="pt-8 pb-13 fs-14 cn-9 fw-6">4/4</div>}
+                        {!(k8sDeploy === "in_progress") ? <div className="pt-8 pb-8 fs-14 cn-9">4/4</div> : <div className="pt-8 pb-8 fs-14 cn-9 fw-6">4/4</div>}
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={k8sDeploy} />
                             {(k8sDeploy === "success" || k8sDeploy === "in_progress" || k8sDeploy === "waiting" || k8sDeploy === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
                         </div>
-                        <div className="pt-13 pb-13">
+                        <div className="pt-12 pb-12">
                             <div className={(k8sDeploy === "error") ? "fs-14 cr-5" : (k8sDeploy === "in_progress") ? "fs-14 cn-9 fw-6" : (k8sDeploy === "success") ? "fs-14 cn-9 " : "fs-14 o-5"}>
                                 {k8sDeploy === "error" ? `${message.error}: ` : null}Rollout
                                 </div>

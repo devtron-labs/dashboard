@@ -1723,7 +1723,7 @@ table.resource-tree {
     bottom: 0px;
 }
 
-.add-line:last-of-type::before {
+.add-line:last-child::before {
     height: calc(100% - 44px);
 }
 
