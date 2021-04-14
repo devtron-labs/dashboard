@@ -5,6 +5,8 @@ import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { URLS } from '../../../config';
 import { AppListViewType } from '../config';
+import ExternalListContainer from './ExternalListContainer';
+import KubernetesListContainer from './KubernetessListContainer';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -74,7 +76,9 @@ export default class ListContainer extends Component<{}, ListContainerState> {
         return (
             <div>
                 {this.renderPageHeader()}
-                <AppListContainer />
+                {/* <AppListContainer /> */}
+                <ExternalListContainer />
+                <KubernetesListContainer />
 
             </div>
         )

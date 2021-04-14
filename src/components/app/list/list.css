@@ -84,7 +84,7 @@
     line-height: 1.5;
     letter-spacing: normal;
     color: var(--N500);
-    padding-left: 24px;
+    padding-left: 20px;
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
     background: white;
@@ -367,6 +367,22 @@
     position: fixed;
     top: 60px;
     z-index: 1000;
+}
+
+.external-list__cell{
+    flex-basis: 15%;
+    flex-grow: 1;
+    min-width: 0px;
+    display: flex;
+    justify-content: left;
+    height: 100%;
+    background-color: inherit;
+    justify-content: left;
+    align-items: center;
+}
+
+.external-list__cell--width{
+    flex-basis: 60%;
 }
 
 @media(min-width: 1024px) {
