@@ -1,8 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg';
 import { AppStreamData, AggregatedNodes } from '../../types';
 import { Drawer } from '../../../common';
+
+export const NodeStatusSortOrder = {
+    "failed": 1,
+    "error": 2,
+    "degraded": 3,
+    "imagepullbackoff": 4,
+    "progressing": 5,
+    "running": 6,
+    "healthy": 7,
+}
 
 export const AppStatusModal: React.FC<{
     streamData: AppStreamData;
@@ -36,15 +46,16 @@ export const AppStatusModal: React.FC<{
             return acc;
         }, [])
         allRows = allRows.filter(node => node.kind.toLowerCase() !== "rollout");
-        let knownStatus = ["degraded", "failed", "error", "progressing", "running", "healthy"];
-        let failed = allRows.filter(node => node?.status?.toLowerCase() === "failed" || node?.health?.status?.toLowerCase() === "failed"
-            || node?.status?.toLowerCase() === "error" || node?.health?.status?.toLowerCase() === "error"
-            || node?.status?.toLowerCase() === "degraded" || node?.health?.status?.toLowerCase() === "degraded");
-        let progressing = allRows.filter(node => node?.status?.toLowerCase() === "progressing" || node?.health?.status?.toLowerCase() === "progressing");
-        let running = allRows.filter(node => node?.status?.toLowerCase() === "running" || node?.health?.status?.toLowerCase() === "running");
-        let healthy = allRows.filter(node => node?.status?.toLowerCase() === "healthy" || node?.health?.status?.toLowerCase() === "healthy");
-        let unknown = allRows.filter(node => !knownStatus.includes(node?.status?.toLowerCase() || node?.health?.status?.toLowerCase()));
-        let sortedRows = failed.concat(progressing, running, healthy, unknown);
+        allRows = allRows.map(node => {
+            let nodeStatus = node?.status?.toLowerCase() || node?.health?.status?.toLowerCase()
+            return {
+                ...node,
+                nodeStatusSortOrder: NodeStatusSortOrder[nodeStatus] || 100,
+            }
+        })
+        let sortedRows = allRows.sort((a, b) => {
+            return a.nodeStatusSortOrder - b.nodeStatusSortOrder
+        })
         setRows(sortedRows);
     }, [appName]);
 
