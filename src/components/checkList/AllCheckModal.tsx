@@ -34,8 +34,8 @@ export class AllCheckModal extends Component {
             <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
             <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
             {this.renderCustomAppDeploy()}
-            <AllChartsCheck />
             {this.renderSampleApplication()}
+            <AllChartsCheck />
         </div>
     }
 }
