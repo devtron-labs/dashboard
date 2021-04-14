@@ -23,21 +23,19 @@ export class AllCheckModal extends Component {
             <img className="img-width pt-12 pb-12 pl-16" src={Sample} />
             <div className="pl-20 fs-13">
                 <div className="pt-16 cn-9"> Deploy sample “Hello world” application.</div>
-                <a href={DOCUMENTATION.APP_CREATE} target="_blank"  rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
+                <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noopener noreferer" className="no-decor cb-5 fw-6">View documentation</a>
             </div>
         </div>
     }
 
     render() {
-        return (
-            <div className="">
-                <img src={Complete} className="applist__checklist-img" />
-                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
-                <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
-                <AllChartsCheck />
-                {this.renderSampleApplication()}
-                {this.renderCustomAppDeploy()}
-            </div>
-        )
+        return <div className="">
+            <img src={Complete} className="applist__checklist-img" />
+            <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
+            <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
+            {this.renderCustomAppDeploy()}
+            <AllChartsCheck />
+            {this.renderSampleApplication()}
+        </div>
     }
 }
