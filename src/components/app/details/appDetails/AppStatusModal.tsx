@@ -62,10 +62,10 @@ export const AppStatusModal: React.FC<{
                 <div className="flex flex-align-center flex-justify" >
                     <div className="">
                         <h2 className="mt-12 mb-0 pl-20 pr-20 fs-16 lh-1-5 fw-6">App status detail: {appName} / {environmentName}</h2>
-                        <p className={`m-0 pl-20 pr-20 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
-                        {message && status?.toLowerCase() !== "degraded" && <div className="mt-4 mb-12 pl-20 pr-20 fs-12 fw-5 lh-1-5">{message}</div>}
+                        <p className={`m-0 pl-20 pr-20 text-uppercase app-summary__status-name mb-4 fs-12 fw-6 f-${status.toLowerCase()}`}>{status.toUpperCase()}</p>
+                        {message && status?.toLowerCase() !== "degraded" && <div className="mb-12 pl-20 pr-20 fs-12 fw-5 lh-1-5">{message}</div>}
                     </div>
-                    <button type="button" className="transparent flex icon-dim-24" onClick={close}>
+                    <button type="button" className="transparent flex icon-dim-24 mr-20" onClick={close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -79,7 +79,7 @@ export const AppStatusModal: React.FC<{
                 </div>}
             </div>
             {status.toLowerCase() !== 'missing' && (
-                <table className="mt-7" style={{ borderCollapse: "collapse" }}>
+                <table className="mt-7 w-100" style={{ borderCollapse: "collapse" }}>
                     <thead>
                         <tr>
                             <th style={{ width: "36%", borderBottom: "1px solid #edf1f5" }} className="cn-7 pt-20 pb-8 pl-20 pr-20">NAME</th>
