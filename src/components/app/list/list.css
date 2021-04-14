@@ -385,6 +385,28 @@
     flex-basis: 60%;
 }
 
+.external-list__header{
+     height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N500);
+    padding-left: 20px;
+    box-shadow: 0 1px 0 0 var(--N200);
+    margin-bottom: 1px;
+    background: white;
+    position: sticky;
+    top: 60px;
+    z-index: var(--app-list-header-index);
+}
+
 @media(min-width: 1024px) {
     .search-filter-section {
         flex-direction: row;

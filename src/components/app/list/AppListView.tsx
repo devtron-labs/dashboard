@@ -72,7 +72,7 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderPageHeader() {
         return <div className="app-header">
-          {/*   <div className="app-header__title">
+            <div className="app-header__title">
                 <h1 className="app-header__text flex">Applications({this.props.size})
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsed ? '180deg' : '0deg' }} />
                 </h1>
@@ -108,7 +108,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Add new app
                 </button> : null}
             </div>
-            {this.renderFilters()}*/}
+            {this.renderFilters()}
         </div>
     }
 
@@ -317,8 +317,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {/* {this.renderPageHeader()} */}
-                {this.renderFilters()}
+                {this.renderPageHeader()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}

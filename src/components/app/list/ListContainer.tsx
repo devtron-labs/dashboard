@@ -42,7 +42,7 @@ export default class ListContainer extends Component<{}, ListContainerState> {
 
     renderPageHeader() {
         return <div className="app-header">
-            <div className="app-header__title">
+            <div className="p-20 flexbox left" style={{ justifyContent: "space-between"}}>
                 <h1 className="app-header__text flex">Applications
                 <Dropdown onClick={this.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.state.collapsed ? '180deg' : '0deg' }} />
                 </h1>
@@ -75,7 +75,6 @@ export default class ListContainer extends Component<{}, ListContainerState> {
     render() {
         return (
             <div>
-                {this.renderPageHeader()}
                 {/* <AppListContainer /> */}
                 <ExternalListContainer />
                 <KubernetesListContainer />

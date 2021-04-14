@@ -8,11 +8,9 @@ export default class ExternalListContainer extends Component {
         // if (this.props.apps.length) {
         // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
         return <div className="app-list">
-            <div className="app-list__header">
+            <div className="external-list__header">
                 <div className="external-list__cell">
-                    <button className="app-list__cell-header"
-                    // onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}
-                    > App name
+                    <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
                          {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
                     </button>
                 </div>
