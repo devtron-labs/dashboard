@@ -113,3 +113,20 @@ export const SortBy = {
     ENVIRONMENT: "environmentSort",
 }
 
+export interface ListContainerState {
+    code: number;
+    view: string;
+    collapsed: boolean;
+    selectedList: string;
+    onShowList: boolean;
+    selectedAppList:[
+        {value: string, label: string, description: string;},
+        {value: string, label: string, description: string;},
+        {value: string, label: string, description: string;}
+    ]
+}
+
+export interface ListContainerProps extends RouteComponentProps<{}> {
+
+}
+

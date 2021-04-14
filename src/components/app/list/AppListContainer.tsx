@@ -43,7 +43,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             chartChecklist: undefined,
             appStageCompleted: 0,
             chartStageCompleted: 0,
-            collapsed: false
+            collapsed: false,
         }
     }
 
@@ -276,7 +276,8 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ expandedRow: false, appData: null });
     }
 
-    toggleHeaderName =()=>{
+    toggleHeaderName =(e)=>{
+        e.stopPropagation()
         this.setState({ collapsed: !this.state.collapsed})
     }
 

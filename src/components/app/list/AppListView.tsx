@@ -21,6 +21,11 @@ const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
+const APP_LIST_TITLE={
+    application: 'Applications',
+    externalApp: 'External Apps',
+    k8sObjects: 'k8 Objects'
+}
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     applyFilter: (type: string, list: FilterOption[]) => void;
     expandRow: (app: App | null) => void;
@@ -38,7 +43,7 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
-    toggleHeaderName: () => void;
+    toggleHeaderName: (e: React.FormEvent) => void;
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -61,29 +66,33 @@ export class AppListView extends Component<AppListViewProps>{
         else return <div className="app-list__cell app-list__cell--env"></div>
     }
 
+    renderAppListCard(){
+      if(APP_LIST_TITLE.application==='application'){return }
+    }
+
     renderPageHeader() {
         return <div className="app-header">
-            <div className="app-header__title">
+          {/*   <div className="app-header__title">
                 <h1 className="app-header__text flex">Applications({this.props.size})
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsed ? '180deg' : '0deg' }} />
                 </h1>
                 {this.props.collapsed ? <>
-                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8">
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8">
+                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
+                        <div onClick={this.renderAppListCard} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                         <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
                                 <div className="cn-9 fs-13">Devtron Apps & Charts</div>
                                 <div className="cn-5">Apps & charts deployed using Devtron</div>
                             </div>
                         </div>
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8">
+                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                         <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
                                 <div className="cn-9 fs-13">External Apps</div>
                                 <div className="cn-5">Helm charts, Argocd objects</div>
                             </div>
                         </div>
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8">
+                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                         <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
                                 <div className="cn-9 fs-13">K8s Objects</div>
@@ -99,7 +108,7 @@ export class AppListView extends Component<AppListViewProps>{
                     Add new app
                 </button> : null}
             </div>
-            {this.renderFilters()}
+            {this.renderFilters()}*/}
         </div>
     }
 
@@ -308,7 +317,8 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {this.renderPageHeader()}
+                {/* {this.renderPageHeader()} */}
+                {this.renderFilters()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}
