@@ -407,6 +407,24 @@
     z-index: var(--app-list-header-index);
 }
 
+.external-list__row{
+    height: 56px;
+    box-shadow: 0 1px 0 0 var(--N100);
+}
+
+.external-list__row:hover {
+    text-decoration: none;
+    color: var(--N900);
+    background-color: var(--N100);
+}
+
+.external-list__cell--name{
+    flex-basis: 16%;
+    flex-grow: 1;
+    min-width: 0px
+}
+
+
 @media(min-width: 1024px) {
     .search-filter-section {
         flex-direction: row;
