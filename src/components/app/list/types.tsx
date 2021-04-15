@@ -127,6 +127,6 @@ export interface ListContainerState {
 }
 
 export interface ListContainerProps extends RouteComponentProps<{}> {
-
+    collapsed: boolean;
 }
 

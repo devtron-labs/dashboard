@@ -76,7 +76,9 @@ export default class ListContainer extends Component<{}, ListContainerState> {
         return (
             <div>
                 {/* <AppListContainer /> */}
-                <ExternalListContainer />
+                <ExternalListContainer 
+                collapsed={this.state.collapsed}
+                toggleHeaderName= {this.toggleHeaderName}/>
                 <KubernetesListContainer />
 
             </div>
