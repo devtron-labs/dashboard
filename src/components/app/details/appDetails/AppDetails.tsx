@@ -599,10 +599,16 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: "32px", maxHeight: "32px" }),
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: 'white',
+                            minHeight: "32px",
+                            maxHeight: "32px",
+                            boxShadow: 'none',
+                            border: 'solid 1px var(--B500)',
+                        }),
                         singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                         indicatorsContainer: (base, state) => ({ ...base, height: "32px" })
-
                     }}
                     isDisabled={disabled}
                     isSearchable={false}
