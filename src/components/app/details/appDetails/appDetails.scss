@@ -1695,14 +1695,14 @@ table.resource-tree {
     background-color: #959ba1;
 }
 
-.add-line:first-of-type::before {
+.add-line.add-line--git-push::before {
     height: calc(100% - 44px);
     top: unset;
     bottom: 0px;
 }
 
-.add-line:last-child::before {
-    height: calc(100% - 44px);
+.add-line.add-line--rollout::before {
+    height: 44px;
 }
 
 .app-status__error-msg {

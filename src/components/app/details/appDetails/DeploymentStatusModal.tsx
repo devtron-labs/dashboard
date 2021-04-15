@@ -31,9 +31,9 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </button>
             </div>
             <div className="p-20">
-                <div className="position-rel add-line">
+                <div className="position-rel add-line add-line--git-push">
                     <div className="flex left ">
-                        <div className="pt-8 pb-8 fs-14 cn-9">1/4</div>
+                        <div className="fs-14 cn-9">1/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={gitPushStep} />
                         </div>
@@ -56,7 +56,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </div>
                 <div className="position-rel add-line">
                     <div className="flex left ">
-                        <div className="pt-8 pb-8 fs-14 cn-9">2/4</div>
+                        <div className="fs-14 cn-9">2/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={gitPullStep} />
                         </div>
@@ -80,7 +80,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                 </div>
                 <div className="position-rel add-line">
                     <div className="flex left">
-                        <div className="pt-8 pb-8 fs-14 cn-9">3/4</div>
+                        <div className="fs-14 cn-9">3/4</div>
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={configApplyStep} />
                         </div>
@@ -102,9 +102,9 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
                             {deploymentStatus?.configApplyStep?.errorMessage}</div>
                     </div> : null}
                 </div>
-                <div className="position-rel add-line">
+                <div className="position-rel add-line add-line--rollout">
                     <div className="flex left">
-                        {!(k8sDeploy === "in_progress") ? <div className="pt-8 pb-8 fs-14 cn-9">4/4</div> : <div className="pt-8 pb-8 fs-14 cn-9 fw-6">4/4</div>}
+                        {!(k8sDeploy === "in_progress") ? <div className="fs-14 cn-9">4/4</div> : <div className="pt-8 pb-8 fs-14 cn-9 fw-6">4/4</div>}
                         <div className="mr-18 ml-17 icon-dim-20 bcn-0 position-rel">
                             <AppDeploymentStageStatusIcon status={k8sDeploy} />
                             {(k8sDeploy === "success" || k8sDeploy === "in_progress" || k8sDeploy === "waiting" || k8sDeploy === "error") ? null : <img src={Uncheck} className="icon-dim-20" />}
@@ -132,9 +132,7 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
     </Drawer>
 }
 
-
 function AppDeploymentStageStatusIcon({ status }) {
-    console.log(status)
     if (!status) return;
 
     return <>
