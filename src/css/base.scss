@@ -566,13 +566,13 @@ button.anchor {
 }
 
 .app-summary__status-name {
- 
     &.f-healthy,
+    &.f-success,
     &.f-synced,
     &.f-sync.ok,
     &.f-running,
     &.f-scalingreplicasetdown {
-        color: var(--green);
+        color: var(--G500);
     }
 
     &.f-suspended,
@@ -592,9 +592,13 @@ button.anchor {
 
     &.f-progressing,
     &.f-inprogress,
-    &.f-unknown,
+    &.f-in_progress,
     &.initiated {
         color: var(--yellow);
+    }
+
+    &.f-unknown {
+        color: var(--N500)
     }
 }
 

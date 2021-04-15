@@ -38,10 +38,10 @@
     --R300: #f99292;
     --R200: #fcbcbc;
     --R100: #fde7e7;
-    --yellow: #FF8300;
-    --red: rgba(240, 96, 96, 1);
-    --green: rgba(23, 170, 86, 1);
-    --orange: rgba(252, 173, 38, 1);
+    --yellow: #FF7E5B; 
+    --red: #f06060;
+    --green: #17aa56;
+    --orange: #fcad26;
     --window-bg: #f2f4f7;
     --white: #fff;
 }
