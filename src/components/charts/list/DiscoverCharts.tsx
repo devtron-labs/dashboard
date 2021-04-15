@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, Checkbox } from '../../common';
+import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, multiSelectStyles, Checkbox } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -22,7 +22,7 @@ import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer, Option } from '../charts.util';
+import { DropdownIndicator, Option } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
@@ -74,12 +74,13 @@ function DiscoverChartList() {
     const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([]);
     const [appStoreName, setAppStoreName] = useState("");
     const [searchApplied, setSearchApplied] = useState(false);
-    const [includeDeprecated, setIncludeDeprecated] = useState(1);
+    const [includeDeprecated, setIncludeDeprecated] = useState(0);
     const projectsMap = mapByKey(state.projects, 'id');
     const chartList: Chart[] = Array.from(state.availableCharts.values());
     const isLeavingPageNotAllowed = useRef(false);
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
     const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
+    const [openMenu, changeOpenMenu] = useState<'repository' | ''>('')
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
@@ -495,12 +496,12 @@ export default function DiscoverCharts() {
 }
 
 function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-
+{console.log(chartRepoList)}
     const menuHeaderStyle = {
         padding: '8px 12px',
         background: '#0066cc',
         color: 'white',
-        
+
     };
 
     const MenuList = props => {
@@ -515,25 +516,25 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             </components.MenuList>
         );
     };
-    function ValueContainer(props) {
-        if (!props.hasValue) return <components.ValueContainer {...props}>
-        </components.ValueContainer>
-        else {
-            return <components.ValueContainer {...props}>
-                <p style={{ margin: '0px' }}>
-                    {props?.selectProps?.name}
-                    {  (appliedChartRepoFilter?.length==0) ? '' :<span className="badge">{appliedChartRepoFilter?.length}</span> }
-                </p>
-            </components.ValueContainer>
-        }
-    }
+   
+    //  const ValueContainer = props => {
+    //     return <components.ValueContainer {...props}>
+    //         {props.hasValue ?
+    //             <p style={{ margin: '0px' }}>
+    //                 {props?.selectProps?.name}
+    //                 {(appliedChartRepoFilter?.length > 0) ? <span className="badge">{appliedChartRepoFilter?.length}</span> : ""}
+    //             </p>
+    //             : ''}
+    //     </components.ValueContainer>
+
+    //  }
 
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
-        <div className="flexbox flex-justify pl-24 pr-24">
+        <div className="flexbox flex-justify">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >
                 <Search className="search__icon icon-dim-18" />
                 <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
@@ -542,26 +543,29 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                 </button> : null}
             </form>
             <div className="flex">
+
                 <ReactSelect className="date-align-left fs-14"
                     placeholder="Repository : All"
                     name="Repository "
                     value={selectedChartRepo}
                     options={chartRepoList}
+                    closeOnSelect={false}
                     onChange={setSelectedChartRepo}
                     isClearable={false}
                     isMulti={true}
-                    closeMenuOnSelect={false}
+                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
-                    openMenuOnClick={false}
                     onMenuOpen={handleCloseFilter}
                     components={{
                         DropdownIndicator,
-                        ValueContainer,
-                        Option: Option,
+                        // ValueContainer: props => <components.ValueContainer {...props} /> ,
+                        Option,
                         IndicatorSeparator: null,
+                        ClearIndicator: null,
                         MenuList,
                     }}
                     styles={{
+                        ...multiSelectStyles,
                         menuList: (base, state) => ({
                             ...base,
                             paddingBottom: "0px"
