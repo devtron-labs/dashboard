@@ -104,9 +104,8 @@ export class Pagination extends Component<PaginationProps, PaginationState>{
 
     renderPages() {
         let pageNoIndex = this.state.pages.findIndex(page => page.selected);
-        let visiblePages = this.state.pages.filter((page) => {
-            if (page.isVisible) return page;
-        })
+        let visiblePages = this.state.pages.filter((page) => page.isVisible);
+
         return <ul className="pagination" >
             <li className="page">
                 <button className="page__button page__button--icon"
