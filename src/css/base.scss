@@ -566,7 +566,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
+ 
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -583,6 +583,7 @@ button.anchor {
     &.f-degraded,
     &.f-sync.failed,
     &.f-failed,
+    &.f-error,
     &.f-imagepullbackoff,
     &.f-errimagepull,
     &.f-outofsync {

@@ -9,14 +9,14 @@ import { useParams } from 'react-router'
 import { Nodes } from '../../types';
 
 export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatusModal = null, toggleDeploymentStatusModal = null, environments, showCommitInfo = null, showHibernateModal = null }) {
-    const status = appDetails?.lastDeploymentStatus || ""
-    const params = useParams<{ appId: string; envId?: string }>()
+    const appStatus = appDetails?.resourceTree?.status?.toLowerCase();
+    const deploymentStatus = appDetails?.deploymentStatus?.lastDeploymentStatus?.toLowerCase() || "";
+    const params = useParams<{ appId: string; envId?: string }>();
     const conditions = appDetails?.resourceTree?.conditions;
     let message = null;
     let Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
-    let appStatus = appDetails?.resourceTree?.status;
     if (
-        ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
+        ['progressing', 'degraded'].includes(deploymentStatus) &&
         Array.isArray(conditions) &&
         conditions.length > 0 &&
         conditions[0].message
@@ -25,8 +25,6 @@ export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatu
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message;
     }
-
-
 
     return <div className="mb-16">
         <div className="flex left w-100 pl-24 pr-24 mb-16">
@@ -52,13 +50,13 @@ export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatu
                 {showHibernateModal && (
                     <button className="cta cta-with-img small cancel fs-12 fw-6"
                         onClick={(e) =>
-                            showHibernateModal(status.toLowerCase() === 'hibernating' ? 'resume' : 'hibernate')
+                            showHibernateModal(deploymentStatus === 'hibernating' ? 'resume' : 'hibernate')
                         }>
                         <ScaleDown className={`icon-dim-16 mr-6 rotate`}
                             style={{
-                                ['--rotateBy' as any]: status.toLowerCase() === 'hibernating' ? '180deg' : '0deg',
+                                ['--rotateBy' as any]: deploymentStatus === 'hibernating' ? '180deg' : '0deg',
                             }} />
-                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
+                        {deploymentStatus === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
                     </button>
                 )}
             </div>
@@ -67,14 +65,14 @@ export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatu
             {isAppDeployment && (
                 <div className="flex left top column bcn-0 pt-16 pb-16 pl-20 pr-20 br-8 en-1 bw-1" >
                     <div className="cn-9 fw-6">Deployment Status</div>
-                    {appDetails?.deploymentStatus && (
+                    {deploymentStatus && (
                         <div style={{ maxWidth: '50%' }} onClick={(e) => toggleDeploymentStatusModal(true)} className="flex left">
                             <div className="flex left column" style={{ maxWidth: '100%' }}>
                                 <div className="pointer">
-                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                        {status}
+                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${deploymentStatus}`}>
+                                        {deploymentStatus}
                                     </span>
-                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${status.toLowerCase()}`}></span>
+                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${deploymentStatus}`}></span>
                                 </div>
                                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
                                     <div style={{ marginLeft: 'auto' }} className="flex wrap left fs-12 cn-9">
@@ -105,10 +103,10 @@ export function SourceInfo({ appDetails, isAppDeployment = false, toggleAppStatu
                         <div style={{ maxWidth: '50%' }} onClick={(e) => toggleAppStatusModal(true)} className="flex left">
                             <div className="flex left column" style={{ maxWidth: '100%' }}>
                                 <div className="pointer">
-                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${appStatus.toLowerCase()}`}>
+                                    <span className={`app-summary__status-name text-uppercase fs-14 mr-8 fw-6 f-${appStatus}`}>
                                         {appStatus}
                                     </span>
-                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${appStatus.toLowerCase()}`}></span>
+                                    <span className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name text-uppercase f-${appStatus}`}></span>
                                 </div>
                                 {message && <span className="ellipsis-right w-100">{message}</span>}
                             </div>

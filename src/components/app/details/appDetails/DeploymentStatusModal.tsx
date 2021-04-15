@@ -7,12 +7,12 @@ import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-c
 import { ReactComponent as Unknown } from '../../../../assets/icons/appstatus/unknown.svg';
 import Uncheck from '../../../../assets/img/ic-success@2x.png';
 
-export function DeploymentStatusModal({ appName, environmentName, deploymentStatus, lastDeploymentStatus, close }) {
-    let gitPushStep = deploymentStatus?.gitPushStep?.status.toLowerCase()
-    let gitPullStep = deploymentStatus?.gitPullStep?.status.toLowerCase()
-    let configApplyStep = deploymentStatus?.configApplyStep?.status.toLowerCase()
-    let k8sDeploy = deploymentStatus?.k8sDeploy?.status.toLowerCase()
-    const status = lastDeploymentStatus || ""
+export function DeploymentStatusModal({ appName, environmentName, deploymentStatus, close }) {
+    let gitPushStep = deploymentStatus?.gitPushStep?.status.toLowerCase();
+    let gitPullStep = deploymentStatus?.gitPullStep?.status.toLowerCase();
+    let configApplyStep = deploymentStatus?.configApplyStep?.status.toLowerCase();
+    let k8sDeploy = deploymentStatus?.k8sDeploy?.status.toLowerCase();
+    let lastDeploymentStatus = deploymentStatus?.lastDeploymentStatus?.toLowerCase() || "";
     let message = {
         error: "Error"
     }
@@ -22,8 +22,8 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
             <div className="pl-20 pr-20 pt-12 pb-12 flex flex-align-center flex-justify" style={{ borderBottom: "1px solid #d0d4d9" }}>
                 <div>
                     <h2 className="fs-16 lh-1-5 fw-6 m-0">Deployment status: {appName} / {environmentName}</h2>
-                    <p className={`m-0 text-uppercase app-summary__status-name fs-12 fw-6 f-${status.toLowerCase()}`}>
-                        {status}
+                    <p className={`m-0 text-uppercase app-summary__status-name fs-12 fw-6 f-${lastDeploymentStatus}`}>
+                        {lastDeploymentStatus}
                     </p>
                 </div>
                 <button type="button" className="transparent flex icon-dim-24" onClick={close}>
@@ -134,7 +134,9 @@ export function DeploymentStatusModal({ appName, environmentName, deploymentStat
 
 
 function AppDeploymentStageStatusIcon({ status }) {
-    status = status?.toLowerCase();
+    console.log(status)
+    if (!status) return;
+
     return <>
         {status === "success" ? <Success className="icon-dim-20" /> : null}
         {status === "in_progress" ? <Progressing /> : null}

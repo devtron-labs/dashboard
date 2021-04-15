@@ -514,7 +514,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                     </div>
                     {(nodeDetails?.status || nodeDetails?.health?.status) && (
                         <span
-                            className={` app-summary__status-name f-${(
+                            className={`app-summary__status-name f-${(
                                 nodeDetails?.status || nodeDetails?.health?.status
                             ).toLowerCase()}`}
                         >

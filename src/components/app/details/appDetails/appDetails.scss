@@ -726,28 +726,6 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
-
-        &.f-healthy,
-        &.f-scalingreplicasetdown {
-            color: var(--green);
-        }
-
-        &.f-suspended,
-        &.f-switchedtoactiveservice {
-            color: var(--orange);
-        }
-
-        &.f-degraded {
-            color: var(--red);
-        }
-
-        &.f-progressing,
-        &.f-inprogress,
-        &.f-unknown,
-        &.initiated {
-            color: var(--yellow);
-        }
-
         .tooltip-button {
             display: flex;
             align-items: center;
