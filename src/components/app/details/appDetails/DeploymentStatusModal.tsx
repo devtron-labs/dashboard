@@ -1,6 +1,7 @@
 import React from 'react';
-import { Progressing, Drawer } from '../../../common';
+import { Drawer } from '../../../common';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
+import { ReactComponent as Progressing } from '../../../../assets/icons/appstatus/progressing-rotating.svg';
 import { ReactComponent as Waiting } from '../../../../assets/icons/ic-clock.svg';
 import { ReactComponent as Failed } from '../../../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/ic-outline-check.svg';
@@ -137,7 +138,7 @@ function AppDeploymentStageStatusIcon({ status }) {
 
     return <>
         {status === "success" ? <Success className="icon-dim-20" /> : null}
-        {status === "in_progress" ? <Progressing /> : null}
+        {status === "in_progress" ? <Progressing className="icon-dim-20"/> : null}
         {status === "waiting" ? <Waiting className="icon-dim-20 o-5" /> : null}
         {status === "error" ? <Failed className="icon-dim-20" /> : null}
         {status === "unknown" ? <Unknown className="icon-dim-20" /> : null}
