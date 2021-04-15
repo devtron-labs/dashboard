@@ -31,7 +31,7 @@ export interface ChartsProps extends RouteComponentProps<any> {
 }
 
 
-export interface DeployedChartProps {
+export interface DeployedChartProps extends RouteComponentProps<{}> {
 
 }
 

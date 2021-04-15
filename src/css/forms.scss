@@ -1,17 +1,17 @@
 .form__app-compose {
-    width: 800px;
+    width: 1012px;
     margin: 0 auto;
-    padding: 12px 24px;
+    padding: 24px;
     margin-bottom: 64px;
 }
 
 .form__title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     line-height: 1.4;
     color: var(--N900);
     margin: 0px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .form__title--mb-24 {
@@ -22,7 +22,7 @@
     font-size: 12px;
     line-height: 1.67;
     color: var(--N600);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .form__section {
@@ -45,7 +45,7 @@
 
 .form__row {
     display: block;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     position: relative;
 }
 
@@ -153,7 +153,6 @@ p.sentence-case:first-letter {
     background: var(--window-bg);
     display: grid;
     grid-template-columns: 100%;
-    grid-row-gap: 16px;
     border-radius: 4px;
     padding: 16px;
     margin-bottom: 16px;
@@ -176,6 +175,14 @@ p.sentence-case:first-letter {
         justify-content: flex-start;
         flex-direction: column;
         text-transform: capitalize;
+    }
+    textarea {
+        border-radius: 4px;
+        border: solid 1px var(--N200);
+        padding: 9px 10px;
+        display: block;
+        width: 100%;
+        font-weight: 500;
     }
 }
 
@@ -234,6 +241,7 @@ p.sentence-case:first-letter {
     height: 24px;
     position: absolute;
     left: 0;
+    top: -4px;
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
@@ -546,4 +554,14 @@ p.sentence-case:first-letter {
 
 .form__label.form__label--sentence::first-letter {
     text-transform: capitalize;
+}
+
+.modal__form-title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--N900);
+    margin: 0px;
+    margin-bottom: 4px;
+
 }

@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { ErrorScreenManager, Progressing, showError } from '../../components/common';
-import { ViewType } from '../../config';
+import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';
 import { Project } from './Project';
-import { ProjectListState, ProjectType } from './types';
+import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
 
-export default class ProjectList extends Component<{}, ProjectListState>  {
+export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
 
     constructor(props) {
         super(props);
@@ -113,7 +114,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
         return <>
             <h1 className="form__title">Projects</h1>
             <p className="form__subtitle">Manage your organization's projects.&nbsp;
-                <a className="learn-more__href" href="https://docs.devtron.ai/global-configurations/projects" rel="noopener noreferer" target="_blank">Learn more about projects.</a>
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
             </p>
         </>
     }
@@ -135,7 +136,7 @@ export default class ProjectList extends Component<{}, ProjectListState>  {
             return <ErrorScreenManager code={this.state.code} />
         }
         else {
-            return <section className="project-list">
+            return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                 {this.renderPageHeader()}
                 {this.renderAddProject()}
                 {this.state.projects.map((project, index) => {

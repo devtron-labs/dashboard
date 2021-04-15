@@ -17,7 +17,7 @@ import { ChartGroupEntry, Chart } from '../charts.types'
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy';
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { URLS } from '../../../config';
+import { DOCUMENTATION, URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
@@ -27,6 +27,9 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { isGitopsConfigured } from '../../../services/service';
+import { ConfirmationDialog } from '../../common'
+import warn from '../../../assets/icons/ic-warning.svg';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -75,12 +78,20 @@ function DiscoverChartList() {
     const projectsMap = mapByKey(state.projects, 'id');
     const chartList: Chart[] = Array.from(state.availableCharts.values());
     const isLeavingPageNotAllowed = useRef(false);
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
+        isGitopsConfigured().then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+        }).catch((error) => {
+            showError(error);
+        })
         return () => {
             window.removeEventListener('beforeunload', reloadCallback);
         }
@@ -102,6 +113,24 @@ function DiscoverChartList() {
         event.preventDefault();
         if (isLeavingPageNotAllowed.current) {
             event.returnValue = "Your changes will be lost. Do you want to reload without deploying?"
+        }
+    }
+
+    function handleOnDeployTo() {
+        if (isGitOpsConfigAvailable) {
+            toggleDeployModal(true)
+        }
+        else {
+            toggleGitOpsWarningModal(true)
+        }
+    }
+
+    function handleAdvancedChart() {
+        if (isGitOpsConfigAvailable) {
+            configureChart(0)
+        }
+        else {
+            toggleGitOpsWarningModal(true)
         }
     }
 
@@ -380,7 +409,7 @@ function DiscoverChartList() {
                                 )}>
                                 <button type="button"
                                     disabled={state.charts.length === 0}
-                                    onClick={(e) => configureChart(0)}
+                                    onClick={handleAdvancedChart}
                                     className="cta cancel ellipsis-right">
                                     Advanced Options
                                     </button>
@@ -398,7 +427,7 @@ function DiscoverChartList() {
                             )}>
                             <button type="button"
                                 disabled={state.charts.length === 0}
-                                onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                onClick={state.advanceVisited ? handleInstall : () => handleOnDeployTo()}
                                 className="cta ellipsis-right">
                                 {installing ? <Progressing /> : state.advanceVisited ? ('Deploy charts') : ('Deploy to...')}
                             </button>
@@ -421,6 +450,17 @@ function DiscoverChartList() {
             redirectToAdvancedOptions={redirectToConfigure}
             validateData={validateData}
         /> : null}
+
+        {showGitOpsWarningModal ? <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+            <ConfirmationDialog.Body title="GitOps configuration required">
+                <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
+            </ConfirmationDialog.Body>
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={() => toggleGitOpsWarningModal(false)}>Cancel</button>
+                <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog> : null}
     </>
 }
 
@@ -489,10 +529,9 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
     }
 
     return <div className="chart-group__header">
-        <ChartGroupListMin chartGroups={chartGroups.slice(0, 4)} />
-        <h3 className="chart-grid__title pl-24">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
-        <h5 className="form__subtitle pl-24">Select chart to deploy. &nbsp;
-            <a className="learn-more__href" href="https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts" rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
+        <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+        <h5 className="form__subtitle">Select chart to deploy. &nbsp;
+            <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <div className="flexbox flex-justify pl-24 pr-24">
             <form onSubmit={handleAppStoreChange} className="search position-rel" >

@@ -13,7 +13,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
 import { useHistory } from 'react-router';
 import { toast } from 'react-toastify';
-import { ViewType } from '../../config';
+import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 
@@ -99,10 +99,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload />
-        else return <section className="cluster-page">
+        else return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Clusters and Environments</h2>
             <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-            <a className="learn-more__href" href="https://docs.devtron.ai/global-configurations/cluster-and-environments"  rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
             </h5>
             {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
         </section>
@@ -149,7 +149,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
         try {
             let payload = {};
             const { result } = await retryClusterInstall(clusterId, payload);
-            if (result) toast.success("Retry successful")
+            if (result) toast.success("Successfully triggered")
             reload();
         } catch (error) {
             showError(error);
@@ -177,7 +177,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                     {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                 </List>
                 {clusterId ? <hr className="mt-0 mb-16" /> : null}
-                {clusterId && defaultClusterComponent ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
+                {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
                     envName={envName}
                     onClick={clusterInstallStatusOnclick} /> : null}
                 {showClusterComponentModal ? <ClusterComponentModal agentInstallationStage={agentInstallationStage}

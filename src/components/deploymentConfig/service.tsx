@@ -18,11 +18,6 @@ export const saveDeploymentTemplate = (request) => {
     return post(URL, request)
 }
 
-export const getChartReferences = (appId: number) => {
-    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`;
-    return get(URL);
-}
-
 export function getConfigmap(appId: number) {
     const URL = `${Routes.APP_CONFIG_MAP_GET}/${appId}`;
     return get(URL).then((response) => {
@@ -53,7 +48,7 @@ export function updateConfigmap(appId: number, request: ConfigMapRequest) {
     })
 }
 
-export function toggleAppMetrics(appId, payload){
+export function toggleAppMetrics(appId, payload) {
     return post(`app/template/metrics/${appId}`, payload)
 }
 

@@ -4,7 +4,6 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
-    getNextStageURL,
     getAppCDURL,
 } from '../../../../config';
 import {
@@ -161,13 +160,14 @@ export const Details: React.FC<{
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
-        //@ts-ignore
-        prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+        //     //@ts-ignore
+        //     prefix = `${location.protocol}//${location.host}`; 
     }
+
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
-        `${prefix}${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
+        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
         !!appDetails?.appName && !!appDetails?.environmentName,
         (event) => setStreamData(JSON.parse(event.data)),
@@ -320,7 +320,10 @@ export const Details: React.FC<{
             <SecurityVulnerabilitites imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
                 severityCount={lastExecutionDetail.severityCount}
                 onClick={() => { toggleScanDetailsModal(true) }} />
-            {environment && <AppMetrics appName={appDetails.appName} environment={environment} podMap={aggregatedNodes.nodes.Pod} />}
+            {environment && <AppMetrics appName={appDetails.appName}
+                environment={environment}
+                podMap={aggregatedNodes.nodes.Pod}
+                k8sVersion={appDetails.k8sVersion} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
                     nodes={aggregatedNodes}
@@ -392,8 +395,8 @@ export const Details: React.FC<{
                             ) : hibernateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
@@ -958,7 +961,7 @@ export function AppNotConfigured({ text = 'You have not finished configuring thi
     const { push } = useHistory();
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = getNextStageURL(response.result, appId);
+            let url = `/app/${appId}/edit`;
             push(url);
         });
     }
@@ -1202,8 +1205,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>

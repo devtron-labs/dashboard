@@ -14,6 +14,7 @@ export * from './formFields/Checkbox';
 export * from './formFields/DevtronSwitch';
 export * from './modals/OpaqueModal';
 export * from './modals/VisibleModal';
+export * from './modals/VisibleModal2';
 export * from './dialogs/DeleteDialog';
 export * from './modals/Modal';
 export * from './dialogs/DialogForm';
@@ -33,7 +34,6 @@ export * from './helpers/git';
 export * from './helpers/UseWindowSize';
 export * from './helpers/util';
 export * from './helpers/time';
-export * from './DeletePipeline';
 export * from './ToastBody';
 export { BreadCrumb, useBreadcrumb } from './BreadCrumb/BreadCrumb'
 export { default as BreadcrumbStore } from './BreadCrumb/BreadcrumbStore'
@@ -46,3 +46,4 @@ export * from './security/ScanVulnerabilitiesTable';
 export * from './security/ScanDetailsModal';
 export * from './DatePickers/Calender';
 export * from './DatePickers/DayPickerRangeController';
+export * from './helpers/compareVersion';

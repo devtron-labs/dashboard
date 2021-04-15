@@ -130,3 +130,14 @@ export interface LastExecutionMinResponseType {
         },
     }
 }
+
+export interface HostURLConfig {
+    id: number,
+    key: string;
+    value: string,
+    active: boolean,
+}
+
+export interface HostURLConfigResponse extends ResponseType {
+    result?: HostURLConfig;
+}

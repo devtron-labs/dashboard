@@ -3,13 +3,16 @@
     grid-template-rows: 80px 1fr;
     grid-template-columns: 240px 1fr;
     height: 100vh;
+
     .page-header {
         grid-column: 1 / -1;
     }
+
     .global-configuration__navigation {
-        padding: 16px ;
+        padding: 16px;
         border-right: solid 1px #d6dbdf;
         background: white;
+
         a {
             font-size: 13px;
             line-height: 40px;
@@ -18,11 +21,14 @@
             border-radius: 4px;
             padding: 0 8px;
         }
+
         a {
             text-decoration: none;
+
             &:hover {
                 text-decoration: none;
             }
+
             &.active-route {
                 color: var(--B500);
                 font-weight: 600;
@@ -30,59 +36,41 @@
             }
         }
     }
+
+    .global-configuration__error-icon {
+        margin: auto 0;
+    }
+
     .global-configuration__component-wrapper {
         padding: 0;
         overflow-y: auto;
         position: relative;
         max-height: 100%;
     }
+
     .form__buttons {
         button.cta {
             cursor: pointer;
             margin-left: 8px;
         }
     }
+
     .form__input.popup-body {
         max-height: 250px;
         height: min-content;
+
         &:hover {
             border: 1px solid transparent;
         }
     }
-    .protected-input-container {
-        padding: 0;
-        overflow: hidden;
-        border-radius: 4px;
-        border: solid 1px #d6dbdf;
-        width: 100%;
-        height: 40px;
-        input {
-            height: 100%;
-            border: none;
-            outline: none;
-            width: calc( 100% - 34px);
-            padding: 0 10px;
-            background: transparent;
-        }
-        svg {
-            margin-right: 10px;
-        }
+
+    .protected-input__toggle{
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
     }
-    .form__error {
-        position: unset;
-        display: flex;
-        align-items: center;
-        margin-top: 4px;
-        &:before {
-            content: '';
-            background: url('../../assets/icons/misc/errorInfo.svg');
-            height: 14px;
-            width: 14px;
-            display: inline-block;
-            background-size: contain;
-            margin-right: 4px;
-        }
-    }
+    
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
@@ -107,10 +95,7 @@
     transition: opacity 300ms linear 150ms;
 }
 
-.git-page,
-.docker-page,
-.cluster-page,
-.project-list,
+.global-configuration__component,
 .add-notification-page {
     margin: 0 auto;
     max-width: 1012px;
@@ -130,21 +115,25 @@
     background: white;
     grid-column-gap: 8px;
     cursor: pointer;
+
     .toggle__switch,
     .tooltip-button {
         width: 32px;
         margin-left: auto;
         margin-bottom: 0;
     }
+
     .list__title {
         font-size: 14px;
         color: var(--N900);
     }
+
     .list__subtitle {
         color: var(--N600);
         font-size: 12px;
         font-weight: 500;
     }
+
     .tag {
         height: 20px;
         border-radius: 2px;
@@ -158,19 +147,24 @@
         margin-left: 8px;
         line-height: 23px;
     }
+
     .list__logo.git-logo {
         width: 24px;
         height: 24px;
         background: url('../../assets/icons/git/git.svg');
+
         &.github {
             background: url('../../assets/icons/git/github.svg')
         }
+
         &.gitlab {
             background: url('../../assets/icons/git/gitlab.svg')
         }
+
         &.bitbucket {
             background: url('../../assets/icons/git/bitbucket.svg')
         }
+
         &.docker {
             background: url('../../assets/icons/git/docker.svg')
         }
@@ -189,21 +183,25 @@
     margin-bottom: 16px;
     background: white;
     border-radius: 8px;
+
     &>.list {
         border: unset;
         margin-bottom: unset;
         grid-template-columns: 1fr 24px;
         align-items: center;
     }
+
     &.cluster-list--create {
         &>.list {
             grid-template-columns: 24px 1fr 24px;
         }
+
         .list__title {
             color: var(--B500);
             font-weight: 600;
         }
     }
+
     .cluster-environment {
         &.cluster-environment--update {
             .fa {
@@ -212,16 +210,19 @@
             }
         }
     }
+
     .environments-container {
         padding: 0 24px 24px 24px;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         grid-row-gap: 16px;
         grid-column-gap: 16px;
+
         .list {
             border-radius: 4px;
             border: 1px solid #d6dbdf;
         }
+
         .cluster-environment--create {
             border: 1px #d6dbdf dashed;
         }
@@ -232,8 +233,8 @@
     border-style: dashed;
 }
 
-.collapsed-list{
-    &.collapsed-list--chart{
+.collapsed-list {
+    &.collapsed-list--chart {
         border: 1px solid #d6dbdf;
         margin-bottom: 16px;
         border-radius: 8px;
@@ -241,15 +242,18 @@
         background: white;
     }
 }
+
 .collapsed-list {
+
     &.collapsed-list--git,
     &.collapsed-list--docker {
-        border: 1px dashed #d6dbdf;
+        border: 1px solid #d6dbdf;
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
         background: white;
     }
+
     &.collapsed-list--create {
         .add-icon {
             background: url('../../assets/icons/ic-add.svg');
@@ -257,6 +261,7 @@
             height: 24px;
             background-size: contain;
         }
+
         .list__title {
             color: var(--B500);
             font-weight: 600;
@@ -278,12 +283,15 @@
     height: 48px;
     border-radius: 4px;
     align-items: center;
+
     .flex {
         padding-left: 20px;
         height: 100%;
+
         &:not(:first-child) {
             border-left: 1px solid #d6dbdf;
         }
+
         input[type=radio] {
             margin: 0 8px 0 0;
         }
@@ -309,14 +317,17 @@
         width: 100%;
         border: unset;
     }
+
     .form__buttons {
         align-items: center;
+
         .docker-default {
             margin-right: auto;
             color: var(--N700);
             font-size: 13px;
             font-weight: normal;
             line-height: 18px;
+
             input[type="checkbox"] {
                 height: 16px;
                 width: 16px;
@@ -335,16 +346,20 @@
 
 .cluster-form {
     padding: 24px;
+
     .form__row--bearer-token .bearer-token {
         display: flex;
         width: 100%;
+
         img {
             margin-left: 16px;
         }
+
         input,
         textarea {
             width: 100%
         }
+
         textarea {
             resize: vertical;
         }
@@ -357,14 +372,17 @@
     background: white;
     padding: 24px;
     margin: 5% auto auto auto;
+
     .form__title+img {
         margin-left: auto;
         cursor: pointer;
     }
+
     .form__title {
         font-weight: 600;
         margin-bottom: unset;
     }
+
     .environment-type {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -372,38 +390,47 @@
         border: 1px solid #d6dbdf;
         border-radius: 4px;
         cursor: pointer;
+
         .form__label {
             margin-bottom: 0;
             cursor: pointer;
             width: 100%;
         }
+
         input[type="radio"] {
             margin: 0 8px 0 8px;
             cursor: pointer;
         }
+
         input:checked+span {
             color: var(--B500);
         }
+
         .environment--non-production {
             border-left: 1px solid #d6dbdf;
         }
     }
+
     .form__row--namespace {
         .form__error {
             color: --N400;
         }
     }
+
     .form__row--ignore-namespace {
         margin-bottom: 4px;
+
         input {
             margin-right: 8px;
             height: 16px;
             width: 16px;
         }
+
         .form__label.bold {
             display: inline;
         }
     }
+
     .form__row--warn {
         margin-bottom: 4px;
     }
@@ -412,12 +439,16 @@
 .cluster-create-status {
     padding: 8px 24px;
     display: grid;
-    grid-template-columns: 20px auto 48px;
+    grid-template-columns: 20px auto 64px;
     column-gap: 16px;
 }
 
 .cluster-create-status--healthy {
     background-color: var(--G100);
+}
+
+.cluster-create-status--not-triggered {
+    background-color: var(--N100);
 }
 
 .cluster-create-status--installing {

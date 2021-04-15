@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, useAsync, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput } from '../common'
+import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
 import { useParams } from 'react-router'
-import { updateConfig, deleteConfig } from './service'
-import { getConfigMapList } from '../../services/service';
+import { updateConfig, deleteConfig } from './service';
+import { getAppChartRef, getConfigMapList } from '../../services/service';
 import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
-import Reload from '../Reload/Reload'
-import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { DOCUMENTATION, PATTERNS } from '../../config';
+import Reload from '../Reload/Reload';
+import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as File } from '../../assets/icons/ic-file.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import './ConfigMap.scss'
 
@@ -21,25 +21,61 @@ const EXTERNAL_TYPES = {
 }
 
 const ConfigMap = ({ respondOnSuccess, ...props }) => {
-    const { appId } = useParams()
-    const [loading, result, error, reload, setResult] = useAsync(() => getConfigMapList(appId), [appId])
+    const { appId } = useParams<{ appId }>()
+    const [configmap, setConfigmap] = useState<{ id: number, configData: any[], appId: number }>()
+    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
 
-    if (loading && !result) {
+    useEffect(() => {
+        async function initialise() {
+            try {
+                const appChartRefRes = await getAppChartRef(appId);
+                const configmapRes = await getConfigMapList(appId);
+                setConfigmap({
+                    appId: configmapRes.result.appId,
+                    id: configmapRes.result.id,
+                    configData: configmapRes.result.configData || [],
+                })
+                setAppChartRef(appChartRefRes.result);
+            } catch (error) {
+
+            } finally {
+                setConfigmapLoading(false);
+            }
+        }
+        initialise();
+    }, [appId])
+
+    async function reload() {
+        try {
+            const configmapRes = await getConfigMapList(appId);
+            setConfigmap({
+                appId: configmapRes.result.appId,
+                id: configmapRes.result.id,
+                configData: configmapRes.result.configData || [],
+            })
+        } catch (error) {
+
+        }
+    }
+
+    if (configmapLoading) {
         return <Progressing pageLoader />
     }
-    if (error) {
-        showError(error)
-        if (!result) return <Reload />
-    }
-    if (!result) return null
-    let { result: { configData, id } } = result
-    configData = [{ id: id }].concat(configData)
+
+    let configData = [{ id: null, name: null }].concat(configmap?.configData);
     return <div className="form__app-compose">
         <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
         <p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
-            <a className="learn-more__href" rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/config-maps" target="blank">Learn more about ConfigMaps</a>
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more about ConfigMaps</a>
         </p>
-        {Array.isArray(configData) && configData.filter(cm => cm).map((cm, idx) => <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }} appId={appId} id={id} update={reload} index={idx} />)}
+        {configData.map((cm, idx) => {
+            return <CollapsedConfigMapForm key={cm.name || Math.random().toString(36).substr(2, 5)} {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
+                appChartRef={appChartRef}
+                appId={appId} id={configmap.id}
+                update={reload}
+                index={idx} />
+        })}
     </div>
 }
 
@@ -78,11 +114,11 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(({ key
     )
 })
 
-export function CollapsedConfigMapForm({ title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, ...rest }) {
+export function CollapsedConfigMapForm({ appChartRef, title = "", name = "", type = "environment", external = false, data = null, id = null, appId, update = null, index = null, filePermission = "", subPath = false, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
-    return <section className="config-map-container white-card">{collapsed
-        ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'create-new' : ''} />
-        : <ConfigMapForm {...{ name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, ...rest }} />}
+    return <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">{collapsed
+        ? <ListComponent title={name || title} name={name} onClick={e => toggleCollapse(!collapsed)} collapsible={!title} className={title ? 'fw-5 cb-5 fs-14' : 'fw-5 cn-9 fs-14'} />
+        : <ConfigMapForm {...{ appChartRef, name, type, external, data, id, appId, isUpdate: !title, collapse: e => toggleCollapse(!collapsed), update, index, filePermission, subPath, ...rest }} />}
     </section>
 }
 
@@ -149,7 +185,6 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({ minHeight,
     );
 }
 
-
 export function ListComponent({ title, name = "", subtitle = "", onClick, className = "", collapsible = false }) {
     return <article className={`configuration-list pointer ${className}`} onClick={typeof onClick === 'function' ? onClick : function () { }}>
         {!name ? <Add className="configuration-list__logo icon-dim-24 fcb-5" /> : <File className="configuration-list__logo icon-dim-24" />}
@@ -189,8 +224,8 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
             valueError = 'value must not be empty'
             isValid = false
         }
-        if (typeof v === 'string' && !PATTERNS.CONFIG_MAP_KEY.test(k)) {
-            keyError = `Key "${k}" must be of ${PATTERNS.CONFIG_MAP_KEY} format`
+        if (typeof v === 'string' && !PATTERNS.CONFIG_MAP_AND_SECRET_KEY.test(k)) {
+            keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
             isValid = false
         }
         return [...agg, { k, v, keyError, valueError }]
@@ -198,23 +233,28 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function ConfigMapForm({ id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm }) {
+export function ConfigMapForm({ appChartRef, id, appId, name = "", external, data = null, type = 'environment', mountPath = "", isUpdate = true, collapse = null, index: listIndex, update: updateForm, subPath, filePermission }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
     const [externalValues, setExternalValues] = useState([])
     const [configName, setName] = useState({ value: name, error: "" })
     const [volumeMountPath, setVolumeMountPath] = useState({ value: mountPath, error: "" })
     const [loading, setLoading] = useState(false)
-    const { envId } = useParams()
+    const { envId } = useParams<{ envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
-    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_KEY, `key must be of format ${PATTERNS.CONFIG_MAP_KEY}`)
+    const { yaml, handleYamlChange, error } = useKeyValueYaml(externalValues, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const tempArray = useRef([])
+    const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
+    const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
+    const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
 
     useEffect(() => {
+
         if (data) {
             setExternalValues(Object.keys(data).map(k => ({ k, v: typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k], keyError: "", valueError: "" })))
         }
@@ -233,35 +273,69 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     async function handleDelete() {
         try {
             if (!envId) {
-                const { result } = await deleteConfig(id, appId, name)
+                await deleteConfig(id, appId, name)
                 toast.success('Successfully deleted')
                 updateForm(listIndex, null)
             }
             else {
-                const { result } = await deleteEnvironmentConfig(id, appId, envId, name);
+                await deleteEnvironmentConfig(id, appId, envId, name);
                 toast.success('Successfully deleted')
                 updateForm(true)
             }
-
         }
         catch (err) {
             showError(err)
         }
     }
 
+    function handleFilePermission(e): void {
+        let permissionValue = e.target.value;
+        setFilePermissionValue({ value: permissionValue, error: "" });
+    }
+
     async function handleSubmit(e) {
+        const configmapNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME);
         if (!configName.value) {
-            setName({ value: "", error: 'Field is manadatory' })
+            setName({ value: "", error: 'This is a required field' })
             return
         }
-        if (!/^[-.a-zA-Z0-9]+$/.test(configName.value)) {
-            setName({ value: configName.value, error: 'Name must be of format /^[-.a-zA-Z0-9]+$/' })
+        if (configName.value.length > 253) {
+            setName({ value: configName.value, error: 'More than 253 characters are not allowed' })
+            return
+        }
+        if (!configmapNameRegex.test(configName.value)) {
+            setName({ value: configName.value, error: `Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'` })
             return
         }
         if (selectedTab === 'Data Volume' && !volumeMountPath.value) {
-            setVolumeMountPath({ value: volumeMountPath.value, error: 'Field is manadatory' })
+            setVolumeMountPath({ value: volumeMountPath.value, error: 'This is a required field' })
             return
         }
+        if (selectedTab === 'Data Volume' && isFilePermissionChecked && !isChartVersion309OrBelow) {
+            if (!filePermissionValue.value) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is a required field' });
+                return;
+            }
+            else if (filePermissionValue.value.length > 4) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'More than 4 characters are not allowed' });
+                return;
+            }
+            else if (filePermissionValue.value.length === 4) {
+                if (!filePermissionValue.value.startsWith('0')) {
+                    setFilePermissionValue({ value: filePermissionValue.value, error: '4 characters are allowed in octal format only, first character should be 0' });
+                    return;
+                }
+            }
+            else if (filePermissionValue.value.length < 3) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
+                return;
+            }
+            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
+                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
+                return;
+            }
+        }
+
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
@@ -284,7 +358,15 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                 data,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: isExternalValues,
-                ...(volumeMountPath.value && { mountPath: volumeMountPath.value })
+            }
+            if (selectedTab === 'Data Volume') {
+                payload['mountPath'] = volumeMountPath.value;
+                if (!isExternalValues && !isChartVersion309OrBelow) {
+                    payload['subPath'] = isSubPathChecked;
+                }
+                if (isFilePermissionChecked && !isChartVersion309OrBelow) {
+                    payload['filePermission'] = filePermissionValue.value.length === 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
+                }
             }
             if (!envId) {
                 const { result } = await updateConfig(id, +appId, payload)
@@ -336,7 +418,6 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
     }
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
 
-
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
@@ -364,15 +445,13 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
             </div> : null}
             <div className="form__row">
                 <label className="form__label">Name*</label>
-                <input value={configName.value} autoComplete="off" onChange={isUpdate ? null : e => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
+                <input value={configName.value} autoComplete="off" autoFocus onChange={(e) => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
-
             <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
             <div className={`form__row form-row__tab`}>
                 {tabs.map((data, idx) => <Tab {...data} key={idx} onClick={title => selectTab(title)} />)}
             </div>
-
             {selectedTab === 'Data Volume' ? <div className="form__row">
                 <CustomInput value={volumeMountPath.value}
                     autoComplete="off"
@@ -383,7 +462,58 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-
+            {!isExternalValues && selectedTab === 'Data Volume' ?
+                <div className="mb-16">
+                    <Checkbox isChecked={isSubPathChecked}
+                        onClick={(e) => { e.stopPropagation(); }}
+                        rootClassName="top"
+                        disabled={isChartVersion309OrBelow}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
+                        <span className="mb-0">Set SubPath (same as
+                            <a href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                                subPath
+                            </a>
+                            for volume mount)<br></br>
+                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                            {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                                <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                <span className="cn-7 ml-5">Learn more about </span>
+                                <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                            </span> : null}
+                        </span>
+                    </Checkbox>
+                </div> : ""}
+            {selectedTab === 'Data Volume' ? <div className="mb-16">
+                <Checkbox isChecked={isFilePermissionChecked}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName=""
+                    disabled={isChartVersion309OrBelow}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
+                    <span className="mr-5"> Set File Permission (same as
+                        <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                            defaultMode
+                        </a>
+                     for secrets in kubernetes)<br></br>
+                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
+                        </span> : null}
+                    </span>
+                </Checkbox>
+            </div> : ""}
+            {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+                <CustomInput value={filePermissionValue.value}
+                    autoComplete="off"
+                    tabIndex={5}
+                    label={""}
+                    disabled={isChartVersion309OrBelow}
+                    placeholder={"eg. 0400 or 400"}
+                    error={filePermissionValue.error}
+                    onChange={handleFilePermission} />
+            </div> : ""}
             {!isExternalValues && <div className="flex left mb-16">
                 <b className="mr-5 bold">Data*</b>
                 <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
@@ -427,8 +557,7 @@ export function ConfigMapForm({ id, appId, name = "", external, data = null, typ
                             </div>
                         </>
                     }
-                </>
-            }
+                </>}
             <div className="form__buttons">
                 <button type="button" className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}</button>
             </div>

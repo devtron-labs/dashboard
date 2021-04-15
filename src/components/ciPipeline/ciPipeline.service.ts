@@ -9,6 +9,11 @@ export function savePipeline(request): Promise<any> {
     return post(URL, request);
 }
 
+export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
+    const URL = `app/pipeline/suggest/ci/${appId}`;
+    return get(URL);
+}
+
 function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
     return get(URL)
@@ -219,7 +224,9 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials: { gitMa
                 scanEnabled: ciPipeline.scanEnabled,
             },
             loadingData: false,
-            gitMaterials
+            gitMaterials,
+            showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
+            showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
         };
     }
 }

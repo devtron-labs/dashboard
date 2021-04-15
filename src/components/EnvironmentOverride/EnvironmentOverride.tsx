@@ -7,7 +7,7 @@ import { useParams, useRouteMatch, generatePath, useHistory } from 'react-router
 import './environmentOverride.scss'
 import Reload from '../Reload/Reload'
 import { getAppOtherEnvironment } from '../../services/service'
-import { getAppComposeURL, APP_COMPOSE_STAGE } from '../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION } from '../../config';
 
 type ComponentStates = 'loading' | 'success' | 'failed'
 export default function EnvironmentOverride() {
@@ -54,11 +54,11 @@ export default function EnvironmentOverride() {
     return <ErrorBoundary>
         {loading && <Progressing pageLoader />}
         <div className="environment-override mb-24">
-            <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
             {environments.size && !loading && <>
+                <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
                 <div className="form__title">{environments.has(+params.envId) ? environments.get(+params.envId).environment_name : ''}</div>
                 <div className="form__subtitle">Manage environment configurations for this application.&nbsp;
-                        <a rel="noreferre noopener" href="https://docs.devtron.ai/creating-application/environment-overrides" target="blank">Learn about Environment Overrides</a>
+                        <a className="learn-more__href" rel="noreferre noopener" href={DOCUMENTATION.APP_CREATE_ENV} target="blank">Learn about Environment Overrides</a>
                 </div>
             </>}
             <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />

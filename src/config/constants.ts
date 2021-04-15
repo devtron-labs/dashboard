@@ -1,6 +1,7 @@
 export const RequestTimeout = 60000;
 export const DEFAULT_STATUS = 'Checking Status...';
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+export const DEFAULTK8SVERSION = 'v1.16.0';
 
 export const Routes = {
     LOGIN: 'api/v1/session',
@@ -28,6 +29,8 @@ export const Routes = {
     ENVIRONMENT_CONFIG: 'app/env',
     PIPELINE_CONFIG: 'app/cd-pipeline/pipeline-config',
 
+    APP_CHECKLIST: 'global/checklist',
+
     APP: 'app',
     APP_LIST: 'app/list',
     APP_LIST_MIN: 'app/autocomplete',
@@ -42,6 +45,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
 
+    HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
     NOTIFIER: 'notification',
     PROJECT: 'team',
@@ -50,6 +54,8 @@ export const Routes = {
     TEAM_USER: 'team/app/user', //TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
+    GITOPS: 'gitops/config',
+    GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     CHART_LIST: 'app-store/repo/list',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
@@ -99,7 +105,6 @@ export const ViewType = {
     EMPTY: 'EMPTY',
     LOADING: 'LOADING',
     FORM: 'FORM',
-    INVALID_URL: 'INVALID_URL',
     ERROR: 'ERROR',
 };
 
@@ -124,8 +129,9 @@ export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: '(?:[a-z0-9]+(?:[.-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
-    CONFIG_MAP_KEY: /^[-._a-zA-Z0-9]+$/,
-    SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
+    CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
+    CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
+    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/
 };
 
 export const TriggerType = {
@@ -160,4 +166,25 @@ export const TagOptions = [
 ];
 
 
-export const Moment12HourFormat ="ddd, DD MMM YYYY, hh:mm A";
+export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
+
+export const DOCUMENTATION = {
+    APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
+    APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
+    APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
+    APP_CREATE_DEPLOYMENT_TEMPLATE: 'https://docs.devtron.ai/user-guide/creating-application/deployment-template',
+    APP_CREATE_CONFIG_MAP: 'https://docs.devtron.ai/user-guide/creating-application/config-maps',
+    APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
+    APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
+
+    CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
+
+    GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
+    GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
+    GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
+    GLOBAL_CONFIG_CLUSTER: 'https://docs.devtron.ai/user-guide/global-configurations/cluster-and-environments',
+    GLOBAL_CONFIG_CHART: 'https://docs.devtron.ai/user-guide/global-configurations/chart-repo',
+    GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/global-configurations/manage-notification',
+    GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
+    GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
+}

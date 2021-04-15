@@ -3,14 +3,16 @@ import { saveLinkedCIPipeline } from './ciPipeline.service';
 import { ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, LinkedCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError } from '../common';
+import { Progressing, Typeahead, TypeaheadOption, TypeaheadErrorOption, showError, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader';
-import { Info } from '../common/icons/Icons'
+import { Info } from '../common/icons/Icons';
 import { getAppListMin, getCIConfig } from '../../services/service';
-import error from '../../assets/icons/misc/errorInfo.svg'
+import error from '../../assets/icons/misc/errorInfo.svg';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import './ciPipeline.css';
+
 
 export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
     validationRules;
@@ -68,7 +70,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             })
         });
     }
-    
+
     handleName(event): void {
         let { form, isValid } = { ...this.state };
         form.name = event.target.value;
@@ -113,19 +115,20 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderHeader() {
-        return <>
-            <h1 className="form__title">Linked CI Pipeline</h1>
-            <p className="form__subtitle"></p>
-        </>
+        return <div className="p-20 flex flex-align-center flex-justify">
+            <h2 className="fs-16 fw-6 lh-1-43 m-0">Create linked build pipeline</h2>
+            <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                <Close className="icon-dim-24" />
+            </button>
+        </div>
     }
 
     renderInfoDialog() {
-        return <div className="info__container info__container--linked-ci">
-            <Info />
+        return <div className="info__container fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
+            <Info className="icon-dim-20" />
             <div className="flex column left">
-                <div className="info__title">Info</div>
-                <div className="info__subtitle">Use Linked CI Pipelines to refer to an existing CI Pipeline.
-                    {/* <a className="learn-more__href" href="https://docs.devtron.ai/docs/deployment-template/" target="_blank" className="ml-5">Learn More about</a> */}
+                <div className="info__title">Info: &nbsp;
+                <span className="info__subtitle">Use Linked CI Pipelines to refer to an existing CI Pipeline.</span>
                 </div>
             </div>
         </div>
@@ -152,50 +155,61 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         </div>
     }
 
-    render() {
+    renderCIPipelineBody() {
         let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId);
         if (this.state.view === ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
+            return <div style={{minHeight: "250px"}} className="flex"><Progressing pageLoader /></div>
         }
         else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
-                    {this.renderHeader()}
-                    {this.renderInfoDialog()}
-                    <div className="typeahead form__row">
-                        <Typeahead labelKey={'name'} name='app' label={'Filter By Application'} disabled={false}
-                            onChange={(event) => { this.selectApp(event) }} multi={false} defaultSelections={app ? [app] : []} >
-                            {this.state.apps.map((app) => {
-                                return <TypeaheadOption key={app.id} id={app.id} item={app}>{app.name}</TypeaheadOption>
-                            })}
-                        </Typeahead>
-                        {(this.state.showError && !this.state.isValid.parentAppId) ? <span className="form__error">
-                            <img src={error} alt="" className="form__icon" />
-                            This is a required Field
+            return <>
+                <div className="typeahead form__row">
+                    <Typeahead labelKey={'name'} name='app' label={'Filter By Application'} disabled={false}
+                        onChange={(event) => { this.selectApp(event) }} multi={false} defaultSelections={app ? [app] : []} >
+                        {this.state.apps.map((app) => {
+                            return <TypeaheadOption key={app.id} id={app.id} item={app}>{app.name}</TypeaheadOption>
+                        })}
+                    </Typeahead>
+                    {(this.state.showError && !this.state.isValid.parentAppId) ? <span className="form__error">
+                        <img src={error} alt="" className="form__icon" />This is a required Field
                         </span> : null}
-                    </div>
-                    {this.renderCIPipelinesDropdown(app)}
-                    {this.state.form.parentCIPipelineId
-                        ? <label className="form__row">
-                            <span className="form__label">Name*</span>
-                            <input className="form__input" placeholder="Enter pipeline name" type="text" value={this.state.form.name} onChange={this.handleName} />
-                            {(!this.state.isValid.name) ? <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
+                </div>
+                {this.renderCIPipelinesDropdown(app)}
+                {this.state.form.parentCIPipelineId
+                    ? <label className="form__row">
+                        <span className="form__label">Name*</span>
+                        <input className="form__input" placeholder="Enter pipeline name" type="text" value={this.state.form.name} onChange={this.handleName} />
+                        {(!this.state.isValid.name) ? <span className="form__error">
+                            <img src={error} alt="" className="form__icon" />
                                 You cannot use same name for pipeline within an app.
                         </span> : null}
-                        </label>
-                        : null}
-                    <div className="form__row form__row--flex">
-                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+                    </label>
+                    : null}
+
+            </>
+        }
+    }
+
+    render() {
+        return <VisibleModal className="">
+            <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                {this.renderHeader()}
+                <hr className="divider m-0" />
+                <div className="pl-20 pr-20 pt-20">
+                    {this.renderInfoDialog()}
+                    {this.renderCIPipelineBody()}
+                </div>
+                {this.state.view !== ViewType.LOADING &&
+                    <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        <button type="button" className="cta cta--workflow cancel mr-16"
+                            onClick={this.props.close}>Cancel
+                        </button>
+                        <ButtonWithLoader rootClassName="cta cta--workflow flex-1" loaderColor="white"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}>
                             Create Linked CI Pipeline
                         </ButtonWithLoader>
-                    </div>
-                </div>
-            </OpaqueModal >
-        }
+                    </div>}
+            </div>
+        </VisibleModal >
     }
 }

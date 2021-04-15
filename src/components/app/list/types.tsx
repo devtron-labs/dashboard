@@ -1,6 +1,7 @@
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
 import { FilterOption } from '../../common/filter/types';
+import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
 export interface AppListState {
     code: number;
@@ -23,8 +24,12 @@ export interface AppListState {
     offset: number;
     pageSize: number;
     expandedRow: boolean;
-    isDockerRegistryEmpty: boolean;
     appData: App | null;
+    isAppCreated: boolean;
+    appStageCompleted: number;
+    chartStageCompleted: number;
+    appChecklist: AppCheckList;
+    chartChecklist: ChartCheckList;
 }
 
 export interface App {

@@ -1,0 +1,3 @@
+.tab-list__tab-link.active .tab-list__icon path {
+    fill: var(--B500);
+}

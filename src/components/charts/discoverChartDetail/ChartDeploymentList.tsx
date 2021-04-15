@@ -7,7 +7,8 @@ import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import deleteIcon from '../../../assets/icons/ic-delete.svg';
+import trash from '../../../assets/icons/ic-delete.svg';
+import deleteIcon from '../../../assets/img/warning-medium.svg';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -41,21 +42,21 @@ export function ChartDeploymentList({ chartId }) {
     return <div className="white-card white-card--no-padding deployments">
         <div className="chart-store-card__header">Deployments</div>
         {installs.length !== 0 &&
-                <table className="deployments-table">
-                    <thead className="deployment-table-header">
-                        <tr>
-                            <th>App name</th>
-                            <th>Environment</th>
-                            <th>Deployed By</th>
-                            <th>Deployed at</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {installs.map((install, idx) => <DeploymentRow {...install} key={idx} />)}
-                    </tbody>
-                </table>
-            }
+            <table className="deployments-table">
+                <thead className="deployment-table-header">
+                    <tr>
+                        <th>App name</th>
+                        <th>Environment</th>
+                        <th>Deployed By</th>
+                        <th>Deployed at</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {installs.map((install, idx) => <DeploymentRow {...install} key={idx} />)}
+                </tbody>
+            </table>
+        }
         {installs.length === 0 && <NoDeployments imageComponent={<img src={AppNotDeployedIcon} alt="no deployed charts" style={{ width: '200px', marginBottom: '12px' }} />} />}
     </div>
 }
@@ -92,10 +93,10 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 <Td>
                     <PopupMenu autoClose>
                         <PopupMenu.Button isKebab>
-                            <img src={dots} alt=""/>
+                            <img src={dots} alt="" />
                         </PopupMenu.Button>
                         <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                            <div className="flex left" onClick={e => toggleConfirmation(true)}><img src={deleteIcon} alt="delete" />Delete</div>
+                            <div className="flex left" onClick={e => toggleConfirmation(true)}><img src={trash} alt="delete" />Delete</div>
                         </PopupMenu.Body>
                     </PopupMenu>
                 </Td>
@@ -103,7 +104,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             {confirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={deleteIcon} />
                 <ConfirmationDialog.Body title={`Delete app ‘${appName}’`} subtitle={`This will delete all resources associated with this application.`}>
-                    <p style={{ marginTop: '20px' }}>Deleted app;lications cannot be restored.</p>
+                    <p className="mt-20">Deleted applications cannot be restored.</p>
                 </ConfirmationDialog.Body>
                 <ConfirmationDialog.ButtonGroup>
                     <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>

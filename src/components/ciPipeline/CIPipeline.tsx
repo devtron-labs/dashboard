@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
-import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigParsed } from './ciPipeline.service';
-import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
+import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigParsed, getCIPipelineNameSuggestion } from './ciPipeline.service';
+import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
-import { Progressing, OpaqueModal, Select, ButtonWithLoader, Trash, Page, showError, ConditionalWrap, Toggle } from '../common';
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
+import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDialog, showError } from '../common';
 import { toast } from 'react-toastify';
-import { DeletePipeline } from '../common/DeletePipeline';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
-import trash from '../../assets/icons/misc/delete.svg';
-import git from '../../assets/icons/git/git.svg';
-import error from '../../assets/icons/misc/errorInfo.svg'
 import { ValidationRules } from './validationRules';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import CodeEditor from '../CodeEditor/CodeEditor';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import { CIPipelineAdvanced } from './CIPipelineAdvanced';
+import { SourceMaterials } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
+import { classNames } from 'react-select/src/utils';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules;
@@ -51,27 +47,54 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
+            showPreBuild: false,
+            showDocker: false,
+            showPostBuild: false,
+            isAdvanced: false,
         }
+        this.validationRules = new ValidationRules();
         this.handlePipelineName = this.handlePipelineName.bind(this);
+        this.addEmptyStage = this.addEmptyStage.bind(this);
         this.handleTriggerChange = this.handleTriggerChange.bind(this);
         this.savePipeline = this.savePipeline.bind(this);
         this.selectSourceType = this.selectSourceType.bind(this);
         this.deletePipeline = this.deletePipeline.bind(this);
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
         this.handleScanToggle = this.handleScanToggle.bind(this);
-        this.validationRules = new ValidationRules();
+        this.handleDocker = this.handleDocker.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handlePreBuild = this.handlePreBuild.bind(this);
+        this.handleDockerArgs = this.handleDockerArgs.bind(this);
+        this.handlePostBuild = this.handlePostBuild.bind(this);
+        this.discardChanges = this.discardChanges.bind(this);
+        this.handleDockerArgChange=this.handleDockerArgChange.bind(this);
+        this.addDockerArg=this.addDockerArg.bind(this);
+        this.removeDockerArgs=this.removeDockerArgs.bind(this);
+        this.handleSourceChange = this.handleSourceChange.bind(this);
+        this.toggleCollapse = this.toggleCollapse.bind(this);
+        this.toggleCIPipelineView = this.toggleCIPipelineView.bind(this);
     }
 
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
             getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
-                this.setState({ ...response, loadingData: false });
+                this.setState({ ...response, loadingData: false, isAdvanced: true });
             }).catch((error: ServerErrors) => {
                 showError(error);
                 this.setState({ loadingData: false });
             })
         }
         else {
+            getCIPipelineNameSuggestion(this.props.match.params.appId).then((response) => {
+                this.setState({
+                    form: {
+                        ...this.state.form,
+                        name: response.result
+                    },
+                })
+            }).catch((error) => {
+
+            })
             getSourceConfigParsed(this.props.match.params.appId).then((response) => {
                 this.setState({
                     view: ViewType.FORM,
@@ -81,9 +104,40 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     },
                     gitMaterials: response.result.gitMaterials,
                     loadingData: false,
+                    isAdvanced: false,
                 });
             })
         }
+    }
+
+    toggleCIPipelineView(): void {
+        this.setState({
+            isAdvanced: !this.state.isAdvanced
+        })
+    }
+
+    handlePreBuild(): void {
+        this.setState({
+            showPreBuild: !this.state.showPreBuild
+        })
+    }
+
+    handleDockerArgs(): void {
+        this.setState({
+            showDockerArgs: !this.state.showDockerArgs
+        })
+    }
+
+    handlePostBuild(): void {
+        this.setState({
+            showPostBuild: !this.state.showPostBuild
+        })
+    }
+
+    handleDocker(): void {
+        this.setState({
+            showDocker: !this.state.showDocker
+        })
     }
 
     handleDockerArgChange(event, index: number, key: 'key' | 'value') {
@@ -153,7 +207,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     //invoked on Done, Discard, collapse icon
-    toggleCollapse(stageId, stageIndex: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
+    toggleCollapse(stageId, stageIndex: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts'): void {
         let stage = this.state.form[key].find(s => s.id == stageId);
         if (stage.name.length && stage.script.length) {
             let { form } = { ...this.state };
@@ -167,7 +221,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
     }
 
-    addEmptyStage(stageType: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
+    addEmptyStage(stageType: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts'): void {
         let { form } = this.state
         let { length, [length - 1]: last } = form[stageType]
         let stage = {
@@ -182,7 +236,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
-    deleteStage = (stageId: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts', stageIndex: number) => {
+    deleteStage = (stageId: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts', stageIndex: number): void => {
         let stages = this.state.form[key]
         stages.splice(stageIndex, 1)
         this.setState(form => ({ ...form, [key]: stages }))
@@ -284,7 +338,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -297,7 +351,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
-    closeCIDeleteModal() {
+    closeCIDeleteModal(): void {
         this.setState({ showDeleteModal: false });
     }
 
@@ -311,180 +365,17 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
-    renderTriggerType() {
-        return <div className="form__row">
-            <label className="form__label form__label--sentence">When do you want the pipeline to execute?*</label>
-            <RadioGroup value={this.state.form.triggerType} name="trigger-type" onChange={this.handleTriggerChange}>
-                <RadioGroupItem value={TriggerType.Auto}> Automatic  </RadioGroupItem>
-                <RadioGroupItem value={TriggerType.Manual}>  Manual  </RadioGroupItem>
-            </RadioGroup>
-        </div>
-    }
-
-    renderDeleteCI() {
+    renderDeleteCIModal() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.form.name}
-                appName={this.props.appName}
-                shouldDeleteApp={false}
-                setDeleteApp={() => { }}
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deletePipeline} />
-
+                delete={this.deletePipeline} />
         }
         return null;
     }
 
-    renderMaterials() {
-        return <div className="form__row">
-            <span className="form__label">Materials*</span>
-            {this.state.form.materials.map((mat, index) => {
-                let errorObj = this.validationRules.sourceValue(mat.value);
-                return <div className="ci-artifact" key={mat.gitMaterialId}>
-                    <div className="ci-artifact__header">
-                        <img src={git} alt="" className="ci-artifact__icon" />
-                        {mat.name}
-                    </div>
-                    <div className="ci-artifact__body">
-                        <div className="flex-1 mr-16">
-                            <label className="form__label">Source Type*</label>
-                            <Select rootClassName="popup-body--source-info"
-                                disabled={!!mat.id} onChange={(event) => this.selectSourceType(event, mat.gitMaterialId)} >
-                                <Select.Button rootClassName="select-button default" >{SourceTypeReverseMap[mat.type] || "Select Source Type"}</Select.Button>
-                                {TagOptions.map((tag) => {
-                                    return <Select.Option key={tag.value} value={tag.value}>{tag.label}</Select.Option>
-                                })}
-                            </Select>
-                        </div>
-                        <div className="flex-1">
-                            <label className="form__label">
-                                {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : "Source Value*"}
-                            </label>
-                            <input className="form__input" autoComplete="off" placeholder="Name" type="text" value={mat.value}
-                                onChange={(event) => { this.handleSourceChange(event, mat.gitMaterialId) }} />
-                            {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.validationRules.sourceValue(this.state.form.materials[index].value).message}
-                            </span> : null}
-                        </div>
-                    </div>
-                </div>
-            })}
-        </div>
-    }
-
-    renderAddStage(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        return <div className="white-card flex left cursor mb-16"
-            onClick={() => { this.addEmptyStage(key) }}>
-            <Add className="icon-dim-24 fcb-5 vertical-align-middle mr-16" />
-            <span className="artifact__add">Add Stage</span>
-        </div>
-    }
-
-    renderStages(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        let description, title;
-        if (key == 'beforeDockerBuildScripts') {
-            title = "Pre-build";
-            description = " These stages are run in sequence before the docker image is built";
-        }
-        else {
-            title = "Post-build";
-            description = " These stages are run in sequence after the docker image is built";
-        }
-        return <>
-            <h3 className="ci-stage__title">{title}</h3>
-            <p className="ci-stage__description mb-10">{description}</p>
-            {this.state.form[key].map((stage, index) => {
-                if (stage.isCollapsed) {
-                    return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mb-16" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>
-                        <Page className="ci-file-icon" />
-                        <div className="ci-stage-name">{stage.name}</div>
-                        <img src={dropdown} className="collapsed__icon" alt="collapsed" />
-                    </div>
-                }
-                else {
-                    return <div key={`${key}-${index}`} className="white-card mb-16">
-                        <div className="white-card__header" >
-                            {stage.id ? "Edit Stage" : "Add Stage"}
-                            {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.deleteStage(stage.id, key, index)} />}
-                        </div>
-                        <label className="form__row">
-                            <span className="form__label">Stage Name*</span>
-                            <input className="form__input" autoComplete="off" placeholder="Enter stage name" type="text" value={stage.name} onChange={(event) => this.handleChange(event, stage.id, key, index, 'name')} />
-                        </label>
-                        <label className="form__row">
-                            <span className="form__label">Script to execute*</span>
-                            <div className="script-container">
-                                <CodeEditor
-                                    value={stage.script}
-                                    mode="shell"
-                                    onChange={(value) => this.handleChange({ target: { value } }, stage.id, key, index, 'script')}
-                                    shebang="#!/bin/sh"
-                                    inline
-                                    height={300}
-                                >
-                                </CodeEditor>
-                            </div>
-                        </label>
-                        <label className="form__row">
-                            <span className="form__label">Report Directory</span>
-                            <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.handleChange(event, stage.id, key, index, 'outputLocation')} />
-                        </label>
-                        <div className="form__buttons">
-                            <button type="button" className="cta tertiary mr-16" onClick={(event) => this.discardChanges(stage.id, key, index)}>Cancel</button>
-                            <button type="button" className="cta ghosted" onClick={(event) => this.toggleCollapse(stage.id, index, key)}>Done</button>
-                        </div>
-                    </div>
-                }
-            })}
-            {this.renderAddStage(key)}
-        </>
-    }
-
-    renderDockerArgs() {
-        return <>
-            <h2 className="ci-stage__title">Docker build</h2>
-            <p className="ci-stage__description mb-10">Override docker build configurations for this pipeline.</p>
-            <div className="docker-build-args">
-                <div className="docker-build-args__header"
-                    onClick={(event) => { this.setState({ showDockerArgs: !this.state.showDockerArgs }) }}>
-                    <span className="docker-build-args__text">Docker Arguments Override</span>
-                    <img src={dropdown} alt="dropDown" style={{ "transform": this.state.showDockerArgs ? "rotate(180deg)" : "rotate(0)" }} />
-                </div>
-                {this.state.showDockerArgs ? <div className="docker-build-args__wrapper">
-                    {this.state.form.args.map((arg, index) => {
-                        return <div key={index} className="form__key-value-inputs form__key-value-inputs--docker-build docker-build-args__body">
-                            <img src={trash} onClick={(event) => { this.removeDockerArgs(index) }} />
-                            <div className="form__field">
-                                <label className="form__label">Key</label>
-                                <input className="form__input w-50" autoComplete="off" placeholder="Name" type="text"
-                                    value={arg.key} onChange={(event) => { this.handleDockerArgChange(event, index, 'key'); }} />
-                            </div>
-                            <div className="form__field">
-                                <label className="form__label">Value</label>
-                                <textarea value={arg.value} onChange={(event) => { this.handleDockerArgChange(event, index, 'value') }}
-                                    placeholder="Enter Your Text here" />
-                            </div>
-                        </div>
-                    })}
-                    <button type="button" onClick={(event) => { this.addDockerArg() }}
-                        className="form__add-parameter form__add-parameter--docker-build">
-                        <span className="fa fa-plus"></span>
-                        Add parameter
-                    </button>
-                </div> : null}
-            </div>
-        </>
-    }
-
-    renderHeader() {
-        return <>
-            <h1 className="form__title">CI Pipeline</h1>
-            <p className="form__subtitle"></p>
-        </>
-    }
-
-    renderDeleteCIButton() {
+    renderSecondaryButtton() {
         if (this.props.match.params.ciPipelineId) {
             let canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0;
             let message = this.props.connectCDPipelines > 0 ? "This Pipeline cannot be deleted as it has connected CD pipeline" : "This pipeline has linked CI pipelines";
@@ -494,61 +385,102 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     <div>{children}</div>
                 </Tippy>}>
                 <button type="button"
-                    className={`cta delete mr-16`}
+                    className={`cta cta--workflow delete mr-16`}
                     disabled={!canDeletePipeline}
                     onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
                 </button>
             </ConditionalWrap>
         }
+        else {
+            if (!this.state.isAdvanced) {
+                return <button type="button"
+                    className={`cta cta--workflow cancel mr-16`}
+                    onClick={() => { this.setState({ isAdvanced: true }) }}>
+                    Advanced options
+                </button>
+            }
+            else {
+                return <button type="button"
+                    className={`cta cta--workflow cancel mr-16`}
+                    onClick={this.props.close}>Cancel
+                </button>
+            }
+        }
+    }
+
+    renderBasicCI() {
+        return <SourceMaterials showError={this.state.showError}
+            validationRules={this.validationRules}
+            materials={this.state.form.materials}
+            selectSourceType={this.selectSourceType}
+            handleSourceChange={this.handleSourceChange}
+        />
+    }
+
+    renderAdvanceCI() {
+        return <CIPipelineAdvanced {...this.state}
+            validationRules={this.validationRules}
+            closeCIDeleteModal={this.closeCIDeleteModal}
+            deletePipeline={this.deletePipeline}
+            handlePreBuild={this.handlePreBuild}
+            handlePostBuild={this.handlePostBuild}
+            handleDockerArgs={this.handleDockerArgs}
+            addEmptyStage={this.addEmptyStage}
+            toggleCollapse={this.toggleCollapse}
+            deleteStage={this.deleteStage}
+            handleChange={this.handleChange}
+            discardChanges={this.discardChanges}
+            handleTriggerChange={this.handleTriggerChange}
+            handleDocker={this.handleDocker}
+            addDockerArg={this.addDockerArg}
+            handleDockerArgChange={this.handleDockerArgChange}
+            removeDockerArgs={this.removeDockerArgs}
+            handleScanToggle={this.handleScanToggle}
+            handleSourceChange={this.handleSourceChange}
+            handlePipelineName={this.handlePipelineName}
+            selectSourceType={this.selectSourceType}
+        />
+    }
+
+    renderCIPipelineBody() {
+        if (this.state.view === ViewType.LOADING) {
+            return <div style={{minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
+        }
+        else if (this.state.isAdvanced) {
+            return this.renderAdvanceCI()
+        }
+        else {
+            return this.renderBasicCI()
+        }
     }
 
     render() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
-        let errorObj = this.validationRules.name(this.state.form.name);
-        if (this.state.view == ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
-        }
-        else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
-                    {this.renderHeader()}
-                    <label className="form__row">
-                        <span className="form__label">Pipeline Name*</span>
-                        <input className="form__input" autoComplete="off" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
-                            onChange={this.handlePipelineName} />
-                        {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                            <img src={error} className="form__icon" />
-                            {this.validationRules.name(this.state.form.name).message}
-                        </span> : null}
-                    </label>
-                    {this.renderTriggerType()}
-                    {this.renderMaterials()}
-                    <h2 className="form__section mt-20 mb-16">Stages</h2>
-                    {this.renderStages('beforeDockerBuildScripts')}
-                    {this.renderDockerArgs()}
-                    {this.renderStages('afterDockerBuildScripts')}
-                    <div className="white-card flexbox flex-justify mb-40">
-                        <div>
-                            <p className="ci-stage__title">Scan for vulnerabilities</p>
-                            <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
-                        </div>
-                        <div className="" style={{ width: "32px", height: "20px" }}>
-                            <Toggle selected={this.state.form.scanEnabled} onSelect={this.handleScanToggle} />
-                        </div>
-                    </div>
-                    {this.renderDeleteCI()}
-                    <div className="form__row form__row--flex">
-                        {this.renderDeleteCIButton()}
-                        <ButtonWithLoader rootClassName="cta flex-1" loaderColor="white"
+        return <VisibleModal className="" >
+            <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                <div className="p-20 flex flex-align-center flex-justify">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                <hr className="divider m-0" />
+                <div className="pl-20 pr-20 pt-20 pb-20" style={{ maxHeight: "calc(100vh - 164px)", overflowY: "scroll" }}>
+                    {this.renderCIPipelineBody()}
+                </div>
+                {this.state.view !== ViewType.LOADING && <>
+                    <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        {this.renderSecondaryButtton()}
+                        <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
+                            loaderColor="white"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}>
                             {text}
                         </ButtonWithLoader>
                     </div>
-                </div>
-            </OpaqueModal >
-        }
+                </>}
+                {this.renderDeleteCIModal()}
+            </div>
+        </VisibleModal>
     }
 }

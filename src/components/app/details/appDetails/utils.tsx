@@ -5,12 +5,12 @@ import {
     AggregatedNodes,
     PodMetadatum,
 } from '../../types';
-import { mapByKey } from '../../../common';
+import { getVersionArr, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
 import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps } from './appDetails.type';
+import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
 
@@ -213,27 +213,68 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
     return str;
 }
 
-export function getIframeSrc(appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: string):string {
-    let rootUrl = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
-    // rootUrl = 'http://demo.devtron.info:32080';
-    let startTime: string = calendarInputs.startDate;
-    let endTime: string = calendarInputs.endDate;
-    let url = ``;
-    if (chartName !== 'status') {
-        url = `${rootUrl}/grafana/d-solo/devtron-app-metrics-`;
+export function isK8sVersionValid(k8sVersion: string): boolean {
+    if (!k8sVersion) return false;
+    try {
+        let versionNum = getVersionArr(k8sVersion);
+        let sum = versionNum.reduce((sum, item) => {
+            return sum += item;
+        }, 0)
+        if (isNaN(sum)) return false;
+    } catch (error) {
+        return false;
+    }
+    return true;
+}
+
+export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
+    //Comparing with v1.15.xxx
+    let target = [1, 15];
+    return isVersionLessThanOrEqualToTarget(k8sVersion, target);
+}
+
+export interface AppInfo {
+    appId: string | number;
+    envId: string | number;
+    environmentName: string;
+    newPodHash: string,
+    k8sVersion: string;
+}
+
+export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+    let baseURL = getGrafanaBaseURL(chartName);
+    let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode);
+    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode)
+    return grafanaURL;
+}
+
+export function getGrafanaBaseURL(chartName: ChartTypes): string {
+    let url = '/grafana/d-solo';
+    if (chartName === 'status') {
+        url = `${url}/NnFpQOKGk/res_status_per_pod`;
     }
     else {
-        url = `${rootUrl}/grafana/d-solo/NnFpQOKGk/res_status_per_pod`;
+        url = `${url}/devtron-app-metrics-`;
     }
+    return url;
+}
+
+export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
     switch (chartName) {
         case 'latency':
             url += `latency/latency`;
             break;
         case 'ram':
-            url += `memory/memory-usage`;
+            if (isK8sVersion115OrBelow(k8sVersion)) {
+                url += `memory-k8s15/memory-usage-k8s15`;
+            }
+            else url += `memory/memory-usage`;
             break;
         case 'cpu':
-            url += `cpu/cpu-usage`;
+            if (isK8sVersion115OrBelow(k8sVersion)) {
+                url += `cpu-k8s15/cpu-usage-k8s15`;
+            }
+            else url += `cpu/cpu-usage`;
             break;
         case 'status':
             if (statusCode.includes("xx")) url += ``;
@@ -242,6 +283,12 @@ export function getIframeSrc(appId: string | number, envId: string | number, env
         default:
             return '';
     }
+    return url;
+}
+
+export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+    let startTime: string = calendarInputs.startDate;
+    let endTime: string = calendarInputs.endDate;
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`;
     url += `&refresh=10s`;
     url += `&var-app=${appId}`;

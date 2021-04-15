@@ -10,10 +10,10 @@ import { Empty } from './emptyView/Empty';
 import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
+import { AppCheckListModal } from '../../checkList/AppCheckModal';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -231,6 +231,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
     }
 
+
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
@@ -243,29 +244,20 @@ export class AppListView extends Component<AppListViewProps>{
         else if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
                 {this.renderPageHeader()}
-                {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
-                    <Info className="icon-dim-20 fcb-5 vertical-align-bottom" />
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Configure docker registry </Link>
-                    to setup a new application.&nbsp;
-                    <a href="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" rel="noreferrer noopener" className="cb-5 anchor">Learn how to configure docker registry.</a>
-                </p>}
                 {this.renderRouter()}
-                <Empty view={this.props.view}
-                    title={"No Applications here"}
-                    message={"You don't have any apps as of now. Add an application or check again later."}
-                    buttonLabel={"Add new app"}
-                    clickHandler={this.openCreateModal} />
+                <AppCheckListModal history={this.props.history}
+                    location={this.props.location}
+                    match={this.props.match}
+                    appChecklist={this.props.appChecklist}
+                    chartChecklist={this.props.chartChecklist}
+                    appStageCompleted={this.props.appStageCompleted}
+                    chartStageCompleted={this.props.chartStageCompleted}
+                />
             </React.Fragment>
         }
         else if (this.props.view === AppListViewType.NO_RESULT) {
             return <React.Fragment>
                 {this.renderPageHeader()}
-                {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
-                    <Info className="icon-dim-20 fcb-5 vertical-align-bottom" />
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Configure docker registry </Link>
-                    to setup a new application.&nbsp;
-                    <a href="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" rel="noreferrer noopener" className="cb-5 anchor">Learn how to configure docker registry.</a>
-                </p>}
                 {this.renderSavedFilters()}
                 {this.renderRouter()}
                 <Empty view={this.props.view}
@@ -278,18 +270,14 @@ export class AppListView extends Component<AppListViewProps>{
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
                 {this.renderPageHeader()}
-                <ErrorScreenManager code={this.props.code} />
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={this.props.code} />
+                </div>
             </React.Fragment>
         }
         else {
             return <React.Fragment>
                 {this.renderPageHeader()}
-                {this.props.isDockerRegistryEmpty && <p className="m-0 pt-10 pb-10 pl-24 pr-24 cn-9 bcb-1 fw-5 fs-13">
-                    <Info className="icon-dim-20 fcb-5 vertical-align-bottom" />
-                    &nbsp;<Link to="/global-config/docker" className="cb-5 anchor">Configure docker registry </Link>
-                    to setup a new application.&nbsp;
-                    <a href="https://docs.devtron.ai/user-guide/global-configurations/docker-registries" target="_blank" rel="noreferrer noopener" className="cb-5 anchor">Learn how to configure docker registry.</a>
-                </p>}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}
