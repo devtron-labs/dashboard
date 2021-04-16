@@ -55,6 +55,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             title = "Post-build Stages";
             description = " These stages are run in sequence after the docker image is built";
         }
+        let showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild;
+
         return <>
             <div className="flex left cursor" onClick={(event) => {
                 if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild();
@@ -70,8 +72,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.props.showPostBuild ? "rotate(180deg)" : "rotate(0)" }} />}
             </div>
             {this.props.form[key].map((stage, index) => {
-                if (stage.isCollapsed) {
-                    return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mb-16" onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}>
+                if (showBuild && stage.isCollapsed) {
+                    return <div key={`${key}-${index}-collapsed`} className="white-card white-card--add-new-item mt-16" onClick={(event) => { event.stopPropagation(); this.props.toggleCollapse(stage.id, index, key) }}>
                         <Page className="ci-file-icon" />
                         <div className="ci-stage-name">{stage.name}</div>
                         <img src={dropdown} className="collapsed__icon" alt="collapsed" />
@@ -80,10 +82,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 else {
                     if (key === 'beforeDockerBuildScripts' && this.props.showPreBuild) {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
-
-                            <div className="white-card__header" >
+                            <div className="white-card__header  flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
@@ -115,9 +116,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     else if (key === 'afterDockerBuildScripts' && this.props.showPostBuild) {
                         return <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
 
-                            <div className="white-card__header" >
+                            <div className="white-card__header flex flex-justify" >
                                 {stage.id ? "Edit Stage" : "Add Stage"}
-                                {stage.id > 0 && <Trash style={{ margin: '0 16px 0 auto' }} className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
+                                {stage.id > 0 && <Trash className="pointer" onClick={e => this.props.deleteStage(stage.id, key, index)} />}
                             </div>
                             <label className="form__row">
                                 <span className="form__label">Stage Name*</span>
@@ -187,7 +188,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                 <img src={trash} onClick={(event) => { this.props.removeDockerArgs(index) }} />
                                 <div className="form__field">
                                     <label className="form__label">Key</label>
-                                    <input className="form__input w-50" autoComplete="off" placeholder="Name" type="text"
+                                    <input className="form__input" autoComplete="off" placeholder="Name" type="text"
                                         value={arg.key} onChange={(event) => { this.props.handleDockerArgChange(event, index, 'key'); }} />
                                 </div>
                                 <div className="form__field">
@@ -199,7 +200,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                         })}
                         <button type="button" onClick={(event) => { this.props.addDockerArg() }}
                             className="form__add-parameter form__add-parameter--docker-build">
-                            <span className="fa fa-plus"></span>Add parameter
+                            <span className="fa fa-plus mr-5"></span>Add parameter
                     </button>
                     </div> : null}
                 </div> : null}

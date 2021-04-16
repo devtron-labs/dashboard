@@ -1,5 +1,7 @@
 
 export function getVersionArr(version: string): number[] {
+    if (!version) return [0, 0, 0];
+
     let versionMod = version;
     if (versionMod.includes("v")) {
         versionMod = version.split("v")[1];
