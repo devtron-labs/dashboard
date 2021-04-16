@@ -51,7 +51,8 @@
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
         "test:ci": "./node_modules/.bin/react-app-rewired test --env=jest-environment-jsdom-sixteen --watchAll=false --ci --coverage --reporters=default --reporters=jest-junit",
-        "eject": "react-app-rewired eject"
+        "eject": "react-app-rewired eject",
+        "jest": "jest"
     },
     "eslintConfig": {
         "extends": "react-app"
