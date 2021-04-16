@@ -219,16 +219,21 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
     }, [result.length])
 
     const createCallback = useCallback((payload) => {
-        if (Array.isArray(payload)) {
-            setState(state => {
-                return ({ ...state, result: [...payload, ...state.result] })
-            })
+        if (type === 'user') {
+            reloadLists();
+        } else {
+            if (Array.isArray(payload)) {
+                setState(state => {
+                    return ({ ...state, result: [...payload, ...state.result] });
+                })
+            }
+            else {
+                setState(state => {
+                    return ({ ...state, result: [payload, ...state.result] });
+                })
+            }
         }
-        else {
-            setState(state => {
-                return ({ ...state, result: [payload, ...state.result] })
-            })
-        }
+
     }, [result.length])
 
     function addNewEntry() {
@@ -246,22 +251,20 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
 
     if (loading) return <div className="w-100 flex" style={{ minHeight: '600px' }}><Progressing pageLoader /></div>
     if (!addHash) return type === "user" ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    const filteredAndSorted = result
-        .filter(userOrGroup => (userOrGroup.email_id?.includes(searchString?.toLowerCase()) || userOrGroup.name?.includes(searchString?.toLowerCase()) || userOrGroup.description?.includes(searchString)))
-    return (
-        <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`Search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
-            {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
-            {filteredAndSorted
-                .map((data, index) =>
-                    <CollapsedUserOrGroup
-                        key={data.id}
-                        {...data}
-                        type={type}
-                        {...{ updateCallback, deleteCallback, createCallback, index }}
-                    />)}
-            {filteredAndSorted.length === 0 && result.length > 0 && <SearchEmpty searchString={searchString} setSearchString={setSearchString} />}
-        </div>
+    const filteredAndSorted = result.filter(userOrGroup => (userOrGroup.email_id?.includes(searchString?.toLowerCase()) || userOrGroup.name?.includes(searchString?.toLowerCase()) || userOrGroup.description?.includes(searchString)));
+
+    return (<div id="auth-page__body" className="auth-page__body-users__list-container">
+        {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`Search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
+        {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
+        {filteredAndSorted.map((data, index) =>
+            <CollapsedUserOrGroup
+                key={data.id}
+                {...data}
+                type={type}
+                {...{ updateCallback, deleteCallback, createCallback, index }}
+            />)}
+        {filteredAndSorted.length === 0 && result.length > 0 && <SearchEmpty searchString={searchString} setSearchString={setSearchString} />}
+    </div>
     )
 }
 
