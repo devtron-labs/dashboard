@@ -10,6 +10,7 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
+import ListContainer from './ListContainerList';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -376,28 +377,31 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     render() {
-        return <AppListView
-            {...this.state}
-            match={this.props.match}
-            location={this.props.location}
-            history={this.props.history}
-            applyFilter={this.applyFilter}
-            expandRow={this.expandRow}
-            closeExpandedRow={this.closeExpandedRow}
-            removeFilter={this.removeFilter}
-            removeAllFilters={this.removeAllFilters}
-            search={this.search}
-            clearSearch={this.clearSearch}
-            handleSearchStr={this.handleSearchStr}
-            sort={this.sort}
-            redirectToAppDetails={this.redirectToAppDetails}
-            handleEditApp={this.handleEditApp}
-            clearAll={this.clearAll}
-            changePage={this.changePage}
-            changePageSize={this.changePageSize}
-            closeModal={this.closeModal}
-            openTriggerInfoModal={this.openTriggerInfoModal}
-        />
+        return( 
+            <ListContainer />
+        // <AppListView
+        //     {...this.state}
+        //     match={this.props.match}
+        //     location={this.props.location}
+        //     history={this.props.history}
+        //     applyFilter={this.applyFilter}
+        //     expandRow={this.expandRow}
+        //     closeExpandedRow={this.closeExpandedRow}
+        //     removeFilter={this.removeFilter}
+        //     removeAllFilters={this.removeAllFilters}
+        //     search={this.search}
+        //     clearSearch={this.clearSearch}
+        //     handleSearchStr={this.handleSearchStr}
+        //     sort={this.sort}
+        //     redirectToAppDetails={this.redirectToAppDetails}
+        //     handleEditApp={this.handleEditApp}
+        //     clearAll={this.clearAll}
+        //     changePage={this.changePage}
+        //     changePageSize={this.changePageSize}
+        //     closeModal={this.closeModal}
+        //     openTriggerInfoModal={this.openTriggerInfoModal}
+        // />
+        )
     }
 }
 
