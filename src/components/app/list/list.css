@@ -386,6 +386,10 @@
     flex-basis: 60%;
 }
 
+.external-list--grid{
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+}
 .external-list__header{
     display: flex;
     align-items: center;
@@ -398,14 +402,13 @@
     line-height: 1.67;
     letter-spacing: normal;
     color: var(--N500);
-    padding-left: 20px;
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
-    background: white;
     position: sticky;
     top: 60px;
     z-index: var(--app-list-header-index);
 }
+
 
 .external-list__row{
     height: 56px;

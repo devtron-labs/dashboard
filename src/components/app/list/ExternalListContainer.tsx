@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import Select, {components} from 'react-select';
 import './list.css';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
+import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
+import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 
 interface ExternalListContainerProps {
     collapsed: boolean;
@@ -45,22 +48,47 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
+    renderExternalFilter() {
+        return <div className="flexbox flex-justify mr-12">
+            <form
+                // onSubmit={handleAppStoreChange} 
+                className="search position-rel" style={{ flexBasis: "100%"}} >
+                <Search className="search__icon icon-dim-18" />
+                <input type="text" placeholder="Search applications"
+                    // value={appStoreName} 
+                    className="search__input bcn-1"
+                // onChange={(event) => { setAppStoreName(event.target.value); }} 
+                />
+                {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                </button> : null} */}
+            </form>
+        </div>
+    }
+
     renderExternalListHeader() {
-        // if (this.props.apps.length) {
-        // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
-        return <div className="external-list__header pt-8 pb-8">
-            <div className="external-list__cell pr-12">
-                <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
+        {/* // if (this.props.apps.length) { 
+        // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";*/}
+        return <div className=" bcn-0 pl-20 pr-20">
+            <div className="external-list--grid pt-12 pb-12">
+                {this.renderExternalFilter()}
+                <Select className="mr-12"/>
+                <Select />
+             </div>
+            <div className="external-list__header pt-8 pb-8">
+                <div className="external-list__cell pr-12">
+                    <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
                          {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
-                </button>
+                    </button>
+                </div>
+                <div className="external-list__cell external-list__cell--width pl-12 pr-12">
+                    <span className="app-list__cell-header">Environment</span>
+                </div>
+                <div className="external-list__cell pl-12 pr-12">
+                    <span className="app-list__cell-header ">Last Updated </span>
+                </div>
+                <div className="app-list__cell app-list__cell--action"></div>
             </div>
-            <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                <span className="app-list__cell-header">Environment</span>
-            </div>
-            <div className="external-list__cell pl-12 pr-12">
-                <span className="app-list__cell-header ">Last Updated </span>
-            </div>
-            <div className="app-list__cell app-list__cell--action"></div>
         </div>
     }
 
@@ -76,7 +104,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                             <Edit className="button-edit__icon" />
                         </button>
                     </div> */}
-                   <div className="app-list__cell app-list__cell--action"></div>
+                    <div className="app-list__cell app-list__cell--action"></div>
                 </Link>
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
                     <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">testing</p></div>
@@ -92,6 +120,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         return (
             <>
                 {this.renderExternalTitle()}
+
                 {this.renderExternalListHeader()}
                 {this.renderExternalList()}
             </>
