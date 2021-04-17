@@ -76,8 +76,8 @@ export default class ListContainer extends Component<{}, ListContainerState> {
             <div>
                 {/* <AppListContainer /> */}
                 <ExternalListContainer 
-                // collapsed={this.state.collapsed}
-                // toggleHeaderName= {this.toggleHeaderName}
+                collapsed={this.state.collapsed}
+                toggleHeaderName= {this.toggleHeaderName}
                 />
 
             </div>
