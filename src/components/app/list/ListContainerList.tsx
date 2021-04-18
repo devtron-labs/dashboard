@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import AppListContainer from './AppListContainer'
-import { ListContainerState } from './types';
+import { ListContainerProps, ListContainerState } from './types';
 import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { URLS } from '../../../config';
@@ -11,7 +11,7 @@ const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
-export default class ListContainer extends Component<{}, ListContainerState> {
+export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
     constructor(props) {
         super(props)
 
@@ -25,7 +25,7 @@ export default class ListContainer extends Component<{}, ListContainerState> {
                 { value: "application", label: "Devtron apps & Charts", description: "Apps & charts deployed using Devtron" },
                 { value: "argocd", label: "External Apps", description: "Helm charts, Argocd objects" },
                 { value: "k8s", label: "K8s Objects", description: "All objects for which you have direct access" }
-            ]
+            ],
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
         this.toggleSelectedList = this.toggleSelectedList.bind(this)
@@ -41,7 +41,7 @@ export default class ListContainer extends Component<{}, ListContainerState> {
 
     renderPageHeader() {
         return <div className="app-header">
-            <div className="p-20 flexbox left" style={{ justifyContent: "space-between"}}>
+            <div className="p-20 flexbox left" style={{ justifyContent: "space-between" }}>
                 <h1 className="app-header__text flex">Applications
                 <Dropdown onClick={this.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.state.collapsed ? '180deg' : '0deg' }} />
                 </h1>
@@ -50,11 +50,11 @@ export default class ListContainer extends Component<{}, ListContainerState> {
                         {/* {this.state.onShowList ? : ""}*/}
                         {this.state.selectedAppList.map((list) => {
                             return <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor" onClick={this.toggleSelectedList}>
-                                    <Check className="scb-5 mr-8 icon-dim-16" />
-                                    <div>
-                                        <div className="cn-9 fs-13">{list.label}</div>
-                                        <div className="cn-5">{list.description}</div>
-                                    </div>
+                                <Check className="scb-5 mr-8 icon-dim-16" />
+                                <div>
+                                    <div className="cn-9 fs-13">{list.label}</div>
+                                    <div className="cn-5">{list.description}</div>
+                                </div>
                             </div>
 
                         })}
@@ -75,9 +75,10 @@ export default class ListContainer extends Component<{}, ListContainerState> {
         return (
             <div>
                 {/* <AppListContainer /> */}
-                <ExternalListContainer 
-                collapsed={this.state.collapsed}
-                toggleHeaderName= {this.toggleHeaderName}
+                <ExternalListContainer {...this.props}
+                    collapsed={this.state.collapsed}
+                    toggleHeaderName={this.toggleHeaderName}
+                    environment={this.props.environment}
                 />
 
             </div>

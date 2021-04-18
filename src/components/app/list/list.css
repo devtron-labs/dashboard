@@ -388,7 +388,8 @@
 
 .external-list--grid{
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr;
+    grid-template-columns: 4fr 1fr 1fr;
+    gap: 12px;
 }
 .external-list__header{
     display: flex;
@@ -406,7 +407,6 @@
     margin-bottom: 1px;
     position: sticky;
     top: 60px;
-    z-index: var(--app-list-header-index);
 }
 
 

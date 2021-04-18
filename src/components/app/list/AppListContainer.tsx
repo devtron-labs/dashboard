@@ -377,31 +377,33 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     render() {
-        return( 
-            <ListContainer />
-        // <AppListView
-        //     {...this.state}
-        //     match={this.props.match}
-        //     location={this.props.location}
-        //     history={this.props.history}
-        //     applyFilter={this.applyFilter}
-        //     expandRow={this.expandRow}
-        //     closeExpandedRow={this.closeExpandedRow}
-        //     removeFilter={this.removeFilter}
-        //     removeAllFilters={this.removeAllFilters}
-        //     search={this.search}
-        //     clearSearch={this.clearSearch}
-        //     handleSearchStr={this.handleSearchStr}
-        //     sort={this.sort}
-        //     redirectToAppDetails={this.redirectToAppDetails}
-        //     handleEditApp={this.handleEditApp}
-        //     clearAll={this.clearAll}
-        //     changePage={this.changePage}
-        //     changePageSize={this.changePageSize}
-        //     closeModal={this.closeModal}
-        //     openTriggerInfoModal={this.openTriggerInfoModal}
-        // />
-        )
+        return( <>
+            <ListContainer 
+            environment={this.state.filters.environment}
+            />
+        <AppListView
+            {...this.state}
+            match={this.props.match}
+            location={this.props.location}
+            history={this.props.history}
+            applyFilter={this.applyFilter}
+            expandRow={this.expandRow}
+            closeExpandedRow={this.closeExpandedRow}
+            removeFilter={this.removeFilter}
+            removeAllFilters={this.removeAllFilters}
+            search={this.search}
+            clearSearch={this.clearSearch}
+            handleSearchStr={this.handleSearchStr}
+            sort={this.sort}
+            redirectToAppDetails={this.redirectToAppDetails}
+            handleEditApp={this.handleEditApp}
+            clearAll={this.clearAll}
+            changePage={this.changePage}
+            changePageSize={this.changePageSize}
+            closeModal={this.closeModal}
+            openTriggerInfoModal={this.openTriggerInfoModal}
+        />
+       </> )
     }
 }
 

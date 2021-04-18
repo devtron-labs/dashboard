@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Select, {components} from 'react-select';
+import Select, { components } from 'react-select';
 import './list.css';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
@@ -7,10 +7,12 @@ import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { FilterOption, Option, multiSelectStyles} from '../../common';
 
 interface ExternalListContainerProps {
     collapsed: boolean;
     toggleHeaderName: () => void;
+    environment: FilterOption[];
 }
 export default class ExternalListContainer extends Component<ExternalListContainerProps> {
     renderExternalTitle() {
@@ -48,15 +50,14 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
-    renderExternalFilter() {
-        return <div className="flexbox flex-justify mr-12">
+    renderExternalSearch() {
+        return <div className="flexbox flex-justify">
             <form
                 // onSubmit={handleAppStoreChange} 
-                className="search position-rel" style={{ flexBasis: "100%"}} >
+                className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
-                <input type="text" placeholder="Search applications"
-                    // value={appStoreName} 
-                    className="search__input bcn-1"
+                <input className="search__input bcn-1" type="text" placeholder="Search applications"
+                // value={appStoreName} 
                 // onChange={(event) => { setAppStoreName(event.target.value); }} 
                 />
                 {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
@@ -71,10 +72,28 @@ export default class ExternalListContainer extends Component<ExternalListContain
         // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";*/}
         return <div className=" bcn-0 pl-20 pr-20">
             <div className="external-list--grid pt-12 pb-12">
-                {this.renderExternalFilter()}
-                <Select className="mr-12"/>
-                <Select />
-             </div>
+                {this.renderExternalSearch()}
+                <Select className="cn-9 fs-14"
+                    placeholder="Cluster: All"
+                    options={this.props.environment?.map((env) => ({ label: env.label, value: env.key }))}
+                    components={{
+                        Option,
+                    }}
+                    isMulti
+                    hideSelectedOptions={false}
+                    closeMenuOnSelect={false}
+                    styles={{
+                        ...multiSelectStyles,
+                        control: (base, state) => ({
+                            ...base,
+                            border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+                            boxShadow: 'none',
+                        }),
+                    }}
+                />
+                <Select className="cn-9 fs-14"
+                    placeholder="Namespace: All" />
+            </div>
             <div className="external-list__header pt-8 pb-8">
                 <div className="external-list__cell pr-12">
                     <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
@@ -120,7 +139,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         return (
             <>
                 {this.renderExternalTitle()}
-
+                {console.log(this.props)}
                 {this.renderExternalListHeader()}
                 {this.renderExternalList()}
             </>

@@ -124,3 +124,7 @@ export interface ListContainerState{
         { value: string;label: string; description: string; }
     ]
 }
+
+export interface ListContainerProps{
+    environment: FilterOption[];
+}
