@@ -381,7 +381,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             <ListContainer 
             environment={this.state.filters.environment}
             />
-        <AppListView
+        {/* <AppListView
             {...this.state}
             match={this.props.match}
             location={this.props.location}
@@ -402,7 +402,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             changePageSize={this.changePageSize}
             closeModal={this.closeModal}
             openTriggerInfoModal={this.openTriggerInfoModal}
-        />
+        /> */}
        </> )
     }
 }

@@ -7,13 +7,53 @@ import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { FilterOption, Option, multiSelectStyles} from '../../common';
+import { FilterOption, Option, multiSelectStyles } from '../../common';
 
 interface ExternalListContainerProps {
     collapsed: boolean;
     toggleHeaderName: () => void;
     environment: FilterOption[];
 }
+
+
+const MenuList = props => {
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
+                <button type="button" className="cta flex cta--chart-store"
+                    disabled={false}
+                    onClick={(selected: any) => { }}>Apply Filter</button>
+            </div>
+        </components.MenuList>
+    );
+};
+
+const ValueContainer = props => {
+    let length = props.getValue().length;
+    let count = ''
+    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+        count = 'All'
+    }
+    else {
+        count = length
+    }
+
+    const Item = props.selectProps.name === 'entityName' ? 'cluster' : 'Namespace'
+    const counting = <span className="badge">{count}</span>
+
+    return (
+        <components.ValueContainer  {...props}>
+            {length > 0 ?
+                <>
+                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${counting}`}
+                    {React.cloneElement(props.children[1])}
+                </>
+                : <>{props.children}</>}
+        </components.ValueContainer>
+    );
+};
+
 export default class ExternalListContainer extends Component<ExternalListContainerProps> {
     renderExternalTitle() {
         return <div className="app-header">
@@ -67,6 +107,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
+
+
+
     renderExternalListHeader() {
         {/* // if (this.props.apps.length) { 
         // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";*/}
@@ -78,6 +121,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     options={this.props.environment?.map((env) => ({ label: env.label, value: env.key }))}
                     components={{
                         Option,
+                        MenuList,
+                        ValueContainer
+                        // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
                     }}
                     isMulti
                     hideSelectedOptions={false}
