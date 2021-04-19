@@ -9,8 +9,8 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { FilterOption, Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types' 
-
-
+import { getExternalList } from './service'
+import { Progressing, showError } from '../../../components/common';
 
 const MenuList = props => {
     return (
@@ -56,10 +56,20 @@ export default class ExternalListContainer extends Component<ExternalListContain
     
         this.state = {
             collapsed: false,
-             
+             externalList: []
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
 
+    }
+
+    componentDidMount(){
+        getExternalList().then((response)=>{
+            this.setState({
+                externalList: response 
+            })
+        }).catch((error) => {
+            showError(error);
+          })
     }
 
     toggleHeaderName() {
@@ -87,13 +97,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
                             <div>
                                 <div className="cn-9 fs-13">External Apps</div>
                                 <div className="cn-5">Helm charts, Argocd objects</div>
-                            </div>
-                        </div>
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
-                            <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div>
-                                <div className="cn-9 fs-13">K8s Objects</div>
-                                <div className="cn-5">All objects for which you have direct access</div>
                             </div>
                         </div>
                     </div>
@@ -169,24 +172,19 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
-    renderExternalList() {
+    renderExternalList(list) {
+        
         return (
             <div className="bcn-0">
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">testing</p></div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">status </div>
-                    <div className="external-list__cell pr-12"> hi </div>
+                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
+                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
+                    <div className="external-list__cell pr-12"> {list.lastupdate} </div>
                     {/* <div className="external-list__cell app-list__cell--action">
                         <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
                             <Edit className="button-edit__icon" />
                         </button>
                     </div> */}
-                    <div className="app-list__cell app-list__cell--action"></div>
-                </Link>
-                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">testing</p></div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">status </div>
-                    <div className="external-list__cell pl-12 pr-12"> hi </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </Link>
             </div>
@@ -198,7 +196,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <>
                 {this.renderExternalTitle()}
                 {this.renderExternalListHeader()}
-                {this.renderExternalList()}
+                {this.state.externalList.map((list)=> 
+                {return this.renderExternalList(list)} )}
             </>
         )
     }

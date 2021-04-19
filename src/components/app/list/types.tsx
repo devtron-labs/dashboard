@@ -130,9 +130,14 @@ export interface ListContainerProps{
     environment: FilterOption[];
 }
 
+export interface ExternalList {
+    appname: string;
+    environment: string;
+    lastupdate: string;
+}
 export interface ExternalListContainerState{
     collapsed: boolean;
-
+    externalList: ExternalList[]
 }
 
 export interface ExternalListContainerProps {
