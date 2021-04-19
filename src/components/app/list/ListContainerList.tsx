@@ -45,14 +45,14 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
         this.setState({ onShowList: !this.state.onShowList })
     }
 
-//     handleChartRepoChange(selected): void {
-//         let namespaceId = this.props.environment?.map((e) => { return e.key }).join(",");
-//         //let searchParams = new URLSearchParams(location.search);
-//         let cluster= searchParams.get(QueryParams.Cluster);
-//         let qs = `${QueryParams.Namespace}=${namespaceId}`;
-//         if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
-//         // this.props.history.push(`${url}?${qs}`);
-// }
+    //     handleChartRepoChange(selected): void {
+    //         let namespaceId = this.props.environment?.map((e) => { return e.key }).join(",");
+    //         //let searchParams = new URLSearchParams(location.search);
+    //         let cluster= searchParams.get(QueryParams.Cluster);
+    //         let qs = `${QueryParams.Namespace}=${namespaceId}`;
+    //         if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
+    //         // this.props.history.push(`${url}?${qs}`);
+    // }
 
 
     renderPageHeader() {
@@ -91,7 +91,8 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
         return (
             <div>
                 {/* <AppListContainer /> */}
-                <ExternalListContainer {...this.props}
+                <ExternalListContainer
+                    {...this.props}
                     environment={this.props.environment}
                 />
 

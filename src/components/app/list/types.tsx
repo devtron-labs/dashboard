@@ -126,7 +126,7 @@ export interface ListContainerState{
     selectedEnvironment: []
 }
 
-export interface ListContainerProps{
+export interface ListContainerProps extends RouteComponentProps<{}>{
     environment: FilterOption[];
 }
 
@@ -149,11 +149,12 @@ export interface Cluster{
 export interface ExternalListContainerState{
     collapsed: boolean;
     externalList: ExternalList[];
-    namespace: Namespace[]
-    cluster: Cluster[]
+    namespace: Namespace[];
+    cluster: Cluster[];
+    selectedNamespace: [];
 }
 
-export interface ExternalListContainerProps {
+export interface ExternalListContainerProps extends RouteComponentProps<{}> {
     environment: FilterOption[];
 }
 

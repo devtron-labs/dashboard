@@ -12,6 +12,13 @@ import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList } from './service'
 import { Progressing, showError } from '../../../components/common';
 import { getClusterList } from '../../cluster/cluster.service';
+import { useHistory, useLocation, useRouteMatch } from 'react-router';
+
+const QueryParams = {
+    Cluster: "cluster",
+    Namespace: "namespace",
+    Appstore: "appstore"
+}
 
 const MenuList = props => {
     return (
@@ -51,7 +58,9 @@ const ValueContainer = props => {
     );
 };
 
+
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
+
     constructor(props) {
         super(props)
 
@@ -59,7 +68,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             collapsed: false,
             externalList: [],
             namespace: [],
-            cluster: []
+            cluster: [],
+            selectedNamespace: [],
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
     }
@@ -87,16 +97,16 @@ export default class ExternalListContainer extends Component<ExternalListContain
             showError(error);
         })
 
-        getClusterList().then((response)=>{
-           let clusterList = response.map((list)=>{
-              return {
-                value: list.value,
-                key: list.key
-              }
-           })
-           this.setState({
-                cluster: clusterList  
-        })
+        getClusterList().then((response) => {
+            let clusterList = response.map((list) => {
+                return {
+                    value: list.value,
+                    key: list.key
+                }
+            })
+            this.setState({
+                cluster: clusterList
+            })
         }).catch((error) => {
             showError(error);
         })
@@ -151,6 +161,19 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
+    handleSelectedNamespace(selected) {
+        let url = this.props.match.url
+        let namespaceId = selected.map((e) => { return e.value }).join(",");
+        {console.log(namespaceId)}
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let cluster = searchParams.get(QueryParams.Cluster);
+        let appStore = searchParams.get(QueryParams.Appstore)
+        let qs = `${QueryParams.Namespace}=${namespaceId}`;
+        if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
+        if (appStore) qs = `${qs}&${QueryParams.Appstore}=${appStore}`;
+        this.props.history.push(`${url}?${qs}`);
+    }
+
     renderExternalFilters() {
         return <div className="external-list--grid">
             {this.renderExternalSearch()}
@@ -163,6 +186,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     ValueContainer
                     // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
                 }}
+                value={this.state.selectedNamespace}
+                onChange={(selected: any) => this.handleSelectedNamespace(selected)}
                 isMulti
                 hideSelectedOptions={false}
                 closeMenuOnSelect={false}
@@ -176,9 +201,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 }}
             />
             <Select className="cn-9 fs-14"
-                placeholder="Namespace: All" 
+                placeholder="Namespace: All"
                 options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
-                />
+            />
         </div>
     }
 
@@ -214,12 +239,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
                     <div className="external-list__cell pr-12"> {list.lastupdate} </div>
-                    {/* <div className="external-list__cell app-list__cell--action">
+                    <div className="app-list__cell app-list__cell--action">
                         <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
                             <Edit className="button-edit__icon" />
                         </button>
-                    </div> */}
-                    <div className="app-list__cell app-list__cell--action"></div>
+                    </div>
+                    {/* <div className="app-list__cell app-list__cell--action"></div> */}
                 </Link>
             </div>
         )
@@ -228,6 +253,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
     render() {
         return (
             <>
+                {console.log(this.props)}
                 {this.renderExternalTitle()}
                 {this.renderExternalListHeader()}
                 {this.state.externalList.map((list) => { return this.renderExternalList(list) })}
