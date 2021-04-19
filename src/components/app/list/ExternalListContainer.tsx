@@ -8,9 +8,10 @@ import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-d
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { FilterOption, Option, multiSelectStyles } from '../../common';
-import { ExternalListContainerState, ExternalListContainerProps } from './types' 
-import { getExternalList } from './service'
+import { ExternalListContainerState, ExternalListContainerProps } from './types'
+import { getExternalList, getNamespaceList } from './service'
 import { Progressing, showError } from '../../../components/common';
+import { getClusterList } from '../../cluster/cluster.service';
 
 const MenuList = props => {
     return (
@@ -53,30 +54,58 @@ const ValueContainer = props => {
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
     constructor(props) {
         super(props)
-    
+
         this.state = {
             collapsed: false,
-             externalList: []
+            externalList: [],
+            namespace: [],
+            cluster: []
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
-
     }
 
-    componentDidMount(){
-        getExternalList().then((response)=>{
+    componentDidMount() {
+        getExternalList().then((response) => {
             this.setState({
-                externalList: response 
+                externalList: response
             })
         }).catch((error) => {
             showError(error);
-          })
+        })
+
+        getNamespaceList().then((response) => {
+            let namespaceList = response.map((list) => {
+                return {
+                    value: list.value,
+                    key: list.key
+                }
+            })
+            this.setState({
+                namespace: namespaceList
+            })
+        }).catch((error) => {
+            showError(error);
+        })
+
+        getClusterList().then((response)=>{
+           let clusterList = response.map((list)=>{
+              return {
+                value: list.value,
+                key: list.key
+              }
+           })
+           this.setState({
+                cluster: clusterList  
+        })
+        }).catch((error) => {
+            showError(error);
+        })
     }
 
     toggleHeaderName() {
         this.setState({ collapsed: !this.state.collapsed })
     }
 
-    
     renderExternalTitle() {
         return <div className="app-header">
             <div className="app-header__title">
@@ -122,38 +151,43 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
-
-
+    renderExternalFilters() {
+        return <div className="external-list--grid">
+            {this.renderExternalSearch()}
+            <Select className="cn-9 fs-14"
+                placeholder="Cluster: All"
+                options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
+                components={{
+                    Option,
+                    MenuList,
+                    ValueContainer
+                    // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
+                }}
+                isMulti
+                hideSelectedOptions={false}
+                closeMenuOnSelect={false}
+                styles={{
+                    ...multiSelectStyles,
+                    control: (base, state) => ({
+                        ...base,
+                        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+                        boxShadow: 'none',
+                    }),
+                }}
+            />
+            <Select className="cn-9 fs-14"
+                placeholder="Namespace: All" 
+                options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
+                />
+        </div>
+    }
 
     renderExternalListHeader() {
         {/* // if (this.props.apps.length) { 
         // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";*/}
         return <div className=" bcn-0 pl-20 pr-20">
-            <div className="external-list--grid pt-12 pb-12">
-                {this.renderExternalSearch()}
-                <Select className="cn-9 fs-14"
-                    placeholder="Cluster: All"
-                    options={this.props.environment?.map((env) => ({ label: env.label, value: env.key }))}
-                    components={{
-                        Option,
-                        MenuList,
-                        ValueContainer
-                        // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
-                    }}
-                    isMulti
-                    hideSelectedOptions={false}
-                    closeMenuOnSelect={false}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base, state) => ({
-                            ...base,
-                            border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-                            boxShadow: 'none',
-                        }),
-                    }}
-                />
-                <Select className="cn-9 fs-14"
-                    placeholder="Namespace: All" />
+            <div className=" pt-12 pb-12">
+                {this.renderExternalFilters()}
             </div>
             <div className="external-list__header pt-8 pb-8">
                 <div className="external-list__cell pr-12">
@@ -173,7 +207,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
     }
 
     renderExternalList(list) {
-        
+
         return (
             <div className="bcn-0">
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
@@ -196,8 +230,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <>
                 {this.renderExternalTitle()}
                 {this.renderExternalListHeader()}
-                {this.state.externalList.map((list)=> 
-                {return this.renderExternalList(list)} )}
+                {this.state.externalList.map((list) => { return this.renderExternalList(list) })}
             </>
         )
     }

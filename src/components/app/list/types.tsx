@@ -135,9 +135,22 @@ export interface ExternalList {
     environment: string;
     lastupdate: string;
 }
+
+export interface Namespace{
+    key: string | number;
+    value: string;
+}
+
+export interface Cluster{
+    key: string | number;
+    value: string; 
+}
+
 export interface ExternalListContainerState{
     collapsed: boolean;
-    externalList: ExternalList[]
+    externalList: ExternalList[];
+    namespace: Namespace[]
+    cluster: Cluster[]
 }
 
 export interface ExternalListContainerProps {
