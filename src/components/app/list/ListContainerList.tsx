@@ -11,6 +11,11 @@ const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
+const QueryParams = {
+    Namespace: "namespace",
+    Cluster: "cluster"
+}
+
 export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
     constructor(props) {
         super(props)
@@ -26,6 +31,7 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
                 { value: "argocd", label: "External Apps", description: "Helm charts, Argocd objects" },
                 { value: "k8s", label: "K8s Objects", description: "All objects for which you have direct access" }
             ],
+            selectedEnvironment: []
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
         this.toggleSelectedList = this.toggleSelectedList.bind(this)
@@ -38,6 +44,16 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
     toggleSelectedList() {
         this.setState({ onShowList: !this.state.onShowList })
     }
+
+//     handleChartRepoChange(selected): void {
+//         let namespaceId = this.props.environment?.map((e) => { return e.key }).join(",");
+//         //let searchParams = new URLSearchParams(location.search);
+//         let cluster= searchParams.get(QueryParams.Cluster);
+//         let qs = `${QueryParams.Namespace}=${namespaceId}`;
+//         if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
+//         // this.props.history.push(`${url}?${qs}`);
+// }
+
 
     renderPageHeader() {
         return <div className="app-header">
@@ -76,8 +92,6 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
             <div>
                 {/* <AppListContainer /> */}
                 <ExternalListContainer {...this.props}
-                    collapsed={this.state.collapsed}
-                    toggleHeaderName={this.toggleHeaderName}
                     environment={this.props.environment}
                 />
 

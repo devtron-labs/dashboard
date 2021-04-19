@@ -123,8 +123,19 @@ export interface ListContainerState{
         { value: string; label: string; description: string; },
         { value: string;label: string; description: string; }
     ]
+    selectedEnvironment: []
 }
 
 export interface ListContainerProps{
     environment: FilterOption[];
 }
+
+export interface ExternalListContainerState{
+    collapsed: boolean;
+
+}
+
+export interface ExternalListContainerProps {
+    environment: FilterOption[];
+}
+

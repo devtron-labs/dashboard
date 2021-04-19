@@ -1,19 +1,15 @@
 import React, { Component } from 'react'
 import Select, { components } from 'react-select';
 import './list.css';
-import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { FilterOption, Option, multiSelectStyles } from '../../common';
+import { ExternalListContainerState, ExternalListContainerProps } from './types' 
 
-interface ExternalListContainerProps {
-    collapsed: boolean;
-    toggleHeaderName: () => void;
-    environment: FilterOption[];
-}
 
 
 const MenuList = props => {
@@ -46,7 +42,7 @@ const ValueContainer = props => {
         <components.ValueContainer  {...props}>
             {length > 0 ?
                 <>
-                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${counting}`}
+                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
                     {React.cloneElement(props.children[1])}
                 </>
                 : <>{props.children}</>}
@@ -54,14 +50,30 @@ const ValueContainer = props => {
     );
 };
 
-export default class ExternalListContainer extends Component<ExternalListContainerProps> {
+export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            collapsed: false,
+             
+        }
+        this.toggleHeaderName = this.toggleHeaderName.bind(this)
+
+    }
+
+    toggleHeaderName() {
+        this.setState({ collapsed: !this.state.collapsed })
+    }
+
+    
     renderExternalTitle() {
         return <div className="app-header">
             <div className="app-header__title">
                 <h1 className="app-header__text flex">External Apps
-                <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsed ? '180deg' : '0deg' }} />
+                <Dropdown onClick={this.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.state.collapsed ? '180deg' : '0deg' }} />
                 </h1>
-                {this.props.collapsed ? <>
+                {this.state.collapsed ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
                         <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
@@ -163,7 +175,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
                     <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">testing</p></div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">status </div>
-                    <div className="external-list__cell pl-12 pr-12"> hi </div>
+                    <div className="external-list__cell pr-12"> hi </div>
                     {/* <div className="external-list__cell app-list__cell--action">
                         <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
                             <Edit className="button-edit__icon" />
@@ -185,7 +197,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
         return (
             <>
                 {this.renderExternalTitle()}
-                {console.log(this.props)}
                 {this.renderExternalListHeader()}
                 {this.renderExternalList()}
             </>

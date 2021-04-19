@@ -380,6 +380,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         return( <>
             <ListContainer 
             environment={this.state.filters.environment}
+            //history={this.props.history}
             />
         {/* <AppListView
             {...this.state}
