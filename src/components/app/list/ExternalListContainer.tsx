@@ -25,7 +25,7 @@ const MenuList = props => {
         <components.MenuList {...props}>
             {props.children}
             <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                <button type="button" className="cta flex cta--chart-store"
+                <button type="button" style={{width: "92%"}} className="cta flex cta--chart-store"
                     disabled={false}
                     onClick={(selected: any) => { }}>Apply Filter</button>
             </div>
@@ -161,10 +161,21 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
+    handleSelectedCluster(selected){
+        let url = this.props.match.url
+        let clusterId = selected.map((e) => { return e.value }).join(",");
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let namespace = searchParams.get(QueryParams.Namespace);
+        let appStore = searchParams.get(QueryParams.Appstore)
+        let qs = `${QueryParams.Namespace}=${clusterId}`;
+        if (namespace) qs = `${qs}&${QueryParams.Cluster}=${namespace}`;
+        if (appStore) qs = `${qs}&${QueryParams.Appstore}=${appStore}`;
+        this.props.history.push(`${url}?${qs}`);
+    }
+
     handleSelectedNamespace(selected) {
         let url = this.props.match.url
         let namespaceId = selected.map((e) => { return e.value }).join(",");
-        {console.log(namespaceId)}
         let searchParams = new URLSearchParams(this.props.location.search);
         let cluster = searchParams.get(QueryParams.Cluster);
         let appStore = searchParams.get(QueryParams.Appstore)
@@ -173,6 +184,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         if (appStore) qs = `${qs}&${QueryParams.Appstore}=${appStore}`;
         this.props.history.push(`${url}?${qs}`);
     }
+
+
 
     renderExternalFilters() {
         return <div className="external-list--grid">
@@ -186,8 +199,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     ValueContainer
                     // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
                 }}
-                value={this.state.selectedNamespace}
-                onChange={(selected: any) => this.handleSelectedNamespace(selected)}
+                // value={this.state.selectedNamespace}
+                onChange={(selected: any) => this.handleSelectedCluster(selected)}
                 isMulti
                 hideSelectedOptions={false}
                 closeMenuOnSelect={false}
@@ -203,6 +216,26 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <Select className="cn-9 fs-14"
                 placeholder="Namespace: All"
                 options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
+                onChange={(selected: any) => this.handleSelectedNamespace(selected)}
+                // value={this.state.selectedNamespace}
+                components={{
+                    Option,
+                    MenuList,
+                    ValueContainer
+                    // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
+                }}
+                // value={this.state.selectedNamespace}
+                isMulti
+                hideSelectedOptions={false}
+                closeMenuOnSelect={false}
+                styles={{
+                    ...multiSelectStyles,
+                    control: (base, state) => ({
+                        ...base,
+                        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+                        boxShadow: 'none',
+                    }),
+                }}
             />
         </div>
     }
