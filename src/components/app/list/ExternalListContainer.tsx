@@ -7,12 +7,12 @@ import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { FilterOption, Option, multiSelectStyles } from '../../common';
+import { FilterOption, Option, multiSelectStyles} from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList } from './service'
 import { Progressing, showError } from '../../../components/common';
 import { getClusterList } from '../../cluster/cluster.service';
-import { useHistory, useLocation, useRouteMatch } from 'react-router';
+import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -58,6 +58,14 @@ const ValueContainer = props => {
     );
 };
 
+const DropdownIndicator = props => {
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
+        </components.DropdownIndicator>
+    )
+}
+
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
 
@@ -84,7 +92,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
 
         getNamespaceList().then((response) => {
-            let namespaceList = response.map((list) => {
+            let data = response
+            let namespaceList = data?.map((list) => {
                 return {
                     value: list.value,
                     key: list.key
@@ -98,7 +107,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
 
         getClusterList().then((response) => {
-            let clusterList = response.map((list) => {
+            let data = response
+            let clusterList = data?.map((list) => {
                 return {
                     value: list.value,
                     key: list.key
@@ -107,7 +117,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             this.setState({
                 cluster: clusterList
             })
-        }).catch((error) => {
+        },()=>console.log(this.state)).catch((error) => {
             showError(error);
         })
     }
@@ -147,7 +157,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
     renderExternalSearch() {
         return <div className="flexbox flex-justify">
             <form
-                // onSubmit={handleAppStoreChange} 
+                onSubmit={this.handleAppStoreChange} 
                 className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
                 <input className="search__input bcn-1" type="text" placeholder="Search applications"
@@ -185,21 +195,25 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.props.history.push(`${url}?${qs}`);
     }
 
+    handleAppStoreChange(){
 
+    }
 
     renderExternalFilters() {
         return <div className="external-list--grid">
             {this.renderExternalSearch()}
             <Select className="cn-9 fs-14"
                 placeholder="Cluster: All"
+                name="Cluster"
                 options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
                 components={{
                     Option,
                     MenuList,
-                    ValueContainer
-                    // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
+                    ValueContainer,
+                    DropdownIndicator,
+                    IndicatorSeparator: null,
                 }}
-                // value={this.state.selectedNamespace}
+                // value={this.state.selectedCluster}
                 onChange={(selected: any) => this.handleSelectedCluster(selected)}
                 isMulti
                 hideSelectedOptions={false}
@@ -210,6 +224,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         ...base,
                         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
                         boxShadow: 'none',
+                        height: '36px',
                     }),
                 }}
             />
@@ -218,13 +233,14 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
                 onChange={(selected: any) => this.handleSelectedNamespace(selected)}
                 // value={this.state.selectedNamespace}
+                name="Namespace"
                 components={{
                     Option,
                     MenuList,
-                    ValueContainer
-                    // ValueContainer :  props => { return <components.ValueContainer {...props} > </components.ValueContainer>}
+                    ValueContainer,
+                    IndicatorSeparator: null,
+                    DropdownIndicator,
                 }}
-                // value={this.state.selectedNamespace}
                 isMulti
                 hideSelectedOptions={false}
                 closeMenuOnSelect={false}
@@ -232,8 +248,11 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     ...multiSelectStyles,
                     control: (base, state) => ({
                         ...base,
-                        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+                        border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
                         boxShadow: 'none',
+                        height: '36px',
+                        ...base,
+                        paddingBottom: "0px"
                     }),
                 }}
             />
@@ -241,8 +260,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
     }
 
     renderExternalListHeader() {
-        {/* // if (this.props.apps.length) { 
-        // let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";*/}
         return <div className=" bcn-0 pl-20 pr-20">
             <div className=" pt-12 pb-12">
                 {this.renderExternalFilters()}
@@ -277,7 +294,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
                             <Edit className="button-edit__icon" />
                         </button>
                     </div>
-                    {/* <div className="app-list__cell app-list__cell--action"></div> */}
                 </Link>
             </div>
         )
@@ -286,7 +302,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
     render() {
         return (
             <>
-                {console.log(this.props)}
                 {this.renderExternalTitle()}
                 {this.renderExternalListHeader()}
                 {this.state.externalList.map((list) => { return this.renderExternalList(list) })}
