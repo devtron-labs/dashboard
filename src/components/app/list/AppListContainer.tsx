@@ -377,11 +377,9 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     render() {
-        return( <>
-            <ListContainer {...this.props}
-            environment={this.state.filters.environment}
-            />
-        {/* <AppListView
+        return (<>
+            <ListContainer {...this.props} />
+            {/* <AppListView
             {...this.state}
             match={this.props.match}
             location={this.props.location}
@@ -403,7 +401,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             closeModal={this.closeModal}
             openTriggerInfoModal={this.openTriggerInfoModal}
         /> */}
-       </> )
+        </>)
     }
 }
 

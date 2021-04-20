@@ -66,15 +66,15 @@ export function getClusterList(): Promise<{
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([{
-                key: 1,
+                key: 101,
                 value: "devtron",
             },
             {
-                key: 2,
+                key: 102,
                 value: "dev-1",
             },
             {
-                key: 3,
+                key: 103,
                 value: "dev-3",
             },
             ])

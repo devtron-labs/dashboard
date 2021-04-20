@@ -7,11 +7,10 @@ import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { FilterOption, Option, multiSelectStyles} from '../../common';
+import { FilterOption, Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
-import { getExternalList, getNamespaceList } from './service'
+import { getExternalList, getNamespaceList, getClusterList } from './service'
 import { Progressing, showError } from '../../../components/common';
-import { getClusterList } from '../../cluster/cluster.service';
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
 
 const QueryParams = {
@@ -25,7 +24,7 @@ const MenuList = props => {
         <components.MenuList {...props}>
             {props.children}
             <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                <button type="button" style={{width: "92%"}} className="cta flex cta--chart-store"
+                <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
                     disabled={false}
                     onClick={(selected: any) => { }}>Apply Filter</button>
             </div>
@@ -43,7 +42,7 @@ const ValueContainer = props => {
         count = length
     }
 
-    const Item = props.selectProps.name === 'entityName' ? 'cluster' : 'Namespace'
+    const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
     const counting = <span className="badge">{count}</span>
 
     return (
@@ -78,6 +77,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             namespace: [],
             cluster: [],
             selectedNamespace: [],
+            searchQuery: "",
+            isSearchApplied: false
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
     }
@@ -117,7 +118,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             this.setState({
                 cluster: clusterList
             })
-        },()=>console.log(this.state)).catch((error) => {
+        }).catch((error) => {
             showError(error);
         })
     }
@@ -154,32 +155,22 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
-    renderExternalSearch() {
-        return <div className="flexbox flex-justify">
-            <form
-                onSubmit={this.handleAppStoreChange} 
-                className="search position-rel" style={{ flexBasis: "100%" }} >
-                <Search className="search__icon icon-dim-18" />
-                <input className="search__input bcn-1" type="text" placeholder="Search applications"
-                // value={appStoreName} 
-                // onChange={(event) => { setAppStoreName(event.target.value); }} 
-                />
-                {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : null} */}
-            </form>
-        </div>
+    handleSearchStr = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        let str = event.target.value || "";
+        str = str.toLowerCase();
+        this.setState({ searchQuery: str });
     }
 
-    handleSelectedCluster(selected){
+
+    handleSelectedCluster(selected) {
         let url = this.props.match.url
         let clusterId = selected.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(this.props.location.search);
         let namespace = searchParams.get(QueryParams.Namespace);
         let appStore = searchParams.get(QueryParams.Appstore)
-        let qs = `${QueryParams.Namespace}=${clusterId}`;
-        if (namespace) qs = `${qs}&${QueryParams.Cluster}=${namespace}`;
-        if (appStore) qs = `${qs}&${QueryParams.Appstore}=${appStore}`;
+        let qs = `${QueryParams.Cluster}=${clusterId}`;
+        if (namespace) { qs = `${qs}&${QueryParams.Cluster}=${namespace}` };
+        if (appStore) { qs = `${qs}&${QueryParams.Appstore}=${appStore}` };
         this.props.history.push(`${url}?${qs}`);
     }
 
@@ -190,13 +181,49 @@ export default class ExternalListContainer extends Component<ExternalListContain
         let cluster = searchParams.get(QueryParams.Cluster);
         let appStore = searchParams.get(QueryParams.Appstore)
         let qs = `${QueryParams.Namespace}=${namespaceId}`;
-        if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
-        if (appStore) qs = `${qs}&${QueryParams.Appstore}=${appStore}`;
+        if (cluster) { qs = `${qs}&${QueryParams.Cluster}=${cluster}` };
+        if (appStore) { qs = `${qs}&${QueryParams.Appstore}=${appStore}` };
         this.props.history.push(`${url}?${qs}`);
     }
 
-    handleAppStoreChange(){
+    handleAppStoreChange(event) {
+        event.preventDefault();
+        let url = this.props.match.url
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let cluster = searchParams.get(QueryParams.Cluster);
+        let namespace = searchParams.get(QueryParams.Namespace);
+        let qs = `${QueryParams.Appstore}=${this.state.searchQuery}`;
+        if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
+        if (namespace) qs = `${qs}&${QueryParams.Namespace}=${namespace}`;
+        this.props.history.push(`${url}?${qs}`);
+    }
 
+    clearSearch() {
+        let url = this.props.match.url
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let cluster = searchParams.get(QueryParams.Cluster);
+        let namespace = searchParams.get(QueryParams.Namespace); 
+        let qs: string = "";
+        if (cluster) qs = `${qs}&${QueryParams.Cluster}=${cluster}`;
+        if (namespace) qs = `${qs}&${QueryParams.Namespace}=${namespace}`;
+        this.props.history.push(`${url}?${qs}`);
+    }
+
+    renderExternalSearch() {
+        return <div className="flexbox flex-justify">
+            <form
+                onSubmit={(e)=>this.handleAppStoreChange(e)}
+                className="search position-rel" style={{ flexBasis: "100%" }} >
+                <Search className="search__icon icon-dim-18" />
+                <input className="search__input bcn-1" type="text" placeholder="Search applications"
+                    value={this.state.searchQuery}
+                    onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
+                />
+                {this.state.isSearchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                </button> : null}
+            </form>
+        </div>
     }
 
     renderExternalFilters() {
@@ -204,8 +231,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             {this.renderExternalSearch()}
             <Select className="cn-9 fs-14"
                 placeholder="Cluster: All"
-                name="Cluster"
-                options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
+                name="cluster"
+                options={this.state.cluster?.map((env) => ({ label: env.value, value: env.key }))}
                 components={{
                     Option,
                     MenuList,
@@ -213,7 +240,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     DropdownIndicator,
                     IndicatorSeparator: null,
                 }}
-                // value={this.state.selectedCluster}
+               // value={this.state.cluster}
                 onChange={(selected: any) => this.handleSelectedCluster(selected)}
                 isMulti
                 hideSelectedOptions={false}
@@ -232,7 +259,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 placeholder="Namespace: All"
                 options={this.state.namespace?.map((env) => ({ label: env.value, value: env.key }))}
                 onChange={(selected: any) => this.handleSelectedNamespace(selected)}
-                // value={this.state.selectedNamespace}
+                value={this.state.selectedNamespace}
                 name="Namespace"
                 components={{
                     Option,

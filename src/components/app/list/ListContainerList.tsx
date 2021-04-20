@@ -93,7 +93,6 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
                 {/* <AppListContainer /> */}
                 <ExternalListContainer
                     {...this.props}
-                    environment={this.props.environment}
                 />
 
             </div>
