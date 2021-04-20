@@ -41,7 +41,7 @@ export const AppStatusModal: React.FC<{
             acc = acc.concat(array)
             return acc;
         }, [])
-        // allRows = allRows.filter(node => node.kind.toLowerCase() !== "rollout");
+        allRows = allRows.filter(node => node.kind.toLowerCase() !== "rollout");
         allRows = allRows.map(node => {
             let nodeStatus = node?.status?.toLowerCase() || node?.health?.status?.toLowerCase();
             let nodeStatusSortOrder = 1;

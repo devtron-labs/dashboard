@@ -70,7 +70,7 @@ const AppDeploymentStage = ({ stage, stageName, stageNumber, title }) => {
     };
 
     let messageString: string = MessageStageStatus[stageName][status?.toLowerCase()];
-    if (messageString) {
+    if (!messageString) {
         messageString = MessageGeneric[stageName];
     }
 
