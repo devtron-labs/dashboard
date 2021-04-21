@@ -30,6 +30,8 @@ export interface AppListState {
     chartStageCompleted: number;
     appChecklist: AppCheckList;
     chartChecklist: ChartCheckList;
+    showExternalList: boolean;
+    collapsedListTogglingModal: boolean;
 }
 
 export interface App {
@@ -148,6 +150,7 @@ export interface ExternalListContainerState {
     selectedNamespace: [];
     searchQuery: string;
     isSearchApplied: boolean;
+    showDevtronAppList: boolean;
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {

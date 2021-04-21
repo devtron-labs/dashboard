@@ -91,9 +91,7 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
         return (
             <div>
                 {/* <AppListContainer /> */}
-                <ExternalListContainer
-                    {...this.props}
-                />
+                <ExternalListContainer {...this.props} />
 
             </div>
         )

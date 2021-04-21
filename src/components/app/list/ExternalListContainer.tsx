@@ -12,6 +12,8 @@ import { Progressing, showError } from '../../../components/common';
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
 import { URLS, ViewType } from '../../../config';
 import ExternalDefaultList from './ExternalDefaultList';
+import AppListContainer from './AppListContainer';
+import { AppListView } from './AppListView';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -84,7 +86,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             },
             selectedNamespace: [],
             searchQuery: "",
-            isSearchApplied: false
+            isSearchApplied: false,
+            showDevtronAppList: false
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this)
     }
@@ -149,6 +152,10 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.setState({ selectedNamespace: selected })
     }
 
+    togglingAppList(){
+        this.setState({ showDevtronAppList: !this.state.showDevtronAppList})
+    }
+
     renderExternalTitle() {
         return <div className="app-header">
             <div className="app-header__title">
@@ -157,9 +164,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 </h1>
                 {this.state.collapsed ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                        <div onClick={()=> this.togglingAppList()} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div>
+                            <div >
                                 <div className="cn-9 fs-13">Devtron Apps & Charts</div>
                                 <div className="cn-5">Apps & charts deployed using Devtron</div>
                             </div>
@@ -321,12 +328,13 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
-            {/* <ExternalDefaultList 
+            <ExternalDefaultList 
+            {...this.props}
             view={this.state.view} 
             externalList={this.state.externalList}
             filters= {this.state.filters}
-            /> */}
-            
+            />
+            {this.state.showDevtronAppList ? <AppListContainer /> : ""}
         </>
         )
     }

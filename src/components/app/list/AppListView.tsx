@@ -14,6 +14,8 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
+import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -36,6 +38,11 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
+    toggleHeaderName: () => void;
+    collapsedListTogglingModal: boolean;
+    toggleToExternalList: () => void;
+    showExternalList: boolean,
+
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -61,7 +68,27 @@ export class AppListView extends Component<AppListViewProps>{
     renderPageHeader() {
         return <div className="app-header">
             <div className="app-header__title">
-                <h1 className="app-header__text">Applications({this.props.size})</h1>
+                <h1 className="app-header__text flex left">Applications({this.props.size})
+                <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
+                </h1>
+                {this.props.collapsedListTogglingModal ? <>
+                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
+                        {/* <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                            <Check className="scb-5 mr-8 icon-dim-16" />
+                            <div >
+                                <div className="cn-9 fs-13">Devtron Apps & Charts</div>
+                                <div className="cn-5">Apps & charts deployed using Devtron</div>
+                            </div>
+                        </div> */}
+                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                            <Check className="scb-5 mr-8 icon-dim-16" />
+                            <div>
+                                <div onClick={()=> this.props.toggleToExternalList} className="cn-9 fs-13">External Apps</div>
+                                <div className="cn-5">Helm charts, Argocd objects</div>
+                            </div>
+                        </div>
+                    </div>
+                </> : ""}
                 {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>

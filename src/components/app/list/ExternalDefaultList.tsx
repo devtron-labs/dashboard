@@ -1,34 +1,33 @@
 import React, { Component } from 'react'
 import { Progressing, showError } from '../../../components/common';
 import { ExternalDefaultListProps } from './types'
-import { RouteComponentProps } from 'react-router';
 import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 
-export default class ExternalDefaultList extends Component< ExternalDefaultListProps>{
+export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
-    renderDefaultListTitle(){
+    renderDefaultListTitle() {
         return (<div>
-                <div className=" bcn-0 pl-20 pr-20">
-           
-            <div className="external-list__header pt-8 pb-8">
-                <div className="external-list__cell pr-12">
-                    <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
+            <div className=" bcn-0 pl-20 pr-20">
+
+                <div className="external-list__header pt-8 pb-8">
+                    <div className="external-list__cell pr-12">
+                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
                          {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
-                    </button>
+                        </button>
+                    </div>
+                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">
+                        <span className="app-list__cell-header">Environment</span>
+                    </div>
+                    <div className="external-list__cell pl-12 pr-12">
+                        <span className="app-list__cell-header ">Last Updated </span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--action"></div>
                 </div>
-                <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                    <span className="app-list__cell-header">Environment</span>
-                </div>
-                <div className="external-list__cell pl-12 pr-12">
-                    <span className="app-list__cell-header ">Last Updated </span>
-                </div>
-                <div className="app-list__cell app-list__cell--action"></div>
             </div>
         </div>
-            </div>
         )
     }
 
@@ -90,17 +89,20 @@ export default class ExternalDefaultList extends Component< ExternalDefaultListP
         )
     }
 
-    renderDefaultList(){
-        {this.props.view === ViewType.LOADING ? <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
-                : <>
-                    {this.renderSavedFilters()}
-                    {this.props.externalList.map((list) => { return this.renderExternalList(list) })}
-                </>}
+    renderDefaultList() {
+        if (this.props.view === ViewType.LOADING) {
+            return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
+        } else {
+            return <>{this.renderSavedFilters()}
+                {this.props.externalList.map((list) => { return this.renderExternalList(list) })}
+            </>
+        }
     }
     render() {
         return (
             <div>
                 {this.renderDefaultListTitle()}
+                {this.renderDefaultList()}
             </div>
         )
     }
