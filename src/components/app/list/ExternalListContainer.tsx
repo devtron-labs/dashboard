@@ -21,52 +21,55 @@ const QueryParams = {
     Appstore: "appstore"
 }
 
- const  MenuList = props => {
-    return (
-        <components.MenuList {...props}>
-            {props.children}
-            <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
-                    disabled={false}
-                    onClick={(selected: any) => {props.handleSelectedNamespace(selected)}}>Apply Filter</button>
-            </div>
-        </components.MenuList>
-    );
-};
-
-const ValueContainer = props => {
-    let length = props.getValue().length;
-    let count = ''
-    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
-        count = 'All'
+function ExternalFilter({renderExternalSearch}){
+    const  MenuList = props => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
+                    <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
+                        disabled={false}
+                        onClick={(selected: any) => {props.handleSelectedNamespace(selected)}}>Apply Filter</button>
+                </div>
+            </components.MenuList>
+        );
+    };
+    
+    const ValueContainer = props => {
+        let length = props.getValue().length;
+        let count = ''
+        if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+            count = 'All'
+        }
+        else {
+            count = length
+        }
+    
+        const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
+        const counting = <span className="badge">{count}</span>
+    
+        return (
+            <components.ValueContainer  {...props}>
+                {length > 0 ?
+                    <>
+                        {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
+                        {React.cloneElement(props.children[1])}
+                    </>
+                    : <>{props.children}</>}
+            </components.ValueContainer>
+        );
+    };
+    
+    const DropdownIndicator = props => {
+        return (
+            <components.DropdownIndicator {...props}>
+                <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
+            </components.DropdownIndicator>
+        )
     }
-    else {
-        count = length
-    }
-
-    const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
-    const counting = <span className="badge">{count}</span>
-
-    return (
-        <components.ValueContainer  {...props}>
-            {length > 0 ?
-                <>
-                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
-                    {React.cloneElement(props.children[1])}
-                </>
-                : <>{props.children}</>}
-        </components.ValueContainer>
-    );
-};
-
-const DropdownIndicator = props => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
-        </components.DropdownIndicator>
-    )
-}
-
+     { renderExternalSearch()}
+    
+    } 
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
 
@@ -247,8 +250,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     renderExternalFilters() {
         return <div className="external-list--grid">
-            {this.renderExternalSearch()}
-            <Select className="cn-9 fs-14"
+            {/* <ExternalFilter renderExternalSearch={this.renderExternalSearch}/> */}
+            {/*{this.renderExternalSearch()}
+             <Select className="cn-9 fs-14"
                 placeholder="Cluster: All"
                 name="cluster"
                 options={this.state.filters.cluster?.map((env) => ({ label: env.label, value: env.key }))}
@@ -301,8 +305,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         paddingBottom: "0px"
                     }),
                 }}
-            />
-        </div>
+            />*/}
+        </div> 
     }
 
     renderExternalListHeader() {
@@ -399,3 +403,5 @@ export default class ExternalListContainer extends Component<ExternalListContain
         )
     }
 }
+
+
