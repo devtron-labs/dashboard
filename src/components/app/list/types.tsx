@@ -1,5 +1,5 @@
 import { ServerError } from '../../../modals/commonTypes';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
@@ -153,3 +153,12 @@ export interface ExternalListContainerState {
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
 }
 
+
+export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
+    view: string;
+    externalList: ExternalList[];
+    filters: {
+        namespace: FilterOption[];
+        cluster: FilterOption[];
+    }
+}

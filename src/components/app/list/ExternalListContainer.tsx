@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import Select, { components } from 'react-select';
 import './list.css';
-import { Link } from 'react-router-dom';
-import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
@@ -12,8 +10,8 @@ import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList } from './External.service'
 import { Progressing, showError } from '../../../components/common';
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
-import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
+import ExternalDefaultList from './ExternalDefaultList';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -21,55 +19,53 @@ const QueryParams = {
     Appstore: "appstore"
 }
 
-function ExternalFilter({renderExternalSearch}){
-    const  MenuList = props => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                    <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
-                        disabled={false}
-                        onClick={(selected: any) => {props.handleSelectedNamespace(selected)}}>Apply Filter</button>
-                </div>
-            </components.MenuList>
-        );
-    };
-    
-    const ValueContainer = props => {
-        let length = props.getValue().length;
-        let count = ''
-        if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
-            count = 'All'
-        }
-        else {
-            count = length
-        }
-    
-        const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
-        const counting = <span className="badge">{count}</span>
-    
-        return (
-            <components.ValueContainer  {...props}>
-                {length > 0 ?
-                    <>
-                        {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
-                        {React.cloneElement(props.children[1])}
-                    </>
-                    : <>{props.children}</>}
-            </components.ValueContainer>
-        );
-    };
-    
-    const DropdownIndicator = props => {
-        return (
-            <components.DropdownIndicator {...props}>
-                <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
-            </components.DropdownIndicator>
-        )
+
+const MenuList = props => {
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
+                <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
+                    disabled={false}
+                    onClick={(selected: any) => { props.handleSelectedNamespace(selected) }}>Apply Filter</button>
+            </div>
+        </components.MenuList>
+    );
+};
+
+const ValueContainer = props => {
+    let length = props.getValue().length;
+    let count = ''
+    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+        count = 'All'
     }
-     { renderExternalSearch()}
-    
-    } 
+    else {
+        count = length
+    }
+
+    const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
+    const counting = <span className="badge">{count}</span>
+
+    return (
+        <components.ValueContainer  {...props}>
+            {length > 0 ?
+                <>
+                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
+                    {React.cloneElement(props.children[1])}
+                </>
+                : <>{props.children}</>}
+        </components.ValueContainer>
+    );
+};
+
+const DropdownIndicator = props => {
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
+        </components.DropdownIndicator>
+    )
+}
+
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
 
@@ -144,9 +140,13 @@ export default class ExternalListContainer extends Component<ExternalListContain
             showError(error);
         })
     }
-    
+
     toggleHeaderName() {
         this.setState({ collapsed: !this.state.collapsed })
+    }
+
+    setNamespace(selected){
+        this.setState({ selectedNamespace: selected })
     }
 
     renderExternalTitle() {
@@ -250,9 +250,15 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     renderExternalFilters() {
         return <div className="external-list--grid">
-            {/* <ExternalFilter renderExternalSearch={this.renderExternalSearch}/> */}
-            {/*{this.renderExternalSearch()}
-             <Select className="cn-9 fs-14"
+            {this.renderExternalSearch()}
+            {/* <ExternalFilters 
+            handleSelectedCluster= {this.handleSelectedCluster}
+            cluster={this.state.filters.cluster}
+            namespace={this.state.filters.namespace}
+            selectedNamespace={this.state.selectedNamespace}
+            setNamespace={this.setNamespace}
+            /> */}
+            <Select className="cn-9 fs-14"
                 placeholder="Cluster: All"
                 name="cluster"
                 options={this.state.filters.cluster?.map((env) => ({ label: env.label, value: env.key }))}
@@ -277,11 +283,11 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         height: '36px',
                     }),
                 }}
-            />
-            <Select className="cn-9 fs-14"
+            /> 
+             <Select className="cn-9 fs-14" 
                 placeholder="Namespace: All"
                 options={this.state.filters.namespace?.map((env) => ({ label: env.label, value: env.key }))}
-                onChange={(selected: any) =>this.setState({ selectedNamespace: selected}) }
+                onChange={(selected: any) => this.setState({ selectedNamespace: selected })}
                 value={this.state.selectedNamespace}
                 name="Namespace"
                 components={{
@@ -305,103 +311,82 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         paddingBottom: "0px"
                     }),
                 }}
-            />*/}
-        </div> 
-    }
-
-    renderExternalListHeader() {
-        return <div className=" bcn-0 pl-20 pr-20">
-            <div className=" pt-12 pb-12">
-                {this.renderExternalFilters()}
-            </div>
-            <div className="external-list__header pt-8 pb-8">
-                <div className="external-list__cell pr-12">
-                    <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
-                         {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
-                    </button>
-                </div>
-                <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                    <span className="app-list__cell-header">Environment</span>
-                </div>
-                <div className="external-list__cell pl-12 pr-12">
-                    <span className="app-list__cell-header ">Last Updated </span>
-                </div>
-                <div className="app-list__cell app-list__cell--action"></div>
-            </div>
+            />
         </div>
-    }
-
-    removeFilter = (val, type: string): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        query['offset'] = 0;
-        let appliedFilters = query[type];
-        let arr = appliedFilters.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        query[type] = arr.toString();
-        if (query[type] == "") delete query[type];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
-    renderSavedFilters() {
-        let count = 0;
-        let keys = Object.keys(this.state.filters);
-        let savedFilters = <div className="saved-filters">
-            {keys.map((key) => {
-                return this.state.filters[key].map((filter) => {
-                    if (filter.isChecked) {
-                        count++;
-                        return <div key={filter.key} className="saved-filter">{filter.label}
-                            <button type="button" className="saved-filter__clear-btn"
-                                onClick={(event) => this.removeFilter(filter.key, key)} >
-                                <i className="fa fa-times-circle" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    }
-                })
-            })}
-            <button type="button" className="saved-filters__clear-btn" >
-                Clear All Filters
-            </button>
-        </div>
-    }
-
-    renderExternalList(list) {
-
-        return (
-            <div className="bcn-0">
-                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
-                    <div className="external-list__cell pr-12"> {list.lastupdate} </div>
-                    <div className="app-list__cell app-list__cell--action">
-                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
-                            <Edit className="button-edit__icon" />
-                        </button>
-                    </div>
-                </Link>
-            </div>
-        )
     }
 
     render() {
         return (<>
             {this.renderExternalTitle()}
-            {this.renderExternalListHeader()}
-            {this.state.view === ViewType.LOADING ? <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
-                : <>
-                    {this.renderSavedFilters()}
-                    {this.state.externalList.map((list) => { return this.renderExternalList(list) })}
-                </>}
+            <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
+                {this.renderExternalFilters()}
+            </div>
+            {/* <ExternalDefaultList 
+            view={this.state.view} 
+            externalList={this.state.externalList}
+            filters= {this.state.filters}
+            /> */}
+            
         </>
         )
     }
 }
 
-
+// function ExternalFilters({handleSelectedCluster, cluster, namespace, selectedNamespace, setNamespace}) {
+//     return <>
+//     <Select className="cn-9 fs-14"
+//                 placeholder="Cluster: All"
+//                 name="cluster"
+//                 options={cluster?.map((env) => ({ label: env.label, value: env.key }))}
+//                 components={{
+//                     Option,
+//                     MenuList,
+//                     ValueContainer,
+//                     DropdownIndicator,
+//                     IndicatorSeparator: null,
+//                 }}
+//                 // value={this.state.cluster}
+//                 onChange={(selected: any) => handleSelectedCluster(selected)}
+//                 isMulti
+//                 hideSelectedOptions={false}
+//                 closeMenuOnSelect={false}
+//                 styles={{
+//                     ...multiSelectStyles,
+//                     control: (base, state) => ({
+//                         ...base,
+//                         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+//                         boxShadow: 'none',
+//                         height: '36px',
+//                     }),
+//                 }}
+//             />
+//             <Select className="cn-9 fs-14"
+//                 placeholder="Namespace: All"
+//                 options={namespace?.map((env) => ({ label: env.label, value: env.key }))}
+//                 onChange={(selected: any) => setNamespace(selected)}
+//                 value={selectedNamespace}
+//                 name="Namespace"
+//                 components={{
+//                     Option,
+//                     MenuList,
+//                     ValueContainer,
+//                     IndicatorSeparator: null,
+//                     DropdownIndicator,
+//                 }}
+//                 isMulti
+//                 hideSelectedOptions={false}
+//                 closeMenuOnSelect={false}
+//                 styles={{
+//                     ...multiSelectStyles,
+//                     control: (base, state) => ({
+//                         ...base,
+//                         border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
+//                         boxShadow: 'none',
+//                         height: '36px',
+//                         ...base,
+//                         paddingBottom: "0px"
+//                     }),
+//                 }}
+//             />
+//     </>
+// }
