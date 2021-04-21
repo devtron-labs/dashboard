@@ -112,21 +112,21 @@ export const SortBy = {
     ENVIRONMENT: "environmentSort",
 }
 
-export interface ListContainerState{
+export interface ListContainerState {
     collapsed: boolean;
     code: number;
     view: string;
-    onShowList:  boolean;
+    onShowList: boolean;
     selectedList: string;
     selectedAppList: [
         { value: string; label: string; description: string; },
         { value: string; label: string; description: string; },
-        { value: string;label: string; description: string; }
+        { value: string; label: string; description: string; }
     ]
     selectedEnvironment: []
 }
 
-export interface ListContainerProps extends RouteComponentProps<{}>{
+export interface ListContainerProps extends RouteComponentProps<{}> {
 }
 
 export interface ExternalList {
@@ -135,21 +135,16 @@ export interface ExternalList {
     lastupdate: string;
 }
 
-export interface Namespace{
-    key: string | number;
-    value: string;
-}
-
-export interface Cluster{
-    key: string | number;
-    value: string; 
-}
-
-export interface ExternalListContainerState{
+export interface ExternalListContainerState {
+    view: string;
+    code: number;
+    loadingData: boolean;
     collapsed: boolean;
     externalList: ExternalList[];
-    namespace: Namespace[];
-    cluster: Cluster[];
+    filters: {
+        namespace: FilterOption[];
+        cluster: FilterOption[];
+    },
     selectedNamespace: [];
     searchQuery: string;
     isSearchApplied: boolean;

@@ -42,17 +42,23 @@ export function getExternalList(): Promise<{
 
 export function getNamespaceList(): Promise<{
     key: string | number;
-    value: string;
+    label: string;
+    isChecked: boolean;
+    isSaved: boolean;   
 }[]> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([{
                 key: 1,
-                value: "dashboard",
+                label: "dashboard",
+                isChecked: true,
+                isSaved: true,
             },
             {
                 key: 2,
-                value: "demo",
+                label: "demo",
+                isChecked: true,
+                isSaved: true,
             },
             ])
         }, 1000)
@@ -61,21 +67,29 @@ export function getNamespaceList(): Promise<{
 
 export function getClusterList(): Promise<{
     key: string | number;
-    value: string;
+    label: string;
+    isChecked: boolean;
+    isSaved: boolean;
 }[]> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([{
                 key: 101,
-                value: "devtron",
+                label: "devtron",
+                isChecked: true,
+                isSaved: true,
             },
             {
                 key: 102,
-                value: "dev-1",
+                label: "dev-1",
+                isChecked: true,
+                isSaved: true,
             },
             {
                 key: 103,
-                value: "dev-3",
+                label: "dev-3",
+                isChecked: true,
+                isSaved: true,
             },
             ])
         }, 1000)
