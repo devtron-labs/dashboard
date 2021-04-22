@@ -73,13 +73,6 @@ export class AppListView extends Component<AppListViewProps>{
                 </h1>
                 {this.props.collapsedListTogglingModal ? <>
                     <div onClick={(e) => this.props.toggleToExternalList()} className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        {/* <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
-                            <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div >
-                                <div className="cn-9 fs-13">Devtron Apps & Charts</div>
-                                <div className="cn-5">Apps & charts deployed using Devtron</div>
-                            </div>
-                        </div> */}
                         <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>

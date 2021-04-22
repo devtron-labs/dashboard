@@ -158,3 +158,12 @@ export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
         cluster: FilterOption[];
     }
 }
+
+export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
+    view: string;
+    externalList: ExternalList[];
+    filters: {
+        namespace: FilterOption[];
+        cluster: FilterOption[];
+    }
+}

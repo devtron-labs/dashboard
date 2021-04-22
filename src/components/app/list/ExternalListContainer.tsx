@@ -14,7 +14,7 @@ import ExternalDefaultList from './ExternalDefaultList';
 import AppListContainer from './AppListContainer';
 import { AppListView } from './AppListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
-
+import ExternalSearchQueryList from './ExternalSearchQueryList'
 
 const QueryParams = {
     Cluster: "cluster",
@@ -301,7 +301,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                         {this.renderExternalFilters()}
                     </div>
-                    <ExternalDefaultList {...this.props}
+                    {/* <ExternalDefaultList {...this.props}
+                        view={this.state.view}
+                        externalList={this.state.externalList}
+                        filters={this.state.filters}
+                    /> */}
+                    <ExternalSearchQueryList {...this.props}
                         view={this.state.view}
                         externalList={this.state.externalList}
                         filters={this.state.filters}
