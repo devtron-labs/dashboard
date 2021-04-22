@@ -7,7 +7,7 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { FilterOption, Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
-import { getExternalList, getNamespaceList, getClusterList } from './External.service'
+import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
 import { Progressing, showError } from '../../../components/common';
 import { ViewType } from '../../../config';
 import ExternalDefaultList from './ExternalDefaultList';
@@ -48,6 +48,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             loadingData: false,
             collapsed: false,
             externalList: [],
+            externalQueryList: [],
             filters: {
                 namespace: [],
                 cluster: [],
@@ -69,6 +70,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
             })
         }).catch((error) => {
             showError(error);
+        })
+
+        getExternalSearchQueryList().then((response)=>{
+            this.setState({
+              externalQueryList: response
+            })
         })
 
         getNamespaceList().then((response) => {
@@ -308,7 +315,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     /> */}
                     <ExternalSearchQueryList {...this.props}
                         view={this.state.view}
-                        externalList={this.state.externalList}
+                        externalQueryList={this.state.externalQueryList}
                         filters={this.state.filters}
                     />
                 </>}

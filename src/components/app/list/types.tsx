@@ -130,6 +130,12 @@ export interface ExternalList {
     lastupdate: string;
 }
 
+export interface ExternalQueryList {
+    appname: string;
+    environment: string;
+    queryMatch: string;
+}
+
 export interface ExternalListContainerState {
     view: string;
     code: number;
@@ -144,6 +150,7 @@ export interface ExternalListContainerState {
     searchQuery: string;
     isSearchApplied: boolean;
  showDevtronAppList: boolean;
+ externalQueryList: ExternalQueryList[]
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
@@ -161,7 +168,7 @@ export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
 
 export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
     view: string;
-    externalList: ExternalList[];
+    externalQueryList: ExternalQueryList[];
     filters: {
         namespace: FilterOption[];
         cluster: FilterOption[];

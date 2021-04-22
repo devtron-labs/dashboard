@@ -78,7 +78,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
                     <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
                     <div className="external-list__cell pl-12 pr-12">{list.environment}</div>
-                    <div className="external-list__cell external-list__cell--width pr-12"> {list.lastupdate} </div>
+                    <div className="external-list__cell external-list__cell--width pr-12"> {list.queryMatch} </div>
                     <div className="app-list__cell app-list__cell--action">
                         <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
                             <Edit className="button-edit__icon" />
@@ -94,7 +94,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
         } else {
             return <>{this.renderSavedFilters()}
-                {this.props.externalList.map((list) => { return this.renderExternalList(list) })}
+                {this.props.externalQueryList.map((list) => { return this.renderExternalList(list) })}
             </>
         }
     }
