@@ -10,7 +10,7 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import ListContainer from './ListContainerList';
+import ListContainer from './ListContainer';
 import ExternalListContainer from './ExternalListContainer';
 
 class AppListContainer extends Component<AppListProps, AppListState>{

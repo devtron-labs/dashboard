@@ -118,14 +118,7 @@ export interface ListContainerState {
     collapsed: boolean;
     code: number;
     view: string;
-    onShowList: boolean;
-    selectedList: string;
-    selectedAppList: [
-        { value: string; label: string; description: string; },
-        { value: string; label: string; description: string; },
-        { value: string; label: string; description: string; }
-    ]
-    selectedEnvironment: []
+    showAppList: boolean;
 }
 
 export interface ListContainerProps extends RouteComponentProps<{}> {

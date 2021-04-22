@@ -9,11 +9,12 @@ import { FilterOption, Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList } from './External.service'
 import { Progressing, showError } from '../../../components/common';
-import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
-import { URLS, ViewType } from '../../../config';
+import { ViewType } from '../../../config';
 import ExternalDefaultList from './ExternalDefaultList';
 import AppListContainer from './AppListContainer';
 import { AppListView } from './AppListView';
+import { ValueContainer, DropdownIndicator } from './external.util';
+
 
 const QueryParams = {
     Cluster: "cluster",
@@ -34,39 +35,6 @@ const MenuList = props => {
         </components.MenuList>
     );
 };
-
-const ValueContainer = props => {
-    let length = props.getValue().length;
-    let count = ''
-    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
-        count = 'All'
-    }
-    else {
-        count = length
-    }
-
-    const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
-    const counting = <span className="badge">{count}</span>
-
-    return (
-        <components.ValueContainer  {...props}>
-            {length > 0 ?
-                <>
-                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
-                    {React.cloneElement(props.children[1])}
-                </>
-                : <>{props.children}</>}
-        </components.ValueContainer>
-    );
-};
-
-const DropdownIndicator = props => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
-        </components.DropdownIndicator>
-    )
-}
 
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
@@ -148,12 +116,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.setState({ collapsed: !this.state.collapsed })
     }
 
-    setNamespace(selected){
+    setNamespace(selected) {
         this.setState({ selectedNamespace: selected })
     }
 
-    togglingAppList(){
-        this.setState({ showDevtronAppList: !this.state.showDevtronAppList})
+    togglingAppList() {
+        this.setState({ showDevtronAppList: !this.state.showDevtronAppList })
     }
 
     renderExternalTitle() {
@@ -164,7 +132,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 </h1>
                 {this.state.collapsed ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div onClick={()=> this.togglingAppList()} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                        <div onClick={() => this.togglingAppList()} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div >
                                 <div className="cn-9 fs-13">Devtron Apps & Charts</div>
@@ -290,8 +258,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         height: '36px',
                     }),
                 }}
-            /> 
-             <Select className="cn-9 fs-14" 
+            />
+            <Select className="cn-9 fs-14"
                 placeholder="Namespace: All"
                 options={this.state.filters.namespace?.map((env) => ({ label: env.label, value: env.key }))}
                 onChange={(selected: any) => this.setState({ selectedNamespace: selected })}
@@ -328,13 +296,13 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
-            <ExternalDefaultList 
-            {...this.props}
-            view={this.state.view} 
-            externalList={this.state.externalList}
-            filters= {this.state.filters}
-            />
-            {this.state.showDevtronAppList ? <AppListContainer /> : ""}
+            {this.state.showDevtronAppList ? <AppListContainer /> :
+                <ExternalDefaultList
+                    {...this.props}
+                    view={this.state.view}
+                    externalList={this.state.externalList}
+                    filters={this.state.filters}
+                />}
         </>
         )
     }
