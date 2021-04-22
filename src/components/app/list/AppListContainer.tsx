@@ -391,8 +391,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     render() {
         return (<>
-            <ListContainer {...this.props} />
-            {/* {this.state.showExternalList ? <ExternalListContainer {...this.props} /> :
+            {this.state.showExternalList ? <ExternalListContainer {...this.props} />    :  
             <AppListView
             {...this.state}
             match={this.props.match}
@@ -419,7 +418,8 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             toggleToExternalList= {this.toggleToExternalList}
             showExternalList= {this.state.showExternalList}
 
-        />} */}
+        /> }
+   
         </>)
     }
 }

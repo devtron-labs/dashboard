@@ -72,7 +72,7 @@ export class AppListView extends Component<AppListViewProps>{
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
                 </h1>
                 {this.props.collapsedListTogglingModal ? <>
-                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
+                    <div onClick={(e) => this.props.toggleToExternalList()} className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
                         {/* <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div >
@@ -83,7 +83,7 @@ export class AppListView extends Component<AppListViewProps>{
                         <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
-                                <div onClick={()=> this.props.toggleToExternalList} className="cn-9 fs-13">External Apps</div>
+                                <div className="cn-9 fs-13">External Apps</div>
                                 <div className="cn-5">Helm charts, Argocd objects</div>
                             </div>
                         </div>

@@ -57,7 +57,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             isSearchApplied: false,
             showDevtronAppList: false
         }
-        this.toggleHeaderName = this.toggleHeaderName.bind(this)
+        this.toggleHeaderName = this.toggleHeaderName.bind(this);
+        this.togglingAppList = this.togglingAppList.bind(this);
     }
 
     componentDidMount() {
@@ -134,7 +135,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 </h1>
                 {this.state.collapsed ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div onClick={(e) => this.togglingAppList(e)} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                        <div onClick={(e) => this.togglingAppList(e)}
+                            className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div >
                                 <div className="cn-9 fs-13">Devtron Apps & Charts</div>
@@ -294,17 +296,17 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     render() {
         return (<>
-            {this.renderExternalTitle()}
-            <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
-                {this.renderExternalFilters()}
-            </div>
-            {this.state.showDevtronAppList ?
-             <ExternalDefaultList {...this.props}
-                    view={this.state.view}
-                    externalList={this.state.externalList}
-                    filters={this.state.filters}
-                /> :
-            <AppListContainer />}
+            {this.state.showDevtronAppList ? <AppListContainer /> :
+                <> {this.renderExternalTitle()}
+                    <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
+                        {this.renderExternalFilters()}
+                    </div>
+                    <ExternalDefaultList {...this.props}
+                        view={this.state.view}
+                        externalList={this.state.externalList}
+                        filters={this.state.filters}
+                    />
+                </>}
         </>
         )
     }

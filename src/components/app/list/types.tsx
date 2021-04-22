@@ -143,7 +143,7 @@ export interface ExternalListContainerState {
     selectedNamespace: [];
     searchQuery: string;
     isSearchApplied: boolean;
-    showDevtronAppList: boolean;
+ showDevtronAppList: boolean;
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {

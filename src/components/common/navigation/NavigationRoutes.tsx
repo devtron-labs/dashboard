@@ -10,7 +10,7 @@ import { Security } from '../../security/Security';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
-const ListContainer = lazy(() => import('../../app/list/ListContainer'));
+const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
@@ -86,10 +86,10 @@ export function AppRouter(props) {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <ListContainer {...props} />} />
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />}/>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <ListContainer {...props}/>
+                        <AppListContainer />
                     </Route>
                     <Route>
                         <RedirectWithSentry />
