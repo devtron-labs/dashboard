@@ -120,7 +120,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.setState({ selectedNamespace: selected })
     }
 
-    togglingAppList() {
+    togglingAppList(e) {
+        e.preventDefault();
+        e.stopPropagation();
         this.setState({ showDevtronAppList: !this.state.showDevtronAppList })
     }
 
@@ -132,20 +134,20 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 </h1>
                 {this.state.collapsed ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div onClick={() => this.togglingAppList()} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                        <div onClick={(e) => this.togglingAppList(e)} className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div >
                                 <div className="cn-9 fs-13">Devtron Apps & Charts</div>
                                 <div className="cn-5">Apps & charts deployed using Devtron</div>
                             </div>
                         </div>
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
+                        {/* <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
                                 <div className="cn-9 fs-13">External Apps</div>
                                 <div className="cn-5">Helm charts, Argocd objects</div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </> : ""}
             </div>
@@ -296,13 +298,13 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
-            {this.state.showDevtronAppList ? <AppListContainer /> :
-                <ExternalDefaultList
-                    {...this.props}
+            {this.state.showDevtronAppList ?
+             <ExternalDefaultList {...this.props}
                     view={this.state.view}
                     externalList={this.state.externalList}
                     filters={this.state.filters}
-                />}
+                /> :
+            <AppListContainer />}
         </>
         )
     }

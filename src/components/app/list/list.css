@@ -367,7 +367,7 @@
     width: 348px;
     position: fixed;
     top: 60px;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .external-list__cell{
