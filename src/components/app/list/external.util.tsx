@@ -1,7 +1,5 @@
 import { components } from 'react-select';
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as CheckSelected } from '../../assets/icons/ic-checkbox-selected.svg';
-import { ReactComponent as CheckNotSelected } from '../../assets/icons/ic-checkbox-unselected.svg';
 import React from 'react';
 
 export const ValueContainer = props => {
@@ -32,7 +30,7 @@ export const ValueContainer = props => {
 export const DropdownIndicator = props => {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className={`rotate`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '24px', width: '24px' }} />
+            <ArrowDown className={`rotate scn-2`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '20px', width: '20px' }} />
         </components.DropdownIndicator>
     )
 }

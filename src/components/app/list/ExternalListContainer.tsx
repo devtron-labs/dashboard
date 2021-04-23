@@ -23,18 +23,6 @@ const QueryParams = {
 }
 
 
-const MenuList = props => {
-    return (
-        <components.MenuList {...props}>
-            {props.children}
-            <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
-                    disabled={false}
-                    onClick={(selected: any) => { props.handleSelectedNamespace(selected) }}>Apply Filter</button>
-            </div>
-        </components.MenuList>
-    );
-};
 
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
@@ -54,6 +42,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 cluster: [],
             },
             selectedNamespace: [],
+            selectedCluster: [],
             searchQuery: "",
             isSearchApplied: false,
             showDevtronAppList: false
@@ -72,9 +61,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
             showError(error);
         })
 
-        getExternalSearchQueryList().then((response)=>{
+        getExternalSearchQueryList().then((response) => {
             this.setState({
-              externalQueryList: response
+                externalQueryList: response
             })
         })
 
@@ -124,7 +113,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.setState({ collapsed: !this.state.collapsed })
     }
 
-    setNamespace(selected) {
+    setNamespace = (selected) => {
         this.setState({ selectedNamespace: selected })
     }
 
@@ -170,8 +159,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
     }
 
 
-    handleSelectedCluster(selected) {
+    handleSelectedCluster = () => {
         let url = this.props.match.url
+        let selected = this.state.selectedCluster
         let clusterId = selected.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(this.props.location.search);
         let namespace = searchParams.get(QueryParams.Namespace);
@@ -182,8 +172,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.props.history.push(`${url}?${qs}`);
     }
 
-    handleSelectedNamespace(selected) {
+    handleSelectedNamespace = () => {
         let url = this.props.match.url
+        let selected = this.state.selectedNamespace
         let namespaceId = selected.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(this.props.location.search);
         let cluster = searchParams.get(QueryParams.Cluster);
@@ -234,69 +225,24 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
+    setCluster = (selected) => {
+        this.setState({
+            selectedCluster: selected
+        })
+    }
+
     renderExternalFilters() {
         return <div className="external-list--grid">
             {this.renderExternalSearch()}
-            {/* <ExternalFilters 
-            handleSelectedCluster= {this.handleSelectedCluster}
-            cluster={this.state.filters.cluster}
-            namespace={this.state.filters.namespace}
-            selectedNamespace={this.state.selectedNamespace}
-            setNamespace={this.setNamespace}
-            /> */}
-            <Select className="cn-9 fs-14"
-                placeholder="Cluster: All"
-                name="cluster"
-                options={this.state.filters.cluster?.map((env) => ({ label: env.label, value: env.key }))}
-                components={{
-                    Option,
-                    MenuList,
-                    ValueContainer,
-                    DropdownIndicator,
-                    IndicatorSeparator: null,
-                }}
-                // value={this.state.cluster}
-                onChange={(selected: any) => this.handleSelectedCluster(selected)}
-                isMulti
-                hideSelectedOptions={false}
-                closeMenuOnSelect={false}
-                styles={{
-                    ...multiSelectStyles,
-                    control: (base, state) => ({
-                        ...base,
-                        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-                        boxShadow: 'none',
-                        height: '36px',
-                    }),
-                }}
-            />
-            <Select className="cn-9 fs-14"
-                placeholder="Namespace: All"
-                options={this.state.filters.namespace?.map((env) => ({ label: env.label, value: env.key }))}
-                onChange={(selected: any) => this.setState({ selectedNamespace: selected })}
-                value={this.state.selectedNamespace}
-                name="Namespace"
-                components={{
-                    Option,
-                    MenuList,
-                    ValueContainer,
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                }}
-                isMulti
-                hideSelectedOptions={false}
-                closeMenuOnSelect={false}
-                styles={{
-                    ...multiSelectStyles,
-                    control: (base, state) => ({
-                        ...base,
-                        border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                        boxShadow: 'none',
-                        height: '36px',
-                        ...base,
-                        paddingBottom: "0px"
-                    }),
-                }}
+            <ExternalFilters
+                handleSelectedNamespace={this.handleSelectedNamespace}
+                handleSelectedCluster={this.handleSelectedCluster}
+                cluster={this.state.filters.cluster}
+                namespace={this.state.filters.namespace}
+                selectedNamespace={this.state.selectedNamespace}
+                setNamespace={this.setNamespace}
+                selectedCluster={this.state.selectedCluster}
+                setCluster={this.setCluster}
             />
         </div>
     }
@@ -324,61 +270,78 @@ export default class ExternalListContainer extends Component<ExternalListContain
     }
 }
 
-// function ExternalFilters({handleSelectedCluster, cluster, namespace, selectedNamespace, setNamespace}) {
-//     return <>
-//     <Select className="cn-9 fs-14"
-//                 placeholder="Cluster: All"
-//                 name="cluster"
-//                 options={cluster?.map((env) => ({ label: env.label, value: env.key }))}
-//                 components={{
-//                     Option,
-//                     MenuList,
-//                     ValueContainer,
-//                     DropdownIndicator,
-//                     IndicatorSeparator: null,
-//                 }}
-//                 // value={this.state.cluster}
-//                 onChange={(selected: any) => handleSelectedCluster(selected)}
-//                 isMulti
-//                 hideSelectedOptions={false}
-//                 closeMenuOnSelect={false}
-//                 styles={{
-//                     ...multiSelectStyles,
-//                     control: (base, state) => ({
-//                         ...base,
-//                         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-//                         boxShadow: 'none',
-//                         height: '36px',
-//                     }),
-//                 }}
-//             />
-//             <Select className="cn-9 fs-14"
-//                 placeholder="Namespace: All"
-//                 options={namespace?.map((env) => ({ label: env.label, value: env.key }))}
-//                 onChange={(selected: any) => setNamespace(selected)}
-//                 value={selectedNamespace}
-//                 name="Namespace"
-//                 components={{
-//                     Option,
-//                     MenuList,
-//                     ValueContainer,
-//                     IndicatorSeparator: null,
-//                     DropdownIndicator,
-//                 }}
-//                 isMulti
-//                 hideSelectedOptions={false}
-//                 closeMenuOnSelect={false}
-//                 styles={{
-//                     ...multiSelectStyles,
-//                     control: (base, state) => ({
-//                         ...base,
-//                         border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-//                         boxShadow: 'none',
-//                         height: '36px',
-//                         ...base,
-//                         paddingBottom: "0px"
-//                     }),
-//                 }}
-//             />
-//     </>
-// }
+function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, cluster, namespace, selectedNamespace, setNamespace, selectedCluster, setCluster }) {
+    const MenuList = (props) => {
+        let name = props.selectProps.name
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
+                    <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
+                        disabled={false}
+                        onClick={(event) => { name === "cluster" ? handleSelectedCluster(event) : handleSelectedNamespace(event) }}
+                    >Apply Filter</button>
+                </div>
+            </components.MenuList>
+        );
+    };
+    return <>
+        <Select className="cn-9 fs-14"
+            placeholder="Cluster: All"
+            name="cluster"
+            options={cluster?.map((env) => ({ label: env.label, value: env.key }))}
+            components={{
+                Option,
+                MenuList,
+                ValueContainer,
+                DropdownIndicator,
+                IndicatorSeparator: null,
+            }}
+            // value={this.state.cluster}
+            onChange={(selected: any) => setCluster(selected)}
+            isMulti
+            value={selectedCluster}
+            hideSelectedOptions={false}
+            closeMenuOnSelect={false}
+            isClearable={false}
+            styles={{
+                ...multiSelectStyles,
+                control: (base, state) => ({
+                    ...base,
+                    border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+                    boxShadow: 'none',
+                    height: '36px',
+                }),
+            }}
+        />
+        <Select className="cn-9 fs-14"
+            placeholder="Namespace: All"
+            options={namespace?.map((env) => ({ label: env.label, value: env.key }))}
+            onChange={(selected: any) => setNamespace(selected)}
+            value={selectedNamespace}
+            name="namespace"
+            components={{
+                Option,
+                MenuList,
+                ValueContainer,
+                IndicatorSeparator: null,
+                DropdownIndicator,
+            }}
+            isClearable={false}
+            isMulti
+            hideSelectedOptions={false}
+            closeMenuOnSelect={false}
+            styles={{
+                ...multiSelectStyles,
+                control: (base, state) => ({
+                    ...base,
+                    border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
+                    boxShadow: 'none',
+                    height: '36px',
+                    ...base,
+                    paddingBottom: "0px"
+                }),
+            }}
+        />
+    </>
+}

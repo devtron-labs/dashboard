@@ -2,6 +2,7 @@ import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
+import { string } from 'prop-types';
 
 export interface AppListState {
     code: number;
@@ -101,7 +102,6 @@ export interface DeploymentDetailContainerResponse {
     lastDeployedPipeline?: string
 }
 
-
 export const OrderBy = {
     ASC: 'ASC',
     DESC: 'DESC'
@@ -136,6 +136,11 @@ export interface ExternalQueryList {
     queryMatch: string;
 }
 
+export interface SelectedExternalDropdown {
+    label: string;
+    value: string;
+}
+
 export interface ExternalListContainerState {
     view: string;
     code: number;
@@ -146,16 +151,16 @@ export interface ExternalListContainerState {
         namespace: FilterOption[];
         cluster: FilterOption[];
     },
-    selectedNamespace: [];
+    selectedNamespace: SelectedExternalDropdown[];
     searchQuery: string;
     isSearchApplied: boolean;
- showDevtronAppList: boolean;
- externalQueryList: ExternalQueryList[]
+    showDevtronAppList: boolean;
+    selectedCluster: SelectedExternalDropdown[]
+    externalQueryList: ExternalQueryList[]
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
 }
-
 
 export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
     view: string;
