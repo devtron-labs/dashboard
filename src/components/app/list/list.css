@@ -427,6 +427,11 @@
     min-width: 0px
 }
 
+.external__overflow-handling{
+    overflow: hidden;
+    overflow-x: auto;
+}
+
 
 @media(min-width: 1024px) {
     .search-filter-section {

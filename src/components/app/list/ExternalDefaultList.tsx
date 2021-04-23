@@ -11,7 +11,6 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
     renderDefaultListTitle() {
         return (<div>
             <div className=" bcn-0 pl-20 pr-20">
-
                 <div className="external-list__header pt-8 pb-8">
                     <div className="external-list__cell pr-12">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
@@ -19,7 +18,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                         </button>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                        <span className="app-list__cell-header">Environment</span>
+                        <span className="app-list__cell-header">Cluster/Namespace</span>
                     </div>
                     <div className="external-list__cell pl-12 pr-12">
                         <span className="app-list__cell-header ">Last Updated </span>
@@ -28,6 +27,23 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                 </div>
             </div>
         </div>
+        )
+    }
+
+    renderExternalList(list) {
+        return (
+            <div className="bcn-0">
+                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
+                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
+                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
+                    <div className="external-list__cell pr-12"> {list.lastupdate} </div>
+                    <div className="app-list__cell app-list__cell--action">
+                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
+                            <Edit className="button-edit__icon" />
+                        </button>
+                    </div>
+                </Link>
+            </div>
         )
     }
 
@@ -72,23 +88,6 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         this.props.history.push(url);
     }
 
-    renderExternalList(list) {
-        return (
-            <div className="bcn-0">
-                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
-                    <div className="external-list__cell pr-12"> {list.lastupdate} </div>
-                    <div className="app-list__cell app-list__cell--action">
-                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
-                            <Edit className="button-edit__icon" />
-                        </button>
-                    </div>
-                </Link>
-            </div>
-        )
-    }
-
     renderDefaultList() {
         if (this.props.view === ViewType.LOADING) {
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
@@ -98,6 +97,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
             </>
         }
     }
+
     render() {
         return (
             <div>

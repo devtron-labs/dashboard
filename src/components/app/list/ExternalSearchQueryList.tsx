@@ -19,15 +19,32 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
                         </button>
                     </div>
                     <div className="external-list__cell pl-12 pr-12">
-                        <span className="app-list__cell-header">Environment</span>
+                        <span className="app-list__cell-header">Cluster/Namespace</span>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                        <span className="app-list__cell-header ">Query Matches </span>
+                        <span className="app-list__cell-header ml-12 mr-12">Query Matches </span>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>
             </div>
         </div>
+        )
+    }
+
+    renderExternalList(list) {
+        return (
+            <div className="bcn-0">
+                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
+                    <div className="external-list__cell content-left mr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
+                    <div className="external-list__cell ml-12 mr-12 external__overflow-handling">{list.environment}</div>
+                    <div className="external-list__cell external-list__cell--width ml-12 mr-12"> {list.queryMatch} </div>
+                    <div className="app-list__cell app-list__cell--action">
+                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
+                            <Edit className="button-edit__icon" />
+                        </button>
+                    </div>
+                </Link>
+            </div>
         )
     }
 
@@ -70,23 +87,6 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         let queryStr = queryString.stringify(query);
         let url = `${URLS.APP}?${queryStr}`;
         this.props.history.push(url);
-    }
-
-    renderExternalList(list) {
-        return (
-            <div className="bcn-0">
-                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
-                    <div className="external-list__cell pl-12 pr-12">{list.environment}</div>
-                    <div className="external-list__cell external-list__cell--width pr-12"> {list.queryMatch} </div>
-                    <div className="app-list__cell app-list__cell--action">
-                        <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
-                            <Edit className="button-edit__icon" />
-                        </button>
-                    </div>
-                </Link>
-            </div>
-        )
     }
 
     renderDefaultList() {

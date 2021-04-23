@@ -49,22 +49,22 @@ export function getExternalSearchQueryList(): Promise<{
         setTimeout(() => {
             resolve([{
                 appname: "shivani",
-                environment: "dashboard",
+                environment: "default_cluster/devtroncd ",
                 queryMatch: "19 June 2019,04:02 PM",
             },
             {
                 appname: "testing",
-                environment: "dashboard",
+                environment: "default_cluster/devtroncd ",
                 queryMatch: "19 June 2019,04:02 PM",
             },
             {
                 appname: "demo",
-                environment: "dashboard",
-                queryMatch: "Gerena is a municipality in the Province of Seville, Spain. It is 25 km northwest of the provincial capital, Seville, and 10 km north of Olivares",
+                environment: "default_cluster/devtroncddefaultdefault_cluster/devtroncddefault",
+                queryMatch: "Gerena is a municipality in the Province of Seville, Spain. It is 25 km northwest of the provincial capital, Seville, and 10 km north of Olivares. Gerena is a municipality in the Province of Seville, Spain. It is 25 km northwest of the provincial capital, Seville, and 10 km north of Olivares",
             },
             {
                 appname: "devtron",
-                environment: "dashboard",
+                environment: "default_cluster/devtroncd ",
                 queryMatch: "19 June 2019,04:02 PM",
             },
             ])
