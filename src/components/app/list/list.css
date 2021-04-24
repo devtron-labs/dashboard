@@ -370,6 +370,11 @@
     z-index: 10000;
 }
 
+.overflow-hidden{
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .external-list__cell{
     flex-basis: 15%;
     flex-grow: 1;

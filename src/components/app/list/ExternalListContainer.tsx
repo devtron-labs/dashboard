@@ -15,15 +15,14 @@ import AppListContainer from './AppListContainer';
 import { AppListView } from './AppListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
 import ExternalSearchQueryList from './ExternalSearchQueryList'
+import Tippy from '@tippyjs/react';
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 
 const QueryParams = {
     Cluster: "cluster",
     Namespace: "namespace",
     Appstore: "appstore"
 }
-
-
-
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
 
@@ -139,13 +138,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                                 <div className="cn-5">Apps & charts deployed using Devtron</div>
                             </div>
                         </div>
-                        {/* <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
-                            <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div>
-                                <div className="cn-9 fs-13">External Apps</div>
-                                <div className="cn-5">Helm charts, Argocd objects</div>
-                            </div>
-                        </div> */}
+                       
                     </div>
                 </> : ""}
             </div>
@@ -210,18 +203,22 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     renderExternalSearch() {
         return <div className="flexbox flex-justify">
-            <form
-                onSubmit={(e) => this.handleAppStoreChange(e)}
-                className="search position-rel" style={{ flexBasis: "100%" }} >
+            <form onSubmit={(e) => this.handleAppStoreChange(e)} className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
                 <input className="search__input bcn-1" type="text" placeholder="Search applications"
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
+
                 {this.state.isSearchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                    <Question className="icon-dim-20 scn-5" />
+                </Tippy>
             </form>
+
         </div>
     }
 
@@ -297,7 +294,6 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
                 DropdownIndicator,
                 IndicatorSeparator: null,
             }}
-            // value={this.state.cluster}
             onChange={(selected: any) => setCluster(selected)}
             isMulti
             value={selectedCluster}
