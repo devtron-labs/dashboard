@@ -153,7 +153,7 @@ export interface ExternalListContainerState {
     },
     selectedNamespace: SelectedExternalDropdown[];
     searchQuery: string;
-    isSearchApplied: boolean;
+    searchApplied: boolean;
     showDevtronAppList: boolean;
     selectedCluster: SelectedExternalDropdown[]
     externalQueryList: ExternalQueryList[]

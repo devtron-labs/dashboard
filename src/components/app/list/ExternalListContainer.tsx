@@ -43,7 +43,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             selectedNamespace: [],
             selectedCluster: [],
             searchQuery: "",
-            isSearchApplied: false,
+            searchApplied: false,
             showDevtronAppList: false
         }
         this.toggleHeaderName = this.toggleHeaderName.bind(this);
@@ -108,6 +108,70 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
     }
 
+    // componentDidUpdate(prevProps, prevState) {
+    //     if(prevProps){
+    //         this.setState({ loadingData: false })
+    //         this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
+    //     }
+    // }
+
+
+    initialiseFromQueryParams = (clusterList, namespaceList) => {
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let appNameSearch: string = searchParams.get(QueryParams.Appstore);
+        let cluster: string = searchParams.get(QueryParams.Cluster);
+        let namespace: string = searchParams.get(QueryParams.Namespace);
+        let clusterIdArray = [];
+        let namespaceIdArray = [];
+
+        if (cluster) {
+            clusterIdArray = clusterList.split(",")
+        };
+
+        if (namespace) {
+            namespaceIdArray= namespaceList.split(",")
+        }
+
+        clusterIdArray = clusterIdArray.map((clusterId => parseInt(clusterId)));
+        namespaceIdArray =  namespaceIdArray.map((namespaceId)=>parseInt(namespaceId));
+
+        let selectedcluster = [];
+        for (let i = 0; i < clusterIdArray.length; i++) {
+            let clusterValue = clusterList.find(item => item.value === clusterIdArray[i]);
+            if (clusterValue) {
+                selectedcluster.push(clusterValue);
+            }
+        }
+        let selectedNamespace = [];
+        for ( let i=0; i<namespaceIdArray.length; i++){
+            let namespaceValue = namespaceList.find(item => item.value === namespaceIdArray[i]);
+            if(namespaceValue){
+                selectedNamespace.push(namespaceValue)
+            }
+        }
+
+        if (selectedcluster || selectedNamespace) {
+            this.setState({
+            filters:{
+                cluster: selectedcluster,
+                namespace: selectedNamespace
+            }
+            })
+        }
+       
+        if (appNameSearch) {
+           this.setState({
+            searchApplied: true,
+            searchQuery: appNameSearch
+           })
+        } else {
+            this.setState({
+                searchApplied: false,
+                searchQuery: ""
+               })
+        }
+    }
+
     toggleHeaderName() {
         this.setState({ collapsed: !this.state.collapsed })
     }
@@ -138,7 +202,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                                 <div className="cn-5">Apps & charts deployed using Devtron</div>
                             </div>
                         </div>
-                       
+
                     </div>
                 </> : ""}
             </div>
@@ -210,7 +274,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
 
-                {this.state.isSearchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
+                {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
                 <Tippy className="default-tt" arrow={false} placement="top" content={
