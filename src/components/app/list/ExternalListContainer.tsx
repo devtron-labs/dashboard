@@ -108,12 +108,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     if(prevProps){
-    //         this.setState({ loadingData: false })
-    //         this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
-    //     }
-    // }
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.location.search !== this.props.location.search){
+            this.setState({ loadingData: false })
+            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
+        }
+    }
 
 
     initialiseFromQueryParams = (clusterList, namespaceList) => {
@@ -125,11 +125,11 @@ export default class ExternalListContainer extends Component<ExternalListContain
         let namespaceIdArray = [];
 
         if (cluster) {
-            clusterIdArray = clusterList.split(",")
+            clusterIdArray = cluster.split(",")
         };
 
         if (namespace) {
-            namespaceIdArray= namespaceList.split(",")
+            namespaceIdArray= namespace.split(",")
         }
 
         clusterIdArray = clusterIdArray.map((clusterId => parseInt(clusterId)));
