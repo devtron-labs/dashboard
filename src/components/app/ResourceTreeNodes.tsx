@@ -370,16 +370,16 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                     />
                 </>
             ) : (
-                    <GenericInfo
-                        nodes={nodes}
-                        level={1}
-                        Data={nodes.nodes[Nodes.Pod]}
-                        type={Nodes.Pod}
-                        describeNode={describeNode}
-                        appName={appName}
-                        environmentName={environmentName}
-                    />
-                )}
+                <GenericInfo
+                    nodes={nodes}
+                    level={1}
+                    Data={nodes.nodes[Nodes.Pod]}
+                    type={Nodes.Pod}
+                    describeNode={describeNode}
+                    appName={appName}
+                    environmentName={environmentName}
+                />
+            )}
         </div>
     );
 }
@@ -499,14 +499,12 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                 <div className="flex left column">
                     <div className="flex left">
                         {nodeDetails?.name}
-                        {console.log(nodeDetails)}
                         <Tippy
                             className="default-tt"
                             arrow={false}
                             placement="bottom"
                             content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                            trigger='mouseenter click'
-                        >
+                            trigger='mouseenter click'>
                             <Clipboard
                                 className="hover-only icon-dim-18 pointer"
                                 onClick={(e) => copyToClipboard(nodeDetails?.name, () => setCopied(true))}
@@ -514,48 +512,30 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                         </Tippy>
                     </div>
                     {(nodeDetails?.status || nodeDetails?.health?.status) && (
-                        <span
-                            className={` app-summary__status-name f-${(
-                                nodeDetails?.status || nodeDetails?.health?.status
-                            ).toLowerCase()}`}
-                        >
+                        <span className={`app-summary__status-name f-${(
+                            nodeDetails?.status || nodeDetails?.health?.status).toLowerCase()}`}>
                             {nodeDetails?.status || nodeDetails?.health?.status}
                         </span>
                     )}
                 </div>
-                {console.log(Nodes)}
                 {nodeDetails.kind !== Nodes.Containers && (
                     <>
-                     <span
-                            data-testid={`${nodeDetails.name}-summary`}
+                        <span data-testid={`${nodeDetails.name}-manifest`}
                             className="hover-only fw-6 anchor pointer ml-6"
-                            onClick={(e) => showManifest(NodeDetailTabs.SUMMARY)}
-                        >
-                            SUMMARY
-                        </span>
-                        <span
-                            data-testid={`${nodeDetails.name}-manifest`}
-                            className="hover-only fw-6 anchor pointer ml-6"
-                            onClick={(e) => showManifest(NodeDetailTabs.MANIFEST)}
-                        >
+                            onClick={(e) => showManifest(NodeDetailTabs.MANIFEST)}>
                             MANIFEST
                         </span>
-                        <span
-                            data-testid={`${nodeDetails.name}-events`}
+                        <span data-testid={`${nodeDetails.name}-events`}
                             className="hover-only fw-6 anchor pointer ml-6"
-                            onClick={(e) => showManifest(NodeDetailTabs.EVENTS)}
-                        >
+                            onClick={(e) => showManifest(NodeDetailTabs.EVENTS)}>
                             EVENTS
                         </span>
                     </>
                 )}
-
                 {[Nodes.Pod, Nodes.Containers].includes(nodeDetails.kind) && (
-                    <span
-                        data-testid={`${nodeDetails.name}-logs`}
+                    <span data-testid={`${nodeDetails.name}-logs`}
                         className="hover-only fw-6 anchor pointer ml-6"
-                        onClick={(e) => showManifest(NodeDetailTabs.LOGS)}
-                    >
+                        onClick={(e) => showManifest(NodeDetailTabs.LOGS)}>
                         LOGS
                     </span>
                 )}

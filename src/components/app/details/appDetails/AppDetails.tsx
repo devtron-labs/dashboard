@@ -30,11 +30,10 @@ import {
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link } from 'react-router-dom';
 import ResourceTreeNodes from '../../ResourceTreeNodes';
-import EventsLogs from '../../EventsLogs';
+import EventsLogs from '../../EventsLogs/EventsLogs';
 import ResponsiveDrawer from '../../ResponsiveDrawer';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
-//@ts-check
 import moment from 'moment';
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png';
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png';
@@ -60,11 +59,11 @@ import {
     NodeType,
     AggregatedNodes,
     NodeDetailTabs,
-    NodeDetailTabsType,
-    AppDetails,
+    NodeDetailTabsType
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+import { AppDetails } from './appDetails.type';
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
@@ -102,9 +101,6 @@ export default function AppDetail() {
     return (
         <div style={{ overflowY: 'auto', height: '100%' }}>
             <div className="flex left column w-100" style={{ minHeight: '100%', justifyContent: 'flex-start' }}>
-                {/* <div className="flex left w-100 p-16">
-                    <EnvSelector environments={otherEnvsResult?.result} />
-                </div> */}
                 {!params.envId && otherEnvsResult?.result?.length > 0 && (
                     <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                         <SourceInfo
@@ -236,7 +232,6 @@ export const Details: React.FC<{
         }
     }, [appDetailsError]);
 
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI();
@@ -694,8 +689,8 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
             }
         >
             <div className={`pl-20 flex left tab-container ${!!params.tab ? 'cursor--ns-resize' : 'pointer'}`}>
-                {[NodeDetailTabs.SUMMARY,NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
-                ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
+                {[NodeDetailTabs.MANIFEST, NodeDetailTabs.EVENTS,
+                ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL, NodeDetailTabs.SUMMARY] : []),
                 ].map((title, idx) => (
                     <div key={idx}
                         className={`tab capitalize ${params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''}`}

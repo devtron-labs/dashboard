@@ -1,6 +1,4 @@
 import { RouteComponentProps } from 'react-router';
-
-
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
@@ -22,38 +20,6 @@ export interface AddNewAppState {
         projectId: boolean;
         appName: boolean;
     };
-}
-
-export interface AppDetails {
-    appId: number;
-    appName: string;
-    environmentId: number;
-    environmentName: string;
-    namespace: string;
-    lastDeployedTime: string;
-    lastDeployedBy: string;
-    materialInfo: MaterialInfo[];
-    releaseVersion: string;
-    dataSource: string;
-    lastDeployedPipeline: string;
-    instanceDetail?: any;
-    otherEnvironment: OtherEnvironment[];
-    resourceTree: ResourceTree;
-}
-
-interface ResourceTree {
-    nodes: Node[];
-    newGenerationReplicaSet: string;
-    status: string;
-    podMetadata: PodMetadatum[];
-    conditions?: any;
-}
-
-export interface PodMetadatum {
-    name: string;
-    uid: string;
-    containers: string[];
-    isNew: boolean;
 }
 
 interface Node {
@@ -84,7 +50,6 @@ interface Node {
     images?: string[];
     url?: string;
 }
-
 export interface Pod extends Node {
     containers: any[];
     ready?: number;
@@ -111,27 +76,6 @@ interface NetworkingInfo {
         'rollouts-pod-template-hash': string;
     };
 }
-
-export interface OtherEnvironment {
-    environmentId: number;
-    environmentName: string;
-    appMetrics: boolean;
-    infraMetrics: boolean;
-    prod: boolean;
-}
-
-interface MaterialInfo {
-    author: string;
-    branch: string;
-    message: string;
-    modifiedTime: string;
-    revision: string;
-    url: string;
-}
-
-
-
-
 
 interface Source {
     repoURL: string;
@@ -244,7 +188,6 @@ export interface AppStreamData {
     }
 }
 
-
 export interface GenericNode<T> {
     group?: string;
     version: string;
@@ -286,6 +229,7 @@ export enum Nodes {
     PersistentVolume = 'PersistentVolume',
     Containers = 'Containers',// containers are being trated same way as nodes for nsted table generation
 }
+
 export type NodeType = keyof typeof Nodes;
 
 export enum AggregationKeys {
@@ -297,6 +241,7 @@ export enum AggregationKeys {
     'Custom Resource' = 'Custom Resource',
     Other = 'Other'
 }
+
 export type AggregationKeysType = keyof typeof AggregationKeys;
 
 type Aggregation = {
@@ -325,7 +270,6 @@ export interface AggregatedNodes {
     }
 }
 
-
 export enum NodeDetailTabs {
     SUMMARY = 'SUMMARY',
     EVENTS = 'EVENTS',
@@ -334,5 +278,5 @@ export enum NodeDetailTabs {
     DESCRIBE = 'DESCRIBE',
     TERMINAL = "TERMINAL",
 };
-export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
 
+export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
