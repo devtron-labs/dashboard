@@ -40,8 +40,8 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         return (
             <div className="bcn-0">
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left mr-12"> 
-                    <p className="truncate-text m-0 overflow-hidden">{list.appname}</p></div>
+                    <div className="external-list__cell content-left mr-12">
+                        <p className="truncate-text m-0 overflow-hidden">{list.appname}</p></div>
                     <div className="external-list__cell ml-12 mr-12 external__overflow-handling">
                         <span className="overflow-hidden">{list.environment}</span></div>
                     <div className="external-list__cell external-list__cell--width ml-12 mr-12">
@@ -57,11 +57,13 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
     }
 
     renderSavedFilters() {
+        {console.log(this.props)}
         let count = 0;
-        let keys = Object.keys(this.props.filters);
+        let keys = Object.keys(this.props.selectedCluster);
         let savedFilters = <div className="saved-filters">
             {keys.map((key) => {
                 return this.props.filters[key].map((filter) => {
+                    { console.log(filter) }
                     if (filter.isChecked) {
                         count++;
                         return <div key={filter.key} className="saved-filter">{filter.label}
@@ -77,6 +79,9 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
                 Clear All Filters
             </button>
         </div>
+        return <React.Fragment>
+            {count > 0 ? savedFilters : null}
+        </React.Fragment>
     }
 
     removeFilter = (val, type: string): void => {
@@ -101,15 +106,14 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         if (this.props.view === ViewType.LOADING) {
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
         } else {
-            return <>{this.renderSavedFilters()}
-                {this.props.externalQueryList.map((list) => { return this.renderExternalList(list) })}
-            </>
+            return <>{this.props.externalQueryList.map((list) => { return this.renderExternalList(list) })}</>
         }
     }
     render() {
         return (
             <div>
                 {this.renderDefaultListTitle()}
+                {this.renderSavedFilters()}
                 {this.renderDefaultList()}
             </div>
         )

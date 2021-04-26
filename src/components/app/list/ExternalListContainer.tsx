@@ -108,13 +108,18 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     if(prevProps.location.search !== this.props.location.search){
-    //         this.setState({ loadingData: false })
-    //         this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
-    //     }
-    // }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.location.search !== this.props.location.search) {
+            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace);
+            this.callApplyFilterOnExternalList();
+        }
+    }
 
+    async callApplyFilterOnExternalList() {
+        this.setState({ loadingData: true });
+        await getExternalList();
+        this.setState({ loadingData: false });
+    }
 
     initialiseFromQueryParams = (clusterList, namespaceList) => {
         let searchParams = new URLSearchParams(this.props.location.search);
@@ -129,48 +134,48 @@ export default class ExternalListContainer extends Component<ExternalListContain
         };
 
         if (namespace) {
-            namespaceIdArray= namespace.split(",")
+            namespaceIdArray = namespace.split(",")
         }
 
         clusterIdArray = clusterIdArray.map((clusterId => parseInt(clusterId)));
-        namespaceIdArray =  namespaceIdArray.map((namespaceId)=>parseInt(namespaceId));
+        namespaceIdArray = namespaceIdArray.map((namespaceId) => parseInt(namespaceId));
 
-        let selectedcluster = [];
+        let selectedCluster = [];
         for (let i = 0; i < clusterIdArray.length; i++) {
             let clusterValue = clusterList.find(item => item.value === clusterIdArray[i]);
             if (clusterValue) {
-                selectedcluster.push(clusterValue);
+                selectedCluster.push(clusterValue);
             }
         }
         let selectedNamespace = [];
-        for ( let i=0; i<namespaceIdArray.length; i++){
+        for (let i = 0; i < namespaceIdArray.length; i++) {
             let namespaceValue = namespaceList.find(item => item.value === namespaceIdArray[i]);
-            if(namespaceValue){
+            if (namespaceValue) {
                 selectedNamespace.push(namespaceValue)
             }
         }
 
-        if (selectedcluster || selectedNamespace) {
+        if (selectedCluster || selectedNamespace) {
             this.setState({
-            filters:{
-                cluster: selectedcluster,
-                namespace: selectedNamespace
-            }
+                selectedCluster: selectedCluster,
+                selectedNamespace: selectedNamespace
             })
         }
-       
+
         if (appNameSearch) {
-           this.setState({
-            searchApplied: true,
-            searchQuery: appNameSearch
-           })
+            this.setState({
+                searchApplied: true,
+                searchQuery: appNameSearch
+            })
         } else {
             this.setState({
                 searchApplied: false,
                 searchQuery: ""
-               })
+            })
         }
     }
+
+
 
     toggleHeaderName() {
         this.setState({ collapsed: !this.state.collapsed })
@@ -280,7 +285,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
                     <Question className="icon-dim-20 fcn-5" />
                 </Tippy>
-               
+
             </form>
 
         </div>
@@ -310,6 +315,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     render() {
         return (<>
+        {console.log(this.state)}
             {this.state.showDevtronAppList ? <AppListContainer /> :
                 <> {this.renderExternalTitle()}
                     <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
@@ -324,6 +330,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         view={this.state.view}
                         externalQueryList={this.state.externalQueryList}
                         filters={this.state.filters}
+                        selectedNamespace={this.state.selectedNamespace}
+                        selectedCluster={this.state.selectedCluster}
+
                     />
                 </>}
         </>
@@ -364,15 +373,7 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
             hideSelectedOptions={false}
             closeMenuOnSelect={false}
             isClearable={false}
-            styles={{
-                ...multiSelectStyles,
-                control: (base, state) => ({
-                    ...base,
-                    border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-                    boxShadow: 'none',
-                    height: '36px',
-                }),
-            }}
+            styles={multiSelectStyles}
         />
         <Select className="cn-9 fs-14"
             placeholder="Namespace: All"
