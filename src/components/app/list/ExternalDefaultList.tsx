@@ -18,7 +18,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                         </button>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                        <span className="app-list__cell-header">Cluster/Namespace</span>
+                        <span className="app-list__cell-header">Environment</span>
                     </div>
                     <div className="external-list__cell pl-12 pr-12">
                         <span className="app-list__cell-header ">Last Updated </span>

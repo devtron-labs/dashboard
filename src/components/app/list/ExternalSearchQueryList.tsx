@@ -13,22 +13,21 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
     renderDefaultListTitle() {
         return (<div>
             <div className=" bcn-0 pl-20 pr-20">
-
                 <div className="external-list__header pt-8 pb-8">
                     <div className="external-list__cell pr-12">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
                          {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
                         </button>
                     </div>
-                    <div className="external-list__cell pl-12 pr-12">
-                        <span className="app-list__cell-header">Cluster/Namespace</span>
+                    <div className="external-list__cell ml-12 mr-12">
+                        <span className="app-list__cell-header">Environment</span>
                         <Tippy className="default-tt" arrow={false} placement="top" content={
                             <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
                             <Question className="icon-dim-20" />
                         </Tippy>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                        <span className="app-list__cell-header ml-12 mr-12">Query Matches </span>
+                        <span className="app-list__cell-header ">Query Matches </span>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>

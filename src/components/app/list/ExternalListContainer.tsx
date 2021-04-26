@@ -108,12 +108,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if(prevProps.location.search !== this.props.location.search){
-            this.setState({ loadingData: false })
-            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
-        }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //     if(prevProps.location.search !== this.props.location.search){
+    //         this.setState({ loadingData: false })
+    //         this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace)
+    //     }
+    // }
 
 
     initialiseFromQueryParams = (clusterList, namespaceList) => {
@@ -273,14 +273,14 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
-
                 {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null}
                 <Tippy className="default-tt" arrow={false} placement="top" content={
                     <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
-                    <Question className="icon-dim-20 scn-5" />
+                    <Question className="icon-dim-20 fcn-5" />
                 </Tippy>
+               
             </form>
 
         </div>

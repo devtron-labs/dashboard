@@ -30,7 +30,7 @@ export const ValueContainer = props => {
 export const DropdownIndicator = props => {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className={`rotate scn-2`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '20px', width: '20px' }} />
+            <ArrowDown className={`rotate fcn-4`} style={{ ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg', height: '20px', width: '20px' }} />
         </components.DropdownIndicator>
     )
 }
