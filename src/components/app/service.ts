@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
 import { ServerErrors } from '../../modals/commonTypes';
 import { sortCallback } from '../common';
 import { History } from './details/cIDetails/types'
-import { AppDetails } from './types';
+import { AppDetails } from '../app/details/appDetails/appDetails.type';
 import { CDMdalTabType } from './details/triggerView/types'
 
 let stageMap = {
