@@ -68,11 +68,11 @@ export class AppListView extends Component<AppListViewProps>{
     renderPageHeader() {
         return <div className="app-header">
             <div className="app-header__title">
-                <h1 className="app-header__text flex left">Applications({this.props.size})
+                {/* <h1 className="app-header__text flex left">Applications({this.props.size})
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
-                </h1>
-                {this.props.collapsedListTogglingModal ? <>
-                    <div onClick={(e) => this.props.toggleToExternalList()} className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
+                </h1> */}
+                {/* {this.props.collapsedListTogglingModal ? <>
+                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
                         <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
                             <div>
@@ -81,14 +81,14 @@ export class AppListView extends Component<AppListViewProps>{
                             </div>
                         </div>
                     </div>
-                </> : ""}
+                </> : ""} */}
                 {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
                     Add new app
                 </button> : null}
             </div>
-            {this.renderFilters()}
+            {/* {this.renderFilters()} */}
         </div>
     }
 
@@ -236,7 +236,7 @@ export class AppListView extends Component<AppListViewProps>{
             />
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
                 render={(props) => <TriggerInfoModal {...props}
-                    close={this.props.closeModal} />}
+                 location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}
             />
         </Switch>
     }
@@ -298,6 +298,7 @@ export class AppListView extends Component<AppListViewProps>{
         else {
             return <React.Fragment>
                 {this.renderPageHeader()}
+                {this.renderFilters()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
                 {this.renderAppList()}

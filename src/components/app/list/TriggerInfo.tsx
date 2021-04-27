@@ -18,7 +18,7 @@ interface TriggerInfoModalState {
     appName: string;
 }
 
-interface TriggerInfoModalProps extends RouteComponentProps<{ appId: string; commit: string; ciArtifactId: string }> {
+interface TriggerInfoModalProps extends RouteComponentProps<{ appId: string; commit: string; ciArtifactId: string; }> {
     close: () => void;
 }
 

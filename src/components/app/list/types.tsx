@@ -120,6 +120,7 @@ export interface ListContainerState {
 }
 
 export interface ListContainerProps extends RouteComponentProps<{}> {
+    closeModal: () => void;
 }
 
 export interface ExternalList {

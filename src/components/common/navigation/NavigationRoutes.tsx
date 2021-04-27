@@ -78,7 +78,7 @@ export default function NavigationRoutes() {
     )
 }
 
-export function AppRouter(props) {
+export function AppRouter(closeModal) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -89,14 +89,10 @@ export function AppRouter(props) {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <ListContainer history={history} match={match} location={location}/>}/>
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <ListContainer history={history} match={match} location={location}  closeModal={closeModal}/> }/>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
-                    <Route exact path="">
-                        <ListContainer history={history} match={match} location={location}/>
-                    </Route>
-                    <Route>
-                        <RedirectWithSentry />
-                    </Route>
+                    <Route exact path=""><ListContainer history={history} match={match} location={location}  closeModal={closeModal} /></Route>
+                    <Route><RedirectWithSentry /></Route>
                 </Switch>
             </AppContext.Provider>
         </ErrorBoundary>

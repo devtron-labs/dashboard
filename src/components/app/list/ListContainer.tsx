@@ -4,6 +4,12 @@ import AppListContainer from './AppListContainer';
 import ExternalListContainer from './ExternalListContainer';
 import { ListContainerProps, ListContainerState } from './types';
 import { AppListViewType } from '../config';
+import { URLS } from '../../../config';
+import { AddNewApp } from '../create/CreateApp';
+
+const APP_LIST_PARAM = {
+    createApp: 'create-app',
+}
 
 export default class ListContainer extends React.Component<ListContainerProps, ListContainerState> {
     constructor(props) {
@@ -26,6 +32,7 @@ export default class ListContainer extends React.Component<ListContainerProps, L
                 <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${path}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
                 </li>
+                <li><NavLink activeClassName="active" to={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}>{AddNewApp}</NavLink></li>
             </ul>
         </>
     }
@@ -35,7 +42,10 @@ export default class ListContainer extends React.Component<ListContainerProps, L
         return <Switch>
             <Route path={`${path}/devtron-apps`} component={AppListContainer} />
             <Route path={`${path}/external-apps`} component={ExternalListContainer} />
-            <Redirect to={`${path}/scans`} />
+            <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
+                render={(props) => <AddNewApp close={this.props.closeModal} match={props.match} location={props.location} history={props.history} />}
+            />
+            <Redirect to={`${path}/devtron-apps`} />
         </Switch>
     }
 
