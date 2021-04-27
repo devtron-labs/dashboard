@@ -10,7 +10,7 @@ import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 
 export default class ExternalSearchQueryList extends Component<ExternalSearchQueryListProps> {
-    renderDefaultListTitle() {
+    renderSearchListHeader() {
         return (<div>
             <div className=" bcn-0 pl-20 pr-20">
                 <div className="external-list__header pt-8 pb-8">
@@ -57,10 +57,11 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
     }
 
     renderSavedFilters() {
+        {console.log(this.props)}
         let count = 0;
-        let allAppliedFiilters = this.props.selectedCluster.concat(this.props.selectedNamespace)
+        let allAppliedFilters = this.props.selectedCluster.concat(this.props.selectedNamespace)
         let savedFilters = <div className="saved-filters">
-            {allAppliedFiilters.map((filter) => {
+            {allAppliedFilters.map((filter) => {
                 count++;
                 return <div key={filter.value} className="saved-filter">{filter.label}
                     <button type="button" className="saved-filter__clear-btn"
@@ -85,7 +86,6 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         keys.map((key) => {
             query[key] = qs[key];
         })
-        query['offset'] = 0;
         let appliedFilters = query[type];
         let arr = appliedFilters.split(",");
         arr = arr.filter((item) => item != val.toString());
@@ -96,7 +96,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         this.props.history.push(url);
     }
 
-    renderDefaultList() {
+    renderSearchListRows() {
         if (this.props.view === ViewType.LOADING) {
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
         } else {
@@ -104,11 +104,10 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         }
     }
     render() {
-        return (
-            <div>
-                {this.renderDefaultListTitle()}
+        return (<div>
                 {this.renderSavedFilters()}
-                {this.renderDefaultList()}
+                {this.renderSearchListHeader()}
+                {this.renderSearchListRows()}
             </div>
         )
     }

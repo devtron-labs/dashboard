@@ -247,7 +247,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.props.history.push(`${url}?${qs}`);
     }
 
-    clearSearch() {
+    clearSearch(event) {
         let url = this.props.match.url
         let searchParams = new URLSearchParams(this.props.location.search);
         let cluster = searchParams.get(QueryParams.Cluster);
@@ -262,17 +262,18 @@ export default class ExternalListContainer extends Component<ExternalListContain
         return <div className="flexbox flex-justify">
             <form onSubmit={(e) => this.handleAppStoreChange(e)} className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
-                <input className="search__input bcn-1" type="text" placeholder="Search applications"
+                <input className="search__input bcn-1" type="text" placeholder="Search… (eg. chart:fluetnd AND label:label-name)"
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
-                {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : null}
-                <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                {!this.state.searchApplied ? <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> Search using app name or key:value queries (eg. chart:fluentd; label:label-name).
+                    You can also use "AND" or "OR" operators between search queries. (eg. chart:fluentd AND label:label-name). </span>}>
                     <Question className="icon-dim-20 fcn-5" />
-                </Tippy>
+                </Tippy> : <button className="search__clear-button" type="button" onClick={(e)=>this.clearSearch(e)}>
+                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    </button>
+                }
 
             </form>
 
