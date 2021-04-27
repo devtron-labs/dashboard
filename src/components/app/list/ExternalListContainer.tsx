@@ -111,15 +111,10 @@ export default class ExternalListContainer extends Component<ExternalListContain
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
             this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace);
-            this.callApplyFilterOnExternalList();
         }
     }
 
-    async callApplyFilterOnExternalList() {
-        this.setState({ loadingData: true });
-        await getExternalList();
-        this.setState({ loadingData: false });
-    }
+
 
     initialiseFromQueryParams = (clusterList, namespaceList) => {
         let searchParams = new URLSearchParams(this.props.location.search);
@@ -155,24 +150,17 @@ export default class ExternalListContainer extends Component<ExternalListContain
             }
         }
 
-        if (selectedCluster || selectedNamespace) {
-            this.setState({
-                selectedCluster: selectedCluster,
-                selectedNamespace: selectedNamespace
-            })
+        this.setState({
+            searchApplied: appNameSearch ? true : false,
+            searchQuery: appNameSearch ? appNameSearch : "",
+            selectedCluster: selectedCluster,
+            selectedNamespace: selectedNamespace
+        }, () => {
+            this.setState({ loadingData: true })
+            getExternalList()
+            this.setState({ loadingData: false })
         }
-
-        if (appNameSearch) {
-            this.setState({
-                searchApplied: true,
-                searchQuery: appNameSearch
-            })
-        } else {
-            this.setState({
-                searchApplied: false,
-                searchQuery: ""
-            })
-        }
+        )
     }
 
 
@@ -315,7 +303,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     render() {
         return (<>
-        {console.log(this.state)}
+            {console.log(this.state)}
             {this.state.showDevtronAppList ? <AppListContainer /> :
                 <> {this.renderExternalTitle()}
                     <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
