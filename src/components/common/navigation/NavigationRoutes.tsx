@@ -10,7 +10,7 @@ import { Security } from '../../security/Security';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
-const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const ListContainer = lazy(() => import('../../app/list/ListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
@@ -79,6 +79,9 @@ export default function NavigationRoutes() {
 }
 
 export function AppRouter(props) {
+    const history = useHistory()
+    const location = useLocation()
+    const match = useRouteMatch()
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -86,10 +89,10 @@ export function AppRouter(props) {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <AppListContainer {...props}/>}/>
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <ListContainer history={history} match={match} location={location}/>}/>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <AppListContainer {...props}/>
+                        <ListContainer history={history} match={match} location={location}/>
                     </Route>
                     <Route>
                         <RedirectWithSentry />
