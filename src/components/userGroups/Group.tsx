@@ -96,12 +96,12 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
             const { result } = await saveGroup(payload)
             if (id) {
                 updateCallback(index, result)
+                toast.success('Group updated')
             }
             else {
                 createCallback(result)
+                toast.success('Group createed')
             }
-
-            toast.success('Create successfully')
         }
         catch (err) {
             showError(err)
@@ -237,7 +237,7 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
         setSubmitting(true)
         try {
             await deleteGroup(id)
-            toast.success('Deleted group successfully.')
+            toast.success('Group deleted')
             deleteCallback(index)
         }
         catch (err) {

@@ -4,7 +4,6 @@ import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
 import { getUserList, getGroupList, getUserId, getGroupId, getUserRole } from './userGroup.service';
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
-import Select, { components } from 'react-select';
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
@@ -12,15 +11,15 @@ import { ChartGroup } from '../charts/charts.types'
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType } from './userGroups.types'
 import UserForm from './User'
 import GroupForm from './Group';
-import './UserGroup.scss';
+import Select, { components } from 'react-select';
 import { DOCUMENTATION, Routes } from '../../config'
-
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react';
 import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
+import './UserGroup.scss';
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean, result: { id: number, name: string }[], error: any }>;
@@ -248,10 +247,10 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
     if (loading) return <div className="w-100 flex" style={{ minHeight: '600px' }}><Progressing pageLoader /></div>
     if (!addHash) return type === "user" ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result
-        .filter(userOrGroup => (userOrGroup.email_id?.includes(searchString) || userOrGroup.name?.includes(searchString) || userOrGroup.description?.includes(searchString)))
+        .filter(userOrGroup => (userOrGroup.email_id?.includes(searchString?.toLowerCase()) || userOrGroup.name?.includes(searchString?.toLowerCase()) || userOrGroup.description?.includes(searchString)))
     return (
         <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
+            {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`Search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
             {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
             {filteredAndSorted
                 .map((data, index) =>
