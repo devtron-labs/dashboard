@@ -57,23 +57,17 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
     }
 
     renderSavedFilters() {
-        {console.log(this.props)}
         let count = 0;
-        let keys = Object.keys(this.props.selectedCluster);
+        let allAppliedFiilters = this.props.selectedCluster.concat(this.props.selectedNamespace)
         let savedFilters = <div className="saved-filters">
-            {keys.map((key) => {
-                return this.props.filters[key].map((filter) => {
-                    { console.log(filter) }
-                    if (filter.isChecked) {
-                        count++;
-                        return <div key={filter.key} className="saved-filter">{filter.label}
-                            <button type="button" className="saved-filter__clear-btn"
-                                onClick={(event) => this.removeFilter(filter.key, key)} >
-                                <i className="fa fa-times-circle" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    }
-                })
+            {allAppliedFiilters.map((filter) => {
+                count++;
+                return <div key={filter.value} className="saved-filter">{filter.label}
+                    <button type="button" className="saved-filter__clear-btn"
+                        onClick={(event) => this.removeFilter(filter.value, filter.value)} >
+                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
             })}
             <button type="button" className="saved-filters__clear-btn" >
                 Clear All Filters
