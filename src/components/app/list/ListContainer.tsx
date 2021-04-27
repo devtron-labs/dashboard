@@ -7,16 +7,7 @@ import { URLS } from '../../../config';
 import { AppListViewType } from '../config';
 import ExternalListContainer from './ExternalListContainer';
 
-const APP_LIST_PARAM = {
-    createApp: 'create-app',
-}
-
-const QueryParams = {
-    Namespace: "namespace",
-    Cluster: "cluster"
-}
-
-export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
+export default class ListContainer extends React.Component<ListContainerProps, ListContainerState> {
     constructor(props) {
         super(props)
 
@@ -24,27 +15,30 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
             collapsed: false,
             code: 0,
             view: AppListViewType.LOADING,
-            showAppList:true,
         }
-        this.toggleHeaderName = this.toggleHeaderName.bind(this)
-        this.toggleSelectedList = this.toggleSelectedList.bind(this)
     }
 
-    toggleHeaderName() {
-        this.setState({ collapsed: !this.state.collapsed })
+    renderListHeader(){
+        // const path = this.props.match.path;
+        return <>hi
+        {/* <ul role="tablist" className="tab-list">
+        <li className="tab-list__tab ellipsis-right">
+            <NavLink activeClassName="active" to={`${path}/scans`} className="tab-list__tab-link">Security Scans</NavLink>
+        </li>
+        <li className="tab-list__tab">
+            <NavLink activeClassName="active" to={`${path}/policies`} className="tab-list__tab-link">Security Policies</NavLink>
+        </li>
+    </ul> */}
+        </>
     }
-
-    toggleSelectedList() {
-        this.setState({ showAppList: !this.state.showAppList })
-    }
-
-    
 
     render() {
+        {console.log(this.props)}
         return (
             <div>
+                {this.renderListHeader()}
                 {/* <AppListContainer /> */}
-                <ExternalListContainer {...this.props} />
+                {/* <ExternalListContainer {...this.props} /> */}
 
             </div>
         )

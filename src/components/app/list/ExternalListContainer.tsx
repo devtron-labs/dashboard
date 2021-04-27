@@ -42,6 +42,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             },
             selectedNamespace: [],
             selectedCluster: [],
+            appliedCluster:[],
+            appliedNamespace:[],
             searchQuery: "",
             searchApplied: false,
             showDevtronAppList: false
@@ -135,11 +137,11 @@ export default class ExternalListContainer extends Component<ExternalListContain
         clusterIdArray = clusterIdArray.map((clusterId => parseInt(clusterId)));
         namespaceIdArray = namespaceIdArray.map((namespaceId) => parseInt(namespaceId));
 
-        let selectedCluster = [];
+        let selectedClusterList = [];
         for (let i = 0; i < clusterIdArray.length; i++) {
             let clusterValue = clusterList.find(item => item.value === clusterIdArray[i]);
             if (clusterValue) {
-                selectedCluster.push(clusterValue);
+                selectedClusterList.push(clusterValue);
             }
         }
         let selectedNamespace = [];
@@ -153,8 +155,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.setState({
             searchApplied: appNameSearch ? true : false,
             searchQuery: appNameSearch ? appNameSearch : "",
-            selectedCluster: selectedCluster,
-            selectedNamespace: selectedNamespace
+            appliedCluster: this.state.selectedCluster,
+            appliedNamespace: this.state.selectedNamespace
         }, () => {
             this.setState({ loadingData: true })
             getExternalList()
@@ -162,8 +164,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
         }
         )
     }
-
-
 
     toggleHeaderName() {
         this.setState({ collapsed: !this.state.collapsed })
@@ -212,6 +212,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
     handleSelectedCluster = () => {
         let url = this.props.match.url
         let selected = this.state.selectedCluster
+        let appliedCluster = this.state.appliedCluster
         let clusterId = selected.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(this.props.location.search);
         let namespace = searchParams.get(QueryParams.Namespace);
@@ -319,9 +320,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                         view={this.state.view}
                         externalQueryList={this.state.externalQueryList}
                         filters={this.state.filters}
-                        selectedNamespace={this.state.selectedNamespace}
-                        selectedCluster={this.state.selectedCluster}
-
+                        appliedNamespace={this.state.appliedNamespace}
+                        appliedCluster={this.state.appliedCluster}
                     />
                 </>}
         </>

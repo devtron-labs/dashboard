@@ -86,10 +86,10 @@ export function AppRouter(props) {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />}/>
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <AppListContainer {...props}/>}/>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <AppListContainer />
+                        <AppListContainer {...props}/>
                     </Route>
                     <Route>
                         <RedirectWithSentry />

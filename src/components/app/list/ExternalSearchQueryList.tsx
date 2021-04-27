@@ -36,6 +36,59 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         )
     }
 
+    removeAllFilters = (): void => {
+        let qs = queryString.parse(this.props.location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        delete query['cluster'];
+        delete query['namespace'];
+        let queryStr = queryString.stringify(query);
+        let url = `${URLS.APP}?${queryStr}`;
+        this.props.history.push(url);
+    }
+
+    removeFilter = (val, type: string): void => {
+        let qs = queryString.parse(this.props.location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        let appliedFilters = query[type];
+        let arr = appliedFilters.split(",");
+        arr = arr.filter((item) => item != val.toString());
+        query[type] = arr.toString();
+        if (query[type] == "") delete query[type];
+        let queryStr = queryString.stringify(query);
+        let url = `${URLS.APP}?${queryStr}`;
+        this.props.history.push(url);
+    }
+
+    renderSavedFilters() {
+        let count = 0;
+        let allAppliedFilters = this.props.appliedCluster.concat(this.props.appliedNamespace)
+        let savedFilters = <div className="saved-filters">
+            {allAppliedFilters.map((filter) => {
+                count++;
+                return <div key={filter.value} className="saved-filter">{filter.label}
+                    <button type="button" className="saved-filter__clear-btn"
+                        onClick={(event) => this.removeFilter(filter.value, filter.value)} >
+                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+            })}
+            <button type="button" className="saved-filters__clear-btn" onClick={() => { this.removeAllFilters() }}>
+                Clear All Filters
+            </button>
+        </div>
+        return <React.Fragment>
+            {count > 0 ? savedFilters : null}
+        </React.Fragment>
+    }
+
     renderExternalList(list) {
         return (
             <div className="bcn-0">
@@ -56,46 +109,6 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         )
     }
 
-    renderSavedFilters() {
-        {console.log(this.props)}
-        let count = 0;
-        let allAppliedFilters = this.props.selectedCluster.concat(this.props.selectedNamespace)
-        let savedFilters = <div className="saved-filters">
-            {allAppliedFilters.map((filter) => {
-                count++;
-                return <div key={filter.value} className="saved-filter">{filter.label}
-                    <button type="button" className="saved-filter__clear-btn"
-                        onClick={(event) => this.removeFilter(filter.value, filter.value)} >
-                        <i className="fa fa-times-circle" aria-hidden="true"></i>
-                    </button>
-                </div>
-            })}
-            <button type="button" className="saved-filters__clear-btn" >
-                Clear All Filters
-            </button>
-        </div>
-        return <React.Fragment>
-            {count > 0 ? savedFilters : null}
-        </React.Fragment>
-    }
-
-    removeFilter = (val, type: string): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        let appliedFilters = query[type];
-        let arr = appliedFilters.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        query[type] = arr.toString();
-        if (query[type] == "") delete query[type];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
     renderSearchListRows() {
         if (this.props.view === ViewType.LOADING) {
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
@@ -103,6 +116,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
             return <>{this.props.externalQueryList.map((list) => { return this.renderExternalList(list) })}</>
         }
     }
+
     render() {
         return (<div>
                 {this.renderSavedFilters()}

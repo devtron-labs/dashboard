@@ -1,8 +1,7 @@
 import { ServerError } from '../../../modals/commonTypes';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
-import { string } from 'prop-types';
 
 export interface AppListState {
     code: number;
@@ -118,7 +117,6 @@ export interface ListContainerState {
     collapsed: boolean;
     code: number;
     view: string;
-    showAppList: boolean;
 }
 
 export interface ListContainerProps extends RouteComponentProps<{}> {
@@ -156,7 +154,9 @@ export interface ExternalListContainerState {
     searchApplied: boolean;
     showDevtronAppList: boolean;
     selectedCluster: SelectedExternalDropdown[]
-    externalQueryList: ExternalQueryList[]
+    externalQueryList: ExternalQueryList[],
+    appliedCluster: SelectedExternalDropdown[];
+    appliedNamespace: SelectedExternalDropdown[];
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
@@ -178,6 +178,6 @@ export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
         namespace: FilterOption[];
         cluster: FilterOption[];
     }
-    selectedNamespace: SelectedExternalDropdown[];
-    selectedCluster: SelectedExternalDropdown[];
+    appliedNamespace: SelectedExternalDropdown[];
+    appliedCluster: SelectedExternalDropdown[];
 }

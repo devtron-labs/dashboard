@@ -10,7 +10,6 @@ import { FilterOption, showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import ListContainer from './ListContainer';
 import ExternalListContainer from './ExternalListContainer';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
@@ -99,8 +98,8 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ collapsedListTogglingModal: !this.state.collapsedListTogglingModal })
     }
 
-    toggleToExternalList(){
-        this.setState({ showExternalList: !this.state.showExternalList})
+    toggleToExternalList() {
+        this.setState({ showExternalList: !this.state.showExternalList })
     }
 
     createPayloadFromURL(searchQuery: string) {
@@ -391,35 +390,34 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     render() {
         return (<>
-            {this.state.showExternalList ? <ExternalListContainer {...this.props} />    :  
-            <AppListView
-            {...this.state}
-            match={this.props.match}
-            location={this.props.location}
-            history={this.props.history}
-            applyFilter={this.applyFilter}
-            expandRow={this.expandRow}
-            closeExpandedRow={this.closeExpandedRow}
-            removeFilter={this.removeFilter}
-            removeAllFilters={this.removeAllFilters}
-            search={this.search}
-            clearSearch={this.clearSearch}
-            handleSearchStr={this.handleSearchStr}
-            sort={this.sort}
-            redirectToAppDetails={this.redirectToAppDetails}
-            handleEditApp={this.handleEditApp}
-            clearAll={this.clearAll}
-            changePage={this.changePage}
-            changePageSize={this.changePageSize}
-            closeModal={this.closeModal}
-            openTriggerInfoModal={this.openTriggerInfoModal}
-            toggleHeaderName={this.toggleHeaderName}
-            collapsedListTogglingModal= {this.state.collapsedListTogglingModal}
-            toggleToExternalList= {this.toggleToExternalList}
-            showExternalList= {this.state.showExternalList}
+            {this.state.showExternalList ? <ExternalListContainer {...this.props} /> :
+                <AppListView
+                    {...this.state}
+                    match={this.props.match}
+                    location={this.props.location}
+                    history={this.props.history}
+                    applyFilter={this.applyFilter}
+                    expandRow={this.expandRow}
+                    closeExpandedRow={this.closeExpandedRow}
+                    removeFilter={this.removeFilter}
+                    removeAllFilters={this.removeAllFilters}
+                    search={this.search}
+                    clearSearch={this.clearSearch}
+                    handleSearchStr={this.handleSearchStr}
+                    sort={this.sort}
+                    redirectToAppDetails={this.redirectToAppDetails}
+                    handleEditApp={this.handleEditApp}
+                    clearAll={this.clearAll}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
+                    closeModal={this.closeModal}
+                    openTriggerInfoModal={this.openTriggerInfoModal}
+                    toggleHeaderName={this.toggleHeaderName}
+                    collapsedListTogglingModal={this.state.collapsedListTogglingModal}
+                    toggleToExternalList={this.toggleToExternalList}
+                    showExternalList={this.state.showExternalList}
 
-        /> }
-   
+                />}
         </>)
     }
 }
