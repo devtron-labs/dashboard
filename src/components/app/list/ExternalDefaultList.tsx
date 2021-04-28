@@ -12,18 +12,18 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
 
     renderDefaultListTitle() {
         return (<div>
-            <div className=" bcn-0 pl-20 pr-20">
+            <div className=" bcn-0">
                 <div className="external-list__header pt-8 pb-8">
-                    <div className="external-list__cell pr-12">
+                    <div className="external-list__cell pr-12 pl-20">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
-                         {/* {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>} */}
+                        <span className={'sort-down'}></span> 
                         </button>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
                         <span className="app-list__cell-header">Environment</span>
                         <Tippy className="default-tt" arrow={false} placement="top" content={
                             <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
-                            <Question className="icon-dim-20" />
+                            <Question className="icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
                     <div className="external-list__cell pl-12 pr-12">

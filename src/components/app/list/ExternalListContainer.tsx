@@ -339,7 +339,7 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
         );
     };
     return <>
-        <Select className="cn-9 fs-14"
+        <Select className="cn-9 fs-13"
             placeholder="Cluster: All"
             name="cluster"
             options={cluster?.map((env) => ({ label: env.label, value: env.key }))}

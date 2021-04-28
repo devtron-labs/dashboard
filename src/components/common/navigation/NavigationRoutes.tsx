@@ -11,6 +11,7 @@ import { Security } from '../../security/Security';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const ListContainer = lazy(() => import('../../app/list/ListContainer'));
+const ExternalApps = lazy(()=> import('../../app/list/ExternalDefaultList'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
@@ -63,6 +64,7 @@ export default function NavigationRoutes() {
                     <ErrorBoundary>
                         <Switch>
                             <Route path={URLS.APP} render={() => <AppRouter />} />
+                            {/* <Route path={URLS.EXTERNAL_APPS} render={(props) => <ExternalApps {...props}/>}/> */}
                             <Route path={URLS.CHARTS} render={() => <Charts />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />

@@ -158,7 +158,7 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderAppList() {
         if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
+            let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-down" : "sort-up";
             return <div className="app-list">
                 <div className="app-list__header">
                     <div className="app-list__cell app-list__cell--name">

@@ -32,14 +32,14 @@ export default class ListContainer extends React.Component<ListContainerProps, L
         var inputs = ['input', 'select', 'button', 'textarea'];
 
         if (activeElement && inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1) {
-            return ;
+            return;
         }
-        
-        if (event.key === 'A') {
+
+        if (event.key === 'E') {
             let url = `${URLS.APP}/external-apps`
             this.props.history.push(`${url}`);
         }
-        else if (event.key === 'E') {
+        else if (event.key === 'A') {
             let url = `${URLS.APP}`
             this.props.history.push(`${url}`);
             { console.log(document.hasFocus(), document.activeElement) }
@@ -50,7 +50,6 @@ export default class ListContainer extends React.Component<ListContainerProps, L
         document.removeEventListener("keydown", this.handleKeyPress);
     }
 
-
     openCreateModal = (event: React.MouseEvent): void => {
         let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${this.props.location.search}`
         this.props.history.push(`${url}`);
@@ -58,13 +57,14 @@ export default class ListContainer extends React.Component<ListContainerProps, L
 
     renderListHeader() {
         const path = this.props.match.path;
+        let url = `${window.location.origin}/external-apps`;
         return <>
             <ul role="tablist" className="tab-list border-btm bcn-0 pl-20">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${path}`} className="tab-list__tab-link">Devtron Apps [A]</NavLink>
                 </li>
                 <li className="tab-list__tab">
-                    <NavLink activeClassName="active" to={`${path}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
+                    <NavLink activeClassName="active" to={`${URLS.APP}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
                 </li>
                 <li className="tab-list__tab--right mt-9 mb-9 mr-20"><button type="button" className="cta h-30"
                     onClick={this.openCreateModal}>
@@ -77,9 +77,10 @@ export default class ListContainer extends React.Component<ListContainerProps, L
 
     renderRouter() {
         const path = this.props.match.path
+        { console.log(this.props) }
         return <Switch>
             <Route exact path={`${path}`} component={AppListContainer} />
-            <Route path={`${path}/external-apps`} component={ExternalListContainer} />
+            <Route path={`${URLS.APP}/external-apps`} component={ExternalListContainer} />
             <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal} match={props.match} location={props.location} history={props.history} />}
             />

@@ -392,6 +392,7 @@
     background-color: inherit;
     justify-content: left;
     align-items: center;
+    font-size: 13px;
 }
 
 .external-list__cell--width{
@@ -420,7 +421,6 @@
     position: sticky;
     top: 60px;
 }
-
 
 .external-list__row{
     height: 56px;
