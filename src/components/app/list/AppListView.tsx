@@ -14,8 +14,6 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
-import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
-import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
@@ -134,21 +132,21 @@ export class AppListView extends Component<AppListViewProps>{
                 <span className="filters__label">Filter By</span>
                 <Filter list={this.props.filters.environment}
                     labelKey="label"
-                    buttonText="Environment"
+                    buttonText="Environment: "
                     searchable multi
                     placeholder="Search Environment"
                     type={"environment"}
                     applyFilter={this.props.applyFilter} />
                 <Filter list={this.props.filters.status}
                     labelKey="label"
-                    buttonText="Status"
+                    buttonText="Status: "
                     placeholder="Search Status"
                     searchable multi
                     type={"status"}
                     applyFilter={this.props.applyFilter} />
                 <Filter list={this.props.filters.team}
                     labelKey="label"
-                    buttonText="Projects"
+                    buttonText="Projects: "
                     placeholder="Search Project"
                     searchable multi
                     type={"team"}

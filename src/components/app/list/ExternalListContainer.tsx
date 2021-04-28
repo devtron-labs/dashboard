@@ -42,8 +42,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
             },
             selectedNamespace: [],
             selectedCluster: [],
-            appliedCluster:[],
-            appliedNamespace:[],
+            appliedCluster: [],
+            appliedNamespace: [],
             searchQuery: "",
             searchApplied: false,
             showDevtronAppList: false
@@ -263,17 +263,13 @@ export default class ExternalListContainer extends Component<ExternalListContain
         return <div className="flexbox flex-justify">
             <form onSubmit={(e) => this.handleAppStoreChange(e)} className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
-                <input className="search__input bcn-1" type="text" placeholder="Search… (eg. chart:fluetnd AND label:label-name)"
+                <input className="search__input bcn-1" type="text" placeholder="Search by app name"
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
-                {!this.state.searchApplied ? <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span style={{ display: "block", width: "160px" }}> Search using app name or key:value queries (eg. chart:fluentd; label:label-name).
-                    You can also use "AND" or "OR" operators between search queries. (eg. chart:fluentd AND label:label-name). </span>}>
-                    <Question className="icon-dim-20 fcn-5" />
-                </Tippy> : <button className="search__clear-button" type="button" onClick={(e)=>this.clearSearch(e)}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                    </button>
+                {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => this.clearSearch(e)}>
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                </button> : ""
                 }
 
             </form>
@@ -305,25 +301,23 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     render() {
         return (<>
-            {console.log(this.state)}
-            {this.state.showDevtronAppList ? <AppListContainer /> :
-                <> {this.renderExternalTitle()}
-                    <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
-                        {this.renderExternalFilters()}
-                    </div>
-                    {/* <ExternalDefaultList {...this.props}
-                        view={this.state.view}
-                        externalList={this.state.externalList}
-                        filters={this.state.filters}
+            {/* {this.renderExternalTitle()} */}
+            <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
+                {this.renderExternalFilters()}
+            </div>
+            <ExternalDefaultList {...this.props}
+                view={this.state.view}
+                externalList={this.state.externalList}
+                filters={this.state.filters}
+            />
+            {/* Comented out for time being */}
+            {/* <ExternalSearchQueryList {...this.props}
+                   view={this.state.view}
+                   externalQueryList={this.state.externalQueryList}
+                   filters={this.state.filters}
+                   appliedNamespace={this.state.appliedNamespace}
+                   appliedCluster={this.state.appliedCluster}
                     /> */}
-                    <ExternalSearchQueryList {...this.props}
-                        view={this.state.view}
-                        externalQueryList={this.state.externalQueryList}
-                        filters={this.state.filters}
-                        appliedNamespace={this.state.appliedNamespace}
-                        appliedCluster={this.state.appliedCluster}
-                    />
-                </>}
         </>
         )
     }

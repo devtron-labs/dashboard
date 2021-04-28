@@ -32,7 +32,7 @@ export default class ListContainer extends React.Component<ListContainerProps, L
         return <>
             <ul role="tablist" className="tab-list border-btm bcn-0 pl-20">
                 <li className="tab-list__tab ellipsis-right">
-                    <NavLink activeClassName="active" to={`${path}/devtron-apps`} className="tab-list__tab-link">Devtron Apps [A]</NavLink>
+                    <NavLink activeClassName="active" to={`${path}`} className="tab-list__tab-link">Devtron Apps [A]</NavLink>
                 </li>
                 <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${path}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
@@ -49,12 +49,12 @@ export default class ListContainer extends React.Component<ListContainerProps, L
     renderRouter() {
         const path = this.props.match.path;
         return <Switch>
-            <Route path={`${path}/devtron-apps`} component={AppListContainer} />
+            <Route path={`${path}`} component={AppListContainer} />
             <Route path={`${path}/external-apps`} component={ExternalListContainer} />
             <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal} match={props.match} location={props.location} history={props.history} />}
             />
-            <Redirect to={`${path}/devtron-apps`} />
+            <Redirect to={`${path}`} />
         </Switch>
     }
 
