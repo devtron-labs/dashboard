@@ -37,10 +37,10 @@ export default class ListContainer extends React.Component<ListContainerProps, L
                 <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${path}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
                 </li>
-                <li className="tab-list__tab--right mt-4 mb-4 mr-20"><button type="button" className="cta"
+                <li className="tab-list__tab--right mt-9 mb-9 mr-20"><button type="button" className="cta h-30"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
-                    Add new app
+                     New app
                 </button></li>
             </ul>
         </>
