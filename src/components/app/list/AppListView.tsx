@@ -67,7 +67,7 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderPageHeader() {
         return <div className="app-header">
-            <div className="app-header__title">
+            {/* <div className="app-header__title"> */}
                 {/* <h1 className="app-header__text flex left">Applications({this.props.size})
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
                 </h1> */}
@@ -82,12 +82,12 @@ export class AppListView extends Component<AppListViewProps>{
                         </div>
                     </div>
                 </> : ""} */}
-                {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
+                {/* {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
                     Add new app
                 </button> : null}
-            </div>
+            </div> */}
             {/* {this.renderFilters()} */}
         </div>
     }
@@ -230,10 +230,10 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderRouter() {
         return <Switch>
-            <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
+            {/* <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal}
                     match={props.match} location={props.location} history={props.history} />}
-            />
+            /> */}
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
                 render={(props) => <TriggerInfoModal {...props}
                  location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}

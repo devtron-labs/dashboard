@@ -163,6 +163,14 @@ a:focus {
     }
 }
 
+.tab-list__tab--right{
+    margin: auto;
+    margin-right: 0;
+}
+
+.border-btm{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
 .cursor {
     cursor: pointer;
 }

@@ -22,17 +22,26 @@ export default class ListContainer extends React.Component<ListContainerProps, L
         }
     }
 
+    openCreateModal = (event: React.MouseEvent): void => {
+        let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${this.props.location.search}`
+        this.props.history.push(`${url}`);
+    }
+
     renderListHeader() {
         const path = this.props.match.path;
         return <>
-            <ul role="tablist" className="tab-list bcn-0 pl-20">
+            <ul role="tablist" className="tab-list border-btm bcn-0 pl-20">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink activeClassName="active" to={`${path}/devtron-apps`} className="tab-list__tab-link">Devtron Apps [A]</NavLink>
                 </li>
                 <li className="tab-list__tab">
                     <NavLink activeClassName="active" to={`${path}/external-apps`} className="tab-list__tab-link">External Apps [E]</NavLink>
                 </li>
-                <li><NavLink activeClassName="active" to={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}>{AddNewApp}</NavLink></li>
+                <li className="tab-list__tab--right mt-4 mb-4 mr-20"><button type="button" className="cta"
+                    onClick={this.openCreateModal}>
+                    <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
+                    Add new app
+                </button></li>
             </ul>
         </>
     }
