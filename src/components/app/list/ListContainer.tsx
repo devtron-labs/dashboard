@@ -20,7 +20,36 @@ export default class ListContainer extends React.Component<ListContainerProps, L
             code: 0,
             view: AppListViewType.LOADING,
         }
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyPress);
+    }
+
+    handleKeyPress(event) {
+        var activeElement = document.activeElement
+        var inputs = ['input', 'select', 'button', 'textarea'];
+
+        if (activeElement && inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1) {
+            return ;
+        }
+        
+        if (event.key === 'A') {
+            let url = `${URLS.APP}/external-apps`
+            this.props.history.push(`${url}`);
+        }
+        else if (event.key === 'E') {
+            let url = `${URLS.APP}`
+            this.props.history.push(`${url}`);
+            { console.log(document.hasFocus(), document.activeElement) }
+        }
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyPress);
+    }
+
 
     openCreateModal = (event: React.MouseEvent): void => {
         let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${this.props.location.search}`
@@ -59,7 +88,6 @@ export default class ListContainer extends React.Component<ListContainerProps, L
     }
 
     render() {
-        { console.log(this.props) }
         return (
             <div>
                 {this.renderListHeader()}

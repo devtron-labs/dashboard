@@ -5,6 +5,8 @@ import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
+import Tippy from '@tippyjs/react';
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 
 export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
@@ -19,6 +21,10 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
                         <span className="app-list__cell-header">Environment</span>
+                        <Tippy className="default-tt" arrow={false} placement="top" content={
+                            <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
+                            <Question className="icon-dim-20" />
+                        </Tippy>
                     </div>
                     <div className="external-list__cell pl-12 pr-12">
                         <span className="app-list__cell-header ">Last Updated </span>
