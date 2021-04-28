@@ -433,6 +433,10 @@
     background-color: var(--N100);
 }
 
+.external-list__row:hover .app-list__cell--action {
+    visibility: visible;
+}
+
 .external-list__cell--name{
     flex-basis: 16%;
     flex-grow: 1;
