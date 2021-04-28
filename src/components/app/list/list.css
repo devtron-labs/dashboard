@@ -178,6 +178,13 @@
     justify-content: flex-start;
 }
 
+.app-list__grid{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 12px;
+    gap: 12px;
+}
+
 .app-list__cell--action {
     visibility: hidden;
     justify-content: flex-end;

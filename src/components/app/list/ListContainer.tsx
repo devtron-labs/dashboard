@@ -47,14 +47,14 @@ export default class ListContainer extends React.Component<ListContainerProps, L
     }
 
     renderRouter() {
-        const path = this.props.match.path;
+        const path = this.props.match.path
         return <Switch>
-            <Route path={`${path}`} component={AppListContainer} />
+            <Route exact path={`${path}`} component={AppListContainer} />
             <Route path={`${path}/external-apps`} component={ExternalListContainer} />
             <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal} match={props.match} location={props.location} history={props.history} />}
             />
-            <Redirect to={`${path}`} />
+            <Redirect exact to={`${path}`} />
         </Switch>
     }
 

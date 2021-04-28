@@ -66,10 +66,10 @@ export class AppListView extends Component<AppListViewProps>{
     renderPageHeader() {
         return <div className="app-header">
             {/* <div className="app-header__title"> */}
-                {/* <h1 className="app-header__text flex left">Applications({this.props.size})
+            {/* <h1 className="app-header__text flex left">Applications({this.props.size})
                 <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
                 </h1> */}
-                {/* {this.props.collapsedListTogglingModal ? <>
+            {/* {this.props.collapsedListTogglingModal ? <>
                     <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
                         <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
                             <Check className="scb-5 mr-8 icon-dim-16" />
@@ -80,7 +80,7 @@ export class AppListView extends Component<AppListViewProps>{
                         </div>
                     </div>
                 </> : ""} */}
-                {/* {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
+            {/* {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
                     onClick={this.openCreateModal}>
                     <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
                     Add new app
@@ -118,39 +118,40 @@ export class AppListView extends Component<AppListViewProps>{
     }
 
     renderFilters() {
-        return <div className="search-filter-section">
-            <form style={{ display: "inline" }} onSubmit={this.props.search}>
-                <div className="search">
-                    <Search className="search__icon icon-dim-18" />
-                    <input type="text" placeholder="Search apps" className="search__input bcn-1" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
-                    {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                    </button> : null}
+        return <div className="">
+            <div className="search-filter-section app-list__grid">
+                <form style={{ display: "inline" }} onSubmit={this.props.search}>
+                    <div className="search">
+                        <Search className="search__icon icon-dim-18" />
+                        <input type="text" placeholder="Search apps" className="search__input bcn-1" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
+                        {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
+                            <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        </button> : null}
+                    </div>
+                </form>
+                <div className="filters">
+                    <Filter list={this.props.filters.environment}
+                        labelKey="label"
+                        buttonText="Environment: "
+                        searchable multi
+                        placeholder="Search Environment"
+                        type={"environment"}
+                        applyFilter={this.props.applyFilter} />
+                    <Filter list={this.props.filters.status}
+                        labelKey="label"
+                        buttonText="Status: "
+                        placeholder="Search Status"
+                        searchable multi
+                        type={"status"}
+                        applyFilter={this.props.applyFilter} />
+                    <Filter list={this.props.filters.team}
+                        labelKey="label"
+                        buttonText="Projects: "
+                        placeholder="Search Project"
+                        searchable multi
+                        type={"team"}
+                        applyFilter={this.props.applyFilter} />
                 </div>
-            </form>
-            <div className="filters">
-                <span className="filters__label">Filter By</span>
-                <Filter list={this.props.filters.environment}
-                    labelKey="label"
-                    buttonText="Environment: "
-                    searchable multi
-                    placeholder="Search Environment"
-                    type={"environment"}
-                    applyFilter={this.props.applyFilter} />
-                <Filter list={this.props.filters.status}
-                    labelKey="label"
-                    buttonText="Status: "
-                    placeholder="Search Status"
-                    searchable multi
-                    type={"status"}
-                    applyFilter={this.props.applyFilter} />
-                <Filter list={this.props.filters.team}
-                    labelKey="label"
-                    buttonText="Projects: "
-                    placeholder="Search Project"
-                    searchable multi
-                    type={"team"}
-                    applyFilter={this.props.applyFilter} />
             </div>
         </div>
     }
@@ -234,7 +235,7 @@ export class AppListView extends Component<AppListViewProps>{
             /> */}
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
                 render={(props) => <TriggerInfoModal {...props}
-                 location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}
+                    location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}
             />
         </Switch>
     }

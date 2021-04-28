@@ -457,7 +457,7 @@ p.sentence-case:first-letter {
 //used in Select Component and app list
 .search {
     display: block;
-    width: 250px;
+    min-width: 250px;
     height: 36px;
     position: relative;
 }
