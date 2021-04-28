@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { AggregatedNodes } from '../types';
 import summarylist from './summarylist.json';
-
 export interface SummaryProps {
     appName: string;
     environmentName: string;
@@ -13,8 +12,7 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
 
     useEffect(() => {
 
-        
-
+    
     }, [appName, environmentName, nodeName])
 
     return <div className="pb-20" style={{ gridColumn: '1 / span 2', overflow: "scroll", height: "100%" }}>

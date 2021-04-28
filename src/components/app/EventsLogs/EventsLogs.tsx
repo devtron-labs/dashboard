@@ -17,7 +17,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-question.sv
 import { TerminalView } from '../../terminal';
 import { SocketConnectionType } from '../details/appDetails/AppDetails';
 import { SummaryView } from './SummaryView';
-import { ManifestView } from './ManifestView'
+import { ManifestView } from './Manifest';
 import { NoEvents, NoContainer } from './eventsLogs.util';
 import moment from 'moment';
 import Tippy from '@tippyjs/react';

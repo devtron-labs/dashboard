@@ -1,8 +1,13 @@
 import { RouteComponentProps } from 'react-router';
+import { AppDetails} from './details/appDetails/appDetails.type';
+import { ResponseType } from '../../services/service.types';
+
+export interface AppDetailsResponse extends ResponseType {
+    result?: AppDetails;
+}
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
-
 export interface AddNewAppState {
     view: string;
     code: number;

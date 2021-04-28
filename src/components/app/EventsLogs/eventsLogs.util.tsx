@@ -1,13 +1,11 @@
 import React from 'react';
-import { ReactComponent as InfoIcon } from '../../../assets/icons/appstatus/info-filled.svg';
+import { ReactComponent as Info } from '../../../assets/icons/appstatus/info-filled.svg';
 
 export function NoEvents({ title = "Events not available" }) {
-    return (
-        <div style={{ width: '100%', textAlign: 'center' }}>
-            <InfoIcon className="" />
-            <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
-        </div>
-    )
+    return <div style={{ width: '100%', textAlign: 'center' }}>
+        <Info className="" />
+        <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+    </div>
 }
 
 export function NoContainer({ selectMessage = "Select a container to view events", style = {} }) {
