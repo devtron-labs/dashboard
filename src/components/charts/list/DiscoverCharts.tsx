@@ -338,6 +338,7 @@ function DiscoverChartList() {
                                     handleNameChange={handleNameChange}
                                     discardValuesYamlChanges={discardValuesYamlChanges}
                                 /> </> : <>
+                                <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
                                 <ChartListHeader chartRepoList={state.chartRepos}
                                     appliedChartRepoFilter={appliedChartRepoFilter}
                                     setSelectedChartRepo={setSelectedChartRepo}
@@ -620,7 +621,7 @@ export function ChartGroupListMin({ chartGroups }) {
     return <div className="chart-group" style={{ minHeight: "280px" }}>
         <div className="chart-group__header">
             <div className="flexbox">
-                <h2 className="chart-grid__title pl-24">Chart Groups</h2>
+                <h2 className="chart-grid__title">Chart Groups</h2>
                 <button type="button" className="chart-group__view-all"
                     onClick={(e) => history.push(match.url + '/group')}>View All
                 </button>
