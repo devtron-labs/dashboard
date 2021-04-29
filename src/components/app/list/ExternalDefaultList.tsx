@@ -16,7 +16,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                 <div className="external-list__header pt-8 pb-8">
                     <div className="external-list__cell pr-12 pl-20">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
-                        <span className={'sort-down'}></span> 
+                        <span className={'sort-down'}></span>
                         </button>
                     </div>
                     <div className="external-list__cell external-list__cell--width pl-12 pr-12">
@@ -26,8 +26,8 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                             <Question className="icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
-                    <div className="external-list__cell pl-12 pr-12">
-                        <span className="app-list__cell-header ">Last Updated </span>
+                    <div className="external-list__cell ">
+                        <span className="app-list__cell-header pl-12">Last Updated </span>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>
@@ -41,8 +41,8 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
             <div className="bcn-0">
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
                     <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appname}</p></div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">{list.environment}</div>
-                    <div className="external-list__cell pr-12"> {list.lastupdate} </div>
+                    <div className="external-list__cell external-list__cell--width ">{list.environment}</div>
+                    <div className="external-list__cell pl-12 pr-12"> {list.lastupdate} </div>
                     <div className="app-list__cell app-list__cell--action">
                         <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
                             <Edit className="button-edit__icon" />
