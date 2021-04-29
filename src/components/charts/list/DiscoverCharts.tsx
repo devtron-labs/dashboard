@@ -558,7 +558,6 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                     onMenuOpen={handleCloseFilter}
                     components={{
                         DropdownIndicator,
-                        // ValueContainer: props => <components.ValueContainer {...props} /> ,
                         Option,
                         IndicatorSeparator: null,
                         ClearIndicator: null,
@@ -566,30 +565,30 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                     }}
                     styles={{
                         ...multiSelectStyles,
-                        menuList: (base, state) => ({
-                            ...base,
-                            paddingBottom: "0px"
-                        }),
-                        container: (base, state) => ({
-                            ...base,
-                            width: '230px',
-                        }),
-                        control: (base, state) => ({
-                            ...base,
-                            height: '36px',
-                            minHeight: 'unset',
-                            width: '230px',
-                            border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                            boxShadow: 'none',
+                        // menuList: (base, state) => ({
+                        //     ...base,
+                        //     paddingBottom: "0px"
+                        // }),
+                        // container: (base, state) => ({
+                        //     ...base,
+                        //     width: '230px',
+                        // }),
+                        // control: (base, state) => ({
+                        //     ...base,
+                        //     height: '36px',
+                        //     minHeight: 'unset',
+                        //     width: '230px',
+                        //     border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
+                        //     boxShadow: 'none',
 
-                        }),
-                        option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            color: 'var(--N900)',
-                            fontSize: '14px',
-                            padding: '8px 24px'
-                        }),
+                        // }),
+                        // option: (base, state) => ({
+                        //     ...base,
+                        //     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                        //     color: 'var(--N900)',
+                        //     fontSize: '14px',
+                        //     padding: '8px 24px'
+                        // }),
                     }} />
                 <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                     isChecked={includeDeprecated === 1}
