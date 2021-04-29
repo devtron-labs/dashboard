@@ -555,8 +555,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                 </button> : null}
             </form>
             <div className="flex">
-
-                <ReactSelect className="date-align-left fs-14"
+                <ReactSelect className="date-align-left fs-13"
                     placeholder="Repository : All"
                     name="repository "
                     value={selectedChartRepo}
@@ -576,33 +575,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                         ClearIndicator: null,
                         MenuList,
                     }}
-                    styles={{
-                        ...multiSelectStyles,
-                        // menuList: (base, state) => ({
-                        //     ...base,
-                        //     paddingBottom: "0px"
-                        // }),
-                        // container: (base, state) => ({
-                        //     ...base,
-                        //     width: '230px',
-                        // }),
-                        // control: (base, state) => ({
-                        //     ...base,
-                        //     height: '36px',
-                        //     minHeight: 'unset',
-                        //     width: '230px',
-                        //     border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                        //     boxShadow: 'none',
-
-                        // }),
-                        // option: (base, state) => ({
-                        //     ...base,
-                        //     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                        //     color: 'var(--N900)',
-                        //     fontSize: '14px',
-                        //     padding: '8px 24px'
-                        // }),
-                    }} />
+                    styles={{ ...multiSelectStyles }} />
                 <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                     isChecked={includeDeprecated === 1}
                     value={"CHECKED"}
