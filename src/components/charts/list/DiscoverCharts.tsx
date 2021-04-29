@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, multiSelectStyles, Checkbox } from '../../common';
+import {
+    Progressing,
+    Select,
+    mapByKey,
+    showError,
+    BreadCrumb,
+    useBreadcrumb,
+    ConditionalWrap,
+    multiSelectStyles,
+    ConfirmationDialog,
+    Checkbox,
+    Option
+} from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -22,13 +34,12 @@ import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, Option } from '../charts.util';
+import { DropdownIndicator, ValueContainer } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
-import { ConfirmationDialog } from '../../common'
 import warn from '../../../assets/icons/ic-warning.svg';
 
 const QueryParams = {
@@ -100,7 +111,7 @@ function DiscoverChartList() {
 
     useEffect(() => {
         if (!location.search) {
-            history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
         }
         else {
             if (!state.loading) {
@@ -496,7 +507,7 @@ export default function DiscoverCharts() {
 }
 
 function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-{console.log(chartRepoList)}
+    { console.log(chartRepoList) }
     const menuHeaderStyle = {
         padding: '8px 12px',
         background: '#0066cc',
@@ -516,7 +527,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             </components.MenuList>
         );
     };
-   
+
     //  const ValueContainer = props => {
     //     return <components.ValueContainer {...props}>
     //         {props.hasValue ?
@@ -546,19 +557,20 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
 
                 <ReactSelect className="date-align-left fs-14"
                     placeholder="Repository : All"
-                    name="Repository "
+                    name="repository "
                     value={selectedChartRepo}
                     options={chartRepoList}
                     closeOnSelect={false}
                     onChange={setSelectedChartRepo}
                     isClearable={false}
                     isMulti={true}
-                     closeMenuOnSelect={false}
+                    closeMenuOnSelect={false}
                     hideSelectedOptions={false}
                     onMenuOpen={handleCloseFilter}
                     components={{
                         DropdownIndicator,
                         Option,
+                        ValueContainer,
                         IndicatorSeparator: null,
                         ClearIndicator: null,
                         MenuList,

@@ -1,18 +1,15 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { showError, Progressing, ConfirmationDialog, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog } from '../common'
-
+import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog } from '../common'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable'
 import Select, { components } from 'react-select';
-
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType, APIRoleFilter } from './userGroups.types'
-import './UserGroup.scss';
 import { toast } from 'react-toastify'
 import { useUserGroupContext, DirectPermission, ChartPermission, GroupRow } from './UserGroup'
-import deleteIcon from '../../assets/img/warning-medium.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
+import './UserGroup.scss';
 
 const MultiValueContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
@@ -151,17 +148,16 @@ export default function UserForm({ id = null, userData = null, index, updateCall
             ],
             superAdmin: localSuperAdmin
         }
-
         try {
             const { result } = await saveUser(payload)
             if (id) {
                 updateCallback(index, result)
+                toast.success('User updated');
             }
             else {
                 createCallback(result)
+                toast.success('User created');
             }
-
-            toast.success('Created user successfully')
         }
         catch (err) {
             showError(err)
@@ -335,7 +331,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         try {
             await deleteUser(id)
             deleteCallback(index)
-            toast.success('Deleted user successfully.')
+            toast.success('User deleted')
         }
         catch (err) {
             showError(err)

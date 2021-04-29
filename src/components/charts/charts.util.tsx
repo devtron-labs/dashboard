@@ -43,19 +43,40 @@ export const smallMenuList = {
     }),
 }
 
-
-export function ValueContainer(props) {
-    if (!props.hasValue) return <components.ValueContainer {...props}>
-    </components.ValueContainer>
-    else {
-        return <components.ValueContainer {...props}>
-            <p style={{ margin: '0px' }}>
-                {props?.selectProps?.name}
-                <span className="badge">{props.getValue()?.length}</span>
-            </p>
-        </components.ValueContainer>
+export const ValueContainer = props => {
+    let length = props.getValue().length;
+    let count = ''
+    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+        count = 'All'
     }
-}
+    else {
+        count = length
+    }
+
+    return (
+        <components.ValueContainer  {...props}>
+            {length > 0 ?
+      <>
+          {(!props.selectProps.menuIsOpen  && length == 1) ? <>Repository: <span className="badge">{length} </span></>: '' }
+          {(!props.selectProps.menuIsOpen  && length > 1) ? <>Repositories:<span className="badge">{length} </span> </> : '' }
+          {React.cloneElement(props.children[1])}
+      </>
+      : <>{props.children}</>}
+        </components.ValueContainer>
+    );
+};
+// export function ValueContainer(props) {
+//     if (!props.hasValue) return <components.ValueContainer {...props}>
+//     </components.ValueContainer>
+//     else {
+//         return <components.ValueContainer {...props}>
+//             <p style={{ margin: '0px' }}>
+//                 {props?.selectProps?.name}
+//                 <span className="badge">{props.getValue()?.length}</span>
+//             </p>
+//         </components.ValueContainer>
+//     }
+// }
 
 export function Option(props) {
     return <components.Option {...props}>
