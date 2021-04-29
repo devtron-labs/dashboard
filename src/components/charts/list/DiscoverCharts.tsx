@@ -529,18 +529,6 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
         );
     };
 
-    //  const ValueContainer = props => {
-    //     return <components.ValueContainer {...props}>
-    //         {props.hasValue ?
-    //             <p style={{ margin: '0px' }}>
-    //                 {props?.selectProps?.name}
-    //                 {(appliedChartRepoFilter?.length > 0) ? <span className="badge">{appliedChartRepoFilter?.length}</span> : ""}
-    //             </p>
-    //             : ''}
-    //     </components.ValueContainer>
-
-    //  }
-
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
