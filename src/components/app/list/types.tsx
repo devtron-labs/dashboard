@@ -144,7 +144,6 @@ export interface ExternalListContainerState {
     view: string;
     code: number;
     loadingData: boolean;
-    collapsed: boolean;
     externalList: ExternalList[];
     filters: {
         namespace: FilterOption[];
@@ -153,7 +152,6 @@ export interface ExternalListContainerState {
     selectedNamespace: SelectedExternalDropdown[];
     searchQuery: string;
     searchApplied: boolean;
-    showDevtronAppList: boolean;
     selectedCluster: SelectedExternalDropdown[]
     externalQueryList: ExternalQueryList[],
     appliedCluster: SelectedExternalDropdown[];

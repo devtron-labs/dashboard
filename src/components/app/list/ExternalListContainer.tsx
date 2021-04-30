@@ -1,22 +1,16 @@
 import React, { Component } from 'react'
 import Select, { components } from 'react-select';
 import './list.css';
-import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
-import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { FilterOption, Option, multiSelectStyles } from '../../common';
+import { Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
-import { Progressing, showError } from '../../../components/common';
+import { showError } from '../../../components/common';
 import { ViewType } from '../../../config';
 import ExternalDefaultList from './ExternalDefaultList';
-import AppListContainer from './AppListContainer';
-import { AppListView } from './AppListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
-import ExternalSearchQueryList from './ExternalSearchQueryList'
-import Tippy from '@tippyjs/react';
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
+import ExternalSearchQueryList from './ExternalSearchQueryList' //Not using for the time being
 
 const QueryParams = {
     Cluster: "cluster",
@@ -33,7 +27,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
             view: ViewType.LOADING,
             code: 0,
             loadingData: false,
-            collapsed: false,
             externalList: [],
             externalQueryList: [],
             filters: {
@@ -46,10 +39,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             appliedNamespace: [],
             searchQuery: "",
             searchApplied: false,
-            showDevtronAppList: false
         }
-        this.toggleHeaderName = this.toggleHeaderName.bind(this);
-        this.togglingAppList = this.togglingAppList.bind(this);
     }
 
     componentDidMount() {
@@ -116,8 +106,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
         }
     }
 
-
-
     initialiseFromQueryParams = (clusterList, namespaceList) => {
         let searchParams = new URLSearchParams(this.props.location.search);
         let appNameSearch: string = searchParams.get(QueryParams.Appstore);
@@ -165,41 +153,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         )
     }
 
-    toggleHeaderName() {
-        this.setState({ collapsed: !this.state.collapsed })
-    }
-
     setNamespace = (selected) => {
         this.setState({ selectedNamespace: selected })
-    }
-
-    togglingAppList(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.setState({ showDevtronAppList: !this.state.showDevtronAppList })
-    }
-
-    renderExternalTitle() {
-        return <div className="app-header">
-            <div className="app-header__title">
-                <h1 className="app-header__text flex">External Apps
-                <Dropdown onClick={this.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.state.collapsed ? '180deg' : '0deg' }} />
-                </h1>
-                {this.state.collapsed ? <>
-                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div onClick={(e) => this.togglingAppList(e)}
-                            className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
-                            <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div >
-                                <div className="cn-9 fs-13">Devtron Apps & Charts</div>
-                                <div className="cn-5">Apps & charts deployed using Devtron</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </> : ""}
-            </div>
-        </div>
     }
 
     handleSearchStr = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -269,11 +224,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 />
                 {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => this.clearSearch(e)}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : ""
-                }
-
+                </button> : ""}
             </form>
-
         </div>
     }
 
@@ -301,7 +253,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     render() {
         return (<>
-            {/* {this.renderExternalTitle()} */}
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
@@ -310,7 +261,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 externalList={this.state.externalList}
                 filters={this.state.filters}
             />
-            {/* Comented out for time being */}
+            {/* Comented out for the time being */}
             {/* <ExternalSearchQueryList {...this.props}
                    view={this.state.view}
                    externalQueryList={this.state.externalQueryList}
@@ -375,17 +326,7 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
             isMulti
             hideSelectedOptions={false}
             closeMenuOnSelect={false}
-            styles={{
-                ...multiSelectStyles,
-                control: (base, state) => ({
-                    ...base,
-                    border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                    boxShadow: 'none',
-                    height: '36px',
-                    ...base,
-                    paddingBottom: "0px"
-                }),
-            }}
+            styles={{ ...multiSelectStyles }}
         />
     </>
 }

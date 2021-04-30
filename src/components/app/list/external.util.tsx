@@ -5,7 +5,7 @@ import React from 'react';
 export const ValueContainer = props => {
     let length = props.getValue().length;
     let count = ''
-    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+    if (length === props.options.length) {
         count = 'All'
     }
     else {
@@ -13,13 +13,13 @@ export const ValueContainer = props => {
     }
 
     const Item = props.selectProps.name === 'cluster' ? 'Cluster' : 'Namespace'
-    const counting = <span className="badge">{count}</span>
 
     return (
         <components.ValueContainer  {...props}>
             {length > 0 ?
                 <>
-                    {!props.selectProps.menuIsOpen && ` ${Item}${length !== 1 ? "s" : ""} ${count}`}
+                    {!props.selectProps.menuIsOpen &&
+                        <> {Item}{length !== 1 ? "s" : ""}: <span className="badge">{count}</span> </>}
                     {React.cloneElement(props.children[1])}
                 </>
                 : <>{props.children}</>}
