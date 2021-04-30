@@ -165,6 +165,8 @@ function DiscoverChartList() {
     }
 
     function initialiseFromQueryParams(chartRepoList) {
+        {console.log(chartRepoList)}
+        {console.log(state)}
         let searchParams = new URLSearchParams(location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);

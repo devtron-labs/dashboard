@@ -129,7 +129,7 @@ a:focus {
 
 .tab-list__tab {
     user-select: none;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: normal;
     line-height: 1.43;
     letter-spacing: normal;
@@ -144,7 +144,7 @@ a:focus {
     display: block;
     width: 100%;
     height: 100%;
-    padding: 10px 0px;
+    padding: 14px 0px;
     cursor: pointer;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -163,6 +163,14 @@ a:focus {
     }
 }
 
+.tab-list__tab--right{
+    margin: auto;
+    margin-right: 0;
+}
+
+.border-btm{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
 .cursor {
     cursor: pointer;
 }

@@ -5,7 +5,6 @@ import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
-import { AddNewApp } from '../create/CreateApp';
 import { Empty } from './emptyView/Empty';
 import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
@@ -36,6 +35,11 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
+    toggleHeaderName: () => void;
+    collapsedListTogglingModal: boolean;
+    toggleToExternalList: () => void;
+    showExternalList: boolean,
+
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -56,20 +60,6 @@ export class AppListView extends Component<AppListViewProps>{
             </div>
         }
         else return <div className="app-list__cell app-list__cell--env"></div>
-    }
-
-    renderPageHeader() {
-        return <div className="app-header">
-            <div className="app-header__title">
-                <h1 className="app-header__text">Applications({this.props.size})</h1>
-                {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
-                    onClick={this.openCreateModal}>
-                    <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
-                    Add new app
-                </button> : null}
-            </div>
-            {this.renderFilters()}
-        </div>
     }
 
     renderSavedFilters() {
@@ -100,67 +90,78 @@ export class AppListView extends Component<AppListViewProps>{
     }
 
     renderFilters() {
-        return <div className="search-filter-section">
-            <form style={{ display: "inline" }} onSubmit={this.props.search}>
-                <div className="search">
-                    <Search className="search__icon icon-dim-18" />
-                    <input type="text" placeholder="Search apps" className="search__input bcn-1" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
-                    {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                    </button> : null}
+        return <div className="">
+            <div className="search-filter-section app-list__grid">
+                <form style={{ display: "inline" }} onSubmit={this.props.search}>
+                    <div className="search">
+                        <Search className="search__icon icon-dim-18" />
+                        <input type="text" placeholder="Search apps" className="search__input bcn-1" value={this.props.searchQuery} onChange={this.props.handleSearchStr} />
+                        {this.props.searchApplied ? <button className="search__clear-button" type="button" onClick={this.props.clearSearch}>
+                            <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        </button> : null}
+                    </div>
+                </form>
+                <div className="filters">
+                    <Filter list={this.props.filters.environment}
+                        labelKey="label"
+                        buttonText="Environment: "
+                        searchable multi
+                        placeholder="Search Environment"
+                        type={"environment"}
+                        applyFilter={this.props.applyFilter} />
+                    <Filter list={this.props.filters.status}
+                        labelKey="label"
+                        buttonText="Status: "
+                        placeholder="Search Status"
+                        searchable multi
+                        type={"status"}
+                        applyFilter={this.props.applyFilter} />
+                    <Filter list={this.props.filters.team}
+                        labelKey="label"
+                        buttonText="Projects: "
+                        placeholder="Search Project"
+                        searchable multi
+                        type={"team"}
+                        applyFilter={this.props.applyFilter} />
                 </div>
-            </form>
-            <div className="filters">
-                <span className="filters__label">Filter By</span>
-                <Filter list={this.props.filters.environment}
-                    labelKey="label"
-                    buttonText="Environment"
-                    searchable multi
-                    placeholder="Search Environment"
-                    type={"environment"}
-                    applyFilter={this.props.applyFilter} />
-                <Filter list={this.props.filters.status}
-                    labelKey="label"
-                    buttonText="Status"
-                    placeholder="Search Status"
-                    searchable multi
-                    type={"status"}
-                    applyFilter={this.props.applyFilter} />
-                <Filter list={this.props.filters.team}
-                    labelKey="label"
-                    buttonText="Projects"
-                    placeholder="Search Project"
-                    searchable multi
-                    type={"team"}
-                    applyFilter={this.props.applyFilter} />
             </div>
         </div>
     }
 
-    renderAppList() {
-        if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
-            return <div className="app-list">
-                <div className="app-list__header">
-                    <div className="app-list__cell app-list__cell--name">
-                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+    renderAppListHeader() {
+        let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-down" : "sort-up";
+        return <div className="app-list__header">
+            <div className="app-list__cell app-list__cell--name">
+                <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
-                        </button>
-                    </div>
-                    <div className="app-list__cell app-list__cell--status">
-                        <span className="app-list__cell-header">Status</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header">Environment</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--material-info">
-                        <span className="app-list__cell-header">Commit</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--time">
-                        <span className="app-list__cell-header">Last Deployed Time </span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--action"></div>
+                </button>
+            </div>
+            <div className="app-list__cell app-list__cell--status">
+                <span className="app-list__cell-header">Status</span>
+            </div>
+            <div className="app-list__cell app-list__cell--env">
+                <span className="app-list__cell-header">Environment</span>
+            </div>
+            <div className="app-list__cell app-list__cell--material-info">
+                <span className="app-list__cell-header">Commit</span>
+            </div>
+            <div className="app-list__cell app-list__cell--time">
+                <span className="app-list__cell-header">Last Deployed Time </span>
+            </div>
+            <div className="app-list__cell app-list__cell--action"></div>
+        </div>
+    }
+
+    renderAppListRows() {
+        if (!this.props.apps.length && this.props.view === AppListViewType.LOADING) {
+            return <React.Fragment>
+                <div className="loading-wrapper">
+                    <Progressing pageLoader />
                 </div>
+            </React.Fragment>
+        } else {
+            return <div className="app-list">
+
                 {this.props.apps.map((app) => {
                     let commits = app.defaultEnv.materialInfo.map(mat => {
                         return <div key={mat.revision} className="app-commit">
@@ -210,13 +211,13 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderRouter() {
         return <Switch>
-            <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
+            {/* <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal}
                     match={props.match} location={props.location} history={props.history} />}
-            />
+            /> */}
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
                 render={(props) => <TriggerInfoModal {...props}
-                    close={this.props.closeModal} />}
+                    location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}
             />
         </Switch>
     }
@@ -233,17 +234,8 @@ export class AppListView extends Component<AppListViewProps>{
 
 
     render() {
-        if (this.props.view === AppListViewType.LOADING) {
+        if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
-                {this.renderPageHeader()}
-                <div className="loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            </React.Fragment>
-        }
-        else if (this.props.view === AppListViewType.EMPTY) {
-            return <React.Fragment>
-                {this.renderPageHeader()}
                 {this.renderRouter()}
                 <AppCheckListModal history={this.props.history}
                     location={this.props.location}
@@ -257,7 +249,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.NO_RESULT) {
             return <React.Fragment>
-                {this.renderPageHeader()}
+                {this.renderFilters()}
                 {this.renderSavedFilters()}
                 {this.renderRouter()}
                 <Empty view={this.props.view}
@@ -269,7 +261,6 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
-                {this.renderPageHeader()}
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={this.props.code} />
                 </div>
@@ -277,10 +268,11 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {this.renderPageHeader()}
+                {this.renderFilters()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
-                {this.renderAppList()}
+                {this.renderAppListHeader()}
+                {this.renderAppListRows()}
                 {this.renderPagination()}
             </React.Fragment>
         }

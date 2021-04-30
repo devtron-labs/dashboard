@@ -31,6 +31,7 @@ export class Security extends Component<RouteComponentProps<{}>> {
     }
 
     render() {
+        {console.log(this.props)}
         return <>
             {this.renderPageheader()}
             {this.renderRouter()}

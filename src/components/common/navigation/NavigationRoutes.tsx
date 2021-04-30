@@ -10,7 +10,8 @@ import { Security } from '../../security/Security';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
-const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const ListContainer = lazy(() => import('../../app/list/ListContainer'));
+const ExternalApps = lazy(()=> import('../../app/list/ExternalDefaultList'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
@@ -63,6 +64,7 @@ export default function NavigationRoutes() {
                     <ErrorBoundary>
                         <Switch>
                             <Route path={URLS.APP} render={() => <AppRouter />} />
+                            {/* <Route path={URLS.EXTERNAL_APPS} render={(props) => <ExternalApps {...props}/>}/> */}
                             <Route path={URLS.CHARTS} render={() => <Charts />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
@@ -78,7 +80,10 @@ export default function NavigationRoutes() {
     )
 }
 
-export function AppRouter() {
+export function AppRouter(closeModal) {
+    const history = useHistory()
+    const location = useLocation()
+    const match = useRouteMatch()
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -86,14 +91,10 @@ export function AppRouter() {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={(props) => <ListContainer history={history} match={match} location={location}  closeModal={closeModal}/> }/>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
-                    <Route exact path="">
-                        <AppListContainer />
-                    </Route>
-                    <Route>
-                        <RedirectWithSentry />
-                    </Route>
+                    <Route exact path=""><ListContainer history={history} match={match} location={location}  closeModal={closeModal} /></Route>
+                    <Route><RedirectWithSentry /></Route>
                 </Switch>
             </AppContext.Provider>
         </ErrorBoundary>
