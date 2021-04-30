@@ -102,12 +102,12 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
-            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace);
+            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace, this.props.location.search);
         }
     }
 
-    initialiseFromQueryParams = (clusterList, namespaceList) => {
-        let searchParams = new URLSearchParams(this.props.location.search);
+    initialiseFromQueryParams = (clusterList, namespaceList, searchString) => {
+        let searchParams = new URLSearchParams(searchString);
         let appNameSearch: string = searchParams.get(QueryParams.Appstore);
         let cluster: string = searchParams.get(QueryParams.Cluster);
         let namespace: string = searchParams.get(QueryParams.Namespace);
@@ -145,7 +145,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             searchQuery: appNameSearch ? appNameSearch : "",
             appliedCluster: this.state.selectedCluster,
             appliedNamespace: this.state.selectedNamespace
-        }, () => {
+        }, () => {{console.log(this.state.appliedCluster)}
             this.setState({ loadingData: true })
             getExternalList()
             this.setState({ loadingData: false })
@@ -260,6 +260,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 view={this.state.view}
                 externalList={this.state.externalList}
                 filters={this.state.filters}
+                appliedNamespace={this.state.appliedNamespace}
+                appliedCluster={this.state.appliedCluster}
             />
             {/* Comented out for the time being */}
             {/* <ExternalSearchQueryList {...this.props}
@@ -268,7 +270,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                    filters={this.state.filters}
                    appliedNamespace={this.state.appliedNamespace}
                    appliedCluster={this.state.appliedCluster}
-                    /> */}
+                    />
+       */}
         </>
         )
     }

@@ -168,6 +168,8 @@ export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
         namespace: FilterOption[];
         cluster: FilterOption[];
     }
+    appliedNamespace: SelectedExternalDropdown[];
+    appliedCluster: SelectedExternalDropdown[]; 
 }
 
 export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {

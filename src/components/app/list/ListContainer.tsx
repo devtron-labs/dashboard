@@ -77,7 +77,6 @@ export default class ListContainer extends React.Component<ListContainerProps, L
 
     renderRouter() {
         const path = this.props.match.path
-        { console.log(this.props) }
         return <Switch>
             <Route exact path={`${path}`} component={AppListContainer} />
             <Route path={`${URLS.APP}/external-apps`} component={ExternalListContainer} />

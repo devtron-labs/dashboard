@@ -8,6 +8,11 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 
+const QueryParams = {
+    Cluster: "cluster",
+    Namespace: "namespace",
+    Appstore: "appstore"
+}
 export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
     renderDefaultListTitle() {
@@ -36,7 +41,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         )
     }
 
-    renderExternalList(list) {
+    renderListRow(list) {
         return (
             <div className="bcn-0">
                 <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
@@ -53,53 +58,92 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         )
     }
 
-    renderSavedFilters() {
-        let count = 0;
-        let keys = Object.keys(this.props.filters);
-        let savedFilters = <div className="saved-filters">
-            {keys.map((key) => {
-                return this.props.filters[key].map((filter) => {
-                    if (filter.isChecked) {
-                        count++;
-                        return <div key={filter.key} className="saved-filter">{filter.label}
-                            <button type="button" className="saved-filter__clear-btn"
-                                onClick={(event) => this.removeFilter(filter.key, key)} >
-                                <i className="fa fa-times-circle" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    }
-                })
-            })}
-            <button type="button" className="saved-filters__clear-btn" >
-                Clear All Filters
-            </button>
-        </div>
+    removeFilter = (key, val): void => {
+        
+        {console.log(key,val)}
+        let searchQuery = new URLSearchParams(this.props.location.search)
+        let queryParamValue = searchQuery.get(key)
+        if(queryParamValue){
+            
+        } 
+        {console.log(queryParamValue, key)}
+        let arr = queryParamValue.split(",");
+        arr = arr.filter((item) => item != val.toString());
+        queryParamValue= arr.toString();
+        searchQuery.set(key,queryParamValue)
+
+
+        // let qs = queryString.parse(this.props.location.search);
+        // console.log(qs)
+        // let keys = Object.keys(qs);
+        // let query = {};
+        // keys.map((key) => {
+        //     query[key] = qs[key];
+        // })
+        // let appliedFilters = query[key];
+        // {console.log(query)}
+        // {console.log(appliedFilters)}
+
+        // let arr = appliedFilters.split(",");
+        // arr = arr.filter((item) => item != val.toString());
+        // query[key] = arr.toString();
+        // if (query[key] == "") delete query[key];
+        // let queryStr = queryString.stringify(query);
+        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${searchQuery}`;
+        this.props.history.push(url);
     }
 
-    removeFilter = (val, type: string): void => {
+    removeAllFilters = (): void => {
         let qs = queryString.parse(this.props.location.search);
         let keys = Object.keys(qs);
         let query = {};
         keys.map((key) => {
             query[key] = qs[key];
         })
-        query['offset'] = 0;
-        let appliedFilters = query[type];
-        let arr = appliedFilters.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        query[type] = arr.toString();
-        if (query[type] == "") delete query[type];
+        delete query['cluster'];
+        delete query['namespace'];
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${queryStr}`;
         this.props.history.push(url);
     }
 
-    renderDefaultList() {
+    renderSavedFilters() {
+        let count = 0;
+   
+        let savedFilters = <div className="saved-filters">
+            {this.props.appliedCluster.map((filter) => {
+                count++;
+                return <div key={filter.value} className="saved-filter">{filter.label}
+                    <button type="button" className="saved-filter__clear-btn"
+                        onClick={(event) => this.removeFilter('cluster', filter.value)} >
+                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+            })}
+            {this.props.appliedNamespace.map((filter) => {
+                count++;
+                return <div key={filter.value} className="saved-filter">{filter.label}
+                    <button type="button" className="saved-filter__clear-btn"
+                        onClick={(event) => this.removeFilter('namespace', filter.value)} >
+                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+            })}
+            <button type="button" className="saved-filters__clear-btn" onClick={() => { this.removeAllFilters() }}>
+                Clear All Filters
+            </button>
+        </div>
+        return <React.Fragment>
+            {count > 0 ? savedFilters : null}
+        </React.Fragment>
+    }
+
+    renderDefaultListRows() {
         if (this.props.view === ViewType.LOADING) {
             return <div style={{ height: "calc(100vh - 280px)" }}> <Progressing pageLoader /> </div>
         } else {
-            return <>{this.renderSavedFilters()}
-                {this.props.externalList.map((list) => { return this.renderExternalList(list) })}
+            return <>
+                {this.props.externalList.map((list) => { return this.renderListRow(list) })}
             </>
         }
     }
@@ -107,8 +151,9 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
     render() {
         return (
             <div>
+                {this.renderSavedFilters()}
                 {this.renderDefaultListTitle()}
-                {this.renderDefaultList()}
+                {this.renderDefaultListRows()}
             </div>
         )
     }

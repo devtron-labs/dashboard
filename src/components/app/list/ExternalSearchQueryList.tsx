@@ -46,7 +46,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
         delete query['cluster'];
         delete query['namespace'];
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}/?${queryStr}`;
         this.props.history.push(url);
     }
 
