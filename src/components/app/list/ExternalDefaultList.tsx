@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { Progressing } from '../../../components/common';
 import { ExternalDefaultListProps } from './types'
-import { URLS, ViewType } from '../../../config';
+import { Progressing, ErrorScreenManager } from '../../../components/common';
+import { ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
+import { AppCheckListModal } from '../../checkList/AppCheckModal';
 
 export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
@@ -52,8 +53,6 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         )
     }
 
-    
-
     renderSavedFilters() {
         let count = 0;
         let savedFilters = <div className="saved-filters">
@@ -95,12 +94,24 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
     }
 
     render() {
-        return (
-            <div>
-                {this.renderSavedFilters()}
-                {this.renderDefaultListTitle()}
-                {this.renderDefaultListRows()}
-            </div>
-        )
+        if (this.props.view === ViewType.EMPTY) {
+            return <React.Fragment>
+                {/* Not sure about image */}
+            </React.Fragment>
+        }
+        else if (this.props.view === ViewType.ERROR) {
+            return <>
+                <ErrorScreenManager code={this.props.code} />
+            </>
+        }
+        else {
+            return (
+                <div>
+                    {this.renderSavedFilters()}
+                    {this.renderDefaultListTitle()}
+                    {this.renderDefaultListRows()}
+                </div>
+            )
+        }
     }
 }

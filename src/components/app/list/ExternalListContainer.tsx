@@ -266,8 +266,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 filters={this.state.filters}
                 appliedNamespace={this.state.appliedNamespace}
                 appliedCluster={this.state.appliedCluster}
-                removeFilter={this.removeFilter}
-                removeAllFilters={this.removeAllFilters}
+                removeFilter= {this.removeFilter} 
+                removeAllFilters= {this.removeAllFilters}
+                code={this.state.code}
             />
             {/* Comented out for the time being */}
             {/* <ExternalSearchQueryList {...this.props}

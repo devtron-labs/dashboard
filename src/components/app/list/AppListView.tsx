@@ -5,7 +5,6 @@ import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
-import { AddNewApp } from '../create/CreateApp';
 import { Empty } from './emptyView/Empty';
 import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
@@ -61,33 +60,6 @@ export class AppListView extends Component<AppListViewProps>{
             </div>
         }
         else return <div className="app-list__cell app-list__cell--env"></div>
-    }
-
-    renderPageHeader() {
-        return <div className="app-header">
-            {/* <div className="app-header__title"> */}
-            {/* <h1 className="app-header__text flex left">Applications({this.props.size})
-                <Dropdown onClick={this.props.toggleHeaderName} className="icon-dim-24 rotate ml-4" style={{ ['--rotateBy' as any]: this.props.collapsedListTogglingModal ? '180deg' : '0deg' }} />
-                </h1> */}
-            {/* {this.props.collapsedListTogglingModal ? <>
-                    <div className="app-list-card bcn-0 br-4 en-1 bw-1 pt-8 pr-8 pb-8 pl-8 ">
-                        <div className="flex left pt-8 pr-8 pb-8 pl-8 cursor">
-                            <Check className="scb-5 mr-8 icon-dim-16" />
-                            <div>
-                                <div className="cn-9 fs-13">External Apps</div>
-                                <div className="cn-5">Helm charts, Argocd objects</div>
-                            </div>
-                        </div>
-                    </div>
-                </> : ""} */}
-            {/* {this.props.view != AppListViewType.EMPTY ? <button type="button" className="cta"
-                    onClick={this.openCreateModal}>
-                    <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
-                    Add new app
-                </button> : null}
-            </div> */}
-            {/* {this.renderFilters()} */}
-        </div>
     }
 
     renderSavedFilters() {
@@ -156,30 +128,40 @@ export class AppListView extends Component<AppListViewProps>{
         </div>
     }
 
-    renderAppList() {
-        if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-down" : "sort-up";
-            return <div className="app-list">
-                <div className="app-list__header">
-                    <div className="app-list__cell app-list__cell--name">
-                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+    renderAppListHeader() {
+        let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-down" : "sort-up";
+        return <div className="app-list__header">
+            <div className="app-list__cell app-list__cell--name">
+                <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
-                        </button>
-                    </div>
-                    <div className="app-list__cell app-list__cell--status">
-                        <span className="app-list__cell-header">Status</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header">Environment</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--material-info">
-                        <span className="app-list__cell-header">Commit</span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--time">
-                        <span className="app-list__cell-header">Last Deployed Time </span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--action"></div>
+                </button>
+            </div>
+            <div className="app-list__cell app-list__cell--status">
+                <span className="app-list__cell-header">Status</span>
+            </div>
+            <div className="app-list__cell app-list__cell--env">
+                <span className="app-list__cell-header">Environment</span>
+            </div>
+            <div className="app-list__cell app-list__cell--material-info">
+                <span className="app-list__cell-header">Commit</span>
+            </div>
+            <div className="app-list__cell app-list__cell--time">
+                <span className="app-list__cell-header">Last Deployed Time </span>
+            </div>
+            <div className="app-list__cell app-list__cell--action"></div>
+        </div>
+    }
+
+    renderAppListRows() {
+        if (!this.props.apps.length && this.props.view === AppListViewType.LOADING) {
+            return <React.Fragment>
+                <div className="loading-wrapper">
+                    <Progressing pageLoader />
                 </div>
+            </React.Fragment>
+        } else {
+            return <div className="app-list">
+
                 {this.props.apps.map((app) => {
                     let commits = app.defaultEnv.materialInfo.map(mat => {
                         return <div key={mat.revision} className="app-commit">
@@ -252,17 +234,8 @@ export class AppListView extends Component<AppListViewProps>{
 
 
     render() {
-        if (this.props.view === AppListViewType.LOADING) {
+        if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
-                {this.renderPageHeader()}
-                <div className="loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            </React.Fragment>
-        }
-        else if (this.props.view === AppListViewType.EMPTY) {
-            return <React.Fragment>
-                {this.renderPageHeader()}
                 {this.renderRouter()}
                 <AppCheckListModal history={this.props.history}
                     location={this.props.location}
@@ -276,7 +249,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.NO_RESULT) {
             return <React.Fragment>
-                {this.renderPageHeader()}
+                {this.renderFilters()}
                 {this.renderSavedFilters()}
                 {this.renderRouter()}
                 <Empty view={this.props.view}
@@ -288,7 +261,6 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
-                {this.renderPageHeader()}
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={this.props.code} />
                 </div>
@@ -296,11 +268,11 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else {
             return <React.Fragment>
-                {this.renderPageHeader()}
                 {this.renderFilters()}
                 {this.renderRouter()}
                 {this.renderSavedFilters()}
-                {this.renderAppList()}
+                {this.renderAppListHeader()}
+                {this.renderAppListRows()}
                 {this.renderPagination()}
             </React.Fragment>
         }
