@@ -58,54 +58,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         )
     }
 
-    removeFilter = (key, val): void => {
-        
-        {console.log(key,val)}
-        let searchQuery = new URLSearchParams(this.props.location.search)
-        let queryParamValue = searchQuery.get(key)
-        if(queryParamValue){
-            
-        } 
-        {console.log(queryParamValue, key)}
-        let arr = queryParamValue.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        queryParamValue= arr.toString();
-        searchQuery.set(key,queryParamValue)
-
-
-        // let qs = queryString.parse(this.props.location.search);
-        // console.log(qs)
-        // let keys = Object.keys(qs);
-        // let query = {};
-        // keys.map((key) => {
-        //     query[key] = qs[key];
-        // })
-        // let appliedFilters = query[key];
-        // {console.log(query)}
-        // {console.log(appliedFilters)}
-
-        // let arr = appliedFilters.split(",");
-        // arr = arr.filter((item) => item != val.toString());
-        // query[key] = arr.toString();
-        // if (query[key] == "") delete query[key];
-        // let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${searchQuery}`;
-        this.props.history.push(url);
-    }
-
-    removeAllFilters = (): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        delete query['cluster'];
-        delete query['namespace'];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${queryStr}`;
-        this.props.history.push(url);
-    }
+    
 
     renderSavedFilters() {
         let count = 0;
@@ -115,7 +68,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                 count++;
                 return <div key={filter.value} className="saved-filter">{filter.label}
                     <button type="button" className="saved-filter__clear-btn"
-                        onClick={(event) => this.removeFilter('cluster', filter.value)} >
+                        onClick={(event) => this.props.removeFilter('cluster', filter.value)} >
                         <i className="fa fa-times-circle" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -124,7 +77,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                 count++;
                 return <div key={filter.value} className="saved-filter">{filter.label}
                     <button type="button" className="saved-filter__clear-btn"
-                        onClick={(event) => this.removeFilter('namespace', filter.value)} >
+                        onClick={(event) => this.props.removeFilter('namespace', filter.value)} >
                         <i className="fa fa-times-circle" aria-hidden="true"></i>
                     </button>
                 </div>

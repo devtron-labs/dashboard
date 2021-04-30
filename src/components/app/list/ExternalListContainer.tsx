@@ -7,9 +7,10 @@ import { Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
 import { showError } from '../../../components/common';
-import { ViewType } from '../../../config';
+import { URLS,ViewType } from '../../../config';
 import ExternalDefaultList from './ExternalDefaultList';
 import { ValueContainer, DropdownIndicator } from './external.util';
+import * as queryString from 'query-string';
 import ExternalSearchQueryList from './ExternalSearchQueryList' //Not using for the time being
 
 const QueryParams = {
@@ -153,6 +154,54 @@ export default class ExternalListContainer extends Component<ExternalListContain
         )
     }
 
+    removeFilter = (key, val): void => {
+        
+        {console.log(key,val)}
+        let searchQuery = new URLSearchParams(this.props.location.search)
+        let queryParamValue = searchQuery.get(key)
+        if(queryParamValue){
+            
+        } 
+        {console.log(queryParamValue, key)}
+        let arr = queryParamValue.split(",");
+        arr = arr.filter((item) => item != val.toString());
+        queryParamValue= arr.toString();
+        searchQuery.set(key,queryParamValue)
+
+
+        // let qs = queryString.parse(this.props.location.search);
+        // console.log(qs)
+        // let keys = Object.keys(qs);
+        // let query = {};
+        // keys.map((key) => {
+        //     query[key] = qs[key];
+        // })
+        // let appliedFilters = query[key];
+        // {console.log(query)}
+        // {console.log(appliedFilters)}
+
+        // let arr = appliedFilters.split(",");
+        // arr = arr.filter((item) => item != val.toString());
+        // query[key] = arr.toString();
+        // if (query[key] == "") delete query[key];
+        // let queryStr = queryString.stringify(query);
+        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${searchQuery}`;
+        this.props.history.push(url);
+    }
+
+    removeAllFilters = (): void => {
+        let qs = queryString.parse(this.props.location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        delete query['cluster'];
+        delete query['namespace'];
+        let queryStr = queryString.stringify(query);
+        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${queryStr}`;
+        this.props.history.push(url);
+    }
     setNamespace = (selected) => {
         this.setState({ selectedNamespace: selected })
     }
@@ -262,6 +311,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
                 filters={this.state.filters}
                 appliedNamespace={this.state.appliedNamespace}
                 appliedCluster={this.state.appliedCluster}
+                removeFilter= {this.removeFilter} 
+                removeAllFilters= {this.removeAllFilters}
             />
             {/* Comented out for the time being */}
             {/* <ExternalSearchQueryList {...this.props}
