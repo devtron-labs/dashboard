@@ -44,7 +44,7 @@ export const smallMenuList = {
 export const ValueContainer = props => {
     let length = props.getValue().length;
     let count = ''
-    if (length === props.options.length && (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')) {
+    if (length === props.options.length) {
         count = 'All'
     }
     else {
