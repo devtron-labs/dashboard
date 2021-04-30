@@ -73,24 +73,18 @@ export function getExternalSearchQueryList(): Promise<{
 }
 
 export function getNamespaceList(): Promise<{
-    key: string | number;
+    value: number;
     label: string;
-    isChecked: boolean;
-    isSaved: boolean;   
 }[]> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([{
-                key: 1,
+                value: 1,
                 label: "dashboard",
-                isChecked: true,
-                isSaved: true,
             },
             {
-                key: 2,
+                value: 2,
                 label: "demo",
-                isChecked: true,
-                isSaved: true,
             },
             ])
         }, 1000)
@@ -98,30 +92,22 @@ export function getNamespaceList(): Promise<{
 }
 
 export function getClusterList(): Promise<{
-    key: string | number;
+    value: number;
     label: string;
-    isChecked: boolean;
-    isSaved: boolean;
 }[]> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([{
-                key: 101,
+                value: 101,
                 label: "devtron",
-                isChecked: true,
-                isSaved: true,
             },
             {
-                key: 102,
+                value: 102,
                 label: "dev-1",
-                isChecked: true,
-                isSaved: true,
             },
             {
-                key: 103,
+                value: 103,
                 label: "dev-3",
-                isChecked: true,
-                isSaved: true,
             },
             ])
         }, 1000)

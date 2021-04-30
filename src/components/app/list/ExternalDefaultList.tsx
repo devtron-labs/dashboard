@@ -1,18 +1,12 @@
 import React, { Component } from 'react'
-import { Progressing, showError } from '../../../components/common';
+import { Progressing } from '../../../components/common';
 import { ExternalDefaultListProps } from './types'
-import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 
-const QueryParams = {
-    Cluster: "cluster",
-    Namespace: "namespace",
-    Appstore: "appstore"
-}
 export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
     renderDefaultListTitle() {
@@ -62,7 +56,6 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
 
     renderSavedFilters() {
         let count = 0;
-   
         let savedFilters = <div className="saved-filters">
             {this.props.appliedCluster.map((filter) => {
                 count++;

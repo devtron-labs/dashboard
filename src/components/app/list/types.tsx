@@ -3,6 +3,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
+export interface ExternalListFilterOption {
+    label: string;
+    value: number;
+}
 export interface AppListState {
     code: number;
     view: string;
@@ -135,27 +139,23 @@ export interface ExternalQueryList {
     queryMatch: string;
 }
 
-export interface SelectedExternalDropdown {
-    label: string;
-    value: string;
-}
-
 export interface ExternalListContainerState {
     view: string;
     code: number;
-    loadingData: boolean;
     externalList: ExternalList[];
     filters: {
-        namespace: FilterOption[];
-        cluster: FilterOption[];
-    },
-    selectedNamespace: SelectedExternalDropdown[];
+        namespace: ExternalListFilterOption[];
+        cluster: ExternalListFilterOption[];
+    };
+    namespaceHashmap: Map<string, any>;
+    clusterHashmap: Map<string, any>;
+    selectedNamespace: ExternalListFilterOption[];
     searchQuery: string;
     searchApplied: boolean;
-    selectedCluster: SelectedExternalDropdown[]
+    selectedCluster: ExternalListFilterOption[]
     externalQueryList: ExternalQueryList[],
-    appliedCluster: SelectedExternalDropdown[];
-    appliedNamespace: SelectedExternalDropdown[];
+    appliedCluster: ExternalListFilterOption[];
+    appliedNamespace: ExternalListFilterOption[];
 }
 
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
@@ -165,11 +165,11 @@ export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
     view: string;
     externalList: ExternalList[];
     filters: {
-        namespace: FilterOption[];
-        cluster: FilterOption[];
+        namespace: ExternalListFilterOption[];
+        cluster: ExternalListFilterOption[];
     }
-    appliedNamespace: SelectedExternalDropdown[];
-    appliedCluster: SelectedExternalDropdown[];
+    appliedNamespace: ExternalListFilterOption[];
+    appliedCluster: ExternalListFilterOption[];
     removeFilter: (key: any, val: any) => void;
     removeAllFilters: () => void;
 }
@@ -178,9 +178,9 @@ export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
     view: string;
     externalQueryList: ExternalQueryList[];
     filters: {
-        namespace: FilterOption[];
-        cluster: FilterOption[];
+        namespace: ExternalListFilterOption[];
+        cluster: ExternalListFilterOption[];
     }
-    appliedNamespace: SelectedExternalDropdown[];
-    appliedCluster: SelectedExternalDropdown[];
+    appliedNamespace: ExternalListFilterOption[];
+    appliedCluster: ExternalListFilterOption[];
 }
