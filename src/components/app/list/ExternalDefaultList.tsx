@@ -82,7 +82,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
                     </button>
                 </div>
             })}
-            <button type="button" className="saved-filters__clear-btn" onClick={() => { this.removeAllFilters() }}>
+            <button type="button" className="saved-filters__clear-btn" onClick={() => { this.props.removeAllFilters() }}>
                 Clear All Filters
             </button>
         </div>
