@@ -5,7 +5,6 @@ import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
-import { AddNewApp } from '../create/CreateApp';
 import { Empty } from './emptyView/Empty';
 import { URLS } from '../../../config';
 import { App, AppListState, OrderBy, SortBy } from './types';
@@ -235,14 +234,6 @@ export class AppListView extends Component<AppListViewProps>{
 
 
     render() {
-        // if (this.props.view === AppListViewType.LOADING) {
-        //     return <React.Fragment>
-        //         <div className="loading-wrapper">
-        //             <Progressing pageLoader />
-        //         </div>
-        //     </React.Fragment>
-        // }
-        // else 
         if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
                 {this.renderRouter()}

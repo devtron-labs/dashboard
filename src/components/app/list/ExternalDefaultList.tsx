@@ -1,18 +1,13 @@
 import React, { Component } from 'react'
-import { Progressing, showError } from '../../../components/common';
+import { Progressing, ErrorScreenManager, showError } from '../../../components/common';
 import { ExternalDefaultListProps } from './types'
-import * as queryString from 'query-string';
-import { URLS, ViewType } from '../../../config';
+import { ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
+import { AppCheckListModal } from '../../checkList/AppCheckModal';
 
-const QueryParams = {
-    Cluster: "cluster",
-    Namespace: "namespace",
-    Appstore: "appstore"
-}
 export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
 
     renderDefaultListTitle() {
@@ -58,11 +53,8 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
         )
     }
 
-    
-
     renderSavedFilters() {
         let count = 0;
-   
         let savedFilters = <div className="saved-filters">
             {this.props.appliedCluster.map((filter) => {
                 count++;
@@ -102,12 +94,23 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
     }
 
     render() {
-        return (
-            <div>
-                {this.renderSavedFilters()}
-                {this.renderDefaultListTitle()}
-                {this.renderDefaultListRows()}
-            </div>
-        )
+        if (this.props.view === ViewType.EMPTY) {
+            return <React.Fragment>
+            </React.Fragment>
+        }
+        else if (this.props.view === ViewType.ERROR) {
+            return <>
+                <ErrorScreenManager code={this.props.code} />
+            </>
+        }
+        else {
+            return (
+                <div>
+                    {this.renderSavedFilters()}
+                    {this.renderDefaultListTitle()}
+                    {this.renderDefaultListRows()}
+                </div>
+            )
+        }
     }
 }

@@ -172,6 +172,7 @@ export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
     appliedCluster: SelectedExternalDropdown[];
     removeFilter: (key: any, val: any) => void;
     removeAllFilters: () => void;
+    code: number;
 }
 
 export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
