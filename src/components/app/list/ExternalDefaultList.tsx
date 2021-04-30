@@ -96,6 +96,7 @@ export default class ExternalDefaultList extends Component<ExternalDefaultListPr
     render() {
         if (this.props.view === ViewType.EMPTY) {
             return <React.Fragment>
+                {/* Not sure about image */}
             </React.Fragment>
         }
         else if (this.props.view === ViewType.ERROR) {
