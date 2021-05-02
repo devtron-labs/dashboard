@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ExternalSearchQueryListProps } from './types';
 import { Progressing, showError } from '../../../components/common';
-import { ExternalDefaultListProps } from './types'
+import { ExternalListViewProps } from './types'
 import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
@@ -75,7 +75,7 @@ export default class ExternalSearchQueryList extends Component<ExternalSearchQue
                 count++;
                 return <div key={filter.value} className="saved-filter">{filter.label}
                     <button type="button" className="saved-filter__clear-btn"
-                        onClick={(event) => this.removeFilter(filter.value, filter.value)} >
+                        onClick={(event) => this.removeFilter(filter.value, '')} >
                         <i className="fa fa-times-circle" aria-hidden="true"></i>
                     </button>
                 </div>

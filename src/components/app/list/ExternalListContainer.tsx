@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 import Select, { components } from 'react-select';
-import './list.css';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { Option, multiSelectStyles } from '../../common';
 import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
 import { showError } from '../../../components/common';
-import { URLS,ViewType } from '../../../config';
-import ExternalDefaultList from './ExternalDefaultList';
+import { URLS, ViewType } from '../../../config';
+import ExternalListView from './ExternalListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
 import * as queryString from 'query-string';
 import ExternalSearchQueryList from './ExternalSearchQueryList' //Not using for the time being
+import './list.css';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -27,13 +27,15 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.state = {
             view: ViewType.LOADING,
             code: 0,
-            loadingData: false,
             externalList: [],
             externalQueryList: [],
             filters: {
                 namespace: [],
                 cluster: [],
             },
+
+            namespaceHashmap: undefined,
+            clusterHashmap: undefined,
             selectedNamespace: [],
             selectedCluster: [],
             appliedCluster: [],
@@ -60,41 +62,36 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
 
         getNamespaceList().then((response) => {
-            let data = response
-            let namespaceList = data?.map((list) => {
-                return {
-                    label: list.label,
-                    key: list.key,
-                    isSaved: list.isSaved,
-                    isChecked: list.isChecked
-                }
-            })
+            let namespaceHashmap = new Map();
+            let namespaceList = response || [];
+            for (let i = 0; i < namespaceList.length; i++) {
+                namespaceHashmap.set(namespaceList[i].value.toString(), namespaceList[i]);
+            }
             this.setState({
                 filters: {
+                    ...this.state.filters,
                     namespace: namespaceList,
-                    cluster: this.state.filters.cluster
-                }
+                },
+                namespaceHashmap: namespaceHashmap
+
             })
         }).catch((error) => {
             showError(error);
         })
 
         getClusterList().then((response) => {
-            let data = response
-            let clusterList = data?.map((list) => {
-                return {
-                    label: list.label,
-                    key: list.key,
-                    isSaved: list.isSaved,
-                    isChecked: list.isChecked
-                }
-            })
+            let clusterHashmap = new Map();
+            let clusterList = response || [];
+            for (let i = 0; i < clusterList.length; i++) {
+                clusterHashmap.set(clusterList[i].value.toString(), clusterList[i]);
+            }
             this.setState({
                 ...this.state,
                 filters: {
-                    namespace: this.state.filters.namespace,
+                    ...this.state.filters,
                     cluster: clusterList
-                }
+                },
+                clusterHashmap: clusterHashmap,
             })
         }).catch((error) => {
             showError(error);
@@ -103,55 +100,39 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
-            this.initialiseFromQueryParams(this.state.filters.cluster, this.state.filters.namespace, this.props.location.search);
+            this.initialiseFromQueryParams();
         }
     }
 
-    initialiseFromQueryParams = (clusterList, namespaceList, searchString) => {
-        let searchParams = new URLSearchParams(searchString);
+    initialiseFromQueryParams = () => {
+        let searchParams = new URLSearchParams(this.props.location.search);
         let appNameSearch: string = searchParams.get(QueryParams.Appstore);
         let cluster: string = searchParams.get(QueryParams.Cluster);
         let namespace: string = searchParams.get(QueryParams.Namespace);
-        let clusterIdArray = [];
-        let namespaceIdArray = [];
 
-        if (cluster) {
-            clusterIdArray = cluster.split(",")
-        };
+        let selectedClusterIdArray: string[] = cluster ? cluster.split(",") : [];
+        let selectedNamespaceIdArray: string[] = namespace ? namespace?.split(",") : [];
 
-        if (namespace) {
-            namespaceIdArray = namespace.split(",")
-        }
+        let selectedClusterList = selectedClusterIdArray.map((clusterId: string) => {
+            return this.state.clusterHashmap.get((clusterId))
+        })
 
-        clusterIdArray = clusterIdArray.map((clusterId => parseInt(clusterId)));
-        namespaceIdArray = namespaceIdArray.map((namespaceId) => parseInt(namespaceId));
-
-        let selectedClusterList = [];
-        for (let i = 0; i < clusterIdArray.length; i++) {
-            let clusterValue = clusterList.find(item => item.value === clusterIdArray[i]);
-            if (clusterValue) {
-                selectedClusterList.push(clusterValue);
-            }
-        }
-        let selectedNamespace = [];
-        for (let i = 0; i < namespaceIdArray.length; i++) {
-            let namespaceValue = namespaceList.find(item => item.value === namespaceIdArray[i]);
-            if (namespaceValue) {
-                selectedNamespace.push(namespaceValue)
-            }
-        }
+        let selectedNamespaceList = selectedNamespaceIdArray.map((namespace) => {
+            return this.state.namespaceHashmap.get((namespace))
+        })
 
         this.setState({
             searchApplied: appNameSearch ? true : false,
             searchQuery: appNameSearch ? appNameSearch : "",
-            appliedCluster: this.state.selectedCluster,
-            appliedNamespace: this.state.selectedNamespace
-        }, () => {{console.log(this.state.appliedCluster)}
-            this.setState({ loadingData: true })
+            appliedNamespace: selectedNamespaceList,
+            appliedCluster: selectedClusterList,
+            selectedCluster: selectedClusterList,
+            selectedNamespace: selectedNamespaceList,
+        }, () => {
+            this.setState({ view: ViewType.LOADING })
             getExternalList()
-            this.setState({ loadingData: false })
-        }
-        )
+            this.setState({ view: ViewType.FORM })
+        })
     }
 
     removeFilter = (key, val): void => {
@@ -159,8 +140,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
         let queryParamValue = searchQuery.get(key)
         let arr = queryParamValue.split(",");
         arr = arr.filter((item) => item != val.toString());
-        queryParamValue= arr.toString();
-        searchQuery.set(key,queryParamValue)
+        queryParamValue = arr.toString();
+        searchQuery.set(key, queryParamValue)
         let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${searchQuery}`;
         this.props.history.push(url);
     }
@@ -191,7 +172,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
     handleSelectedCluster = () => {
         let url = this.props.match.url
         let selected = this.state.selectedCluster
-        let appliedCluster = this.state.appliedCluster
         let clusterId = selected.map((e) => { return e.value }).join(",");
         let searchParams = new URLSearchParams(this.props.location.search);
         let namespace = searchParams.get(QueryParams.Namespace);
@@ -280,7 +260,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
-            <ExternalDefaultList {...this.props}
+            <ExternalListView {...this.props}
                 view={this.state.view}
                 externalList={this.state.externalList}
                 filters={this.state.filters}
@@ -323,7 +303,7 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
         <Select className="cn-9 fs-13"
             placeholder="Cluster: All"
             name="cluster"
-            options={cluster?.map((env) => ({ label: env.label, value: env.key }))}
+            options={cluster}
             components={{
                 Option,
                 MenuList,
@@ -341,7 +321,7 @@ function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, clust
         />
         <Select className="cn-9 fs-14"
             placeholder="Namespace: All"
-            options={namespace?.map((env) => ({ label: env.label, value: env.key }))}
+            options={namespace}
             onChange={(selected: any) => setNamespace(selected)}
             value={selectedNamespace}
             name="namespace"

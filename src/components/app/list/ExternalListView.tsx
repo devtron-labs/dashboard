@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Progressing, ErrorScreenManager, showError } from '../../../components/common';
-import { ExternalDefaultListProps } from './types'
+import { ExternalListViewProps } from './types'
+import { Progressing, ErrorScreenManager } from '../../common';
 import { ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
@@ -8,7 +8,7 @@ import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
 
-export default class ExternalDefaultList extends Component<ExternalDefaultListProps>{
+export default class ExternalListView extends Component<ExternalListViewProps>{
 
     renderDefaultListTitle() {
         return (<div>
