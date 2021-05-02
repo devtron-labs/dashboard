@@ -7,7 +7,7 @@ import { ExternalListContainerState, ExternalListContainerProps } from './types'
 import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
 import { showError } from '../../../components/common';
 import { URLS, ViewType } from '../../../config';
-import ExternalDefaultList from './ExternalDefaultList';
+import ExternalListView from './ExternalListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
 import * as queryString from 'query-string';
 import ExternalSearchQueryList from './ExternalSearchQueryList' //Not using for the time being
@@ -260,7 +260,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
             <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
                 {this.renderExternalFilters()}
             </div>
-            <ExternalDefaultList {...this.props}
+            <ExternalListView {...this.props}
                 view={this.state.view}
                 externalList={this.state.externalList}
                 filters={this.state.filters}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ExternalSearchQueryListProps } from './types';
 import { Progressing, showError } from '../../../components/common';
-import { ExternalDefaultListProps } from './types'
+import { ExternalListViewProps } from './types'
 import * as queryString from 'query-string';
 import { URLS, ViewType } from '../../../config';
 import { Link } from 'react-router-dom';

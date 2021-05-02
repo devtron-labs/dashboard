@@ -161,7 +161,7 @@ export interface ExternalListContainerState {
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
 }
 
-export interface ExternalDefaultListProps extends RouteComponentProps<{}> {
+export interface ExternalListViewProps extends RouteComponentProps<{}> {
     view: string;
     externalList: ExternalList[];
     filters: {

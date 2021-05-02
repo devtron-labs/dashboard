@@ -11,7 +11,7 @@ import { Security } from '../../security/Security';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const ListContainer = lazy(() => import('../../app/list/ListContainer'));
-const ExternalApps = lazy(()=> import('../../app/list/ExternalDefaultList'))
+const ExternalApps = lazy(()=> import('../../app/list/ExternalListView'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 
