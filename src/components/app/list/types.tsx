@@ -34,7 +34,6 @@ export interface AppListState {
     chartStageCompleted: number;
     appChecklist: AppCheckList;
     chartChecklist: ChartCheckList;
-    showExternalList: boolean;
     collapsedListTogglingModal: boolean;
 }
 

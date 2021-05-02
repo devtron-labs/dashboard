@@ -43,11 +43,8 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             chartChecklist: undefined,
             appStageCompleted: 0,
             chartStageCompleted: 0,
-            showExternalList: false,
             collapsedListTogglingModal: false,
         }
-        this.toggleHeaderName = this.toggleHeaderName.bind(this);
-        this.toggleToExternalList = this.toggleToExternalList.bind(this);
     }
 
     componentDidMount() {
@@ -91,14 +88,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             let payload = this.createPayloadFromURL(this.props.location.search);
             this.getAppList(payload);
         }
-    }
-
-    toggleHeaderName() {
-        this.setState({ collapsedListTogglingModal: !this.state.collapsedListTogglingModal })
-    }
-
-    toggleToExternalList() {
-        this.setState({ showExternalList: !this.state.showExternalList })
     }
 
     createPayloadFromURL(searchQuery: string) {
@@ -410,11 +399,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
                     changePageSize={this.changePageSize}
                     closeModal={this.closeModal}
                     openTriggerInfoModal={this.openTriggerInfoModal}
-                    toggleHeaderName={this.toggleHeaderName}
                     collapsedListTogglingModal={this.state.collapsedListTogglingModal}
-                    toggleToExternalList={this.toggleToExternalList}
-                    showExternalList={this.state.showExternalList}
-
                 />
         </>)
     }

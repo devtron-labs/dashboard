@@ -35,10 +35,7 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     closeModal: () => void;
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
-    toggleHeaderName: () => void;
     collapsedListTogglingModal: boolean;
-    toggleToExternalList: () => void;
-    showExternalList: boolean,
 
 }
 
