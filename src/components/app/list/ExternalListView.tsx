@@ -7,6 +7,8 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import emptyImage from '../../../assets/img/empty-noresult@2x.png';
+import EmptyState from '../../EmptyState/EmptyState';
 
 export default class ExternalListView extends Component<ExternalListViewProps>{
 
@@ -15,7 +17,7 @@ export default class ExternalListView extends Component<ExternalListViewProps>{
             <div className=" bcn-0">
                 <div className="external-list__header pt-8 pb-8">
                     <div className="external-list__cell pr-12 pl-20">
-                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); }}> App name
+                        <button className="app-list__cell-header p-0" onClick={e => { e.preventDefault(); }}> App name
                         <span className={'sort-down'}></span>
                         </button>
                     </div>
@@ -95,9 +97,12 @@ export default class ExternalListView extends Component<ExternalListViewProps>{
 
     render() {
         if (this.props.view === ViewType.EMPTY) {
-            return <React.Fragment>
-                {/* Not sure about image */}
-            </React.Fragment>
+            return <EmptyState>
+                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                {/* <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button> */}
+            </EmptyState>
         }
         else if (this.props.view === ViewType.ERROR) {
             return <>
