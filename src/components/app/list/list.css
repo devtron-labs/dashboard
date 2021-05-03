@@ -130,7 +130,6 @@
 .app-list__cell-header {
     background: transparent;
     font-weight: 600;
-    padding: 0px;
     border: none;
     min-width: 0px;
     user-select: none;
