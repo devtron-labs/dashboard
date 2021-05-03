@@ -20,14 +20,14 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
         async function getManifest() {
             if (!appName || !nodeName || !environmentName) return;
             try {
+                setManifestLoading(true);
                 const response = await getNodeStatus({ ...node, appName: `${appName}-${environmentName}` });
-                let manifestJSON = YAMLJSParser.parse(response.result.manifest)
+                let manifestJSON = YAMLJSParser.parse(response.result.manifest);
                 setManifest(manifestJSON);
-                console.log(manifestJSON);
             } catch (error) {
             }
             finally {
-                setManifestLoading(false)
+                setManifestLoading(false);
             }
         }
 
@@ -35,51 +35,55 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
 
     }, [appName, environmentName, nodeName])
 
-    if (isManifestLoading) return <Progressing pageLoader />
+    if (isManifestLoading) {
+        return <div className="pb-20" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "100%" }}>
+            <Progressing pageLoader />
+        </div>
+    }
 
-    return <div className="pb-20" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "100%" }}>
-        <div className="w-100 pt-20 pl-20 pr-20" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
-            <div className="flex left top column pt-16 pb-16 pl-16 pr-16 en-7 br-4 bw-1">
+    return <div className="p-20" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "100%" }}>
+        <div className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
+            <div className="summary-view__card flex left top column pt-16 pb-16 pl-16 pr-16 br-4">
                 <div className="cn-0 o-1 fw-6 fs-14">Configuration</div>
                 <div className="cn-0">
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Priority</div>
-                        <div className="pt-6">{manifest.spec.priority}</div>
+                        <div className="pt-6">{manifest?.spec.priority}</div>
                     </div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Node</div>
-                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest.spec.nodeName}</div>
+                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec.nodeName}</div>
                     </div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Selector</div>
-                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest.spec?.selector}</div>
+                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec?.selector}</div>
                     </div>
                 </div>
             </div>
-            <div className="flex left top column pt-16 pb-16 pl-16 pr-16 br-4 en-7 bw-1">
+            <div className="summary-view__card flex left top column pt-16 pb-16 pl-16 pr-16 br-4">
                 <div className="cn-0 o-1 fw-6 fs-14">Status</div>
                 <div className="cn-0">
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05 cn-0">QoS</div>
-                        <div className="">{manifest.status.qosClass}</div>
+                        <div className="">{manifest?.status?.qosClass}</div>
                     </div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Phase</div>
-                        <div className="cg-5">{manifest.status?.phase}</div>
+                        <div className="cg-5">{manifest?.status?.phase}</div>
                     </div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Pod IP</div>
-                        <div>{manifest.status.podIP}</div>
+                        <div>{manifest?.status?.podIP}</div>
                     </div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Host IP</div>
-                        <div>{manifest.status.hostIP}</div>
+                        <div>{manifest?.status?.hostIP}</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pb-16 pl-16 pr-16 br-4 en-7 bw-1" >
+        <div className="summary-view__card mt-12 flex left top column pt-16 pb-16 pl-16 pr-16 br-4" >
             <div className="cn-0 mb-8 fw-6 fs-14">Pod Conditions</div>
             <div className="w-100">
                 <div className="w-100 mt-7 mb-7" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
@@ -89,7 +93,7 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
                     <div className="pt-7 pb-7 cn-0">Message</div>
                     <div className="pt-7 pb-7 cn-0">Reason</div>
                 </div>
-                {manifest.status.conditions.map((condition) => {
+                {manifest?.status.conditions.map((condition) => {
                     return <div key={condition.type} className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
                         <div className="pt-3 pb-3 cn-0 o-05">{condition.type}</div>
                         <div className="pt-3 pb-3 cn-0">{condition?.status}</div>
@@ -100,8 +104,9 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
                 })}
             </div>
         </div>
-        {manifest.spec.containers?.map((container) => {
-            return <div className="mr-20 ml-20 mt-20 mb-20 flex left top column pt-16 pl-16 pr-16 br-4 en-7 bw-1">
+      
+        {manifest?.spec.containers?.map((container) => {
+            return <div className="summary-view__card mt-12 flex left top column pt-16 pl-16 pr-16 br-4">
                 <div className="cn-0 mb-8 fw-6 fs-14">{container.name}</div>
                 <div className="cn-0  w-100">
                     <div className="" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>

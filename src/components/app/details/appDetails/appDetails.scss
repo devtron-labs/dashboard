@@ -247,6 +247,10 @@ table.pod__table td:last-child {
     }
 }
 
+.summary-view__card {
+    background-color: rgba(44, 51, 84, 0.3);
+}
+
 .enable-app-metrics {
     border-radius: unset;
     width: 250px;
