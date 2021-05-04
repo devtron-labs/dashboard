@@ -17,7 +17,7 @@ export default class ExternalListView extends Component<ExternalListViewProps>{
             <div className=" bcn-0">
                 <div className="external-list__header pt-8 pb-8">
                     <div className="external-list__cell pr-12 pl-20">
-                        <button className="app-list__cell-header p-0" onClick={e => { e.preventDefault(); }}> App name
+                        <button className="app-list__cell-header p-0 flex" onClick={e => { e.preventDefault(); }}> App name
                         <span className={'sort-down'}></span>
                         </button>
                     </div>
@@ -29,7 +29,10 @@ export default class ExternalListView extends Component<ExternalListViewProps>{
                         </Tippy>
                     </div>
                     <div className="external-list__cell ">
-                        <span className="app-list__cell-header pl-12">Last Updated </span>
+                        <div className="m-auto_mr-0 flex">
+                            <span className="app-list__cell-header pr-20">Last Updated</span>
+                            <span className={'sort-down'}></span>
+                        </div>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>
