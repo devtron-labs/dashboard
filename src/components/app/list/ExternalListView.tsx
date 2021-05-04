@@ -28,9 +28,9 @@ export default class ExternalListView extends Component<ExternalListViewProps>{
                             <Question className="icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
-                    <div className="external-list__cell ">
+                    <div className="external-list__cell pr-20">
                         <div className="m-auto_mr-0 flex">
-                            <span className="app-list__cell-header pr-20">Last Updated</span>
+                            <span className="app-list__cell-header">Last Updated</span>
                             <span className={'sort-down'}></span>
                         </div>
                     </div>
