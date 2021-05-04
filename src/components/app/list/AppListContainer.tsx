@@ -276,6 +276,11 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ expandedRow: false, appData: null });
     }
 
+    toggleHeaderName =(e)=>{
+        e.stopPropagation()
+        this.setState({ collapsedListTogglingModal: !this.state.collapsedListTogglingModal})
+    }
+
     getAppList = (request): void => {
         let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {

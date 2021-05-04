@@ -5,9 +5,9 @@ import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
 import moment from 'moment-timezone';
 import { ServerErrors } from '../../modals/commonTypes';
 import { sortCallback } from '../common';
-import { History } from './details/cIDetails/types'
-import { AppDetails } from './types';
-import { CDMdalTabType } from './details/triggerView/types'
+import { History } from './details/cIDetails/types';
+import { CDMdalTabType } from './details/triggerView/types';
+import { AppDetailsResponse } from './types';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -74,10 +74,6 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
 export function deletePod({ appName, env, name, namespace, appId, envId }) {
     const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=v1&kind=Pod&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
-}
-
-interface AppDetailsResponse extends ResponseType {
-    result?: AppDetails;
 }
 
 export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {

@@ -11,13 +11,20 @@ import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
+import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
+const APP_LIST_TITLE = {
+    application: 'Applications',
+    externalApp: 'External Apps',
+    k8sObjects: 'k8 Objects'
+}
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     applyFilter: (type: string, list: FilterOption[]) => void;
     expandRow: (app: App | null) => void;
@@ -36,7 +43,6 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     openTriggerInfoModal: (appId: number | string, ciArtifactId: number, commit: string) => void;
     changePageSize: (size: number) => void;
     collapsedListTogglingModal: boolean;
-
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -214,7 +220,10 @@ export class AppListView extends Component<AppListViewProps>{
             /> */}
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
                 render={(props) => <TriggerInfoModal {...props}
-                    location={props.location} match={props.match} history={props.history} close={this.props.closeModal} />}
+                    location={props.location} 
+                    match={props.match} 
+                    history={props.history} 
+                    close={this.props.closeModal} />}
             />
         </Switch>
     }

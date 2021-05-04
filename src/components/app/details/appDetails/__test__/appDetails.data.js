@@ -113,3 +113,63 @@ export const podMetadata = [
         isNew: true,
     },
 ];
+
+export const appDetails = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "appId": 1,
+        "appName": "dashboard",
+        "environmentId": 7,
+        "environmentName": "demo-devtroncd",
+        "namespace": "devtroncd",
+        "lastDeployedTime": "2021-04-16 07:15:04.244687+00",
+        "lastDeployedBy": "rashmi@devtron.ai",
+        "materialInfo": [
+            {
+                "author": "rashmirai21 <rashmi@devtron.ai>",
+                "branch": "deploy-to-demo",
+                "message": "Merge branch 'user-access-onsave' into deploy-to-demo\n",
+                "modifiedTime": "2021-04-16T11:27:17+05:30",
+                "revision": "f9068dd13f1624c087ae4566396435a70f318d7b",
+                "url": "https://github.com/devtron-labs/dashboard.git"
+            }
+        ],
+        "releaseVersion": "221",
+        "dataSource": "CI-RUNNER",
+        "lastDeployedPipeline": "demo-cd-pipeline",
+        "deprecated": false,
+        "k8sVersion": "",
+        "instanceDetail": null,
+        "otherEnvironment": [
+            {
+                "environmentId": 4,
+                "environmentName": "prod-devtroncd",
+                "appMetrics": true,
+                "infraMetrics": true,
+                "prod": false
+            },
+            {
+                "environmentId": 7,
+                "environmentName": "demo-devtroncd",
+                "appMetrics": false,
+                "infraMetrics": true,
+                "prod": false
+            },
+            {
+                "environmentId": 12,
+                "environmentName": "bp-devtroncd",
+                "appMetrics": false,
+                "infraMetrics": true,
+                "prod": false
+            }
+        ],
+        "resourceTree": {
+            "nodes": nodes,
+            "newGenerationReplicaSet": "dashboard-demo-devtroncd-f6c57c69b",
+            "status": "Healthy",
+            "podMetadata": podMetadata,
+            "conditions": null
+        }
+    }
+}
