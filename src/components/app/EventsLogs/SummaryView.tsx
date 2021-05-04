@@ -43,9 +43,8 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
 
     return <div className="p-20" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "100%" }}>
         <div className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
-            <div className="summary-view__card flex left top column pt-16 pb-16 pl-16 pr-16 br-4">
-                <div className="cn-0 o-1 fw-6 fs-14">Configuration</div>
-                <div className="cn-0">
+            <div className="summary-view__card cn-0 pt-16 pb-16 pl-16 pr-16 br-4">
+                <div className="cn-0 fw-6 fs-14">Configuration</div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05">Priority</div>
                         <div className="pt-6">{manifest?.spec.priority}</div>
@@ -58,11 +57,9 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
                         <div className="pt-6 o-05">Selector</div>
                         <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec?.selector}</div>
                     </div>
-                </div>
             </div>
-            <div className="summary-view__card flex left top column pt-16 pb-16 pl-16 pr-16 br-4">
-                <div className="cn-0 o-1 fw-6 fs-14">Status</div>
-                <div className="cn-0">
+            <div className="summary-view__card cn-0 pt-16 pb-16 pl-16 pr-16 br-4">
+                <div className="cn-0 fw-6 fs-14">Status</div>
                     <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
                         <div className="pt-6 o-05 cn-0">QoS</div>
                         <div className="">{manifest?.status?.qosClass}</div>
@@ -79,11 +76,10 @@ export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, 
                         <div className="pt-6 o-05">Host IP</div>
                         <div>{manifest?.status?.hostIP}</div>
                     </div>
-                </div>
             </div>
         </div>
 
-        <div className="summary-view__card mt-12 flex left top column pt-16 pb-16 pl-16 pr-16 br-4" >
+        <div className="summary-view__card mt-12 cn-0 pt-16 pb-16 pl-16 pr-16 br-4" >
             <div className="cn-0 mb-8 fw-6 fs-14">Pod Conditions</div>
             <div className="w-100">
                 <div className="w-100 mt-7 mb-7" style={{ display: "grid", gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: "16px", borderBottom: "bcn-7" }}>
