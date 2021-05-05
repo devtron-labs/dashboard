@@ -1559,3 +1559,7 @@ button.anchor {
     color: var(--B500);
     font-size: 14px;
 }
+
+.border-bottom{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}

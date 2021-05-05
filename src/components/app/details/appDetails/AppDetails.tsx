@@ -26,6 +26,7 @@ import {
     useAsync,
     SingleSelectOption as Option,
     ScanDetailsModal,
+    Checkbox
 } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link } from 'react-router-dom';
@@ -65,6 +66,8 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
+
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
@@ -158,6 +161,7 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
+    const [isRollout, setRollout] = useState(true)
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
@@ -362,44 +366,115 @@ export const Details: React.FC<{
             )}
 
             {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                    />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
-                            }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be{' '}
-                                <b>
-                                    scaled{' '}
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? 'down to 0'
-                                        : ' upto its original count'}{' '}
-                                    on {appDetails.environmentName}
-                                </b>{' '}
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                'Restore App'
-                            )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
+                <>
+                    <VisibleModal className="" >
+                        <div className={`modal__body br-4`} style={{ width: "600px" }}>
+                            <h1 className="cn-9 fw-6 fs-20 m-0">Select objects to scale</h1>
+                            <div className="fs-14 mt-24 mb-8 br-4 p-16 eb-2 bw-1" style={{ backgroundColor: "#f0f7ff" }}>
+                                <div>
+                                    <div className="flex left ">
+                                        <Info className="icon-dim-20 mr-8 " />
+                                        <div className="fw-6">What does this do?</div>
+                                    </div>
+                                    <div className="ml-30">
+                                        Scaled down objects will stop using resources until restored or a new deployment is initiated. How does this work?</div>
+                                </div>
+                            </div>
+                            <div className="fw-6 mt-8 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
+                            <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
+                                <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                    isChecked={isRollout}
+                                    value={"CHECKED"}
+                                    onChange={(e) => e.stopPropagation()}
+                                >
+                                    <div className="pl-16">
+                                        <span>Name</span>
+                                    </div>
+                                </Checkbox></div>
+                            <div className="pt-11 pb-11" >
+                                <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                    isChecked={isRollout}
+                                    value={"CHECKED"}
+                                    onChange={(e) => e.stopPropagation()}
+                                >
+                                    <div className="pl-16">
+                                        <span className="cn-9 fw-6">Rollout / </span>
+                                        <span>dashboard-bp-devtroncd</span>
+                                    </div>
+                                </Checkbox>
+
+                            </div>
+                            <div className="pt-11 pb-11">
+                                <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                    isChecked={isRollout}
+                                    value={"CHECKED"}
+                                    onChange={(e) => e.stopPropagation()}
+                                >
+                                    <div className="pl-16">
+                                        <span className="cn-9 fw-6">HorizontalPodAutoscaler / </span>
+                                        <span> dashboard-bp-devtroncd-hpa</span>
+                                    </div>
+                                </Checkbox>
+
+                            </div>
+                            <div className="pt-11 pb-11">
+                                <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                    isChecked={isRollout}
+                                    value={"CHECKED"}
+                                    onChange={(e) => e.stopPropagation()}
+                                >
+                                    <div className="pl-16">
+                                        <span className="cn-9 fw-6">Deployment / </span>
+                                        <span>dashboard-bp-devtroncd</span>
+                                    </div>
+                                </Checkbox>
+
+                            </div>
+                            <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex">
+                                <ScaleDown className="icon-dim-16" />
+                                Scale Pods to 0
+                            </button>
+                        </div>
+                    </VisibleModal>
+                </>
+                // <ConfirmationDialog>
+                //     <ConfirmationDialog.Icon
+                //         src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+                //     />
+                //     <ConfirmationDialog.Body
+                //         title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
+                //             }' on '${appDetails.environmentName}'`}
+                //         subtitle={
+                //             <p>
+                //                 Pods for this application will be{' '}
+                //                 <b>
+                //                     scaled{' '}
+                //                     {hibernateConfirmationModal === 'hibernate'
+                //                         ? 'down to 0'
+                //                         : ' upto its original count'}{' '}
+                //                     on {appDetails.environmentName}
+                //                 </b>{' '}
+                //                 environment.
+                //             </p>
+                //         }
+                //     >
+                //         <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
+                //     </ConfirmationDialog.Body>
+                //     <ConfirmationDialog.ButtonGroup>
+                //         <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
+                //             Cancel
+                //         </button>
+                //         <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                //             {hibernating ? (
+                //                 <Progressing />
+                //             ) : hibernateConfirmationModal === 'hibernate' ? (
+                //                 `Hibernate App `
+                //             ) : (
+                //                 'Restore App'
+                //             )}
+                //         </button>
+                //     </ConfirmationDialog.ButtonGroup>
+                // </ConfirmationDialog>
             )}
         </React.Fragment>
     );
@@ -1137,7 +1212,7 @@ const MaterialCard: React.FC<{
                         }
                     >
                         <ScaleDown className="icon-dim-16" />
-                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
+                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0 '}
                     </button>
                 </div>
             </div>
@@ -1205,8 +1280,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                'Restore App'
-                            )}
+                                        'Restore App'
+                                    )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
