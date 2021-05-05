@@ -211,11 +211,6 @@
     font-size: 14px;
 }
 
-.round-button__icon {
-    display: inline-block;
-    margin-right: 8px;
-}
-
 .button-edit {
     height: 56px;
     background-color: var(--N600);

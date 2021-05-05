@@ -115,13 +115,6 @@ export const SortBy = {
     STATUS: "statusSort",
     ENVIRONMENT: "environmentSort",
 }
-
-export interface ListContainerState {
-    collapsed: boolean;
-    code: number;
-    view: string;
-}
-
 export interface ListContainerProps extends RouteComponentProps<{}> {
     closeModal: () => void;
 }

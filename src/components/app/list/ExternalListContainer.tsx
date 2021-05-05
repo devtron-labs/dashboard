@@ -10,8 +10,6 @@ import { URLS, ViewType } from '../../../config';
 import ExternalListView from './ExternalListView';
 import { ValueContainer, DropdownIndicator } from './external.util';
 import * as queryString from 'query-string';
-import ExternalSearchQueryList from './ExternalSearchQueryList' //Not using for the time being
-import './list.css';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -142,7 +140,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         arr = arr.filter((item) => item != val.toString());
         queryParamValue = arr.toString();
         searchQuery.set(key, queryParamValue)
-        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${searchQuery}`;
+        let url = `${URLS.EXTERNAL_APP}?${searchQuery}`;
         this.props.history.push(url);
     }
 
@@ -156,7 +154,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         delete query['cluster'];
         delete query['namespace'];
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}/${URLS.EXTERNAL_APPS}?${queryStr}`;
+        let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
         this.props.history.push(url);
     }
     setNamespace = (selected) => {

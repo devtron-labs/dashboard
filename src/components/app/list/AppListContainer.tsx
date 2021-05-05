@@ -1,4 +1,3 @@
-import './list.css';
 import React, { Component } from 'react';
 import { getInitState, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';

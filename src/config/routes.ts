@@ -8,7 +8,7 @@ export interface NavItem {
 export const URLS = {
     CHARTS: '/chart-store',
     APP: '/app',
-    APP_DETAILS: 'details', //
+    APP_DETAILS: 'details',
     APP_TRIGGER: 'trigger',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
@@ -26,8 +26,9 @@ export const URLS = {
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
     AUTHENTICATE: '/auth/login',
-    EXTERNAL_APPS: 'external-apps',
-    LOGIN_ADMIN: '/login/admin', //
+    EXTERNAL_APP: '/external-app',
+    LOGIN: '/login',
+    LOGIN_ADMIN: '/login/admin', 
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',

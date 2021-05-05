@@ -11,20 +11,13 @@ import { App, AppListState, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 import { TriggerInfoModal } from './TriggerInfo';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
-import { ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 
 const APP_LIST_PARAM = {
     createApp: 'create-app',
 }
 
-const APP_LIST_TITLE = {
-    application: 'Applications',
-    externalApp: 'External Apps',
-    k8sObjects: 'k8 Objects'
-}
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     applyFilter: (type: string, list: FilterOption[]) => void;
     expandRow: (app: App | null) => void;
@@ -214,16 +207,8 @@ export class AppListView extends Component<AppListViewProps>{
 
     renderRouter() {
         return <Switch>
-            {/* <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
-                render={(props) => <AddNewApp close={this.props.closeModal}
-                    match={props.match} location={props.location} history={props.history} />}
-            /> */}
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
-                render={(props) => <TriggerInfoModal {...props}
-                    location={props.location} 
-                    match={props.match} 
-                    history={props.history} 
-                    close={this.props.closeModal} />}
+                render={(props) => <TriggerInfoModal {...props} close={this.props.closeModal} />}
             />
         </Switch>
     }
