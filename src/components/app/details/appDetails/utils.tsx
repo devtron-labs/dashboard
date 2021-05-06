@@ -298,7 +298,7 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     if (chartName === "status") {
         if (statusCode === StatusType.Throughput) { //Throughput Graph
             url += `&var-response_code_class=.*`;
-            url += `&var-response_code=${statusCode}`;
+            url += `&var-response_code=`;
         }
         else { //Status Code
             url += (statusCode.includes("xx")) ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`;

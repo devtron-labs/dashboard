@@ -137,15 +137,15 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function getNewGraphs(newTab): void {
-        if (!datasource.isHealthy) return;
+        // if (!datasource.isHealthy) return;
 
-        if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
-            toast.warn(<div className="toast">
-                <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
-            </div>)
-        }
+        // if (!isK8sVersionValid(k8sVersion)) {
+        //     k8sVersion = DEFAULTK8SVERSION;
+        //     toast.warn(<div className="toast">
+        //         <div className="toast__title">Error Parsing K8sVersion</div>
+        //         <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
+        //     </div>)
+        // }
         let appInfo = {
             appId: appId,
             envId: envId,
@@ -180,13 +180,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }, [calendarValue])
 
     //@ts-ignore
-    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
-        return <AppMetricsEmptyState isLoading={datasource.isLoading}
-            isConfigured={datasource.isConfigured}
-            isHealthy={datasource.isHealthy}
-            hostURLConfig={hostURLConfig} />
-    }
-    else {
+    // if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
+    //     return <AppMetricsEmptyState isLoading={datasource.isLoading}
+    //         isConfigured={datasource.isConfigured}
+    //         isHealthy={datasource.isHealthy}
+    //         hostURLConfig={hostURLConfig} />
+    // }
+    // else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
             {(appMetrics || infraMetrics) && (
@@ -284,7 +284,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 </> : <EnableAppMetrics />}
             </div>
         </section>
-    }
+    // }
 }
 
 function PrometheusError() {
