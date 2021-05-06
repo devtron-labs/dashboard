@@ -137,15 +137,15 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function getNewGraphs(newTab): void {
-        // if (!datasource.isHealthy) return;
+        if (!datasource.isHealthy) return;
 
-        // if (!isK8sVersionValid(k8sVersion)) {
-        //     k8sVersion = DEFAULTK8SVERSION;
-        //     toast.warn(<div className="toast">
-        //         <div className="toast__title">Error Parsing K8sVersion</div>
-        //         <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
-        //     </div>)
-        // }
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = DEFAULTK8SVERSION;
+            toast.warn(<div className="toast">
+                <div className="toast__title">Error Parsing K8sVersion</div>
+                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
+            </div>)
+        }
         let appInfo = {
             appId: appId,
             envId: envId,
