@@ -296,8 +296,8 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     url += `&var-new_rollout_pod_template_hash=${newPodHash}`;
     url += `&var-datasource=Prometheus-${environmentName}`;
     if (chartName === "status") {
-        url += (statusCode.includes("xx")) ? `&response_code_class=${statusCode}` : `&response_code_class=`;
-        url += (statusCode.includes("xx")) ? `&response_code=` : `&response_code=${statusCode}`;
+        url += (statusCode.includes("xx")) ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`;
+        url += (statusCode.includes("xx")) ? `&var-response_code=` : `&var-response_code=${statusCode}`;
     }
     let panelId = (tab === 'aggregate') ? 2 : 3;
     if (!isLegendRequired) {
