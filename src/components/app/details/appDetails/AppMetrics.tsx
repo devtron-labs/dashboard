@@ -180,13 +180,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }, [calendarValue])
 
     //@ts-ignore
-    // if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
-    //     return <AppMetricsEmptyState isLoading={datasource.isLoading}
-    //         isConfigured={datasource.isConfigured}
-    //         isHealthy={datasource.isHealthy}
-    //         hostURLConfig={hostURLConfig} />
-    // }
-    // else {
+    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
+        return <AppMetricsEmptyState isLoading={datasource.isLoading}
+            isConfigured={datasource.isConfigured}
+            isHealthy={datasource.isHealthy}
+            hostURLConfig={hostURLConfig} />
+    }
+    else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
             {(appMetrics || infraMetrics) && (
@@ -284,7 +284,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 </> : <EnableAppMetrics />}
             </div>
         </section>
-    // }
+    }
 }
 
 function PrometheusError() {
