@@ -508,7 +508,6 @@ export default function DiscoverCharts() {
 }
 
 function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-    { console.log(chartRepoList) }
     const menuHeaderStyle = {
         padding: '8px 12px',
         background: '#0066cc',
@@ -520,7 +519,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
+                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
                     <button type="button" className="cta flex cta--chart-store"
                         disabled={false}
                         style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
