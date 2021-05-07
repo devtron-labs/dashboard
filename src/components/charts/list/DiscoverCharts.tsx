@@ -314,15 +314,15 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                            <span className='empty-height'>
-                                <EmptyState>
-                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                                </EmptyState>
-                            </span>
-                        </>}
+                        <span className='empty-height'>
+                            <EmptyState>
+                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                            </EmptyState>
+                        </span>
+                    </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
@@ -508,21 +508,14 @@ export default function DiscoverCharts() {
 }
 
 function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-    const menuHeaderStyle = {
-        padding: '8px 12px',
-        background: '#0066cc',
-        color: 'white',
-
-    };
-
-    const MenuList = props => {
+    const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
                     <button type="button" className="cta flex cta--chart-store"
                         disabled={false}
-                        style={menuHeaderStyle} onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
+                        onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
                 </div>
             </components.MenuList>
         );
@@ -553,7 +546,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
                     isMulti={true}
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
-                    onMenuOpen={handleCloseFilter}
+                    onMenuClose={handleCloseFilter}
                     components={{
                         DropdownIndicator,
                         Option,
