@@ -36,6 +36,11 @@ export default class ExternalListContainer extends Component<ExternalListContain
             appliedNamespace: [],
             searchQuery: "",
             searchApplied: false,
+            pagination: {
+                size: 0,
+                offset: 0,
+                pageSize: 0,
+            }
         }
     }
 
@@ -100,7 +105,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
     fetchExternalAppList() {
         this.setState({ view: ViewType.LOADING });
         getExternalList(this.props.location.search).then((response) => {
-            console.log(response.result)
             this.setState({
                 externalList: response.result,
                 view: ViewType.FORM
@@ -131,6 +135,34 @@ export default class ExternalListContainer extends Component<ExternalListContain
         })
         delete query['cluster'];
         delete query['namespace'];
+        let queryStr = queryString.stringify(query);
+        let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
+        this.props.history.push(url);
+    }
+
+    changePage = (pageNo: number): void => {
+        let offset = this.state.pagination.pageSize * (pageNo - 1);
+        let qs = queryString.parse(this.props.location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        query['offset'] = offset;
+        let queryStr = queryString.stringify(query);
+        let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
+        this.props.history.push(url);
+    }
+
+    changePageSize = (size: number): void => {
+        let qs = queryString.parse(this.props.location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        query['offset'] = 0;
+        query['pageSize'] = size;
         let queryStr = queryString.stringify(query);
         let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
         this.props.history.push(url);
@@ -234,6 +266,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     externalList={this.state.externalList}
                     appliedNamespace={this.state.appliedNamespace}
                     appliedCluster={this.state.appliedCluster}
+                    pagination={this.state.pagination}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
                     removeFilter={this.removeFilter}
                     removeAllFilters={this.removeAllFilters}
                 />

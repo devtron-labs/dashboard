@@ -138,6 +138,11 @@ export interface ExternalQueryList {
 export interface ExternalListContainerState {
     view: string;
     code: number;
+    pagination: {
+        size: number;
+        offset: number;
+        pageSize: number;
+    };
     externalList: ExternalList[];
     namespaceList: ExternalListFilterOption[];
     clusterList: ExternalListFilterOption[];
@@ -161,6 +166,13 @@ export interface ExternalListViewProps {
     externalList: ExternalList[];
     appliedNamespace: ExternalListFilterOption[];
     appliedCluster: ExternalListFilterOption[];
+    pagination: {
+        size: number;
+        offset: number;
+        pageSize: number;
+    };
+    changePage;
+    changePageSize;
     removeFilter: (key: any, val: any) => void;
     removeAllFilters: () => void;
 }

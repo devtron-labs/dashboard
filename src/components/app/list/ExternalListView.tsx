@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { ExternalListViewProps } from './types'
-import { Progressing, ErrorScreenManager } from '../../common';
+import { Progressing, Pagination, ErrorScreenManager } from '../../common';
 import { ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
-import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
@@ -18,9 +18,9 @@ export class ExternalListView extends Component<ExternalListViewProps>{
                 <div className="bcn-0">
                     <div className="external-list__header pt-8 pb-8">
                         <div className="external-list__cell pr-12 pl-20">
-                            <button className="app-list__cell-header p-0 flex" onClick={e => { e.preventDefault(); }}> App name
-                                <span className={'sort-down'}></span>
-                            </button>
+                            <span className="app-list__cell-header p-0 flex">
+                                App name
+                            </span>
                         </div>
                         <div className="external-list__cell external-list__cell--width pl-12 pr-12">
                             <span className="app-list__cell-header">Environment</span>
@@ -32,7 +32,6 @@ export class ExternalListView extends Component<ExternalListViewProps>{
                         <div className="external-list__cell pr-20">
                             <div className="m-auto_mr-0 flex">
                                 <span className="app-list__cell-header">Last Updated</span>
-                                <span className={'sort-down'}></span>
                             </div>
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>
@@ -96,6 +95,16 @@ export class ExternalListView extends Component<ExternalListViewProps>{
         }
     }
 
+    renderPagination() {
+        if (this.props.pagination.size > 20) {
+            return <Pagination size={this.props.pagination.size}
+                pageSize={this.props.pagination.pageSize}
+                offset={this.props.pagination.offset}
+                changePage={this.props.changePage}
+                changePageSize={this.props.changePageSize} />
+        }
+    }
+
     render() {
         if (this.props.view === ViewType.EMPTY) {
             return <EmptyState>
@@ -116,6 +125,7 @@ export class ExternalListView extends Component<ExternalListViewProps>{
                     {this.renderSavedFilters()}
                     {this.renderDefaultListTitle()}
                     {this.renderDefaultListRows()}
+                    {this.renderPagination()}
                 </div>
             )
         }

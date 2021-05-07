@@ -37,7 +37,6 @@
     /* margin-bottom: 2px; */
 }
 
-
 .filters {
     flex: 1 1;
     display: flex;
@@ -177,7 +176,7 @@
     justify-content: flex-start;
 }
 
-.app-list__grid{
+.app-list__grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-gap: 12px;
@@ -203,13 +202,13 @@
     padding: 0px;
     border: none;
 }
-
+/* 
 .round-button {
     border-radius: 20px;
     background-color: var(--B500);
     color: var(--white);
     font-size: 14px;
-}
+} */
 
 .button-edit {
     height: 56px;
@@ -306,12 +305,12 @@
 .select-material--h450 {
     height: 450px;
 }
-
+/* 
 .round-button--app-list {
     width: 142px;
     height: 40px;
     border: none;
-}
+} */
 
 .modal__header--flex-col {
     flex-direction: column;
@@ -356,27 +355,16 @@
     visibility: visible;
 }
 
-.round-button:hover {
-    background-color: #0558af;
-}
-
 .cell__link:hover {
     text-decoration: underline;
 }
 
-.app-list-card{
-    width: 348px;
-    position: fixed;
-    top: 60px;
-    z-index: 10000;
-}
-
-.overflow-hidden{
+.overflow-hidden {
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
-.external-list__cell{
+.external-list__cell {
     flex-basis: 20%;
     flex-grow: 1;
     min-width: 0px;
@@ -389,34 +377,31 @@
     font-size: 13px;
 }
 
-.external-list__cell--width{
+.external-list__cell--width {
     flex-basis: 60%;
 }
 
-.external-list--grid{
+.external-list--grid {
     display: grid;
     grid-template-columns: 4fr 1fr 1fr;
     gap: 12px;
 }
-.external-list__header{
+
+.external-list__header {
     display: flex;
     align-items: center;
     justify-content: stretch;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-size: 12px;
     font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
     line-height: 1.67;
     letter-spacing: normal;
     color: var(--N500);
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
-    position: sticky;
-    top: 60px;
 }
 
-.external-list__row{
+.external-list__row {
     height: 56px;
     box-shadow: 0 1px 0 0 var(--N100);
 }
@@ -431,17 +416,16 @@
     visibility: visible;
 }
 
-.external-list__cell--name{
+.external-list__cell--name {
     flex-basis: 16%;
     flex-grow: 1;
     min-width: 0px
 }
 
-.external__overflow-handling{
+.external__overflow-handling {
     overflow: hidden;
     overflow-x: auto;
 }
-
 
 @media(min-width: 1024px) {
     .search-filter-section {
