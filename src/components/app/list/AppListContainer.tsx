@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getInitState, appListModal } from './appList.modal';
+import { getApplistInitData, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';
 import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
@@ -48,7 +48,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
-        getInitState(payload).then((response) => {
+        getApplistInitData(payload).then((response) => {
             this.setState({
                 code: response.code,
                 filters: response.filters,

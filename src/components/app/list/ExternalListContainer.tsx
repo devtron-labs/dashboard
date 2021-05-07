@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
-import Select, { components } from 'react-select';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import { Option, multiSelectStyles } from '../../common';
-import { ExternalListContainerState, ExternalListContainerProps } from './types'
-import { getExternalList, getNamespaceList, getClusterList, getExternalSearchQueryList } from './External.service'
+import { ExternalListContainerState, ExternalListContainerProps } from './types';
+import { getExternalList, getExternalApplistInitData } from './appList.modal';
 import { showError } from '../../../components/common';
 import { URLS, ViewType } from '../../../config';
-import ExternalListView from './ExternalListView';
-import { ValueContainer, DropdownIndicator } from './external.util';
+import { ExternalListView } from './ExternalListView';
+import { ExternalFilters } from './external.util'
 import * as queryString from 'query-string';
 
 const QueryParams = {
@@ -23,19 +21,16 @@ export default class ExternalListContainer extends Component<ExternalListContain
         super(props)
 
         this.state = {
-            view: ViewType.LOADING,
             code: 0,
+            view: ViewType.LOADING,
             externalList: [],
             externalQueryList: [],
-            filters: {
-                namespace: [],
-                cluster: [],
-            },
-
-            namespaceHashmap: undefined,
-            clusterHashmap: undefined,
+            namespaceList: [],
+            clusterList: [],
             selectedNamespace: [],
             selectedCluster: [],
+            namespaceHashmap: undefined,
+            clusterHashmap: undefined,
             appliedCluster: [],
             appliedNamespace: [],
             searchQuery: "",
@@ -44,52 +39,21 @@ export default class ExternalListContainer extends Component<ExternalListContain
     }
 
     componentDidMount() {
+        getExternalApplistInitData().then((response) => {
+            this.setState({
+                namespaceList: response.result.namespaceList,
+                clusterList: response.result.clusterList,
+                namespaceHashmap: response.result.namespaceHashmap,
+                clusterHashmap: response.result.clusterHashmap,
+            })
+        }).catch((error) => {
+            showError(error);
+        })
+
         getExternalList().then((response) => {
             this.setState({
-                externalList: response,
+                externalList: response.result,
                 view: ViewType.FORM
-            })
-        }).catch((error) => {
-            showError(error);
-        })
-
-        getExternalSearchQueryList().then((response) => {
-            this.setState({
-                externalQueryList: response
-            })
-        })
-
-        getNamespaceList().then((response) => {
-            let namespaceHashmap = new Map();
-            let namespaceList = response || [];
-            for (let i = 0; i < namespaceList.length; i++) {
-                namespaceHashmap.set(namespaceList[i].value.toString(), namespaceList[i]);
-            }
-            this.setState({
-                filters: {
-                    ...this.state.filters,
-                    namespace: namespaceList,
-                },
-                namespaceHashmap: namespaceHashmap
-
-            })
-        }).catch((error) => {
-            showError(error);
-        })
-
-        getClusterList().then((response) => {
-            let clusterHashmap = new Map();
-            let clusterList = response || [];
-            for (let i = 0; i < clusterList.length; i++) {
-                clusterHashmap.set(clusterList[i].value.toString(), clusterList[i]);
-            }
-            this.setState({
-                ...this.state,
-                filters: {
-                    ...this.state.filters,
-                    cluster: clusterList
-                },
-                clusterHashmap: clusterHashmap,
             })
         }).catch((error) => {
             showError(error);
@@ -102,7 +66,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         }
     }
 
-    initialiseFromQueryParams = () => {
+    initialiseFromQueryParams() {
         let searchParams = new URLSearchParams(this.props.location.search);
         let appNameSearch: string = searchParams.get(QueryParams.Appstore);
         let cluster: string = searchParams.get(QueryParams.Cluster);
@@ -127,9 +91,9 @@ export default class ExternalListContainer extends Component<ExternalListContain
             selectedCluster: selectedClusterList,
             selectedNamespace: selectedNamespaceList,
         }, () => {
-            this.setState({ view: ViewType.LOADING })
+            this.setState({ view: ViewType.LOADING });
             getExternalList()
-            this.setState({ view: ViewType.FORM })
+            this.setState({ view: ViewType.FORM });
         })
     }
 
@@ -157,6 +121,7 @@ export default class ExternalListContainer extends Component<ExternalListContain
         let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
         this.props.history.push(url);
     }
+
     setNamespace = (selected) => {
         this.setState({ selectedNamespace: selected })
     }
@@ -216,11 +181,33 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.props.history.push(`${url}?${qs}`);
     }
 
+    setCluster = (selected) => {
+        this.setState({
+            selectedCluster: selected
+        })
+    }
+
+    renderExternalFilters() {
+        return <div className="external-list--grid">
+            {this.renderExternalSearch()}
+            <ExternalFilters cluster={this.state.clusterList}
+                namespace={this.state.namespaceList}
+                selectedNamespace={this.state.selectedNamespace}
+                selectedCluster={this.state.selectedCluster}
+                handleSelectedNamespace={this.handleSelectedNamespace}
+                handleSelectedCluster={this.handleSelectedCluster}
+                setNamespace={this.setNamespace}
+                setCluster={this.setCluster}
+            />
+        </div>
+    }
+
     renderExternalSearch() {
         return <div className="flexbox flex-justify">
             <form onSubmit={(e) => this.handleAppStoreChange(e)} className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
-                <input className="search__input bcn-1" type="text" placeholder="Search by app name"
+                <input className="search__input bcn-1" type="text"
+                    placeholder="Search by app name"
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
@@ -231,110 +218,31 @@ export default class ExternalListContainer extends Component<ExternalListContain
         </div>
     }
 
-    setCluster = (selected) => {
-        this.setState({
-            selectedCluster: selected
-        })
-    }
-
-    renderExternalFilters() {
-        return <div className="external-list--grid">
-            {this.renderExternalSearch()}
-            <ExternalFilters
-                handleSelectedNamespace={this.handleSelectedNamespace}
-                handleSelectedCluster={this.handleSelectedCluster}
-                cluster={this.state.filters.cluster}
-                namespace={this.state.filters.namespace}
-                selectedNamespace={this.state.selectedNamespace}
-                setNamespace={this.setNamespace}
-                selectedCluster={this.state.selectedCluster}
-                setCluster={this.setCluster}
-            />
-        </div>
-    }
-
     render() {
-        return (<>
-            <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
-                {this.renderExternalFilters()}
-            </div>
-            <ExternalListView {...this.props}
-                view={this.state.view}
-                externalList={this.state.externalList}
-                filters={this.state.filters}
-                appliedNamespace={this.state.appliedNamespace}
-                appliedCluster={this.state.appliedCluster}
-                removeFilter= {this.removeFilter} 
-                removeAllFilters= {this.removeAllFilters}
-                code={this.state.code}
-            />
-            {/* Comented out for the time being */}
-            {/* <ExternalSearchQueryList {...this.props}
+        return (
+            <>
+                <div className=" bcn-0 pl-20 pr-20 pt-12 pb-12">
+                    {this.renderExternalFilters()}
+                </div>
+                <ExternalListView
+                    code={this.state.code}
+                    view={this.state.view}
+                    externalList={this.state.externalList}
+                    appliedNamespace={this.state.appliedNamespace}
+                    appliedCluster={this.state.appliedCluster}
+                    removeFilter={this.removeFilter}
+                    removeAllFilters={this.removeAllFilters}
+                />
+                {/* Comented out for the time being */}
+                {/* <ExternalSearchQueryList {...this.props}
                    view={this.state.view}
                    externalQueryList={this.state.externalQueryList}
                    filters={this.state.filters}
                    appliedNamespace={this.state.appliedNamespace}
                    appliedCluster={this.state.appliedCluster}
                     />
-       */}
-        </>
+                */}
+            </>
         )
     }
-}
-
-function ExternalFilters({ handleSelectedCluster, handleSelectedNamespace, cluster, namespace, selectedNamespace, setNamespace, selectedCluster, setCluster }) {
-    const MenuList = (props) => {
-        let name = props.selectProps.name
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chartListApplyFilter flex bcn-0 pt-10 pb-10">
-                    <button type="button" style={{ width: "92%" }} className="cta flex cta--chart-store"
-                        disabled={false}
-                        onClick={(event) => { name === "cluster" ? handleSelectedCluster(event) : handleSelectedNamespace(event) }}
-                    >Apply Filter</button>
-                </div>
-            </components.MenuList>
-        );
-    };
-    return <>
-        <Select className="cn-9 fs-13"
-            placeholder="Cluster: All"
-            name="cluster"
-            options={cluster}
-            components={{
-                Option,
-                MenuList,
-                ValueContainer,
-                DropdownIndicator,
-                IndicatorSeparator: null,
-            }}
-            onChange={(selected: any) => setCluster(selected)}
-            isMulti
-            value={selectedCluster}
-            hideSelectedOptions={false}
-            closeMenuOnSelect={false}
-            isClearable={false}
-            styles={multiSelectStyles}
-        />
-        <Select className="cn-9 fs-14"
-            placeholder="Namespace: All"
-            options={namespace}
-            onChange={(selected: any) => setNamespace(selected)}
-            value={selectedNamespace}
-            name="namespace"
-            components={{
-                Option,
-                MenuList,
-                ValueContainer,
-                IndicatorSeparator: null,
-                DropdownIndicator,
-            }}
-            isClearable={false}
-            isMulti
-            hideSelectedOptions={false}
-            closeMenuOnSelect={false}
-            styles={{ ...multiSelectStyles }}
-        />
-    </>
 }

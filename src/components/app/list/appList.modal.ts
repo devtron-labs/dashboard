@@ -1,9 +1,11 @@
-import { getAppCheckList, getEnvironmentListMin, getTeamListMin } from '../../../services/service';
-import { handleUTCTime } from '../../common';
-import { Environment } from './types';
 import moment from 'moment';
+import { get } from '../../../services/api';
+import { Environment } from './types';
+import { handleUTCTime } from '../../common';
+import { ResponseType } from '../../../services/service.types';
+import { getAppCheckList, getEnvironmentListMin, getTeamListMin, getClusterListMin } from '../../../services/service';
 
-export const getInitState = (appListPayload): Promise<any> => {
+export function getApplistInitData(appListPayload): Promise<any> {
     return Promise.all([getAppCheckList(), getTeamListMin(), getEnvironmentListMin()]).then(([checkList, teams, environments]) => {
         let appChecklist = checkList.result.appChecklist;
         let chartChecklist = checkList.result.chartChecklist;
@@ -80,7 +82,7 @@ export const getInitState = (appListPayload): Promise<any> => {
     })
 }
 
-export const appListModal = (appList) => {
+export function appListModal(appList) {
     return appList.map(app => {
         return {
             id: app.appId || 0,
@@ -91,9 +93,44 @@ export const appListModal = (appList) => {
     })
 }
 
-const environmentModal = (env) => {
-    let status = env.status;
-    if (env.status.toLocaleLowerCase() == "deployment initiated") {
+export function getExternalList(qs: string = ""): Promise<ResponseType> {
+    const URL = `external-apps/all?${qs}`;
+    return get(URL);
+}
+
+export function getExternalApplistInitData(): Promise<ResponseType> {
+    return Promise.all([getNamespaceList(), getClusterListMin()]).then(([namespaceRes, clusterRes]) => {
+        let namespaceList = namespaceRes.result || [];
+        let clusterList = clusterRes.result ? clusterRes.result.map((cluster) => {
+            return {
+                value: cluster.id,
+                label: cluster.cluster_name,
+            }
+        }) : [];
+        let namespaceHashmap = new Map();
+        let clusterHashmap = new Map();
+        for (let i = 0; i < namespaceList.length; i++) {
+            namespaceHashmap.set(namespaceList[i].value.toString(), namespaceList[i]);
+        }
+        for (let i = 0; i < clusterList.length; i++) {
+            clusterHashmap.set(clusterList[i].value.toString(), clusterList[i]);
+        }
+        return {
+            code: 200,
+            status: "ok",
+            result: {
+                clusterList: clusterList,
+                namespaceList: namespaceList,
+                namespaceHashmap: namespaceHashmap,
+                clusterHashmap: clusterHashmap,
+            }
+        }
+    })
+}
+
+function environmentModal(env) {
+    let status = env.status.toLocaleLowerCase();
+    if (status == "deployment initiated") {
         status = "Progressing";
     }
     return {
@@ -107,7 +144,7 @@ const environmentModal = (env) => {
     }
 }
 
-const getDefaultEnvironment = (envList): Environment => {
+function getDefaultEnvironment(envList): Environment {
     let env = envList.find(env => env.default);
     if (env) {
         return environmentModal(env);;
@@ -130,7 +167,7 @@ const getDefaultEnvironment = (envList): Environment => {
     }
 }
 
-const getLastDeployedEnv = (envList: Array<Environment>): Environment => {
+function getLastDeployedEnv(envList: Array<Environment>): Environment {
     let env = envList[0];
     let ms = moment(new Date(0)).valueOf();
     for (let i = 0; i < envList.length; i++) {
@@ -144,18 +181,37 @@ const getLastDeployedEnv = (envList: Array<Environment>): Environment => {
     return env;
 }
 
-const sortByLabel = (a, b) => {
+function sortByLabel(a, b) {
     if (a.label < b.label) { return -1; }
     if (a.label > b.label) { return 1; }
     return 0;
 }
 
-const getStatus = () => {
+function getStatus() {
     return ["Not Deployed", "Healthy", "Missing", "Unknown", "Progressing", "Suspended", "Degraded"];
 }
 
-const handleDeploymentInitiatedStatus = (status: string): string => {
+function handleDeploymentInitiatedStatus(status: string): string {
     if (status.replace(/\s/g, '').toLowerCase() == "deploymentinitiated")
         return "progressing";
     else return status;
+}
+
+export function getNamespaceList(): Promise<ResponseType> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                code: 200,
+                status: "ok",
+                result: [{
+                    value: 1,
+                    label: "dashboard",
+                },
+                {
+                    value: 2,
+                    label: "demo",
+                }]
+            })
+        }, 1000)
+    })
 }

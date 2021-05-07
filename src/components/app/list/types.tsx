@@ -135,16 +135,14 @@ export interface ExternalListContainerState {
     view: string;
     code: number;
     externalList: ExternalList[];
-    filters: {
-        namespace: ExternalListFilterOption[];
-        cluster: ExternalListFilterOption[];
-    };
+    namespaceList: ExternalListFilterOption[];
+    clusterList: ExternalListFilterOption[];
+    selectedNamespace: ExternalListFilterOption[];
+    selectedCluster: ExternalListFilterOption[]
     namespaceHashmap: Map<string, any>;
     clusterHashmap: Map<string, any>;
-    selectedNamespace: ExternalListFilterOption[];
     searchQuery: string;
     searchApplied: boolean;
-    selectedCluster: ExternalListFilterOption[]
     externalQueryList: ExternalQueryList[],
     appliedCluster: ExternalListFilterOption[];
     appliedNamespace: ExternalListFilterOption[];
@@ -153,21 +151,17 @@ export interface ExternalListContainerState {
 export interface ExternalListContainerProps extends RouteComponentProps<{}> {
 }
 
-export interface ExternalListViewProps extends RouteComponentProps<{}> {
+export interface ExternalListViewProps {
+    code: number;
     view: string;
     externalList: ExternalList[];
-    filters: {
-        namespace: ExternalListFilterOption[];
-        cluster: ExternalListFilterOption[];
-    }
     appliedNamespace: ExternalListFilterOption[];
     appliedCluster: ExternalListFilterOption[];
     removeFilter: (key: any, val: any) => void;
     removeAllFilters: () => void;
-    code: number;
 }
 
-export interface ExternalSearchQueryListProps extends RouteComponentProps<{}> {
+export interface ExternalSearchQueryListProps {
     view: string;
     externalQueryList: ExternalQueryList[];
     filters: {

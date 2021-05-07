@@ -10,34 +10,35 @@ import { AppCheckListModal } from '../../checkList/AppCheckModal';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 
-export default class ExternalListView extends Component<ExternalListViewProps>{
+export class ExternalListView extends Component<ExternalListViewProps>{
 
     renderDefaultListTitle() {
-        return (<div>
-            <div className=" bcn-0">
-                <div className="external-list__header pt-8 pb-8">
-                    <div className="external-list__cell pr-12 pl-20">
-                        <button className="app-list__cell-header p-0 flex" onClick={e => { e.preventDefault(); }}> App name
+        return (
+            <div>
+                <div className="bcn-0">
+                    <div className="external-list__header pt-8 pb-8">
+                        <div className="external-list__cell pr-12 pl-20">
+                            <button className="app-list__cell-header p-0 flex" onClick={e => { e.preventDefault(); }}> App name
                         <span className={'sort-down'}></span>
-                        </button>
-                    </div>
-                    <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                        <span className="app-list__cell-header">Environment</span>
-                        <Tippy className="default-tt" arrow={false} placement="top" content={
-                            <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
-                            <Question className="icon-dim-16 ml-4" />
-                        </Tippy>
-                    </div>
-                    <div className="external-list__cell pr-20">
-                        <div className="m-auto_mr-0 flex">
-                            <span className="app-list__cell-header">Last Updated</span>
-                            <span className={'sort-down'}></span>
+                            </button>
                         </div>
+                        <div className="external-list__cell external-list__cell--width pl-12 pr-12">
+                            <span className="app-list__cell-header">Environment</span>
+                            <Tippy className="default-tt" arrow={false} placement="top" content={
+                                <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
+                                <Question className="icon-dim-16 ml-4" />
+                            </Tippy>
+                        </div>
+                        <div className="external-list__cell pr-20">
+                            <div className="m-auto_mr-0 flex">
+                                <span className="app-list__cell-header">Last Updated</span>
+                                <span className={'sort-down'}></span>
+                            </div>
+                        </div>
+                        <div className="app-list__cell app-list__cell--action"></div>
                     </div>
-                    <div className="app-list__cell app-list__cell--action"></div>
                 </div>
             </div>
-        </div>
         )
     }
 
