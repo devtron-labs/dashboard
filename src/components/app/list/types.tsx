@@ -120,9 +120,13 @@ export interface ListContainerProps extends RouteComponentProps<{}> {
 }
 
 export interface ExternalList {
-    appname: string;
+    id: number;
+    appName: string;
+    clusterId: number;
+    chartName: string;
     environment: string;
-    lastupdate: string;
+    namespace: string;
+    lastDeployedOn: string;
 }
 
 export interface ExternalQueryList {

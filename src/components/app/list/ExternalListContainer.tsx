@@ -16,6 +16,7 @@ const QueryParams = {
 }
 
 export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
+    abortController: AbortController;
 
     constructor(props) {
         super(props)
@@ -41,29 +42,32 @@ export default class ExternalListContainer extends Component<ExternalListContain
     componentDidMount() {
         getExternalApplistInitData().then((response) => {
             this.setState({
-                namespaceList: response.result.namespaceList,
                 clusterList: response.result.clusterList,
+                namespaceList: response.result.namespaceList,
                 namespaceHashmap: response.result.namespaceHashmap,
                 clusterHashmap: response.result.clusterHashmap,
             })
         }).catch((error) => {
             showError(error);
         })
-
-        getExternalList().then((response) => {
-            this.setState({
-                externalList: response.result,
-                view: ViewType.FORM
-            })
-        }).catch((error) => {
-            showError(error);
-        })
+        this.initialiseFromQueryParams();
+        this.fetchExternalAppList();
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
-            this.initialiseFromQueryParams();
+            this.fetchExternalAppList();
         }
+    }
+
+    setCluster = (selected) => {
+        this.setState({
+            selectedCluster: selected
+        })
+    }
+
+    setNamespace = (selected) => {
+        this.setState({ selectedNamespace: selected })
     }
 
     initialiseFromQueryParams() {
@@ -90,11 +94,21 @@ export default class ExternalListContainer extends Component<ExternalListContain
             appliedCluster: selectedClusterList,
             selectedCluster: selectedClusterList,
             selectedNamespace: selectedNamespaceList,
-        }, () => {
-            this.setState({ view: ViewType.LOADING });
-            getExternalList()
-            this.setState({ view: ViewType.FORM });
+        });
+    }
+
+    fetchExternalAppList() {
+        this.setState({ view: ViewType.LOADING });
+        getExternalList(this.props.location.search).then((response) => {
+            console.log(response.result)
+            this.setState({
+                externalList: response.result,
+                view: ViewType.FORM
+            })
+        }).catch((error) => {
+            showError(error);
         })
+        this.setState({ view: ViewType.FORM });
     }
 
     removeFilter = (key, val): void => {
@@ -120,10 +134,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
         let queryStr = queryString.stringify(query);
         let url = `${URLS.EXTERNAL_APP}?${queryStr}`;
         this.props.history.push(url);
-    }
-
-    setNamespace = (selected) => {
-        this.setState({ selectedNamespace: selected })
     }
 
     handleSearchStr = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -181,12 +191,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
         this.props.history.push(`${url}?${qs}`);
     }
 
-    setCluster = (selected) => {
-        this.setState({
-            selectedCluster: selected
-        })
-    }
-
     renderExternalFilters() {
         return <div className="external-list--grid">
             {this.renderExternalSearch()}
@@ -204,14 +208,14 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     renderExternalSearch() {
         return <div className="flexbox flex-justify">
-            <form onSubmit={(e) => this.handleAppStoreChange(e)} className="search position-rel" style={{ flexBasis: "100%" }} >
+            <form onSubmit={this.handleAppStoreChange} className="search position-rel" style={{ flexBasis: "100%" }} >
                 <Search className="search__icon icon-dim-18" />
                 <input className="search__input bcn-1" type="text"
                     placeholder="Search by app name"
                     value={this.state.searchQuery}
                     onChange={(event) => { this.setState({ searchQuery: event.target.value }); }}
                 />
-                {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => this.clearSearch(e)}>
+                {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={this.clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : ""}
             </form>
@@ -233,15 +237,6 @@ export default class ExternalListContainer extends Component<ExternalListContain
                     removeFilter={this.removeFilter}
                     removeAllFilters={this.removeAllFilters}
                 />
-                {/* Comented out for the time being */}
-                {/* <ExternalSearchQueryList {...this.props}
-                   view={this.state.view}
-                   externalQueryList={this.state.externalQueryList}
-                   filters={this.state.filters}
-                   appliedNamespace={this.state.appliedNamespace}
-                   appliedCluster={this.state.appliedCluster}
-                    />
-                */}
             </>
         )
     }
