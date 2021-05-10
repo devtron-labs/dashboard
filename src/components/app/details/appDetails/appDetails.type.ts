@@ -47,3 +47,18 @@ export interface ScalePodsNameType{
         value: "CHECKED" | "INTERMEDIATE"
     }
 }
+
+export interface ScalePodsToZero{
+    rollout:{
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE"
+    },
+    horizontalPodAutoscaler: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE"
+    },
+    deployment: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE" 
+    }
+}

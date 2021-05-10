@@ -6,7 +6,6 @@ import {
     getAppTriggerURL,
     getAppCDURL,
 } from '../../../../config';
-import {ScalePodsNameType} from './appDetails.type'
 import {
     NavigationArrow,
     Redirect as RedirectIcon,
@@ -69,6 +68,7 @@ import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { scalarOptions } from 'yaml';
+import {ScalePodsNameType, ScalePodsToZero} from './appDetails.type'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -177,19 +177,19 @@ export const Details: React.FC<{
         },
     })
 
-    const [scalePodsToZero, setScalePodsToZero] = useState({
+    const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
 
         rollout: {
             isChecked: false,
-            value: "INTERMEDIATE",
+            value: "CHECKED",
         },
         horizontalPodAutoscaler: {
             isChecked: false,
-            value: "INTERMEDIATE",
+            value: "CHECKED",
         },
         deployment: {
             isChecked: false,
-            value: "INTERMEDIATE",
+            value: "CHECKED",
         }
     })
     const interval = 30000;
@@ -369,8 +369,6 @@ export const Details: React.FC<{
                 }
             })
         } 
-
-        
     }
 
     function toggleScalePods() {
@@ -481,7 +479,7 @@ export const Details: React.FC<{
                             <div className="pt-11 pb-11" >
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                     isChecked={scalePodsToZero.rollout.isChecked}
-                                    value={"CHECKED"}
+                                    value={scalePodsToZero.rollout.value}
                                     onChange={(e) => { e.stopPropagation(); handleScaleObject("rollout") }}
                                 >
                                     <div className="pl-16">
@@ -493,7 +491,7 @@ export const Details: React.FC<{
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                     isChecked={scalePodsToZero.horizontalPodAutoscaler.isChecked}
-                                    value={"CHECKED"}
+                                    value={scalePodsToZero.horizontalPodAutoscaler.value}
                                     onChange={(e) => { e.stopPropagation(); handleScaleObject("horizontalPodAutoscaler") }}
                                 >
                                     <div className="pl-16">
@@ -506,7 +504,7 @@ export const Details: React.FC<{
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                     isChecked={scalePodsToZero.deployment.isChecked}
-                                    value={"CHECKED"}
+                                    value={scalePodsToZero.deployment.value}
                                     onChange={(e) => { e.stopPropagation(); handleScaleObject("deployment") }}
                                 >
                                     <div className="pl-16">
