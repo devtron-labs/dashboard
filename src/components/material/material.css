@@ -1,16 +1,7 @@
-.artifact__add {
-    font-weight: 600;
-    font-style: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--B500);
-    font-size: 14px;
-}
-
 .artifact-collapsed {
     display: flex;
     margin-bottom: 12px;
-    padding: 15px 24px;
+    padding: 15px 20px;
     border: solid 1px #d6dbdf;
     align-items: center;
     cursor: pointer;
@@ -22,7 +13,7 @@
 }
 
 .git__icon {
-    background-image: url('../../assets/icons/git/git.svg');
+  /*  background-image: url('../../assets/icons/git/git.svg');*/
     margin-right: 10px;
     display: inline-block;
     width: 20px;
@@ -57,4 +48,13 @@
     border-radius: 4px;
     border: solid 1px var(--N200);
     background-color: var(--white);
+}
+
+.form-row__material {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-column-gap: 16px;
+   
+      
+    
 }

@@ -62,7 +62,6 @@ export function AppHeader() {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];
         const newUrl = generatePath(match.path, { appId: value });
         history.push(`${newUrl}/${tab}`);
-        console.log(`${newUrl}/${tab}`);
         ReactGA.event({
             category: 'App Selector',
             action: 'App Selection Changed',

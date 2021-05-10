@@ -1,14 +1,14 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { useHistory, useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router';
 import { URLS } from './config';
 import { toast } from 'react-toastify';
 import "patternfly/dist/css/patternfly.css";
 import "patternfly/dist/css/patternfly-additions.css";
 import "patternfly/dist/css/rcue.css";
-import "patternfly/dist/css/rcue-additions.css"
-import "patternfly-react/dist/css/patternfly-react.css"
-import 'react-toastify/dist/ReactToastify.css'
+import "patternfly/dist/css/rcue-additions.css";
+import "patternfly-react/dist/css/patternfly-react.css";
+import 'react-toastify/dist/ReactToastify.css';
 import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
@@ -17,7 +17,7 @@ import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progr
 import Hotjar from './components/Hotjar/Hotjar'
 import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
-import Reload from './components/Reload/Reload'
+import Reload from './components/Reload/Reload';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -190,27 +190,28 @@ export default function App() {
 					<Progressing pageLoader />
 				</div>
 			) : (
-					<>
-						{errorPage ? (
-							<div style={{ height: '100vh', width: '100vw' }}>
-								<Reload />
-							</div>
-						) : (
-								<BreadcrumbStore>
-									<Switch>
-										<Route path={`/login`} component={Login} />
-										<Route path="/" render={() => <NavigationRoutes />} />
-										<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
-									</Switch>
-									<div id="full-screen-modal"></div>
-									<div id="visible-modal"></div>
-									{process.env.NODE_ENV === 'production' && window._env_ && window._env_.HOTJAR_ENABLED && (
-										<Hotjar />
-									)}
-								</BreadcrumbStore>
+				<>
+					{errorPage ? (
+						<div style={{ height: '100vh', width: '100vw' }}>
+							<Reload />
+						</div>
+					) : (
+						<BreadcrumbStore>
+							<Switch>
+								<Route path={`/login`} component={Login} />
+								<Route path="/" render={() => <NavigationRoutes />} />
+								<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
+							</Switch>
+							<div id="full-screen-modal"></div>
+							<div id="visible-modal"></div>
+							<div id="visible-modal-2"></div>
+							{process.env.NODE_ENV === 'production' && window._env_ && window._env_.HOTJAR_ENABLED && (
+								<Hotjar />
 							)}
-					</>
-				)}
+						</BreadcrumbStore>
+					)}
+				</>
+			)}
 		</Suspense>
 	);
 }

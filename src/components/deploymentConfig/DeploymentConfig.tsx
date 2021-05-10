@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getChartReferences, toggleAppMetrics as updateAppMetrics } from './service';
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml } from '../common';
+import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
+import { getChartReferences } from '../../services/service';
+import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
-import './deploymentConfig.scss';
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
+import { DOCUMENTATION } from '../../config';
+import './deploymentConfig.scss';
 
-export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
+export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
+    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
+
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
         <div className="p-lr-20 m-tb-20 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>
             <div className="flex column left">
@@ -17,10 +21,10 @@ export function OptApplicationMetrics({ currentVersion, minimumSupportedVersion,
                 <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
             </div>
             <div style={{ height: '20px', width: '32px' }}>
-                {loading ? <Progressing /> : <Toggle disabled={disabled || (currentVersion < minimumSupportedVersion)} onSelect={onChange} selected={opted} />}
+                {loading ? <Progressing /> : <Toggle disabled={disabled || isChartVersionSupported} onSelect={onChange} selected={opted} />}
             </div>
         </div>
-        {currentVersion < minimumSupportedVersion && <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%' }}>
+        {isChartVersionSupported && <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%' }}>
             <img />
             <span>Application metrics is not supported for the selected chart version. Update to the latest chart version and re-deploy the application to view metrics.</span>
         </div>}
@@ -31,7 +35,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     return <div className="form__app-compose">
         <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
         <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
-            <a rel="noreferrer noopener" href="https://docs.devtron.ai/creating-application/deployment-template" target="_blank">Learn more about Deployment Template Configurations</a>
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
         </p>
         <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
     </div>
@@ -65,12 +69,12 @@ function DeploymentConfigForm({ respondOnSuccess }) {
         // initialise()
     }, [selectedChart])
 
-    const { appId } = useParams()
+    const { appId } = useParams<{ appId }>()
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
             setAppMetricsLoading(true)
-            const { result } = await updateAppMetrics(+appId, {
+            await updateAppMetrics(+appId, {
                 isAppMetricsEnabled: appMetricsEnabled
             })
             toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null })
@@ -198,8 +202,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                         value={template ? JSON.stringify(template, null, 2) : ""}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
-                        loading={chartConfigLoading}
-                    >
+                        loading={chartConfigLoading}>
                         <CodeEditor.Header>
                             <CodeEditor.LanguageChanger />
                             <CodeEditor.ValidationError />
@@ -220,15 +223,13 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled && 
+            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
-                    minimumSupportedVersion={"3.7.0"}
                     onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
                     opted={isAppMetricsEnabled}
                     loading={appMetricsLoading}
-                />
-            }
+                />}
         </>
     )
 }

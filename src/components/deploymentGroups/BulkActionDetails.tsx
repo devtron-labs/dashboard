@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { getCDMaterialList, triggerGroupDeploy, getDeploymentGroupDetail, pauseResumeDeploymentGroup } from './service';
 import { CDMaterial } from '../app/details/triggerView/cdMaterial';
 import { Routes, URLS, getAppTriggerURL } from '../../config';
-import Trash2 from '../../assets/icons/ic-delete.svg'
+import Trash2 from '../../assets/img/warning-medium.svg'
 import warningIcon from '../../assets/icons/ic-warning.svg';
 import restoreIcon from '../../assets/icons/ic-restore.svg'
 import Tippy from '@tippyjs/react';

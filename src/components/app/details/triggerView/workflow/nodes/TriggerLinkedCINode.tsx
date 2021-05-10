@@ -68,7 +68,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                         <div className="ellipsis-left">{this.props.title}</div>
                     </Tippy>
                 </div>
-                <div className="workflow-node__icon-common workflow-node__CI-linked-icon"/>
+                <div className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
             </div>
             {this.renderStatus()}
         </div>

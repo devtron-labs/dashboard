@@ -1,12 +1,24 @@
+import { string } from 'prop-types';
 import { RouteComponentProps } from 'react-router';
+import { HostURLConfig } from '../../services/service.types';
+import { NodeAttr } from '../app/details/triggerView/types';
 
 export interface WorkflowEditState {
     view: string;
     code: number;
     workflows: any[];
+    allCINodeMap: Map<string, NodeAttr>;
     workflowId: number;
     appName: string;
     showDeleteDialog: boolean;
+    showCIMenu: boolean;
+    isGitOpsConfigAvailable: boolean;
+    allCINodesMap: { id: number; value: any };
+    hostURLConfig: HostURLConfig;
+    cIMenuPosition: {
+        top: number;
+        left: number;
+    }
 }
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {
@@ -29,11 +41,9 @@ export interface AddWorkflowProps extends RouteComponentProps<{ appId: string, w
 }
 
 export interface PipelineSelectProps {
-    ciPipelineId: number;
     showMenu: boolean;
-    workflowId: number;
-    left: number;
-    top: number;
-    type: 'CI' | 'CD';
-    toggleMenu: () => void;
+    workflowId?: number | string;
+    styles: { left: string; top: string; };
+    toggleCIMenu: (event) => void;
+    addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
 }

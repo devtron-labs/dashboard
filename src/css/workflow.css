@@ -157,7 +157,7 @@
 }
 
 .workflow-node__CD-pre-post-icon {
-    background-image: url('../assets/icons/ic-CDPrePost.svg');
+    background-image: url('../assets/icons/ic-cd-stage.svg');
 }
 
 .workflow-node__CI-webhook-icon {
@@ -182,7 +182,6 @@
     width: 24px;
     height: 24px;
     background-size: 100% 100%;
-    margin: 0 0 0 8px;
 }
 
 .workflow-node__add-cd-btn {
@@ -308,4 +307,9 @@
     border: solid 1px var(--N400);
     color: var(--N400);
     background-color: var(--N200);
+}
+
+.cta.cta--workflow {
+    height: 36px;
+    line-height: unset;
 }

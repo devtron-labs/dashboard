@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { HostURLConfig } from '../../services/service.types';
 
 export interface ExternalCIPipelineState {
     code: number;
@@ -31,6 +32,7 @@ export interface ExternalCIPipelineState {
     gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
+    hostURLConfig: HostURLConfig;
 }
 
 export interface CIPipelineState {
@@ -65,6 +67,10 @@ export interface CIPipelineState {
     gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
+    showPreBuild: boolean;
+    showDocker: boolean;
+    showPostBuild: boolean;
+    isAdvanced?: boolean; //required for CIPipeline
 }
 
 

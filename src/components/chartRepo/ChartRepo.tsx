@@ -3,10 +3,11 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import {  saveChartProviderConfig, updateChartProviderConfig} from './service'
-import {getChartRepoList} from '../../services/service'
+import { saveChartProviderConfig, updateChartProviderConfig } from './service'
+import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import {ReactComponent as Helm} from '../../assets/icons/ic-helmchart.svg'
+import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
+import { DOCUMENTATION } from '../../config';
 
 
 export default function ChartRepo() {
@@ -16,16 +17,16 @@ export default function ChartRepo() {
         showError(error)
         if (!result) return null
     }
-   
-        return (
-            <section className="git-page">
-                <h2 className="form__title">Chart Repository</h2>
-                <h5 className="form__subtitle">Manage your organization’s chart repositories. &nbsp;
-                </h5>
-                {[{ id: null,default: true, url: "", name: "", active: true,  authMode: null }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
-            </section>
-            );
-        }
+
+    return (
+        <section className="global-configuration__component">
+            <h2 className="form__title">Chart Repository</h2>
+            <p className="form__subtitle">Manage your organization’s chart repositories.
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more about Git Material</a> </span></p>
+            {[{ id: null, default: true, url: "", name: "", active: true, authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+        </section>
+    );
+}
 
 function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
@@ -55,13 +56,13 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }, [enabled])
 
     return (
-        <article className={`collapsed-list ${id?'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
                 <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git provider' : 'Enable git provider'}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
                             <span style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
@@ -78,7 +79,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         </article>
     )
 }
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -127,11 +128,11 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
-       
+
         try {
             setLoading(true)
             const { result } = await api(payload, id);
-            
+
             await reload();
             toast.success('Successfully saved.')
         }
@@ -145,7 +146,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     return (
         <form onSubmit={handleOnSubmit} className="git-form">
             <div className="form__row form__row--two-third">
-                <CustomInput autoComplete="off" value={state.name.value}  onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
             </div>
             <div className="form__label">Authentication type*</div>

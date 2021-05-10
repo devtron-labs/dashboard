@@ -114,6 +114,11 @@ export function getClusterListMin() {
     return get(URL);
 }
 
+export function getDockerRegistryStatus(): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status`;
+    return get(URL);
+}
+
 export function getDockerRegistryList(): Promise<ResponseType> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
     return get(URL);
@@ -256,4 +261,44 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getHostURLConfiguration(): Promise<ResponseType> {
+    const URL = `${Routes.HOST_URL}?key=url`;
+    return get(URL);
+}
 
+export function isGitopsConfigured(): Promise<ResponseType> {
+    const URL = `${Routes.GITOPS_CONFIGURED}`;
+    return get(URL);
+}
+
+export function getChartReferences(appId: number): Promise<ResponseType> {
+    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`;
+    return get(URL);
+}
+
+export function getAppChartRef(appId: number): Promise<ResponseType> {
+    return getChartReferences(appId).then((response) => {
+        const { result: { chartRefs, latestAppChartRef } } = response;
+        let selectedChartId = latestAppChartRef;
+        let chart = chartRefs.find(chart => selectedChartId === chart.id);
+        return {
+            code: response.code,
+            status: response.status,
+            result: chart
+        }
+    })
+}
+export function getAppCheckList(): Promise<any> {
+    const URL = `${Routes.APP_CHECKLIST}`;
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve({
+    //         "code": 200, "status": "OK",
+    //         "result": {
+    //             "appChecklist": { "gitOps": 0, "project": 1, "git": 1, "environment": 1, "docker": 1, "hostUrl": 1 },
+    //             "chartChecklist": { "gitOps": 0, "project": 1, "environment": 1 },
+    //             "isAppCreated": false,
+    //         }
+    //     })
+    // })
+}

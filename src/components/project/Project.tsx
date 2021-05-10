@@ -36,34 +36,36 @@ export class Project extends Component<ProjectProps>  {
     renderForm() {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
-        return <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16" >
-            <div className="white-card__header"> {this.props.id ? "Edit project" : "Add Project"} </div>
-            <label className="form__row">
-                <span className="form__label">Project name*</span>
-                <input type="text"
-                   autoComplete="off"
-                    name="name"
-                    value={this.props.name}
-                    placeholder="e.g. My Project"
-                    className="form__input"
-                    autoFocus
-                    onChange={(event) => { this.props.handleChange(event, this.props.index, 'name') }} />
-                {isValid.name ? null : <span className="form__error">
-                    {errorMessage.name}
-                </span>}
-            </label>
-            <div className="form__buttons">
-                <button type="button" className="cta cancel mr-16" onClick={this.props.onCancel} >
-                    Cancel
+        return <div>
+            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16" >
+                <div className="white-card__header"> {this.props.id ? "Edit project" : "Add Project"} </div>
+                <label className="form__row">
+                    <span className="form__label">Project name*</span>
+                    <input type="text"
+                        autoComplete="off"
+                        name="name"
+                        value={this.props.name}
+                        placeholder="e.g. My Project"
+                        className="form__input"
+                        autoFocus
+                        onChange={(event) => { this.props.handleChange(event, this.props.index, 'name') }} />
+                    {isValid.name ? null : <span className="form__error">
+                        {errorMessage.name}
+                    </span>}
+                </label>
+                <div className="form__buttons">
+                    <button type="button" className="cta cancel mr-16" onClick={this.props.onCancel} >
+                        Cancel
                 </button>
-                <ButtonWithLoader rootClassName="cta"
-                    loaderColor="#ffffff"
-                    isLoading={this.props.loadingData}
-                    onClick={(event) => { event.preventDefault(); this.props.saveProject(this.props.index) }}>
-                    Save
+                    <ButtonWithLoader rootClassName="cta"
+                        loaderColor="#ffffff"
+                        isLoading={this.props.loadingData}
+                        onClick={(event) => { event.preventDefault(); this.props.saveProject(this.props.index) }}>
+                        Save
                 </ButtonWithLoader>
-            </div>
-        </form >
+                </div>
+            </form >
+        </div>
     }
 
     render() {

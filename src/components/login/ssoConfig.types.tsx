@@ -1,7 +1,8 @@
+import { RouteComponentProps } from "react-router-dom";
+
 export interface SSOLogin {
     id: number;
     name: string;
-    // label: string;
     active: boolean;
 }
 
@@ -14,6 +15,9 @@ export interface SSOLoginState {
     configMap: string;
     showToggling: boolean;
     ssoConfig: SSOConfigType;
+    isError: {
+        url: string;
+    }
 }
 
 export interface SSOConfigType {
@@ -29,6 +33,6 @@ export interface SSOConfigType {
     active?: boolean;
 }
 
-export interface SSOLoginProps {
-    close: () => void;
+export interface SSOLoginProps extends RouteComponentProps<{}> {
+
 }

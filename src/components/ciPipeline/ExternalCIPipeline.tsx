@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import { getCIPipelineParsed, saveCIPipeline, deleteCIPipeline, getSourceConfigParsed } from './ciPipeline.service';
-import { TriggerType, ViewType, TagOptions, SourceTypeReverseMap, SourceTypeMap } from '../../config';
+import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { Progressing, OpaqueModal, Select, DeletePipeline, CopyButton, showError, ConditionalWrap } from '../common';
+import { Progressing,  CopyButton, showError, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
-import git from '../../assets/icons/git/git.svg';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react';
 import { ValidationRules } from './validationRules';
 import { ButtonWithLoader } from '../common';
+import { NavLink } from 'react-router-dom';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { getHostURLConfiguration } from '../../services/service';
+import { URLS } from '../../config';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import { SourceMaterials } from './SourceMaterials';
 import './ciPipeline.css';
+
 
 export default class ExternalCIPipeline extends Component<CIPipelineProps, ExternalCIPipelineState> {
     validationRules;
@@ -50,6 +56,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
+            hostURLConfig: undefined,
         }
         this.handlePipelineName = this.handlePipelineName.bind(this);
         this.savePipeline = this.savePipeline.bind(this);
@@ -58,9 +65,12 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.validationRules = new ValidationRules();
+        this.handleSourceChange = this.handleSourceChange.bind(this);
+
     }
 
     componentDidMount() {
+        this.getHostURLConfig();
         if (this.props.match.params.ciPipelineId) {
             getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response });
@@ -84,6 +94,14 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         }
     }
 
+    getHostURLConfig() {
+        getHostURLConfiguration().then((response) => {
+            this.setState({ hostURLConfig: response.result, })
+        }).catch((error) => {
+
+        })
+    }
+
     handlePipelineName(event): void {
         let state = { ...this.state };
         state.form.name = event.target.value;
@@ -104,7 +122,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
 
     handleSourceChange(event, gitMaterialId: number): void {
         let { form } = { ...this.state };
-        let allMaterials = this.state.form.materials.map((mat) => {
+        let allMaterials = form.materials.map((mat) => {
             if (mat.gitMaterialId === gitMaterialId) {
                 return {
                     ...mat,
@@ -190,63 +208,34 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     }
 
 
-    renderDeleteCI() {
+    renderDeleteCIModal() {
         if (this.props.match.params.ciPipelineId && this.state.showDeleteModal) {
-            return <DeletePipeline pipelineName={this.state.form.name}
-                appName={this.props.appName}
-                shouldDeleteApp={false}
-                setDeleteApp={() => { }}
+            return <DeleteDialog title={`Delete '${this.state.form.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
-                description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}'`}
-                deletePipeline={this.deletePipeline} />
-
+                delete={this.deletePipeline} />
         }
         return null;
     }
 
     renderMaterials() {
-        return <div className="form__row">
-            <span className="form__label">Materials*</span>
-            {this.state.form.materials.map((mat, index) => {
-                let errorObj = this.validationRules.sourceValue(mat.value);
-                return <div className="ci-artifact" key={mat.gitMaterialId}>
-                    <div className="ci-artifact__header">
-                        <img src={git} alt="" className="ci-artifact__icon" />
-                        {mat.name}
-                    </div>
-                    <div className="ci-artifact__body">
-                        <div className="flex-1 mr-16">
-                            <label className="form__label">Source Type*</label>
-                            <Select rootClassName="popup-body--source-info"
-                                disabled={!!mat.id}
-                                onChange={(event) => this.selectSourceType(event, mat.gitMaterialId)} >
-                                <Select.Button rootClassName="select-button--source-info">{SourceTypeReverseMap[mat.type] || "Select Source Type"}</Select.Button>
-                                {TagOptions.map((tag) => {
-                                    return <Select.Option key={tag.value} value={tag.value}>{tag.label}</Select.Option>
-                                })}
-                            </Select>
-                        </div>
-                        <label className="flex-1">
-                            <span className="form__label">
-                                {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : "Source Value*"}
-                            </span>
-                            <input className="form__input" placeholder="Name" type="text" value={mat.value}
-                                onChange={(event) => { this.handleSourceChange(event, mat.gitMaterialId) }} />
-                            {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
-                                {this.validationRules.sourceValue(this.state.form.materials[index].value).message}
-                            </span> : null}
-                        </label>
-                    </div>
-                </div>
-            })}
-        </div>
+        return <SourceMaterials showError={this.state.showError}
+            validationRules={this.validationRules}
+            materials={this.state.form.materials}
+            selectSourceType={this.selectSourceType}
+            handleSourceChange={this.handleSourceChange}
+        />
     }
 
     renderHeader() {
         return <>
-            <h1 className="form__title">External CI Pipeline</h1>
-            <p className="form__subtitle"></p>
+            <div className="p-20 flex flex-align-center flex-justify">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Create external build pipeline</h2>
+                <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                    <Close className="icon-dim-24" />
+                </button>
+            </div>
+            <hr className="divider m-0" />
         </>
     }
 
@@ -260,7 +249,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     <div>{children}</div>
                 </Tippy>}>
                 <button type="button"
-                    className={`cta delete mr-16`}
+                    className={`cta cta--workflow delete mr-16`}
                     disabled={!canDeletePipeline}
                     onClick={() => { this.setState({ showDeleteModal: true }) }}>
                     Delete Pipeline
@@ -292,31 +281,47 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         }
     }
 
+    renderHostErrorMessage() {
+        if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
+            return <div className="br-4 bw-1 er-2 pt-10 mt-20 pb-10 pl-16 pr-16 bcr-1 flex left">
+                <Error className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
+                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                </div>
+            </div>
+        }
+    }
+
     render() {
         let errorObj = this.validationRules.name(this.state.form.name);
         if (this.state.view === ViewType.LOADING) {
-            return <OpaqueModal onHide={this.props.close}>
-                <Progressing pageLoader />
-            </OpaqueModal>
+            return <VisibleModal className="">
+                <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                    {this.renderHeader()}
+                    <div style={{minHeight: "385px"}} className="flex"><Progressing pageLoader /></div>
+                </div>
+            </VisibleModal>
         }
         else {
-            return <OpaqueModal onHide={this.props.close}>
-                <div className="modal__body modal__body--ci">
+            return <VisibleModal className="" >
+                <div className="modal__body modal__body--ci br-0 modal__body--p-0">
                     {this.renderHeader()}
-                    <div className="form__row">
-                        <span className="form__label">Pipeline Name*</span>
-                        <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
-                            onChange={this.handlePipelineName} />
-                        {this.state.showError && !errorObj.isValid ? <span className="form__error">
-                            <img src={error} alt="" className="form__icon" />
-                            {this.validationRules.name(this.state.form.name).message}
-                        </span> : null}
+                    <div className="pl-20 pr-20">
+                        {this.renderHostErrorMessage()}
+                        <div className="form__row">
+                            <span className="form__label  mt-16">Pipeline Name*</span>
+                            <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
+                                onChange={this.handlePipelineName} />
+                            {this.state.showError && !errorObj.isValid ? <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
+                                {this.validationRules.name(this.state.form.name).message}
+                            </span> : null}
+                        </div>
+                        {this.renderMaterials()}
                     </div>
-                    {this.renderMaterials()}
-                    {this.renderDeleteCI()}
-                    <div className="form__row form__row--flex">
+                    <div className="ci-button-container bcn-0 mt-20 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderDeleteCIButton()}
-                        <ButtonWithLoader rootClassName="cta flex-1"
+                        <ButtonWithLoader rootClassName="cta cta--workflow flex flex-1"
                             loaderColor="white"
                             onClick={this.savePipeline}
                             // disabled={!!this.props.match.params.ciPipelineId}
@@ -326,7 +331,8 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     </div>
                     {this.renderExternalCIConfig()}
                 </div>
-            </OpaqueModal >
+                {this.renderDeleteCIModal()}
+            </VisibleModal  >
         }
     }
 }

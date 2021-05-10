@@ -3,6 +3,11 @@ import { post, get } from '../../services/api';
 import { sortCallback } from '../common';
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service';
 
+export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
+    const URL = `app/pipeline/suggest/cd/${appId}`;
+    return get(URL);
+}
+
 export function getDeploymentStrategyList(appId) {
     const URL = `${Routes.DEPLOYMENT_STRATEGY}/${appId}`;
     return get(URL);
@@ -38,6 +43,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 name: env.environment_name,
                 namespace: env.namespace || "",
                 active: envId == env.id,
+                isClusterCdActive: env.isClusterCdActive,
             }
         });
         return {

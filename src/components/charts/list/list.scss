@@ -528,3 +528,27 @@
     border: solid 1px var(--N200);
     font-weight: normal;
 }
+
+.date-align-left {
+    width: 230px;
+}
+
+.chart-list-apply-filter {
+    text-align: center;
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.empty-height {
+    height: 400px;
+}
+
+.cta--chart-store {
+    width: 93%;
+    padding: 8px 12px;
+    background: #0066cc;
+    color: white;
+}
