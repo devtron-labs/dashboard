@@ -153,6 +153,7 @@ export const Details: React.FC<{
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
+    const [showRestore, toggleRestore] = useState(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
         severityCount: { critical: 0, moderate: 0, low: 0 },
@@ -162,14 +163,20 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
-    const [isRollout, setRollout] = useState(true)
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
         //     prefix = `${location.protocol}//${location.host}`; 
     }
 
-    const [ScalePodsToZero, setScalePodsToZero] = useState({
+    const [scalePodsName, setScalePodsName] = useState({
+        name: {
+            isChecked: false,
+            value: "INTERMEDIATE" || "CHECKED" || "UNCHECKED",
+        },
+    })
+    const [scalePodsToZero, setScalePodsToZero] = useState({
+
         rollout: {
             isChecked: false,
             value: "UNCHECKED",
@@ -306,22 +313,50 @@ export const Details: React.FC<{
         }
     }
 
-    function handlerRollout(key: "rollout" |"horizontalPodAutoscaler" | "deployment" ){
+    function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
 
         setScalePodsToZero({
-            ...ScalePodsToZero,
+            ...scalePodsToZero,
             [key]: {
-                isChecked: !ScalePodsToZero[key].isChecked,
-                value: !ScalePodsToZero[key].isChecked ? "CHECKED" : "INTERMEDIATE"
+                isChecked: !scalePodsToZero[key].isChecked,
+                value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
 
             }
         })
     }
 
-    function  handleHorizontalPodAutoscaler() {
-        
+    function handleAllScaleObjects(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
+        setScalePodsName({
+            name: {
+                isChecked: !scalePodsName.name.isChecked,
+                value: !scalePodsName.name.isChecked ? "CHECKED" : "UNCHECKED"
+            }
+        })
+        if (!scalePodsName.name.isChecked) {
+            return setScalePodsToZero({
+                ...scalePodsToZero,
+                [key]: {
+                    isChecked: !scalePodsToZero[key].isChecked,
+                    value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
+
+                }
+            })
+
+        } else {
+            setScalePodsToZero({
+                ...scalePodsToZero,
+                [key]: {
+                    isChecked: !scalePodsToZero[key].isChecked,
+                    value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
+                }
+            })
+        }
     }
-   
+
+    function toggleScalePods() {
+        toggleRestore(!showRestore)
+    }
+
     return (
         <React.Fragment>
             {/* <div
@@ -414,32 +449,32 @@ export const Details: React.FC<{
                             <div className="fw-6 mt-8 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
                             <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={ScalePodsToZero.rollout.isChecked}
+                                    isChecked={scalePodsName.name.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => { e.stopPropagation()}}
+                                    onChange={(e) => { e.stopPropagation(); handleAllScaleObjects("rollout" || "horizontalPodAutoscaler" || "deployment") }}
                                 >
                                     <div className="pl-16">
                                         <span>Name</span>
                                     </div>
-                                </Checkbox></div>
+                                </Checkbox>
+                            </div>
                             <div className="pt-11 pb-11" >
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={ScalePodsToZero.rollout.isChecked}
+                                    isChecked={scalePodsToZero.rollout.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => {e.stopPropagation(); handlerRollout("rollout")}}
+                                    onChange={(e) => { e.stopPropagation(); handleScaleObject("rollout") }}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">Rollout / </span>
                                         <span>dashboard-bp-devtroncd</span>
                                     </div>
                                 </Checkbox>
-
                             </div>
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={ScalePodsToZero.horizontalPodAutoscaler.isChecked}
+                                    isChecked={scalePodsToZero.horizontalPodAutoscaler.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => {e.stopPropagation(); handlerRollout("horizontalPodAutoscaler")}}
+                                    onChange={(e) => { e.stopPropagation(); handleScaleObject("horizontalPodAutoscaler") }}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">HorizontalPodAutoscaler / </span>
@@ -450,9 +485,9 @@ export const Details: React.FC<{
                             </div>
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={ScalePodsToZero.deployment.isChecked}
+                                    isChecked={scalePodsToZero.deployment.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => {e.stopPropagation(); handlerRollout("deployment")}}
+                                    onChange={(e) => { e.stopPropagation(); handleScaleObject("deployment") }}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">Deployment / </span>
@@ -461,10 +496,41 @@ export const Details: React.FC<{
                                 </Checkbox>
 
                             </div>
-                            <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex">
+                            <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={() => toggleScalePods()}>
                                 <ScaleDown className="icon-dim-16" />
                                 Scale Pods to 0
                             </button>
+                            {showRestore && <>
+                                <h1 className="fw-6 mt-20 mb-8 fs-14 cn-9">Select objects to restore</h1>
+                                <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
+                                    <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                        isChecked={scalePodsName.name.isChecked}
+                                        value={"CHECKED"}
+                                        onChange={(e) => { e.stopPropagation(); handleAllScaleObjects("rollout" || "horizontalPodAutoscaler" || "deployment") }}
+                                    >
+                                        <div className="pl-16">
+                                            <span>Name</span>
+                                        </div>
+                                    </Checkbox>
+                                </div>
+                                <div className="pt-11 pb-11" >
+                                    <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                        isChecked={scalePodsToZero.rollout.isChecked}
+                                        value={"CHECKED"}
+                                        onChange={(e) => { e.stopPropagation(); handleScaleObject("rollout") }}
+                                    >
+                                        <div className="pl-16">
+                                            <span className="cn-9 fw-6">Rollout / </span>
+                                            <span>dashboard-bp-devtroncd</span>
+                                        </div>
+                                    </Checkbox>
+                                </div>
+                                <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex">
+                                    <ScaleDown className="icon-dim-16" />
+                                Restore
+                            </button>
+                            </>
+                            }
                         </div>
                     </VisibleModal>
                 </>
