@@ -67,6 +67,7 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
+import { scalarOptions } from 'yaml';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -168,6 +169,20 @@ export const Details: React.FC<{
         //     prefix = `${location.protocol}//${location.host}`; 
     }
 
+    const [ScalePodsToZero, setScalePodsToZero] = useState({
+        rollout: {
+            isChecked: false,
+            value: "UNCHECKED",
+        },
+        horizontalPodAutoscaler: {
+            isChecked: false,
+            value: "UNCHECKED",
+        },
+        deployment: {
+            isChecked: false,
+            value: "UNCHECKED",
+        }
+    })
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
@@ -291,6 +306,22 @@ export const Details: React.FC<{
         }
     }
 
+    function handlerRollout(key: "rollout" |"horizontalPodAutoscaler" | "deployment" ){
+
+        setScalePodsToZero({
+            ...ScalePodsToZero,
+            [key]: {
+                isChecked: !ScalePodsToZero[key].isChecked,
+                value: !ScalePodsToZero[key].isChecked ? "CHECKED" : "INTERMEDIATE"
+
+            }
+        })
+    }
+
+    function  handleHorizontalPodAutoscaler() {
+        
+    }
+   
     return (
         <React.Fragment>
             {/* <div
@@ -383,9 +414,9 @@ export const Details: React.FC<{
                             <div className="fw-6 mt-8 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
                             <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={isRollout}
+                                    isChecked={ScalePodsToZero.rollout.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => e.stopPropagation()}
+                                    onChange={(e) => { e.stopPropagation()}}
                                 >
                                     <div className="pl-16">
                                         <span>Name</span>
@@ -393,9 +424,9 @@ export const Details: React.FC<{
                                 </Checkbox></div>
                             <div className="pt-11 pb-11" >
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={isRollout}
+                                    isChecked={ScalePodsToZero.rollout.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => e.stopPropagation()}
+                                    onChange={(e) => {e.stopPropagation(); handlerRollout("rollout")}}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">Rollout / </span>
@@ -406,9 +437,9 @@ export const Details: React.FC<{
                             </div>
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={isRollout}
+                                    isChecked={ScalePodsToZero.horizontalPodAutoscaler.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => e.stopPropagation()}
+                                    onChange={(e) => {e.stopPropagation(); handlerRollout("horizontalPodAutoscaler")}}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">HorizontalPodAutoscaler / </span>
@@ -419,9 +450,9 @@ export const Details: React.FC<{
                             </div>
                             <div className="pt-11 pb-11">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={isRollout}
+                                    isChecked={ScalePodsToZero.deployment.isChecked}
                                     value={"CHECKED"}
-                                    onChange={(e) => e.stopPropagation()}
+                                    onChange={(e) => {e.stopPropagation(); handlerRollout("deployment")}}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">Deployment / </span>
