@@ -40,3 +40,10 @@ export interface SecurityVulnerabilititesProps {
     };
     onClick: () => void;
 }
+
+export interface ScalePodsNameType{
+    name: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE"
+    }
+}

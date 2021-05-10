@@ -6,6 +6,7 @@ import {
     getAppTriggerURL,
     getAppCDURL,
 } from '../../../../config';
+import {ScalePodsNameType} from './appDetails.type'
 import {
     NavigationArrow,
     Redirect as RedirectIcon,
@@ -169,25 +170,26 @@ export const Details: React.FC<{
         //     prefix = `${location.protocol}//${location.host}`; 
     }
 
-    const [scalePodsName, setScalePodsName] = useState({
+    const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
         name: {
             isChecked: false,
-            value: "INTERMEDIATE" || "CHECKED" || "UNCHECKED",
+            value: "CHECKED"
         },
     })
+
     const [scalePodsToZero, setScalePodsToZero] = useState({
 
         rollout: {
             isChecked: false,
-            value: "UNCHECKED",
+            value: "INTERMEDIATE",
         },
         horizontalPodAutoscaler: {
             isChecked: false,
-            value: "UNCHECKED",
+            value: "INTERMEDIATE",
         },
         deployment: {
             isChecked: false,
-            value: "UNCHECKED",
+            value: "INTERMEDIATE",
         }
     })
     const interval = 30000;
@@ -319,42 +321,60 @@ export const Details: React.FC<{
             ...scalePodsToZero,
             [key]: {
                 isChecked: !scalePodsToZero[key].isChecked,
-                value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
+                value: !scalePodsToZero[key].isChecked ? "CHECKED" : "INTERMEDIATE"
 
             }
         })
     }
 
-    function handleAllScaleObjects(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
+    function handleAllScaleObjects() {
         setScalePodsName({
             name: {
                 isChecked: !scalePodsName.name.isChecked,
-                value: !scalePodsName.name.isChecked ? "CHECKED" : "UNCHECKED"
+                value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
             }
         })
+
         if (!scalePodsName.name.isChecked) {
             return setScalePodsToZero({
                 ...scalePodsToZero,
-                [key]: {
-                    isChecked: !scalePodsToZero[key].isChecked,
-                    value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
-
+                rollout: {
+                    isChecked: true,
+                    value: "CHECKED"
+                },
+                horizontalPodAutoscaler: {
+                    isChecked: true,
+                    value: "CHECKED"
+                },
+                deployment: {
+                    isChecked: true,
+                    value: "CHECKED"
                 }
             })
 
-        } else {
-            setScalePodsToZero({
+        } else if(scalePodsName.name.isChecked){
+            return setScalePodsToZero({
                 ...scalePodsToZero,
-                [key]: {
-                    isChecked: !scalePodsToZero[key].isChecked,
-                    value: !scalePodsToZero[key].isChecked ? "CHECKED" : "UNCHECKED"
+                rollout: {
+                    isChecked: false,
+                    value: "INTERMEDIATE"
+                },
+                horizontalPodAutoscaler: {
+                    isChecked: false,
+                    value: "INTERMEDIATE"
+                },
+                deployment: {
+                    isChecked: false,
+                    value: "INTERMEDIATE"
                 }
             })
-        }
+        } 
+
+        
     }
 
     function toggleScalePods() {
-        toggleRestore(!showRestore)
+        toggleRestore(true)
     }
 
     return (
@@ -446,14 +466,14 @@ export const Details: React.FC<{
                                         Scaled down objects will stop using resources until restored or a new deployment is initiated. How does this work?</div>
                                 </div>
                             </div>
-                            <div className="fw-6 mt-8 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
+                            <div className="fw-6 mt-16 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
                             <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                     isChecked={scalePodsName.name.isChecked}
-                                    value={"CHECKED"}
-                                    onChange={(e) => { e.stopPropagation(); handleAllScaleObjects("rollout" || "horizontalPodAutoscaler" || "deployment") }}
+                                    value={scalePodsName.name.value}
+                                    onChange={(e) => { e.stopPropagation(); handleAllScaleObjects() }}
                                 >
-                                    <div className="pl-16">
+                                    <div className="pl-16 fw-6">
                                         <span>Name</span>
                                     </div>
                                 </Checkbox>
@@ -506,9 +526,9 @@ export const Details: React.FC<{
                                     <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                         isChecked={scalePodsName.name.isChecked}
                                         value={"CHECKED"}
-                                        onChange={(e) => { e.stopPropagation(); handleAllScaleObjects("rollout" || "horizontalPodAutoscaler" || "deployment") }}
+                                        onChange={(e) => { e.stopPropagation(); handleAllScaleObjects() }}
                                     >
-                                        <div className="pl-16">
+                                        <div className="pl-16 fw-6">
                                             <span>Name</span>
                                         </div>
                                     </Checkbox>
@@ -525,7 +545,7 @@ export const Details: React.FC<{
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex">
+                                <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={()=>toggleRestore(false)}>
                                     <ScaleDown className="icon-dim-16" />
                                 Restore
                             </button>
