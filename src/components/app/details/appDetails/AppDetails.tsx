@@ -66,7 +66,7 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { scalarOptions } from 'yaml';
-import { ScalePods } from './ExternalScalePodsModal';
+import { ExternalScalePods } from './ExternalScalePodsModal';
 import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
 import { HibernateModal } from './DevtronAppHibernatemodal';
 
@@ -188,7 +188,20 @@ export const Details: React.FC<{
             value: "CHECKED"
         },
     })
-    const [detailed, toggleDetailed] = React.useState(false);
+    const [scalePodsToRestore, setScalePodsToRestore] = useState({
+        rollout: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        horizontalPodAutoscaler: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        deployment: {
+            isChecked: false,
+            value: "CHECKED",
+        }
+    });
 
     const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
 
@@ -391,7 +404,7 @@ zdf-098u-098      </div> */}
 
             {hibernateConfirmationModal && (
                 <>
-                    <ScalePods
+                    <ExternalScalePods
                         scalePodsName={scalePodsName}
                         setScalePodsName={setScalePodsName}
                         scalePodsToZero={scalePodsToZero}

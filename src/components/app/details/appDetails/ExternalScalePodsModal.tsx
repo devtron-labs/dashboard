@@ -4,7 +4,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 
-export function ScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero, onClose }) {
+export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero, onClose }) {
     const [showRestore, toggleRestore] = useState(false)
 
     function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
@@ -95,11 +95,11 @@ export function ScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, se
             <VisibleModal className="" >
                 <div className={`modal__body br-4`} style={{ width: "600px" }}>
                     <div className="flex left">
-                    <h1 className="cn-9 fw-6 fs-20 m-0">Select objects to scale</h1>
-                    <button type="button" className="transparent p-0" style={{lineHeight: "0", margin: "auto", marginRight: "0"}} onClick={onClose}>
+                        <h1 className="cn-9 fw-6 fs-20 m-0">Select objects to scale</h1>
+                        <button type="button" className="transparent p-0" style={{ lineHeight: "0", margin: "auto", marginRight: "0" }} onClick={onClose}>
                             <Close className="icon-dim-24" />
                         </button>
-                        </div>
+                    </div>
                     <div className="fs-14 mt-24 mb-8 br-4 p-16 eb-2 bw-1" style={{ backgroundColor: "#f0f7ff" }}>
                         <div>
                             <div className="flex left ">
