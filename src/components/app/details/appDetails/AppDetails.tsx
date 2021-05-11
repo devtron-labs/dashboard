@@ -328,25 +328,21 @@ export const Details: React.FC<{
         let areAllSelected = !scalePodsToZero.rollout.isChecked && !scalePodsToZero.horizontalPodAutoscaler.isChecked && !scalePodsToZero.deployment.isChecked;
         let isAnySelected = !scalePodsToZero.rollout.isChecked || !scalePodsToZero.horizontalPodAutoscaler.isChecked || !scalePodsToZero.deployment.isChecked;
       
-       
-        if(isAnySelected){
+        if(areAllSelected){
             return setScalePodsName({
-                
+                 name: {
+                     isChecked: !scalePodsName.name.isChecked,
+                     value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
+                 }
+             })
+         } else if(isAnySelected){
+            return setScalePodsName({
                 name: {
                     isChecked: !scalePodsName.name.isChecked,
                     value: !scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
                 }
             })
         }
-        // if(areAllSelected){
-        //    return setScalePodsName({
-        //         name: {
-        //             isChecked: !scalePodsName.name.isChecked,
-        //             value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
-        //         }
-        //     })
-        // }
-        
     }
 
     function handleAllScaleObjects() {
