@@ -68,6 +68,7 @@ import { AppMetrics } from './AppMetrics';
 import { scalarOptions } from 'yaml';
 import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
 import { ScalePods } from './ExternalScalePodsModal';
+import { HibernateModal } from './Hibernatemodal';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -369,7 +370,12 @@ export const Details: React.FC<{
 
             {hibernateConfirmationModal && (
                 <>
-                    <ScalePods />
+                    <HibernateModal 
+                    appDetails= {appDetails}
+                    handleHibernate= {handleHibernate}
+                    hibernating= {hibernating}
+                    hibernateConfirmationModal= {hibernateConfirmationModal}
+                    setHibernateConfirmationModal= {setHibernateConfirmationModal}/>
                 </>
                 // <ConfirmationDialog>
                 //     <ConfirmationDialog.Icon
