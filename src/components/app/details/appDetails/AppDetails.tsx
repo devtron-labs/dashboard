@@ -68,7 +68,7 @@ import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { scalarOptions } from 'yaml';
-import {ScalePodsNameType, ScalePodsToZero} from './appDetails.type'
+import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -316,7 +316,6 @@ export const Details: React.FC<{
     }
 
     function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
-
         setScalePodsToZero({
             ...scalePodsToZero,
             [key]: {
@@ -325,13 +324,36 @@ export const Details: React.FC<{
 
             }
         })
+
+        let areAllSelected = !scalePodsToZero.rollout.isChecked && !scalePodsToZero.horizontalPodAutoscaler.isChecked && !scalePodsToZero.deployment.isChecked;
+        let isAnySelected = !scalePodsToZero.rollout.isChecked || !scalePodsToZero.horizontalPodAutoscaler.isChecked || !scalePodsToZero.deployment.isChecked;
+      
+       
+        if(isAnySelected){
+            return setScalePodsName({
+                
+                name: {
+                    isChecked: !scalePodsName.name.isChecked,
+                    value: !scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
+                }
+            })
+        }
+        // if(areAllSelected){
+        //    return setScalePodsName({
+        //         name: {
+        //             isChecked: !scalePodsName.name.isChecked,
+        //             value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
+        //         }
+        //     })
+        // }
+        
     }
 
     function handleAllScaleObjects() {
         setScalePodsName({
             name: {
                 isChecked: !scalePodsName.name.isChecked,
-                value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
+                value: scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
             }
         })
 
@@ -351,8 +373,7 @@ export const Details: React.FC<{
                     value: "CHECKED"
                 }
             })
-
-        } else if(scalePodsName.name.isChecked){
+        } else {
             return setScalePodsToZero({
                 ...scalePodsToZero,
                 rollout: {
@@ -368,7 +389,7 @@ export const Details: React.FC<{
                     value: "INTERMEDIATE"
                 }
             })
-        } 
+        }
     }
 
     function toggleScalePods() {
@@ -543,7 +564,7 @@ export const Details: React.FC<{
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={()=>toggleRestore(false)}>
+                                <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={() => toggleRestore(false)}>
                                     <ScaleDown className="icon-dim-16" />
                                 Restore
                             </button>
