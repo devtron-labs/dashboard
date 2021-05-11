@@ -316,46 +316,40 @@ export const Details: React.FC<{
     }
 
     function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
-        setScalePodsToZero({
+        let scalePodsToZeroUpdate = {
             ...scalePodsToZero,
             [key]: {
                 isChecked: !scalePodsToZero[key].isChecked,
                 value: !scalePodsToZero[key].isChecked ? "CHECKED" : "INTERMEDIATE"
 
             }
-        })
+        };
+        let areAllSelected = scalePodsToZeroUpdate.rollout.isChecked && scalePodsToZeroUpdate.horizontalPodAutoscaler.isChecked && scalePodsToZeroUpdate.deployment.isChecked;
+        let isAnySelected = scalePodsToZeroUpdate.rollout.isChecked || scalePodsToZeroUpdate.horizontalPodAutoscaler.isChecked || scalePodsToZeroUpdate.deployment.isChecked;
 
-        let areAllSelected = !scalePodsToZero.rollout.isChecked && !scalePodsToZero.horizontalPodAutoscaler.isChecked && !scalePodsToZero.deployment.isChecked;
-        let isAnySelected = !scalePodsToZero.rollout.isChecked || !scalePodsToZero.horizontalPodAutoscaler.isChecked || !scalePodsToZero.deployment.isChecked;
-      
-        if(areAllSelected){
-            return setScalePodsName({
-                 name: {
-                     isChecked: !scalePodsName.name.isChecked,
-                     value: !scalePodsName.name.isChecked ? "CHECKED" : "INTERMEDIATE"
-                 }
-             })
-         } else if(isAnySelected){
+        setScalePodsToZero(scalePodsToZeroUpdate);
+
+        if (areAllSelected) {
             return setScalePodsName({
                 name: {
-                    isChecked: !scalePodsName.name.isChecked,
-                    value: !scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
+                    isChecked: true,
+                    value: "CHECKED",
+                }
+            })
+        } else if (isAnySelected) {
+            return setScalePodsName({
+                name: {
+                    isChecked: true,
+                    value: "INTERMEDIATE"
                 }
             })
         }
     }
 
     function handleAllScaleObjects() {
-        setScalePodsName({
-            name: {
-                isChecked: !scalePodsName.name.isChecked,
-                value: scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
-            }
-        })
 
         if (!scalePodsName.name.isChecked) {
-            return setScalePodsToZero({
-                ...scalePodsToZero,
+            setScalePodsToZero({
                 rollout: {
                     isChecked: true,
                     value: "CHECKED"
@@ -370,8 +364,7 @@ export const Details: React.FC<{
                 }
             })
         } else {
-            return setScalePodsToZero({
-                ...scalePodsToZero,
+            setScalePodsToZero({
                 rollout: {
                     isChecked: false,
                     value: "INTERMEDIATE"
@@ -386,6 +379,12 @@ export const Details: React.FC<{
                 }
             })
         }
+        setScalePodsName({
+            name: {
+                isChecked: !scalePodsName.name.isChecked,
+                value: scalePodsName.name.isChecked ? "INTERMEDIATE" : "CHECKED"
+            }
+        })
     }
 
     function toggleScalePods() {
@@ -1412,8 +1411,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
