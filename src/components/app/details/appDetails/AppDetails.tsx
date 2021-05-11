@@ -66,9 +66,9 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { scalarOptions } from 'yaml';
-import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
 import { ScalePods } from './ExternalScalePodsModal';
-import { HibernateModal } from './Hibernatemodal';
+import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
+import { HibernateModal } from './DevtronAppHibernatemodal';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -154,7 +154,6 @@ export const Details: React.FC<{
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
-    const [showRestore, toggleRestore] = useState(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
         severityCount: { critical: 0, moderate: 0, low: 0 },
@@ -170,7 +169,6 @@ export const Details: React.FC<{
         //     prefix = `${location.protocol}//${location.host}`; 
     }
 
-   
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
@@ -184,6 +182,28 @@ export const Details: React.FC<{
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
 
+    const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
+        name: {
+            isChecked: false,
+            value: "CHECKED"
+        },
+    })
+
+    const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
+
+        rollout: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        horizontalPodAutoscaler: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        deployment: {
+            isChecked: false,
+            value: "CHECKED",
+        }
+    })
     async function callAppDetailsAPI() {
         try {
             let response = await appDetailsAPI(params.appId, params.envId, 25000);
@@ -370,51 +390,19 @@ export const Details: React.FC<{
 
             {hibernateConfirmationModal && (
                 <>
-                    <HibernateModal 
+                    <ScalePods 
+                    scalePodsName={scalePodsName}
+                    setScalePodsName={setScalePodsName}
+                    scalePodsToZero={scalePodsToZero}
+                    setScalePodsToZero={setScalePodsToZero}/>
+                    {/* <HibernateModal 
                     appDetails= {appDetails}
                     handleHibernate= {handleHibernate}
                     hibernating= {hibernating}
                     hibernateConfirmationModal= {hibernateConfirmationModal}
-                    setHibernateConfirmationModal= {setHibernateConfirmationModal}/>
+                    setHibernateConfirmationModal= {setHibernateConfirmationModal}/> */}
                 </>
-                // <ConfirmationDialog>
-                //     <ConfirmationDialog.Icon
-                //         src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                //     />
-                //     <ConfirmationDialog.Body
-                //         title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
-                //             }' on '${appDetails.environmentName}'`}
-                //         subtitle={
-                //             <p>
-                //                 Pods for this application will be{' '}
-                //                 <b>
-                //                     scaled{' '}
-                //                     {hibernateConfirmationModal === 'hibernate'
-                //                         ? 'down to 0'
-                //                         : ' upto its original count'}{' '}
-                //                     on {appDetails.environmentName}
-                //                 </b>{' '}
-                //                 environment.
-                //             </p>
-                //         }
-                //     >
-                //         <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
-                //     </ConfirmationDialog.Body>
-                //     <ConfirmationDialog.ButtonGroup>
-                //         <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
-                //             Cancel
-                //         </button>
-                //         <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                //             {hibernating ? (
-                //                 <Progressing />
-                //             ) : hibernateConfirmationModal === 'hibernate' ? (
-                //                 `Hibernate App `
-                //             ) : (
-                //                 'Restore App'
-                //             )}
-                //         </button>
-                //     </ConfirmationDialog.ButtonGroup>
-                // </ConfirmationDialog>
+
             )}
         </React.Fragment>
     );

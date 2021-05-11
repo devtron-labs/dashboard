@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ConfirmationDialog, Progressing, } from '../../../common';
 import restoreIcon from '../../../../assets/icons/ic-restore.svg';
 import warningIcon from '../../../../assets/icons/ic-warning.svg';

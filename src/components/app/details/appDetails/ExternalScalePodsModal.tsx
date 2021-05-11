@@ -1,34 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ScalePodsNameType, ScalePodsToZero } from './appDetails.type'
 import { VisibleModal, Checkbox } from '../../../common';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 
-export function ScalePods() {
+export function ScalePods({scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero}) {
     const [showRestore, toggleRestore] = useState(false)
-    const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
-        name: {
-            isChecked: false,
-            value: "CHECKED"
-        },
-    })
-
-    const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
-
-        rollout: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        horizontalPodAutoscaler: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        deployment: {
-            isChecked: false,
-            value: "CHECKED",
-        }
-    })
-
+   
     function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
         let scalePodsToZeroUpdate = {
             ...scalePodsToZero,
