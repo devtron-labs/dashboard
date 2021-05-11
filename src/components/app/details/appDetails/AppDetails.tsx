@@ -188,6 +188,7 @@ export const Details: React.FC<{
             value: "CHECKED"
         },
     })
+    const [detailed, toggleDetailed] = React.useState(false);
 
     const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
 
@@ -333,7 +334,7 @@ export const Details: React.FC<{
                     nodes={aggregatedNodes}
                 />}
                 <AppSyncDetails streamData={streamData} />
-            </div> */}
+zdf-098u-098      </div> */}
             <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                 <SourceInfo
                     appDetails={appDetails}
@@ -390,11 +391,12 @@ export const Details: React.FC<{
 
             {hibernateConfirmationModal && (
                 <>
-                    <ScalePods 
-                    scalePodsName={scalePodsName}
-                    setScalePodsName={setScalePodsName}
-                    scalePodsToZero={scalePodsToZero}
-                    setScalePodsToZero={setScalePodsToZero}/>
+                    <ScalePods
+                        scalePodsName={scalePodsName}
+                        setScalePodsName={setScalePodsName}
+                        scalePodsToZero={scalePodsToZero}
+                        setScalePodsToZero={setScalePodsToZero} 
+                        onClose= {()=>setHibernateConfirmationModal('')}/>
                     {/* <HibernateModal 
                     appDetails= {appDetails}
                     handleHibernate= {handleHibernate}
