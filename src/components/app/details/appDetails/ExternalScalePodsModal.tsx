@@ -10,7 +10,7 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
         kind: "",
         name: ""
     })
-    // const [scalePodLoading , setScalePodLoading] = useState(false)
+    const [scalePodLoading, setScalePodLoading] = useState(false)
     const key = "rollout" || "horizontalPodAutoscaler" || "deployment"
 
     function handleScaleObjectToZero(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
@@ -92,12 +92,18 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
         })
     }
 
-    function toggleScalePods() {
+    function handleScalePodsToZero() {
         toggleRestore(true)
-        // setScalePodLoading(true);
-        // let payload= {
-
-        // }
+        setScalePodLoading(true);
+        let doc = document.getElementsByClassName('scale-pod-list') as HTMLCollectionOf<HTMLElement>;
+        doc[0].style.opacity = "0.5"
+        let payload = {
+            kind: form.kind,
+            name: form.name
+        }
+        setForm(payload)
+        { console.log(payload) }
+        // setScalePodLoading(false);
     }
 
     return (
@@ -121,37 +127,43 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
                         </div>
                     </div>
                     <div className="fw-6 mt-16 mb-8 fs-14 cn-9">Select objects to scale down to 0 (zero)</div>
-                    <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
-                        <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                            isChecked={scalePodsName.name.isChecked}
-                            value={scalePodsName.name.value}
-                            onChange={(e) => { e.stopPropagation(); handleAllScaleObjects() }}
-                        >
-                            <div className="pl-16 fw-6">
-                                <span>Name</span>
-                            </div>
-                        </Checkbox>
-                    </div>
-
-                    {scalePodsList.map((list) =>
-                        <div className="pt-11 pb-11" >
+                    <div className="scale-pod-list">
+                        <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
                             <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                isChecked={scalePodsToZero.rollout.isChecked}
-                                value={scalePodsToZero.rollout.value}
-                                onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero(key) }}
+                                isChecked={scalePodsName.name.isChecked}
+                                value={scalePodsName.name.value}
+                                onChange={(e) => { e.stopPropagation(); handleAllScaleObjects() }}
                             >
-                                <div className="pl-16">
-                                    <span className="cn-9 fw-6">{list?.kind} / </span>
-                                    <span>{list?.name}</span>
+                                <div className="pl-16 fw-6">
+                                    <span>Name</span>
                                 </div>
                             </Checkbox>
                         </div>
-                    )}
 
-                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={(e) => { e.preventDefault(); toggleScalePods() }}>
-                        <ScaleDown className="icon-dim-16" />
-                                Scale Pods to 0
-                            </button>
+                        {scalePodsList.map((list) =>
+                            <div className="pt-11 pb-11" >
+                                <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                    isChecked={scalePodsToZero.rollout.isChecked}
+                                    value={scalePodsToZero.rollout.value}
+                                    onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero(key) }}
+                                >
+                                    <div className="pl-16">
+                                        <span className="cn-9 fw-6">{list?.kind} / </span>
+                                        <span>{list?.name}</span>
+                                    </div>
+                                </Checkbox>
+                            </div>
+                        )}
+                    </div>
+                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px", fontWeight: "normal" }} className="cta flex" onClick={(e) => { e.preventDefault(); handleScalePodsToZero() }}>
+                        {scalePodLoading ?
+                            <>
+                                <div className="icon-dim-16 mr-4"> <Progressing pageLoader /> </div> Please wait...
+                            </> :
+                            <>
+                                <ScaleDown className="icon-dim-16 mr-4" /> Scale Pods to 0 (zero)
+                             </>}
+                    </button>
 
                     {showRestore && <>
                         <h1 className="fw-6 mt-20 mb-8 fs-14 cn-9">Select objects to restore</h1>
