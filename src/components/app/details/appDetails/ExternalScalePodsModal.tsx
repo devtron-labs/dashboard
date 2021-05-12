@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { VisibleModal, Checkbox } from '../../../common';
+import React, { useState } from 'react';
+import { VisibleModal, Checkbox, Progressing, } from '../../../common';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 
-export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero, onClose }) {
+export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero, onClose, scalePodsList }) {
     const [showRestore, toggleRestore] = useState(false)
+    const [form, setForm] = useState({
+        kind: "",
+        name: ""
+    })
+    // const [scalePodLoading , setScalePodLoading] = useState(false)
+    const key = "rollout" || "horizontalPodAutoscaler" || "deployment"
 
-    function handleScaleObject(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
+    function handleScaleObjectToZero(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
         let scalePodsToZeroUpdate = {
             ...scalePodsToZero,
             [key]: {
@@ -88,6 +94,10 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
 
     function toggleScalePods() {
         toggleRestore(true)
+        // setScalePodLoading(true);
+        // let payload= {
+
+        // }
     }
 
     return (
@@ -122,45 +132,23 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
                             </div>
                         </Checkbox>
                     </div>
-                    <div className="pt-11 pb-11" >
-                        <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                            isChecked={scalePodsToZero.rollout.isChecked}
-                            value={scalePodsToZero.rollout.value}
-                            onChange={(e) => { e.stopPropagation(); handleScaleObject("rollout") }}
-                        >
-                            <div className="pl-16">
-                                <span className="cn-9 fw-6">Rollout / </span>
-                                <span>dashboard-bp-devtroncd</span>
-                            </div>
-                        </Checkbox>
-                    </div>
-                    <div className="pt-11 pb-11">
-                        <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                            isChecked={scalePodsToZero.horizontalPodAutoscaler.isChecked}
-                            value={scalePodsToZero.horizontalPodAutoscaler.value}
-                            onChange={(e) => { e.stopPropagation(); handleScaleObject("horizontalPodAutoscaler") }}
-                        >
-                            <div className="pl-16">
-                                <span className="cn-9 fw-6">HorizontalPodAutoscaler / </span>
-                                <span> dashboard-bp-devtroncd-hpa</span>
-                            </div>
-                        </Checkbox>
 
-                    </div>
-                    <div className="pt-11 pb-11">
-                        <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                            isChecked={scalePodsToZero.deployment.isChecked}
-                            value={scalePodsToZero.deployment.value}
-                            onChange={(e) => { e.stopPropagation(); handleScaleObject("deployment") }}
-                        >
-                            <div className="pl-16">
-                                <span className="cn-9 fw-6">Deployment / </span>
-                                <span>dashboard-bp-devtroncd</span>
-                            </div>
-                        </Checkbox>
+                    {scalePodsList.map((list) =>
+                        <div className="pt-11 pb-11" >
+                            <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                isChecked={scalePodsToZero.rollout.isChecked}
+                                value={scalePodsToZero.rollout.value}
+                                onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero(key) }}
+                            >
+                                <div className="pl-16">
+                                    <span className="cn-9 fw-6">{list?.kind} / </span>
+                                    <span>{list?.name}</span>
+                                </div>
+                            </Checkbox>
+                        </div>
+                    )}
 
-                    </div>
-                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={() => toggleScalePods()}>
+                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={(e) => { e.preventDefault(); toggleScalePods() }}>
                         <ScaleDown className="icon-dim-16" />
                                 Scale Pods to 0
                             </button>
@@ -182,11 +170,11 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
                             <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                 isChecked={scalePodsToZero.rollout.isChecked}
                                 value={"CHECKED"}
-                                onChange={(e) => { e.stopPropagation(); handleScaleObject("rollout") }}
+                                onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero("rollout") }}
                             >
                                 <div className="pl-16">
-                                    <span className="cn-9 fw-6">Rollout / </span>
-                                    <span>dashboard-bp-devtroncd</span>
+                                    <span className="cn-9 fw-6">{form.kind} / </span>
+                                    <span>{form.name}</span>
                                 </div>
                             </Checkbox>
                         </div>

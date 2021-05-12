@@ -41,24 +41,33 @@ export interface SecurityVulnerabilititesProps {
     onClick: () => void;
 }
 
-export interface ScalePodsNameType{
+export interface ScalePodsNameType {
     name: {
         isChecked: boolean;
         value: "CHECKED" | "INTERMEDIATE"
     }
 }
 
-export interface ScalePodsToZero{
-    rollout:{
+export interface ScalePodsList {
+    kind: string;
+    name: string;
+}
+
+export interface ScalePodsObjectList {
+    scalePodsList: ScalePodsList[];
+    }
+
+export interface ScalePodsToZero {
+    rollout: {
         isChecked: boolean;
-        value: "CHECKED" | "INTERMEDIATE"
+        value: "CHECKED" | "INTERMEDIATE";
     },
     horizontalPodAutoscaler: {
         isChecked: boolean;
-        value: "CHECKED" | "INTERMEDIATE"
+        value: "CHECKED" | "INTERMEDIATE";
     },
     deployment: {
         isChecked: boolean;
-        value: "CHECKED" | "INTERMEDIATE" 
+        value: "CHECKED" | "INTERMEDIATE";
     }
 }
