@@ -147,7 +147,7 @@ export default class Navigation extends Component<NavigationProps, NavigationSta
 		let isLatest = this.props.currentVersion === this.props.latestVersion;
 
 		return <>
-			<nav>
+			<nav className="main-nav">
 				<aside className="short-nav nav-grid nav-grid--collapsed">
 					<NavLink to={URLS.APP} onClick={(event) => {
 						ReactGA.event({

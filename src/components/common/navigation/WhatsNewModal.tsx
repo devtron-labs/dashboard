@@ -27,7 +27,6 @@ export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalSt
 
     componentDidMount() {
         getReleases().then((response) => {
-            console.log(response)
             this.setState({
                 releases: response,
                 selected: response[0],
