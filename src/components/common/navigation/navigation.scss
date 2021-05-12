@@ -228,3 +228,12 @@
 .whats-new-modal__release img {
     max-width: 100%;
 }
+
+.whats-new-modal__right li {
+    margin: 0 0 16px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+}

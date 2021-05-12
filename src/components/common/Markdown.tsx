@@ -28,7 +28,6 @@ export function MarkDown({ markdown = "", className = "", ...props }) {
             </a>`;
     };
 
-
     marked.setOptions({
         renderer,
         gfm: true,

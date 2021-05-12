@@ -27,6 +27,7 @@ export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalSt
 
     componentDidMount() {
         getReleases().then((response) => {
+            console.log(response)
             this.setState({
                 releases: response,
                 selected: response[0],
@@ -57,8 +58,8 @@ export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalSt
                         {this.state.releases.map((release) => {
                             let isLatest = this.props.latestVersion === this.props.currentVersion;
                             let classes = '';
-                            if (release.tag_name === this.state.selected.tag_name) classes = 'm-0 cursor cb-5';
-                            else classes = 'm-0 cursor';
+                            if (release.tag_name === this.state.selected.tag_name) classes = 'm-0 pt-8 pb-8 cursor cb-5';
+                            else classes = 'm-0 pt-8 pb-8 cursor';
                             return <p className={classes} onClick={() => { this.setState({ selected: release }) }}>
                                 {release.tag_name}
                                 {this.props.latestVersion === release.tag_name ? " (Latest)" : ""}
