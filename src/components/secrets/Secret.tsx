@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { Progressing, showError, Select, RadioGroup, not, Info, ToastBody, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, getMajorAndMinorVersionArr } from '../common'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service';
 import { getAppChartRef } from '../../services/service';
@@ -208,7 +208,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!props.subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
-    const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(props.appChartRef.version, [3, 9]);
+    const chartVersionNum = getMajorAndMinorVersionArr(props.appChartRef.version);
+    const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
 
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {

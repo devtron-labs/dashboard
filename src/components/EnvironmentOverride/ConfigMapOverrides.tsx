@@ -6,7 +6,7 @@ import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
-import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, getMajorAndMinorVersionArr } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -196,7 +196,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
+    const chartVersionNum: number[] = getMajorAndMinorVersionArr(appChartRef.version);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
 
     function changeEditorMode(e) {
         if (yamlMode) {

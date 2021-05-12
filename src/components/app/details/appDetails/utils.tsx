@@ -5,7 +5,7 @@ import {
     AggregatedNodes,
     PodMetadatum,
 } from '../../types';
-import { getVersionArr, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
+import { getMajorAndMinorVersionArr, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
 import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
@@ -216,7 +216,7 @@ export function getCalendarValue(startDateStr: string, endDateStr: string): stri
 export function isK8sVersionValid(k8sVersion: string): boolean {
     if (!k8sVersion) return false;
     try {
-        let versionNum = getVersionArr(k8sVersion);
+        let versionNum = getMajorAndMinorVersionArr(k8sVersion);
         let sum = versionNum.reduce((sum, item) => {
             return sum += item;
         }, 0)
@@ -225,12 +225,6 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
         return false;
     }
     return true;
-}
-
-export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
-    //Comparing with v1.15.xxx
-    let target = [1, 15];
-    return isVersionLessThanOrEqualToTarget(k8sVersion, target);
 }
 
 export interface AppInfo {
@@ -260,18 +254,21 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
 }
 
 export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
+    let target = [1, 15];
+    let k8sVersionNum: number[] = getMajorAndMinorVersionArr(k8sVersion);
+
     switch (chartName) {
         case 'latency':
             url += `latency/latency`;
             break;
         case 'ram':
-            if (isK8sVersion115OrBelow(k8sVersion)) {
+            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, target)) {
                 url += `memory-k8s15/memory-usage-k8s15`;
             }
             else url += `memory/memory-usage`;
             break;
         case 'cpu':
-            if (isK8sVersion115OrBelow(k8sVersion)) {
+            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, target)) {
                 url += `cpu-k8s15/cpu-usage-k8s15`;
             }
             else url += `cpu/cpu-usage`;

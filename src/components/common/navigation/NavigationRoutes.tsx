@@ -24,10 +24,11 @@ export default function NavigationRoutes() {
     const history = useHistory();
     const location = useLocation();
     const match = useRouteMatch();
-    const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("true");
+    const [showWhatsNewPrompt, setWhatsNewPrompt] = useState<WhatsNewPrompt>("false");
     const [showWhatsNewModal, setShowWhatsNewModal] = useState(false);
     const [currentVersion, setCurrentVersion] = useState("");
     const [latestVersion, setLatestVersion] = useState("");
+    const [isCurrentVersionLatest, setIsCurrentVersionLatest] = useState(true);
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -66,42 +67,45 @@ export default function NavigationRoutes() {
     }, [])
 
     useEffect(() => {
-        let show = localStorage.getItem('infobar');
-        if (show != "false") show = "true";
-        setWhatsNewPrompt(show as WhatsNewPrompt);
         getLatestReleases().then((response) => {
             setLatestVersion(response.tag_name);
+            setCurrentVersion(window._env_?.VERSION)
+            let isCurrentVersionLatest = window._env_?.VERSION === response.tag_name;
+            setIsCurrentVersionLatest(isCurrentVersionLatest);
+            let show = localStorage.getItem('infobar');
+            if (show != "false") show = "true";
+            setWhatsNewPrompt(show as WhatsNewPrompt);
         })
-        setCurrentVersion(window?._env_?.VERSION)
     }, [])
 
     return <main>
-        <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showWhatsNewPrompt === "true" ? '40px' : '0px' }}>
+        <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: (!isCurrentVersionLatest && showWhatsNewPrompt === "true") ? '40px' : '0px' }}>
             <span className="mt-10 mb-10">
                 <Info className="icon-dim-20" />
             </span>
             <p className="m-0 pt-10 pb-10">
-                A new version of Devtron is available.&nbsp;
-                <span className="cursor cb-5" onClick={(event) => { setShowWhatsNewModal(true) }}>See what's new.</span>&nbsp;
                 <span className="fw-6">Customers: </span>
-                <a className="cursor cb-5 mr-5" href="mailto:support@devtron.ai?subject=Request for latest version">mail us</a>
+                <a className="cursor cb-5 mr-5" href="mailto:contact@devtron.ai?subject=Request for latest version" target="_blank" rel="noopener noreferer">mail us</a>
                 to request latest version.&nbsp;
-                {/* <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a> */}
+                <span className="fw-6">Open source users: </span>
+                <a href="https://github.com/devtron-labs/devtron/blob/main/README.md" target="_blank" rel="noopener noreferer">click here to see how to upgrade.</a>
             </p>
             <button type="button" className="transparent icon-dim-42" onClick={(event) => { localStorage.setItem('infobar', "false"); setWhatsNewPrompt("false"); }}>
                 <Close className="icon-dim-20" />
             </button>
         </div>
 
-        <div className="page-content" style={{ height: showWhatsNewPrompt === "true" ? 'calc(100vh - 40px)' : '100vh' }}>
+        <div className="page-content" style={{ height: !isCurrentVersionLatest && showWhatsNewPrompt === "true" ? 'calc(100vh - 40px)' : '100vh' }}>
             <Navigation history={history} match={match} location={location}
                 latestVersion={latestVersion}
                 currentVersion={currentVersion}
+                isCurrentVersionLatest={isCurrentVersionLatest}
                 showWhatsNewModal={showWhatsNewModal}
                 setShowWhatsNewModal={setShowWhatsNewModal}
             />
             {showWhatsNewModal ? <WhatsNewModal currentVersion={currentVersion}
                 latestVersion={latestVersion}
+                isCurrentVersionLatest={isCurrentVersionLatest}
                 close={() => setShowWhatsNewModal(false)} /> : null}
             <div>
                 <Suspense fallback={<Progressing pageLoader />}>

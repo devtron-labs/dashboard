@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
 import { getChartReferences } from '../../services/service';
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
+import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget, getMajorAndMinorVersionArr } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
@@ -12,7 +12,8 @@ import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
-    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
+    let currentVersionNum: number[] = getMajorAndMinorVersionArr(currentVersion)
+    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersionNum, [3, 7, 0]);
 
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
         <div className="p-lr-20 m-tb-20 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>

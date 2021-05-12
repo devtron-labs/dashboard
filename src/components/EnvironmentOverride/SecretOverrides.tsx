@@ -3,7 +3,7 @@ import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
 import { getEnvironmentSecrets, } from '../../services/service';
 import { useParams } from 'react-router';
 import { ListComponent, Override } from './ConfigMapOverrides'
-import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, getMajorAndMinorVersionArr } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify';
@@ -189,7 +189,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
+    const chartVersionNum = getMajorAndMinorVersionArr(appChartRef.version);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
 
     function setKeyValueArray(arr) {
         tempArr.current = arr

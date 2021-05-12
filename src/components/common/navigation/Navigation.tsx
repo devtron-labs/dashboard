@@ -16,6 +16,7 @@ import './navigation.scss';
 export interface NavigationProps extends RouteComponentProps<{}> {
 	latestVersion: string;
 	currentVersion: string;
+	isCurrentVersionLatest: boolean;
 	showWhatsNewModal: boolean;
 	setShowWhatsNewModal: (flag) => void;
 }
@@ -66,13 +67,12 @@ export default class Navigation extends Component<NavigationProps, NavigationSta
 	}
 
 	renderHelpCard() {
-		let isLatest = this.props.currentVersion === this.props.latestVersion;
 		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleHelpCard}>
 			<div className="nav-grid__card help-card br-4 bcn-0">
 				<a href="https://docs.devtron.ai/" rel="noreferrer noopener" target="_blank" className="block pt-14 pb-10 pl-16 pr-16 m-0 fs-13 fw-5 lh-1-54 cn-9">Documentation</a>
 				<div className="pt-10 pb-18 cursor clickable" onClick={(event) => this.props.setShowWhatsNewModal(true)}>
-					<p className="m-0 pl-16 pr-16 fs-13 fw-5 lh-1-54 cn-9" >What's New{isLatest ? null : <span className="inline-block ml-8 br-5 icon-dim-10 bcy-5"></span>}</p>
-					{isLatest ? null : <p className="m-0 pl-16 pr-16 fs-12 fw-5 lh-1-54 cb-5">New Version Available ({this.props.latestVersion})</p>}
+					<p className="m-0 pl-16 pr-16 fs-13 fw-5 lh-1-54 cn-9" >What's New{this.props.isCurrentVersionLatest ? '' : <span className="inline-block ml-8 br-5 icon-dim-10 bcy-5"></span>}</p>
+					{this.props.isCurrentVersionLatest ? '' : <p className="m-0 pl-16 pr-16 fs-12 fw-5 lh-1-54 cb-5">New Version Available ({this.props.latestVersion})</p>}
 				</div>
 			</div>
 		</div>, document.getElementById('root'))
@@ -144,8 +144,7 @@ export default class Navigation extends Component<NavigationProps, NavigationSta
 
 	render() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
-		let isLatest = this.props.currentVersion === this.props.latestVersion;
-
+	
 		return <>
 			<nav className="main-nav">
 				<aside className="short-nav nav-grid nav-grid--collapsed">
@@ -228,7 +227,7 @@ export default class Navigation extends Component<NavigationProps, NavigationSta
 						}}>
 						<div className="flexbox">
 							<div className="icon-dim-40 flex position-rel">
-								{isLatest ? null : <span className="inline-block br-5 icon-dim-10 bcy-5 en-0 bw-2" style={{ position: 'absolute', top: "7px", right: "11px" }}></span>}
+								{this.props.isCurrentVersionLatest ? '' : <span className="inline-block br-5 icon-dim-10 bcy-5 en-0 bw-2" style={{ position: 'absolute', top: "7px", right: "11px" }}></span>}
 								<Help className="icon-dim-24 fcn-0" />
 							</div>
 							<div className="expandable-active-nav">
