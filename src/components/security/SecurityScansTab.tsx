@@ -413,7 +413,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   }
 
   render() {
-    return <div className="security-scan">
+    return <div className="security-scan bcn-0">
       {this.renderFilters()}
       {this.renderSavedFilters()}
       {this.renderTable()}
