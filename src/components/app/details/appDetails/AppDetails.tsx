@@ -70,6 +70,7 @@ import { AppMetrics } from './AppMetrics';
 import { scalarOptions } from 'yaml';
 import { ExternalScalePods } from './ExternalScalePodsModal';
 import { HibernateModal } from './DevtronAppHibernateModal';
+import ExternalAppScaleModal from './ExternalAppScaleModal';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -369,9 +370,10 @@ zdf-098u-098      </div> */}
 
             {hibernateConfirmationModal && (
                 <>
-                    <ExternalScalePods
+                    < ExternalAppScaleModal />
+                    {/* <ExternalScalePods
                         onClose={() => setHibernateConfirmationModal('')} 
-                        />
+                        /> */}
                     {/* <HibernateModal 
                     appDetails= {appDetails}
                     handleHibernate= {handleHibernate}

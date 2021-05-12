@@ -8,16 +8,16 @@ import { getScalePodList } from './appDetails.service';
 import { ScalePodsNameType, ScalePodsToZero, ScalePodsObjectList } from './appDetails.type'
 
 export function ExternalScalePods({ onClose }) {
-    const [scalePodsList, setScalePodsList] = useState <ScalePodsObjectList>([])
+    const [scalePodsList, setScalePodsList] = useState<ScalePodsObjectList>([])
+    const [showRestore, toggleRestore] = useState(false)
+    const [scalePodLoading, setScalePodLoading] = useState(false)
     const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
         name: {
             isChecked: false,
             value: "CHECKED"
         },
     })
-   
     const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
-
         rollout: {
             isChecked: false,
             value: "CHECKED",
@@ -31,20 +31,17 @@ export function ExternalScalePods({ onClose }) {
             value: "CHECKED",
         }
     })
-    const [showRestore, toggleRestore] = useState(false)
     const [form, setForm] = useState({
         kind: "",
         name: ""
     })
-    const [scalePodLoading, setScalePodLoading] = useState(false)
-    const key = "rollout" || "horizontalPodAutoscaler" || "deployment"
 
     useEffect(() => {
         getScalePodList().then((response) => {
-            {console.log(response)}
+            { console.log(response) }
             setScalePodsList(response)
         })
-}, [])
+    }, [])
 
     function handleScaleObjectToZero(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
         let scalePodsToZeroUpdate = {
@@ -130,11 +127,11 @@ export function ExternalScalePods({ onClose }) {
         setScalePodLoading(true);
         let doc = document.getElementsByClassName('scale-pod-list') as HTMLCollectionOf<HTMLElement>;
         doc[0].style.opacity = "0.5"
-        // let payload = scalePodsToZero.filter(item => item.isChecked)
-        // getScalePodList(payload).then((response) =>{ return response })
-        // setForm(payload)
-        // setScalePodLoading(false);
-        // { console.log(payload) }
+        let payload = scalePodsList.filter(item => item.isChecked)
+        getScalePodList(payload).then((response) =>{ return response })
+        setForm(payload)
+        setScalePodLoading(false);
+        { console.log(payload) }
         // setScalePodLoading(false);
     }
 
@@ -174,6 +171,8 @@ export function ExternalScalePods({ onClose }) {
 
                         {scalePodsList.map((list) =>
                             <div className="pt-11 pb-11" >
+                                {console.log(scalePodsList)}
+                                {console.log(scalePodsToZero)}
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                                     isChecked={scalePodsToZero[list?.kind].isChecked}
                                     value={scalePodsToZero[list?.kind].value}

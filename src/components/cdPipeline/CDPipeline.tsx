@@ -96,6 +96,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     getDeploymentStrategies(): void {
         getDeploymentStrategyList(this.props.match.params.appId).then((response) => {
+            {console.log(response)}
             let strategies = response.result.pipelineStrategy || [];
             for (let i = 0; i < strategies.length; i++) {
                 if (!this.allStrategies[strategies[i].deploymentTemplate])

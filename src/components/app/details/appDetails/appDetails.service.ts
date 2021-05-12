@@ -13,23 +13,34 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchAPI(URL, 'GET');
 }
 
-export function getScalePodList(paylaod) {
+export function getScalePodList() {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            resolve([
-                    {
-                        kind: "rollout",
-                        name: "dashboard-bp-devtroncd"
-                    },
-                    {
-                        kind: "horizontalPodAutoscaler",
-                        name: "dashboard-bp-devtroncd"
-                    },
-                    {
-                        kind: "deployment",
-                        name: "dashboard-bp-devtroncd"
-                    },
-                ],
-            )}, 1000)
+            resolve({
+                result: {
+                    scalePodToZeroList: [
+                        {
+                            kind: "rollout",
+                            name: "dashboard-bp-devtroncd",
+                            isChecked: false,
+                            value: "CHECKED"
+                        },
+                        {
+                            kind: "horizontalPodAutoscaler",
+                            name: "dashboard-bp-devtroncd",
+                            isChecked: false,
+                            value: "CHECKED"
+                        },
+                        {
+                            kind: "deployment",
+                            name: "dashboard-bp-devtroncd",
+                            isChecked: false,
+                            value: "CHECKED"
+                        },
+                    ]
+                }
+            },
+            )
+        }, 1000)
     })
 }

@@ -56,7 +56,7 @@ export interface ScalePodsList {
 export interface ScalePodsObjectList {
     scalePodsList: ScalePodsList[];
     objectToRestoreList: ScalePodsList[];
-    }
+}
 
 export interface ScalePodsToZero {
     rollout: {
@@ -70,5 +70,29 @@ export interface ScalePodsToZero {
     deployment: {
         isChecked: boolean;
         value: "CHECKED" | "INTERMEDIATE";
+    }
+}
+
+export interface ScalePod {
+    kind: string
+    isChecked: boolean;
+    value: "INTERMEDIATE" | "CHECKED";
+}
+
+export interface ScaleToZero {
+    kind: ScalePod;
+    name: string;
+}
+
+export interface ExternalAppScaleModalState {
+    view: string;
+    scalePodsToZero: ScaleToZero[];
+    // objectToRestore: ScaleToZero[];
+    // kindValue: ScalePod
+    scalePodName: {
+        name: {
+            isChecked: boolean;
+            value: "INTERMEDIATE" | "CHECKED";
+        }
     }
 }
