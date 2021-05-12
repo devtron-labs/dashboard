@@ -69,9 +69,7 @@ import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { scalarOptions } from 'yaml';
 import { ExternalScalePods } from './ExternalScalePodsModal';
-import { ScalePodsNameType, ScalePodsToZero, ScalePodsObjectList } from './appDetails.type'
 import { HibernateModal } from './DevtronAppHibernateModal';
-import { getScalePodList } from './appDetails.service';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -184,43 +182,6 @@ export const Details: React.FC<{
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
-    const [scalePodsList, setScalePodsList] = useState <ScalePodsObjectList>([])
-    const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
-        name: {
-            isChecked: false,
-            value: "CHECKED"
-        },
-    })
-    const [scalePodsToRestore, setScalePodsToRestore] = useState({
-        rollout: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        horizontalPodAutoscaler: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        deployment: {
-            isChecked: false,
-            value: "CHECKED",
-        }
-    });
-
-    const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
-
-        rollout: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        horizontalPodAutoscaler: {
-            isChecked: false,
-            value: "CHECKED",
-        },
-        deployment: {
-            isChecked: false,
-            value: "CHECKED",
-        }
-    })
 
     async function callAppDetailsAPI() {
         try {
@@ -262,14 +223,6 @@ export const Details: React.FC<{
             clearInterval(pollingIntervalID);
         }
     }
-
-    useEffect(() => {
-            getScalePodList().then((response) => {
-                {console.log(response)}
-                setScalePodsList(response)
-            })
-    }, [])
-
 
     useEffect(() => {
         if (appDetailsResult && setAppDetailResultInParent) {
@@ -417,12 +370,8 @@ zdf-098u-098      </div> */}
             {hibernateConfirmationModal && (
                 <>
                     <ExternalScalePods
-                        scalePodsName={scalePodsName}
-                        setScalePodsName={setScalePodsName}
-                        scalePodsToZero={scalePodsToZero}
-                        setScalePodsToZero={setScalePodsToZero}
                         onClose={() => setHibernateConfirmationModal('')} 
-                        scalePodsList={scalePodsList}/>
+                        />
                     {/* <HibernateModal 
                     appDetails= {appDetails}
                     handleHibernate= {handleHibernate}

@@ -55,6 +55,7 @@ export interface ScalePodsList {
 
 export interface ScalePodsObjectList {
     scalePodsList: ScalePodsList[];
+    objectToRestoreList: ScalePodsList[];
     }
 
 export interface ScalePodsToZero {

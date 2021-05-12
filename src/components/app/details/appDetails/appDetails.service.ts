@@ -13,7 +13,7 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchAPI(URL, 'GET');
 }
 
-export function getScalePodList() {
+export function getScalePodList(paylaod) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve([

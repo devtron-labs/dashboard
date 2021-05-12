@@ -1,10 +1,36 @@
-import React, { useState } from 'react';
+//@ts-nocheck
+import React, { useState, useEffect } from 'react';
 import { VisibleModal, Checkbox, Progressing, } from '../../../common';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
+import { getScalePodList } from './appDetails.service';
+import { ScalePodsNameType, ScalePodsToZero, ScalePodsObjectList } from './appDetails.type'
 
-export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsToZero, setScalePodsToZero, onClose, scalePodsList }) {
+export function ExternalScalePods({ onClose }) {
+    const [scalePodsList, setScalePodsList] = useState <ScalePodsObjectList>([])
+    const [scalePodsName, setScalePodsName] = useState<ScalePodsNameType>({
+        name: {
+            isChecked: false,
+            value: "CHECKED"
+        },
+    })
+   
+    const [scalePodsToZero, setScalePodsToZero] = useState<ScalePodsToZero>({
+
+        rollout: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        horizontalPodAutoscaler: {
+            isChecked: false,
+            value: "CHECKED",
+        },
+        deployment: {
+            isChecked: false,
+            value: "CHECKED",
+        }
+    })
     const [showRestore, toggleRestore] = useState(false)
     const [form, setForm] = useState({
         kind: "",
@@ -12,6 +38,13 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
     })
     const [scalePodLoading, setScalePodLoading] = useState(false)
     const key = "rollout" || "horizontalPodAutoscaler" || "deployment"
+
+    useEffect(() => {
+        getScalePodList().then((response) => {
+            {console.log(response)}
+            setScalePodsList(response)
+        })
+}, [])
 
     function handleScaleObjectToZero(key: "rollout" | "horizontalPodAutoscaler" | "deployment") {
         let scalePodsToZeroUpdate = {
@@ -97,12 +130,11 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
         setScalePodLoading(true);
         let doc = document.getElementsByClassName('scale-pod-list') as HTMLCollectionOf<HTMLElement>;
         doc[0].style.opacity = "0.5"
-        let payload = {
-            kind: form.kind,
-            name: form.name
-        }
-        setForm(payload)
-        { console.log(payload) }
+        // let payload = scalePodsToZero.filter(item => item.isChecked)
+        // getScalePodList(payload).then((response) =>{ return response })
+        // setForm(payload)
+        // setScalePodLoading(false);
+        // { console.log(payload) }
         // setScalePodLoading(false);
     }
 
@@ -143,9 +175,9 @@ export function ExternalScalePods({ scalePodsName, setScalePodsName, scalePodsTo
                         {scalePodsList.map((list) =>
                             <div className="pt-11 pb-11" >
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={scalePodsToZero.rollout.isChecked}
-                                    value={scalePodsToZero.rollout.value}
-                                    onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero(key) }}
+                                    isChecked={scalePodsToZero[list?.kind].isChecked}
+                                    value={scalePodsToZero[list?.kind].value}
+                                    onChange={(e) => { e.stopPropagation(); handleScaleObjectToZero(list?.kind) }}
                                 >
                                     <div className="pl-16">
                                         <span className="cn-9 fw-6">{list?.kind} / </span>
