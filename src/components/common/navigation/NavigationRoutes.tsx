@@ -66,29 +66,14 @@ export default function NavigationRoutes() {
     }, [])
 
     useEffect(() => {
-        let show = localStorage.getItem('infobarppp');
+        let show = localStorage.getItem('infobar');
         if (show != "false") show = "true";
         setWhatsNewPrompt(show as WhatsNewPrompt);
         getLatestReleases().then((response) => {
             setLatestVersion(response.tag_name);
-
         })
         setCurrentVersion(window?._env_?.VERSION)
     }, [])
-
-    function sendEmail(): void {
-        let message = {
-            emailId: "email",
-            from: "from",
-            subject: "Subject",
-            emailBody: "Hi ",
-        }
-        let email = message.emailId;
-        let subject = message.subject;
-        let emailBody = 'Hi ' + message.from;
-        //@ts-ignore
-        document.location = "mailto:" + email + "?subject=" + subject + "&body=" + emailBody;
-    }
 
     return <main>
         <div className="bcb-1 pl-20 pr-20 version-info" style={{ height: showWhatsNewPrompt === "true" ? '40px' : '0px' }}>
@@ -99,10 +84,9 @@ export default function NavigationRoutes() {
                 A new version of Devtron is available.&nbsp;
                 <span className="cursor cb-5" onClick={(event) => { setShowWhatsNewModal(true) }}>See what's new.</span>&nbsp;
                 <span className="fw-6">Customers: </span>
-                <span className="cursor cb-5" onClick={sendEmail}>Mail us</span>
+                <a className="cursor cb-5 mr-5" href="mailto:support@devtron.ai?subject=Request for latest version">mail us</a>
                 to request latest version.&nbsp;
-                <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
-                {/* <a href="mailto:support@example.com?subject=SendMail&body=Description"> Mail Us</a> */}
+                {/* <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a> */}
             </p>
             <button type="button" className="transparent icon-dim-42" onClick={(event) => { localStorage.setItem('infobar', "false"); setWhatsNewPrompt("false"); }}>
                 <Close className="icon-dim-20" />

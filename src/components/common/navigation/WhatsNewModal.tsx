@@ -48,8 +48,10 @@ export class WhatsNewModal extends Component<WhatsNewModalProps, WhatsNewModalSt
                         <Info className="icon-dim-20" />
                     </span>
                     <p className="m-0 pt-10 pb-10">
-                        <span className="fw-6">Customers: </span><span>mail us</span> to request latest version.&nbsp;
-                        <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a>
+                        <span className="fw-6">Customers: </span>
+                        <a className="cursor cb-5 mr-5" href="mailto:support@devtron.ai?subject=Request for latest version" target="_blank">mail us</a>
+                        to request latest version.&nbsp;
+                        {/* <span className="fw-6">Open source users: </span><a href="">click here to see how to upgrade.</a> */}
                     </p>
                 </div>
                 <div className="flexbox whats-new-modal">
