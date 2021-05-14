@@ -80,20 +80,23 @@ export interface ScaleToZero {
     value: "INTERMEDIATE" | "CHECKED";
 }
 
+export interface ScalePodName {
+    name: {
+        isChecked: boolean;
+        value: "INTERMEDIATE" | "CHECKED";
+    }
+}
 export interface ExternalAppScaleModalState {
     view: string;
     scalePodsToZero: ScaleToZero[];
     objectToRestore: ScaleToZero[];
-    scalePodName: {
-        name: {
-            isChecked: boolean;
-            value: "INTERMEDIATE" | "CHECKED";
-        }
-    }
-    scalePodLoading:boolean;
+    scalePodName: ScalePodName;
+    objectToRestoreName: ScalePodName;
+    scalePodLoading: boolean;
+    objectToRestoreLoading: boolean;
     showRestore: boolean;
 }
 
 export interface ExternalAppScaleModalProps {
-   onClose: () => void
+    onClose: () => void
 }
