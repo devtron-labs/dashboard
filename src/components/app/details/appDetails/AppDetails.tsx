@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
@@ -64,6 +66,11 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { AppDetails } from './appDetails.type';
+import { scalarOptions } from 'yaml';
+import { ExternalScalePods } from './ExternalScalePodsModal';
+import { HibernateModal } from './DevtronAppHibernateModal';
+import ExternalAppScaleModal from './ExternalAppScaleModal';
+
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
@@ -301,7 +308,7 @@ export const Details: React.FC<{
                     nodes={aggregatedNodes}
                 />}
                 <AppSyncDetails streamData={streamData} />
-            </div> */}
+zdf-098u-098      </div> */}
             <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                 <SourceInfo
                     appDetails={appDetails}
@@ -357,44 +364,19 @@ export const Details: React.FC<{
             )}
 
             {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                    />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
-                            }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be{' '}
-                                <b>
-                                    scaled{' '}
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? 'down to 0'
-                                        : ' upto its original count'}{' '}
-                                    on {appDetails.environmentName}
-                                </b>{' '}
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                'Restore App'
-                            )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
+                <>
+                    < ExternalAppScaleModal onClose={() => setHibernateConfirmationModal('')} />
+                    {/* <ExternalScalePods
+                        onClose={() => setHibernateConfirmationModal('')} 
+                        /> */}
+                    {/* <HibernateModal 
+                    appDetails= {appDetails}
+                    handleHibernate= {handleHibernate}
+                    hibernating= {hibernating}
+                    hibernateConfirmationModal= {hibernateConfirmationModal}
+                    setHibernateConfirmationModal= {setHibernateConfirmationModal}/> */}
+                </>
+
             )}
         </React.Fragment>
     );
@@ -1132,7 +1114,7 @@ const MaterialCard: React.FC<{
                         }
                     >
                         <ScaleDown className="icon-dim-16" />
-                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
+                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0 '}
                     </button>
                 </div>
             </div>
@@ -1200,8 +1182,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                'Restore App'
-                            )}
+                                        'Restore App'
+                                    )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>

@@ -1739,3 +1739,7 @@ table.resource-tree {
     height: 28px;
     align-items: center;
 }
+
+.restore-btn.path.path :last-child{
+  fill: white;
+}

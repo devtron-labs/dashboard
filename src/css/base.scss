@@ -1587,3 +1587,10 @@ button.anchor {
 .content-left{
     justify-content: left;
 }
+.border-bottom{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
+
+.restore-btn.path.path :last-child{
+    fill: white;
+  }

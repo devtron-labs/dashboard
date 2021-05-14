@@ -90,3 +90,63 @@ export interface SecurityVulnerabilititesProps {
     };
     onClick: () => void;
 }
+
+export interface ScalePodsNameType {
+    name: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE"
+    }
+}
+
+export interface ScalePodsList {
+    kind: string;
+    name: string;
+}
+
+export interface ScalePodsObjectList {
+    scalePodsList: ScalePodsList[];
+    objectToRestoreList: ScalePodsList[];
+}
+
+export interface ScalePodsToZero {
+    rollout: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE";
+    },
+    horizontalPodAutoscaler: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE";
+    },
+    deployment: {
+        isChecked: boolean;
+        value: "CHECKED" | "INTERMEDIATE";
+    }
+}
+
+export interface ScaleToZero {
+    kind: string;
+    name: string;
+    isChecked: boolean;
+    value: "INTERMEDIATE" | "CHECKED";
+}
+
+export interface ScalePodName {
+    name: {
+        isChecked: boolean;
+        value: "INTERMEDIATE" | "CHECKED";
+    }
+}
+export interface ExternalAppScaleModalState {
+    view: string;
+    scalePodsToZero: ScaleToZero[];
+    objectToRestore: ScaleToZero[];
+    scalePodName: ScalePodName;
+    objectToRestoreName: ScalePodName;
+    scalePodLoading: boolean;
+    objectToRestoreLoading: boolean;
+    showRestore: boolean;
+}
+
+export interface ExternalAppScaleModalProps {
+    onClose: () => void
+}
