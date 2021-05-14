@@ -94,8 +94,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     isGitUrlValid(url: string): string | undefined {
         if (!url.length) return "This is a required field"
 
-        if (url.endsWith(".git")) return undefined;
-        else return "Invalid Path. URL should end with .git"
+        return undefined;
     }
 
     isGitProviderValid(provider) {
