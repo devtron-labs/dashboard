@@ -73,26 +73,27 @@ export interface ScalePodsToZero {
     }
 }
 
-export interface ScalePod {
-    kind: string
+export interface ScaleToZero {
+    kind: string;
+    name: string;
     isChecked: boolean;
     value: "INTERMEDIATE" | "CHECKED";
-}
-
-export interface ScaleToZero {
-    kind: ScalePod;
-    name: string;
 }
 
 export interface ExternalAppScaleModalState {
     view: string;
     scalePodsToZero: ScaleToZero[];
-    // objectToRestore: ScaleToZero[];
-    // kindValue: ScalePod
+    objectToRestore: ScaleToZero[];
     scalePodName: {
         name: {
             isChecked: boolean;
             value: "INTERMEDIATE" | "CHECKED";
         }
     }
+    scalePodLoading:boolean;
+    showRestore: boolean;
+}
+
+export interface ExternalAppScaleModalProps {
+   onClose: () => void
 }

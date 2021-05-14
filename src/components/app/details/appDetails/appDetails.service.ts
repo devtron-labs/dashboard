@@ -13,34 +13,79 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchAPI(URL, 'GET');
 }
 
-export function getScalePodList() {
+export function getScalePodList(): Promise<{
+    result: {
+        scalePodToZeroList:
+        {
+            kind: string;
+            name: string;
+            isChecked: boolean;
+            value: "CHECKED" | "INTERMEDIATE";
+        }[],
+        // objectToRestoreList:
+        // {
+        //     kind: string;
+        //     name: string;
+        //     isChecked: boolean;
+        //     value: string;
+        // }[]
+    },
+}> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
                 result: {
-                    scalePodToZeroList: [
-                        {
-                            kind: "rollout",
-                            name: "dashboard-bp-devtroncd",
+                    scalePodToZeroList: scalePodToZeroList.map((list) => {
+                        return {
+                            kind: list.kind,
+                            name: list.name,
                             isChecked: false,
                             value: "CHECKED"
-                        },
-                        {
-                            kind: "horizontalPodAutoscaler",
-                            name: "dashboard-bp-devtroncd",
-                            isChecked: false,
-                            value: "CHECKED"
-                        },
-                        {
-                            kind: "deployment",
-                            name: "dashboard-bp-devtroncd",
-                            isChecked: false,
-                            value: "CHECKED"
-                        },
-                    ]
+                        }
+                    },
+                        // objectToRestore: objectToRestoreList.map((list) => {
+                        //     return {
+                        //         kind: list.kind,
+                        //         name: list.name,
+                        //         isChecked: false,
+                        //         value: "CHECKED"
+                        //     }
+                        // })
+                    )
                 }
-            },
+            }
             )
         }, 1000)
     })
 }
+
+const scalePodToZeroList = [
+    {
+        kind: "rollout",
+        name: "dashboard-bp-devtroncd",
+
+    },
+    {
+        kind: "horizontalPodAutoscaler",
+        name: "dashboard-bp-devtroncd",
+
+    },
+    {
+        kind: "deployment",
+        name: "dashboard-bp-devtroncd",
+
+    },
+]
+
+const objectToRestoreList = [
+    {
+        kind: "rollout",
+        name: "dashboard-bp-devtroncd",
+
+    },
+    {
+        kind: "horizontalPodAutoscaler",
+        name: "dashboard-bp-devtroncd",
+
+    },
+]

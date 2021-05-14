@@ -370,7 +370,7 @@ zdf-098u-098      </div> */}
 
             {hibernateConfirmationModal && (
                 <>
-                    < ExternalAppScaleModal />
+                    < ExternalAppScaleModal onClose={() => setHibernateConfirmationModal('')} />
                     {/* <ExternalScalePods
                         onClose={() => setHibernateConfirmationModal('')} 
                         /> */}
