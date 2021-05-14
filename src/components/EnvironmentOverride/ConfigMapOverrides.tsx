@@ -11,9 +11,9 @@ import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import CodeEditor from '../CodeEditor/CodeEditor';
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
+import { PATTERNS, MINCHARTVERSION_FOR_SUBPATH_SUPPORT } from '../../config';
 import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
 
@@ -197,7 +197,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const chartVersionNum: number[] = getMajorAndMinorVersionArr(appChartRef.version);
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, MINCHARTVERSION_FOR_SUBPATH_SUPPORT);
 
     function changeEditorMode(e) {
         if (yamlMode) {

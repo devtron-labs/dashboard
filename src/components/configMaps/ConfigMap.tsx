@@ -7,7 +7,7 @@ import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '.
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS, MINCHARTVERSION_FOR_SUBPATH_SUPPORT } from '../../config';
 import Reload from '../Reload/Reload';
 import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg';
@@ -249,7 +249,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
     const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
     
     const chartVersionNum = getMajorAndMinorVersionArr(appChartRef.version);
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, MINCHARTVERSION_FOR_SUBPATH_SUPPORT);
 
     function setKeyValueArray(arr) {
         tempArray.current = arr

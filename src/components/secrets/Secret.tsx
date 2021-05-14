@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS, MINCHARTVERSION_FOR_SUBPATH_SUPPORT } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -209,7 +209,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
     const chartVersionNum = getMajorAndMinorVersionArr(props.appChartRef.version);
-    const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
+    const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, MINCHARTVERSION_FOR_SUBPATH_SUPPORT);
 
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {

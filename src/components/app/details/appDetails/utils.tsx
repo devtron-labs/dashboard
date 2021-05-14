@@ -13,6 +13,7 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
+import { MINK8SVERSION } from '../../../../config';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -254,7 +255,6 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
 }
 
 export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
-    let target = [1, 15];
     let k8sVersionNum: number[] = getMajorAndMinorVersionArr(k8sVersion);
 
     switch (chartName) {
@@ -262,13 +262,13 @@ export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, 
             url += `latency/latency`;
             break;
         case 'ram':
-            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, target)) {
+            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, MINK8SVERSION)) {
                 url += `memory-k8s15/memory-usage-k8s15`;
             }
             else url += `memory/memory-usage`;
             break;
         case 'cpu':
-            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, target)) {
+            if (isVersionLessThanOrEqualToTarget(k8sVersionNum, MINK8SVERSION)) {
                 url += `cpu-k8s15/cpu-usage-k8s15`;
             }
             else url += `cpu/cpu-usage`;

@@ -2,6 +2,9 @@ export const RequestTimeout = 60000;
 export const DEFAULT_STATUS = 'Checking Status...';
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 export const DEFAULTK8SVERSION = 'v1.16.0';
+export const MINK8SVERSION = [1, 15]; //excluded
+export const MINCHARTVERSION_FOR_APPMETRICS_SUPPORT = [3, 7, 0]; //included
+export const MINCHARTVERSION_FOR_SUBPATH_SUPPORT = [3, 9]; //excluded
 
 export const Routes = {
     LOGIN: 'api/v1/session',

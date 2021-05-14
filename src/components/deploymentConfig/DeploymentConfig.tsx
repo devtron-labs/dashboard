@@ -8,12 +8,12 @@ import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
-import { DOCUMENTATION } from '../../config';
+import { DOCUMENTATION, MINCHARTVERSION_FOR_APPMETRICS_SUPPORT } from '../../config';
 import './deploymentConfig.scss';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let currentVersionNum: number[] = getMajorAndMinorVersionArr(currentVersion)
-    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersionNum, [3, 7, 0]);
+    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersionNum, MINCHARTVERSION_FOR_APPMETRICS_SUPPORT);
 
     return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
         <div className="p-lr-20 m-tb-20 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>

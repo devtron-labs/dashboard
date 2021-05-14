@@ -11,7 +11,7 @@ import { Progressing } from '../common';
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml';
-import { PATTERNS } from '../../config';
+import { PATTERNS, MINCHARTVERSION_FOR_SUBPATH_SUPPORT } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
@@ -190,7 +190,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const chartVersionNum = getMajorAndMinorVersionArr(appChartRef.version);
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(chartVersionNum, MINCHARTVERSION_FOR_SUBPATH_SUPPORT);
 
     function setKeyValueArray(arr) {
         tempArr.current = arr
