@@ -20,14 +20,3 @@ export function isVersionLessThanOrEqualToTarget(version: number[], target: numb
     }
     return true;
 }
-
-export function getVersionArr(version: string): number[] {
-    if (!version) return [0, 0, 0];
-
-    let versionMod = version;
-    if (versionMod.includes("v")) {
-        versionMod = version.split("v")[1];
-    }
-    let versionStr: string[] = versionMod.split(".");
-    return [Number(versionStr[0]), Number(versionStr[1]), Number(versionStr[2])];
-}
