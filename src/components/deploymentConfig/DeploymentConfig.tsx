@@ -110,7 +110,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             setTemplate(defaultAppOverride)
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId })
             toggleAppMetrics(isAppMetricsEnabled)
-            setTempFormData(JSON.stringify(defaultAppOverride, null, 4))
+            setTempFormData(JSON.stringify(defaultAppOverride, null, 2))
         }
         catch (err) {
             showError(err);
@@ -199,7 +199,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                 </div>
                 <div className="form__row form__row--code-editor-container">
                     <CodeEditor
-                        value={template ? JSON.stringify(template, null, 2) : ""}
+                        value={tempFormData}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
                         loading={chartConfigLoading}>
