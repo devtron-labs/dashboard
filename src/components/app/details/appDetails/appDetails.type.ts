@@ -1,3 +1,53 @@
+
+
+interface ResourceTree {
+    nodes: Node[];
+    newGenerationReplicaSet: string;
+    status: string;
+    podMetadata: PodMetadatum[];
+    conditions?: any;
+}
+
+export interface PodMetadatum {
+    name: string;
+    uid: string;
+    containers: string[];
+    isNew: boolean;
+}
+
+export interface OtherEnvironment {
+    environmentId: number;
+    environmentName: string;
+    appMetrics: boolean;
+    infraMetrics: boolean;
+    prod: boolean;
+}
+
+interface MaterialInfo {
+    author: string;
+    branch: string;
+    message: string;
+    modifiedTime: string;
+    revision: string;
+    url: string;
+}
+export interface AppDetails {
+    appId: number;
+    appName: string;
+    environmentId: number;
+    environmentName: string;
+    namespace: string;
+    lastDeployedTime: string;
+    lastDeployedBy: string;
+    materialInfo: MaterialInfo[];
+    releaseVersion: string;
+    dataSource: string;
+    lastDeployedPipeline: string;
+    instanceDetail?: any;
+    otherEnvironment: OtherEnvironment[];
+    resourceTree: ResourceTree;
+}
+
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
     Pod = 'pod'

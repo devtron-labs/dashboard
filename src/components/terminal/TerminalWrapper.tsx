@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Terminal } from 'xterm';
 import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
-import { AppDetails } from '../app/types';
+import { AppDetails } from '../app/details/appDetails/appDetails.type';
 import SockJS from 'sockjs-client';
 import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'

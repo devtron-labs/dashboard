@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FilterProps, FilterState } from './types';
 import './filter.css';
+import { ReactComponent as Dropdown } from '../../../assets/icons/appstatus/ic-dropdown.svg'
 
 export class Filter extends Component<FilterProps, FilterState>{
     node;
@@ -13,6 +14,11 @@ export class Filter extends Component<FilterProps, FilterState>{
             searchStr: "",
             show: false,
         }
+        this.toggleFilterdropdown = this.toggleFilterdropdown.bind(this)
+    }
+
+    toggleFilterdropdown() {
+        this.setState({ show: !this.state.show })
     }
 
     componentDidMount() {
@@ -81,7 +87,6 @@ export class Filter extends Component<FilterProps, FilterState>{
 
     render() {
         let classNames = this.state.show ? "filter__menu filter__menu--show" : "filter__menu";
-        let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
         let isDisable = this.shouldApplyFilter();
         let badge = this.getSavedFilter();
 
@@ -101,8 +106,8 @@ export class Filter extends Component<FilterProps, FilterState>{
         return <div className="filter" >
             <button type="button" className="filter__trigger" onClick={() => this.setState({ show: !this.state.show })}>
                 {this.props.buttonText}
-                {badge > 0 ? <span className="badge">{badge}</span> : null}
-                <span className="filter-icon"><i className={faIcon}></i></span>
+                {badge > 0 ? <span className="badge">{badge}</span> : "All"}
+                <span className="filter-icon"><Dropdown onClick={this.toggleFilterdropdown} className="icon-dim-20 rotate ml-4" style={{ ['--rotateBy' as any]: this.state.show ? '180deg' : '0deg' }} /></span>
             </button>
             {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
             <div className={classNames} ref={node => this.node = node}>

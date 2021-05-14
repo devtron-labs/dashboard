@@ -11,31 +11,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px 0px 24px;
+    padding: 20px;
+    box-shadow: inset 0 -1px 0 0 #d0d4d9;
 }
 
 .app-header__text {
     margin: 0px;
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     font-style: normal;
     font-stretch: normal;
-    line-height: 1.4;
+    line-height: 1.33;
     letter-spacing: normal;
     color: var(--N900);
 }
 
 .search-filter-section {
-    padding: 12px 24px;
+    padding: 12px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border: solid 1px rgba(255, 255, 255, 0);
     background-color: white;
     z-index: 1;
-    margin-bottom: 2px;
+    /* margin-bottom: 2px; */
 }
-
 
 .filters {
     flex: 1 1;
@@ -62,7 +62,7 @@
     box-shadow: inset 0 -1px 0 0 var(--N200);
     background-color: var(--white);
     position: sticky;
-    top: 60px;
+    top: 48px;
     z-index: var(--app-list-header-index);
 }
 
@@ -72,7 +72,7 @@
 }
 
 .app-list__header {
-    height: 40px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: stretch;
@@ -84,7 +84,7 @@
     line-height: 1.5;
     letter-spacing: normal;
     color: var(--N500);
-    padding-left: 24px;
+    padding-left: 20px;
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
     background: white;
@@ -100,7 +100,7 @@
 .app-list__row {
     min-height: 56px;
     display: flex;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
@@ -108,7 +108,7 @@
     letter-spacing: normal;
     color: var(--N900);
     align-items: center;
-    padding-left: 24px;
+    padding-left: 20px;
     cursor: pointer;
     background-color: white;
     box-shadow: inset 0 -1px 0 0 var(--N100);
@@ -129,7 +129,6 @@
 .app-list__cell-header {
     background: transparent;
     font-weight: 600;
-    padding: 0px;
     border: none;
     min-width: 0px;
     user-select: none;
@@ -177,6 +176,13 @@
     justify-content: flex-start;
 }
 
+.app-list__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 12px;
+    gap: 12px;
+}
+
 .app-list__cell--action {
     visibility: hidden;
     justify-content: flex-end;
@@ -196,18 +202,13 @@
     padding: 0px;
     border: none;
 }
-
+/* 
 .round-button {
     border-radius: 20px;
     background-color: var(--B500);
     color: var(--white);
     font-size: 14px;
-}
-
-.round-button__icon {
-    display: inline-block;
-    margin-right: 8px;
-}
+} */
 
 .button-edit {
     height: 56px;
@@ -304,12 +305,12 @@
 .select-material--h450 {
     height: 450px;
 }
-
+/* 
 .round-button--app-list {
     width: 142px;
     height: 40px;
     border: none;
-}
+} */
 
 .modal__header--flex-col {
     flex-direction: column;
@@ -354,12 +355,76 @@
     visibility: visible;
 }
 
-.round-button:hover {
-    background-color: #0558af;
-}
-
 .cell__link:hover {
     text-decoration: underline;
+}
+
+.overflow-hidden {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.external-list__cell {
+    flex-basis: 20%;
+    flex-grow: 1;
+    min-width: 0px;
+    display: flex;
+    justify-content: left;
+    height: 100%;
+    background-color: inherit;
+    justify-content: left;
+    align-items: center;
+    font-size: 13px;
+}
+
+.external-list__cell--width {
+    flex-basis: 60%;
+}
+
+.external-list--grid {
+    display: grid;
+    grid-template-columns: 4fr 1fr 1fr;
+    gap: 12px;
+}
+
+.external-list__header {
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    text-transform: capitalize;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.67;
+    letter-spacing: normal;
+    color: var(--N500);
+    box-shadow: 0 1px 0 0 var(--N200);
+    margin-bottom: 1px;
+}
+
+.external-list__row {
+    height: 56px;
+    box-shadow: 0 1px 0 0 var(--N100);
+}
+
+.external-list__row:hover {
+    text-decoration: none;
+    color: var(--N900);
+    background-color: var(--N100);
+}
+
+.external-list__row:hover .app-list__cell--action {
+    visibility: visible;
+}
+
+.external-list__cell--name {
+    flex-basis: 16%;
+    flex-grow: 1;
+    min-width: 0px
+}
+
+.external__overflow-handling {
+    overflow: hidden;
+    overflow-x: auto;
 }
 
 @media(min-width: 1024px) {

@@ -1,8 +1,12 @@
 import { ServerError } from '../../../modals/commonTypes';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
+export interface ExternalListFilterOption {
+    label: string;
+    value: number;
+}
 export interface AppListState {
     code: number;
     view: string;
@@ -30,6 +34,7 @@ export interface AppListState {
     chartStageCompleted: number;
     appChecklist: AppCheckList;
     chartChecklist: ChartCheckList;
+    collapsedListTogglingModal: boolean;
 }
 
 export interface App {
@@ -99,7 +104,6 @@ export interface DeploymentDetailContainerResponse {
     lastDeployedPipeline?: string
 }
 
-
 export const OrderBy = {
     ASC: 'ASC',
     DESC: 'DESC'
@@ -111,4 +115,75 @@ export const SortBy = {
     STATUS: "statusSort",
     ENVIRONMENT: "environmentSort",
 }
+export interface ListContainerProps extends RouteComponentProps<{}> {
+    closeModal: () => void;
+}
 
+export interface ExternalList {
+    id: number;
+    appName: string;
+    clusterId: number;
+    chartName: string;
+    environment: string;
+    namespace: string;
+    lastDeployedOn: string;
+}
+
+export interface ExternalQueryList {
+    appname: string;
+    environment: string;
+    queryMatch: string;
+}
+
+export interface ExternalListContainerState {
+    view: string;
+    code: number;
+    pagination: {
+        size: number;
+        offset: number;
+        pageSize: number;
+    };
+    externalList: ExternalList[];
+    namespaceList: ExternalListFilterOption[];
+    clusterList: ExternalListFilterOption[];
+    selectedNamespace: ExternalListFilterOption[];
+    selectedCluster: ExternalListFilterOption[]
+    namespaceHashmap: Map<string, any>;
+    clusterHashmap: Map<string, any>;
+    searchQuery: string;
+    searchApplied: boolean;
+    externalQueryList: ExternalQueryList[],
+    appliedCluster: ExternalListFilterOption[];
+    appliedNamespace: ExternalListFilterOption[];
+}
+
+export interface ExternalListContainerProps extends RouteComponentProps<{}> {
+}
+
+export interface ExternalListViewProps {
+    code: number;
+    view: string;
+    externalList: ExternalList[];
+    appliedNamespace: ExternalListFilterOption[];
+    appliedCluster: ExternalListFilterOption[];
+    pagination: {
+        size: number;
+        offset: number;
+        pageSize: number;
+    };
+    changePage;
+    changePageSize;
+    removeFilter: (key: any, val: any) => void;
+    removeAllFilters: () => void;
+}
+
+export interface ExternalSearchQueryListProps {
+    view: string;
+    externalQueryList: ExternalQueryList[];
+    filters: {
+        namespace: ExternalListFilterOption[];
+        cluster: ExternalListFilterOption[];
+    }
+    appliedNamespace: ExternalListFilterOption[];
+    appliedCluster: ExternalListFilterOption[];
+}

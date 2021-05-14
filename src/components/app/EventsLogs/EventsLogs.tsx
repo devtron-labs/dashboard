@@ -1,34 +1,28 @@
-//@ts-nocheck
-
 import React, { useEffect, useState, useRef } from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
-import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
+import { useKeyDown, useAsync, useSearchString } from '../../common';
 import { Spinner } from 'patternfly-react';
-import LogViewer from '../LogViewer/LogViewer'
-import { NoPod } from './ResourceTreeNodes'
-import { get } from '../../services/api'
-import { getNodeStatus } from './service'
-import { Routes, Host } from "../../config";
+import LogViewer from '../../LogViewer/LogViewer'
+import { NoPod } from '../ResourceTreeNodes'
+import { get } from '../../../services/api'
+import { Routes, Host } from '../../../config';
 import { toast } from 'react-toastify';
-import YamljsParser from 'yaml';
-import sseWorker from './grepSSEworker';
-import WebWorker from './WebWorker';
+import sseWorker from '../grepSSEworker';
+import WebWorker from '../WebWorker';
 import { useParams } from 'react-router'
-import moment from 'moment'
-import { Subject } from '../../util/Subject';
-import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from './types';
-import { AppDetails } from '../app/types'
-import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg';
-import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
+import { Subject } from '../../../util/Subject';
+import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from '../types';
+import { AppDetails } from '../details/appDetails/appDetails.type';
+import { ReactComponent as CloseImage } from '../../../assets/icons/ic-appstatus-cancelled.svg';
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg';
+import { TerminalView } from '../../terminal';
+import { SocketConnectionType } from '../details/appDetails/AppDetails';
+import { SummaryView } from './SummaryView';
+import { ManifestView } from './Manifest';
+import { NoEvents, NoContainer } from './eventsLogs.util';
+import moment from 'moment';
 import Tippy from '@tippyjs/react';
-import { TerminalView } from '../terminal';
-import { SocketConnectionType } from './details/appDetails/AppDetails';
-import MonacoEditor from 'react-monaco-editor';
-import { editor } from 'monaco-editor';
-import { AutoSizer } from 'react-virtualized'
 
 const commandLineParser = require('command-line-parser')
-
 
 const subject: Subject<string> = new Subject()
 
@@ -41,7 +35,7 @@ interface EventsLogsProps {
     subject?: Subject<string>;
     socketConnection: SocketConnectionType;
     terminalCleared: boolean;
-    shell: { label; value; }
+    shell: { label: string; value; }
     isReconnection: boolean;
     setIsReconnection: (flag) => void;
     selectShell: (shell: { label; value; }) => void;
@@ -50,10 +44,20 @@ interface EventsLogsProps {
     handleLogPause: (paused: boolean) => void;
 }
 
+interface LogsView {
+    subject: Subject<string>;
+    nodeName?: string;
+    containerName: string;
+    handleLogPause: (paused: boolean) => void;
+    logsPaused: boolean;
+    appDetails: AppDetails;
+}
+
 export function parsePipes(expression) {
     const pipes = expression.split(/[\|\s]*grep[\s]*/).filter(p => !!p)
     return pipes
 }
+
 export function getGrepTokens(expression) {
     const options = commandLineParser({
         args: expression.replace(/[\s]+/, " ").replace('"', "").split(" "),
@@ -73,134 +77,60 @@ export function getGrepTokens(expression) {
 
 const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
-    return (
-        <>
-            {params.tab.toLowerCase() === NodeDetailTabs.EVENTS.toLowerCase() && (
-                <>
-                    <span style={{ background: '#2c3354' }} />
-                    <EventsView nodeName={nodeName} appDetails={appDetails} nodes={nodes} />
-                </>
-            )}
-            {params.tab.toLowerCase() === NodeDetailTabs.LOGS.toLowerCase() && (
-                <LogsView
-                    appDetails={appDetails}
-                    subject={subject}
+    return <>
+        {params.tab.toLowerCase() === NodeDetailTabs.EVENTS.toLowerCase() && (
+            <>
+                <span style={{ background: '#2c3354' }} />
+                <EventsView nodeName={nodeName} appDetails={appDetails} nodes={nodes} />
+            </>
+        )}
+        {params.tab.toLowerCase() === NodeDetailTabs.LOGS.toLowerCase() && (
+            <LogsView appDetails={appDetails}
+                subject={subject}
+                nodeName={nodeName}
+                containerName={containerName}
+                handleLogPause={handleLogPause}
+                logsPaused={logsPaused}
+            />
+        )}
+        {params.tab.toLowerCase() === NodeDetailTabs.MANIFEST.toLowerCase() && (
+            <>
+                <span style={{ background: '#2c3354' }} />
+                <ManifestView
+                    nodeName={nodeName}
+                    nodes={nodes}
+                    appName={appDetails.appName}
+                    environmentName={appDetails.environmentName}
+                />
+            </>
+        )}
+        {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
+            <>
+                <span style={{ background: '#2c3354' }} />
+                <TerminalView appDetails={appDetails}
                     nodeName={nodeName}
                     containerName={containerName}
-                    handleLogPause={handleLogPause}
-                    logsPaused={logsPaused}
+                    socketConnection={socketConnection}
+                    terminalCleared={terminalCleared}
+                    shell={shell}
+                    isReconnection={isReconnection}
+                    setIsReconnection={setIsReconnection}
+                    setTerminalCleared={setTerminalCleared}
+                    setSocketConnection={setSocketConnection}
                 />
-            )}
-            {params.tab.toLowerCase() === NodeDetailTabs.MANIFEST.toLowerCase() && (
-                <>
-                    <span style={{ background: '#2c3354' }} />
-                    <NodeManifestView
-                        nodeName={nodeName}
-                        nodes={nodes}
-                        appName={appDetails.appName}
-                        environmentName={appDetails.environmentName}
-                    />
-                </>
-            )}
-            {params.tab.toLowerCase() === NodeDetailTabs.TERMINAL.toLowerCase() && (
-                <>
-                    <span style={{ background: '#2c3354' }} />
-                    <TerminalView appDetails={appDetails}
-                        nodeName={nodeName}
-                        containerName={containerName}
-                        socketConnection={socketConnection}
-                        terminalCleared={terminalCleared}
-                        shell={shell}
-                        isReconnection={isReconnection}
-                        setIsReconnection={setIsReconnection}
-                        selectShell={selectShell}
-                        setTerminalCleared={setTerminalCleared}
-                        setSocketConnection={setSocketConnection}
-                    />
-                </>
-            )}
-        </>
-    );
+            </>
+        )}
+        {params.tab.toLowerCase() === NodeDetailTabs.SUMMARY.toLowerCase() && (
+            <>
+                <span style={{ background: '#2c3354' }} />
+                <SummaryView nodeName={nodeName}
+                    nodes={nodes}
+                    appName={appDetails.appName}
+                    environmentName={appDetails.environmentName} />
+            </>
+        )}
+    </>
 })
-
-export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNodes, appName: string, environmentName: string }> = ({ nodeName, nodes, appName, environmentName }) => {
-    const { queryParams, searchParams } = useSearchString()
-    const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
-    const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
-    const [manifest, setManifest] = useState(null)
-
-    editor.defineTheme('vs-dark--dt', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-            { background: '#0B0F22' }
-        ],
-        colors: {
-            'editor.background': '#0B0F22',
-        }
-    });
-
-    useEffect(() => {
-        if (loadingManifest) return
-        if (error) showError(error)
-        if (manifestResult?.result?.manifest) {
-            try {
-                const manifest = JSON.parse(manifestResult?.result?.manifest);
-                setManifest(manifest);
-            }
-            catch (err) {
-
-            }
-        }
-    }, [loadingManifest, manifestResult, error])
-
-    useEffect(() => {
-        return () => {
-            setManifest(null)
-        }
-    }, [nodeName])
-
-    if (!node) {
-        return null
-    }
-
-    else if (loadingManifest && !manifest) return <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
-        <Progressing data-testid="manifest-loader" pageLoader />;
-    </div>
-
-    else if (!manifest) return <div style={{ gridColumn: '1 / span 2' }} className="flex">
-        <NoEvents title="Manifest not available" />
-    </div>
-
-    return <AutoSizer>
-        {({ height, width }) => <div style={{
-            gridColumn: '1 / span 2',
-        }}>
-            <MonacoEditor language={'yaml'}
-                value={YamljsParser.stringify(manifest, { indent: 2 })}
-                theme={'vs-dark--dt'}
-                options={{
-                    selectOnLineNumbers: true,
-                    roundedSelection: false,
-                    readOnly: true,
-                    automaticLayout: false,
-                    scrollBeyondLastLine: false,
-                    minimap: {
-                        enabled: false
-                    },
-                    scrollbar: {
-                        alwaysConsumeMouseWheel: false,
-                        vertical: 'auto'
-                    }
-                }}
-                onChange={() => { }}
-                editorDidMount={() => { }}
-                height={height - 75}
-                width={width}
-            />
-        </div>}
-    </AutoSizer>
-}
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
     const { searchParams } = useSearchString()
@@ -210,47 +140,30 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
     const [loading, eventsResult, error, reload] = useAsync(() => get(eventsUrl), [eventsUrl, pod?.name], !!pod)
     const events: { reason: string; message: string; count: number; lastTimestamp: string }[] = eventsResult?.result?.items || []
     if (!pod) return null
-    return <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
-        {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
-            <div className="events-logs__events-table-row header">
-                {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
-                    <span className="events-logs__event" key={idx}>{head}</span>)}
-            </div>
-            {events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
-                <span className="events-logs__event">{event.reason}</span>
-                <span className="events-logs__event">{event.message}</span>
-                <span className="events-logs__event">{event.count}</span>
-                <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
-            </div>)
-            }
-        </div>}
-        {nodeName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
-            {loading && <div style={{ width: '100%', textAlign: 'center' }}>
-                <Spinner loading></Spinner>
-                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+    return <div className="">
+        <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
+            {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
+                <div className="events-logs__events-table-row header">
+                    {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
+                        <span className="events-logs__event" key={idx}>{head}</span>)}
+                </div>
+                {events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
+                    <span className="events-logs__event">{event.reason}</span>
+                    <span className="events-logs__event">{event.message}</span>
+                    <span className="events-logs__event">{event.count}</span>
+                    <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
+                </div>)}
             </div>}
-            {!loading && events.filter(event => event).length === 0 && <NoEvents />}
-        </div>}
-        {!nodeName && <NoPod />}
-    </div>
-}
-
-function NoEvents({ title = "Events not available" }) {
-    return (
-        <div style={{ width: '100%', textAlign: 'center' }}>
-            <img src={InfoIcon} />
-            <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+            {nodeName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
+                {loading && <div style={{ width: '100%', textAlign: 'center' }}>
+                    <Spinner loading></Spinner>
+                    <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                </div>}
+                {!loading && events.filter(event => event).length === 0 && <NoEvents />}
+            </div>}
+            {!nodeName && <NoPod />}
         </div>
-    )
-}
-
-interface LogsView {
-    subject: Subject<string>;
-    nodeName?: string;
-    containerName: string;
-    handleLogPause: (paused: boolean) => void;
-    logsPaused: boolean;
-    appDetails: AppDetails;
+    </div>
 }
 
 export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName, handleLogPause, logsPaused, appDetails }) => {
@@ -466,13 +379,4 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
     );
 }
 
-function NoContainer({ selectMessage = "Select a container to view events", style = {} }) {
-    return <div className="no-pod no-pod--container" style={{ ...style }}>
-        <div className="no-pod__container-icon">
-            {Array(6).fill(0).map((z, idx) => <span key={idx} className="no-pod__container-sub-icon"></span>)}
-        </div>
-        <p>{selectMessage}</p>
-    </div>
-}
-
-export default EventsLogs
+export default EventsLogs;

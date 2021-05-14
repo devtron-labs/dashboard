@@ -19,7 +19,7 @@ import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload';
 
-const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
+const Navigation = lazy(() => import('./components/common/navigation/Navigation'));
 const Login = lazy(() => import('./components/login/Login'));
 
 toast.configure({
@@ -198,8 +198,8 @@ export default function App() {
 					) : (
 						<BreadcrumbStore>
 							<Switch>
-								<Route path={`/login`} component={Login} />
-								<Route path="/" render={() => <NavigationRoutes />} />
+								<Route path={URLS.LOGIN} component={Login} />
+								<Route path={"/"} render={() => <Navigation />} />
 								<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
 							</Switch>
 							<div id="full-screen-modal"></div>

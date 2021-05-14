@@ -12,7 +12,7 @@
     --page-header-index: 4;
     --filter-menu-index: 7;
     --transparent-div-index: 6;
-    --app-list-header-index: 3;
+    --app-list-header-index: 0;
     --navigation-index: 5;
     --tooltip-index: 7;
     --events-logs: 4;
@@ -129,7 +129,7 @@ a:focus {
 
 .tab-list__tab {
     user-select: none;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: normal;
     line-height: 1.43;
     letter-spacing: normal;
@@ -144,7 +144,7 @@ a:focus {
     display: block;
     width: 100%;
     height: 100%;
-    padding: 10px 0px;
+    padding: 14px 0px;
     cursor: pointer;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -163,6 +163,14 @@ a:focus {
     }
 }
 
+.tab-list__tab--right{
+    margin: auto;
+    margin-right: 0;
+}
+
+.border-btm{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
 .cursor {
     cursor: pointer;
 }
@@ -729,13 +737,13 @@ button.anchor {
     margin-bottom: 20px;
 }
 
-.round-button--empty {
-    display: block;
-    width: 142px;
-    height: 40px;
-    margin: auto;
-    border: none;
-}
+// .round-button--empty {
+//     display: block;
+//     width: 142px;
+//     height: 40px;
+//     margin: auto;
+//     border: none;
+// }
 
 .clear-buttons {
     display: flex;
@@ -1567,3 +1575,22 @@ button.anchor {
 .restore-btn.path.path :last-child{
     fill: white;
   }
+.o-1{
+    opacity: 1;
+}
+
+.o-01{
+    opacity: 0.1;
+}
+
+.o-02{
+    opacity: 0.2;
+}
+
+.o-05{
+    opacity: 0.5;
+}
+
+.content-left{
+    justify-content: left;
+}

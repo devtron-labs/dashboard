@@ -1,6 +1,5 @@
-import './list.css';
 import React, { Component } from 'react';
-import { getInitState, appListModal } from './appList.modal';
+import { getApplistInitData, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';
 import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
@@ -43,12 +42,13 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             chartChecklist: undefined,
             appStageCompleted: 0,
             chartStageCompleted: 0,
+            collapsedListTogglingModal: false,
         }
     }
 
     componentDidMount() {
         let payload = this.createPayloadFromURL(this.props.location.search);
-        getInitState(payload).then((response) => {
+        getApplistInitData(payload).then((response) => {
             this.setState({
                 code: response.code,
                 filters: response.filters,
@@ -275,6 +275,11 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ expandedRow: false, appData: null });
     }
 
+    toggleHeaderName =(e)=>{
+        e.stopPropagation()
+        this.setState({ collapsedListTogglingModal: !this.state.collapsedListTogglingModal})
+    }
+
     getAppList = (request): void => {
         let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
         let filterApplied = {
@@ -376,28 +381,31 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     render() {
-        return <AppListView
-            {...this.state}
-            match={this.props.match}
-            location={this.props.location}
-            history={this.props.history}
-            applyFilter={this.applyFilter}
-            expandRow={this.expandRow}
-            closeExpandedRow={this.closeExpandedRow}
-            removeFilter={this.removeFilter}
-            removeAllFilters={this.removeAllFilters}
-            search={this.search}
-            clearSearch={this.clearSearch}
-            handleSearchStr={this.handleSearchStr}
-            sort={this.sort}
-            redirectToAppDetails={this.redirectToAppDetails}
-            handleEditApp={this.handleEditApp}
-            clearAll={this.clearAll}
-            changePage={this.changePage}
-            changePageSize={this.changePageSize}
-            closeModal={this.closeModal}
-            openTriggerInfoModal={this.openTriggerInfoModal}
-        />
+        return (<>
+                <AppListView
+                    {...this.state}
+                    match={this.props.match}
+                    location={this.props.location}
+                    history={this.props.history}
+                    applyFilter={this.applyFilter}
+                    expandRow={this.expandRow}
+                    closeExpandedRow={this.closeExpandedRow}
+                    removeFilter={this.removeFilter}
+                    removeAllFilters={this.removeAllFilters}
+                    search={this.search}
+                    clearSearch={this.clearSearch}
+                    handleSearchStr={this.handleSearchStr}
+                    sort={this.sort}
+                    redirectToAppDetails={this.redirectToAppDetails}
+                    handleEditApp={this.handleEditApp}
+                    clearAll={this.clearAll}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
+                    closeModal={this.closeModal}
+                    openTriggerInfoModal={this.openTriggerInfoModal}
+                    collapsedListTogglingModal={this.state.collapsedListTogglingModal}
+                />
+        </>)
     }
 }
 
