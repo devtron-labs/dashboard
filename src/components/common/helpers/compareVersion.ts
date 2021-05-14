@@ -10,17 +10,15 @@ export function getMajorAndMinorVersionArr(version: string): number[] {
 }
 
 export function isVersionLessThanOrEqualToTarget(version: number[], target: number[]): boolean {
-    //Comparing with v1.15.xxx
     for (let i = 0; i < target.length; i++) {
-        if (version[i] === target[i]) {
-            if (i === target.length - 1) return true;
-            continue
-        }
-        else if (version[i] < target[i]) {
+        if(target[i] > version[i]) {
             return true;
         }
+        else if (target[i] < version[i]) {
+            return false;
+        }
     }
-    return false;
+    return true;
 }
 
 export function getVersionArr(version: string): number[] {
