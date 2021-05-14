@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react'
-import { ExternalAppScaleModalState, ExternalAppScaleModalProps } from './appDetails.type';
+import { ExternalAppScaleModalState, ExternalAppScaleModalProps, ScaleToZero } from './appDetails.type';
 import { ViewType } from '../../../../config';
 import { VisibleModal, Checkbox, Progressing, } from '../../../common';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
@@ -31,35 +31,38 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
         getScalePodList().then((response) => {
             this.setState({
                 view: ViewType.FORM,
-                scalePodsToZero: response.result.scalePodToZeroList
+                scalePodsToZero: response.result.scalePodToZeroList,
+                objectToRestore: response.result.objectToRestoreList
             }, () => { console.log(this.state.scalePodsToZero) })
         })
     }
 
-    handleScaleObjectToZero = () => {
-        this.setState({
-            scalePodsToZero: this.state.scalePodsToZero.map((item) => {
+    handleScaleObjectToZeroList = (key) => {
+        let scalePodToZeroUpdate: ScaleToZero[] = this.state.scalePodsToZero.map((item) => {
+            if (key == item.kind) {
                 return {
                     ...item,
                     isChecked: !item.isChecked,
                     value: !item.isChecked ? "CHECKED" : "INTERMEDIATE"
                 }
-            })
+            } else {
+                return item;
+            }
         })
 
-        let allKey = Object.keys(this.state.scalePodsToZero)
+        this.setState({
+            scalePodsToZero: scalePodToZeroUpdate
+        })
+
+        let allKey = Object.keys(scalePodToZeroUpdate)
         let areAllSelected = allKey.reduce((acc, item) => {
-            acc = acc && this.state.scalePodsToZero[item].isChecked
+            acc = acc && scalePodToZeroUpdate[item].isChecked
             return acc;
         })
         let isAnySelected = allKey.reduce((acc, item) => {
-            acc = acc || this.state.scalePodsToZero[item].isChecked
+            acc = acc || scalePodToZeroUpdate[item].isChecked
             return acc;
-        }, true)
-
-        { console.log(areAllSelected) }
-        { console.log(isAnySelected) }
-
+        }, false)
 
         if (areAllSelected) {
             return this.setState({
@@ -123,7 +126,7 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
         })
     }
 
-    handleScalePodsToZero = () => {
+    handleScalePodsToZerobutton = () => {
         this.setState({
             scalePodLoading: true,
             showRestore: true
@@ -133,7 +136,7 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
         let payload = this.state.scalePodsToZero.filter(item => item.isChecked)
         getScalePodList().then((response) => { return response })
         this.setState({
-            scalePodLoading: false
+            // scalePodLoading: false
         })
         { console.log(payload) }
     }
@@ -152,8 +155,7 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
                         <Info className="icon-dim-20 mr-8 " />
                         <div className="fw-6">What does this do?</div>
                     </div>
-                    <div className="ml-30">
-                        Scaled down objects will stop using resources until restored or a new deployment is initiated. How does this work?</div>
+                    <div className="ml-30"> Scaled down objects will stop using resources until restored or a new deployment is initiated.</div>
                 </div>
             </div>
         </>
@@ -176,21 +178,21 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
                                 </div>
                             </Checkbox>
                         </div>
-                        {scalePodsToZero.map((list) =>
+                        {scalePodsToZero.map((item) =>
                             <div className="pt-11 pb-11" >
                                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                                    isChecked={list.isChecked}
-                                    value={list.value}
-                                    onChange={(e) => { e.stopPropagation(); this.handleScaleObjectToZero() }} >
+                                    isChecked={item.isChecked}
+                                    value={item.value}
+                                    onChange={(e) => { e.stopPropagation(); this.handleScaleObjectToZeroList(item.kind) }} >
                                     <div className="pl-16">
-                                        <span className="cn-9 fw-6">{list?.kind} / </span>
-                                        <span>{list?.name}</span>
+                                        <span className="cn-9 fw-6">{item?.kind} / </span>
+                                        <span>{item?.name}</span>
                                     </div>
                                 </Checkbox>
                             </div>
                         )}
                     </div>
-                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px", fontWeight: "normal" }} className="cta flex" onClick={(e) => { e.preventDefault(); this.handleScalePodsToZero() }}>
+                    <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px", fontWeight: "normal" }} className="cta flex" onClick={(e) => { e.preventDefault(); this.handleScalePodsToZerobutton() }}>
                         {this.state.scalePodLoading ?
                             <>
                                 <div className="icon-dim-16 mr-4"> <Progressing pageLoader /> </div> Please wait...
@@ -203,12 +205,13 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
     }
 
     renderObjectToRestore() {
+        const { objectToRestore } = this.state
         return <>
             <h1 className="fw-6 mt-20 mb-8 fs-14 cn-9">Select objects to restore</h1>
             <div className="cn-5 pt-9 pb-9 fw-6 border-bottom">
                 <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
                     isChecked={this.state.scalePodName.name.isChecked}
-                    value={"CHECKED"}
+                    value={this.state.scalePodName.name.value}
                     onChange={(e) => { e.stopPropagation(); this.handleAllScaleObjects() }}
                 >
                     <div className="pl-16 fw-6">
@@ -216,26 +219,26 @@ export default class ExternalAppScaleModal extends Component<ExternalAppScaleMod
                     </div>
                 </Checkbox>
             </div>
-            <div className="pt-11 pb-11" >
-                {this.state.objectToRestore.map((list) => {
-                    return <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
-                        isChecked={list.isChecked}
-                        value={list.value}
-                        onChange={(e) => { e.stopPropagation(); this.handleScaleObjectToZero() }}
-                    >
+            {objectToRestore.map((item) =>
+                <div className="pt-11 pb-11" >
+                    <Checkbox rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                        isChecked={item.isChecked}
+                        value={item.value}
+                        onChange={(e) => { e.stopPropagation(); }}>
                         <div className="pl-16">
-                            <span className="cn-9 fw-6">{ } / </span>
-                            <span>{ }</span>
+                            <span className="cn-9 fw-6">{item.kind} / </span>
+                            <span>{item.name}</span>
                         </div>
                     </Checkbox>
-                })}
-            </div>
+                </div>
+            )}
             <button style={{ margin: "auto", marginRight: "0px", marginTop: "20px" }} className="cta flex" onClick={() => this.setState({ showRestore: false })}>
                 <ScaleDown className="icon-dim-16" />
             Restore
         </button>
         </>
     }
+
     render() {
         return (
             <div>
