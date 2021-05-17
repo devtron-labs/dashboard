@@ -3,10 +3,8 @@ import { ExternalListViewProps } from './types'
 import { Progressing, Pagination, ErrorScreenManager } from '../../common';
 import { ViewType } from '../../../config';
 import { Link } from 'react-router-dom';
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
-import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg';
-import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import Tippy from '@tippyjs/react';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
 
@@ -14,44 +12,41 @@ export class ExternalListView extends Component<ExternalListViewProps>{
 
     renderDefaultListTitle() {
         return (
-            <div>
-                <div className="bcn-0">
-                    <div className="external-list__header pt-8 pb-8">
-                        <div className="external-list__cell pr-12 pl-20">
-                            <span className="app-list__cell-header p-0 flex">
-                                App name
-                            </span>
-                        </div>
-                        <div className="external-list__cell external-list__cell--width pl-12 pr-12">
-                            <span className="app-list__cell-header">Environment</span>
-                            <Tippy className="default-tt" arrow={false} placement="top" content={
-                                <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
-                                <Question className="icon-dim-16 ml-4" />
-                            </Tippy>
-                        </div>
-                        <div className="external-list__cell pr-20">
-                            <div className="flex">
-                                <span className="app-list__cell-header">Last Updated</span>
-                            </div>
-                        </div>
-                        <div className="app-list__cell app-list__cell--action"></div>
-                    </div>
+            <div className="app-list__header bcn-0">
+                <div className="app-list__cell app-list__cell--name">
+                    <span className="app-list__cell-header">
+                        App name
+                    </span>
+                </div>
+                <div className="app-list__cell app-list__cell--material-info">
+                    <span className="app-list__cell-header">Environment</span>
+                    <Tippy className="default-tt" arrow={false} placement="top" content={
+                        <span style={{ display: "block", width: "200px" }}> Environment is a unique combination of cluster and namespace. </span>}>
+                        <Question className="icon-dim-16 ml-4" />
+                    </Tippy>
+                </div>
+                <div className="app-list__cell">
+                    <span className="app-list__cell-header">
+                        Last Updated
+                    </span>
                 </div>
             </div>
         )
     }
 
-    renderListRow(list) {
+    renderListRow(row) {
         return (
-            <div className="bcn-0">
-                <Link to="" className="external-list__row flex left cn-9 pt-19 pb-19 pl-20">
-                    <div className="external-list__cell content-left pr-12"> <p className="truncate-text m-0">{list.appName}</p></div>
-                    <div className="external-list__cell external-list__cell--width ">{list.environment}/{list.namespace}</div>
-                    <div className="external-list__cell pl-12 pr-12"> {list.lastDeployedOn} </div>
-                    <div className="app-list__cell app-list__cell--action">
-                    </div>
-                </Link>
-            </div>
+            <Link to="" className="app-list__row">
+                <div className="app-list__cell app-list__cell--name">
+                    <p className="truncate-text m-0">{row.appName}</p>
+                </div>
+                <div className="app-list__cell app-list__cell--material-info">
+                    {row.environment}/{row.namespace}
+                </div>
+                <div className="app-list__cell">
+                    {row.lastDeployedOn}
+                </div>
+            </Link>
         )
     }
 

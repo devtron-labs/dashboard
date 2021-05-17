@@ -104,7 +104,8 @@ export default class ExternalListContainer extends Component<ExternalListContain
 
     fetchExternalAppList() {
         this.setState({ view: ViewType.LOADING });
-        getExternalList(this.props.location.search).then((response) => {
+        let searchQuery = 'offset=0&size=10';
+        getExternalList(searchQuery).then((response) => {
             this.setState({
                 externalList: response.result,
                 view: ViewType.FORM
