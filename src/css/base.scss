@@ -163,14 +163,15 @@ a:focus {
     }
 }
 
-.tab-list__tab--right{
+.tab-list__tab--right {
     margin: auto;
     margin-right: 0;
 }
 
-.border-btm{
+.border-btm {
     box-shadow: inset 0 -1px 0 0 var(--N200);
 }
+
 .cursor {
     cursor: pointer;
 }
@@ -1568,29 +1569,26 @@ button.anchor {
     font-size: 14px;
 }
 
-.border-bottom{
+.border-bottom {
     box-shadow: inset 0 -1px 0 0 var(--N200);
 }
 
-.restore-btn.path.path :last-child{
-    fill: white;
-  }
-.o-1{
+.o-1 {
     opacity: 1;
 }
 
-.o-01{
+.o-01 {
     opacity: 0.1;
 }
 
-.o-02{
+.o-02 {
     opacity: 0.2;
 }
 
-.o-05{
+.o-05 {
     opacity: 0.5;
 }
 
-.content-left{
+.content-left {
     justify-content: left;
 }

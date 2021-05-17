@@ -59,8 +59,8 @@ export default class ListContainer extends Component<ListContainerProps, {}> {
                 <NavLink activeClassName="active" to={`${URLS.EXTERNAL_APP}`} className="tab-list__tab-link">External Apps [E]</NavLink>
             </li>
             <li className="tab-list__tab--right mt-9 mb-9 mr-20">
-                <button type="button" className="cta h-30" onClick={this.openCreateModal}>
-                    <Add className="" />New app
+                <button type="button" className="cta small flex" onClick={this.openCreateModal}>
+                    <Add className="mr-8 icon-dim-16" />New app
                 </button>
             </li>
         </ul>

@@ -72,6 +72,10 @@ $style in $margins {
     }
 }
 
+.ml-auto {
+    margin-left: auto;
+}
+
 // font-weight from 100-700
 @for $i from 1 through 7 {
     .fw-#{$i} {
@@ -273,6 +277,10 @@ $color-suffix: 00;
     line-height: 1.43;
 }
 
+.lh-1-54 {
+    line-height: 1.54
+}
+
 .divider {
     border-top: 1px solid #d0d4d9;
 }
@@ -288,36 +296,6 @@ $color-suffix: 00;
     border-radius: 4px;
 }
 
-.lh-1-54 {
-    line-height: 1.54
-}
-
-.ml-auto {
-    margin-left: auto;
-}
-
-.dashed {
+.border-style-dashed {
     border-style: dashed;
-}
-
-.header {
-    position: fixed;
-    top: 0;
-    z-index: 999;
-    margin-top: 45px;
-    width: 800px
-}
-
-.modal__top-fixed {
-    height: 50px;
-}
-
-.h-30{
-    height: 30px;
-    line-height: 0%;
-}
-
-.m-auto_mr-0{
-    margin: auto;
-    margin-right: 0;
 }

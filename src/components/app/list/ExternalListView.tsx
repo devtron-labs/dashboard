@@ -30,7 +30,7 @@ export class ExternalListView extends Component<ExternalListViewProps>{
                             </Tippy>
                         </div>
                         <div className="external-list__cell pr-20">
-                            <div className="m-auto_mr-0 flex">
+                            <div className="flex">
                                 <span className="app-list__cell-header">Last Updated</span>
                             </div>
                         </div>

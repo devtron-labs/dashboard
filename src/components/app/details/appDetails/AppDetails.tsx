@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
@@ -65,12 +63,10 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
-import { scalarOptions } from 'yaml';
-import { ExternalScalePods } from './ExternalScalePodsModal';
-import { HibernateModal } from './DevtronAppHibernateModal';
-import ExternalAppScaleModal from './ExternalAppScaleModal';
-
+import { HibernateAppModal } from './HibernateAppModal';
+import { ScalePodsModal } from './ScalePodsModal';
 import { AppDetails } from './appDetails.type';
+
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 export default function AppDetail() {
@@ -365,18 +361,14 @@ zdf-098u-098      </div> */}
 
             {hibernateConfirmationModal && (
                 <>
-                    < ExternalAppScaleModal onClose={() => setHibernateConfirmationModal('')} />
-                    {/* <ExternalScalePods
-                        onClose={() => setHibernateConfirmationModal('')} 
-                        /> */}
-                    {/* <HibernateModal 
-                    appDetails= {appDetails}
-                    handleHibernate= {handleHibernate}
-                    hibernating= {hibernating}
-                    hibernateConfirmationModal= {hibernateConfirmationModal}
-                    setHibernateConfirmationModal= {setHibernateConfirmationModal}/> */}
+                    <ScalePodsModal onClose={() => setHibernateConfirmationModal('')} />
+                    {/* <HibernateAppModal
+                        appDetails={appDetails}
+                        handleHibernate={handleHibernate}
+                        hibernating={hibernating}
+                        hibernateConfirmationModal={hibernateConfirmationModal}
+                        setHibernateConfirmationModal={setHibernateConfirmationModal} /> */}
                 </>
-
             )}
         </React.Fragment>
     );
@@ -1182,8 +1174,8 @@ const MaterialCard: React.FC<{
                             ) : hiberbateConfirmationModal === 'hibernate' ? (
                                 `Hibernate App`
                             ) : (
-                                        'Restore App'
-                                    )}
+                                'Restore App'
+                            )}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
