@@ -1,4 +1,4 @@
-export enum EntityTypes{
+export enum EntityTypes {
     CHART_GROUP = 'chart-group',
     DIRECT = '',
     DOCKER = 'docker',
@@ -7,14 +7,14 @@ export enum EntityTypes{
     NOTIFICATION = 'notification'
 }
 
-export enum ActionTypes{
+export enum ActionTypes {
     MANAGER = 'manager',
     ADMIN = 'admin',
     TRIGGER = 'trigger',
     VIEW = 'view',
     UPDATE = 'update'
 }
-interface RoleFilter{
+interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
     team?: OptionType;
     entityName?: OptionType[];
@@ -22,7 +22,7 @@ interface RoleFilter{
     action?: any;
 }
 
-export interface DirectPermissionsRoleFilter extends RoleFilter{
+export interface DirectPermissionsRoleFilter extends RoleFilter {
     entity: EntityTypes.DIRECT;
     team: OptionType;
     entityName: OptionType[];
@@ -35,14 +35,14 @@ export interface DirectPermissionsRoleFilter extends RoleFilter{
     };
 }
 
-export interface ChartGroupPermissionsFilter extends RoleFilter{
+export interface ChartGroupPermissionsFilter extends RoleFilter {
     entity: EntityTypes.CHART_GROUP;
     team?: never;
     environment?: never;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
 }
 
-export interface APIRoleFilter{
+export interface APIRoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
     team?: string;
     entityName?: string;
@@ -50,19 +50,19 @@ export interface APIRoleFilter{
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
 }
 
-export interface OptionType{
+export interface OptionType {
     label: string;
     value: string;
 }
 
-export interface UserConfig{
+export interface UserConfig {
     id: number;
     email_id: string;
     groups: string[];
     roleFilters: RoleFilter[];
 }
 
-export interface CreateUser{
+export interface CreateUser {
     id: number;
     email_id: string;
     groups: string[];
@@ -70,7 +70,7 @@ export interface CreateUser{
     superAdmin: boolean;
 }
 
-export interface CreateGroup{
+export interface CreateGroup {
     id: number;
     name: string;
     description: string;

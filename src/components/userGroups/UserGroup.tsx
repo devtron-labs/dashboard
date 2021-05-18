@@ -152,7 +152,8 @@ export default function UserGroupRoute() {
 }
 
 function HeaderSection() {
-    const { url, path } = useRouteMatch()
+    const { url, path } = useRouteMatch();
+
     return (
         <div className="auth-page__header">
             <h1 className="form__title">User access</h1>
@@ -161,8 +162,8 @@ function HeaderSection() {
             </p>
 
             <ul role="tablist" className="tab-list">
-                <li className='tab-list__tab'><NavLink to={`${url}/users`} className="tab-list__tab-link" activeClassName="active">Users</NavLink></li>
-                <li className='tab-list__tab'><NavLink to={`${url}/groups`} className="tab-list__tab-link" activeClassName="active">Groups</NavLink></li>
+                <li className='tab-list__tab'><NavLink to={`${url}/groups`} className="tab-list__tab-link" activeClassName="active">Permission Groups</NavLink></li>
+                <li className='tab-list__tab'><NavLink to={`${url}/users`} className="tab-list__tab-link" activeClassName="active">Manage Users</NavLink></li>
             </ul>
         </div>
     )
@@ -758,7 +759,7 @@ function NoGroups({ onClick }) {
             <EmptyState.Title><h4>No groups</h4></EmptyState.Title>
             <EmptyState.Subtitle>Groups allow you to combine permissions and easily assign them to users</EmptyState.Subtitle>
             <EmptyState.Button>
-                <button onClick={onClick} className="cta flex"><AddIcon className="mr-5" />Add group</button>
+                <button onClick={onClick} className="cta flex"><AddIcon className="mr-5" />Add permission group</button>
             </EmptyState.Button>
         </EmptyState>
     )

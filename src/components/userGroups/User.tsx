@@ -1,15 +1,13 @@
-
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog } from '../common'
 import { saveUser, deleteUser } from './userGroup.service';
-import Creatable from 'react-select/creatable'
-import Select, { components } from 'react-select';
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType, APIRoleFilter } from './userGroups.types'
 import { toast } from 'react-toastify'
 import { useUserGroupContext, DirectPermission, ChartPermission, GroupRow } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
-import './UserGroup.scss';
+import Creatable from 'react-select/creatable';
+import Select, { components } from 'react-select';
 
 const MultiValueContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
@@ -375,8 +373,8 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     }), [])
 
     const creatableOptions = useMemo(() => ([]), [])
-
     const availableGroups = userGroupsList?.map(group => ({ value: group.name, label: group.name }))
+
     return (
         <div className="user-form">
             {!id && (
