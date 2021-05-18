@@ -68,6 +68,69 @@ test("single grep test double match 2 gap", () => {
     expect(actualOut.length).toStrictEqual(expectedOut.length)
 })
 
+test("single grep test double match 4 gap", () => {
+    let grepToken = {_args:"hello", a:3, b:2}
+    let grepTokens = [grepToken]
+    let logFilter = new LogFilter(grepTokens)
+    let input = ["i", "am", "here", "hello", "or", "not", "and", "we", "hello", "and", "you", "know", "who"]
+    let expectedOut = ["am", "here", "hello", "or", "not", "and", "we", "hello", "and", "you", "know"]
+    let actualOut = []
+    input.forEach((value, index, arr) => {
+        let out = logFilter.filter(value)
+        out.forEach((val) => {
+            actualOut.push(val)
+        })
+    })
+    let remaining = logFilter.stop()
+    remaining.forEach((value, index, arr) => {
+        actualOut.push(value)
+    })
+    expect(actualOut).toEqual(expectedOut)
+    expect(actualOut.length).toStrictEqual(expectedOut.length)
+})
+
+test("single grep test double match 3 gap a+b=5", () => {
+    let grepToken = {_args:"hello", a:3, b:2}
+    let grepTokens = [grepToken]
+    let logFilter = new LogFilter(grepTokens)
+    let input = ["i", "am", "here", "hello", "or", "not", "and", "hello", "and", "you", "know", "who"]
+    let expectedOut = ["am", "here", "hello", "or", "not", "and", "hello", "and", "you", "know"]
+    let actualOut = []
+    input.forEach((value, index, arr) => {
+        let out = logFilter.filter(value)
+        out.forEach((val) => {
+            actualOut.push(val)
+        })
+    })
+    let remaining = logFilter.stop()
+    remaining.forEach((value, index, arr) => {
+        actualOut.push(value)
+    })
+    expect(actualOut).toEqual(expectedOut)
+    expect(actualOut.length).toStrictEqual(expectedOut.length)
+})
+
+test("single grep test double match 3 gap a+b=5 and a<b", () => {
+    let grepToken = {_args:"hello", a:2, b:3}
+    let grepTokens = [grepToken]
+    let logFilter = new LogFilter(grepTokens)
+    let input = ["i", "am", "here", "hello", "or", "not", "and", "hello", "and", "you", "know", "who"]
+    let expectedOut = ["i", "am", "here", "hello", "or", "not", "and", "hello", "and", "you"]
+    let actualOut = []
+    input.forEach((value, index, arr) => {
+        let out = logFilter.filter(value)
+        out.forEach((val) => {
+            actualOut.push(val)
+        })
+    })
+    let remaining = logFilter.stop()
+    remaining.forEach((value, index, arr) => {
+        actualOut.push(value)
+    })
+    expect(actualOut).toEqual(expectedOut)
+    expect(actualOut.length).toStrictEqual(expectedOut.length)
+})
+
 test("single grep test double match 3 gap", () => {
     let grepToken = {_args:"hello", a:2, b:2}
     let grepTokens = [grepToken]
