@@ -94,6 +94,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     isGitUrlValid(url: string): string | undefined {
         if (!url.length) return "This is a required field"
 
+        if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+
         return undefined;
     }
 
