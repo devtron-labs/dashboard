@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
+import { AllCheckModal } from '../../checkList/AllCheckModal';
 
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
@@ -85,12 +86,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 <ErrorScreenManager code={this.state.code} />
             </div>
         }
-        else if (this.state.installedCharts.length === 0) {
-            return <div className="chart-list-page">
+        if (this.state.installedCharts.length === 0) {
+            return <div className="chart-list-page" >
                 {this.renderPageHeader()}
-                <div>
-                    <ChartCheckListModal {...this.props} />
-                </div>
+                    <div style={{width: "600px", margin: "auto", marginTop: '20px'}} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
+                        <AllCheckModal />
+                    </div>
             </div>
         }
         else {

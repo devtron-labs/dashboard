@@ -34,7 +34,7 @@ export class AllCheckModal extends Component {
                 <img src={Complete} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
                 <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
-                <AllChartsCheck />
+                <div className="mb-8"><AllChartsCheck /></div>
                 {this.renderSampleApplication()}
                 {this.renderCustomAppDeploy()}
             </div>
