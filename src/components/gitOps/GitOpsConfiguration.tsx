@@ -38,20 +38,20 @@ const DefaultGitOpsConfig = {
     active: true,
 }
 
-const GitProviderTabIcons: React.FC<{ name: string }> = ({ name }) => {
-    switch (name) {
+const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
+    switch (gitops) {
         case "GitHub": return <GitHub />
         case "GitLab": return <GitLab />
         case "Azure": return <img className="icon-dim-24" src={Azure} />
     }
 }
 
-const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; name: string }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, name }) => {
+const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, gitops }) => {
     return <label className="tertiary-tab__radio">
         <input type="radio" name="status" value={provider} checked={tab === provider} onChange={handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
-            <aside className="login__icon-alignment"><GitProviderTabIcons name={name} /></aside>
-            <aside className="login__text-alignment"> {name}</aside>
+            <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
+            <aside className="login__text-alignment"> {gitops}</aside>
             <div>
                 {(lastActiveGitOp?.provider === provider) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
             </div>
@@ -246,9 +246,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
                 <div className="login__sso-flex">
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.Github} name="GitHub" />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GitLab} name="GitLab" />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.Azure_devops} name="Azure" />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.Github} gitops="GitHub" />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GitLab} gitops="GitLab" />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.Azure_devops} gitops="Azure" />
                 </div>
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
