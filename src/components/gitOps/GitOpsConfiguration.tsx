@@ -37,6 +37,21 @@ const DefaultGitOpsConfig = {
     azureOrgId: "",
     active: true,
 }
+
+const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; name: string }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, name }) => {
+    return <label className="tertiary-tab__radio">
+        <input type="radio" name="status" value={provider} checked={tab === provider} onChange={handleGitopsTab} />
+        <span className="tertiary-tab sso-icons">
+            <aside className="login__icon-alignment"><GitHub /></aside>
+            <aside className="login__text-alignment"> {name}</aside>
+            <div>
+                {(lastActiveGitOp?.provider === GitProvider.Github) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+            </div>
+        </span>
+    </label>
+}
+
+
 export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     constructor(props) {
@@ -208,8 +223,6 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     }
 
     render() {
-        // { console.log(this.state.gitList) }
-        // { console.log(this.state.form) }
         let key: "gitHubOrgId" | "gitLabGroupId" | "azureOrgId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : this.state.tab === GitProvider.Azure_devops ? 'azureOrgId' : 'gitLabGroupId';
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -225,17 +238,10 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
                 <div className="login__sso-flex">
-                    <label className="tertiary-tab__radio">
-                        <input type="radio" name="status" value={GitProvider.Github} checked={this.state.tab === GitProvider.Github} onChange={this.handleGitopsTab} />
-                        <span className="tertiary-tab sso-icons">
-                            <aside className="login__icon-alignment"><GitHub /></aside>
-                            <aside className="login__text-alignment"> GitHub</aside>
-                            <div>
-                                {(this.state.lastActiveGitOp?.provider === GitProvider.Github) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                            </div>
-                        </span>
-                    </label>
-                    <label className="tertiary-tab__radio">
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider= {GitProvider.Github} name="GitHub"/>
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider= {GitProvider.GitLab} name="GitLab"/>
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider= {GitProvider.Azure_devops} name="Azure"/>
+                    {/* <label className="tertiary-tab__radio">
                         <input type="radio" name="status" value={GitProvider.GitLab} checked={this.state.tab === GitProvider.GitLab} onChange={this.handleGitopsTab} />
                         <span className="tertiary-tab sso-icons">
                             <aside className="login__icon-alignment"><GitLab /></aside>
@@ -243,9 +249,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             <div>
                                 {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                             </div>
-                        </span>
-                    </label>
-                    <label className="tertiary-tab__radio">
+                        </span> */}
+                    {/* </label> */}
+                    {/* <label className="tertiary-tab__radio">
                         <input type="radio" name="status" value={GitProvider.Azure_devops} checked={this.state.tab === GitProvider.Azure_devops} onChange={this.handleGitopsTab} />
                         <span className="tertiary-tab sso-icons">
                             <aside className="login__icon-alignment "><img className="icon-dim-24" src={Azure} /></aside>
@@ -254,7 +260,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                                 {this.state.lastActiveGitOp?.provider === GitProvider.Azure_devops ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                             </div>
                         </span>
-                    </label>
+                    </label> */}
                 </div>
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
