@@ -255,7 +255,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     onChange={(event) => this.handleChange(event, 'host')}
                     name="Enter host"
                     error={this.state.isError.host}
-                    label={this.state.tab === GitProvider.Azure_devops ? "Azure DevOps organization Url*" : "Git Host*"}
+                    label={this.state.tab === GitProvider.Azure_devops ? "Azure DevOps Organisation Url*" : "Git Host*"}
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 <div className="mt-16">
