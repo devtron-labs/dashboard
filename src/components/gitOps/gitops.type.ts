@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router'
 
-export type GitProviderType = "GITHUB" | "GITLAB";
+export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE";
 export interface CustomGitOpsState {
     username: {
         value: string;

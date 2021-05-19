@@ -4,6 +4,7 @@ import { GitOpsState, GitOpsProps, GitOpsConfig } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
+import Azure from '../../assets/icons/git/azure.png';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
@@ -16,11 +17,13 @@ import './gitops.css';
 enum GitProvider {
     GitLab = 'GITLAB',
     Github = 'GITHUB',
+    Azure = 'AZURE'
 };
 
 const GitHost = {
     GITHUB: "https://github.com/",
-    GITLAB: "https://gitlab.com/"
+    GITLAB: "https://gitlab.com/",
+    AZURE: 'https://azure.microsoft.com/'
 }
 
 const DefaultGitOpsConfig = {
@@ -197,6 +200,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
     }
 
     render() {
+        { console.log(this.state.gitList) }
         let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -232,20 +236,32 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             </div>
                         </span>
                     </label>
+                    <label className="tertiary-tab__radio">
+                        <input type="radio" name="status" value={GitProvider.Azure}
+                            checked={this.state.tab === GitProvider.Github}
+                            onChange={this.handleGitopsTab} />
+                        <span className="tertiary-tab sso-icons">
+                            <aside className="login__icon-alignment "><img className="icon-dim-24" src={Azure} /></aside>
+                            <aside className="login__text-alignment"> Azure</aside>
+                            <div>
+                                {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                            </div>
+                        </span>
+                    </label>
                 </div>
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
                     name="Enter host"
                     error={this.state.isError.host}
-                    label="Git Host*"
+                    label={this.state.tab === GitProvider.Azure? "Azure DevOps organization Url*" : "Git Host*"}
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 <div className="mt-16">
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
                         error={this.state.isError[key]}
-                        label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : "GitLab Group ID*"}
+                        label={this.state.tab === GitProvider.Github ? "GitHub Organisation Name*" : this.state.tab === GitProvider.GitLab ? "GitLab Group ID*" : "Azure DevOps Project Name*"}
                         onChange={(event) => { this.handleChange(event, key); }} />
                 </div>
                 <hr />
@@ -258,7 +274,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             onChange={(event) => this.handleChange(event, 'username')}
                             name="Enter username" error={this.state.isError.username}
                             tabIndex={3}
-                            label={this.state.tab === GitProvider.Github ? "GithHub Username*" : "GitLab Username*"}
+                            label={this.state.tab === GitProvider.Github ? "GithHub Username*" : this.state.tab === GitProvider.GitLab ? "GitLab Username*" : "Azure DevOps Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <ProtectedInput value={this.state.form.token}
@@ -266,7 +282,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         name="Enter token"
                         tabIndex={4}
                         error={this.state.isError.token}
-                        label={"Personal Access Token*"}
+                        label={this.state.tab === GitProvider.Azure ? "Azure DevOps Access Token*" : "Personal Access Token*"}
                         labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                 </div>
 
