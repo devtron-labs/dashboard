@@ -17,13 +17,13 @@ import './gitops.css';
 enum GitProvider {
     GitLab = 'GITLAB',
     Github = 'GITHUB',
-    Azure = 'AZURE'
+    Azure_devops = 'AZURE_DEVOPS'
 };
 
 const GitHost = {
     GITHUB: "https://github.com/",
     GITLAB: "https://gitlab.com/",
-    AZURE: 'https://azure.microsoft.com/'
+    AZURE_DEVOPS: 'https://dev.azure.com/'
 }
 
 const DefaultGitOpsConfig = {
@@ -34,6 +34,7 @@ const DefaultGitOpsConfig = {
     username: "",
     gitLabGroupId: "",
     gitHubOrgId: "",
+    azureOrgId: "",
     active: true,
 }
 export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
@@ -59,6 +60,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 token: "",
                 gitHubOrgId: "",
                 gitLabGroupId: "",
+                azureOrgId: ""
             }
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
@@ -117,7 +119,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         })
     }
 
-    handleChange(event, key: "host" | "username" | "token" | "gitHubOrgId" | "gitLabGroupId"): void {
+    handleChange(event, key: "host" | "username" | "token" | "gitHubOrgId" | "azureOrgId" | "gitLabGroupId"  ): void {
         this.setState({
             form: {
                 ...this.state.form,
@@ -138,6 +140,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: "",
             gitHubOrgId: "",
             gitLabGroupId: "",
+            azureOrgId: ""
         }
 
         let isError = {
@@ -146,7 +149,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: form.token.length ? "" : "This is a required field",
             gitHubOrgId: form.gitHubOrgId.length ? "" : "This is a required field",
             gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
-        };
+            azureOrgId: form.azureOrgId.length ? "" : "This is a required field"
+         };
         return isError;
     }
 
@@ -160,13 +164,16 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             })
         }
 
-        let { host, username, token, gitHubOrgId, gitLabGroupId } = isError;
+        let { host, username, token, gitHubOrgId, gitLabGroupId, azureOrgId } = isError;
         let isInvalid = host?.length > 0 || username?.length > 0 || token?.length > 0;
         if (this.state.tab === GitProvider.Github) {
             isInvalid = isInvalid || gitHubOrgId?.length > 0
         }
-        else {
+        else if((this.state.tab === GitProvider.GitLab)){
             isInvalid = isInvalid || gitLabGroupId?.length > 0
+        }
+        else{
+            isInvalid = isInvalid || azureOrgId?.length > 0
         }
 
         if (isInvalid) {
@@ -187,6 +194,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: this.state.form.token,
             gitLabGroupId: this.state.form.gitLabGroupId,
             gitHubOrgId: this.state.form.gitHubOrgId,
+            azureOrgId: this.state.form.azureOrgId,
             active: true,
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
@@ -201,7 +209,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
 
     render() {
         { console.log(this.state.gitList) }
-        let key: "gitHubOrgId" | "gitLabGroupId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : 'gitLabGroupId';
+        {console.log(this.state.form)}
+        let key: "gitHubOrgId" | "gitLabGroupId" | "azureOrgId" = this.state.tab === GitProvider.Github ? 'gitHubOrgId' : this.state.tab === GitProvider.Azure_devops ?  'azureOrgId' : 'gitLabGroupId' ;
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -237,14 +246,12 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         </span>
                     </label>
                     <label className="tertiary-tab__radio">
-                        <input type="radio" name="status" value={GitProvider.Azure}
-                            checked={this.state.tab === GitProvider.Github}
-                            onChange={this.handleGitopsTab} />
+                        <input type="radio" name="status" value={GitProvider.Azure_devops} checked={this.state.tab === GitProvider.Azure_devops} onChange={this.handleGitopsTab} />
                         <span className="tertiary-tab sso-icons">
                             <aside className="login__icon-alignment "><img className="icon-dim-24" src={Azure} /></aside>
                             <aside className="login__text-alignment"> Azure</aside>
                             <div>
-                                {this.state.lastActiveGitOp?.provider === GitProvider.GitLab ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                                {this.state.lastActiveGitOp?.provider === GitProvider.Azure_devops ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
                             </div>
                         </span>
                     </label>
@@ -254,7 +261,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     onChange={(event) => this.handleChange(event, 'host')}
                     name="Enter host"
                     error={this.state.isError.host}
-                    label={this.state.tab === GitProvider.Azure? "Azure DevOps organization Url*" : "Git Host*"}
+                    label={this.state.tab === GitProvider.Azure_devops? "Azure DevOps organization Url*" : "Git Host*"}
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 <div className="mt-16">
@@ -282,7 +289,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         name="Enter token"
                         tabIndex={4}
                         error={this.state.isError.token}
-                        label={this.state.tab === GitProvider.Azure ? "Azure DevOps Access Token*" : "Personal Access Token*"}
+                        label={this.state.tab === GitProvider.Azure_devops ? "Azure DevOps Access Token*" : "Personal Access Token*"}
                         labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                 </div>
 
