@@ -34,7 +34,7 @@ const DefaultGitOpsConfig = {
     username: "",
     gitLabGroupId: "",
     gitHubOrgId: "",
-    azureOrgId: "",
+    azureProjectName: "",
     active: true,
 }
 
@@ -83,7 +83,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                 token: "",
                 gitHubOrgId: "",
                 gitLabGroupId: "",
-                azureOrgId: ""
+                azureProjectName: ""
             }
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
@@ -163,7 +163,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: "",
             gitHubOrgId: "",
             gitLabGroupId: "",
-            azureOrgId: ""
+            azureProjectName: ""
         }
 
         let isError = {
@@ -172,7 +172,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: form.token.length ? "" : "This is a required field",
             gitHubOrgId: form.gitHubOrgId.length ? "" : "This is a required field",
             gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
-            azureOrgId: form.azureOrgId.length ? "" : "This is a required field"
+            azureProjectName: form.azureProjectName.length ? "" : "This is a required field"
         };
         return isError;
     }
@@ -195,7 +195,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             isInvalid = isInvalid || isError.gitLabGroupId?.length > 0
         }
         else {
-            isInvalid = isInvalid || isError.azureOrgId?.length > 0
+            isInvalid = isInvalid || isError.azureProjectName?.length > 0
         }
 
         if (isInvalid) {
@@ -216,7 +216,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             token: this.state.form.token,
             gitLabGroupId: this.state.form.gitLabGroupId,
             gitHubOrgId: this.state.form.gitHubOrgId,
-            azureOrgId: this.state.form.azureOrgId,
+            azureProjectName: this.state.form.azureProjectName,
             active: true,
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
@@ -234,7 +234,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
            return 'gitLabGroupId'
         }
         else if (this.state.tab === GitProvider.AZURE_DEVOPS) {
-           return 'azureOrgId'
+           return 'azureProjectName'
         }
         else {
            return 'gitHubOrgId'
