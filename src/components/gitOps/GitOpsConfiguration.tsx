@@ -4,7 +4,7 @@ import { GitOpsState, GitOpsProps, GitOpsConfig } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
-import Azure from '../../assets/icons/git/azure.png';
+import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { toast } from 'react-toastify';
@@ -42,7 +42,7 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
         case "GitHub": return <GitHub />
         case "GitLab": return <GitLab />
-        case "Azure": return <img className="icon-dim-24" src={Azure} />
+        case "Azure": return <Azure />
     }
 }
 
