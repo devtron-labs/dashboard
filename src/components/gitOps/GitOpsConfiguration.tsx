@@ -187,16 +187,15 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
             })
         }
 
-        let { host, username, token, gitHubOrgId, gitLabGroupId, azureOrgId } = isError;
-        let isInvalid = host?.length > 0 || username?.length > 0 || token?.length > 0;
+        let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0;
         if (this.state.tab === GitProvider.GITHUB) {
-            isInvalid = isInvalid || gitHubOrgId?.length > 0
+            isInvalid = isInvalid || isError.gitHubOrgId?.length > 0
         }
         else if ((this.state.tab === GitProvider.GITLAB)) {
-            isInvalid = isInvalid || gitLabGroupId?.length > 0
+            isInvalid = isInvalid || isError.gitLabGroupId?.length > 0
         }
         else {
-            isInvalid = isInvalid || azureOrgId?.length > 0
+            isInvalid = isInvalid || isError.azureOrgId?.length > 0
         }
 
         if (isInvalid) {
@@ -269,7 +268,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     error={this.state.isError.host}
                     label={this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Organisation Url*" : "Git Host*"}
                     tabIndex={1}
-                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
                 <div className="mt-16">
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
