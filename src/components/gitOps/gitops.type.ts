@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router'
-
+export type GitOpsKeysType =  "host" |"username" | "token" | "gitHubOrgId" | "azureOrgId" | "gitLabGroupId";
 export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS";
+
 export interface CustomGitOpsState {
     username: {
         value: string;
@@ -24,6 +25,7 @@ export interface GitOpsConfig {
     gitHubOrgId: string,
     azureOrgId: string;
 }
+
 
 export interface GitOpsState {
     view: string;
