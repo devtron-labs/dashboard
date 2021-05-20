@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsKeysType } from './gitops.type'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
@@ -142,7 +142,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         })
     }
 
-    handleChange(event, key: GitOpsKeysType): void {
+    handleChange(event, key: GitOpsFieldKeyType): void {
         this.setState({
             form: {
                 ...this.state.form,
@@ -263,7 +263,8 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                         tabIndex={2}
                         error={this.state.isError[key]}
                         label={this.state.tab === GitProvider.GITHUB ? "GitHub Organisation Name*" : this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : "Azure DevOps Project Name*"}
-                        onChange={(event) => { this.handleChange(event, key); }} />
+                        onChange={(event) => { this.handleChange(event, key); }} 
+                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"/>
                 </div>
                 <hr />
                 <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
