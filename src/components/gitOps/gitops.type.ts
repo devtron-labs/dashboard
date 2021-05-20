@@ -1,5 +1,6 @@
 import { RouteComponentProps } from 'react-router'
 export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureOrgId" | "gitLabGroupId";
+export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureOrgId";
 export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS";
 
 export interface CustomGitOpsState {

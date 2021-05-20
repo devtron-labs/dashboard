@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType } from './gitops.type'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType, GitOpsOrganisationIdType } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
@@ -230,8 +230,20 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         })
     }
 
+    getGitOpsOrgId = () => {
+        if (this.state.tab === GitProvider.GITLAB) {
+           return 'gitLabGroupId'
+        }
+        else if (this.state.tab === GitProvider.AZURE_DEVOPS) {
+           return 'azureOrgId'
+        }
+        else {
+           return 'gitHubOrgId'
+        }
+    }
+
     render() {
-        let key: "gitHubOrgId" | "gitLabGroupId" | "azureOrgId" = this.state.tab === GitProvider.GITHUB ? 'gitHubOrgId' : this.state.tab === GitProvider.AZURE_DEVOPS ? 'azureOrgId' : 'gitLabGroupId';
+        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId() ;
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -262,9 +274,9 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
                         error={this.state.isError[key]}
-                        label={this.state.tab === GitProvider.GITHUB ? "GitHub Organisation Name*" : this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : "Azure DevOps Project Name*"}
-                        onChange={(event) => { this.handleChange(event, key); }} 
-                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"/>
+                        label={ this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" :  "GitHub Organisation Name*"}
+                        onChange={(event) => { this.handleChange(event, key); }}
+                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 </div>
                 <hr />
                 <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
@@ -276,7 +288,7 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
                             onChange={(event) => this.handleChange(event, 'username')}
                             name="Enter username" error={this.state.isError.username}
                             tabIndex={3}
-                            label={this.state.tab === GitProvider.GITHUB ? "GithHub Username*" : this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : "Azure DevOps Username*"}
+                            label={ this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : this.state.tab === GitProvider.AZURE_DEVOPS ?  "Azure DevOps Username*":  "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <ProtectedInput value={this.state.form.token}
