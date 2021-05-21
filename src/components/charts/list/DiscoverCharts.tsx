@@ -278,7 +278,7 @@ function DiscoverChartList() {
                 </ConditionalWrap>
                 <div className="page-header__cta-container flex">
                     {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex" to={`${url}/group/create`}>
+                        <NavLink className="cta no-decor flex" to={`${url}/create`}>
                             <Add className="icon-dim-18 mr-5" />Create Group
                         </NavLink>
                     )}
