@@ -177,8 +177,9 @@ export const DOCUMENTATION = {
     APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
 
+    CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
-
+    
     GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
     GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
