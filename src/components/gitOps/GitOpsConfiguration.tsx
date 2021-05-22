@@ -12,7 +12,7 @@ import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurat
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
-
+import {withRouter} from 'react-router-dom'
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -60,7 +60,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 }
 
 
-export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
+ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     constructor(props) {
         super(props)
@@ -308,3 +308,5 @@ export default class GitOpsConfiguration extends Component<GitOpsProps, GitOpsSt
         </section>
     }
 }
+
+export default withRouter(GitOpsConfiguration);
