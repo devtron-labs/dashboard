@@ -135,7 +135,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         autoFocus
                         name="Git Repo URL*"
                         type="text"
-                        placeholder="e.g. https://gitlab.com/abc/xyz.git"
+                        placeholder="e.g. https://gitlab.com/abc/xyz"
                         value={`${this.props.material.url}`}
                         onChange={this.props.handleUrlChange} />
                     <span className="form__error">
