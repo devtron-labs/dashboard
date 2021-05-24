@@ -26,7 +26,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         this.setState({ list, filteredList: list });
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         let list = JSON.parse(JSON.stringify(nextProps.list));
         let filteredList = list.filter(item => item[this.props.labelKey].search(this.state.searchStr.toLocaleLowerCase()) != -1);
         this.setState({ list, filteredList });
@@ -94,7 +94,7 @@ export class Filter extends Component<FilterProps, FilterState>{
             return <label key={index} className="filter-element">
                 <input type="checkbox" className="filter-element__input" value={env.key}
                     checked={env.isChecked} onChange={this.handleSelection} />
-                    {env[this.props.labelKey]}
+                {env[this.props.labelKey]}
                 <span className="filter-element__checkmark"></span>
             </label>
         })
@@ -103,7 +103,7 @@ export class Filter extends Component<FilterProps, FilterState>{
             filterOptions = [<p key={"none"} className="filter__no-result">{this.state.searchStr.length ? "No Matching Results" : "No Filters Found"}</p>]
         }
 
-        return <div className="filter" >
+        return <div className="filter">
             <button type="button" className="filter__trigger" onClick={() => this.setState({ show: !this.state.show })}>
                 {this.props.buttonText}
                 {badge > 0 ? <span className="badge">{badge}</span> : "All"}
@@ -115,7 +115,7 @@ export class Filter extends Component<FilterProps, FilterState>{
                 <div className="filter__options">
                     {filterOptions}
                 </div>
-                {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
+                {this.props.multi && <button type="button" data-testid={`apply-filter-${this.props.type}`} className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
                     Apply Filter
                 </button>}
             </div>
