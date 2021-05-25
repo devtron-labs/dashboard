@@ -689,6 +689,7 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             env: environmentName,
             envId: +params.envId,
             namespace,
+            version: version,
             name,
         };
         try {
