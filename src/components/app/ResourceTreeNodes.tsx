@@ -1,17 +1,15 @@
 //@ts-nocheck
-
 import React, { useEffect, useState } from 'react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
-import { PopupMenu, Pod as PodIcon, Trash, showError, Progressing, useAsync, copyToClipboard, not, useSearchString } from '../common';
+import { PopupMenu, Pod as PodIcon, Trash, showError, copyToClipboard, not, useSearchString } from '../common';
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 import { toast } from 'react-toastify'
-import { deletePod as deletePodService } from './service'
+import { deleteResource } from './service'
 import { ReactComponent as DropDown } from '../../assets/icons/ic-dropdown-filled.svg'
 import { AggregatedNodes, Nodes, NodeType, NodeDetailTabs, NodeDetailTabsType, AggregationKeys, AggregationKeysType } from './types'
 import { ReactComponent as ErrorImage } from '../../assets/icons/misc/errorInfo.svg';
-
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
 import { getAggregator } from './details/appDetails/utils';
@@ -23,7 +21,6 @@ interface ResourceTree {
     nodes: AggregatedNodes;
     describeNode: (name: string, containerName?: string) => void;
     isAppDeployment: boolean;
-
 }
 
 function ignoreCaseCompare(a: string, b: string): boolean {
@@ -33,11 +30,11 @@ function ignoreCaseCompare(a: string, b: string): boolean {
 function getGenricRowFields(kind: NodeType): string[] {
     switch (kind) {
         case Nodes.Service:
-            return ['name', 'url']
+            return ['name', 'url', '']
         case Nodes.Pod:
             return ['name', 'ready', ''] // empty string denotes menu
         default:
-            return ['name']
+            return ['name', '']
     }
 }
 
@@ -370,16 +367,16 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                     />
                 </>
             ) : (
-                    <GenericInfo
-                        nodes={nodes}
-                        level={1}
-                        Data={nodes.nodes[Nodes.Pod]}
-                        type={Nodes.Pod}
-                        describeNode={describeNode}
-                        appName={appName}
-                        environmentName={environmentName}
-                    />
-                )}
+                <GenericInfo
+                    nodes={nodes}
+                    level={1}
+                    Data={nodes.nodes[Nodes.Pod]}
+                    type={Nodes.Pod}
+                    describeNode={describeNode}
+                    appName={appName}
+                    environmentName={environmentName}
+                />
+            )}
         </div>
     );
 }
@@ -561,7 +558,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
     );
 }
 
-export const Menu: React.FC<{ appName: string; environmentName: string; name, namespace, describeNode }> = ({ appName, environmentName, name, namespace, describeNode }) => {
+export const Menu: React.FC<{ appName: string; environmentName: string; name, kind:NodeType, namespace, describeNode }> = ({ appName, environmentName, name, kind, namespace, describeNode }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
@@ -582,6 +579,7 @@ export const Menu: React.FC<{ appName: string; environmentName: string; name, na
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <PodPopup
+                        kind={kind}
                         name={name}
                         namespace={namespace}
                         describeNode={describeNodeWrapper}
@@ -596,9 +594,7 @@ export const Menu: React.FC<{ appName: string; environmentName: string; name, na
 
 export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
-
     const tableColumns = getGenricRowFields(nodeDetails.kind)
-
     return (
         <React.Fragment>
             <tr className={`data-row `}>
@@ -622,11 +618,11 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} />;
                     else if (column === '') {
                         return (
-                            <Menu
-                                name={nodeDetails.name}
+                            <Menu name={nodeDetails.name}
                                 namespace={nodeDetails.namespace}
                                 describeNode={describeNode}
                                 appName={appName}
+                                kind={nodeDetails.kind}
                                 environmentName={environmentName}
                                 key={column}
                             />
@@ -675,19 +671,21 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
     );
 }
 
-const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, namespace, describeNode }) => {
+const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, kind, namespace, describeNode }) => {
     const params = useParams<{ appId: string; envId: string }>();
     async function asyncDeletePod(e) {
         let apiParams = {
             appId: +params.appId,
             appName,
+            kind: kind,
+            group: getAggregator(kind),
             env: environmentName,
             envId: +params.envId,
             namespace,
             name,
         };
         try {
-            await deletePodService(apiParams);
+            await deleteResource(apiParams);
             toast.success('Deletion initiated successfully.');
         } catch (err) {
             showError(err);
@@ -695,20 +693,18 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
     }
 
     return <div className="pod-info__popup-container">
-        <span className="flex pod-info__popup-row"
+        {kind === Nodes.Pod ? <span className="flex pod-info__popup-row"
             onClickCapture={e => describeNode(NodeDetailTabs.EVENTS)}>
             View Events
-        </span>
-        <span className="flex pod-info__popup-row"
+        </span> : ''}
+        {kind === Nodes.Pod ? <span className="flex pod-info__popup-row"
             onClick={e => describeNode(NodeDetailTabs.LOGS)}>
             View Container Logs
-        </span>
+        </span> : ''}
         <span className="flex pod-info__popup-row pod-info__popup-row--red"
             onClick={asyncDeletePod}>
-            <span>
-                Delete Pod
-            </span>
-            <Trash style={{ width: '20px', height: '20px' }} />
+            <span>Delete {kind}</span>
+            <Trash className="icon-dim-20" />
         </span>
     </div>
 }

@@ -71,8 +71,8 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
     })
 }
 
-export function deletePod({ appName, env, name, namespace, appId, envId }) {
-    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=v1&kind=Pod&force=true&appId=${appId}&envId=${envId}`;
+export function deleteResource({ appName, env, name, kind, group, namespace, appId, envId }) {
+    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=v1&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
 }
 

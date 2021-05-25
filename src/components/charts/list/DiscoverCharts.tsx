@@ -66,7 +66,8 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 function DiscoverChartList() {
     const location = useLocation();
     const history = useHistory();
-    const { url } = useRouteMatch();
+    const match = useRouteMatch();
+    const { url } = match
     const { breadcrumbs, setCrumb } = useBreadcrumb({});
     const {
         state,
@@ -91,7 +92,7 @@ function DiscoverChartList() {
     const isLeavingPageNotAllowed = useRef(false);
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
     const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
-    const [openMenu, changeOpenMenu] = useState<'repository' | ''>('')
+    const [showChartGroupModal, toggleChartGroupModal] = useState(false)
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
@@ -278,9 +279,10 @@ function DiscoverChartList() {
                 </ConditionalWrap>
                 <div className="page-header__cta-container flex">
                     {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex" to={`${url}/create`}>
+                        <button type="button" className="cta flex"
+                            onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
-                        </NavLink>
+                        </button>
                     )}
                 </div>
             </div>
@@ -314,15 +316,15 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                            <span className='empty-height'>
-                                <EmptyState>
-                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                                </EmptyState>
-                            </span>
-                        </>}
+                        <span className='empty-height'>
+                            <EmptyState>
+                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                            </EmptyState>
+                        </span>
+                    </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
@@ -474,16 +476,17 @@ function DiscoverChartList() {
                 <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog> : null}
+        {showChartGroupModal ? <CreateChartGroup history={history}
+            location={location}
+            match={match}
+            closeChartGroupModal={() => { toggleChartGroupModal(!showChartGroupModal) }} /> : null}
     </>
 }
 
 
 export default function DiscoverCharts() {
-    const history = useHistory();
-    const location = useLocation();
     const match = useRouteMatch();
-    const { url, path } = match
-
+    const { path } = match;
 
     return <Switch>
         <Route path={`${path}/group`}>
@@ -495,14 +498,6 @@ export default function DiscoverCharts() {
         <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
         <Route>
             <DiscoverChartList />
-            <Route exact path={`${path}/create`}>
-                <CreateChartGroup
-                    history={history}
-                    location={location}
-                    match={match}
-                    closeChartGroupModal={() => history.push(url)}
-                />
-            </Route>
         </Route>
     </Switch>
 }
