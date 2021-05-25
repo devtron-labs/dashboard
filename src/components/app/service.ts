@@ -72,6 +72,7 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
 }
 
 export function deleteResource({ appName, env, name, kind, group, namespace, appId, envId }) {
+    if (!group) group = '';
     const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=v1&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
 }
@@ -346,5 +347,6 @@ export function getArtifact(pipelineId, workflowId) {
 }
 
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
-    return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group || ''}&kind=${kind}&resourceName=${name}`)
+    if (!group) group = '';
+    return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
 }
