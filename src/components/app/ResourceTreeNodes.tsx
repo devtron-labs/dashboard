@@ -558,7 +558,14 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
     );
 }
 
-export const Menu: React.FC<{ appName: string; environmentName: string; name, kind:NodeType, namespace, describeNode }> = ({ appName, environmentName, name, kind, namespace, describeNode }) => {
+interface MenuProps {
+    appName: string;
+    environmentName: string;
+    nodeDetails;
+    describeNode;
+}
+
+export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetails, describeNode }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
@@ -567,7 +574,7 @@ export const Menu: React.FC<{ appName: string; environmentName: string; name, ki
     function describeNodeWrapper(tab) {
         queryParams.set('kind', Nodes.Pod);
         const newUrl = generatePath(path, { ...params, tab }) + '?' + queryParams.toString();
-        describeNode(name);
+        describeNode(nodeDetails.name);
         history.push(newUrl);
     }
 
@@ -579,9 +586,11 @@ export const Menu: React.FC<{ appName: string; environmentName: string; name, ki
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <PodPopup
-                        kind={kind}
-                        name={name}
-                        namespace={namespace}
+                        kind={nodeDetails?.kind}
+                        name={nodeDetails.name}
+                        version={nodeDetails?.version}
+                        group={nodeDetails?.group}
+                        namespace={nodeDetails.namespace}
                         describeNode={describeNodeWrapper}
                         appName={appName}
                         environmentName={environmentName}
@@ -618,11 +627,9 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} />;
                     else if (column === '') {
                         return (
-                            <Menu name={nodeDetails.name}
-                                namespace={nodeDetails.namespace}
+                            <Menu nodeDetails={nodeDetails}
                                 describeNode={describeNode}
                                 appName={appName}
-                                kind={nodeDetails.kind}
                                 environmentName={environmentName}
                                 key={column}
                             />
@@ -671,14 +678,14 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
     );
 }
 
-const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, kind, namespace, describeNode }) => {
+const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode }) => {
     const params = useParams<{ appId: string; envId: string }>();
     async function asyncDeletePod(e) {
         let apiParams = {
             appId: +params.appId,
             appName,
             kind: kind,
-            group: getAggregator(kind),
+            group: group,
             env: environmentName,
             envId: +params.envId,
             namespace,

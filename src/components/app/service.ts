@@ -345,6 +345,6 @@ export function getArtifact(pipelineId, workflowId) {
     })
 }
 
-export function getNodeStatus({ appName, version, namespace, group, kind, name }) {
-    return get(`api/v1/applications/${appName}/resource?version=${version}&namespace=${namespace}&group=${group || ''}&kind=${kind}&resourceName=${name}`)
+export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
+    return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group || ''}&kind=${kind}&resourceName=${name}`)
 }
