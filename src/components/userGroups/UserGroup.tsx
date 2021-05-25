@@ -77,6 +77,23 @@ export function useUserGroupContext() {
     return context
 }
 
+function HeaderSection() {
+    const { url, path } = useRouteMatch()
+    return (
+        <div className="auth-page__header">
+            <h1 className="form__title">User access</h1>
+            <p className="form__subtitle">Manage user permissions.&nbsp;
+                <a className="learn-more__href" rel="noreferrer noopener" href={DOCUMENTATION.GLOBAL_CONFIG_USER} target="_blank">Learn more about User Access</a>
+            </p>
+
+            <ul role="tablist" className="tab-list">
+                <li className='tab-list__tab'><NavLink to={`${url}/users`} className="tab-list__tab-link" activeClassName="active">Users</NavLink></li>
+                <li className='tab-list__tab'><NavLink to={`${url}/groups`} className="tab-list__tab-link" activeClassName="active">Groups</NavLink></li>
+            </ul>
+        </div>
+    )
+}
+
 export default function UserGroupRoute() {
     const { url, path } = useRouteMatch()
     const [listsLoading, lists, listsError, reloadLists] = useAsync(() => Promise.allSettled([getGroupList(), get(Routes.PROJECT_LIST), getEnvironmentListMin(), getChartGroups(), getUserRole()]), [])
@@ -151,23 +168,6 @@ export default function UserGroupRoute() {
     );
 }
 
-function HeaderSection() {
-    const { url, path } = useRouteMatch()
-    return (
-        <div className="auth-page__header">
-            <h1 className="form__title">User access</h1>
-            <p className="form__subtitle">Manage user permissions.&nbsp;
-                <a className="learn-more__href" rel="noreferrer noopener" href={DOCUMENTATION.GLOBAL_CONFIG_USER} target="_blank">Learn more about User Access</a>
-            </p>
-
-            <ul role="tablist" className="tab-list">
-                <li className='tab-list__tab'><NavLink to={`${url}/users`} className="tab-list__tab-link" activeClassName="active">Users</NavLink></li>
-                <li className='tab-list__tab'><NavLink to={`${url}/groups`} className="tab-list__tab-link" activeClassName="active">Groups</NavLink></li>
-            </ul>
-        </div>
-    )
-}
-
 const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void }> = ({ type, reloadLists }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const result = data?.result || []
@@ -206,6 +206,12 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
             setAddHash(randomString)
         }
     }, [result.length, loading])
+
+    useEffect(() => {
+        if (type == "group") {
+            setSearchString("")
+        }
+    }, [type])
 
     const updateCallback = useCallback((index: number, payload) => {
         const newResult = [...result]
@@ -251,8 +257,9 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
 
     if (loading) return <div className="w-100 flex" style={{ minHeight: '600px' }}><Progressing pageLoader /></div>
     if (!addHash) return type === "user" ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    const filteredAndSorted = result.filter(userOrGroup => (userOrGroup.email_id?.includes(searchString?.toLowerCase()) || userOrGroup.name?.includes(searchString?.toLowerCase()) || userOrGroup.description?.includes(searchString)));
-
+    const filteredAndSorted = result.filter(userOrGroup => userOrGroup.name?.includes(searchString?.toLowerCase()) || (userOrGroup.email_id?.includes(searchString?.toLowerCase()) || userOrGroup.description?.includes(searchString)));
+    { console.log(filteredAndSorted) }
+    { console.log(searchString) }
     return (<div id="auth-page__body" className="auth-page__body-users__list-container">
         {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`Search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
         {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
