@@ -93,6 +93,7 @@
     display: block;
     width: 100%;
     font-weight: 500;
+    margin-bottom: 4px ;
 }
 
 .form__input--error {
@@ -241,7 +242,6 @@ p.sentence-case:first-letter {
     height: 24px;
     position: absolute;
     left: 0;
-    top: -4px;
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');

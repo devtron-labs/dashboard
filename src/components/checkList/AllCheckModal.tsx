@@ -29,13 +29,15 @@ export class AllCheckModal extends Component {
     }
 
     render() {
-        return <div className="">
-            <img src={Complete} className="applist__checklist-img" />
-            <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
-            <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
-            {this.renderCustomAppDeploy()}
-            {this.renderSampleApplication()}
-            <AllChartsCheck />
-        </div>
+        return (
+            <div className="">
+                <img src={Complete} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
+                <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
+                <div className="mb-8"><AllChartsCheck /></div>
+                {this.renderSampleApplication()}
+                {this.renderCustomAppDeploy()}
+            </div>
+        )
     }
 }

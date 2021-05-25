@@ -15,7 +15,7 @@
         "flexsearch": "^0.6.32",
         "http-proxy-middleware": "^1.0.3",
         "marked": "^1.2.5",
-        "moment": "^2.25.0",
+        "moment": "^2.29.1",
         "monaco-editor": "^0.19.3",
         "monaco-editor-webpack-plugin": "^1.8.2",
         "monaco-yaml": "^2.1.0",

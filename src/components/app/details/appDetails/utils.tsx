@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusTypes } from './appDetails.type';
+import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
 
@@ -296,8 +296,14 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     url += `&var-new_rollout_pod_template_hash=${newPodHash}`;
     url += `&var-datasource=Prometheus-${environmentName}`;
     if (chartName === "status") {
-        url += (statusCode.includes("xx")) ? `&response_code_class=${statusCode}` : `&response_code_class=`;
-        url += (statusCode.includes("xx")) ? `&response_code=` : `&response_code=${statusCode}`;
+        if (statusCode === StatusType.Throughput) { //Throughput Graph
+            url += `&var-response_code_class=.*`;
+            url += `&var-response_code=`;
+        }
+        else { //Status Code
+            url += (statusCode.includes("xx")) ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`;
+            url += (statusCode.includes("xx")) ? `&var-response_code=` : `&var-response_code=${statusCode}`;
+        }
     }
     let panelId = (tab === 'aggregate') ? 2 : 3;
     if (!isLegendRequired) {
