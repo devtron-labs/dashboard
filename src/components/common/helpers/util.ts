@@ -1,6 +1,12 @@
-export function sortCallback(key: string, a: any, b: any) {
-    if (a[key] < b[key]) { return -1; }
-    if (a[key] > b[key]) { return 1; }
+export function sortCallback(key: string, a: any, b: any, isCaseSensitive?: boolean) {
+    let x = a[key];
+    let y = b[key];
+    if (isCaseSensitive) {
+        x = x.toLowerCase();
+        y = y.toLowerCase();
+    }
+    if (x < y) { return -1; }
+    if (x > y) { return 1; }
     return 0;
 }
 

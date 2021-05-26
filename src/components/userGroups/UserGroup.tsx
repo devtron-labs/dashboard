@@ -3,22 +3,22 @@ import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
 import { getUserList, getGroupList, getUserId, getGroupId, getUserRole } from './userGroup.service';
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
-import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType } from './userGroups.types'
-import UserForm from './User'
-import GroupForm from './Group';
-import Select, { components } from 'react-select';
+import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType, CollapsedUserOrGroupProps } from './userGroups.types'
 import { DOCUMENTATION, Routes } from '../../config'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
+import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg';
+import Select, { components } from 'react-select';
+import UserForm from './User';
+import GroupForm from './Group';
 import Tippy from '@tippyjs/react';
 import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
-import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
 import './UserGroup.scss';
 
 interface UserGroup {
@@ -270,19 +270,7 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
     )
 }
 
-interface Collapsed {
-    index: number;
-    email_id?: string;
-    id?: number;
-    name?: string;
-    description?: string;
-    type: 'user' | 'group';
-    updateCallback: (index: number, payload: any) => void;
-    deleteCallback: (index: number) => void;
-    createCallback: (payload: any) => void;
-}
-
-const CollapsedUserOrGroup: React.FC<Collapsed> = ({ index, email_id = null, id = null, name = null, description = null, type, updateCallback, deleteCallback, createCallback }) => {
+const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({ index, email_id = null, id = null, name = null, description = null, type, updateCallback, deleteCallback, createCallback }) => {
     const [collapsed, setCollapsed] = useState(true)
     const [dataLoading, data, dataError, reloadData, setData] = useAsync(type === 'group' ? () => getGroupId(id) : () => getUserId(id), [id, type], !collapsed)
 

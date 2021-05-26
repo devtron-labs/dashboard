@@ -305,24 +305,25 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     });
 
     const handleKeyDown = useCallback((event) => {
-        let { emails, inputEmailValue } = emailState
-        inputEmailValue = inputEmailValue.trim()
+        let { emails, inputEmailValue } = emailState;
+        inputEmailValue = inputEmailValue.trim();
         switch (event.key) {
             case 'Enter':
             case 'Tab':
             case ',':
             case ' ': // space
                 if (inputEmailValue) {
+                    let newEmails = inputEmailValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
                     setEmailState({
                         inputEmailValue: '',
-                        emails: [...emails, createOption(inputEmailValue)],
+                        emails: [...emails, ...newEmails],
                         emailError: '',
                     });
                 }
                 if (event.key !== 'Tab') {
                     event.preventDefault();
                 }
-                break
+                break;
         }
     }, [emailState])
 
@@ -384,6 +385,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                     <label htmlFor="" className="mb-8">
                         Email addresses*
                     </label>
+                    {console.log(emailState.emails)}
                     <Creatable
                         ref={creatableRef}
                         options={creatableOptions}
@@ -391,15 +393,15 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                         styles={CreatableStyle}
                         autoFocus
                         isMulti
-                        isValidNewOption={() => false}
-                        inputValue={emailState.inputEmailValue}
                         isClearable
-                        onBlur={handleCreatableBlur}
+                        inputValue={emailState.inputEmailValue}
+                        placeholder="Type email and press enter..."
+                        isValidNewOption={() => false}
                         backspaceRemovesValue
+                        value={emailState.emails}
+                        onBlur={handleCreatableBlur}
                         onInputChange={handleInputChange}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type email and press enter..."
-                        value={emailState.emails}
                         onChange={handleEmailChange}
                     />
                     {emailState.emailError && <label className="form__error">{emailState.emailError}</label>}
