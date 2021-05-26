@@ -71,8 +71,9 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
     })
 }
 
-export function deletePod({ appName, env, name, namespace, appId, envId }) {
-    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=v1&kind=Pod&force=true&appId=${appId}&envId=${envId}`;
+export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
+    if (!group) group = '';
+    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
 }
 
@@ -345,6 +346,7 @@ export function getArtifact(pipelineId, workflowId) {
     })
 }
 
-export function getNodeStatus({ appName, version, namespace, group, kind, name }) {
-    return get(`api/v1/applications/${appName}/resource?version=${version}&namespace=${namespace}&group=${group || ''}&kind=${kind}&resourceName=${name}`)
+export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
+    if (!group) group = '';
+    return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
 }
