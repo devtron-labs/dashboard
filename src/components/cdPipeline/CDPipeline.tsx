@@ -745,6 +745,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="form__label">Deploy to environment</div>
                     <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
+                        isDisabled={!!this.props.match.params.cdPipelineId}
                         placeholder="Select Environment"
                         options={this.state.environments}
                         value={selectedEnv}
