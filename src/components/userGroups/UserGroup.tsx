@@ -254,7 +254,7 @@ const UserGroupList: React.FC<{ type: 'user' | 'group', reloadLists: () => void 
 
     if (loading) return <div className="w-100 flex" style={{ minHeight: '600px' }}><Progressing pageLoader /></div>
     if (!addHash) return type === "user" ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    const filteredAndSorted = result.filter(userOrGroup => userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) || (userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) || userOrGroup.description?.toLowerCase()?.includes(searchString)));
+    const filteredAndSorted = result.filter(userOrGroup => userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) || (userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) || userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase())));
     return (<div id="auth-page__body" className="auth-page__body-users__list-container">
         {result.length > 0 && <input value={searchString} autoComplete="off" ref={searchRef} type="search" placeholder={`Search ${type}`} className="auth-search" onChange={e => setSearchString(e.target.value)} />}
         {!(filteredAndSorted.length === 0 && result.length > 0) && <AddUser cancelCallback={cancelCallback} key={addHash} text={`Add ${type}`} type={type} open={!(result) || result?.length === 0} {...{ createCallback, updateCallback, deleteCallback }} />}
