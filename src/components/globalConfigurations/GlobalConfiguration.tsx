@@ -34,7 +34,7 @@ const ConfigRequired = [
 ]
 
 const ConfigOptional = [
-    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
+    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
     { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },

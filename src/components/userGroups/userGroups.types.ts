@@ -14,6 +14,17 @@ export enum ActionTypes{
     VIEW = 'view',
     UPDATE = 'update'
 }
+export interface CollapsedUserOrGroupProps {
+    index: number;
+    email_id?: string;
+    id?: number;
+    name?: string;
+    description?: string;
+    type: 'user' | 'group';
+    updateCallback: (index: number, payload: any) => void;
+    deleteCallback: (index: number) => void;
+    createCallback: (payload: any) => void;
+}
 interface RoleFilter{
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
     team?: OptionType;
