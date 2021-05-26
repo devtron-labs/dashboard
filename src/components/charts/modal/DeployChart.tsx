@@ -103,8 +103,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
         let projectList = result.map((p) => { return { value: p.id, label: p.name } });
         projectList = projectList.sort((a, b) => sortCallback('label', a, b, true));
         setProjects(projectList);
-        let project = projects.find(p => p.value === teamId);
-        selectProject(project);
     }
 
     const fetchEnvironments = async () => {
@@ -113,8 +111,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
         envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
         envList = envList.sort((a, b) => sortCallback('label', a, b, true));
         setEnvironments(envList);
-        let environment = envList.find(e => e.value === environmentId);
-        selectEnvironment(environment);
     }
 
     function closeMe(event = null) {
@@ -239,6 +235,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
             })
         }
     }, [chartIdFromDeploymentDetail])
+
+    useEffect(() => {
+        if (environmentId && environments.length) {
+            let environment = environments.find(e => e.value.toString() === environmentId.toString());
+            selectEnvironment(environment);
+        }
+    }, [environmentId, environments])
+
+    useEffect(() => {
+        if (teamId && projects.length) {
+            let project = projects.find(e => e.value.toString() === teamId.toString());
+            selectProject(project);
+        }
+    }, [teamId, projects])
 
     useEffect(() => {
         if (chartValues.id && chartValues.chartVersion) {
@@ -387,7 +397,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     IndicatorSeparator: null,
                                     DropdownIndicator
                                 }}
+                                isDisabled={!!isUpdate}
                                 placeholder="Select Project"
+                                value={selectedProject}
                                 styles={{
                                     ...styles,
                                     ...menuList,
@@ -403,7 +415,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     IndicatorSeparator: null,
                                     DropdownIndicator
                                 }}
+                                isDisabled={!!isUpdate}
                                 placeholder="Select Environment"
+                                value={selectedEnvironment}
                                 styles={{
                                     ...styles,
                                     ...menuList,
