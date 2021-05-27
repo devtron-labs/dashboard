@@ -380,6 +380,24 @@ function EnvironmentOverrideRouter() {
     const { url, path } = useRouteMatch()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
 
+    const EnvironmentOverrideDropdown = () => {
+        if (Array.isArray(environmentResult?.result)) {
+            return <div>
+                {(environmentResult.result).map(env => {
+                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
+                    return <NavLink key={env.environmentId}
+                        className="app-compose__nav-item"
+                        to={LINK}>{env.environmentName}
+                    </NavLink>
+                })}
+            </div>
+        }
+        else {
+            return "empty"
+        }
+    }
+
+
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
             reloadEnvironments()
@@ -393,13 +411,7 @@ function EnvironmentOverrideRouter() {
             <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
             </div>
             {!collapsed && <div className="environment-routes">
-                {Array.isArray(environmentResult?.result) && (environmentResult.result).map(env => {
-                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
-                    return <NavLink key={env.environmentId}
-                        className="app-compose__nav-item"
-                        to={LINK}>{env.environmentName}
-                    </NavLink>
-                })}
+                {EnvironmentOverrideDropdown()}
             </div>}
         </div >
     )

@@ -181,10 +181,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
-        return <AppMetricsEmptyState isLoading={datasource.isLoading}
+        return <>
+        {console.log()}
+        <AppMetricsEmptyState isLoading={datasource.isLoading}
             isConfigured={datasource.isConfigured}
             isHealthy={datasource.isHealthy}
             hostURLConfig={hostURLConfig} />
+            </>
     }
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
