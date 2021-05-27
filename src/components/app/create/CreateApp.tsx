@@ -160,7 +160,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             : null}
                     </span>
                     <span className="form__text-field-info">
-                        <Info className="form__icon form__icon--info" />
+                        <Info className="form__icon form__icon--info" style={{height: "none"}} />
                         Apps are NOT env specific and can be used to deploy to multiple environments.
                     </span>
                 </label>
