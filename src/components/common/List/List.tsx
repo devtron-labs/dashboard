@@ -1,6 +1,6 @@
 import React from 'react'
 import Toggle from '../Toggle/Toggle'
-import arrowTriangle from '../../../assets/icons/appstatus/ic-dropdown.svg'
+import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import './list.scss'
 
 function Logo({ src = "", style = {}, className = "", children = null }) {

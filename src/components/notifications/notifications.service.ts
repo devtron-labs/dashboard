@@ -4,7 +4,7 @@ import { getEnvironmentListMin, getTeamListMin, getAppListMin } from '../../serv
 import { sortCallback } from '../common';
 import { NotificationConfiguration } from './NotificationTab';
 import { PipelineType } from './AddNotification';
-import {ResponseType} from '../../services/service.types';
+import { ResponseType } from '../../services/service.types';
 
 interface UpdateNotificationEvent {
     id: number; eventTypeIds: number[];
@@ -83,17 +83,17 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         }
     });
     providers = providers.map(p => {
-        if (p.configId) {
+        if (p.data.configId) {
             return {
-                configId: p.configId,
-                dest: p.dest,
+                configId: p.data.configId,
+                dest: p.data.dest,
                 recipient: "",
             }
         }
         else return {
             configId: 0,
             dest: "",
-            recipient: p.recipient
+            recipient: p.data.recipient
         }
     })
     return {
@@ -101,10 +101,6 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         providers: providers,
         sesConfigId: sesConfigId,
     }
-}
-
-export function getFilterInner(filterOuter) {
-    
 }
 
 export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
@@ -168,6 +164,8 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
             return {
                 id: config.id,
                 pipelineId: config.pipeline?.id || undefined,
+                appName: config?.appName,
+                branch: config?.branch,
                 pipelineName: config.pipeline?.name || undefined,
                 pipelineType: config.pipelineType || "",
                 environmentName: config?.pipeline?.environmentName || undefined,
@@ -355,6 +353,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 appliedFilters: projects.concat(app, environment),
                 checkbox: { isChecked: false, value: "INTERMEDIATE" },
                 pipelineId: row.pipeline?.id,
+                appName: row?.appName,
+                branch: row?.branch,
                 pipelineName: row.pipeline?.name,
                 environmentName: row?.pipeline?.environmentName,
                 type: row.pipelineType,
@@ -411,7 +411,13 @@ export function getAddNotificationInitData(): Promise<{
         let filterOptionsInner = filters.project.concat(filters.application, filters.environment);
         return {
             filterOptionsInner,
-            channelOptions: providerOptions,
+            channelOptions: providerOptions.map(p => {
+                return {
+                    label: p.recipient,
+                    value: p.configId,
+                    data: p,
+                }
+            }),
             sesConfigOptions,
         };
     })

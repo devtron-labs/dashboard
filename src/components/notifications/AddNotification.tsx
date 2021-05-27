@@ -7,13 +7,16 @@ import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg';
-import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
-import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
-import { getAddNotificationInitData, getChannelsAndEmails, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
-import { Link } from 'react-router-dom';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
+import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
+import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
 import { ViewType, URLS } from '../../config';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { components } from 'react-select';
+import { multiSelectStyles, DropdownIndicator, Option, MultiValueLabel } from './notifications.util';
 import Tippy from '@tippyjs/react';
+import CreatableSelect from 'react-select/creatable';
 import './notifications.css';
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {
@@ -29,6 +32,8 @@ export interface PipelineType {
     pipelineId: number;
     pipelineName: string;
     environmentName?: string;
+    branch?: string;
+    appName: string;
     success: boolean;
     trigger: boolean;
     failure: boolean;
@@ -39,12 +44,13 @@ interface AddNotificationState {
     view: string;
     showSlackConfigModal: boolean;
     showSESConfigModal: boolean;
-    channelOptions: { dest: "slack" | "ses" | "", configId: number; recipient: string; }[];
+    channelOptions: { label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
     sesConfigOptions: { id: number; configName: string; dest: "slack" | "ses" | ""; recipient: string }[];
     showChannels: boolean;
     isLoading: boolean;
     appliedFilters: Array<{ type: string, value: number | string | undefined, label: string | undefined }>;
-    selectedChannels: any[];
+    // selectedChannels: any[];
+    selectedChannels: { __isNew__: boolean; label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
     openSelectPipeline: boolean;
     pipelineList: PipelineType[];
     filterInput: string;
@@ -57,7 +63,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         { value: "application", label: "application", type: "main" },
         { value: "project", label: "project", type: "main" },
         { value: "environment", label: "environment", type: "main" },
-        // { value: "pipeline", label: "pipeline", type: "main" },
     ];
     filterOptionsInner = [];
 
@@ -87,12 +92,16 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.toggleChannels = this.toggleChannels.bind(this);
         this.handleChannelInput = this.handleChannelInput.bind(this);
         this.handleFilterTag = this.handleFilterTag.bind(this);
-        this.handleChannelTag = this.handleChannelTag.bind(this);
         this.selectSES = this.selectSES.bind(this);
         this.selectSESFromChild = this.selectSESFromChild.bind(this);
     }
 
     componentDidMount() {
+        this.getInitialData();
+        
+    }
+
+    getInitialData(){
         getAddNotificationInitData().then((result) => {
             this.filterOptionsInner = result.filterOptionsInner;
             this.setState({
@@ -151,20 +160,18 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
-    handleChannelTag(event): void {
-        let theKeyCode = event.key;
-        if (theKeyCode === " " || theKeyCode === "Enter") {
-            let state = { ...this.state };
-            state.selectedChannels.push({ dest: "", configId: 0, recipient: event.target.value });
-            state.channelInput = "";
-            this.setState(state);
-        }
-        else if (theKeyCode === "Backspace" && !this.state.channelInput.length) {
-            let state = { ...this.state };
-            state.channelInput = "";
-            state.selectedChannels.pop();
-            this.setState(state);
-        }
+    showSesDropdown(): boolean {
+        let allEmails = this.state.selectedChannels?.filter(p => p.data.dest === "" || p.data.dest === "ses");
+        let show = allEmails.reduce((isValid, item) => {
+            if (item.data.recipient === 'admin' || item.data.recipient === 'system') {
+                isValid = isValid || true;
+            }
+            else {
+                isValid = isValid || validateEmail(item.data.recipient);
+            }
+            return isValid
+        }, false)
+        return show;
     }
 
     toggleSelectPipeline() {
@@ -249,17 +256,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.setState(state);
     }
 
-    selectChannel(provider): void {
-        let state = { ...this.state }
-        state.channelInput = "";
-        state.showChannels = false;
-        state.selectedChannels.push(provider);
-        this.setState(state);
-    }
-
-    removeChannel(provider): void {
+    selectChannel(selectedChannels): void {
         let state = { ...this.state };
-        state.selectedChannels = state.selectedChannels.filter(p => !(provider.id === p.id && provider.type == p.type && p.recipient === provider.recipient));
+        state.selectedChannels = selectedChannels || [];
+        state.selectedChannels = state.selectedChannels.map((p) => {
+            if (p.__isNew__) return { ...p, data: { dest: "", configId: 0, recipient: p.value } }
+            return p;
+        })
         this.setState(state);
     }
 
@@ -275,7 +278,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     saveNotification(): void {
         let selectedPipelines = this.state.pipelineList.filter(p => p.checkbox.isChecked);
-        let isAnyEmail = this.state.selectedChannels.find(p => p.dest === "" || p.dest === "ses");
+        let isAnyEmail = this.state.selectedChannels.find(p => p.data.dest === "" || p.data.dest === "ses");
 
         if (!selectedPipelines.length) {
             toast.error("Select atleast one pipeline");
@@ -297,9 +300,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     renderSESAccountDropdown() {
-        let email = this.state.selectedChannels.find(p => p.dest === "" || p.dest === "ses");
-        let isValidEmail = email ? validateEmail(email.recipient) : false;
-        if (isValidEmail) {
+        let show = this.showSesDropdown();
+        if (show) {
             let sesConfig = this.state.sesConfigOptions.find(config => config.id === this.state.sesConfigId);
             return <label className="form__row form__row--ses-account">
                 <span className="form__label">SES Account (used for sending email notifications)</span>
@@ -372,11 +374,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             return <table className="pipeline-list__table">
                 <tbody>
                     <tr className="pipeline-list__header">
-                        <th className="pipeline-list__checkbox"></th>
-                        <th className="pipeline-list__pipeline-name">Pipeline Name</th>
-                        <th className="pipeline-list__type">Type</th>
-                        <th className="pipeline-list__environment">Environment</th>
-                        <th className="pipeline-list__stages block">Events</th>
+                        <th className="pipeline-list__checkbox fw-6"></th>
+                        <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
+                        <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
+                        <th className="pipeline-list__type fw-6">Type</th>
+                        <th className="pipeline-list__environment fw-6">Env/Branch</th>
+                        <th className="pipeline-list__stages block fw-6">Events</th>
                     </tr>
                     {this.state.pipelineList.map((row, rowIndex) => {
                         return <tr key={row.pipelineId + row.type} className="pipeline-list__row">
@@ -397,10 +400,15 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         })}
                                     </div>  </> : row.pipelineName}
                             </td>
+                            <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
                             <td className="pipeline-list__type">
-                                {row.type === "CI" ? "Build" : "Deployment"}
+                                {row.type === "CI" ? <CI className="icon-dim-20" /> : ''}
+                                {row.type === "CD" ? <CD className="icon-dim-20" /> : ''}
                             </td>
-                            <td className="pipeline-list__environment">{row?.environmentName}</td>
+                            <td className="pipeline-list__environment">
+                                {row.type === "CI" ? row?.branch : ''}
+                                {row.type === "CD" ? row?.environmentName : ''}
+                            </td>
                             <td className="pipeline-list__stages flexbox flex-justify">
                                 <Tippy className="default-tt" arrow={true} placement="top" content="Trigger" >
                                     <div>
@@ -441,48 +449,42 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     renderSendTo() {
-        let input = this.state.channelInput.toLowerCase();
-        let suggestions = this.state.channelOptions;
-        suggestions = this.state.channelOptions.filter(p => {
-            if (p.recipient.toLowerCase().indexOf(input) >= 0) {
-                return p
-            }
-        })
-        let hideInput = this.state.selectedChannels.length > 0 && !this.state.showChannels;
         return <div className="form__row">
-            <div className="add-notification__title mb-16">Send to</div>
-            <div className="position-rel">
-                <div className="form__input pipeline-filter__select-pipeline flexbox left" onClick={() => this.setState({ showChannels: true })}>
-                    {this.state.selectedChannels.map((provider) => {
-                        return <span key={provider.recipient} className="devtron-tag m-2" style={{ "backgroundColor": (provider.dest === "" && !validateEmail(provider.recipient)) ? "var(--R100)" : "white" }}>
-                            {provider.dest === "ses" ? <Email className="icon-dim-20 mr-5" /> : null}
-                            {provider.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
-                            {provider.dest === "" && validateEmail(provider.recipient) ? <Email className="icon-dim-20 mr-5" /> : null}
-                            {provider.dest === "" && !validateEmail(provider.recipient) ? <RedWarning className="icon-dim-20 mr-5" /> : null}
-                            {`${provider.recipient}`}
-                            <button type="button" className="transparent ml-5" onClick={(event) => { event.stopPropagation(); this.removeChannel(provider) }}>
-                                <i className="fa fa-times-circle" aria-hidden="true"></i>
-                            </button>
-                        </span>
-                    })}
-                    {hideInput ? null : <input type="text" autoComplete="off"  className="pipeline-filter__search transparent flex-1" autoFocus value={this.state.channelInput} onKeyDown={this.handleChannelTag}
-                        placeholder="Enter email addresses or slack channels" onChange={this.handleChannelInput} />}
-                </div>
-                {this.state.showChannels ? <div className="transparent-div" onClick={this.toggleChannels}></div> : null}
-                {this.state.showChannels ? <div className="pipeline-filter__menu">
-                    {suggestions.map((o) => {
-                        return <div className="pipeline-filter__option flex left" key={o.configId + o.recipient}
-                            onClick={() => { this.selectChannel(o); }}>
-                            {o.dest === "ses" || o.dest === "" ? <Email className="icon-dim-20 mr-5" /> : null}
-                            {o.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
-                            {o.recipient}
-                        </div>
-                    })}
-                    <div className="pipeline-filter__sticky-bottom cursor" onClick={(e) => { this.setState({ showSlackConfigModal: true }) }}>
-                        <Slack className="icon-dim-24 mr-12" />Configure Slack Channel
-                    </div>
-                </div> : null}
-            </div>
+            <p className="add-notification__title mb-16">Send to</p>
+            <CreatableSelect placeholder="Enter email addresses or slack channels"
+                value={this.state.selectedChannels}
+                isMulti
+                isSearchable
+                isClearable={false}
+                backspaceRemovesValue
+                className="react-select--height-44"
+                components={{
+                    IndicatorSeparator: null,
+                    DropdownIndicator: DropdownIndicator,
+                    MultiValueLabel: MultiValueLabel,
+                    Option: Option,
+                    MenuList: (props) => {
+                        return <components.MenuList {...props}>
+                            {props.children}
+                            <div className="pipeline-filter__sticky-bottom cursor"
+                                onClick={(e) => { this.setState({ showSlackConfigModal: true }) }}>
+                               <Slack className="icon-dim-24 mr-12" />Configure Slack Channel
+                            </div>
+                        </components.MenuList>
+                    }
+                }}
+                styles={{
+                    ...multiSelectStyles,
+                    menuList: (base) => {
+                        return {
+                            ...base,
+                            position: 'relative',
+                            paddingBottom: '0px',
+                        }
+                    }
+                }}
+                onChange={(selected) => { this.selectChannel(selected) }}
+                options={this.state.channelOptions} />
         </div>
     }
 
@@ -532,12 +534,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 slackConfigId={0}
                 onSaveSuccess={() => {
                     this.setState({ showSlackConfigModal: false });
-                    getChannelsAndEmails().then((response: any) => {
-                        let providers = response?.result || [];
-                        this.setState({ channelOptions: providers })
-                    }).catch((error) => {
-                        showError(error);
-                    })
+                    this.getInitialData();
                 }}
                 closeSlackConfigModal={() => { this.setState({ showSlackConfigModal: false }) }}
             />

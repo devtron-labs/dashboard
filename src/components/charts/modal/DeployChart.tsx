@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog } from '../../common';
+import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog, sortCallback } from '../../common';
 import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
@@ -10,10 +10,12 @@ import { URLS } from '../../../config'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
+import { styles, menuList, DropdownIndicator } from '../charts.util';
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
+import ReactSelect from 'react-select';
 import './DeployChart.scss';
 
 function mapById(arr) {
@@ -52,14 +54,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
     installedAppVersionId = 0,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: "" },
     ...rest }) => {
-    const [teams, setTeams] = useState(new Map())
-    const [environments, setEnvironments] = useState(new Map())
+    const [environments, setEnvironments] = useState([])
+    const [projects, setProjects] = useState([])
     const [loading, setLoading] = useState(false);
     const [selectedVersion, selectVersion] = useState(appStoreVersion)
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
-    const [selectedTeam, selectTeam] = useState(teamId)
+    const [selectedProject, selectProject] = useState<{ label: string; value: number }>()
     const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);
-    const [selectedEnvironment, selectEnvironment] = useState(environmentId)
+    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: number }>(undefined)
     const [appName, setAppName] = useState(originalName)
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
@@ -95,20 +97,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [showCodeEditorError, setCodeEditorError] = useState(false);
     const deployChartForm = useRef(null);
     const deployChartEditor = useRef(null);
-    const fetchTeams = async () => {
-        let response = await getTeamListMin()
-        if (response && response.result) {
-            const teams = mapById(response.result)
-            setTeams(teams)
-        }
+
+    const fetchProjects = async () => {
+        let { result } = await getTeamListMin();
+        let projectList = result.map((p) => { return { value: p.id, label: p.name } });
+        projectList = projectList.sort((a, b) => sortCallback('label', a, b, true));
+        setProjects(projectList);
     }
 
     const fetchEnvironments = async () => {
-        let response = await getEnvironmentListMin()
-        if (response && response.result) {
-            const environments = mapById(response.result)
-            setEnvironments(environments)
-        }
+        let response = await getEnvironmentListMin();
+        let envList = response.result ? response.result : [];
+        envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
+        envList = envList.sort((a, b) => sortCallback('label', a, b, true));
+        setEnvironments(envList);
     }
 
     function closeMe(event = null) {
@@ -140,7 +142,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     const deploy = async (e) => {
-        if (!(selectedTeam && selectedEnvironment)) {
+        if (!(selectedProject && selectedEnvironment)) {
             return
         }
         if (!environmentId && !teamId && !appName) {
@@ -171,10 +173,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
             }
             else {
                 let request = {
-                    teamId: selectedTeam,
+                    teamId: selectedProject.value,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
-                    environmentId: selectedEnvironment,
+                    environmentId: selectedEnvironment.value,
                     appStoreVersion: selectedVersion,
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
@@ -210,8 +212,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
         document.addEventListener("keydown", closeMe);
         if (versions) {
-            fetchTeams()
-            fetchEnvironments()
+            fetchProjects();
+            fetchEnvironments();
         }
         return () => { document.removeEventListener("keydown", closeMe); }
     }, [])
@@ -233,6 +235,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
             })
         }
     }, [chartIdFromDeploymentDetail])
+
+    useEffect(() => {
+        if (environmentId && environments.length) {
+            let environment = environments.find(e => e.value.toString() === environmentId.toString());
+            selectEnvironment(environment);
+        }
+    }, [environmentId, environments])
+
+    useEffect(() => {
+        if (teamId && projects.length) {
+            let project = projects.find(e => e.value.toString() === teamId.toString());
+            selectProject(project);
+        }
+    }, [teamId, projects])
 
     useEffect(() => {
         if (chartValues.id && chartValues.chartVersion) {
@@ -352,9 +368,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     let isUpdate = environmentId && teamId;
-    let isDisabled = isUpdate ? false : !(selectedEnvironment && selectedTeam && selectedVersion && appName?.length);
-    let teamObj = teams.get(selectedTeam);
-    let envObj = environments.get(selectedEnvironment);
+    let isDisabled = isUpdate ? false : !(selectedEnvironment && selectedProject && selectedVersion && appName?.length);
     let chartVersionObj = versions.get(selectedVersion);
     // fetch chart versions for update route
     useEffect(() => {
@@ -374,21 +388,43 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     <div className="hide-scroll">
                         <label className="form__row form__row--w-100">
                             <span className="form__label">App Name</span>
-                            <input autoComplete="off" tabIndex={1} placeholder="app name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
+                            <input autoComplete="off" tabIndex={1} placeholder="App name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Project</span>
-                            <Select tabIndex={2} rootClassName="select-button--default" disabled={!!isUpdate} onChange={event => selectTeam(event.target.value)} value={selectedTeam}>
-                                <Select.Button>{teamObj ? teamObj.name : 'Select Project'}</Select.Button>
-                                {teams && Array.from(teams).map(([teamId, teamData], idx) => <Select.Option key={teamId} value={teamId}>{teamData.name}</Select.Option>)}
-                            </Select>
+                            <ReactSelect
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator
+                                }}
+                                isDisabled={!!isUpdate}
+                                placeholder="Select Project"
+                                value={selectedProject}
+                                styles={{
+                                    ...styles,
+                                    ...menuList,
+                                }}
+                                onChange={selectProject}
+                                options={projects}
+                            />
                         </label>
                         <div className="form__row form__row--w-100">
                             <span className="form__label">Environment</span>
-                            <Select tabIndex={3} rootClassName="select-button--default" value={selectedEnvironment} disabled={!!isUpdate} onChange={e => selectEnvironment(e.target.value)}>
-                                <Select.Button>{envObj ? envObj.environment_name : 'Select Environment'}</Select.Button>
-                                {environments && Array.from(environments).map(([envId, envData], idx) => <Select.Option key={envId} value={envId}>{envData.environment_name}</Select.Option>)}
-                            </Select>
+                            <ReactSelect
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator
+                                }}
+                                isDisabled={!!isUpdate}
+                                placeholder="Select Environment"
+                                value={selectedEnvironment}
+                                styles={{
+                                    ...styles,
+                                    ...menuList,
+                                }}
+                                onChange={selectEnvironment}
+                                options={environments}
+                            />
                         </div>
                         {isUpdate && deprecated &&
                             <div className="info__container--update-chart">

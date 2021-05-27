@@ -689,6 +689,7 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             env: environmentName,
             envId: +params.envId,
             namespace,
+            version: version,
             name,
         };
         try {
@@ -710,7 +711,7 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
         </span> : ''}
         <span className="flex pod-info__popup-row pod-info__popup-row--red"
             onClick={asyncDeletePod}>
-            <span>Delete {kind}</span>
+            <span>Delete</span>
             <Trash className="icon-dim-20" />
         </span>
     </div>

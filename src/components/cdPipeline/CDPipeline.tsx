@@ -24,7 +24,7 @@ import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
+import dropdown from '../../assets/icons/appstatus/ic-chevron-down.svg';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -745,6 +745,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="form__label">Deploy to environment</div>
                     <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
+                        isDisabled={!!this.props.match.params.cdPipelineId}
                         placeholder="Select Environment"
                         options={this.state.environments}
                         value={selectedEnv}
