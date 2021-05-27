@@ -160,7 +160,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             : null}
                     </span>
                     <span className="form__text-field-info">
-                        <Info className="form__icon form__icon--info" style={{height: "none"}} />
+                        <Info className="form__icon form__icon--info" style={{ height: "none" }} />
                         Apps are NOT env specific and can be used to deploy to multiple environments.
                     </span>
                 </label>
@@ -191,11 +191,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </Select.Option>
                         })}
                     </Select>
-                    <span className="form__error">
-                        {showError && !this.state.isValid.projectId
-                            ? <><Error className="form__icon form__icon--error" />{errorObject[1].message}</>
-                            : null}
-                    </span>
                 </div>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
