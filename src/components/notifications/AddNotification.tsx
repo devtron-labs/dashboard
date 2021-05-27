@@ -9,14 +9,14 @@ import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg';
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
-import { getAddNotificationInitData, getChannelsAndEmails, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
-import { Link } from 'react-router-dom';
+import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
 import { ViewType, URLS } from '../../config';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { components } from 'react-select';
+import { multiSelectStyles, DropdownIndicator, Option, MultiValueLabel } from './notifications.util';
 import Tippy from '@tippyjs/react';
 import CreatableSelect from 'react-select/creatable';
-import { multiSelectStyles, DropdownIndicator, Option, MultiValueLabel } from './notifications.util';
-import { components } from 'react-select';
 import './notifications.css';
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {
@@ -457,8 +457,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 isSearchable
                 isClearable={false}
                 backspaceRemovesValue
-                className="basic-multi-select"
-                classNamePrefix="select"
+                className="react-select--height-44"
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator: DropdownIndicator,

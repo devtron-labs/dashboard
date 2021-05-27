@@ -83,17 +83,17 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         }
     });
     providers = providers.map(p => {
-        if (p.configId) {
+        if (p.data.configId) {
             return {
-                configId: p.configId,
-                dest: p.dest,
+                configId: p.data.configId,
+                dest: p.data.dest,
                 recipient: "",
             }
         }
         else return {
             configId: 0,
             dest: "",
-            recipient: p.recipient
+            recipient: p.data.recipient
         }
     })
     return {
