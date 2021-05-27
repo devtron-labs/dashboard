@@ -31,6 +31,7 @@ export interface PipelineType {
     pipelineId: number;
     pipelineName: string;
     environmentName?: string;
+    branch?: string;
     appName: string;
     success: boolean;
     trigger: boolean;
@@ -379,7 +380,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
                         <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
                         <th className="pipeline-list__type fw-6">Type</th>
-                        <th className="pipeline-list__environment fw-6">Environment</th>
+                        <th className="pipeline-list__environment fw-6">Env/Branch</th>
                         <th className="pipeline-list__stages block fw-6">Events</th>
                     </tr>
                     {this.state.pipelineList.map((row, rowIndex) => {
@@ -406,7 +407,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 {row.type === "CI" ? <CI className="icon-dim-20" /> : ''}
                                 {row.type === "CD" ? <CD className="icon-dim-20" /> : ''}
                             </td>
-                            <td className="pipeline-list__environment">{row?.environmentName}</td>
+                            <td className="pipeline-list__environment">
+                                {row.type === "CI" ? row?.branch : ''}
+                                {row.type === "CD" ? row?.environmentName : ''}
+                            </td>
                             <td className="pipeline-list__stages flexbox flex-justify">
                                 <Tippy className="default-tt" arrow={true} placement="top" content="Trigger" >
                                     <div>

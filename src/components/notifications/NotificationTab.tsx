@@ -31,6 +31,7 @@ export interface NotificationConfiguration {
     pipelineName?: string;
     pipelineType: "CI" | "CD";
     environmentName?: string;
+    branch?: string;
     trigger: boolean;
     success: boolean;
     failure: boolean;
@@ -429,7 +430,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
                     <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
                     <th className="pipeline-list__type fw-6">Type</th>
-                    <th className="pipeline-list__environment fw-6">Environment</th>
+                    <th className="pipeline-list__environment fw-6">Env/Branch</th>
                     <th className="pipeline-list__stages fw-6">Events</th>
                     <th className="pipeline-list__recipients fw-6">Recipients</th>
                 </tr>
@@ -464,7 +465,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             {row.pipelineType === "CI" ? <CI className="icon-dim-20" /> : ''}
                             {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
                         </td>
-                        <td className="pipeline-list__environment">{row?.environmentName}</td>
+                        <td className="pipeline-list__environment">
+                            {row.pipelineType === "CI" ? row?.branch : ''}
+                            {row.pipelineType === "CD" ? row?.environmentName : ''}
+                        </td>
                         <td className="pipeline-list__stages flexbox flex-justify">
                             {row.trigger ? <Tippy placement="top" content="on trigger" >
                                 <Play className="icon-dim-20 icon-n5" />

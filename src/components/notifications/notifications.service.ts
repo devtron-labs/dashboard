@@ -4,7 +4,7 @@ import { getEnvironmentListMin, getTeamListMin, getAppListMin } from '../../serv
 import { sortCallback } from '../common';
 import { NotificationConfiguration } from './NotificationTab';
 import { PipelineType } from './AddNotification';
-import {ResponseType} from '../../services/service.types';
+import { ResponseType } from '../../services/service.types';
 
 interface UpdateNotificationEvent {
     id: number; eventTypeIds: number[];
@@ -103,10 +103,6 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
     }
 }
 
-export function getFilterInner(filterOuter) {
-    
-}
-
 export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`;
     let payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId);
@@ -168,6 +164,8 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
             return {
                 id: config.id,
                 pipelineId: config.pipeline?.id || undefined,
+                appName: config?.appName,
+                branch: config?.branch,
                 pipelineName: config.pipeline?.name || undefined,
                 pipelineType: config.pipelineType || "",
                 environmentName: config?.pipeline?.environmentName || undefined,
@@ -355,6 +353,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 appliedFilters: projects.concat(app, environment),
                 checkbox: { isChecked: false, value: "INTERMEDIATE" },
                 pipelineId: row.pipeline?.id,
+                appName: row?.appName,
+                branch: row?.branch,
                 pipelineName: row.pipeline?.name,
                 environmentName: row?.pipeline?.environmentName,
                 type: row.pipelineType,
