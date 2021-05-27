@@ -9,6 +9,8 @@ import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
+import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { getAddNotificationInitData, getChannelsAndEmails, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
 import { Link } from 'react-router-dom';
 import { ViewType, URLS } from '../../config';
@@ -29,6 +31,7 @@ export interface PipelineType {
     pipelineId: number;
     pipelineName: string;
     environmentName?: string;
+    appName: string;
     success: boolean;
     trigger: boolean;
     failure: boolean;
@@ -372,11 +375,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             return <table className="pipeline-list__table">
                 <tbody>
                     <tr className="pipeline-list__header">
-                        <th className="pipeline-list__checkbox"></th>
-                        <th className="pipeline-list__pipeline-name">Pipeline Name</th>
-                        <th className="pipeline-list__type">Type</th>
-                        <th className="pipeline-list__environment">Environment</th>
-                        <th className="pipeline-list__stages block">Events</th>
+                        <th className="pipeline-list__checkbox fw-6"></th>
+                        <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
+                        <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
+                        <th className="pipeline-list__type fw-6">Type</th>
+                        <th className="pipeline-list__environment fw-6">Environment</th>
+                        <th className="pipeline-list__stages block fw-6">Events</th>
                     </tr>
                     {this.state.pipelineList.map((row, rowIndex) => {
                         return <tr key={row.pipelineId + row.type} className="pipeline-list__row">
@@ -397,8 +401,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         })}
                                     </div>  </> : row.pipelineName}
                             </td>
+                            <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
                             <td className="pipeline-list__type">
-                                {row.type === "CI" ? "Build" : "Deployment"}
+                                {row.type === "CI" ? <CI className="icon-dim-20" /> : ''}
+                                {row.type === "CD" ? <CD className="icon-dim-20" /> : ''}
                             </td>
                             <td className="pipeline-list__environment">{row?.environmentName}</td>
                             <td className="pipeline-list__stages flexbox flex-justify">
@@ -465,7 +471,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             </button>
                         </span>
                     })}
-                    {hideInput ? null : <input type="text" autoComplete="off"  className="pipeline-filter__search transparent flex-1" autoFocus value={this.state.channelInput} onKeyDown={this.handleChannelTag}
+                    {hideInput ? null : <input type="text" autoComplete="off" className="pipeline-filter__search transparent flex-1" autoFocus value={this.state.channelInput} onKeyDown={this.handleChannelTag}
                         placeholder="Enter email addresses or slack channels" onChange={this.handleChannelInput} />}
                 </div>
                 {this.state.showChannels ? <div className="transparent-div" onClick={this.toggleChannels}></div> : null}

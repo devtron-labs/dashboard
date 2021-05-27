@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
 import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
+import Tippy from '@tippyjs/react';
+import Reload from '../Reload/Reload';
+import { PopupMenu, Checkbox, Progressing, showError, DeleteDialog, Pagination } from '../common';
+import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmails } from './notifications.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg';
 import { ReactComponent as User } from '../../assets/icons/ic-users.svg';
-import { PopupMenu, Checkbox, Progressing, showError, DeleteDialog, Pagination } from '../common';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
+import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS } from '../../config';
-import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmails } from './notifications.service';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
 import { Link, NavLink } from 'react-router-dom';
-import Tippy from '@tippyjs/react';
-import Reload from '../Reload/Reload';
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
+    appName: string;
     pipelineName?: string;
     pipelineType: "CI" | "CD";
     environmentName?: string;
@@ -423,11 +426,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <span></span>
                         </Checkbox>
                     </th>
-                    <th className="pipeline-list__pipeline-name">Pipeline Name</th>
-                    <th className="pipeline-list__type">Type</th>
-                    <th className="pipeline-list__environment">Environment</th>
-                    <th className="pipeline-list__stages">Events</th>
-                    <th className="pipeline-list__recipients">Recipients</th>
+                    <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
+                    <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
+                    <th className="pipeline-list__type fw-6">Type</th>
+                    <th className="pipeline-list__environment fw-6">Environment</th>
+                    <th className="pipeline-list__stages fw-6">Events</th>
+                    <th className="pipeline-list__recipients fw-6">Recipients</th>
                 </tr>
                 {this.state.notificationList.map((row) => {
                     return <tr key={row.id} className={row.isSelected ? "pipeline-list__row pipeline-list__row--selected" : "pipeline-list__row"}>
@@ -455,8 +459,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     })}
                                 </div> </> : null}
                         </td>
+                        <td className="pipeline-list__pipeline-name">{row?.appName}</td>
                         <td className="pipeline-list__type">
-                            {row.pipelineType === "CI" ? "Build" : "Deployment"}
+                            {row.pipelineType === "CI" ? <CI className="icon-dim-20" /> : ''}
+                            {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
                         </td>
                         <td className="pipeline-list__environment">{row?.environmentName}</td>
                         <td className="pipeline-list__stages flexbox flex-justify">
