@@ -148,6 +148,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         className="basic-multi-select"
                         classNamePrefix="select"
                         components={{
+                            IndicatorSeparator: null,
                             DropdownIndicator,
                             MultiValueLabel,
                             Option,
