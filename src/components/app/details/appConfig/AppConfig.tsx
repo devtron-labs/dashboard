@@ -400,7 +400,7 @@ function EnvironmentOverrideRouter() {
             </div>
         }
         else {
-            return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12">
+            return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
                 Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines. &nbsp;
                 <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
             </div>

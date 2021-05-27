@@ -18,7 +18,6 @@ import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
 import { toast } from 'react-toastify'
 
-
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion }> = ({ appName, environment, podMap, k8sVersion }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
     const [calendar, setDateRange] = useState<{ startDate: Moment, endDate: Moment }>({
