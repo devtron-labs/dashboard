@@ -308,8 +308,18 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             setLoading(false)
         }
     }
+
+    const clusterTitle = () => {
+        if (!id) {
+            return "Add cluster"
+        }
+        else {
+            return "Edit cluster"
+        }
+    }
+
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-        <h2 className="form__title">Edit cluster</h2>
+        <h2 className="form__title">{clusterTitle()}</h2>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
