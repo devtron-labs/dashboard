@@ -11,6 +11,7 @@ import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';
+import { DOCUMENTATION } from '../../../../config';
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'));
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
@@ -379,6 +380,12 @@ function EnvironmentOverrideRouter() {
     const previousPathName = usePrevious(pathname)
     const { url, path } = useRouteMatch()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
+    
+    useEffect(() => {
+        if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
+            reloadEnvironments()
+        }
+    }, [pathname])
 
     const EnvironmentOverrideDropdown = () => {
         if (Array.isArray(environmentResult?.result)) {
@@ -394,17 +401,11 @@ function EnvironmentOverrideRouter() {
         }
         else {
             return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12">
-                Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines. Learn more
-             </div>
+                Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines.
+                <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
+            </div>
         }
     }
-
-
-    useEffect(() => {
-        if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
-            reloadEnvironments()
-        }
-    }, [pathname])
 
     return (
         <div className="flex column left environment-routes-container top">
