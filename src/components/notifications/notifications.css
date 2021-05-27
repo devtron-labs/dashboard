@@ -222,7 +222,7 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    z-index: 4;
+    /* z-index: 4; */
     background-color: white;
     min-height: 44px;
     display: flex;

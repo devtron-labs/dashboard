@@ -411,7 +411,13 @@ export function getAddNotificationInitData(): Promise<{
         let filterOptionsInner = filters.project.concat(filters.application, filters.environment);
         return {
             filterOptionsInner,
-            channelOptions: providerOptions,
+            channelOptions: providerOptions.map(p => {
+                return {
+                    label: p.recipient,
+                    value: p.configId,
+                    data: p,
+                }
+            }),
             sesConfigOptions,
         };
     })
