@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react';
-import dropdown from '../../../assets/icons/appstatus/ic-dropdown.svg';
+import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { isArrayEqual } from '../helpers/util';
 //id must exist
 const TypeaheadContext = createContext({ name: "", search: "", multi: false, labelKey: 0 as any, selections: [], selectItem: (item) => { }, onChange: (...args: any[]) => { } });
