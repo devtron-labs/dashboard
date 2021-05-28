@@ -136,7 +136,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     function getNewGraphs(newTab): void {
-        if (datasource.isLoading || !datasource.isHealthy) return;
+        if (!datasource.isLoading || !datasource.isHealthy) return;
 
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION;
