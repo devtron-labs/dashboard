@@ -1,14 +1,14 @@
 
 import React, { Component } from 'react'
 import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common'
-import Google from '../../assets/icons/ic-google.svg'
+import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import Microsoft from '../../assets/icons/ic-microsoft.svg'
-import LDAP from '../../assets/icons/ic-ldap.svg'
-import OIDC from '../../assets/icons/ic-oidc.svg'
-import Openshift from '../../assets/icons/ic-openshift.svg'
+import { ReactComponent as Microsoft } from '../../assets/icons/ic-microsoft.svg'
+import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
+import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
+import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { SSOLoginProps, SSOLoginState } from './ssoConfig.types'
@@ -34,6 +34,29 @@ const ssoMap = {
     ldap: "https://dexidp.io/docs/connectors/ldap/",
     oidc: "https://dexidp.io/docs/connectors/oidc/",
     openshift: "https://dexidp.io/docs/connectors/openshift/",
+}
+
+const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
+    switch (SSOName) {
+        case "Google": return <Google />
+        case "GitHub": return <GitHub />
+        case "Microsoft": return <Microsoft />
+        case "LDAP": return <LDAP />
+        case "OIDC": return <OIDC />
+        case "OpenShift": return <Openshift />
+    }
+}
+const SSOLoginTab: React.FC<{ handleSSOClick: (e) => void, checked: boolean, lastActiveSSO, value: string, SSOName: string }> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
+    return <label className="tertiary-tab__radio">
+        <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
+        <span className="tertiary-tab sso-icons">
+            <aside className="login__icon-alignment"><SSOTabIcons SSOName={SSOName} /></aside>
+            <aside className="login__text-alignment">{SSOName}</aside>
+            <label>
+                {lastActiveSSO?.name == { value } ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+            </label>
+        </span>
+    </label>
 }
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
@@ -337,78 +360,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" value="google" checked={this.state.sso === "google"} name="status" onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={Google} /></aside>
-                                <aside className="login__text-alignment">Google</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "google" ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="github" checked={this.state.sso === "github"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><GitHub /></aside>
-                                <aside className="login__text-alignment"> GitHub</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "github" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="microsoft" checked={this.state.sso === "microsoft"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment "><img src={Microsoft} /></aside>
-                                <aside className="login__text-alignment"> Microsoft</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "microsoft" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="ldap" checked={this.state.sso === "ldap"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={LDAP} /></aside>
-                                <aside className="login__text-alignment">LDAP</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "ldap" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="oidc" checked={this.state.sso === "oidc"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={OIDC} /></aside>
-                                <aside className="login__text-alignment">OIDC</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "oidc" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
-                    <div>
-                        <label className="tertiary-tab__radio">
-                            <input type="radio" name="status" value="openshift" checked={this.state.sso === "openshift"} onClick={this.handleSSOClick} />
-                            <span className="tertiary-tab sso-icons">
-                                <aside className="login__icon-alignment"><img src={Openshift} /></aside>
-                                <aside className="login__text-alignment"> OpenShift</aside>
-                                <label>
-                                    {this.state.lastActiveSSO?.name == "openshift" ? <aside className="login__check-icon"><img src={Check} /></aside> : ''}
-                                </label>
-                            </span>
-                        </label>
-                    </div>
+                    <SSOLoginTab value="google" SSOName="Google" checked={this.state.sso === "google"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "google"} />
+                    <SSOLoginTab value="github" SSOName="GitHub" checked={this.state.sso === "github"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "github"} />
+                    <SSOLoginTab value="microsoft" SSOName="Microsoft" checked={this.state.sso === "microsoft"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "microsoft"} />
+                    <SSOLoginTab value="ldap" SSOName="LDAP" checked={this.state.sso === "ldap"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "ldap"} />
+                    <SSOLoginTab value="oidc" SSOName="OIDC" checked={this.state.sso === "oidc"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "oidc"} />
+                    <SSOLoginTab value="openshift" SSOName="OpenShift" checked={this.state.sso === "openshift"} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == "openshift"} />
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
