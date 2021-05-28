@@ -12,6 +12,7 @@ import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';
 import { DOCUMENTATION } from '../../../../config';
+import { AppOtherEnvironment } from '../../../../services/service.types';
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'));
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
@@ -373,7 +374,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
     </ErrorBoundary>
 }
 
-const EnvironmentOverrideDropdown = (environmentResult, environmentsLoading, url) => {
+const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, environmentsLoading: boolean, url: string) => {
     if (environmentsLoading) return;
 
     if (Array.isArray(environmentResult?.result)) {
@@ -402,7 +403,7 @@ function EnvironmentOverrideRouter() {
     const previousPathName = usePrevious(pathname)
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
     const { url, path } = useRouteMatch()
-
+     {console.log(environmentResult)}
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
             reloadEnvironments()
