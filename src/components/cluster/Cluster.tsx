@@ -263,7 +263,6 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         let payload = {
             id,
             cluster_name: state.cluster_name.value,
-            server_url: state.url.value,
             config: { bearer_token: state.token.value },
             active,
             prometheus_url: state.endpoint.value,
@@ -271,6 +270,12 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 userName: "",
                 password: ""
             }
+        }
+
+        if (state.url.value.endsWith("/")) {
+            payload['server_url'] = state.url.value.slice(0, -1);
+        } else {
+            payload['server_url'] = state.url.value;
         }
 
         if (state.authType.value === AuthenticationType.BASIC) {
