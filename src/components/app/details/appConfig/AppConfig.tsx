@@ -373,39 +373,41 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
     </ErrorBoundary>
 }
 
+const EnvironmentOverrideDropdown = (environmentResult, environmentsLoading, url) => {
+    if (environmentsLoading) return;
+
+    if (Array.isArray(environmentResult?.result)) {
+        return <div>
+            {(environmentResult.result).map(env => {
+                let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
+                return <NavLink key={env.environmentId}
+                    className="app-compose__nav-item"
+                    to={LINK}>{env.environmentName}
+                </NavLink>
+            })}
+        </div>
+    }
+    else {
+        return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
+            Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines. &nbsp;
+            <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
+        </div>
+    }
+}
+
 function EnvironmentOverrideRouter() {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId }>()
     const [collapsed, toggleCollapsed] = useState(false)
     const previousPathName = usePrevious(pathname)
-    const { url, path } = useRouteMatch()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
+    const { url, path } = useRouteMatch()
 
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
             reloadEnvironments()
         }
     }, [pathname])
-
-    const EnvironmentOverrideDropdown = () => {
-        if (Array.isArray(environmentResult?.result)) {
-            return <div>
-                {(environmentResult.result).map(env => {
-                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
-                    return <NavLink key={env.environmentId}
-                        className="app-compose__nav-item"
-                        to={LINK}>{env.environmentName}
-                    </NavLink>
-                })}
-            </div>
-        }
-        else {
-            return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
-                Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines. &nbsp;
-                <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
-            </div>
-        }
-    }
 
     return (
         <div className="flex column left environment-routes-container top">
@@ -414,7 +416,7 @@ function EnvironmentOverrideRouter() {
             <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
             </div>
             {!collapsed && <div className="environment-routes">
-                {EnvironmentOverrideDropdown()}
+                {EnvironmentOverrideDropdown(environmentResult, environmentsLoading, url)}
             </div>}
         </div >
     )

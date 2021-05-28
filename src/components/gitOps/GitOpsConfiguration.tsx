@@ -247,7 +247,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return <Progressing pageLoader />
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <div className="global-configuration__component flex" >
+            return <div className="global-configuration__component flex">
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }

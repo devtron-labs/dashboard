@@ -138,6 +138,8 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     function getNewGraphs(newTab): void {
         if (!datasource.isHealthy) return;
 
+       
+
         let appInfo = {
             appId: appId,
             envId: envId,
@@ -156,7 +158,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             latency,
         });
     }
-
+   
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
@@ -171,18 +173,19 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [calendarValue])
 
+   
     if (!isK8sVersionValid(k8sVersion)) {
         k8sVersion = DEFAULTK8SVERSION;
+      
         toast.warn(<div className="toast">
             <div className="toast__title">Error Parsing K8sVersion</div>
-            <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
+            <div className="toast__subtitle">Showing Graphs for {k8sVersion} and above</div>
         </div>)
     }
-
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
         return <>
-            {console.log()}
+{console.log(datasource)}
             <AppMetricsEmptyState isLoading={datasource.isLoading}
                 isConfigured={datasource.isConfigured}
                 isHealthy={datasource.isHealthy}

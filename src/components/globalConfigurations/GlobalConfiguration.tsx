@@ -180,7 +180,7 @@ function Body({ getHostURLConfig, checkList }) {
             return <ChartRepo />
         }} />
         <Route path={URLS.GLOBAL_CONFIG_LOGIN} render={(props) => {
-            return <SSOLogin {...props} />
+            return <div className="flexbox h-100"><SSOLogin {...props} /></div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_AUTH} render={(props) => {
             return <UserGroup />
