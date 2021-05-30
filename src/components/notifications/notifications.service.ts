@@ -214,6 +214,7 @@ export function updateNotificationRecipients(notificationList, savedRecipient, n
         let updatedProviders = []
         for (let i = 0; i < config.providers.length; i++) {
             let key = config.providers[i].configId + config.providers[i].name;
+            {console.log(key)}
             if (savedRecipientSet.has(key)) {
                 updatedProviders.push(config.providers[i])
             }

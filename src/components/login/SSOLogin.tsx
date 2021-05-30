@@ -369,7 +369,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-        
+
         let allSSOLoginTabs = [
             <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.google} />,
             <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.github} />,
@@ -384,8 +384,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
                     {allSSOLoginTabs.map((item, i) => {
-                        for (i = 0; i < allSSOLoginTabs.length; i++) {
-                            return item;
+                        let updatedProviders = []
+                        let ssoTab = allSSOLoginTabs[i]
+                        updatedProviders = updatedProviders.concat(ssoTab)
+                        for (i = 0; i < updatedProviders.length; i++) {
+                            return updatedProviders[i]
                         }
                     })}
                 </div>
