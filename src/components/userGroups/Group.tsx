@@ -1,12 +1,18 @@
 
-import React, { useState, useEffect } from 'react'
-import { showError, Progressing, removeItemsFromArray, mapByKey, DeleteDialog } from '../common'
-import { ResizableTextarea } from '../configMaps/ConfigMap'
+import React, { useState, useEffect } from 'react';
+import { showError, Progressing, removeItemsFromArray, mapByKey, DeleteDialog } from '../common';
+import { ResizableTextarea } from '../configMaps/ConfigMap';
 import { saveGroup, deleteGroup } from './userGroup.service';
-import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, APIRoleFilter, CreateGroup } from './userGroups.types'
-import { toast } from 'react-toastify'
-import { DirectPermission, ChartPermission, useUserGroupContext } from './UserGroup'
+import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, APIRoleFilter, CreateGroup } from './userGroups.types';
+import { toast } from 'react-toastify';
+import { DirectPermission, ChartPermission, useUserGroupContext } from './UserGroup';
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
+
+export const Tab = {
+    DevtronApp: 'devtron-app',
+    ExternalApp: 'external-app',
+    Chart: 'chart',
+}
 
 export default function GroupForm({ id = null, index = null, groupData = null, updateCallback, deleteCallback, createCallback, cancelCallback }) {
     // id null is for create
@@ -28,6 +34,7 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
     const [name, setName] = useState({ value: "", error: "" })
     const [description, setDescription] = useState("")
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
+    const [tab, setTab] = useState<string>()
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true
@@ -268,8 +275,33 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
                 value={description}
                 onChange={e => setDescription(e.target.value)}
             />
-            <fieldset>
-                <legend>Direct permissions</legend>
+            <ul role="tablist" aria-label="manage-permissions" className="tab-list" tabIndex={-1}>
+                <li className="tab-list__tab">
+                    <label>
+                        <input type="radio" name="permission-tab" role="tab"
+                            tabIndex={1}
+                            value={Tab.DevtronApp}
+                            onChange={(event) => setTab(event.target.value)} />Devtron App and Charts
+                    </label>
+                </li>
+                <li className="tab-list__tab">
+                    <label>
+                        <input type="radio" name="permission-tab" role="tab"
+                            tabIndex={2}
+                            value={Tab.ExternalApp}
+                            onChange={(event) => setTab(event.target.value)} />External Apps
+                    </label>
+                </li>
+                <li className="tab-list__tab">
+                    <label>
+                        <input type="radio" name="permission-tab" role="tab" tabIndex={3}
+                            value={Tab.Chart}
+                            onChange={(event) => setTab(event.target.value)} />Chart Store
+                    </label>
+                </li>
+            </ul>
+            <fieldset role="tabpanel">
+                <legend>Manage permissions</legend>
                 <div className="w-100 mb-26" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 24px', gridGap: '16px', alignItems: 'center' }}>
                     <label className="bold">Project</label>
                     <label className="bold">Environment</label>
@@ -285,7 +317,7 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
                             handleDirectPermissionChange={(value, actionMeta) => handleDirectPermissionChange(idx, value, actionMeta)}
                         />)}
                 </div>
-                <b className="anchor pointer flex left" style={{ width: '90px' }} onClick={e => setDirectPermission(permission => [...permission, emptyDirectPermission])}><AddIcon className="add-svg mr-12" /> Add row</b>
+                <b className="anchor pointer flex left" style={{ width: '90px' }} onClick={e => setDirectPermission(permission => [...permission, emptyDirectPermission])}><AddIcon className="add-svg mr-12" /> Add Permissio</b>
             </fieldset>
             <ChartPermission chartPermission={chartPermission} setChartPermission={setChartPermission} />
             <div className="flex right mt-32">
