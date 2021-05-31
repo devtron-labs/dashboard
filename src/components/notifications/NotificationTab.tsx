@@ -17,6 +17,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
+import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
 import { ViewType, URLS } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
@@ -466,7 +467,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
                         </td>
                         <td className="pipeline-list__environment">
-                            {row.pipelineType === "CI" ? row?.branch : ''}
+                            {row.branch && row.pipelineType === "CI" ? <span className="flex left"> <Branch className="icon-dim-16 mr-4" /> {row.branch} </span> : ''}
                             {row.pipelineType === "CD" ? row?.environmentName : ''}
                         </td>
                         <td className="pipeline-list__stages flexbox flex-justify">
