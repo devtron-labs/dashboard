@@ -9,6 +9,7 @@ import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg';
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
+import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
 import { ViewType, URLS } from '../../config';
 import { Link } from 'react-router-dom';
@@ -46,15 +47,12 @@ interface AddNotificationState {
     showSESConfigModal: boolean;
     channelOptions: { label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
     sesConfigOptions: { id: number; configName: string; dest: "slack" | "ses" | ""; recipient: string }[];
-    showChannels: boolean;
     isLoading: boolean;
     appliedFilters: Array<{ type: string, value: number | string | undefined, label: string | undefined }>;
-    // selectedChannels: any[];
     selectedChannels: { __isNew__: boolean; label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
     openSelectPipeline: boolean;
     pipelineList: PipelineType[];
     filterInput: string;
-    channelInput: string;
     sesConfigId: number;
 }
 
@@ -75,8 +73,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             showSlackConfigModal: false,
             showSESConfigModal: false,
             openSelectPipeline: false,
-            showChannels: false,
-            channelInput: "",
             filterInput: "",
             appliedFilters: [],
             isLoading: false,
@@ -89,8 +85,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.toggleSelectPipeline = this.toggleSelectPipeline.bind(this);
         this.handlePipelineEventType = this.handlePipelineEventType.bind(this);
         this.selectChannel = this.selectChannel.bind(this);
-        this.toggleChannels = this.toggleChannels.bind(this);
-        this.handleChannelInput = this.handleChannelInput.bind(this);
         this.handleFilterTag = this.handleFilterTag.bind(this);
         this.selectSES = this.selectSES.bind(this);
         this.selectSESFromChild = this.selectSESFromChild.bind(this);
@@ -98,10 +92,9 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     componentDidMount() {
         this.getInitialData();
-        
     }
 
-    getInitialData(){
+    getInitialData() {
         getAddNotificationInitData().then((result) => {
             this.filterOptionsInner = result.filterOptionsInner;
             this.setState({
@@ -119,12 +112,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         });
     }
 
-    handleChannelInput(event): void {
-        this.setState({
-            channelInput: event.target.value,
-            showChannels: true
-        });
-    }
+
 
     handleFilterTag(event): void {
         let theKeyCode = event.key;
@@ -180,11 +168,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             appliedFilters = this.state.appliedFilters.filter(e => e.value);
         }
         this.setState({ appliedFilters, openSelectPipeline: !this.state.openSelectPipeline });
-    }
-
-    toggleChannels() {
-        let appliedFilters = this.state.appliedFilters;
-        this.setState({ appliedFilters, showChannels: !this.state.showChannels });
     }
 
     selectFilterType(filter: { label: string, value: string | number, type: string }): void {
@@ -406,7 +389,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 {row.type === "CD" ? <CD className="icon-dim-20" /> : ''}
                             </td>
                             <td className="pipeline-list__environment">
-                                {row.type === "CI" ? row?.branch : ''}
+                                {row.branch && row.type === "CI" ? <span className="flex left"> <Branch className="icon-dim-16 mr-4" /> {row.branch} </span> : ''}
                                 {row.type === "CD" ? row?.environmentName : ''}
                             </td>
                             <td className="pipeline-list__stages flexbox flex-justify">
@@ -468,7 +451,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             {props.children}
                             <div className="pipeline-filter__sticky-bottom cursor"
                                 onClick={(e) => { this.setState({ showSlackConfigModal: true }) }}>
-                               <Slack className="icon-dim-24 mr-12" />Configure Slack Channel
+                                <Slack className="icon-dim-24 mr-12" />Configure Slack Channel
                             </div>
                         </components.MenuList>
                     }
