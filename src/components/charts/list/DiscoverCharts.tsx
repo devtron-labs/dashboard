@@ -253,7 +253,7 @@ function DiscoverChartList() {
     }
 
     function handleViewAllCharts() {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
     function handleCloseFilter() {
