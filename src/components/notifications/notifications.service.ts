@@ -316,7 +316,16 @@ export function updateSlackConfiguration(data): Promise<UpdateConfigResponseType
     return post(URL, payload);
 }
 
-export function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
+export function getChannelsAndEmailsFilteredByEmail(): Promise<GetChannelsResponseType> {
+    return getChannelsAndEmails().then((response) => {
+        return {
+            ...response,
+            result: response.result ? response.result.filter((p) => !(p.recipient === 'admin' || p.recipient === 'system')) : []
+        }
+    })
+}
+
+function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
     const URL = `${Routes.NOTIFIER}/recipient?value=`;
     return get(URL);
 }
@@ -379,7 +388,7 @@ export function getAddNotificationInitData(): Promise<{
     channelOptions: any[];
     sesConfigOptions: any[];
 }> {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmails(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
+    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
         let filters = {
             environment: environments.result ? environments.result.map((env) => {
                 return {

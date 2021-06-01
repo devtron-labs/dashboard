@@ -112,8 +112,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         });
     }
 
-
-
     handleFilterTag(event): void {
         let theKeyCode = event.key;
         if (theKeyCode === " " || theKeyCode === "Enter") {
