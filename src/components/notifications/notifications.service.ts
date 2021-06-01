@@ -165,7 +165,7 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                 id: config.id,
                 pipelineId: config.pipeline?.id || undefined,
                 appName: config?.pipeline?.appName,
-                branch: config?.pipeline?.branches[0],
+                branch: config?.pipeline?.branches?.join(', '),
                 pipelineName: config.pipeline?.name || undefined,
                 pipelineType: config.pipelineType || "",
                 environmentName: config?.pipeline?.environmentName || undefined,
@@ -316,7 +316,16 @@ export function updateSlackConfiguration(data): Promise<UpdateConfigResponseType
     return post(URL, payload);
 }
 
-export function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
+export function getChannelsAndEmailsFilteredByEmail(): Promise<GetChannelsResponseType> {
+    return getChannelsAndEmails().then((response) => {
+        return {
+            ...response,
+            result: response.result ? response.result.filter((p) => !(p.recipient === 'admin' || p.recipient === 'system')) : []
+        }
+    })
+}
+
+function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
     const URL = `${Routes.NOTIFIER}/recipient?value=`;
     return get(URL);
 }
@@ -354,7 +363,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 checkbox: { isChecked: false, value: "INTERMEDIATE" },
                 pipelineId: row.pipeline?.id,
                 appName: row?.pipeline?.appName,
-                branch: !!row?.pipeline?.branches ? row?.pipeline?.branches[0] : "",
+                branch: row?.pipeline?.branches?.join(', '),
                 pipelineName: row.pipeline?.name,
                 environmentName: row?.pipeline?.environmentName,
                 type: row.pipelineType,
@@ -379,7 +388,7 @@ export function getAddNotificationInitData(): Promise<{
     channelOptions: any[];
     sesConfigOptions: any[];
 }> {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmails(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
+    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
         let filters = {
             environment: environments.result ? environments.result.map((env) => {
                 return {

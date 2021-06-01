@@ -4,7 +4,7 @@ import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
 import { PopupMenu, Checkbox, Progressing, showError, DeleteDialog, Pagination } from '../common';
-import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmails } from './notifications.service';
+import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail } from './notifications.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg';
@@ -154,7 +154,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     getChannels() {
-        getChannelsAndEmails().then((response) => {
+        getChannelsAndEmailsFilteredByEmail().then((response) => {
             let list: any[] = response.result || [];
             list = list.map((item) => {
                 return {
@@ -508,7 +508,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             </Link>
             {this.renderOptions()}
             {this.renderPipelineList()}
-            {this.state.pagination.size > 5 ? <Pagination offset={this.state.pagination.offset}
+            {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}
                 pageSize={this.state.pagination.pageSize}
                 size={this.state.pagination.size}
                 changePage={this.changePage}
