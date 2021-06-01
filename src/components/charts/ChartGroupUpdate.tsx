@@ -6,16 +6,21 @@ import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
+import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb, Checkbox, Option, multiSelectStyles, } from '../common'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config';
 import { toast } from 'react-toastify'
 import { Prompt } from 'react-router';
-import {ReactComponent as SaveIcon} from '../../assets/icons/ic-save.svg'
+import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
+import ReactSelect, { components } from 'react-select';
+import { DropdownIndicator, ValueContainer } from './charts.util';
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
+
 
 export default function ChartGroupUpdate({ }) {
-    const { groupId } = useParams<{groupId}>()
+    const { groupId } = useParams<{ groupId }>()
     const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
     const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState } = useChartGroup(Number(groupId))
     const [loading, setLoading] = useState(false)
@@ -29,7 +34,7 @@ export default function ChartGroupUpdate({ }) {
                 group: 'Chart Groups',
                 ':groupId': {
                     component: <AppSelector
-                        api={()=>getChartGroups().then(res=>({result: res.result.groups}))}
+                        api={() => getChartGroups().then(res => ({ result: res.result.groups }))}
                         primaryKey="groupId"
                         primaryValue='name'
                         matchedKeys={[]}
@@ -95,9 +100,9 @@ export default function ChartGroupUpdate({ }) {
         history.push(url);
     }
 
-    function closeChartGroupModal(props){
-        if(props?.name){
-            updateChartGroupNameAndDescription(props.name, props?.description||"" )
+    function closeChartGroupModal(props) {
+        if (props?.name) {
+            updateChartGroupNameAndDescription(props.name, props?.description || "")
         }
         setChartDetailsUpdate(false)
     }
@@ -108,15 +113,15 @@ export default function ChartGroupUpdate({ }) {
                 <div className="page-header">
                     <div className="flex column left">
                         <div className="flex left">
-                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)}/>
+                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)} />
                         </div>
                         <div className="flex left page-header__title">
-                            {state.name} 
+                            {state.name}
                             <Pencil className="pointer" onClick={e => setChartDetailsUpdate(true)} />
                         </div>
                     </div>
                     <div className="page-header__cta-container flex right">
-                        <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{width:'100%'}}><SaveIcon className="mr-5"/>Save</div>}</button>
+                        <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{ width: '100%' }}><SaveIcon className="mr-5" />Save</div>}</button>
                         <button className="cta cancel" onClick={redirectToGroupDetail}>Group Detail</button>
                     </div>
                 </div>
@@ -135,13 +140,14 @@ export default function ChartGroupUpdate({ }) {
                                 createChartValues={createChartValues}
                                 discardValuesYamlChanges={discardValuesYamlChanges}
                             />
-                            :
-                            <ChartList
-                                availableCharts={state.availableCharts}
-                                addChart={addChart}
-                                subtractChart={subtractChart}
-                                selectedInstances={state.selectedInstances}
-                            />
+                            : <>
+                                <ChartGroupFiltersHeader />
+                                <ChartList
+                                    availableCharts={state.availableCharts}
+                                    addChart={addChart}
+                                    subtractChart={subtractChart}
+                                    selectedInstances={state.selectedInstances}
+                                /></>
 
                         }
                     </div>
@@ -189,4 +195,72 @@ function ChartList({ availableCharts, selectedInstances, addChart, subtractChart
             )}
         </div>
     )
+}
+
+function ChartGroupFiltersHeader() {
+    const MenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
+                    <button type="button" className="cta flex cta--chart-store"
+                        disabled={false}
+                        // onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}
+                        >
+                            Apply Filter
+                            </button>
+                </div>
+            </components.MenuList>
+        );
+    };
+
+    return (<><div className="flexbox flex-justify mt-16 ml-20 mr-20">
+        <form
+            //onSubmit={handleAppStoreChange}
+            className="search position-rel" >
+            <Search className="search__icon icon-dim-18" />
+            <input type="text" placeholder="Search charts"
+                //  value={appStoreName} 
+                className="search__input bcn-0"
+                onChange={(event) => { return event.target.value; }} />
+            {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                </button> : null} */}
+        </form>
+        <div className="flex">
+            <ReactSelect
+                className="date-align-left fs-13"
+                placeholder="Repository : All"
+                name="repository "
+                // value={selectedChartRepo}
+                // options={chartRepoList}
+                closeOnSelect={false}
+                // onChange={setSelectedChartRepo}
+                isClearable={false}
+                isMulti={true}
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                // onMenuClose={handleCloseFilter}
+                components={{
+                    DropdownIndicator,
+                    Option,
+                    ValueContainer,
+                    IndicatorSeparator: null,
+                    ClearIndicator: null,
+                    MenuList,
+                }}
+                styles={{ ...multiSelectStyles }} />
+            <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
+                isChecked={//includeDeprecated === 1
+                true}
+                value={"CHECKED"}
+                onChange={(event) => event.target.value
+                    // { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }
+                } 
+                >
+                <div className="ml-5"> Show deprecated</div>
+            </Checkbox>
+        </div>
+    </div>
+    </>)
 }
