@@ -151,12 +151,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     showSesDropdown(): boolean {
         let allEmails = this.state.selectedChannels?.filter(p => p.data.dest === "" || p.data.dest === "ses");
         let show = allEmails.reduce((isValid, item) => {
-            if (item.data.recipient === 'admin' || item.data.recipient === 'system') {
-                isValid = isValid || true;
-            }
-            else {
-                isValid = isValid || validateEmail(item.data.recipient);
-            }
+            isValid = isValid || validateEmail(item.data.recipient);
             return isValid
         }, false)
         return show;
