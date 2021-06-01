@@ -11,11 +11,11 @@ import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config';
 import { toast } from 'react-toastify'
 import { Prompt } from 'react-router';
-import {ReactComponent as SaveIcon} from '../../assets/icons/ic-save.svg'
+import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
 
 export default function ChartGroupUpdate({ }) {
-    const { groupId } = useParams<{groupId}>()
+    const { groupId } = useParams<{ groupId }>()
     const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
     const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState } = useChartGroup(Number(groupId))
     const [loading, setLoading] = useState(false)
@@ -29,7 +29,7 @@ export default function ChartGroupUpdate({ }) {
                 group: 'Chart Groups',
                 ':groupId': {
                     component: <AppSelector
-                        api={()=>getChartGroups().then(res=>({result: res.result.groups}))}
+                        api={() => getChartGroups().then(res => ({ result: res.result.groups }))}
                         primaryKey="groupId"
                         primaryValue='name'
                         matchedKeys={[]}
@@ -95,9 +95,9 @@ export default function ChartGroupUpdate({ }) {
         history.push(url);
     }
 
-    function closeChartGroupModal(props){
-        if(props?.name){
-            updateChartGroupNameAndDescription(props.name, props?.description||"" )
+    function closeChartGroupModal(props) {
+        if (props?.name) {
+            updateChartGroupNameAndDescription(props.name, props?.description || "")
         }
         setChartDetailsUpdate(false)
     }
@@ -108,15 +108,15 @@ export default function ChartGroupUpdate({ }) {
                 <div className="page-header">
                     <div className="flex column left">
                         <div className="flex left">
-                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)}/>
+                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)} />
                         </div>
                         <div className="flex left page-header__title">
-                            {state.name} 
+                            {state.name}
                             <Pencil className="pointer" onClick={e => setChartDetailsUpdate(true)} />
                         </div>
                     </div>
                     <div className="page-header__cta-container flex right">
-                        <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{width:'100%'}}><SaveIcon className="mr-5"/>Save</div>}</button>
+                        <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{ width: '100%' }}><SaveIcon className="mr-5" />Save</div>}</button>
                         <button className="cta cancel" onClick={redirectToGroupDetail}>Group Detail</button>
                     </div>
                 </div>
