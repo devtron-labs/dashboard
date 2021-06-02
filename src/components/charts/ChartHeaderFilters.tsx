@@ -4,8 +4,20 @@ import ReactSelect, { components } from 'react-select';
 import { DropdownIndicator, ValueContainer } from './charts.util';
 import { Checkbox, Option, multiSelectStyles, } from '../common';
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
+import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 
-const ChartHeaderFilter = ({ selectedChartRepo, handleCloseFilter, handleChartRepoChange, includeDeprecated, handleDeprecateChange, chartRepoList, setSelectedChartRepo, handleAppStoreChange, appStoreName, setAppStoreName, searchApplied, clearSearch }) => {
+const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+}
+
+function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied }) {
+    const match = useRouteMatch()
+    const history = useHistory()
+    const location = useLocation()
+    const { url } = match
+
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -16,6 +28,48 @@ const ChartHeaderFilter = ({ selectedChartRepo, handleCloseFilter, handleChartRe
             </components.MenuList>
         );
     };
+
+    function handleChartRepoChange(selected): void {
+        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        history.push(`${url}?${qs}`);
+    }
+
+    function handleDeprecateChange(deprecated): void {
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+        history.push(`${url}?${qs}`);
+    }
+
+    function handleAppStoreChange(event): void {
+        event.preventDefault();
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        history.push(`${url}?${qs}`);
+    }
+
+    function clearSearch(event): void {
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs: string = "";
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        history.push(`${url}?${qs}`);
+    }
 
     return (<div className="flexbox flex-justify mt-16 ml-20 mr-20">
         <form
@@ -65,4 +119,5 @@ const ChartHeaderFilter = ({ selectedChartRepo, handleCloseFilter, handleChartRe
     </div>
     )
 }
+
 export default ChartHeaderFilter

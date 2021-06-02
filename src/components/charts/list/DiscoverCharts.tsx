@@ -312,10 +312,7 @@ function DiscoverChartList() {
                         includeDeprecated={includeDeprecated}
                         selectedChartRepo={selectedChartRepo}
                         setAppStoreName={setAppStoreName}
-                        clearSearch={clearSearch}
-                        handleAppStoreChange={handleAppStoreChange}
-                        handleChartRepoChange={handleChartRepoChange}
-                        handleDeprecateChange={handleDeprecateChange} />
+                        />
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
@@ -349,10 +346,6 @@ function DiscoverChartList() {
                                     includeDeprecated={includeDeprecated}
                                     selectedChartRepo={selectedChartRepo}
                                     setAppStoreName={setAppStoreName}
-                                    clearSearch={clearSearch}
-                                    handleAppStoreChange={handleAppStoreChange}
-                                    handleChartRepoChange={handleChartRepoChange}
-                                    handleDeprecateChange={handleDeprecateChange}
                                     handleCloseFilter={handleCloseFilter} />
                                 <div className="chart-grid">
                                     {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
@@ -500,7 +493,7 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
+function ChartListHeader({  setSelectedChartRepo, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
     return <div>
         <h3 className="chart-grid__title pl-20 pr-20 pt-16">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
@@ -515,11 +508,8 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             includeDeprecated={includeDeprecated}
             selectedChartRepo={selectedChartRepo}
             setAppStoreName={setAppStoreName}
-            clearSearch={clearSearch}
             handleCloseFilter={handleCloseFilter}
-            handleChartRepoChange={handleChartRepoChange}
-            handleDeprecateChange={handleDeprecateChange}
-            handleAppStoreChange={handleAppStoreChange} />
+           />
     </div>
 }
 

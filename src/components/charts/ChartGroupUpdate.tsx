@@ -134,51 +134,9 @@ export default function ChartGroupUpdate({ }) {
         setChartDetailsUpdate(false)
     }
 
-    function handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
-    function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        history.push(`${url}?${qs}`);
-    }
-
+    
     function handleCloseFilter() {
         setSelectedChartRepo(appliedChartRepoFilter)
-    }
-
-    function handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        history.push(`${url}?${qs}`);
-    }
-
-
-    function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
     }
 
     function initialiseFromQueryParams(chartRepoList) {
@@ -258,11 +216,7 @@ export default function ChartGroupUpdate({ }) {
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
-                                clearSearch={clearSearch}
                                 handleCloseFilter={handleCloseFilter}
-                                handleChartRepoChange={handleChartRepoChange}
-                                handleDeprecateChange={handleDeprecateChange}
-                                handleAppStoreChange={handleAppStoreChange}
                             />
                             <div style={{height: "calc(100vh - 150px" }}>
                                 <EmptyState>
@@ -292,15 +246,11 @@ export default function ChartGroupUpdate({ }) {
                                     <ChartHeaderFilters
                                         selectedChartRepo={selectedChartRepo}
                                         handleCloseFilter={handleCloseFilter}
-                                        handleChartRepoChange={handleChartRepoChange}
                                         includeDeprecated={includeDeprecated}
-                                        handleDeprecateChange={handleDeprecateChange}
                                         chartRepoList={state.chartRepos}
                                         setSelectedChartRepo={setSelectedChartRepo}
-                                        handleAppStoreChange={handleAppStoreChange}
                                         appStoreName={appStoreName}
                                         setAppStoreName={setAppStoreName}
-                                        clearSearch={clearSearch}
                                         searchApplied={searchApplied}
                                     />
                                     <ChartList
