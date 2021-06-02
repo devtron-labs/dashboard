@@ -170,6 +170,17 @@ export default function ChartGroupUpdate({ }) {
         history.push(`${url}?${qs}`);
     }
 
+
+    function clearSearch(event): void {
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs: string = "";
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        history.push(`${url}?${qs}`);
+    }
+
     function initialiseFromQueryParams(chartRepoList) {
         let searchParams = new URLSearchParams(location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
@@ -240,16 +251,18 @@ export default function ChartGroupUpdate({ }) {
                         />
                         : <>
                             <ChartHeaderFilters
-                                selectedChartRepo={selectedChartRepo}
-                                handleCloseFilter={handleCloseFilter}
-                                handleChartRepoChange={handleChartRepoChange}
-                                includeDeprecated={includeDeprecated}
-                                handleDeprecateChange={handleDeprecateChange}
                                 chartRepoList={state.chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                handleAppStoreChange={handleAppStoreChange}
+                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
+                                includeDeprecated={includeDeprecated}
+                                selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
+                                clearSearch={clearSearch}
+                                handleCloseFilter={handleCloseFilter}
+                                handleChartRepoChange={handleChartRepoChange}
+                                handleDeprecateChange={handleDeprecateChange}
+                                handleAppStoreChange={handleAppStoreChange}
                             />
                             <EmptyState>
                                 <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
@@ -285,6 +298,8 @@ export default function ChartGroupUpdate({ }) {
                                         handleAppStoreChange={handleAppStoreChange}
                                         appStoreName={appStoreName}
                                         setAppStoreName={setAppStoreName}
+                                        clearSearch= {clearSearch}
+                                        searchApplied={searchApplied}
                                     />
                                     <ChartList
                                         availableCharts={state.availableCharts}
