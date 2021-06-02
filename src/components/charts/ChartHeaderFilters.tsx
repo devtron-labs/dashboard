@@ -17,6 +17,10 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     const history = useHistory()
     const location = useLocation()
     const { url } = match
+    const searchParams = new URLSearchParams(location.search);
+    const app = searchParams.get(QueryParams.AppStoreName);
+    const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+    const chartRepoId = searchParams.get(QueryParams.ChartRepoId);
 
     const MenuList = (props) => {
         return (
@@ -31,9 +35,6 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
 
     function handleChartRepoChange(selected): void {
         let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
         let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
         if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
         if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
@@ -41,9 +42,6 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     }
 
     function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
         let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
         if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
         if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
@@ -52,9 +50,6 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
 
     function handleAppStoreChange(event): void {
         event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
         let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
         if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
         if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
@@ -62,9 +57,6 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     }
 
     function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
         let qs: string = "";
         if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
         if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
