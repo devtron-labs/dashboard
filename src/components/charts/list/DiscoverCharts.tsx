@@ -42,6 +42,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+import ChartHeaderFilter from '../ChartHeaderFilters';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -304,8 +305,6 @@ function DiscoverChartList() {
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : <> <ChartListHeader chartRepoList={state.chartRepos}
                         handleCloseFilter={handleCloseFilter}
-                        appliedChartRepoFilter={appliedChartRepoFilter}
-                        chartGroups={state.chartGroups.slice(0, 4)}
                         setSelectedChartRepo={setSelectedChartRepo}
                         charts={state.charts}
                         searchApplied={searchApplied}
@@ -343,9 +342,7 @@ function DiscoverChartList() {
                                 /> </> : <>
                                 <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
                                 <ChartListHeader chartRepoList={state.chartRepos}
-                                    appliedChartRepoFilter={appliedChartRepoFilter}
                                     setSelectedChartRepo={setSelectedChartRepo}
-                                    chartGroups={state.chartGroups.slice(0, 4)}
                                     charts={state.charts}
                                     searchApplied={searchApplied}
                                     appStoreName={appStoreName}
@@ -503,63 +500,26 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-export function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-    const MenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store"
-                        disabled={false}
-                        onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
-                </div>
-            </components.MenuList>
-        );
-    };
+function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
     return <div className="chart-group__header">
         <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
         <h5 className="form__subtitle">Select chart to deploy. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
-        <div className="flexbox flex-justify">
-            <form onSubmit={handleAppStoreChange} className="search position-rel" >
-                <Search className="search__icon icon-dim-18" />
-                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
-                {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : null}
-            </form>
-            <div className="flex">
-                <ReactSelect className="date-align-left fs-13"
-                    placeholder="Repository : All"
-                    name="repository "
-                    value={selectedChartRepo}
-                    options={chartRepoList}
-                    closeOnSelect={false}
-                    onChange={setSelectedChartRepo}
-                    isClearable={false}
-                    isMulti={true}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    onMenuClose={handleCloseFilter}
-                    components={{
-                        DropdownIndicator,
-                        Option,
-                        ValueContainer,
-                        IndicatorSeparator: null,
-                        ClearIndicator: null,
-                        MenuList,
-                    }}
-                    styles={{ ...multiSelectStyles }} />
-                <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                    isChecked={includeDeprecated === 1}
-                    value={"CHECKED"}
-                    onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }} >
-                    <div className="ml-5"> Show deprecated</div>
-                </Checkbox>
-            </div>
-        </div>
+        <ChartHeaderFilter
+            chartRepoList={chartRepoList}
+            setSelectedChartRepo={setSelectedChartRepo}
+            searchApplied={searchApplied}
+            appStoreName={appStoreName}
+            includeDeprecated={includeDeprecated}
+            selectedChartRepo={selectedChartRepo}
+            setAppStoreName={setAppStoreName}
+            clearSearch={clearSearch}
+            handleCloseFilter={handleCloseFilter}
+            handleChartRepoChange={handleChartRepoChange}
+            handleDeprecateChange={handleDeprecateChange}
+            handleAppStoreChange={handleAppStoreChange} />
     </div>
 }
 
