@@ -681,7 +681,7 @@ button.anchor {
 .Toastify__toast--error {
     &.devtron-toast {
         &:before {
-            background-image: url('../assets/icons/ic-error.svg');
+            background-image: url('../assets/icons/misc/errorInfo.svg')
         }
     }
 }
