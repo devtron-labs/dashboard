@@ -13,11 +13,14 @@ import { toast } from 'react-toastify'
 import { Prompt } from 'react-router';
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer } from './charts.util';
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
+import ChartHeaderFilters from './ChartHeaderFilters'
 
+const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+
+}
 
 export default function ChartGroupUpdate({ }) {
     const { groupId } = useParams<{ groupId }>()
@@ -28,6 +31,13 @@ export default function ChartGroupUpdate({ }) {
     const location = useLocation()
     const match = useRouteMatch()
     const isLeavingPageNotAllowed = useRef(false)
+    const [selectedChartRepo, setSelectedChartRepo] = useState([]);
+    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([]);
+    const [appStoreName, setAppStoreName] = useState("");
+    const [searchApplied, setSearchApplied] = useState(false);
+    const [includeDeprecated, setIncludeDeprecated] = useState(0);
+    const { url } = match
+
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -107,6 +117,56 @@ export default function ChartGroupUpdate({ }) {
         setChartDetailsUpdate(false)
     }
 
+    function handleDeprecateChange(deprecated): void {
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+        history.push(`${url}?${qs}`);
+    }
+
+    function handleCloseFilter() {
+        setSelectedChartRepo(appliedChartRepoFilter)
+    }
+
+    function handleChartRepoChange(selected): void {
+        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        history.push(`${url}?${qs}`);
+    }
+
+    function initialiseFromQueryParams(chartRepoList) {
+        let searchParams = new URLSearchParams(location.search);
+        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
+        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
+        let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoIdArray = [];
+        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
+        chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
+        let selectedRepos = [];
+        for (let i = 0; i < chartRepoIdArray.length; i++) {
+            let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
+            if (chartRepo) selectedRepos.push(chartRepo);
+        }
+        if (selectedRepos) setSelectedChartRepo(selectedRepos);
+        if (deprecated) setIncludeDeprecated(parseInt(deprecated));
+        if (appStoreName) {
+            setSearchApplied(true);
+            setAppStoreName(appStoreName);
+        } else {
+            setSearchApplied(false);
+            setAppStoreName("");
+        }
+        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
+    }
+
     return (
         <>
             <div className="chart-group--details-page">
@@ -141,7 +201,13 @@ export default function ChartGroupUpdate({ }) {
                                 discardValuesYamlChanges={discardValuesYamlChanges}
                             />
                             : <>
-                                <ChartGroupFiltersHeader />
+                                <ChartHeaderFilters 
+                                selectedChartRepo={selectedChartRepo}
+                                handleCloseFilter={handleCloseFilter}
+                                handleChartRepoChange={handleChartRepoChange}
+                                includeDeprecated={includeDeprecated}
+                                handleDeprecateChange={handleDeprecateChange}
+                                />
                                 <ChartList
                                     availableCharts={state.availableCharts}
                                     addChart={addChart}
@@ -195,72 +261,4 @@ function ChartList({ availableCharts, selectedInstances, addChart, subtractChart
             )}
         </div>
     )
-}
-
-function ChartGroupFiltersHeader() {
-    const MenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store"
-                        disabled={false}
-                        // onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}
-                        >
-                            Apply Filter
-                            </button>
-                </div>
-            </components.MenuList>
-        );
-    };
-
-    return (<><div className="flexbox flex-justify mt-16 ml-20 mr-20">
-        <form
-            //onSubmit={handleAppStoreChange}
-            className="search position-rel" >
-            <Search className="search__icon icon-dim-18" />
-            <input type="text" placeholder="Search charts"
-                //  value={appStoreName} 
-                className="search__input bcn-0"
-                onChange={(event) => { return event.target.value; }} />
-            {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : null} */}
-        </form>
-        <div className="flex">
-            <ReactSelect
-                className="date-align-left fs-13"
-                placeholder="Repository : All"
-                name="repository "
-                // value={selectedChartRepo}
-                // options={chartRepoList}
-                closeOnSelect={false}
-                // onChange={setSelectedChartRepo}
-                isClearable={false}
-                isMulti={true}
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                // onMenuClose={handleCloseFilter}
-                components={{
-                    DropdownIndicator,
-                    Option,
-                    ValueContainer,
-                    IndicatorSeparator: null,
-                    ClearIndicator: null,
-                    MenuList,
-                }}
-                styles={{ ...multiSelectStyles }} />
-            <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                isChecked={//includeDeprecated === 1
-                true}
-                value={"CHECKED"}
-                onChange={(event) => event.target.value
-                    // { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }
-                } 
-                >
-                <div className="ml-5"> Show deprecated</div>
-            </Checkbox>
-        </div>
-    </div>
-    </>)
 }
