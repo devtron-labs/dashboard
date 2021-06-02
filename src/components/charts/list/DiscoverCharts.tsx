@@ -42,6 +42,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
     IncludeDeprecated: 'includeDeprecated',
@@ -502,7 +503,7 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
+export function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>

@@ -6,23 +6,43 @@ import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
+import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb, Checkbox, Option, multiSelectStyles, } from '../common'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config';
 import { toast } from 'react-toastify'
 import { Prompt } from 'react-router';
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
+import ChartHeaderFilters from './ChartHeaderFilters'
+import EmptyState from '../EmptyState/EmptyState';
+import emptyImage from '../../assets/img/empty-noresult@2x.png';
+
+const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+
+}
 
 export default function ChartGroupUpdate({ }) {
-    const { groupId } = useParams<{ groupId }>()
-    const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
-    const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState } = useChartGroup(Number(groupId))
-    const [loading, setLoading] = useState(false)
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+    const { groupId } = useParams<{ groupId }>()
+    const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState, applyFilterOnCharts } = useChartGroup(Number(groupId))
     const isLeavingPageNotAllowed = useRef(false)
+    const [selectedChartRepo, setSelectedChartRepo] = useState([]);
+    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([]);
+    const [appStoreName, setAppStoreName] = useState("");
+    const [searchApplied, setSearchApplied] = useState(false);
+    const [includeDeprecated, setIncludeDeprecated] = useState(0);
+    const { url } = match
+    const [chartListLoading, setChartListLoading] = useState(true);
+    const chartList: Chart[] = Array.from(state.availableCharts.values());
+
+
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -83,6 +103,18 @@ export default function ChartGroupUpdate({ }) {
         }
     }, []);
 
+    useEffect(() => {
+        if (!location.search) {
+            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
+        }
+        else {
+            if (!state.loading) {
+                initialiseFromQueryParams(state.chartRepos);
+                callApplyFilterOnCharts();
+            }
+        }
+    }, [location.search, state.loading])
+
     function reloadCallback(event) {
         event.preventDefault();
         if (isLeavingPageNotAllowed.current) {
@@ -102,75 +134,196 @@ export default function ChartGroupUpdate({ }) {
         setChartDetailsUpdate(false)
     }
 
-    return (
-        <>
-            <div className="chart-group--details-page">
-                <div className="page-header">
-                    <div className="flex column left">
-                        <div className="flex left">
-                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)} />
-                        </div>
-                        <div className="flex left page-header__title">
-                            {state.name}
-                            <Pencil className="pointer" onClick={e => setChartDetailsUpdate(true)} />
-                        </div>
+    function handleAppStoreChange(event): void {
+        event.preventDefault();
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        history.push(`${url}?${qs}`);
+    }
+
+    function handleDeprecateChange(deprecated): void {
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+        history.push(`${url}?${qs}`);
+    }
+
+    function handleCloseFilter() {
+        setSelectedChartRepo(appliedChartRepoFilter)
+    }
+
+    function handleChartRepoChange(selected): void {
+        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+        let searchParams = new URLSearchParams(location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        history.push(`${url}?${qs}`);
+    }
+
+    function initialiseFromQueryParams(chartRepoList) {
+        let searchParams = new URLSearchParams(location.search);
+        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
+        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
+        let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoIdArray = [];
+        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
+        chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
+        let selectedRepos = [];
+        for (let i = 0; i < chartRepoIdArray.length; i++) {
+            let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
+            if (chartRepo) selectedRepos.push(chartRepo);
+        }
+        if (selectedRepos) setSelectedChartRepo(selectedRepos);
+        if (deprecated) setIncludeDeprecated(parseInt(deprecated));
+        if (appStoreName) {
+            setSearchApplied(true);
+            setAppStoreName(appStoreName);
+        } else {
+            setSearchApplied(false);
+            setAppStoreName("");
+        }
+        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
+    }
+
+    async function callApplyFilterOnCharts() {
+        setChartListLoading(true);
+        await applyFilterOnCharts(location.search);
+        setChartListLoading(false);
+    }
+
+    function handleViewAllCharts() {
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+    }
+
+    return (<>
+        <div className="chart-group--details-page">
+            <div className="page-header">
+                <div className="flex column left">
+                    <div className="flex left">
+                        <BreadCrumb breadcrumbs={breadcrumbs.slice(1,)} />
                     </div>
-                    <div className="page-header__cta-container flex right">
-                        <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{ width: '100%' }}><SaveIcon className="mr-5" />Save</div>}</button>
-                        <button className="cta cancel" onClick={redirectToGroupDetail}>Group Detail</button>
+                    <div className="flex left page-header__title">
+                        {state.name}
+                        <Pencil className="pointer" onClick={e => setChartDetailsUpdate(true)} />
                     </div>
                 </div>
-                <Prompt when={isLeavingPageNotAllowed.current} message={"Your changes will be lost. Do you want to leave without saving?"} />
-                {state.loading && <Progressing pageLoader />}
-                {!state.loading && <div className={`chart-group--details-body summary-show`}>
-                    <div className="details">
-                        {typeof state.configureChartIndex === 'number' ?
-                            <AdvancedConfig
-                                chart={state.charts[state.configureChartIndex]}
-                                index={state.configureChartIndex}
-                                getChartVersionsAndValues={getChartVersionsAndValues}
-                                fetchChartValues={fetchChartValues}
-                                handleChartValueChange={handleChartValueChange}
-                                handleChartVersionChange={handleChartVersionChange}
-                                createChartValues={createChartValues}
-                                discardValuesYamlChanges={discardValuesYamlChanges}
-                            />
-                            :
-                            <ChartList
-                                availableCharts={state.availableCharts}
-                                addChart={addChart}
-                                subtractChart={subtractChart}
-                                selectedInstances={state.selectedInstances}
-                            />
-
-                        }
-                    </div>
-                    <div className="summary">
-                        <MultiChartSummary
-                            charts={state.charts}
-                            getChartVersionsAndValues={getChartVersionsAndValues}
-                            configureChart={configureChart}
-                            handleChartValueChange={typeof state.configureChartIndex === 'number' ? null : handleChartValueChange}
-                            handleChartVersionChange={typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange}
-                            chartListing={chartListing}
-                            configureChartIndex={state.configureChartIndex}
-                            removeChart={removeChart}
-                            hideDeployedValues
-                        />
-                    </div>
-                </div>}
+                <div className="page-header__cta-container flex right">
+                    <button className="cta cancel mr-16" onClick={handleSave}>{loading ? <Progressing /> : <div className="flex left" style={{ width: '100%' }}><SaveIcon className="mr-5" />Save</div>}</button>
+                    <button className="cta cancel" onClick={redirectToGroupDetail}>Group Detail</button>
+                </div>
             </div>
-            {chartDetailsUpdate &&
-                <CreateChartGroup
-                    closeChartGroupModal={closeChartGroupModal}
-                    history={history}
-                    location={location}
-                    match={match}
-                    chartGroupId={Number(groupId)}
-                    name={state.name}
-                    description={state.description}
-                />}
-        </>
+            <Prompt when={isLeavingPageNotAllowed.current} message={"Your changes will be lost. Do you want to leave without saving?"} />
+            {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
+
+            {!state.loading && !chartListLoading && <div >
+                {!chartList.length ? <div className="details">
+                    {typeof state.configureChartIndex === 'number' ?
+                        <AdvancedConfig
+                            chart={state.charts[state.configureChartIndex]}
+                            index={state.configureChartIndex}
+                            getChartVersionsAndValues={getChartVersionsAndValues}
+                            fetchChartValues={fetchChartValues}
+                            handleChartValueChange={handleChartValueChange}
+                            handleChartVersionChange={handleChartVersionChange}
+                            createChartValues={createChartValues}
+                            discardValuesYamlChanges={discardValuesYamlChanges}
+                        />
+                        : <>
+                            <ChartHeaderFilters
+                                selectedChartRepo={selectedChartRepo}
+                                handleCloseFilter={handleCloseFilter}
+                                handleChartRepoChange={handleChartRepoChange}
+                                includeDeprecated={includeDeprecated}
+                                handleDeprecateChange={handleDeprecateChange}
+                                chartRepoList={state.chartRepos}
+                                setSelectedChartRepo={setSelectedChartRepo}
+                                handleAppStoreChange={handleAppStoreChange}
+                                appStoreName={appStoreName}
+                                setAppStoreName={setAppStoreName}
+                            />
+                            <EmptyState>
+                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                            </EmptyState>
+                        </>
+                    }
+                </div>
+                    : <div className={`chart-group--details-body summary-show`} >
+                        <div className="details">
+                            {typeof state.configureChartIndex === 'number' ?
+                                <AdvancedConfig
+                                    chart={state.charts[state.configureChartIndex]}
+                                    index={state.configureChartIndex}
+                                    getChartVersionsAndValues={getChartVersionsAndValues}
+                                    fetchChartValues={fetchChartValues}
+                                    handleChartValueChange={handleChartValueChange}
+                                    handleChartVersionChange={handleChartVersionChange}
+                                    createChartValues={createChartValues}
+                                    discardValuesYamlChanges={discardValuesYamlChanges}
+                                />
+                                : <>
+                                    <ChartHeaderFilters
+                                        selectedChartRepo={selectedChartRepo}
+                                        handleCloseFilter={handleCloseFilter}
+                                        handleChartRepoChange={handleChartRepoChange}
+                                        includeDeprecated={includeDeprecated}
+                                        handleDeprecateChange={handleDeprecateChange}
+                                        chartRepoList={state.chartRepos}
+                                        setSelectedChartRepo={setSelectedChartRepo}
+                                        handleAppStoreChange={handleAppStoreChange}
+                                        appStoreName={appStoreName}
+                                        setAppStoreName={setAppStoreName}
+                                    />
+                                    <ChartList
+                                        availableCharts={state.availableCharts}
+                                        addChart={addChart}
+                                        subtractChart={subtractChart}
+                                        selectedInstances={state.selectedInstances}
+                                    />
+                                </>
+                            }
+                        </div>
+                        <div className="summary">
+                            <MultiChartSummary
+                                charts={state.charts}
+                                getChartVersionsAndValues={getChartVersionsAndValues}
+                                configureChart={configureChart}
+                                handleChartValueChange={typeof state.configureChartIndex === 'number' ? null : handleChartValueChange}
+                                handleChartVersionChange={typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange}
+                                chartListing={chartListing}
+                                configureChartIndex={state.configureChartIndex}
+                                removeChart={removeChart}
+                                hideDeployedValues
+                            />
+                        </div>
+                    </div>}
+            </div>}
+        </div>
+        {
+            chartDetailsUpdate &&
+            <CreateChartGroup
+                closeChartGroupModal={closeChartGroupModal}
+                history={history}
+                location={location}
+                match={match}
+                chartGroupId={Number(groupId)}
+                name={state.name}
+                description={state.description}
+            />
+        }
+    </>
     )
 }
 
