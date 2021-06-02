@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-    Progressing,
-    Select,
-    mapByKey,
-    showError,
-    BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    multiSelectStyles,
-    ConfirmationDialog,
-    Checkbox,
-    Option
-} from '../../common';
+import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, ConfirmationDialog } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -33,12 +21,8 @@ import { DOCUMENTATION, URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
@@ -211,49 +195,6 @@ function DiscoverChartList() {
         setChartListloading(false);
     }
 
-    function handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        history.push(`${url}?${qs}`);
-    }
-
-
-    function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        history.push(`${url}?${qs}`);
-    }
-
-    function handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
-    function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
     function handleViewAllCharts() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
@@ -312,7 +253,7 @@ function DiscoverChartList() {
                         includeDeprecated={includeDeprecated}
                         selectedChartRepo={selectedChartRepo}
                         setAppStoreName={setAppStoreName}
-                        />
+                    />
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
@@ -493,7 +434,7 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({  setSelectedChartRepo, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
+function ChartListHeader({ setSelectedChartRepo, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
     return <div>
         <h3 className="chart-grid__title pl-20 pr-20 pt-16">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
@@ -509,7 +450,7 @@ function ChartListHeader({  setSelectedChartRepo, setAppStoreName, chartRepoList
             selectedChartRepo={selectedChartRepo}
             setAppStoreName={setAppStoreName}
             handleCloseFilter={handleCloseFilter}
-           />
+        />
     </div>
 }
 

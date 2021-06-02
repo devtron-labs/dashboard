@@ -4,7 +4,7 @@ import ReactSelect, { components } from 'react-select';
 import { DropdownIndicator, ValueContainer } from './charts.util';
 import { Checkbox, Option, multiSelectStyles, } from '../common';
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { useRouteMatch, useHistory, useLocation } from 'react-router'
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -110,9 +110,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
             <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                 isChecked={includeDeprecated === 1}
                 value={"CHECKED"}
-                onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }
-                }
-            >
+                onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }}>
                 <div className="ml-5"> Show deprecated</div>
             </Checkbox>
         </div>
