@@ -129,6 +129,16 @@ export default function ChartGroupUpdate({ }) {
         setChartDetailsUpdate(false)
     }
 
+    function handleAppStoreChange(event): void {
+        event.preventDefault();
+        let searchParams = new URLSearchParams(location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        history.push(`${url}?${qs}`);
+    }
 
     function handleDeprecateChange(deprecated): void {
         let searchParams = new URLSearchParams(location.search);
@@ -226,6 +236,11 @@ export default function ChartGroupUpdate({ }) {
                                 handleChartRepoChange={handleChartRepoChange}
                                 includeDeprecated={includeDeprecated}
                                 handleDeprecateChange={handleDeprecateChange}
+                                chartRepoList={state.chartRepos}
+                                setSelectedChartRepo={setSelectedChartRepo}
+                                handleAppStoreChange={handleAppStoreChange}
+                                appStoreName={appStoreName}
+                                setAppStoreName={setAppStoreName}
                                 />
                                 <ChartList
                                     availableCharts={state.availableCharts}

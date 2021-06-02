@@ -9,7 +9,7 @@ interface ChartHeaderFilterProps {
 }
 
 
-const ChartHeaderFilter = ({selectedChartRepo, handleCloseFilter, handleChartRepoChange, includeDeprecated, handleDeprecateChange}) => {
+const ChartHeaderFilter = ({selectedChartRepo, handleCloseFilter, handleChartRepoChange, includeDeprecated, handleDeprecateChange, chartRepoList, setSelectedChartRepo, handleAppStoreChange, appStoreName, setAppStoreName}) => {
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -28,13 +28,13 @@ const ChartHeaderFilter = ({selectedChartRepo, handleCloseFilter, handleChartRep
 
     return (<><div className="flexbox flex-justify mt-16 ml-20 mr-20">
         <form
-            //onSubmit={handleAppStoreChange}
+            onSubmit={handleAppStoreChange}
             className="search position-rel" >
             <Search className="search__icon icon-dim-18" />
             <input type="text" placeholder="Search charts"
-                //  value={appStoreName} 
+                 value={appStoreName} 
                 className="search__input bcn-0"
-                onChange={(event) => { return event.target.value; }} />
+                onChange={(event) => { setAppStoreName(event.target.value) }} />
             {/* {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button> : null} */}
@@ -45,9 +45,9 @@ const ChartHeaderFilter = ({selectedChartRepo, handleCloseFilter, handleChartRep
                 placeholder="Repository : All"
                 name="repository "
                 value={selectedChartRepo}
-                // options={chartRepoList}
+                options={chartRepoList}
                 closeOnSelect={false}
-                // onChange={setSelectedChartRepo}
+                onChange={setSelectedChartRepo}
                 isClearable={false}
                 isMulti={true}
                 closeMenuOnSelect={false}
