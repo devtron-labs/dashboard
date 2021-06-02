@@ -264,12 +264,14 @@ export default function ChartGroupUpdate({ }) {
                                 handleDeprecateChange={handleDeprecateChange}
                                 handleAppStoreChange={handleAppStoreChange}
                             />
-                            <EmptyState>
-                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                            </EmptyState>
+                            <div style={{height: "calc(100vh - 150px" }}>
+                                <EmptyState>
+                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                                </EmptyState>
+                            </div>
                         </>
                     }
                 </div>
@@ -298,7 +300,7 @@ export default function ChartGroupUpdate({ }) {
                                         handleAppStoreChange={handleAppStoreChange}
                                         appStoreName={appStoreName}
                                         setAppStoreName={setAppStoreName}
-                                        clearSearch= {clearSearch}
+                                        clearSearch={clearSearch}
                                         searchApplied={searchApplied}
                                     />
                                     <ChartList

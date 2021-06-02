@@ -502,9 +502,9 @@ export default function DiscoverCharts() {
 
 function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
-    return <div className="chart-group__header">
-        <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
-        <h5 className="form__subtitle">Select chart to deploy. &nbsp;
+    return <div>
+        <h3 className="chart-grid__title pl-20 pr-20 pt-16">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+        <h5 className="form__subtitle pl-20">Select chart to deploy. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <ChartHeaderFilter
