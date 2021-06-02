@@ -25,7 +25,7 @@ const QueryParams = {
 export default function ChartGroupUpdate({ }) {
     const { groupId } = useParams<{ groupId }>()
     const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
-    const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState } = useChartGroup(Number(groupId))
+    const { state, getChartVersionsAndValues, configureChart, fetchChartValues, addChart, subtractChart, handleChartValueChange, handleChartVersionChange, chartListing, createChartValues, removeChart, discardValuesYamlChanges, updateChartGroupEntriesFromResponse, updateChartGroupNameAndDescription, reloadState, applyFilterOnCharts } = useChartGroup(Number(groupId))
     const [loading, setLoading] = useState(false)
     const history = useHistory()
     const location = useLocation()
@@ -98,6 +98,18 @@ export default function ChartGroupUpdate({ }) {
         }
     }, []);
 
+    useEffect(() => {
+        if (!location.search) {
+            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
+        }
+        else {
+            if (!state.loading) {
+                initialiseFromQueryParams(state.chartRepos);
+                callApplyFilterOnCharts();
+            }
+        }
+    }, [location.search, state.loading])
+
     function reloadCallback(event) {
         event.preventDefault();
         if (isLeavingPageNotAllowed.current) {
@@ -116,6 +128,7 @@ export default function ChartGroupUpdate({ }) {
         }
         setChartDetailsUpdate(false)
     }
+
 
     function handleDeprecateChange(deprecated): void {
         let searchParams = new URLSearchParams(location.search);
@@ -165,6 +178,12 @@ export default function ChartGroupUpdate({ }) {
             setAppStoreName("");
         }
         if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
+    }
+
+    async function callApplyFilterOnCharts() {
+        setLoading(true);
+        await applyFilterOnCharts(location.search);
+        setLoading(false);
     }
 
     return (
