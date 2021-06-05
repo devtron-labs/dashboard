@@ -39,6 +39,8 @@ export interface DeployedChartState {
     code: number;
     view: string;
     installedCharts: InstalledChartGroup[];
+    includeDeprecated: 0 | 1;
+
 }
 
 export interface InstalledChartGroup {
