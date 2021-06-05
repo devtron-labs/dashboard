@@ -7,7 +7,6 @@ import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 import { getInstalledCharts } from '../charts.service';
 import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 import { AllCheckModal } from '../../checkList/AllCheckModal';
@@ -30,12 +29,19 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             code: 0,
             view: ViewType.LOADING,
             installedCharts: [],
-            includeDeprecated: 0
+            includeDeprecated: 0,
+            appStoreName: "",
+            searchApplied: false,
+            selectedChartRepo: [],
+            appliedChartRepoFilter: [],
+            chartListloading: true
         }
     }
 
     componentDidMount() {
         this.getInstalledCharts();
+        this.initialiseFromQueryParams(this.state.installedCharts);
+        this.callApplyFilterOnCharts();
     }
 
     getInstalledCharts() {
@@ -88,54 +94,95 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     handleChartRepoChange(selected): void {
         let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        // let searchParams = new URLSearchParams(location.search);
-        // let app = searchParams.get(QueryParams.AppStoreName);
-        // let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        // let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        // if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        // if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        // this.props.history.push(`${url}?${qs}`);
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        this.props.history.push(`${this.props.match.url}?${qs}`);
     }
 
 
     handleDeprecateChange(deprecated): void {
-        // let searchParams = new URLSearchParams(location.search);
-        // let app = searchParams.get(QueryParams.AppStoreName);
-        // let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        // let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        // if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        // if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        // this.props.history.push(`${url}?${qs}`);
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let app = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
+        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+        this.props.history.push(`${this.props.match.url}?${qs}`);
     }
 
     handleAppStoreChange(event): void {
         event.preventDefault();
-        // let searchParams = new URLSearchParams(location.search);
-        // let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        // let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        // let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        // if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        // if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        // this.props.history.push(`${url}?${qs}`);
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        this.props.history.push(`${this.props.match.url}?${qs}`);
     }
 
     clearSearch(event): void {
-        // let searchParams = new URLSearchParams(location.search);
-        // let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        // let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        // let qs: string = "";
-        // if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        // if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        // this.props.history.push(`${url}?${qs}`);
+        let searchParams = new URLSearchParams(this.props.location.search);
+        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        let qs: string = "";
+        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+        this.props.history.push(`${this.props.match.url}?${qs}`);
     }
 
     handleViewAllCharts() {
-        // this.props.history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+        this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
     handleCloseFilter() {
-        // setSelectedChartRepo(appliedChartRepoFilter)
+        this.setState({selectedChartRepo: this.state.appliedChartRepoFilter})
     }
+
+    initialiseFromQueryParams(chartRepoList) {
+        let searchParams = new URLSearchParams(this.props.location.pathname);
+        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
+        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
+        let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
+        let chartRepoIdArray = [];
+        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
+        chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
+        let selectedRepos = [];
+        for (let i = 0; i < chartRepoIdArray.length; i++) {
+            let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
+            if (chartRepo) selectedRepos.push(chartRepo);
+        }
+        if (selectedRepos) {
+            this.setState({
+                selectedChartRepo: selectedRepos
+            })
+        };
+        if (deprecated) this.setState({includeDeprecated: parseInt(deprecated)})
+        if (appStoreName) {
+            this.setState({
+                searchApplied: true,
+                appStoreName: appStoreName
+            });
+        } 
+        else {
+            this.setState({
+                searchApplied: false,
+                appStoreName: ""
+            })
+        }
+        if (selectedRepos)this.setState ({appliedChartRepoFilter: selectedRepos})
+    }
+
+    async  callApplyFilterOnCharts() {
+        this.setState({chartListloading: true, })
+            await getInstalledCharts()
+            this.setState({chartListloading: false, })
+    }
+
     renderFilterSection() {
         const MenuList = (props) => {
             return (
@@ -152,14 +199,11 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         };
 
         return (<div className="chart-group__header">
+            {console.log(this.props)}
             <div className="flexbox flex-justify  w-100">
                 <form onSubmit={this.handleAppStoreChange} style={{ width: "none" }} className="search position-rel" >
                     <Search className="search__icon icon-dim-18" />
-                    <input type="text" placeholder="Search charts"
-                        //  value={appStoreName} 
-                        className="search__input bcn-0"
-                    //   onChange={(event) => { setAppStoreName(event.target.value); }} 
-                    />
+                    <input type="text" placeholder="Search charts" value={this.state.appStoreName} className="search__input bcn-0" onChange={(event) => { this.setState({ appStoreName: event.target.value }); }} />
                     {/* // {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
                 //     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 // </button> : null} */}
@@ -189,10 +233,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <ReactSelect className="date-align-left fs-13"
                         placeholder="Repository : All"
                         name="repository "
-                        // value={selectedChartRepo}
-                        // options={chartRepoList}
+                        value={this.state.selectedChartRepo}
+                        // options={this.state.chartRepoList}
                         closeOnSelect={false}
-                        // onChange={setSelectedChartRepo}
+                        onChange={()=>this.setState({selectedChartRepo: this.state.selectedChartRepo})}
                         isClearable={false}
                         isMulti={true}
                         closeMenuOnSelect={false}

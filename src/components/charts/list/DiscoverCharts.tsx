@@ -233,6 +233,7 @@ function DiscoverChartList() {
 
     function handleAppStoreChange(event): void {
         event.preventDefault();
+        {console.log(location)}
         let searchParams = new URLSearchParams(location.search);
         let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
         let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
