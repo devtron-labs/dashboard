@@ -327,6 +327,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         if (!url) {
             return
         }
+        console.log(url)
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({

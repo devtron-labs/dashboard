@@ -1,17 +1,15 @@
-import { string } from 'prop-types';
-import AsyncSelect from 'react-select/async';
 import { LogFilter } from './LogFilter';
-import { Legend } from 'recharts';
 export default () => {
     var eventSrc
     let filteredArray = []
+
+    let logFilter: LogFilter
     self.onmessage = e => { // eslint-disable-line no-restricted-globals
         if (!e) {
             console.log('no event found');
             return
         }
         if (!e.data.type && !e.data.paylod) return
-        let logFilter: LogFilter
         switch (e.data.type) {
             case 'start':
                 const { grepTokens, url } = e.data.payload

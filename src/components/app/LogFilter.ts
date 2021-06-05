@@ -1,4 +1,3 @@
-import { PrePostStage } from '../../services/service.types';
 export class LogFilter {
     private indexFromLastMatch: number = -1000000
     private buffer: Array<string> = new Array()
