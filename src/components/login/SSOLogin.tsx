@@ -317,7 +317,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
-   
+
 
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
@@ -329,7 +329,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
         </div> : null;
-        
+
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
@@ -360,6 +360,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
+    allSSOLoginTabs = () => [
+        <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.google} />,
+        <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.github} />,
+        <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.microsoft} />,
+        <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.ldap} />,
+        <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.oidc} />,
+        <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.openshift} />
+    ]
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -370,27 +379,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         }
 
-        let allSSOLoginTabs = [
-            <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.google} />,
-            <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.github} />,
-            <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.microsoft} />,
-            <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.ldap} />,
-            <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.oidc} />,
-            <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.openshift} />
-        ]
         return <section className="global-configuration__component">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
-                    {allSSOLoginTabs.map((item, i) => {
-                        let updatedProviders = []
-                        let ssoTab = allSSOLoginTabs[i]
-                        updatedProviders = updatedProviders.concat(ssoTab)
-                        for (i = 0; i < updatedProviders.length; i++) {
-                            return updatedProviders[i]
-                        }
-                    })}
+                    {this.allSSOLoginTabs().map((item) => item )}
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
