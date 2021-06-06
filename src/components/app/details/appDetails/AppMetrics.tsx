@@ -10,13 +10,13 @@ import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullsc
 import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
+import { URLS } from '../../../../config';
+import { getHostURLConfiguration } from '../../../../services/service';
+import { toast } from 'react-toastify'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
-import { URLS } from '../../../../config';
-import { getHostURLConfiguration } from '../../../../services/service';
-import { toast } from 'react-toastify'
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion }> = ({ appName, environment, podMap, k8sVersion }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
