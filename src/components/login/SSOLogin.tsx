@@ -21,7 +21,6 @@ import sample from './sampleConfig.json';
 import './login.css';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
-
 export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',
@@ -68,8 +67,6 @@ const SSOLoginTab: React.FC<{ handleSSOClick: (e) => void, checked: boolean, las
         </span>
     </label>
 }
-
-
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     constructor(props) {

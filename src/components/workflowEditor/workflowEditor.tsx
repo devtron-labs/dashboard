@@ -59,10 +59,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             let allCINodes = [];
             for (let i = 0; i < result.workflows.length; i++) {
                 let ciNodes = result.workflows[i].nodes.filter(node => node.type === 'CI');
-                {console.log(result.workflows[i].nodes)}
-                {console.log(ciNodes)}
                 allCINodes = allCINodes.concat(ciNodes);
-                {console.log(allCINodes)}
             }
             for (let i = 0; i < allCINodes.length; i++) {
                 allCINodeMap.set(allCINodes[i].id, allCINodes[i]);
