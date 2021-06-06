@@ -55,6 +55,7 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
         case "OpenShift": return <Openshift />
     }
 }
+
 const SSOLoginTab: React.FC<{ handleSSOClick: (e) => void, checked: boolean, lastActiveSSO, value: string, SSOName: string }> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
     return <label className="tertiary-tab__radio">
         <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
@@ -62,7 +63,7 @@ const SSOLoginTab: React.FC<{ handleSSOClick: (e) => void, checked: boolean, las
             <aside className="login__icon-alignment"><SSOTabIcons SSOName={SSOName} /></aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
-                {lastActiveSSO?.name == { value } ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                {lastActiveSSO?.name === value ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
             </label>
         </span>
     </label>
@@ -361,12 +362,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     allSSOLoginTabs = () => [
-        <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.google} />,
-        <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.github} />,
-        <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.microsoft} />,
-        <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.ldap} />,
-        <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.oidc} />,
-        <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO?.name == SSOProvider.openshift} />
+        <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+        <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+        <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+        <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+        <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+        <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
     ]
 
     render() {
