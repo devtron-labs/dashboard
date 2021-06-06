@@ -39,13 +39,17 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     componentDidMount() {
-        this.getInstalledCharts();
-        this.initialiseFromQueryParams(this.state.installedCharts);
-        this.callApplyFilterOnCharts();
+        if (!this.props.location.search) {
+            this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=0`);
+        }
+        else{ this.getInstalledCharts(this.props.location.search);}
+        {console.log(this.props.location.search)}
+        // this.initialiseFromQueryParams(this.state.installedCharts);
+        // this.callApplyFilterOnCharts();
     }
 
-    getInstalledCharts() {
-        getInstalledCharts().then((response) => {
+    getInstalledCharts(qs) {
+        getInstalledCharts(qs).then((response) => {
             this.setState({ installedCharts: response.result, view: ViewType.FORM });
         }).catch((errors) => {
             this.setState({ code: errors.code, view: ViewType.ERROR })
@@ -179,7 +183,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     async  callApplyFilterOnCharts() {
         this.setState({chartListloading: true, })
-            await getInstalledCharts()
+            await getInstalledCharts(this.props.location.search)
+
             this.setState({chartListloading: false, })
     }
 
