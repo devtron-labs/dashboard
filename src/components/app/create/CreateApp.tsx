@@ -159,8 +159,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             ? <><Error className="form__icon form__icon--error" />{errorObject[0].message} <br /></>
                             : null}
                     </span>
-                    <span className="form__text-field-info">
-                        <Info className="form__icon form__icon--info" style={{ height: "none" }} />
+                    <span className="form__text-field-info form__text-field-info--create-app">
+                        <Info className="form__icon form__icon--info form__icon--create-app" />
                         Apps are NOT env specific and can be used to deploy to multiple environments.
                     </span>
                 </label>

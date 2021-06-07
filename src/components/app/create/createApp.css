@@ -8,3 +8,12 @@ span.form__label {
     padding: 16px;
     align-items: start;
 }
+
+.form__text-field-info--create-app{
+    align-items: flex-start;
+}
+
+.form__icon--create-app {
+    position: relative;
+    top: 3px;
+}
