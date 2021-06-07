@@ -358,14 +358,20 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
-    allSSOLoginTabs = () => [
-        <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
-        <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
-        <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
-        <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
-        <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
-        <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
-    ]
+
+
+    getSSOLoginTabsArr() {
+        let SSOLoginTabsArr = [
+            { provider: SSOProvider.google, SSOName: "Google" }, 
+            { provider: SSOProvider.github, SSOName: "GitHub" },
+            { provider: SSOProvider.microsoft, SSOName: "Microsoft" },
+            { provider: SSOProvider.ldap, SSOName: "LDAP" },
+            { provider: SSOProvider.oidc, SSOName: "OIDC" },
+            { provider: SSOProvider.openshift, SSOName: "OpenShift" }
+        ]
+        return SSOLoginTabsArr;
+    }
+
 
     render() {
         if (this.state.view === ViewType.LOADING) {
@@ -382,7 +388,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
-                    {this.allSSOLoginTabs().map((item) => item)}
+                    {this.getSSOLoginTabsArr().map((item) => {
+                        return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} /> })}
+                    {/* <SSOLoginTab value={SSOProvider.google} SSOName="Google" checked={this.state.sso === SSOProvider.google} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+                    <SSOLoginTab value={SSOProvider.github} SSOName="GitHub" checked={this.state.sso === SSOProvider.github} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+                    <SSOLoginTab value={SSOProvider.microsoft} SSOName="Microsoft" checked={this.state.sso === SSOProvider.microsoft} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+                    <SSOLoginTab value={SSOProvider.ldap} SSOName="LDAP" checked={this.state.sso === SSOProvider.ldap} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+                    <SSOLoginTab value={SSOProvider.oidc} SSOName="OIDC" checked={this.state.sso === SSOProvider.oidc} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />,
+                    <SSOLoginTab value={SSOProvider.openshift} SSOName="OpenShift" checked={this.state.sso === SSOProvider.openshift} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} /> */}
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
