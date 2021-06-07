@@ -1,5 +1,5 @@
-import { components } from 'react-select';
 import React from 'react';
+import { components } from 'react-select';
 import { validateEmail } from '../common';
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
@@ -74,12 +74,12 @@ export function MultiValueLabel(props) {
 
 export const MultiValueContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
-    const { label, value } = data
+    const { label } = data
     const isValidEmail = validator ? validator(data.data.recipient) : true
 
     if (data.data.dest === "" || data.data.dest === "ses" || data.data.dest === "email") {
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-            <div className={`flex fs-12 ml-4`}>
+            <div className="flex fs-12 ml-4">
                 {!isValidEmail ? <RedWarning className="mr-4" /> : <Email className="icon-dim-20 mr-5" />}
                 <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
             </div>
@@ -88,9 +88,9 @@ export const MultiValueContainer = ({ validator, ...props }) => {
     }
     else {
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-            <div className={`flex fs-12 ml-4`}>
+            <div className="flex fs-12 ml-4">
                 <Slack className="icon-dim-20 mr-5" />
-                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+                <div className="cn-9">{label}</div>
             </div>
             {children[1]}
         </components.MultiValueContainer>
