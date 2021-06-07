@@ -36,7 +36,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             appliedChartRepoFilter: [],
             chartListloading: true
         }
-        this.handleDeprecateChange = this.handleDeprecateChange.bind(this)
     }
 
     getInstalledCharts(qs) {
@@ -56,7 +55,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
         else {
             this.initialiseFromQueryParams(this.state.installedCharts);
-            {console.log( this.state)}
+            { console.log(this.state) }
             // this.callApplyFilterOnCharts();
             this.getInstalledCharts(this.props.location.search);
         }
@@ -104,48 +103,43 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         </GenericChartsHeader>
     }
 
+    handleFilterChanges = (selected, key): void => {
+        const searchParams = new URLSearchParams(this.props.location.search);
+        const app = searchParams.get(QueryParams.AppStoreName);
+        const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        const chartRepoId = searchParams.get(QueryParams.ChartRepoId);
 
-    handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(this.props.location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        this.props.history.push(`${this.props.match.url}?${qs}`);
-    }
+        let url = this.props.match.url
 
+        if (key == "chart-repo") {
+            let chartRepoId = selected?.map((e) => { return e.value }).join(",");
+            let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
+            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            this.props.history.push(`${url}?${qs}`)
+        };
 
-    handleDeprecateChange = (deprecated): void => {
-        let searchParams = new URLSearchParams(this.props.location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        this.props.history.push(`${this.props.match.url}?${qs}`);
-    }
+        if (key == "deprecated") {
+            let qs = `${QueryParams.IncludeDeprecated}=${selected}`;
+            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            this.props.history.push(`${url}?${qs}`);
+        }
 
-    handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(this.props.location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        this.props.history.push(`${this.props.match.url}?${qs}`);
-    }
+        if (key == "search") {
+            selected.preventDefault();
+            let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+            this.props.history.push(`${url}?${qs}`);
+        }
 
-    clearSearch(event): void {
-        let searchParams = new URLSearchParams(this.props.location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        this.props.history.push(`${this.props.match.url}?${qs}`);
+        if (key == "clear") {
+            let qs: string = "";
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+            this.props.history.push(`${url}?${qs}`);
+        }
     }
 
     handleViewAllCharts() {
@@ -157,7 +151,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     initialiseFromQueryParams(chartRepoList) {
-        {console.log(chartRepoList)}
+        { console.log(chartRepoList) }
         let searchParams = new URLSearchParams(this.props.location.pathname);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
@@ -201,10 +195,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 <components.MenuList {...props}>
                     {props.children}
                     <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                        <button type="button" className="cta flex cta--chart-store"
-                            disabled={false}
-                        // onClick={(selected: any) => { this.handleChartRepoChange(selectedChartRepo) }}
-                        >Apply Filter</button>
+                        <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(selected: any) => { this.handleFilterChanges(selected, "chart-repo") }}>
+                            Apply Filter
+                      </button>
                     </div>
                 </components.MenuList>
             );
@@ -213,12 +206,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         return (<div className="chart-group__header">
             {console.log(this.state.installedCharts)}
             <div className="flexbox flex-justify  w-100">
-                <form onSubmit={this.handleAppStoreChange} style={{ width: "none" }} className="search position-rel" >
+                <form onSubmit={(e) => this.handleFilterChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
                     <Search className="search__icon icon-dim-18" />
                     <input type="text" placeholder="Search charts" value={this.state.appStoreName} className="search__input bcn-0" onChange={(event) => { this.setState({ appStoreName: event.target.value }); }} />
-                    {/* // {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                //     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                // </button> : null} */}
+                    {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => this.handleFilterChanges(e, "clear")}>
+                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    </button> : null}
                 </form>
                 <div className="flex">
                     <ReactSelect className="date-align-left fs-13 pr-16"
@@ -246,7 +239,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         placeholder="Repository : All"
                         name="repository "
                         value={this.state.selectedChartRepo}
-                        // options={this.state.chartRepoList}
+                        options={this.state.installedCharts}
                         closeOnSelect={false}
                         onChange={() => this.setState({ selectedChartRepo: this.state.selectedChartRepo })}
                         isClearable={false}
@@ -266,7 +259,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                         isChecked={this.state.includeDeprecated === 1}
                         value={"CHECKED"}
-                        onChange={(event) => { let value = (this.state.includeDeprecated + 1) % 2; this.handleDeprecateChange(value) }} >
+                        onChange={(event) => { let value = (this.state.includeDeprecated + 1) % 2; this.handleFilterChanges(value, "deprecated") }} >
                         <div className="ml-5"> Show only deprecated</div>
                     </Checkbox>
                 </div>
