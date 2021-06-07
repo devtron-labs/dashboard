@@ -117,6 +117,7 @@ function DiscoverChartList() {
         else {
             if (!state.loading) {
                 initialiseFromQueryParams(state.chartRepos);
+                {console.log(state.chartRepos)}
                 callApplyFilterOnCharts();
             }
         }
@@ -229,11 +230,12 @@ function DiscoverChartList() {
         if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
         if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
         history.push(`${url}?${qs}`);
+       
+
     }
 
     function handleAppStoreChange(event): void {
         event.preventDefault();
-        {console.log(location)}
         let searchParams = new URLSearchParams(location.search);
         let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
         let chartRepoId = searchParams.get(QueryParams.ChartRepoId);

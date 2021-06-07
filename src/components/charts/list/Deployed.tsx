@@ -36,16 +36,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             appliedChartRepoFilter: [],
             chartListloading: true
         }
-    }
-
-    componentDidMount() {
-        if (!this.props.location.search) {
-            this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=0`);
-        }
-        else{ this.getInstalledCharts(this.props.location.search);}
-        {console.log(this.props.location.search)}
-        // this.initialiseFromQueryParams(this.state.installedCharts);
-        // this.callApplyFilterOnCharts();
+        this.handleDeprecateChange = this.handleDeprecateChange.bind(this)
     }
 
     getInstalledCharts(qs) {
@@ -58,6 +49,24 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             }
         })
     }
+
+    componentDidMount() {
+        if (!this.props.location.search) {
+            this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=0`);
+        }
+        else {
+            this.initialiseFromQueryParams(this.state.installedCharts);
+            {console.log( this.state)}
+            // this.callApplyFilterOnCharts();
+            this.getInstalledCharts(this.props.location.search);
+        }
+    }
+
+    // componentDidUpdate(prevProps, prevState){
+    //     if(prevProps.match.params.path !== this.props.location.search){
+    //         this.initialiseFromQueryParams(this.state.installedCharts);
+    //     }
+    // }
 
     handleImageError(e) {
         const target = e.target as HTMLImageElement
@@ -108,7 +117,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
 
-    handleDeprecateChange(deprecated): void {
+    handleDeprecateChange = (deprecated): void => {
         let searchParams = new URLSearchParams(this.props.location.search);
         let app = searchParams.get(QueryParams.AppStoreName);
         let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
@@ -144,10 +153,11 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     handleCloseFilter() {
-        this.setState({selectedChartRepo: this.state.appliedChartRepoFilter})
+        this.setState({ selectedChartRepo: this.state.appliedChartRepoFilter })
     }
 
     initialiseFromQueryParams(chartRepoList) {
+        {console.log(chartRepoList)}
         let searchParams = new URLSearchParams(this.props.location.pathname);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
@@ -165,28 +175,25 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 selectedChartRepo: selectedRepos
             })
         };
-        if (deprecated) this.setState({includeDeprecated: parseInt(deprecated)})
+        if (deprecated) this.setState({ includeDeprecated: parseInt(deprecated) })
         if (appStoreName) {
             this.setState({
                 searchApplied: true,
                 appStoreName: appStoreName
             });
-        } 
+        }
         else {
             this.setState({
                 searchApplied: false,
                 appStoreName: ""
             })
         }
-        if (selectedRepos)this.setState ({appliedChartRepoFilter: selectedRepos})
+        if (selectedRepos) this.setState({ appliedChartRepoFilter: selectedRepos })
     }
 
-    async  callApplyFilterOnCharts() {
-        this.setState({chartListloading: true, })
-            await getInstalledCharts(this.props.location.search)
-
-            this.setState({chartListloading: false, })
-    }
+    // async callApplyFilterOnCharts() {
+    //     await getInstalledCharts(this.props.location.search)
+    // }
 
     renderFilterSection() {
         const MenuList = (props) => {
@@ -204,7 +211,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         };
 
         return (<div className="chart-group__header">
-            {console.log(this.props)}
+            {console.log(this.state.installedCharts)}
             <div className="flexbox flex-justify  w-100">
                 <form onSubmit={this.handleAppStoreChange} style={{ width: "none" }} className="search position-rel" >
                     <Search className="search__icon icon-dim-18" />
@@ -241,7 +248,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         value={this.state.selectedChartRepo}
                         // options={this.state.chartRepoList}
                         closeOnSelect={false}
-                        onChange={()=>this.setState({selectedChartRepo: this.state.selectedChartRepo})}
+                        onChange={() => this.setState({ selectedChartRepo: this.state.selectedChartRepo })}
                         isClearable={false}
                         isMulti={true}
                         closeMenuOnSelect={false}
