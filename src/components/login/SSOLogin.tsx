@@ -11,7 +11,7 @@ import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
-import { SSOLoginProps, SSOLoginState } from './ssoConfig.types'
+import { SSOLoginProps, SSOLoginState, SSOLoginTab } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType } from '../../config'
@@ -55,7 +55,8 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     }
 }
 
-const SSOLoginTab: React.FC<{ handleSSOClick: (e) => void, checked: boolean, lastActiveSSO, value: string, SSOName: string }> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
+
+const SSOLoginTab: React.FC<SSOLoginTab> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
     return <label className="tertiary-tab__radio">
         <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
         <span className="tertiary-tab sso-icons">
@@ -382,7 +383,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
-                    {this.allSSOLoginTabs().map((item) => item )}
+                    {this.allSSOLoginTabs().map((item) => item)}
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">

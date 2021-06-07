@@ -137,10 +137,10 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     function getNewGraphs(newTab): void {
         if (!datasource.isHealthy) return;
- 
+
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION;
-          
+
             toast.warn(<div className="toast">
                 <div className="toast__title">Error Parsing K8sVersion</div>
                 <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
@@ -165,7 +165,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
             latency,
         });
     }
-   
+
     useEffect(() => {
         let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         setCalendarValue(str);
