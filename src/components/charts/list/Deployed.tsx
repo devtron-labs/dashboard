@@ -142,15 +142,15 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    handleViewAllCharts() {
+    handleViewAllCharts = () => {
         this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
-    handleCloseFilter() {
+    handleCloseFilter = () => {
         this.setState({ selectedChartRepo: this.state.appliedChartRepoFilter })
     }
 
-    initialiseFromQueryParams(chartRepoList) {
+    initialiseFromQueryParams = (chartRepoList) => {
         { console.log(chartRepoList) }
         let searchParams = new URLSearchParams(this.props.location.pathname);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
@@ -189,7 +189,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     //     await getInstalledCharts(this.props.location.search)
     // }
 
-    renderFilterSection() {
+    renderFilterSection = () => {
         const MenuList = (props) => {
             return (
                 <components.MenuList {...props}>
