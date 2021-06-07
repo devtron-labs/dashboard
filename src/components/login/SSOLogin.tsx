@@ -11,7 +11,7 @@ import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
-import { SSOLoginProps, SSOLoginState, SSOLoginTab } from './ssoConfig.types'
+import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType } from '../../config'
@@ -55,8 +55,7 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     }
 }
 
-
-const SSOLoginTab: React.FC<SSOLoginTab> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
+const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
     return <label className="tertiary-tab__radio">
         <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
         <span className="tertiary-tab sso-icons">

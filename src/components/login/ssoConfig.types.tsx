@@ -37,7 +37,7 @@ export interface SSOLoginProps extends RouteComponentProps<{}> {
 
 }
 
-export interface SSOLoginTab {
+export interface SSOLoginTabType {
     handleSSOClick: (e) => void;
     checked: boolean;
     lastActiveSSO: undefined | SSOLogin;
