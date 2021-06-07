@@ -375,7 +375,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
 }
 
 const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, environmentsLoading: boolean, url: string) => {
-    if (environmentsLoading) return;
+    if (environmentsLoading) return null;
 
     if (Array.isArray(environmentResult?.result)) {
         return <div>

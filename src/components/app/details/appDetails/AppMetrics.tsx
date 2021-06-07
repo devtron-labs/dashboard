@@ -143,7 +143,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
           
             toast.warn(<div className="toast">
                 <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {k8sVersion} and above</div>
+                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
             </div>)
         }
 
