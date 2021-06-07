@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router'
 import { SESConfigModal } from './SESConfigModal';
 import { SlackConfigModal } from './SlackConfigModal';
-import { Checkbox, Progressing, showError, Select, validateEmail, ErrorBoundary } from '../common';
+import { Checkbox, Progressing, showError, Select, validateEmail, ErrorBoundary, ClearIndicator, MultiValueRemove } from '../common';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
@@ -15,7 +15,7 @@ import { ViewType, URLS } from '../../config';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { components } from 'react-select';
-import { multiSelectStyles, DropdownIndicator, Option, MultiValueLabel } from './notifications.util';
+import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer } from './notifications.util';
 import Tippy from '@tippyjs/react';
 import CreatableSelect from 'react-select/creatable';
 import './notifications.css';
@@ -435,9 +435,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 backspaceRemovesValue
                 className="react-select--height-44"
                 components={{
+                    MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateEmail} />,
+                    MultiValueRemove: MultiValueRemove,
                     IndicatorSeparator: null,
                     DropdownIndicator: DropdownIndicator,
-                    MultiValueLabel: MultiValueLabel,
+                    // MultiValueContainer: MultiValueContainer,
+                    ClearIndicator: ClearIndicator,
                     Option: Option,
                     MenuList: (props) => {
                         return <components.MenuList {...props}>
