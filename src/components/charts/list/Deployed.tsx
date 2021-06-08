@@ -55,17 +55,17 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
         else {
             this.initialiseFromQueryParams(this.state.installedCharts);
-            { console.log(this.state) }
-            // this.callApplyFilterOnCharts();
+            { console.log(this.state.installedCharts) }
+            this.callApplyFilterOnCharts();
             this.getInstalledCharts(this.props.location.search);
         }
     }
 
-    // componentDidUpdate(prevProps, prevState){
-    //     if(prevProps.match.params.path !== this.props.location.search){
-    //         this.initialiseFromQueryParams(this.state.installedCharts);
-    //     }
-    // }
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.location.search !== this.props.location.search){
+            this.initialiseFromQueryParams(this.state.installedCharts);
+        }
+    }
 
     handleImageError(e) {
         const target = e.target as HTMLImageElement
@@ -185,9 +185,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (selectedRepos) this.setState({ appliedChartRepoFilter: selectedRepos })
     }
 
-    // async callApplyFilterOnCharts() {
-    //     await getInstalledCharts(this.props.location.search)
-    // }
+    async callApplyFilterOnCharts() {
+        await getInstalledCharts(this.props.location.search)
+    }
 
     renderFilterSection = () => {
         const MenuList = (props) => {
@@ -204,7 +204,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         };
 
         return (<div className="chart-group__header">
-            {console.log(this.state.installedCharts)}
             <div className="flexbox flex-justify  w-100">
                 <form onSubmit={(e) => this.handleFilterChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
                     <Search className="search__icon icon-dim-18" />
@@ -269,6 +268,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     render() {
+        {console.log(this.state)}
+        {console.log(this.state.installedCharts)}
+
         if (this.state.view === ViewType.LOADING) {
             return <div className="chart-list-page ">
                 {this.renderPageHeader()}
