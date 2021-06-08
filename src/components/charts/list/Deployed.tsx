@@ -12,6 +12,7 @@ import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 import { AllCheckModal } from '../../checkList/AllCheckModal';
 import DeployedChartFilters from './DeployedChartFilters';
 import { showError } from '../../common';
+import { getChartRepoList, getEnvironmentListMin } from '../../../services/service'
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -29,11 +30,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             view: ViewType.LOADING,
             installedCharts: [],
             chartRepos: [],
+            environment: [],
+            selectedChartRepo: [],
+            selectedEnvironment: [],
             includeDeprecated: 0,
             appStoreName: "",
             searchApplied: false,
-            selectedChartRepo: [],
-            selectedEnvironment: [],
             appliedChartRepoFilter: [],
             chartListloading: true
         }
@@ -41,14 +43,38 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     async componentDidMount() {
-        
+        try {
+            const [{ result: chartRepoList }, { result: environments }] = await Promise.all([getChartRepoList(), getEnvironmentListMin()])
+            let chartRepos = chartRepoList.map((chartRepo) => {
+                {console.log(chartRepo)}
+
+                return {
+                    value: chartRepo.id,
+                    label: chartRepo.name
+                }
+            });
+            let environment = environments.map((env) => {
+                {console.log(env)}
+                return {
+                    value: env.id,
+                    label: env.environment_name
+                }
+            });
+            this.setState({ ...this.state, loading: false, chartRepos: chartRepos, environment: environment });
+        }
+        catch (err) {
+            showError(err)
+            this.setState(state => ({ ...state, loading: false }))
+        }
+        finally {
+            this.setState(state => ({ ...state, loading: false }))
+        }
 
         if (!this.props.location.search) {
             this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=0`);
         }
         else {
-            this.initialiseFromQueryParams(this.state.chartRepos);
-            { console.log(this.state.chartRepos) }
+            this.initialiseFromQueryParams(this.state.chartRepos, this.state.environment);
             this.callApplyFilterOnCharts();
             this.getInstalledCharts(this.props.location.search);
         }
@@ -56,7 +82,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
-            this.initialiseFromQueryParams(this.state.installedCharts);
+            this.initialiseFromQueryParams(this.state.chartRepos, this.state.environment);
             this.callApplyFilterOnCharts();
         }
     }
@@ -106,6 +132,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             <ChartDetailNavigator />
             <HeaderButtonGroup><span /></HeaderButtonGroup>
         </GenericChartsHeader>
+    }
+
+    setAppStoreName = (event) => {
+        // this.setState({ appStoreName: event.target.value})
     }
 
     handleFilterChanges = (selected, key): void => {
@@ -169,7 +199,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         this.setState({ selectedChartRepo: this.state.appliedChartRepoFilter })
     }
 
-    initialiseFromQueryParams = (chartRepoList) => {
+    initialiseFromQueryParams = (chartRepoList, environmentList) => {
         let searchParams = new URLSearchParams(this.props.location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
@@ -178,6 +208,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
         let chartRepoIdArray = [];
         if (allChartRepoIds) { chartRepoIdArray = allChartRepoIds.split(",") }
+        { console.log(allChartRepoIds) }
+
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
         let selectedRepos = [];
         for (let i = 0; i < chartRepoIdArray.length; i++) {
@@ -185,12 +217,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             if (chartRepo) selectedRepos.push(chartRepo);
         }
 
-        if (selectedRepos) {
-            this.setState({ selectedChartRepo: selectedRepos })
-        };
-        { console.log(deprecated) }
+        if (selectedRepos) { this.setState({ selectedChartRepo: selectedRepos }) };
         if (deprecated) {
-            this.setState({ includeDeprecated: parseInt(deprecated) }, () => console.log(this.state))
+            this.setState({ includeDeprecated: parseInt(deprecated) })
         }
         if (appStoreName) {
             this.setState({
@@ -204,7 +233,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 appStoreName: ""
             })
         }
-        if (selectedRepos) this.setState({ appliedChartRepoFilter: selectedRepos })
+        if (selectedRepos) { this.setState({ appliedChartRepoFilter: selectedRepos }) }
     }
 
     async callApplyFilterOnCharts() {
@@ -212,6 +241,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         await getInstalledCharts(this.props.location.search)
         this.setState({ view: ViewType.FORM })
     }
+
+    // handleSelectedchartRepo = (selected) => {
+    //     this.setState({ selectedChartRepo: })
+    // }
 
     render() {
         if (this.state.view === ViewType.LOADING) {
@@ -244,9 +277,11 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     appStoreName={this.state.appStoreName}
                     searchApplied={this.state.searchApplied}
                     handleCloseFilter={this.handleCloseFilter}
-                    installedCharts={this.state.installedCharts}
                     selectedChartRepo={this.state.selectedChartRepo}
                     includeDeprecated={this.state.includeDeprecated}
+                    chartRepos={this.state.chartRepos}
+                    setAppStoreName={this.setAppStoreName}
+                    environment = {this.state.environment}
                 />
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {

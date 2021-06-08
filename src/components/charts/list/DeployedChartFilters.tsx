@@ -5,7 +5,7 @@ import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
-export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, installedCharts, selectedChartRepo, includeDeprecated }) {
+export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment }) {
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -24,7 +24,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                 <div className="flexbox flex-justify  w-100">
                     <form onSubmit={(e) => handleFilterChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
                         <Search className="search__icon icon-dim-18" />
-                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(e) => handleFilterChanges(e, "chart-repo")} />
+                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(e) => setAppStoreName(e.target.value)} />
                         {searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges(e, "clear")}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button> : null}
@@ -34,7 +34,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             placeholder="Environment : All"
                             name="repository "
                             // value={selectedChartRepo}
-                            // options={chartRepoList}
+                            options={environment}
                             closeOnSelect={false}
                             // onChange={setSelectedChartRepo}
                             isClearable={false}
@@ -54,10 +54,10 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <ReactSelect className="date-align-left fs-13"
                             placeholder="Repository : All"
                             name="repository "
-                            value={selectedChartRepo}
-                            options={installedCharts}
+                            // value={selectedChartRepo}
+                            options={chartRepos}
                             closeOnSelect={false}
-                            // onChange={() => this.setState({ selectedChartRepo: this.state.selectedChartRepo })}
+                            // onChange={(e) => handleFilterChanges(e,"chart-repo") }
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}

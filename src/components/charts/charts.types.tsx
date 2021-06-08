@@ -40,12 +40,13 @@ export interface DeployedChartState {
     view: string;
     loading: boolean;
     installedCharts: InstalledChartGroup[];
+    chartRepos: any[],
+    environment: Array<{ label: string; value: number; }>;
+    selectedChartRepo: any[];
+    selectedEnvironment: any[];
     includeDeprecated: number;
     appStoreName: string;
     searchApplied: boolean;
-    selectedChartRepo: any[];
-    chartRepos: any[],
-    selectedEnvironment: any[];
     appliedChartRepoFilter: InstalledChartGroup[];
     chartListloading: boolean
 }
