@@ -38,6 +38,7 @@ export interface DeployedChartProps extends RouteComponentProps<{}> {
 export interface DeployedChartState {
     code: number;
     view: string;
+    loading: boolean;
     installedCharts: InstalledChartGroup[];
     includeDeprecated: number;
     appStoreName: string;

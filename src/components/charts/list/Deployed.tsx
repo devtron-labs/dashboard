@@ -14,6 +14,7 @@ import { DropdownIndicator, ValueContainer } from '../charts.util';
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import ReactSelect, { components } from 'react-select';
+import DeployedChartFilters from './DeployedChartFilters';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -27,6 +28,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         super(props);
         this.state = {
             code: 0,
+            loading: false,
             view: ViewType.LOADING,
             installedCharts: [],
             includeDeprecated: 0,
@@ -36,17 +38,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             appliedChartRepoFilter: [],
             chartListloading: true
         }
-    }
-
-    getInstalledCharts(qs) {
-        getInstalledCharts(qs).then((response) => {
-            this.setState({ installedCharts: response.result, view: ViewType.FORM });
-        }).catch((errors) => {
-            this.setState({ code: errors.code, view: ViewType.ERROR })
-            if (errors && Array.isArray(errors.error)) {
-                errors.errors.map(err => toast.error(err, { autoClose: false }))
-            }
-        })
     }
 
     componentDidMount() {
@@ -61,10 +52,23 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(prevProps.location.search !== this.props.location.search){
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.location.search !== this.props.location.search) {
             this.initialiseFromQueryParams(this.state.installedCharts);
+            this.callApplyFilterOnCharts();
+
         }
+    }
+
+    getInstalledCharts(qs) {
+        getInstalledCharts(qs).then((response) => {
+            this.setState({ installedCharts: response.result, view: ViewType.FORM });
+        }).catch((errors) => {
+            this.setState({ code: errors.code, view: ViewType.ERROR })
+            if (errors && Array.isArray(errors.error)) {
+                errors.errors.map(err => toast.error(err, { autoClose: false }))
+            }
+        })
     }
 
     handleImageError(e) {
@@ -189,87 +193,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         await getInstalledCharts(this.props.location.search)
     }
 
-    renderFilterSection = () => {
-        const MenuList = (props) => {
-            return (
-                <components.MenuList {...props}>
-                    {props.children}
-                    <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                        <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(selected: any) => { this.handleFilterChanges(selected, "chart-repo") }}>
-                            Apply Filter
-                      </button>
-                    </div>
-                </components.MenuList>
-            );
-        };
-
-        return (<div className="chart-group__header">
-            <div className="flexbox flex-justify  w-100">
-                <form onSubmit={(e) => this.handleFilterChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
-                    <Search className="search__icon icon-dim-18" />
-                    <input type="text" placeholder="Search charts" value={this.state.appStoreName} className="search__input bcn-0" onChange={(event) => { this.setState({ appStoreName: event.target.value }); }} />
-                    {this.state.searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => this.handleFilterChanges(e, "clear")}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                    </button> : null}
-                </form>
-                <div className="flex">
-                    <ReactSelect className="date-align-left fs-13 pr-16"
-                        placeholder="Environment : All"
-                        name="repository "
-                        // value={selectedChartRepo}
-                        // options={chartRepoList}
-                        closeOnSelect={false}
-                        // onChange={setSelectedChartRepo}
-                        isClearable={false}
-                        isMulti={true}
-                        closeMenuOnSelect={false}
-                        hideSelectedOptions={false}
-                        onMenuClose={this.handleCloseFilter}
-                        components={{
-                            DropdownIndicator,
-                            Option,
-                            ValueContainer,
-                            IndicatorSeparator: null,
-                            ClearIndicator: null,
-                            MenuList,
-                        }}
-                        styles={{ ...multiSelectStyles }} />
-                    <ReactSelect className="date-align-left fs-13"
-                        placeholder="Repository : All"
-                        name="repository "
-                        value={this.state.selectedChartRepo}
-                        options={this.state.installedCharts}
-                        closeOnSelect={false}
-                        onChange={() => this.setState({ selectedChartRepo: this.state.selectedChartRepo })}
-                        isClearable={false}
-                        isMulti={true}
-                        closeMenuOnSelect={false}
-                        hideSelectedOptions={false}
-                        onMenuClose={this.handleCloseFilter}
-                        components={{
-                            DropdownIndicator,
-                            Option,
-                            ValueContainer,
-                            IndicatorSeparator: null,
-                            ClearIndicator: null,
-                            MenuList,
-                        }}
-                        styles={{ ...multiSelectStyles }} />
-                    <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                        isChecked={this.state.includeDeprecated === 1}
-                        value={"CHECKED"}
-                        onChange={(event) => { let value = (this.state.includeDeprecated + 1) % 2; this.handleFilterChanges(value, "deprecated") }} >
-                        <div className="ml-5"> Show only deprecated</div>
-                    </Checkbox>
-                </div>
-            </div>
-        </div>
-        )
-    }
-
     render() {
-        {console.log(this.state)}
-        {console.log(this.state.installedCharts)}
+        { console.log(this.state) }
+        { console.log(this.state.installedCharts) }
 
         if (this.state.view === ViewType.LOADING) {
             return <div className="chart-list-page ">
@@ -296,7 +222,15 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         else {
             return <div className="chart-list-page">
                 {this.renderPageHeader()}
-                {this.renderFilterSection()}
+                <DeployedChartFilters
+                    handleFilterChanges={this.handleFilterChanges}
+                    appStoreName={this.state.appStoreName}
+                    searchApplied={this.state.searchApplied}
+                    handleCloseFilter={this.handleCloseFilter}
+                    installedCharts={this.state.installedCharts}
+                    selectedChartRepo={this.state.selectedChartRepo}
+                    includeDeprecated={this.state.includeDeprecated}
+                />
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
