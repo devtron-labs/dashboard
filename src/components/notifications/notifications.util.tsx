@@ -1,14 +1,17 @@
-import { components } from 'react-select';
 import React from 'react';
+import { components } from 'react-select';
+import { validateEmail } from '../common';
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
+import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 
 export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         boxShadow: 'none',
+        height: '100%',
     }),
     menu: (base, state) => ({
         ...base,
@@ -27,9 +30,9 @@ export const multiSelectStyles = {
     multiValue: (base, state) => {
         return ({
             ...base,
-            backgroundColor: 'var(--N000)',
+            border: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
             borderRadius: `4px`,
-            border: `solid 1px var(--N200)`,
+            background: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
             padding: `2px`,
             textTransform: `lowercase`,
             fontSize: `12px`,
@@ -59,11 +62,39 @@ export function DropdownIndicator(props) {
 
 export function MultiValueLabel(props) {
     let item = props.data;
-    return <components.MultiValueLabel {...props} >
-        {item.data.dest === "ses" || item.data.dest === "email" || item.data.dest === "" ? <Email className="icon-dim-20 mr-5" /> : null}
+    return <components.MultiValueLabel {...props} validator={validateEmail} >
+        {item.data.dest === "" && !validateEmail(props.children) ? <RedWarning className="icon-dim-20 mr-5 scr-5" /> : null}
+        {item.data.dest === "" && validateEmail(props.children) ? <Email className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
         {props.children}
     </components.MultiValueLabel>
+}
+
+
+export const MultiValueContainer = ({ validator, ...props }) => {
+    const { children, data, innerProps, selectProps } = props
+    const { label } = data
+    const isValidEmail = validator ? validator(data.data.recipient) : true
+
+    if (data.data.dest === "" || data.data.dest === "ses" || data.data.dest === "email") {
+        return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+            <div className="flex fs-12 ml-4">
+                {!isValidEmail ? <RedWarning className="mr-4" /> : <Email className="icon-dim-20 mr-5" />}
+                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    }
+    else {
+        return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+            <div className="flex fs-12 ml-4">
+                <Slack className="icon-dim-20 mr-5" />
+                <div className="cn-9">{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    }
 }
 
 export function Option(props) {

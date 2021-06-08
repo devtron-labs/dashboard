@@ -41,7 +41,7 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
-
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
     IncludeDeprecated: 'includeDeprecated',
@@ -66,7 +66,8 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 function DiscoverChartList() {
     const location = useLocation();
     const history = useHistory();
-    const { url } = useRouteMatch();
+    const match = useRouteMatch();
+    const { url } = match
     const { breadcrumbs, setCrumb } = useBreadcrumb({});
     const {
         state,
@@ -91,7 +92,7 @@ function DiscoverChartList() {
     const isLeavingPageNotAllowed = useRef(false);
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
     const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
-    const [openMenu, changeOpenMenu] = useState<'repository' | ''>('')
+    const [showChartGroupModal, toggleChartGroupModal] = useState(false)
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
@@ -278,9 +279,10 @@ function DiscoverChartList() {
                 </ConditionalWrap>
                 <div className="page-header__cta-container flex">
                     {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex" to={`${url}/create`}>
+                        <button type="button" className="cta flex"
+                            onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
-                        </NavLink>
+                        </button>
                     )}
                 </div>
             </div>
@@ -314,15 +316,15 @@ function DiscoverChartList() {
                         handleAppStoreChange={handleAppStoreChange}
                         handleChartRepoChange={handleChartRepoChange}
                         handleDeprecateChange={handleDeprecateChange} />
-                        <span className='empty-height'>
-                            <EmptyState>
-                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                            </EmptyState>
-                        </span>
-                    </>}
+                            <span className='empty-height'>
+                                <EmptyState>
+                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                                </EmptyState>
+                            </span>
+                        </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
@@ -474,16 +476,17 @@ function DiscoverChartList() {
                 <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog> : null}
+        {showChartGroupModal ? <CreateChartGroup history={history}
+            location={location}
+            match={match}
+            closeChartGroupModal={() => { toggleChartGroupModal(!showChartGroupModal) }} /> : null}
     </>
 }
 
 
 export default function DiscoverCharts() {
-    const history = useHistory();
-    const location = useLocation();
     const match = useRouteMatch();
-    const { url, path } = match
-
+    const { path } = match;
 
     return <Switch>
         <Route path={`${path}/group`}>
@@ -495,14 +498,6 @@ export default function DiscoverCharts() {
         <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
         <Route>
             <DiscoverChartList />
-            <Route exact path={`${path}/create`}>
-                <CreateChartGroup
-                    history={history}
-                    location={location}
-                    match={match}
-                    closeChartGroupModal={() => history.push(url)}
-                />
-            </Route>
         </Route>
     </Switch>
 }
@@ -567,10 +562,25 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
     </div>
 }
 
+export function EmptyChartGroup() {
+    const { url } = useRouteMatch();
+    return <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4' }}>
+        <img src={empty} className="" style={{ width: "200px", margin: "20px 42px" }} />
+        <div>
+            <div className="fs-16 fw-6">Chart group</div>
+            <div className="cn-7">Use chart groups to preconfigure and deploy frequently used charts together.</div>
+            <a href={DOCUMENTATION.CHART_DEPLOY} rel="noreferrer noopener" target="_blank" className="learn-more__href" >  Learn more about chart groups</a>
+            <NavLink to={`${url}/group/create`} className="en-2 br-4 bw-1 mt-16 cursor flex no-decor" style={{ width: "100px" }}>
+                <div className="fw-6 cn-7 p-6">Create group</div>
+            </NavLink>
+        </div>
+    </div>
+}
+
 export function ChartGroupListMin({ chartGroups }) {
     const history = useHistory();
     const match = useRouteMatch();
-
+    if (chartGroups.length == 0) { return <EmptyChartGroup /> }
     return <div className="chart-group" style={{ minHeight: "280px" }}>
         <div className="chart-group__header">
             <div className="flexbox">
