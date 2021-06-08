@@ -43,7 +43,9 @@ export interface DeployedChartState {
     includeDeprecated: number;
     appStoreName: string;
     searchApplied: boolean;
-    selectedChartRepo: InstalledChartGroup[];
+    selectedChartRepo: any[];
+    chartRepos: any[],
+    selectedEnvironment: any[];
     appliedChartRepoFilter: InstalledChartGroup[];
     chartListloading: boolean
 }

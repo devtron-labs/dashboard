@@ -73,10 +73,11 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             }}
                             styles={{ ...multiSelectStyles }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                            isChecked={includeDeprecated === 0}
+                            isChecked={includeDeprecated === 1}
                             value={"CHECKED"}
-                            onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }} >
+                            onChange={(event) => { let value = (includeDeprecated + 1) % 2;console.log(value); handleFilterChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
+                            
                         </Checkbox>
                     </div>
                 </div>

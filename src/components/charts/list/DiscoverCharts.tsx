@@ -117,7 +117,6 @@ function DiscoverChartList() {
         else {
             if (!state.loading) {
                 initialiseFromQueryParams(state.chartRepos);
-                {console.log(state.chartRepos)}
                 callApplyFilterOnCharts();
             }
         }

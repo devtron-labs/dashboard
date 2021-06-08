@@ -10,43 +10,45 @@ import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 import { ChartCheckListModal } from '../../checkList/ChartCheckModal';
 import { AllCheckModal } from '../../checkList/AllCheckModal';
-import { DropdownIndicator, ValueContainer } from '../charts.util';
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
-import ReactSelect, { components } from 'react-select';
 import DeployedChartFilters from './DeployedChartFilters';
+import { showError } from '../../common';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
+    EnvironmentId: 'envId',
     IncludeDeprecated: 'includeDeprecated',
     AppStoreName: 'appStoreName',
 }
-
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
         super(props);
         this.state = {
             code: 0,
-            loading: false,
+            loading: true,
             view: ViewType.LOADING,
             installedCharts: [],
+            chartRepos: [],
             includeDeprecated: 0,
             appStoreName: "",
             searchApplied: false,
             selectedChartRepo: [],
+            selectedEnvironment: [],
             appliedChartRepoFilter: [],
             chartListloading: true
         }
+        this.handleFilterChanges = this.handleFilterChanges.bind(this)
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        
+
         if (!this.props.location.search) {
             this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=0`);
         }
         else {
-            this.initialiseFromQueryParams(this.state.installedCharts);
-            { console.log(this.state.installedCharts) }
+            this.initialiseFromQueryParams(this.state.chartRepos);
+            { console.log(this.state.chartRepos) }
             this.callApplyFilterOnCharts();
             this.getInstalledCharts(this.props.location.search);
         }
@@ -56,7 +58,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (prevProps.location.search !== this.props.location.search) {
             this.initialiseFromQueryParams(this.state.installedCharts);
             this.callApplyFilterOnCharts();
-
         }
     }
 
@@ -112,6 +113,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         const app = searchParams.get(QueryParams.AppStoreName);
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        const envId = searchParams.get(QueryParams.EnvironmentId)
 
         let url = this.props.match.url
 
@@ -120,6 +122,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`)
         };
 
@@ -127,12 +130,23 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`);
         }
 
         if (key == "search") {
             selected.preventDefault();
             let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+            if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
+            this.props.history.push(`${url}?${qs}`);
+        }
+
+        if (key == "environment") {
+            let environment = selected?.map((e) => { return e.value }).join(",");
+            let qs = `${QueryParams.EnvironmentId}=${environment}`;
+            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
             this.props.history.push(`${url}?${qs}`);
@@ -142,6 +156,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let qs: string = "";
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
+            if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`);
         }
     }
@@ -155,25 +170,28 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     initialiseFromQueryParams = (chartRepoList) => {
-        { console.log(chartRepoList) }
-        let searchParams = new URLSearchParams(this.props.location.pathname);
+        let searchParams = new URLSearchParams(this.props.location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
         let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
+        let environment: string = searchParams.get(QueryParams.EnvironmentId);
+
         let chartRepoIdArray = [];
-        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(",");
+        if (allChartRepoIds) { chartRepoIdArray = allChartRepoIds.split(",") }
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
         let selectedRepos = [];
         for (let i = 0; i < chartRepoIdArray.length; i++) {
             let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
             if (chartRepo) selectedRepos.push(chartRepo);
         }
+
         if (selectedRepos) {
-            this.setState({
-                selectedChartRepo: selectedRepos
-            })
+            this.setState({ selectedChartRepo: selectedRepos })
         };
-        if (deprecated) this.setState({ includeDeprecated: parseInt(deprecated) })
+        { console.log(deprecated) }
+        if (deprecated) {
+            this.setState({ includeDeprecated: parseInt(deprecated) }, () => console.log(this.state))
+        }
         if (appStoreName) {
             this.setState({
                 searchApplied: true,
@@ -190,13 +208,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     async callApplyFilterOnCharts() {
+        this.setState({ view: ViewType.LOADING })
         await getInstalledCharts(this.props.location.search)
+        this.setState({ view: ViewType.FORM })
     }
 
     render() {
-        { console.log(this.state) }
-        { console.log(this.state.installedCharts) }
-
         if (this.state.view === ViewType.LOADING) {
             return <div className="chart-list-page ">
                 {this.renderPageHeader()}
