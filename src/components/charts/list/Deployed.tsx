@@ -46,8 +46,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         try {
             const [{ result: chartRepoList }, { result: environments }] = await Promise.all([getChartRepoList(), getEnvironmentListMin()])
             let chartRepos = chartRepoList.map((chartRepo) => {
-                {console.log(chartRepo)}
-
                 return {
                     value: chartRepo.id,
                     label: chartRepo.name
@@ -104,6 +102,14 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         target.src = placeHolder
     }
 
+    renderPageHeader() {
+        return <GenericChartsHeader>
+            <HeaderTitle>Chart Store</HeaderTitle>
+            <ChartDetailNavigator />
+            <HeaderButtonGroup><span /></HeaderButtonGroup>
+        </GenericChartsHeader>
+    }
+
     renderCard(chart) {
         let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
         return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" to={`deployments/${installedAppId}/env/${environmentId}`}>
@@ -125,17 +131,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             <div className="chart-grid-item__light-text ellipsis-right">{deployedAt}</div>
         </Link>
     }
-
-    renderPageHeader() {
-        return <GenericChartsHeader>
-            <HeaderTitle>Chart Store</HeaderTitle>
-            <ChartDetailNavigator />
-            <HeaderButtonGroup><span /></HeaderButtonGroup>
-        </GenericChartsHeader>
-    }
-
+    
     setAppStoreName = (event) => {
-        // this.setState({ appStoreName: event.target.value})
+        this.setState({ appStoreName: event})
     }
 
     handleFilterChanges = (selected, key): void => {

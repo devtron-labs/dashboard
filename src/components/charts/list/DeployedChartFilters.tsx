@@ -33,10 +33,10 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <ReactSelect className="date-align-left fs-13 pr-16"
                             placeholder="Environment : All"
                             name="repository "
-                            // value={selectedChartRepo}
+                            value={selectedChartRepo}
                             options={environment}
                             closeOnSelect={false}
-                            // onChange={setSelectedChartRepo}
+                            onChange={(e) => handleFilterChanges(e,"environment") }
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
@@ -54,10 +54,10 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <ReactSelect className="date-align-left fs-13"
                             placeholder="Repository : All"
                             name="repository "
-                            // value={selectedChartRepo}
+                            value={selectedChartRepo}
                             options={chartRepos}
                             closeOnSelect={false}
-                            // onChange={(e) => handleFilterChanges(e,"chart-repo") }
+                            onChange={(e) => handleFilterChanges(e,"chart-repo") }
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
