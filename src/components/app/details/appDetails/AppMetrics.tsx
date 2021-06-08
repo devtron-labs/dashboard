@@ -140,11 +140,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION;
+
             toast.warn(<div className="toast">
                 <div className="toast__title">Error Parsing K8sVersion</div>
                 <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
             </div>)
         }
+
         let appInfo = {
             appId: appId,
             envId: envId,
@@ -180,10 +182,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
-        return <AppMetricsEmptyState isLoading={datasource.isLoading}
-            isConfigured={datasource.isConfigured}
-            isHealthy={datasource.isHealthy}
-            hostURLConfig={hostURLConfig} />
+        return <>
+            <AppMetricsEmptyState isLoading={datasource.isLoading}
+                isConfigured={datasource.isConfigured}
+                isHealthy={datasource.isHealthy}
+                hostURLConfig={hostURLConfig} />
+        </>
     }
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}

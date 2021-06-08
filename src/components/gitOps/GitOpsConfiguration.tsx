@@ -12,7 +12,7 @@ import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurat
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
-import {withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -60,7 +60,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 }
 
 
- class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
+class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     constructor(props) {
         super(props)
@@ -231,23 +231,23 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 
     getGitOpsOrgId = () => {
         if (this.state.tab === GitProvider.GITLAB) {
-           return 'gitLabGroupId'
+            return 'gitLabGroupId'
         }
         else if (this.state.tab === GitProvider.AZURE_DEVOPS) {
-           return 'azureProjectName'
+            return 'azureProjectName'
         }
         else {
-           return 'gitHubOrgId'
+            return 'gitHubOrgId'
         }
     }
 
     render() {
-        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId() ;
+        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId();
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <div className="global-configuration__component flex" >
+            return <div className="global-configuration__component flex">
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
@@ -273,7 +273,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
                         error={this.state.isError[key]}
-                        label={ this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" :  "GitHub Organisation Name*"}
+                        label={this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : "GitHub Organisation Name*"}
                         onChange={(event) => { this.handleChange(event, key); }}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 </div>
@@ -287,7 +287,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
                             onChange={(event) => this.handleChange(event, 'username')}
                             name="Enter username" error={this.state.isError.username}
                             tabIndex={3}
-                            label={ this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : this.state.tab === GitProvider.AZURE_DEVOPS ?  "Azure DevOps Username*":  "GithHub Username*"}
+                            label={this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <ProtectedInput value={this.state.form.token}
