@@ -15,7 +15,7 @@ import Trash2 from '../../assets/img/warning-medium.svg'
 import warningIcon from '../../assets/icons/ic-warning.svg';
 import restoreIcon from '../../assets/icons/ic-restore.svg'
 import Tippy from '@tippyjs/react';
-import {ReactComponent as DropDown} from '../../assets/icons/appstatus/ic-dropdown.svg';
+import {ReactComponent as DropDown} from '../../assets/icons/appstatus/ic-chevron-down.svg';
 
 export default function BulkActionDetails() {
     const { id: deploymentGroupId } = useParams()
