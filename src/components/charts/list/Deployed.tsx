@@ -13,6 +13,7 @@ import { AllCheckModal } from '../../checkList/AllCheckModal';
 import DeployedChartFilters from './DeployedChartFilters';
 import { showError } from '../../common';
 import { getChartRepoList, getEnvironmentListMin } from '../../../services/service'
+import ChartRepo from '../../chartRepo/ChartRepo';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -135,6 +136,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         this.setState({ appStoreName: event})
     }
 
+    setSelectedChartRepo = (selected) => {
+        this.setState({selectedChartRepo: selected})
+    }
+
     handleFilterChanges = (selected, key): void => {
         const searchParams = new URLSearchParams(this.props.location.search);
         const app = searchParams.get(QueryParams.AppStoreName);
@@ -192,8 +197,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=1`);
     }
 
-    handleCloseFilter = () => {
-        this.setState({ selectedChartRepo: this.state.appliedChartRepoFilter })
+    handleCloseFilter = (environment) => {
+        this.setState({ 
+            selectedChartRepo: {...this.state.appliedChartRepoFilter} })
     }
 
     initialiseFromQueryParams = (chartRepoList, environmentList) => {
@@ -235,8 +241,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     async callApplyFilterOnCharts() {
         this.setState({ view: ViewType.LOADING })
-        await getInstalledCharts(this.props.location.search)
-        this.setState({ view: ViewType.FORM })
+        let response = await getInstalledCharts(this.props.location.search)
+        this.setState({ view: ViewType.FORM, installedCharts: response.result })
     }
 
     // handleSelectedchartRepo = (selected) => {
@@ -273,12 +279,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     handleFilterChanges={this.handleFilterChanges}
                     appStoreName={this.state.appStoreName}
                     searchApplied={this.state.searchApplied}
-                    handleCloseFilter={this.handleCloseFilter}
+                    handleCloseFilter={this.handleCloseFilter("environment")}
                     selectedChartRepo={this.state.selectedChartRepo}
                     includeDeprecated={this.state.includeDeprecated}
                     chartRepos={this.state.chartRepos}
                     setAppStoreName={this.setAppStoreName}
                     environment = {this.state.environment}
+                    setSelectedChartRepo ={this.setSelectedChartRepo }
                 />
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {

@@ -5,7 +5,7 @@ import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
-export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment }) {
+export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedChartRepo }) {
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -33,7 +33,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <ReactSelect className="date-align-left fs-13 pr-16"
                             placeholder="Environment : All"
                             name="repository "
-                            value={selectedChartRepo}
+                            // value={selectedChartRepo}
                             options={environment}
                             closeOnSelect={false}
                             onChange={(e) => handleFilterChanges(e,"environment") }
@@ -41,7 +41,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             isMulti={true}
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            onMenuClose={handleCloseFilter}
+                            // onMenuClose={handleCloseFilter}
                             components={{
                                 DropdownIndicator,
                                 Option,
@@ -57,7 +57,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={selectedChartRepo}
                             options={chartRepos}
                             closeOnSelect={false}
-                            onChange={(e) => handleFilterChanges(e,"chart-repo") }
+                            onChange={(e) => setSelectedChartRepo(e) }
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
