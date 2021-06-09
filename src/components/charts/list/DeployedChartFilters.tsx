@@ -11,7 +11,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(selected: any) => { handleFilterChanges(selected, "chart-repo") }}>
+                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(e) => handleFilterChanges(selectedEnvironment, "environment") }>
                         Apply Filter
                   </button>
                 </div>
@@ -32,7 +32,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                     <div className="flex">
                         <ReactSelect className="date-align-left fs-13 pr-16"
                             placeholder="Environment : All"
-                            name="repository "
+                            name="environment "
                             value={selectedEnvironment}
                             options={environment}
                             closeOnSelect={false}

@@ -20,6 +20,11 @@ const QueryParams = {
     IncludeDeprecated: 'includeDeprecated',
     AppStoreName: 'appName',
 }
+
+const ChartQueryKey = {
+    Environemnt: "environment",
+    ChartRepo: "chart-repo"
+}
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -36,9 +41,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             appStoreName: "",
             searchApplied: false,
             appliedChartRepoFilter: [],
+            appliedEnvironmentFilter: [],
             chartListloading: true
         }
-        this.handleFilterChanges = this.handleFilterChanges.bind(this)
     }
 
     async componentDidMount() {
@@ -131,12 +136,18 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     setSelectedFilters = (selected, key) => {
-        if (key == "chart-repo") {
+        if (key == ChartQueryKey.ChartRepo) {
             this.setState({ selectedChartRepo: selected })
         }
-        if (key == "enviroment") {
+        if (key == ChartQueryKey.Environemnt) {
             this.setState({ selectedEnvironment: selected })
         }
+    }
+
+    setAppliedChartRepoFilter = (selected, key) => {
+        if (key == ChartQueryKey.ChartRepo) { this.setState({ appliedChartRepoFilter: selected }) }
+        if (key == ChartQueryKey.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
+
     }
 
     handleFilterChanges = (selected, key): void => {
@@ -175,8 +186,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
 
         if (key == "environment") {
-            let environment = selected?.map((e) => { return e.value }).join(",");
-            let qs = `${QueryParams.EnvironmentId}=${environment}`;
+            let environmentId = selected?.map((e) => { return e.value }).join(",");
+            let qs = `${QueryParams.EnvironmentId}=${environmentId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
@@ -197,9 +208,16 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     handleCloseFilter = (key) => {
-        this.setState({
-            selectedChartRepo: { ...this.state.appliedChartRepoFilter }
-        })
+        if (key == ChartQueryKey.ChartRepo) {
+            this.setState({
+                selectedChartRepo: { ...this.state.appliedChartRepoFilter }
+            })
+        }
+        if (key == ChartQueryKey.Environemnt) {
+            this.setState({
+                selectedChartRepo: { ...this.state.appliedEnvironmentFilter }
+            })
+        }
     }
 
     initialiseFromQueryParams = (chartRepoList, environmentList) => {
@@ -219,7 +237,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
 
         if (selectedRepos) { this.setState({ selectedChartRepo: selectedRepos }) };
-
+        { console.log(this.state.selectedChartRepo) }
         let environmentIdArray = []
         if (allenvironmentIds) { environmentIdArray = allenvironmentIds.split(",") }
         environmentIdArray = environmentIdArray.map((environmentId => parseInt(environmentId)))
@@ -242,7 +260,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 appStoreName: ""
             })
         }
-        if (selectedRepos) { this.setState({ appliedChartRepoFilter: selectedRepos }) }
+        if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, ChartQueryKey.ChartRepo) }
+        if (selectedEnvironment) { this.setAppliedChartRepoFilter(selectedEnvironment, ChartQueryKey.Environemnt) }
+
     }
 
     async callApplyFilterOnCharts() {
@@ -269,6 +289,20 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (this.state.installedCharts.length === 0) {
             return <div className="chart-list-page" >
                 {this.renderPageHeader()}
+                <DeployedChartFilters
+                    handleFilterChanges={this.handleFilterChanges}
+                    appStoreName={this.state.appStoreName}
+                    searchApplied={this.state.searchApplied}
+                    handleCloseFilter={this.handleCloseFilter}
+                    includeDeprecated={this.state.includeDeprecated}
+                    chartRepos={this.state.chartRepos}
+                    setAppStoreName={this.setAppStoreName}
+                    environment={this.state.environment}
+                    setSelectedFilters={this.setSelectedFilters}
+                    selectedChartRepo={this.state.selectedChartRepo}
+                    selectedEnvironment={this.state.selectedEnvironment}
+
+                />
                 <div style={{ width: "600px", margin: "auto", marginTop: '20px' }} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
                     <AllCheckModal />
                 </div>
@@ -289,6 +323,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     setSelectedFilters={this.setSelectedFilters}
                     selectedChartRepo={this.state.selectedChartRepo}
                     selectedEnvironment={this.state.selectedEnvironment}
+
                 />
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
