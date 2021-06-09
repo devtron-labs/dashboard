@@ -46,7 +46,7 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';

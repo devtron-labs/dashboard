@@ -7,7 +7,7 @@ import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
-import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
 import {GitTriggers, CiMaterial} from '../app/details/cIDetails/types'
 import { Moment12HourFormat } from '../../config';
 

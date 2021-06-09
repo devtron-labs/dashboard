@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer, useCallback } from 'react'
 import { useParams } from 'react-router'
 import { getDeploymentTemplate, createDeploymentTemplate, updateDeploymentTemplate, deleteDeploymentTemplate, createNamespace, toggleAppMetrics, chartRefAutocomplete } from './service'
 import fileIcon from '../../assets/icons/ic-file.svg'
-import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg'
+import arrowTriangle from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { Override } from './ConfigMapOverrides'
 import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog, Info, useEffectAfterMount, useJsonYaml } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor';

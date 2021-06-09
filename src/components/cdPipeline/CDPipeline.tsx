@@ -24,7 +24,7 @@ import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
+import dropdown from '../../assets/icons/appstatus/ic-chevron-down.svg';
 
 export const SwitchItemValues = {
     Sample: 'sample',
