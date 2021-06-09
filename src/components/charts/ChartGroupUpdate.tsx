@@ -16,13 +16,8 @@ import AppSelector from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import EmptyState from '../EmptyState/EmptyState';
 import emptyImage from '../../assets/img/empty-noresult@2x.png';
+import { QueryParams } from './charts.util';
 
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-
-}
 
 export default function ChartGroupUpdate({ }) {
     const history = useHistory()
