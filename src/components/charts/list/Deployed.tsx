@@ -26,7 +26,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         super(props);
         this.state = {
             code: 0,
-            loading: true,
             view: ViewType.LOADING,
             installedCharts: [],
             chartRepos: [],
@@ -58,14 +57,14 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     label: env.environment_name
                 }
             });
-            this.setState({ ...this.state, loading: false, chartRepos: chartRepos, environment: environment });
+            this.setState({ ...this.state, view: ViewType.LOADING, chartRepos: chartRepos, environment: environment });
         }
         catch (err) {
             showError(err)
-            this.setState(state => ({ ...state, loading: false }))
+            this.setState({ ...this.state, view: ViewType.LOADING })
         }
         finally {
-            this.setState(state => ({ ...state, loading: false }))
+            this.setState({...this.state, view: ViewType.LOADING})
         }
 
         if (!this.props.location.search) {

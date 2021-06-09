@@ -38,7 +38,6 @@ export interface DeployedChartProps extends RouteComponentProps<{}> {
 export interface DeployedChartState {
     code: number;
     view: string;
-    loading: boolean;
     installedCharts: InstalledChartGroup[];
     chartRepos: any[],
     environment: Array<{ label: string; value: number; }>;
