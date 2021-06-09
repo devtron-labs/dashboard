@@ -32,7 +32,7 @@
     line-height: 1.67;
     letter-spacing: normal;
     color: var(--N500);
-    text-transform: uppercase;
+    text-transform: capitalize;
     display: table-row;
     box-shadow: inset 0 -1px 0 0 var(--N200);
     padding: 10px 0 16px 0;
@@ -45,7 +45,7 @@
 }
 
 .pipeline-list__pipeline-name {
-    width: 38%;
+    width: 25%;
     padding: 10px;
 }
 
@@ -222,7 +222,7 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    z-index: 4;
+    /* z-index: 4; */
     background-color: white;
     min-height: 44px;
     display: flex;
@@ -231,7 +231,9 @@
     padding-bottom: 5px;
     flex-wrap: wrap;
 }
-
+.react-select--height-44 {
+    min-height: 44px;
+}
 .select-button--pipeline-filter {
     text-align: left;
     font-size: 14px;

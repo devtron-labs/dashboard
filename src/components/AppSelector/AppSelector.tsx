@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router'
 import { mapByKey, useAsync } from '../common'
 import Select, { components } from 'react-select';
-import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
 import StateManager, { ControlProps } from 'react-select';
 
 const AppSelector: React.FC<{

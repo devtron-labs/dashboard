@@ -9,7 +9,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS } from '../../config';
 import Reload from '../Reload/Reload';
-import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
+import arrowTriangle from '../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
