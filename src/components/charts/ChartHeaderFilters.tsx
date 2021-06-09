@@ -5,12 +5,7 @@ import { DropdownIndicator, ValueContainer } from './charts.util';
 import { Checkbox, Option, multiSelectStyles, } from '../common';
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
-
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-}
+import { QueryParams } from './charts.util';
 
 function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied }) {
     const match = useRouteMatch()

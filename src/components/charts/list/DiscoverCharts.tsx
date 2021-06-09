@@ -27,13 +27,8 @@ import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters';
+import { QueryParams } from '../charts.util';
 
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-
-}
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts.filter(chart => chart.isEnabled).map(chart => {
