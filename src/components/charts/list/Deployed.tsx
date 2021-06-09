@@ -263,7 +263,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
         if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, ChartQueryKey.ChartRepo) }
         if (selectedEnvironment) { this.setAppliedChartRepoFilter(selectedEnvironment, ChartQueryKey.Environemnt) }
-
     }
 
     async callApplyFilterOnCharts() {
@@ -331,7 +330,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     setSelectedFilters={this.setSelectedFilters}
                     selectedChartRepo={this.state.selectedChartRepo}
                     selectedEnvironment={this.state.selectedEnvironment}
-
                 />
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {

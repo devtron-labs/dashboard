@@ -229,8 +229,6 @@ function DiscoverChartList() {
         if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
         if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
         history.push(`${url}?${qs}`);
-       
-
     }
 
     function handleAppStoreChange(event): void {
