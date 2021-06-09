@@ -13,6 +13,8 @@ import { AllCheckModal } from '../../checkList/AllCheckModal';
 import DeployedChartFilters from './DeployedChartFilters';
 import { showError } from '../../common';
 import { getChartRepoList, getEnvironmentListMin } from '../../../services/service'
+import emptyImage from '../../../assets/img/empty-noresult@2x.png';
+import EmptyState from '../../EmptyState/EmptyState';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -56,7 +58,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 }
             });
             let environment = environments.map((env) => {
-                { console.log(env) }
                 return {
                     value: env.id,
                     label: env.environment_name
@@ -100,6 +101,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         target.onerror = null
         target.src = placeHolder
     }
+
 
     renderPageHeader() {
         return <GenericChartsHeader>
@@ -204,7 +206,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     handleViewAllCharts = () => {
-        this.props.history.push(`${this.props.match.url}?${QueryParams.IncludeDeprecated}=1`);
+        this.props.history.push(`${this.props.match.url}`);
     }
 
     handleCloseFilter = (key) => {
@@ -237,7 +239,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
 
         if (selectedRepos) { this.setState({ selectedChartRepo: selectedRepos }) };
-        { console.log(this.state.selectedChartRepo) }
         let environmentIdArray = []
         if (allenvironmentIds) { environmentIdArray = allenvironmentIds.split(",") }
         environmentIdArray = environmentIdArray.map((environmentId => parseInt(environmentId)))
@@ -301,11 +302,18 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     setSelectedFilters={this.setSelectedFilters}
                     selectedChartRepo={this.state.selectedChartRepo}
                     selectedEnvironment={this.state.selectedEnvironment}
-
                 />
-                <div style={{ width: "600px", margin: "auto", marginTop: '20px' }} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
+                <span className='empty-height' style={{ height: "calc(100vh - 160px)" }}>
+                    <EmptyState>
+                        <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                        <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                        <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                        <button type="button" onClick={this.handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                    </EmptyState>
+                </span>
+                {/* <div style={{ width: "600px", margin: "auto", marginTop: '20px' }} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
                     <AllCheckModal />
-                </div>
+                </div> */}
             </div>
         }
         else {

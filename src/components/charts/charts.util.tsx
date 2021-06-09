@@ -42,6 +42,9 @@ export const smallMenuList = {
 }
 
 export const ValueContainer = props => {
+    { console.log(props) }
+    { console.log(props.selectProps.name == "repository") }
+
     let length = props.getValue().length;
     let count = ''
     if (length === props.options.length) {
@@ -50,12 +53,30 @@ export const ValueContainer = props => {
     else {
         count = length
     }
-
+    
+    function FilterName() {
+        if (length == 1) {
+            if (props.selectProps.name == "environment") {
+                return "Environment"
+            }
+            if (props.selectProps.name == "repository") {
+                return "Repository"
+            }
+        }else {
+            if (props.selectProps.name == "environment") {
+                return "Environments"
+            }
+            if (props.selectProps.name == "repository") {
+                return "Repositories"
+            }
+        }
+    }
+    
     return (
         <components.ValueContainer  {...props}>
             {length > 0 ?
                 <>{!props.selectProps.menuIsOpen &&
-                    <> {length == 1 ? "Repository" : "Repositories"}: <span className="badge">{count}</span></>
+                    <> {FilterName()}: <span className="badge">{count}</span></>
                 }
                     {React.cloneElement(props.children[1])}
                 </>

@@ -6,18 +6,25 @@ import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedFilters, selectedEnvironment }) {
+    function keys (key) {
+        if(key == "chart-repo"){handleFilterChanges(selectedChartRepo, "chart-repo" )}
+        if(key == "environment"){handleFilterChanges(selectedEnvironment, "environment" )}
+    }
     const MenuList = (props) => {
+        let selected = "environment" || "chart-repo"
+
         return (
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(e) => handleFilterChanges(selectedEnvironment, "environment") }>
+                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key)=>keys(selected) }>
                         Apply Filter
                   </button>
                 </div>
             </components.MenuList>
         );
     };
+
     return (
         <div>
             <div className="chart-group__header">
@@ -32,7 +39,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                     <div className="flex">
                         <ReactSelect className="date-align-left fs-13 pr-16"
                             placeholder="Environment : All"
-                            name="environment "
+                            name="environment"
                             value={selectedEnvironment}
                             options={environment}
                             closeOnSelect={false}
@@ -53,7 +60,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             styles={{ ...multiSelectStyles }} />
                         <ReactSelect className="date-align-left fs-13"
                             placeholder="Repository : All"
-                            name="repository "
+                            name="repository"
                             value={selectedChartRepo}
                             options={chartRepos}
                             closeOnSelect={false}
@@ -75,7 +82,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={includeDeprecated === 1}
                             value={"CHECKED"}
-                            onChange={(event) => { let value = (includeDeprecated + 1) % 2;console.log(value); handleFilterChanges(value, "deprecated") }} >
+                            onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
                             
                         </Checkbox>
