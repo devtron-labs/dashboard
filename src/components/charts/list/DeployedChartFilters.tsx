@@ -11,7 +11,6 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
         if(key == "environment"){handleFilterChanges(selectedEnvironment, "environment" )}
     }
     const MenuList = (props) => {
-        let selected = "environment" || "chart-repo"
 
         return (
             <components.MenuList {...props}>
