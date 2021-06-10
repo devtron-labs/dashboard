@@ -227,11 +227,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             })
         }
     }
-    // handleCloseFilter = () => {
-    //         this.setState({
-    //             selectedEnvironment: this.state.appliedEnvironmentFilter
-    //         })
-    // }
 
     initialiseFromQueryParams = () => {
         let searchParams = new URLSearchParams(this.props.location.search);
@@ -272,7 +267,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             })
         }
         if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, FilterName.ChartRepo) }
-        // if (selectedEnvironment) { this.setAppliedChartRepoFilter(selectedEnvironment, FilterName.Environemnt) }
         if (selectedEnvironment) { this.setState({ appliedEnvironmentFilter: selectedEnvironment }) }
 
     }

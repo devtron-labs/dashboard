@@ -6,17 +6,18 @@ import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedFilters, selectedEnvironment }) {
+
     function keys(key) {
         if (key == "repository") { handleFilterChanges(selectedChartRepo, "repository") }
         if (key == "environment") { handleFilterChanges(selectedEnvironment, "environment") }
     }
-    const MenuList = (props) => {
 
+    const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key) => keys(props.selectProps.name)}>
+                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={() => keys(props.selectProps.name)}>
                         Apply Filter
                   </button>
                 </div>
