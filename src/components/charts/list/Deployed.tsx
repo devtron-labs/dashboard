@@ -60,7 +60,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             this.setState({ ...this.state, view: ViewType.LOADING })
 
         }
-        this.initialiseFromQueryParams(this.state.chartRepos, this.state.environment);
+        this.initialiseFromQueryParams();
         this.callApplyFilterOnCharts();
         // this.getInstalledCharts(this.props.location.search);
 
@@ -87,7 +87,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.location.search !== this.props.location.search) {
-            this.initialiseFromQueryParams(this.state.chartRepos, this.state.environment);
+            this.initialiseFromQueryParams();
             this.callApplyFilterOnCharts();
         }
     }
@@ -229,7 +229,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    initialiseFromQueryParams = (chartRepoList, environmentList) => {
+    initialiseFromQueryParams = () => {
         let searchParams = new URLSearchParams(this.props.location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
@@ -241,7 +241,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId => parseInt(chartRepoId)))
         let selectedRepos = [];
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find(item => item.value === chartRepoIdArray[i]);
+            let chartRepo = this.state.chartRepos.find(item => item.value === chartRepoIdArray[i]);
             if (chartRepo) selectedRepos.push(chartRepo);
         }
 
@@ -251,7 +251,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         environmentIdArray = environmentIdArray.map((environmentId => parseInt(environmentId)))
         let selectedEnvironment = [];
         for (let i = 0; i < environmentIdArray.length; i++) {
-            let environment = environmentList.find(item => item.value === environmentIdArray[i]);
+            let environment = this.state.environment.find(item => item.value === environmentIdArray[i]);
             if (environment) selectedEnvironment.push(environment);
         }
         if (selectedEnvironment) { this.setState({ selectedEnvironment: selectedEnvironment }) }
