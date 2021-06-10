@@ -179,6 +179,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     useEffect(() => {
         getNewGraphs(tab);
     }, [calendarValue])
+    {console.log(datasource)}
 
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
@@ -189,6 +190,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 hostURLConfig={hostURLConfig} />
         </>
     }
+    
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>

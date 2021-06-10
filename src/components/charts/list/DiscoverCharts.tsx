@@ -532,7 +532,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             <div className="flex">
                 <ReactSelect className="date-align-left fs-13"
                     placeholder="Repository : All"
-                    name="repository "
+                    name="repository"
                     value={selectedChartRepo}
                     options={chartRepoList}
                     closeOnSelect={false}

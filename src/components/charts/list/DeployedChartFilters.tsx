@@ -7,7 +7,7 @@ import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedFilters, selectedEnvironment }) {
     function keys (key) {
-        if(key == "chart-repo"){handleFilterChanges(selectedChartRepo, "chart-repo" )}
+        if(key == "repository"){handleFilterChanges(selectedChartRepo, "chart-repo" )}
         if(key == "environment"){handleFilterChanges(selectedEnvironment, "environment" )}
     }
     const MenuList = (props) => {
@@ -17,7 +17,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key)=>keys(selected) }>
+                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key)=>keys(props.selectProps.name) }>
                         Apply Filter
                   </button>
                 </div>
