@@ -48,22 +48,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         try {
-            const [{ result: chartRepoList }, { result: environments }] = await Promise.all([getChartRepoList(), getEnvironmentListMin()])
-            let chartRepos = chartRepoList.map((chartRepo) => {
-                return {
-                    value: chartRepo.id,
-                    label: chartRepo.name
-                }
-            });
-            let environment = environments.map((env) => {
-                return {
-                    value: env.id,
-                    label: env.environment_name
-                }
-            });
-            this.setState({ ...this.state, view: ViewType.LOADING, chartRepos: chartRepos, environment: environment });
+            this.getChartFilter()
         }
         catch (err) {
             showError(err)
@@ -71,11 +58,31 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
         finally {
             this.setState({ ...this.state, view: ViewType.LOADING })
-        }
 
+        }
         this.initialiseFromQueryParams(this.state.chartRepos, this.state.environment);
         this.callApplyFilterOnCharts();
-        this.getInstalledCharts(this.props.location.search);
+        // this.getInstalledCharts(this.props.location.search);
+
+    }
+
+    getChartFilter = async () => {
+        const [{ result: chartRepoListResp }, { result: envListResponse }] = await Promise.all([getChartRepoList(), getEnvironmentListMin()])
+        let chartRepos = chartRepoListResp || []
+        chartRepos = chartRepos.map((chartRepo) => {
+            return {
+                value: chartRepo.id,
+                label: chartRepo.name
+            }
+        });
+        let environment = envListResponse || [];
+        environment = environment.map((env) => {
+            return {
+                value: env.id,
+                label: env.environment_name
+            }
+        });
+        this.setState({ ...this.state, view: ViewType.FORM, chartRepos: chartRepos, environment: environment }, () => { console.log(this.state) });
     }
 
     componentDidUpdate(prevProps, prevState) {
