@@ -6,7 +6,7 @@ import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb, Checkbox, Option, multiSelectStyles, } from '../common'
+import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config';
 import { toast } from 'react-toastify'
