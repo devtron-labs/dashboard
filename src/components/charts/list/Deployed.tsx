@@ -23,10 +23,11 @@ const QueryParams = {
     AppStoreName: 'appName',
 }
 
-const ChartQueryKey = {
+const FilterName = {
     Environemnt: "environment",
-    ChartRepo: "chart-repo"
+    ChartRepo: "repository"
 }
+
 class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     constructor(props) {
@@ -82,8 +83,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         finally {
             this.setState({ ...this.state, view: ViewType.LOADING })
         }
-
-
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -146,17 +145,17 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     setSelectedFilters = (selected, key) => {
-        if (key == ChartQueryKey.ChartRepo) {
+        if (key == FilterName.ChartRepo) {
             this.setState({ selectedChartRepo: selected })
         }
-        if (key == ChartQueryKey.Environemnt) {
+        if (key == FilterName.Environemnt) {
             this.setState({ selectedEnvironment: selected })
         }
     }
 
     setAppliedChartRepoFilter = (selected, key) => {
-        if (key == ChartQueryKey.ChartRepo) { this.setState({ appliedChartRepoFilter: selected }) }
-        if (key == ChartQueryKey.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
+        if (key == FilterName.ChartRepo) { this.setState({ appliedChartRepoFilter: selected }) }
+        if (key == FilterName.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
     }
 
     handleFilterChanges = (selected, key): void => {
@@ -168,7 +167,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
         let url = this.props.match.url
 
-        if (key == "chart-repo") {
+        if (key == "repository") {
             let chartRepoId = selected?.map((e) => { return e.value }).join(",");
             let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
@@ -217,18 +216,22 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     handleCloseFilter = (key) => {
-        if (key == ChartQueryKey.ChartRepo) {
+        if (key == FilterName.ChartRepo) {
             this.setState({
-                selectedChartRepo: { ...this.state.appliedChartRepoFilter }
+                selectedChartRepo: this.state.appliedChartRepoFilter
             })
         }
-        if (key == ChartQueryKey.Environemnt) {
+        if (key == FilterName.Environemnt) {
             this.setState({
-                selectedEnvironment: { ...this.state.appliedEnvironmentFilter }
-                // appliedEnvironmentFilter: { ...this.state.selectedEnvironment }
+                selectedEnvironment: this.state.appliedEnvironmentFilter
             })
         }
     }
+    // handleCloseFilter = () => {
+    //         this.setState({
+    //             selectedEnvironment: this.state.appliedEnvironmentFilter
+    //         })
+    // }
 
     initialiseFromQueryParams = () => {
         let searchParams = new URLSearchParams(this.props.location.search);
@@ -268,8 +271,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 appStoreName: ""
             })
         }
-        if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, ChartQueryKey.ChartRepo) }
-        // if (selectedEnvironment) { this.setAppliedChartRepoFilter(selectedEnvironment, ChartQueryKey.Environemnt) }
+        if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, FilterName.ChartRepo) }
+        // if (selectedEnvironment) { this.setAppliedChartRepoFilter(selectedEnvironment, FilterName.Environemnt) }
         if (selectedEnvironment) { this.setState({ appliedEnvironmentFilter: selectedEnvironment }) }
 
     }
@@ -281,7 +284,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     }
 
     render() {
-        { console.log(this.state) }
         if (this.state.view === ViewType.LOADING) {
             return <div className="chart-list-page ">
                 {this.renderPageHeader()}

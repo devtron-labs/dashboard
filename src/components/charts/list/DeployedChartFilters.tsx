@@ -6,9 +6,9 @@ import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedFilters, selectedEnvironment }) {
-    function keys (key) {
-        if(key == "repository"){handleFilterChanges(selectedChartRepo, "chart-repo" )}
-        if(key == "environment"){handleFilterChanges(selectedEnvironment, "environment" )}
+    function keys(key) {
+        if (key == "repository") { handleFilterChanges(selectedChartRepo, "repository") }
+        if (key == "environment") { handleFilterChanges(selectedEnvironment, "environment") }
     }
     const MenuList = (props) => {
 
@@ -16,7 +16,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
             <components.MenuList {...props}>
                 {props.children}
                 <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key)=>keys(props.selectProps.name) }>
+                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(key) => keys(props.selectProps.name)}>
                         Apply Filter
                   </button>
                 </div>
@@ -42,12 +42,12 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={selectedEnvironment}
                             options={environment}
                             closeOnSelect={false}
-                            onChange={(e) => setSelectedFilters(e, "environment") }
+                            onChange={(e) => setSelectedFilters(e, "environment")}
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            onMenuClose={handleCloseFilter}
+                            onMenuClose={() => handleCloseFilter("environment")}
                             components={{
                                 DropdownIndicator,
                                 Option,
@@ -63,12 +63,12 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={selectedChartRepo}
                             options={chartRepos}
                             closeOnSelect={false}
-                            onChange={(e) => setSelectedFilters(e, "chart-repo") }
+                            onChange={(e) => setSelectedFilters(e, "repository")}
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            onMenuClose={handleCloseFilter}
+                            onMenuClose={() => handleCloseFilter("repository")}
                             components={{
                                 DropdownIndicator,
                                 Option,
@@ -83,7 +83,6 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={"CHECKED"}
                             onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
-                            
                         </Checkbox>
                     </div>
                 </div>
