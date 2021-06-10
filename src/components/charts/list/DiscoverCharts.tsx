@@ -92,15 +92,10 @@ function DiscoverChartList() {
     }, []);
 
     useEffect(() => {
-        if (!location.search) {
-            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
-        }
-        else {
             if (!state.loading) {
                 initialiseFromQueryParams(state.chartRepos);
                 callApplyFilterOnCharts();
             }
-        }
     }, [location.search, state.loading])
 
     function reloadCallback(event) {
