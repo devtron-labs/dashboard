@@ -261,18 +261,25 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         </div>
     }
 
+    renderPolicyListHeader = () => {
+        return (
+            <>
+                <div className="flexbox flex-justify mt-20">
+                    <div>
+                        <h1 className="security-policy-card__title">CVE Policies</h1>
+                        <p className="security-policy-card__subtitle">Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
+                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} rel="noopener noreferrer" target="_blank">Search CVE List</a></p>
+                    </div>
+                    <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
+                        <Add className="icon-dim-16 mr-5" />Add CVE Policy
+                </button>
+                </div>
+            </>
+        )
+    }
+
     private renderPolicyList(cves: CvePolicy[], envId?: number) {
         return <>
-            <div className="flexbox flex-justify mt-20">
-                <div>
-                    <h1 className="security-policy-card__title">CVE Policies</h1>
-                    <p className="security-policy-card__subtitle">Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
-                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} rel="noopener noreferrer" target="_blank">Search CVE List</a></p>
-                </div>
-                <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
-                    <Add className="icon-dim-16 mr-5" />Add CVE Policy
-                </button>
-            </div>
             <div className="security-policy__table mt-20">
                 <table className="w-100">
                     <thead>
@@ -335,6 +342,12 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         </>
     }
 
+    renderEmptyPolicyList = () => {
+        return <div className="br-4 en-1 bw-1 w-100 bcn-1 cn-5 flex" style={{ height: "100px" }}>
+            No specific CVEs blocked or allowed.
+        </div>
+    }
+
     renderHeader() {
         switch (this.props.level) {
             case 'global': return <div className="ml-24 mr-24 mt-20 mb-20">
@@ -383,10 +396,12 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                                 style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
                                 onClick={() => { this.toggleCollapse(cardIndex); }} /> : null}
                         </div>
+                        {console.log(v.cves.length)}
                         {showCardContent ? <>
                             {isCollapsible ? <div className="mb-20"></div> : null}
                             {this.renderVulnerabilitiesCard(v, v.severities)}
-                            {this.renderPolicyList(v.cves, v.envId)}
+                            {this.renderPolicyListHeader()}
+                            {v.cves.length ? this.renderPolicyList(v.cves, v.envId) : this.renderEmptyPolicyList() }
                         </> : null}
                     </div>
                 })}
