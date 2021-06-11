@@ -88,3 +88,10 @@ export function DropdownIndicator(props) {
         <ArrowDown className="icon-dim-20 icon-n4" />
     </components.DropdownIndicator>
 }
+
+export const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+
+}
