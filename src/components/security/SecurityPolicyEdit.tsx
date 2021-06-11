@@ -396,7 +396,6 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                                 style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
                                 onClick={() => { this.toggleCollapse(cardIndex); }} /> : null}
                         </div>
-                        {console.log(v.cves.length)}
                         {showCardContent ? <>
                             {isCollapsible ? <div className="mb-20"></div> : null}
                             {this.renderVulnerabilitiesCard(v, v.severities)}
