@@ -110,11 +110,8 @@ export function deleteChartValues(chartId: number): Promise<any> {
     return trash(URL);
 }
 
-export function getInstalledCharts(queryString) {
+export function getInstalledCharts() {
     let url = `${Routes.CHART_INSTALLED}`
-    if (queryString) {
-        url = `${url}${queryString}`
-    }
     return get(url).then(response => {
         return {
             ...response,

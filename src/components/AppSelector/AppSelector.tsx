@@ -9,7 +9,7 @@ const AppSelector: React.FC<{
     primaryKey: string; //url match
     primaryValue: string;
     matchedKeys: string[];
-    api: (qs) => Promise<any>;
+    api: () => Promise<any>;
     apiPrimaryKey?: string; //primary key to generate map
     onChange?: ({ label, value }) => void;
     formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode;

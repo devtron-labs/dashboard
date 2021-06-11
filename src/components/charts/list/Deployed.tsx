@@ -92,8 +92,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    getInstalledCharts(qs) {
-        getInstalledCharts(qs).then((response) => {
+    getInstalledCharts() {
+        getInstalledCharts().then((response) => {
             this.setState({ installedCharts: response.result, view: ViewType.FORM });
         }).catch((errors) => {
             this.setState({ code: errors.code, view: ViewType.ERROR })
@@ -273,7 +273,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     async callApplyFilterOnCharts() {
         this.setState({ view: ViewType.LOADING })
-        let response = await getInstalledCharts(this.props.location.search)
+        let response = await getInstalledCharts()
         this.setState({ view: ViewType.FORM, installedCharts: response.result })
     }
 
