@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
