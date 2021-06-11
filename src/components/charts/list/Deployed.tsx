@@ -140,11 +140,11 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         </Link>
     }
 
-    setAppStoreName = (event) => {
+    handleAppStoreName = (event) => {
         this.setState({ appStoreName: event })
     }
 
-    setSelectedFilters = (selected, key) => {
+    handleSelectedFilters = (selected, key) => {
         if (key == FilterName.ChartRepo) {
             this.setState({ selectedChartRepo: selected })
         }
@@ -153,12 +153,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
     }
 
-    setAppliedChartRepoFilter = (selected, key) => {
+    handleAppliedEnvironmentAndChartRepoFilter = (selected, key) => {
         if (key == FilterName.ChartRepo) { this.setState({ appliedChartRepoFilter: selected }) }
         if (key == FilterName.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
     }
 
-    handleFilterChanges = (selected, key): void => {
+    handleFilterQueryChanges = (selected, key): void => {
         const searchParams = new URLSearchParams(this.props.location.search);
         const app = searchParams.get(QueryParams.AppStoreName);
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
@@ -266,7 +266,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 appStoreName: ""
             })
         }
-        if (selectedRepos) { this.setAppliedChartRepoFilter(selectedRepos, FilterName.ChartRepo) }
+        if (selectedRepos) { this.handleAppliedEnvironmentAndChartRepoFilter(selectedRepos, FilterName.ChartRepo) }
         if (selectedEnvironment) { this.setState({ appliedEnvironmentFilter: selectedEnvironment }) }
 
     }
@@ -305,15 +305,15 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 return <div className="chart-list-page" >
                     {this.renderPageHeader()}
                     <DeployedChartFilters
-                        handleFilterChanges={this.handleFilterChanges}
+                        handleFilterQueryChanges={this.handleFilterQueryChanges}
                         appStoreName={this.state.appStoreName}
                         searchApplied={this.state.searchApplied}
                         handleCloseFilter={this.handleCloseFilter}
                         includeDeprecated={this.state.includeDeprecated}
                         chartRepos={this.state.chartRepos}
-                        setAppStoreName={this.setAppStoreName}
+                        handleAppStoreName={this.handleAppStoreName}
                         environment={this.state.environment}
-                        setSelectedFilters={this.setSelectedFilters}
+                        handleSelectedFilters={this.handleSelectedFilters}
                         selectedChartRepo={this.state.selectedChartRepo}
                         selectedEnvironment={this.state.selectedEnvironment}
                     />
@@ -333,15 +333,15 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             return <div className="chart-list-page">
                 {this.renderPageHeader()}
                 <DeployedChartFilters
-                    handleFilterChanges={this.handleFilterChanges}
+                    handleFilterQueryChanges={this.handleFilterQueryChanges}
                     appStoreName={this.state.appStoreName}
                     searchApplied={this.state.searchApplied}
                     handleCloseFilter={this.handleCloseFilter}
                     includeDeprecated={this.state.includeDeprecated}
                     chartRepos={this.state.chartRepos}
-                    setAppStoreName={this.setAppStoreName}
+                    handleAppStoreName={this.handleAppStoreName}
                     environment={this.state.environment}
-                    setSelectedFilters={this.setSelectedFilters}
+                    handleSelectedFilters={this.handleSelectedFilters}
                     selectedChartRepo={this.state.selectedChartRepo}
                     selectedEnvironment={this.state.selectedEnvironment}
                 />

@@ -5,11 +5,11 @@ import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
-export default function DeployedChartFilters({ handleFilterChanges, appStoreName, searchApplied, handleCloseFilter, setAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, setSelectedFilters, selectedEnvironment }) {
+export default function DeployedChartFilters({ handleFilterQueryChanges, appStoreName, searchApplied, handleCloseFilter, handleAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, handleSelectedFilters, selectedEnvironment }) {
 
     function keys(key) {
-        if (key == "repository") { handleFilterChanges(selectedChartRepo, "repository") }
-        if (key == "environment") { handleFilterChanges(selectedEnvironment, "environment") }
+        if (key == "repository") { handleFilterQueryChanges(selectedChartRepo, "repository") }
+        if (key == "environment") { handleFilterQueryChanges(selectedEnvironment, "environment") }
     }
 
     const MenuList = (props) => {
@@ -29,10 +29,10 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
         <div>
             <div className="chart-group__header">
                 <div className="flexbox flex-justify  w-100">
-                    <form onSubmit={(e) => handleFilterChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
+                    <form onSubmit={(e) => handleFilterQueryChanges(e, "search")} style={{ width: "none" }} className="search position-rel" >
                         <Search className="search__icon icon-dim-18" />
-                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(e) => setAppStoreName(e.target.value)} />
-                        {searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges(e, "clear")}>
+                        <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(e) => handleAppStoreName(e.target.value)} />
+                        {searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => handleFilterQueryChanges(e, "clear")}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button> : null}
                     </form>
@@ -43,7 +43,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={selectedEnvironment}
                             options={environment}
                             closeOnSelect={false}
-                            onChange={(e) => setSelectedFilters(e, "environment")}
+                            onChange={(e) => handleSelectedFilters(e, "environment")}
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
@@ -64,7 +64,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                             value={selectedChartRepo}
                             options={chartRepos}
                             closeOnSelect={false}
-                            onChange={(e) => setSelectedFilters(e, "repository")}
+                            onChange={(e) => handleSelectedFilters(e, "repository")}
                             isClearable={false}
                             isMulti={true}
                             closeMenuOnSelect={false}
@@ -82,7 +82,7 @@ export default function DeployedChartFilters({ handleFilterChanges, appStoreName
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={includeDeprecated === 1}
                             value={"CHECKED"}
-                            onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }} >
+                            onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterQueryChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
                         </Checkbox>
                     </div>
