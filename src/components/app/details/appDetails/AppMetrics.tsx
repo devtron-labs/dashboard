@@ -179,7 +179,6 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     useEffect(() => {
         getNewGraphs(tab);
     }, [calendarValue])
-    {console.log(datasource)}
 
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
