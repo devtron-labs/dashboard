@@ -51,11 +51,29 @@ export const ValueContainer = props => {
         count = length
     }
 
+    function filterName() {
+        if (length == 1) {
+            if (props.selectProps.name == "environment") {
+                return "Environment"
+            }
+            if (props.selectProps.name == "repository") {
+                return "Repository"
+            }
+        } else {
+            if (props.selectProps.name == "environment") {
+                return "Environments"
+            }
+            if (props.selectProps.name == "repository") {
+                return "Repositories"
+            }
+        }
+    }
+
     return (
         <components.ValueContainer  {...props}>
             {length > 0 ?
                 <>{!props.selectProps.menuIsOpen &&
-                    <> {length == 1 ? "Repository" : "Repositories"}: <span className="badge">{count}</span></>
+                    <> {filterName()}: <span className="badge">{count}</span></>
                 }
                     {React.cloneElement(props.children[1])}
                 </>
