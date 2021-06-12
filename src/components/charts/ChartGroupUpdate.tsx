@@ -6,7 +6,7 @@ import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb, Checkbox, Option, multiSelectStyles, } from '../common'
+import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config';
 import { toast } from 'react-toastify'
@@ -16,13 +16,8 @@ import AppSelector from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import EmptyState from '../EmptyState/EmptyState';
 import emptyImage from '../../assets/img/empty-noresult@2x.png';
+import { QueryParams } from './charts.util';
 
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-
-}
 
 export default function ChartGroupUpdate({ }) {
     const history = useHistory()
@@ -104,14 +99,9 @@ export default function ChartGroupUpdate({ }) {
     }, []);
 
     useEffect(() => {
-        if (!location.search) {
-            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
-        }
-        else {
-            if (!state.loading) {
-                initialiseFromQueryParams(state.chartRepos);
-                callApplyFilterOnCharts();
-            }
+        if (!state.loading) {
+            initialiseFromQueryParams(state.chartRepos);
+            callApplyFilterOnCharts();
         }
     }, [location.search, state.loading])
 
@@ -134,51 +124,9 @@ export default function ChartGroupUpdate({ }) {
         setChartDetailsUpdate(false)
     }
 
-    function handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
-    function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        history.push(`${url}?${qs}`);
-    }
 
     function handleCloseFilter() {
         setSelectedChartRepo(appliedChartRepoFilter)
-    }
-
-    function handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        history.push(`${url}?${qs}`);
-    }
-
-
-    function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
     }
 
     function initialiseFromQueryParams(chartRepoList) {
@@ -236,8 +184,8 @@ export default function ChartGroupUpdate({ }) {
             <Prompt when={isLeavingPageNotAllowed.current} message={"Your changes will be lost. Do you want to leave without saving?"} />
             {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
 
-            {!state.loading && !chartListLoading && <div >
-                {!chartList.length ? <div className="details">
+            {!state.loading && !chartListLoading && <div className={`chart-group--details-body summary-show`} >
+                <div className="details">
                     {typeof state.configureChartIndex === 'number' ?
                         <AdvancedConfig
                             chart={state.charts[state.configureChartIndex]}
@@ -248,8 +196,7 @@ export default function ChartGroupUpdate({ }) {
                             handleChartVersionChange={handleChartVersionChange}
                             createChartValues={createChartValues}
                             discardValuesYamlChanges={discardValuesYamlChanges}
-                        />
-                        : <>
+                        /> : !chartList.length ? <>
                             <ChartHeaderFilters
                                 chartRepoList={state.chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -258,75 +205,51 @@ export default function ChartGroupUpdate({ }) {
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
-                                clearSearch={clearSearch}
                                 handleCloseFilter={handleCloseFilter}
-                                handleChartRepoChange={handleChartRepoChange}
-                                handleDeprecateChange={handleDeprecateChange}
-                                handleAppStoreChange={handleAppStoreChange}
                             />
-                            <div style={{height: "calc(100vh - 150px" }}>
+                            <div style={{ height: "calc(100vh - 150px" }}>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
                                     <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
                                     <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
                                     <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
                                 </EmptyState>
-                            </div>
-                        </>
+                            </div></>
+                            : <>
+                                <ChartHeaderFilters
+                                    chartRepoList={state.chartRepos}
+                                    setSelectedChartRepo={setSelectedChartRepo}
+                                    searchApplied={searchApplied}
+                                    appStoreName={appStoreName}
+                                    includeDeprecated={includeDeprecated}
+                                    selectedChartRepo={selectedChartRepo}
+                                    setAppStoreName={setAppStoreName}
+                                    handleCloseFilter={handleCloseFilter}
+                                />
+                                <ChartList
+                                    availableCharts={state.availableCharts}
+                                    addChart={addChart}
+                                    subtractChart={subtractChart}
+                                    selectedInstances={state.selectedInstances}
+                                />
+                            </>
                     }
                 </div>
-                    : <div className={`chart-group--details-body summary-show`} >
-                        <div className="details">
-                            {typeof state.configureChartIndex === 'number' ?
-                                <AdvancedConfig
-                                    chart={state.charts[state.configureChartIndex]}
-                                    index={state.configureChartIndex}
-                                    getChartVersionsAndValues={getChartVersionsAndValues}
-                                    fetchChartValues={fetchChartValues}
-                                    handleChartValueChange={handleChartValueChange}
-                                    handleChartVersionChange={handleChartVersionChange}
-                                    createChartValues={createChartValues}
-                                    discardValuesYamlChanges={discardValuesYamlChanges}
-                                />
-                                : <>
-                                    <ChartHeaderFilters
-                                        selectedChartRepo={selectedChartRepo}
-                                        handleCloseFilter={handleCloseFilter}
-                                        handleChartRepoChange={handleChartRepoChange}
-                                        includeDeprecated={includeDeprecated}
-                                        handleDeprecateChange={handleDeprecateChange}
-                                        chartRepoList={state.chartRepos}
-                                        setSelectedChartRepo={setSelectedChartRepo}
-                                        handleAppStoreChange={handleAppStoreChange}
-                                        appStoreName={appStoreName}
-                                        setAppStoreName={setAppStoreName}
-                                        clearSearch={clearSearch}
-                                        searchApplied={searchApplied}
-                                    />
-                                    <ChartList
-                                        availableCharts={state.availableCharts}
-                                        addChart={addChart}
-                                        subtractChart={subtractChart}
-                                        selectedInstances={state.selectedInstances}
-                                    />
-                                </>
-                            }
-                        </div>
-                        <div className="summary">
-                            <MultiChartSummary
-                                charts={state.charts}
-                                getChartVersionsAndValues={getChartVersionsAndValues}
-                                configureChart={configureChart}
-                                handleChartValueChange={typeof state.configureChartIndex === 'number' ? null : handleChartValueChange}
-                                handleChartVersionChange={typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange}
-                                chartListing={chartListing}
-                                configureChartIndex={state.configureChartIndex}
-                                removeChart={removeChart}
-                                hideDeployedValues
-                            />
-                        </div>
-                    </div>}
-            </div>}
+                <div className="summary">
+                    <MultiChartSummary
+                        charts={state.charts}
+                        getChartVersionsAndValues={getChartVersionsAndValues}
+                        configureChart={configureChart}
+                        handleChartValueChange={typeof state.configureChartIndex === 'number' ? null : handleChartValueChange}
+                        handleChartVersionChange={typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange}
+                        chartListing={chartListing}
+                        configureChartIndex={state.configureChartIndex}
+                        removeChart={removeChart}
+                        hideDeployedValues
+                    />
+                </div>
+            </div>
+            }
         </div>
         {
             chartDetailsUpdate &&
@@ -340,6 +263,7 @@ export default function ChartGroupUpdate({ }) {
                 description={state.description}
             />
         }
+
     </>
     )
 }
