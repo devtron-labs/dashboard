@@ -1,6 +1,9 @@
 import { PATTERNS } from '../../../config';
 
+
+
 export class ValidationRules {
+
 
     appName = (value: string): { isValid: boolean, message: string } => {
         let re = PATTERNS.APP_NAME;
@@ -9,7 +12,7 @@ export class ValidationRules {
         if (value.length === 0) return { isValid: false, message: 'This is required field' };
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' };
         if (value.length > 30) return { isValid: false, message: 'max 30 characters allowed' };
-        else if (!test) return { isValid: false, message: 'app name must match ' + re};
+        else if (!test) return { isValid: false, message: 'Min 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.)'};
         else return { isValid: true, message: '' };
     }
 
