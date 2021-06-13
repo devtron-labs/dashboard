@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useEffect, useState } from 'react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
@@ -623,8 +622,9 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                 </td>
                 {tableColumns.map((column) => {
                     if (column === 'url') return <URL key={column} url={nodeDetails.url} />;
-                    else if (column === 'name')
+                    else if (column === 'name') {
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} />;
+                    }
                     else if (column === '') {
                         return (
                             <Menu nodeDetails={nodeDetails}
@@ -657,20 +657,32 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                     }, new Map)}
                                 />
                             ))}
-                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length &&
+                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length ?
                             <NestedTable
                                 type={Nodes.Containers}
                                 describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
                                 level={level + 1}
                                 Data={nodeDetails.containers.reduce((agg, containerName) => {
                                     agg.set(containerName, { name: containerName, kind: Nodes.Containers })
-                                    return agg
+                                    return agg;
                                 }, new Map)}
                                 nodes={nodes}
                                 appName={appName}
                                 environmentName={environmentName}
-                            />
-                        }
+                            /> : ''}
+                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.initContainers?.length ?
+                            <NestedTable
+                                type={Nodes.InitContainers}
+                                describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
+                                level={level + 1}
+                                Data={nodeDetails.initContainers.reduce((agg, containerName) => {
+                                    agg.set(containerName, { name: containerName, kind: Nodes.Containers })
+                                    return agg;
+                                }, new Map)}
+                                nodes={nodes}
+                                appName={appName}
+                                environmentName={environmentName}
+                            /> : ''}
                     </td>
                 </tr>
             )}
@@ -709,11 +721,11 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             onClick={e => describeNode(NodeDetailTabs.LOGS)}>
             View Container Logs
         </span> : ''}
-        <span className="flex pod-info__popup-row pod-info__popup-row--red"
+        {kind !== Nodes.Containers ? <span className="flex pod-info__popup-row pod-info__popup-row--red"
             onClick={asyncDeletePod}>
             <span>Delete</span>
             <Trash className="icon-dim-20" />
-        </span>
+        </span> : ''}
     </div>
 }
 
@@ -733,3 +745,11 @@ export function EmptyPage({ title = "Data not available" }) {
 }
 
 export default ResourceTreeNodes
+
+export function getAllContainers(nodeDetails) {
+    let allContainers = nodeDetails.containers.concat(nodeDetails.initContainers);
+    return allContainers.reduce((agg, containerName) => {
+        agg.set(containerName, { name: containerName, kind: Nodes.Containers })
+        return agg;
+    }, new Map)
+}

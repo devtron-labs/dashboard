@@ -7,7 +7,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as PreBuild } from '../../assets/icons/ic-cd-stage.svg';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import error from '../../assets/icons/misc/errorInfo.svg'
-import dropdown from '../../assets/icons/appstatus/ic-chevron-down.svg';
+import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import { SourceMaterials } from './SourceMaterials';
 import { CIPipelineState } from './types';
