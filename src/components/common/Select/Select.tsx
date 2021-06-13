@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { Progressing, useEffectAfterMount, PopupMenu } from '../../common'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';
 
-import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
+import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 
 import './select.css';
