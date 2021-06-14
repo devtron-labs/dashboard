@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Select, showError, mapByKey, Progressing, VisibleModal, useAsync, useKeyDown, Info, Pencil, useSize } from '../common'
+import { Select, showError, mapByKey, Progressing, VisibleModal, useAsync, useKeyDown, Info, Pencil, useSize, sortCallback } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
@@ -18,9 +18,18 @@ interface AdvancedConfig extends AdvancedConfigHelpers {
     index: number;
 }
 
+interface Environment {
+    id: number;
+    name: string;
+    namespace: string;
+    active: boolean;
+    isClusterCdActive: boolean;
+
+}
 const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValues, getChartVersionsAndValues, handleEnvironmentChange, handleChartValueChange, handleChartVersionChange, handleValuesYaml, handleNameChange, discardValuesYamlChanges }) => {
     const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
-    const [environments, setEnvironments] = useState(new Map())
+    // const [environments, setEnvironments] = useState(new Map())
+    const [environments, setEnvironments] = useState([])
     const [showReadme, setReadme] = useState(false)
     const [showDiff, setDiff] = useState(false);
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
@@ -32,8 +41,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     useEffect(() => {
         async function getEnvironments() {
             try {
-                const { result } = await getEnvironmentListMin()
-                setEnvironments(mapByKey(result, 'id'))
+                let response = await getEnvironmentListMin();
+                let envList = response.result ? response.result : [];
+                envList = envList.map((env) => { return { value: env.id, label: env.environment_name } });
+                envList = envList.sort((a, b) => sortCallback('label', a, b, true));
+                setEnvironments(envList);
             }
             catch (err) {
                 showError(err)
@@ -133,179 +145,167 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     //TODO: use default state for variables, so that you don't have to apply ?. before every object. 
     let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
 
-    const MenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false}
-                    //  onClick={() => keys(props.selectProps.name)}
-                    >
-                        Apply Filter
-                  </button>
-                </div>
-            </components.MenuList>
-        );
-    };
+    function renderEnvAndNamespace() {
+        let envId = environment.id;
+        let selectedEnv: Environment = environments.find(env => env.id == envId);
+        return (<>
+            <div className="flex column half left top">
+                <label htmlFor="" className="form__label">Deploy to environment*</label>
 
-    return (<>
-        <div className="advanced-config flex">
-            <form action="" className="advanced-config__form">
-                <h1 className="form__title form__title--mb-24">{chartName}</h1>
-                {handleNameChange && <div className="flex column left top mb-16">
-                    <label htmlFor="" className="form__label">App name*</label>
-                    <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
-                    {appName?.error &&
-                        <span className="form__error flex left">
-                            <WarningIcon className="mr-5" />{appName?.error || ""}
-                            {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
-                        </span>}
-                </div>}
-                {handleEnvironmentChange && <div className="flex top mb-16">
-                    <div className="flex column half left top">
-                        <label htmlFor="" className="form__label">Deploy to environment*</label>
-                        <ReactSelect className="fs-13 w-100 pt-1 pb-1"
-                            placeholder="Environment : All"
-                            name="environment"
-                            // value={selectedEnvironment}
-                            // options={environment}
-                            closeOnSelect={false}
-                            // onChange={(e) => handleSelectedFilters(e, "environment")}
-                            isClearable={false}
-                            isMulti={true}
-                            closeMenuOnSelect={false}
-                            hideSelectedOptions={false}
-                            // onMenuClose={() => handleCloseFilter("environment")}
-                            components={{
-                                DropdownIndicator,
-                                Option,
-                                ValueContainer,
-                                IndicatorSeparator: null,
-                                ClearIndicator: null,
-                                MenuList,
-                            }}
-                            styles={{ ...multiSelectStyles }}
-                        />
-                        {/* <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
+                {console.log(envId)}
+                <ReactSelect className="fs-13 w-100 pt-1 pb-1"
+                    closeMenuOnScroll={true}
+                    // isDisabled={!!this.props.match.params.cdPipelineId}
+                    placeholder="Select Environment"
+                    options={environments}
+                    value={selectedEnv}
+                    isMulti={false}
+                    // onChange={(selected: any) => selectEnvironment(selected)}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator,
+                        Option
+                    }}
+                    styles={{ ...multiSelectStyles }}
+                />
+
+                {/* <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
                                 <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
                                 {Array.from(environments.values()).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
-                            </Select> */}
-                        {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
-                    </div>
-                    <div className="flex column half left top">
-                        <label htmlFor="" className="form__label">Namespace*</label>
-                        <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} />
-                    </div>
-                </div>}
-                <div className="flex top mb-16">
-                    <div className="flex column left top half">
-                        <label htmlFor="" className="form__label">Chart version</label>
-                        <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
-                            {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                            <Select.Button>{`v${selectedChartVersion.version}`}</Select.Button>
-                            {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
-                        </Select>
-                    </div>
+                            </Select>  */}
+                {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
+            </div>
+            <div className="flex column half left top">
+                <label htmlFor="" className="form__label">Namespace*</label>
+                {/* <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} /> */}
+            </div> </>)
+    }
+    return (
+        <>
+            <div className="advanced-config flex">
+                <form action="" className="advanced-config__form">
+                    <h1 className="form__title form__title--mb-24">{chartName}</h1>
+                    {handleNameChange && <div className="flex column left top mb-16">
+                        <label htmlFor="" className="form__label">App name*</label>
+                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
+                        {appName?.error &&
+                            <span className="form__error flex left">
+                                <WarningIcon className="mr-5" />{appName?.error || ""}
+                                {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
+                            </span>}
+                    </div>}
+                    {handleEnvironmentChange && <div className="flex top mb-16">
+                        {renderEnvAndNamespace()}
+                    </div>}
+                    <div className="flex top mb-16">
+                        <div className="flex column left top half">
+                            <label htmlFor="" className="form__label">Chart version</label>
+                            <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
+                                {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
+                                <Select.Button>{`v${selectedChartVersion.version}`}</Select.Button>
+                                {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
+                            </Select>
+                        </div>
 
-                    <div className="flex column left top half">
-                        <label className="form__label form__label--manage-values">
-                            <span>Values</span>
-                            <button type="button" className="text-button p-0" onClick={(event) => {
-                                event.stopPropagation();
-                                toggleManagaValuesModal(!showManageValuesModal);
-                            }}>Manage</button>
-                        </label>
-                        <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
-                            {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                            <Select.Button rootClassName="select-button--default">
-                                <span className="ml-5 select-button__selected-option ellipsis-right" style={{ "width": "100%" }}>
-                                    {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
-                                </span>
-                            </Select.Button>
-                            {chartValuesDropDown?.map(({ kind, values }) => <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
-                                {values?.map(({ chartVersion, id, name, environmentName }) => <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
-                                    <div className="flex left column">
-                                        <span style={{ color: 'var(--N900)', fontSize: '14px' }}>{name} ({chartVersion})</span>
-                                        {environmentName && <span style={{ color: '#404040', fontSize: '12px' }}>{environmentName}</span>}
+                        <div className="flex column left top half">
+                            <label className="form__label form__label--manage-values">
+                                <span>Values</span>
+                                <button type="button" className="text-button p-0" onClick={(event) => {
+                                    event.stopPropagation();
+                                    toggleManagaValuesModal(!showManageValuesModal);
+                                }}>Manage</button>
+                            </label>
+                            <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
+                                {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
+                                <Select.Button rootClassName="select-button--default">
+                                    <span className="ml-5 select-button__selected-option ellipsis-right" style={{ "width": "100%" }}>
+                                        {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
+                                    </span>
+                                </Select.Button>
+                                {chartValuesDropDown?.map(({ kind, values }) => <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
+                                    {values?.map(({ chartVersion, id, name, environmentName }) => <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
+                                        <div className="flex left column">
+                                            <span style={{ color: 'var(--N900)', fontSize: '14px' }}>{name} ({chartVersion})</span>
+                                            {environmentName && <span style={{ color: '#404040', fontSize: '12px' }}>{environmentName}</span>}
+                                        </div>
+
+                                    </Select.Option>)}
+                                    {(!values || values?.length === 0) && <div onClick={e => e.stopPropagation()} className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
+                                </Select.OptGroup>)}
+                            </Select>
+                        </div>
+                    </div>
+                    {!handleNameChange && <div className="tips">
+                        {/* only chart group create and update flow */}
+                        <Info className="tips__icon" />
+                        <div className="column">
+                            <b className="tips__title">Tips</b>
+                            <ul className="tips__container">
+                                <li className="tips__tip">Only default & custom values can be used in a chart group. Read how to create custom values.</li>
+                                <li className="tips__tip">Selected values can be edited during deployment.</li>
+                                <li className="tips__tip">You can select other deployed values during deployment.</li>
+                            </ul>
+                        </div>
+                    </div>}
+                    <div className="code-editor-container">
+                        <CodeEditor
+                            value={valuesYaml}
+                            noParsing
+                            loading={loading}
+                            readOnly={!handleValuesYaml}
+                            onChange={handleValuesYaml ? valuesYaml => { handleValuesYaml(index, valuesYaml) } : () => { }}
+                            mode="yaml"
+                        >
+                            <CodeEditor.Header>
+                                <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
+                                    <span>{appName.value}.yaml</span>
+                                    <div className="flex">
+                                        {!handleValuesYaml && <LockIcon className="mr-5" />}
+                                        {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff}>{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
+                                        <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
                                     </div>
-
-                                </Select.Option>)}
-                                {(!values || values?.length === 0) && <div onClick={e => e.stopPropagation()} className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
-                            </Select.OptGroup>)}
-                        </Select>
-                    </div>
-                </div>
-                {!handleNameChange && <div className="tips">
-                    {/* only chart group create and update flow */}
-                    <Info className="tips__icon" />
-                    <div className="column">
-                        <b className="tips__title">Tips</b>
-                        <ul className="tips__container">
-                            <li className="tips__tip">Only default & custom values can be used in a chart group. Read how to create custom values.</li>
-                            <li className="tips__tip">Selected values can be edited during deployment.</li>
-                            <li className="tips__tip">You can select other deployed values during deployment.</li>
-                        </ul>
-                    </div>
-                </div>}
-                <div className="code-editor-container">
-                    <CodeEditor
-                        value={valuesYaml}
-                        noParsing
-                        loading={loading}
-                        readOnly={!handleValuesYaml}
-                        onChange={handleValuesYaml ? valuesYaml => { handleValuesYaml(index, valuesYaml) } : () => { }}
-                        mode="yaml"
-                    >
-                        <CodeEditor.Header>
-                            <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
-                                <span>{appName.value}.yaml</span>
-                                <div className="flex">
-                                    {!handleValuesYaml && <LockIcon className="mr-5" />}
-                                    {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff}>{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
-                                    <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
                                 </div>
-                            </div>
-                        </CodeEditor.Header>
-                        {warning ? <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
-                            : null}
-                    </CodeEditor>
-                </div>
-            </form>
-        </div>
-        {showReadme && <VisibleModal className="">
-            <ReadmeCharts
-                readme={readmeResult.result.readme}
-                valuesYaml={valuesYaml}
-                handleClose={e => setReadme(false)}
-                chart={chart}
-                onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
-            />
-        </VisibleModal>}
-        {showDiff && <VisibleModal className="">
-            <ValuesDiffViewer
-                chartName={chart?.chartMetaData?.chartName || ""}
-                appName={chart?.name?.value || ""}
-                valuesYaml={valuesYaml}
-                kind={kind}
-                selectedChartValue={selectedChartValue}
-                availableChartValues={chart.availableChartValues || []}
-                handleClose={e => setDiff(false)}
-                onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
-                fetchChartValues={() => fetchChartValues(chart.id, index)}
-            />
-        </VisibleModal>}
-        {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
-            title="Discard values yaml changes?"
-            description="Selecting a different value will discard changes made to yaml"
-            closeOnESC={true}
-            close={() => toggleValuesYamlDialog(false)}
-            copyYamlToClipboard={copyValuesYamlToClipBoard}
-            discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
-            : null}
-        {showManageValuesModal ? <ManageValues chartId={String(chart.id)}
-            close={() => { toggleManagaValuesModal(!showManageValuesModal) }}
-            onDeleteChartValue={() => { }} /> : null}
-    </>
+                            </CodeEditor.Header>
+                            {warning ? <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
+                                : null}
+                        </CodeEditor>
+                    </div>
+                </form>
+            </div>
+            {showReadme && <VisibleModal className="">
+                <ReadmeCharts
+                    readme={readmeResult.result.readme}
+                    valuesYaml={valuesYaml}
+                    handleClose={e => setReadme(false)}
+                    chart={chart}
+                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
+                />
+            </VisibleModal>}
+            {showDiff && <VisibleModal className="">
+                <ValuesDiffViewer
+                    chartName={chart?.chartMetaData?.chartName || ""}
+                    appName={chart?.name?.value || ""}
+                    valuesYaml={valuesYaml}
+                    kind={kind}
+                    selectedChartValue={selectedChartValue}
+                    availableChartValues={chart.availableChartValues || []}
+                    handleClose={e => setDiff(false)}
+                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
+                    fetchChartValues={() => fetchChartValues(chart.id, index)}
+                />
+            </VisibleModal>}
+            {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
+                title="Discard values yaml changes?"
+                description="Selecting a different value will discard changes made to yaml"
+                closeOnESC={true}
+                close={() => toggleValuesYamlDialog(false)}
+                copyYamlToClipboard={copyValuesYamlToClipBoard}
+                discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
+                : null}
+            {showManageValuesModal ? <ManageValues chartId={String(chart.id)}
+                close={() => { toggleManagaValuesModal(!showManageValuesModal) }}
+                onDeleteChartValue={() => { }} /> : null}
+        </>
     )
 }
 
