@@ -9,6 +9,9 @@ import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
 import ManageValues from './modal/ManageValues'
+import ReactSelect, { components } from 'react-select';
+import { Option, multiSelectStyles } from '../common';
+import { DropdownIndicator, ValueContainer } from './charts.util';
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
     chart: ChartGroupEntry;
@@ -130,7 +133,23 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     //TODO: use default state for variables, so that you don't have to apply ?. before every object. 
     let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
 
+    const MenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
+                    <button type="button" className="cta flex cta--chart-store" disabled={false}
+                    //  onClick={() => keys(props.selectProps.name)}
+                    >
+                        Apply Filter
+                  </button>
+                </div>
+            </components.MenuList>
+        );
+    };
+
     return (
+
         <>
             <div className="advanced-config flex">
                 <form action="" className="advanced-config__form">
@@ -147,10 +166,32 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     {handleEnvironmentChange && <div className="flex top mb-16">
                         <div className="flex column half left top">
                             <label htmlFor="" className="form__label">Deploy to environment*</label>
-                            <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
+                            <ReactSelect className="date-align-left fs-13 w-100" style={{minHeight:"40px"}}
+                                placeholder="Environment : All"
+                                name="environment"
+                                // value={selectedEnvironment}
+                                // options={environment}
+                                closeOnSelect={false}
+                                // onChange={(e) => handleSelectedFilters(e, "environment")}
+                                isClearable={false}
+                                isMulti={true}
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                // onMenuClose={() => handleCloseFilter("environment")}
+                                components={{
+                                    DropdownIndicator,
+                                    Option,
+                                    ValueContainer,
+                                    IndicatorSeparator: null,
+                                    ClearIndicator: null,
+                                    MenuList,
+                                }}
+                                styles={{ ...multiSelectStyles }}
+                            />
+                            {/* <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
                                 <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
                                 {Array.from(environments.values()).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
-                            </Select>
+                            </Select> */}
                             {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
                         </div>
                         <div className="flex column half left top">
@@ -253,7 +294,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     handleClose={e => setDiff(false)}
                     onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
                     fetchChartValues={() => fetchChartValues(chart.id, index)}
-               />
+                />
             </VisibleModal>}
             {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
                 title="Discard values yaml changes?"
