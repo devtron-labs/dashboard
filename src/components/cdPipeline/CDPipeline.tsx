@@ -837,7 +837,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <p className="form__label form__label--sentence m-0">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
                 </div>
                 <div className="icon-dim-44 flex">
-                   <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostStage ? "rotate(180deg)" : "rotate(0)" }} />
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostStage ? "rotate(180deg)" : "rotate(0)" }} />
 
                 </div>
             </div>
