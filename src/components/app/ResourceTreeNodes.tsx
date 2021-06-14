@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useEffect, useState } from 'react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
@@ -33,6 +32,8 @@ function getGenricRowFields(kind: NodeType): string[] {
             return ['name', 'url', '']
         case Nodes.Pod:
             return ['name', 'ready', ''] // empty string denotes menu
+        case Nodes.Containers:
+            return ['name']
         default:
             return ['name', '']
     }
@@ -579,7 +580,7 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
     }
 
     return (
-        <td>
+        <td style={{ width: '40px' }}>
             <PopupMenu autoClose>
                 <PopupMenu.Button isKebab={true}>
                     <img src={dots} className="pod-info__dots" />
@@ -623,8 +624,9 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                 </td>
                 {tableColumns.map((column) => {
                     if (column === 'url') return <URL key={column} url={nodeDetails.url} />;
-                    else if (column === 'name')
+                    else if (column === 'name') {
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} />;
+                    }
                     else if (column === '') {
                         return (
                             <Menu nodeDetails={nodeDetails}
@@ -657,20 +659,32 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                     }, new Map)}
                                 />
                             ))}
-                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length &&
+                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length ?
                             <NestedTable
                                 type={Nodes.Containers}
                                 describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
                                 level={level + 1}
                                 Data={nodeDetails.containers.reduce((agg, containerName) => {
                                     agg.set(containerName, { name: containerName, kind: Nodes.Containers })
-                                    return agg
+                                    return agg;
                                 }, new Map)}
                                 nodes={nodes}
                                 appName={appName}
                                 environmentName={environmentName}
-                            />
-                        }
+                            /> : ''}
+                        {nodeDetails.kind === Nodes.Pod && nodeDetails?.initContainers?.length ?
+                            <NestedTable
+                                type={Nodes.InitContainers}
+                                describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
+                                level={level + 1}
+                                Data={nodeDetails.initContainers.reduce((agg, containerName) => {
+                                    agg.set(containerName, { name: containerName, kind: Nodes.Containers })
+                                    return agg;
+                                }, new Map)}
+                                nodes={nodes}
+                                appName={appName}
+                                environmentName={environmentName}
+                            /> : ''}
                     </td>
                 </tr>
             )}
@@ -733,3 +747,11 @@ export function EmptyPage({ title = "Data not available" }) {
 }
 
 export default ResourceTreeNodes
+
+export function getAllContainers(nodeDetails) {
+    let allContainers = nodeDetails.containers.concat(nodeDetails.initContainers);
+    return allContainers.reduce((agg, containerName) => {
+        agg.set(containerName, { name: containerName, kind: Nodes.Containers })
+        return agg;
+    }, new Map)
+}

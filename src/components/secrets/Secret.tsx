@@ -12,7 +12,7 @@ import { DOCUMENTATION, PATTERNS } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
-import arrowTriangle from '../../assets/icons/appstatus/ic-chevron-down.svg'
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import '../configMaps/ConfigMap.scss';
