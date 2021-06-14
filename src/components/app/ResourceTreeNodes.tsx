@@ -32,6 +32,8 @@ function getGenricRowFields(kind: NodeType): string[] {
             return ['name', 'url', '']
         case Nodes.Pod:
             return ['name', 'ready', ''] // empty string denotes menu
+        case Nodes.Containers:
+            return ['name']
         default:
             return ['name', '']
     }
@@ -578,7 +580,7 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
     }
 
     return (
-        <td>
+        <td style={{ width: '40px' }}>
             <PopupMenu autoClose>
                 <PopupMenu.Button isKebab={true}>
                     <img src={dots} className="pod-info__dots" />
@@ -721,11 +723,11 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             onClick={e => describeNode(NodeDetailTabs.LOGS)}>
             View Container Logs
         </span> : ''}
-        {kind !== Nodes.Containers ? <span className="flex pod-info__popup-row pod-info__popup-row--red"
+        <span className="flex pod-info__popup-row pod-info__popup-row--red"
             onClick={asyncDeletePod}>
             <span>Delete</span>
             <Trash className="icon-dim-20" />
-        </span> : ''}
+        </span>
     </div>
 }
 
