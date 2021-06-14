@@ -145,6 +145,20 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     //TODO: use default state for variables, so that you don't have to apply ?. before every object. 
     let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
 
+    function selectEnvironment(selection: Environment): void {
+        if (selection) {
+            let list = environments.map((item) => {
+                return {
+                    ...item,
+                    active: item.id == selection.id
+                }
+            });
+            setEnvironments(list)
+            {console.log(list)}
+
+        }
+    }
+
     function renderEnvAndNamespace() {
         let envId = environment.id;
         let selectedEnv: Environment = environments.find(env => env.id == envId);
@@ -152,7 +166,6 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
             <div className="flex column half left top">
                 <label htmlFor="" className="form__label">Deploy to environment*</label>
 
-                {console.log(envId)}
                 <ReactSelect className="fs-13 w-100 pt-1 pb-1"
                     closeMenuOnScroll={true}
                     // isDisabled={!!this.props.match.params.cdPipelineId}
@@ -160,7 +173,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     options={environments}
                     value={selectedEnv}
                     isMulti={false}
-                    // onChange={(selected: any) => selectEnvironment(selected)}
+                    onChange={(selected: any) => selectEnvironment(selected)}
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,
