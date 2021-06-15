@@ -31,7 +31,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
     // const [environments, setEnvironments] = useState(new Map())
     const [environments, setEnvironments] = useState([])
-    const [environmentId, setEnvironmentId ] = useState(0)
+    const [environmentId, setEnvironmentId] = useState(0)
     const [showReadme, setReadme] = useState(false)
     const [showDiff, setDiff] = useState(false);
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
@@ -46,12 +46,17 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
             try {
                 let response = await getEnvironmentListMin();
                 let envList = response.result ? response.result : [];
-                envList = envList.map((env) => { return { value: env.id, label: env.environment_name } });
+                envList = envList.map((env) => {
+                    return {
+                        value: env.id,
+                        label: env.environment_name,
+                        namespace: env.namespace || "",
+                        active: false,
+                        isClusterCdActive: env.isClusterCdActive,
+                    }
+                });
                 envList = envList.sort((a, b) => sortCallback('label', a, b, true));
                 setEnvironments(envList);
-                let envId = envList.find((env)=>env.value)
-                setEnvironmentId(envId)
-               
             }
             catch (err) {
                 showError(err)
@@ -151,9 +156,9 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     //TODO: use default state for variables, so that you don't have to apply ?. before every object. 
     let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
 
-    function selectEnvironment(selection): void {
+    function selectEnvironment(selection: Environment): void {
         if (selection) {
-            setEnvironmentId(selection.value) ;
+            setEnvironmentId(selection.id);
             setNamespace(selection.namespace);
         }
         else {
@@ -162,15 +167,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
         }
     }
 
-    function handleNamespaceChange(event, environment): void {
-        setNamespace(event.target.value);
-    }
-
-    const match = useRouteMatch()
-
     function renderEnvAndNamespace() {
-        let selectedEnv= environments.find(env => env.value === environmentId);
+
+        let selectedEnv: Environment = environments.find(env => env.value === environmentId);
         let namespaceEditable = false;
+
         return (<>
             <div className="flex column half left top">
                 <label htmlFor="" className="form__label">Deploy to environment*</label>
@@ -188,20 +189,16 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     }}
                     styles={{ ...multiSelectStyles }}
                 />
-
-                {/* <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
-                                <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
-                                {Array.from(environments.values()).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
-                            </Select>  */}
                 {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
             </div>
             <div className="flex column half left top">
                 <label htmlFor="" className="form__label">Namespace*</label>
-                {/* <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} /> */}
                 <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
                     disabled={!namespaceEditable}
                     value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : namespace}
-                    onChange={(event) => { handleNamespaceChange(event, selectedEnv) }} />
+                    onChange={(event) => {
+                        setNamespace(event.target.value)
+                    }} />
             </div> </>)
     }
     return (
@@ -218,9 +215,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                                 {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
                             </span>}
                     </div>}
+
                     {handleEnvironmentChange && <div className="flex top mb-16">
                         {renderEnvAndNamespace()}
                     </div>}
+
                     <div className="flex top mb-16">
                         <div className="flex column left top half">
                             <label htmlFor="" className="form__label">Chart version</label>
