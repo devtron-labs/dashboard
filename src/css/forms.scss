@@ -59,7 +59,7 @@
     font-weight: 500;
     line-height: 1.45;
     letter-spacing: -0.1px;
-    display: flex;
+    display: block;
     margin-bottom: 4px;
     margin-top: 4px
 }
@@ -136,11 +136,11 @@ p.sentence-case:first-letter {
     vertical-align: middle;
     position: relative;
     top: 2px;
+
 }
 
 .form__icon--error path[fill="#FFCB5D"] {
     fill: var(--R500);
-    
 }
 
 .form__icon--info path[fill="#06C"] {

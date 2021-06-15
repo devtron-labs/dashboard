@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 
 interface ChartGroupCreateState {
-    name: { value: string; error: string;};
+    name: { value: string; error: any[]; };
     description: string;
     loading: boolean;
 }
@@ -17,7 +17,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     constructor(props) {
         super(props);
         this.state = {
-            name: {value: "", error: ""},
+            name: { value: "", error: [] },
             description: "",
             loading: false
         }
@@ -27,7 +27,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        this.setState({ name: {value: event.target.value, error: ""} });
+        this.setState({ name: { value: event.target.value, error: [] } });
     }
 
     handleDescriptionChange(event) {
@@ -35,11 +35,43 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     async saveChartGroup(e) {
-        const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
-        if (!nameRegexp.test(this.state.name.value)) {
-            this.setState({ name: { ...this.state.name, error: 'name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'}})
+        // const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
+        // if (!nameRegexp.test(this.state.name.value)) {
+        //     this.setState({ name: { ...this.state.name, error: 'name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'}})
+        //     return
+        // }
+        // if(this.state.name.value.includes("@")){  this.setState({ name: { ...this.state.name, error: ['name must not have @.']}})}
+        const nameRegexp = new RegExp(`^[a-z-]*[a-z0-9-]+$`)
+        const dashRegexp = new RegExp(`[a-zA-Z0-9-.][a-zA-Z0-9-.]*[a-zA-Z0-9-.]$`)
+        // const noErrorRegExp = new RegExp('^[a-z0-9][a-z0-9-.]*[a-z0-9]$/*')
+
+        // if (noErrorRegExp.test(this.state.name.value)) {
+        //     this.setState({ name: { ...this.state.name, error: [] } })
+        //     return
+        // }
+        if (this.state.name.value.length) {
+            this.setState({
+                name: {
+                    ...this.state.name,
+                    error: [
+                        this.state.name.value.length < 5 ? <div >Minimum 5 characters required.</div> : "",
+                        !dashRegexp.test(this.state.name.value) ? <div >Allow (-) , (.) only </div> : "",
+                        // this.state.name.value.includes(`@ !`) ? <div > Do not Allow special characters except (-) </div> : "",
+                        nameRegexp.test(this.state.name.value) ? "" : <div >Characters Should be in lowecase</div>
+                    ]
+                }
+            })
             return
         }
+        else {
+            this.setState({
+                name: {
+                    ...this.state.name,
+                    error: ["This is a required field"]
+                }
+            })
+        }
+
         let requestBody = {
             name: this.state.name.value,
             description: this.state.description
@@ -53,7 +85,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         api(requestBody).then((response) => {
             if (this.props.chartGroupId) {
                 toast.success('Successfully updated.')
-                this.props.closeChartGroupModal({name: this.state.name.value, description: this.state.description});
+                this.props.closeChartGroupModal({ name: this.state.name.value, description: this.state.description });
             }
             else {
                 toast.success('Successfully created.')
@@ -69,7 +101,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
     componentDidMount() {
         if (this.props.chartGroupId && this.props.name) {
-            this.setState({ name: {value: this.props.name, error: ""}, description: this.props.description || "" })
+            this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || "" })
         }
     }
 
