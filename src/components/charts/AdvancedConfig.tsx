@@ -12,7 +12,6 @@ import ManageValues from './modal/ManageValues'
 import ReactSelect from 'react-select';
 import { Option, multiSelectStyles } from '../common';
 import { DropdownIndicator } from './charts.util';
-import { useRouteMatch } from 'react-router'
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
     chart: ChartGroupEntry;
@@ -27,11 +26,11 @@ interface Environment {
     isClusterCdActive: boolean;
 
 }
+
 const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValues, getChartVersionsAndValues, handleEnvironmentChange, handleChartValueChange, handleChartVersionChange, handleValuesYaml, handleNameChange, discardValuesYamlChanges }) => {
     const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
-    // const [environments, setEnvironments] = useState(new Map())
     const [environments, setEnvironments] = useState([])
-    const [environmentId, setEnvironmentId] = useState(0)
+    const [environmentId, setEnvironmentId] = useState(environment.id)
     const [showReadme, setReadme] = useState(false)
     const [showDiff, setDiff] = useState(false);
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
@@ -168,8 +167,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     }
 
     function renderEnvAndNamespace() {
-
-        let selectedEnv: Environment = environments.find(env => env.value === environmentId);
+        let selectedEnv = environments.find(env => env.value === environmentId);
         let namespaceEditable = false;
 
         return (<>
@@ -189,146 +187,145 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     }}
                     styles={{ ...multiSelectStyles }}
                 />
-                {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
+                {/* {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>} */}
             </div>
             <div className="flex column half left top">
                 <label htmlFor="" className="form__label">Namespace*</label>
+                {/* <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} /> */}
                 <input className="form__input" autoComplete="off" placeholder="Namespace" type="text"
                     disabled={!namespaceEditable}
                     value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : namespace}
-                    onChange={(event) => {
-                        setNamespace(event.target.value)
-                    }} />
+                    onChange={(event) => { setNamespace(event.target.value) }} />
             </div> </>)
     }
-    return (
-        <>
-            <div className="advanced-config flex">
-                <form action="" className="advanced-config__form">
-                    <h1 className="form__title form__title--mb-24">{chartName}</h1>
-                    {handleNameChange && <div className="flex column left top mb-16">
-                        <label htmlFor="" className="form__label">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
-                        {appName?.error &&
-                            <span className="form__error flex left">
-                                <WarningIcon className="mr-5" />{appName?.error || ""}
-                                {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
-                            </span>}
-                    </div>}
 
-                    {handleEnvironmentChange && <div className="flex top mb-16">
-                        {renderEnvAndNamespace()}
-                    </div>}
+    return (<>
+        <div className="advanced-config flex">
+            <form action="" className="advanced-config__form">
+                <h1 className="form__title form__title--mb-24">{chartName}</h1>
+                {handleNameChange && <div className="flex column left top mb-16">
+                    <label htmlFor="" className="form__label">App name*</label>
+                    <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
+                    {appName?.error &&
+                        <span className="form__error flex left">
+                            <WarningIcon className="mr-5" />{appName?.error || ""}
+                            {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
+                        </span>}
+                </div>}
 
-                    <div className="flex top mb-16">
-                        <div className="flex column left top half">
-                            <label htmlFor="" className="form__label">Chart version</label>
-                            <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
-                                {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                                <Select.Button>{`v${selectedChartVersion.version}`}</Select.Button>
-                                {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
-                            </Select>
-                        </div>
+                {handleEnvironmentChange && <div className="flex top mb-16">
+                    {renderEnvAndNamespace()}
+                </div>}
 
-                        <div className="flex column left top half">
-                            <label className="form__label form__label--manage-values">
-                                <span>Values</span>
-                                <button type="button" className="text-button p-0" onClick={(event) => {
-                                    event.stopPropagation();
-                                    toggleManagaValuesModal(!showManageValuesModal);
-                                }}>Manage</button>
-                            </label>
-                            <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
-                                {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                                <Select.Button rootClassName="select-button--default">
-                                    <span className="ml-5 select-button__selected-option ellipsis-right" style={{ "width": "100%" }}>
-                                        {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
-                                    </span>
-                                </Select.Button>
-                                {chartValuesDropDown?.map(({ kind, values }) => <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
-                                    {values?.map(({ chartVersion, id, name, environmentName }) => <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
-                                        <div className="flex left column">
-                                            <span style={{ color: 'var(--N900)', fontSize: '14px' }}>{name} ({chartVersion})</span>
-                                            {environmentName && <span style={{ color: '#404040', fontSize: '12px' }}>{environmentName}</span>}
-                                        </div>
-
-                                    </Select.Option>)}
-                                    {(!values || values?.length === 0) && <div onClick={e => e.stopPropagation()} className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
-                                </Select.OptGroup>)}
-                            </Select>
-                        </div>
+                <div className="flex top mb-16">
+                    <div className="flex column left top half">
+                        <label htmlFor="" className="form__label">Chart version</label>
+                        <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
+                            {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
+                            <Select.Button>{`v${selectedChartVersion.version}`}</Select.Button>
+                            {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
+                        </Select>
                     </div>
-                    {!handleNameChange && <div className="tips">
-                        {/* only chart group create and update flow */}
-                        <Info className="tips__icon" />
-                        <div className="column">
-                            <b className="tips__title">Tips</b>
-                            <ul className="tips__container">
-                                <li className="tips__tip">Only default & custom values can be used in a chart group. Read how to create custom values.</li>
-                                <li className="tips__tip">Selected values can be edited during deployment.</li>
-                                <li className="tips__tip">You can select other deployed values during deployment.</li>
-                            </ul>
-                        </div>
-                    </div>}
-                    <div className="code-editor-container">
-                        <CodeEditor
-                            value={valuesYaml}
-                            noParsing
-                            loading={loading}
-                            readOnly={!handleValuesYaml}
-                            onChange={handleValuesYaml ? valuesYaml => { handleValuesYaml(index, valuesYaml) } : () => { }}
-                            mode="yaml"
-                        >
-                            <CodeEditor.Header>
-                                <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
-                                    <span>{appName.value}.yaml</span>
-                                    <div className="flex">
-                                        {!handleValuesYaml && <LockIcon className="mr-5" />}
-                                        {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff}>{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
-                                        <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
+
+                    <div className="flex column left top half">
+                        <label className="form__label form__label--manage-values">
+                            <span>Values</span>
+                            <button type="button" className="text-button p-0" onClick={(event) => {
+                                event.stopPropagation();
+                                toggleManagaValuesModal(!showManageValuesModal);
+                            }}>Manage</button>
+                        </label>
+                        <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
+                            {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
+                            <Select.Button rootClassName="select-button--default">
+                                <span className="ml-5 select-button__selected-option ellipsis-right" style={{ "width": "100%" }}>
+                                    {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
+                                </span>
+                            </Select.Button>
+                            {chartValuesDropDown?.map(({ kind, values }) => <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
+                                {values?.map(({ chartVersion, id, name, environmentName }) => <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
+                                    <div className="flex left column">
+                                        <span style={{ color: 'var(--N900)', fontSize: '14px' }}>{name} ({chartVersion})</span>
+                                        {environmentName && <span style={{ color: '#404040', fontSize: '12px' }}>{environmentName}</span>}
                                     </div>
-                                </div>
-                            </CodeEditor.Header>
-                            {warning ? <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
-                                : null}
-                        </CodeEditor>
+
+                                </Select.Option>)}
+                                {(!values || values?.length === 0) && <div onClick={e => e.stopPropagation()} className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
+                            </Select.OptGroup>)}
+                        </Select>
                     </div>
-                </form>
-            </div>
-            {showReadme && <VisibleModal className="">
-                <ReadmeCharts
-                    readme={readmeResult.result.readme}
-                    valuesYaml={valuesYaml}
-                    handleClose={e => setReadme(false)}
-                    chart={chart}
-                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
-                />
-            </VisibleModal>}
-            {showDiff && <VisibleModal className="">
-                <ValuesDiffViewer
-                    chartName={chart?.chartMetaData?.chartName || ""}
-                    appName={chart?.name?.value || ""}
-                    valuesYaml={valuesYaml}
-                    kind={kind}
-                    selectedChartValue={selectedChartValue}
-                    availableChartValues={chart.availableChartValues || []}
-                    handleClose={e => setDiff(false)}
-                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
-                    fetchChartValues={() => fetchChartValues(chart.id, index)}
-                />
-            </VisibleModal>}
-            {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
-                title="Discard values yaml changes?"
-                description="Selecting a different value will discard changes made to yaml"
-                closeOnESC={true}
-                close={() => toggleValuesYamlDialog(false)}
-                copyYamlToClipboard={copyValuesYamlToClipBoard}
-                discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
-                : null}
-            {showManageValuesModal ? <ManageValues chartId={String(chart.id)}
-                close={() => { toggleManagaValuesModal(!showManageValuesModal) }}
-                onDeleteChartValue={() => { }} /> : null}
-        </>
+                </div>
+                {!handleNameChange && <div className="tips">
+                    {/* only chart group create and update flow */}
+                    <Info className="tips__icon" />
+                    <div className="column">
+                        <b className="tips__title">Tips</b>
+                        <ul className="tips__container">
+                            <li className="tips__tip">Only default & custom values can be used in a chart group. Read how to create custom values.</li>
+                            <li className="tips__tip">Selected values can be edited during deployment.</li>
+                            <li className="tips__tip">You can select other deployed values during deployment.</li>
+                        </ul>
+                    </div>
+                </div>}
+                <div className="code-editor-container">
+                    <CodeEditor
+                        value={valuesYaml}
+                        noParsing
+                        loading={loading}
+                        readOnly={!handleValuesYaml}
+                        onChange={handleValuesYaml ? valuesYaml => { handleValuesYaml(index, valuesYaml) } : () => { }}
+                        mode="yaml"
+                    >
+                        <CodeEditor.Header>
+                            <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
+                                <span>{appName.value}.yaml</span>
+                                <div className="flex">
+                                    {!handleValuesYaml && <LockIcon className="mr-5" />}
+                                    {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff}>{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
+                                    <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
+                                </div>
+                            </div>
+                        </CodeEditor.Header>
+                        {warning ? <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
+                            : null}
+                    </CodeEditor>
+                </div>
+            </form>
+        </div>
+        {showReadme && <VisibleModal className="">
+            <ReadmeCharts
+                readme={readmeResult.result.readme}
+                valuesYaml={valuesYaml}
+                handleClose={e => setReadme(false)}
+                chart={chart}
+                onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
+            />
+        </VisibleModal>}
+        {showDiff && <VisibleModal className="">
+            <ValuesDiffViewer
+                chartName={chart?.chartMetaData?.chartName || ""}
+                appName={chart?.name?.value || ""}
+                valuesYaml={valuesYaml}
+                kind={kind}
+                selectedChartValue={selectedChartValue}
+                availableChartValues={chart.availableChartValues || []}
+                handleClose={e => setDiff(false)}
+                onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
+                fetchChartValues={() => fetchChartValues(chart.id, index)}
+            />
+        </VisibleModal>}
+        {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
+            title="Discard values yaml changes?"
+            description="Selecting a different value will discard changes made to yaml"
+            closeOnESC={true}
+            close={() => toggleValuesYamlDialog(false)}
+            copyYamlToClipboard={copyValuesYamlToClipBoard}
+            discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
+            : null}
+        {showManageValuesModal ? <ManageValues chartId={String(chart.id)}
+            close={() => { toggleManagaValuesModal(!showManageValuesModal) }}
+            onDeleteChartValue={() => { }} /> : null}
+    </>
     )
 }
 
