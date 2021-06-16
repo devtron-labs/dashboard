@@ -41,13 +41,14 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     //         }
 
     async saveChartGroup(e) {
-        const nameRegexp = new RegExp('^[a-z0-9\.][a-z0-9-.\.]*[a-z0-9\.]$')
         // if (!nameRegexp.test(this.state.name.value)) {
         //     this.setState({ name: { ...this.state.name, error: ['name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'] } })
         //     return
         // }
-        const startAndEndRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
-        const allowDashAndDotRegex = new RegExp(`[a-zA-Z0-9-.][a-zA-Z0-9-.]*[a-zA-Z0-9-.]$`)
+        const lowercaseRegexp = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-zA-Z0-9-. ]$')
+        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
+        const allowDashAndDotRegex = new RegExp(`[a-zA-Z0-9-. ][a-zA-Z0-9-. ]*[a-zA-Z0-9-. ]$`)
+        const spaceNotAllowedRegex = new RegExp('^[a-zA-Z0-9!@#\$%^\&*\)\(+=._-]+$')
 
         if (this.state.name.value.length) {
             this.setState({
@@ -55,9 +56,10 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     ...this.state.name,
                     error: [
                         this.state.name.value.length < 5 ? <div>Minimum 5 characters required</div> : "",
-                        !nameRegexp.test(this.state.name.value) ? <div>Use only lowercase alphanumeric characters </div> : "",
-                        !allowDashAndDotRegex.test(this.state.name.value) ? <div>Allow "-" or "." special characters only</div> : "",
-                        !startAndEndRegex.test(this.state.name.value) ? <div>Start and end with an alphanumeric character only</div> : "",
+                        !lowercaseRegexp.test(this.state.name.value) ? <div>Use only lowercase alphanumeric characters "-" or "."  </div> : "",
+                        // !allowDashAndDotRegex.test(this.state.name.value) ? <div>Allow "-" or "." special characters only</div> : "",
+                        !startAndEndAlphanumericRegex.test(this.state.name.value) ? <div>Start and end with an alphanumeric character only</div> : "",
+                        !spaceNotAllowedRegex.test(this.state.name.value) ? <div>Do not Allowed space</div> : ""
                         // this.handleErrors(this.state.name.value),
                     ]
                 }
