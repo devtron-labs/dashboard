@@ -285,6 +285,7 @@ export enum Nodes {
     PersistentVolumeClaim = 'PersistentVolumeClaim',
     PersistentVolume = 'PersistentVolume',
     Containers = 'Containers',// containers are being trated same way as nodes for nsted table generation
+    InitContainers = 'InitContainers'
 }
 export type NodeType = keyof typeof Nodes;
 
