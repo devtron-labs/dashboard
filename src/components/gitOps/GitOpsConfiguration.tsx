@@ -285,7 +285,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <CustomInput autoComplete="off"
                             value={this.state.form.username}
                             onChange={(event) => this.handleChange(event, 'username')}
-                            name="Enter username" error={this.state.isError.username}
+                            name="Enter username"
+                            error={this.state.isError.username}
                             tabIndex={3}
                             label={this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />

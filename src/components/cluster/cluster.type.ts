@@ -65,3 +65,40 @@ export interface ClusterListProps extends RouteComponentProps<{}> {
     // }[];
     // clusterEnvMap: any;
 }
+export interface EnvironmentValue {
+    environment_name: string;
+    namespace: string;
+    isProduction: string;
+    prometheus_endpoint: string;
+    cluster_id: number;
+}
+
+export interface isError {
+    environment_name: string;
+    namespace: string;
+}
+
+export interface EnvironmentState {
+    id: number;
+    loading: boolean;
+    isError: isError;
+    form: EnvironmentValue;
+    environment: [];
+    isclosed: boolean;
+    saveLoading: boolean;
+}
+
+export interface EnvironmentProps extends RouteComponentProps<{}> {
+    environment_name: string;
+    namespace: string;
+    id: number;
+    cluster_id: number;
+    handleClose: boolean;
+    prometheus_endpoint: string;
+    isProduction: boolean;
+    isNamespaceMandatory: boolean;
+    ignore: boolean;
+    ignoreError: string;
+    close: () => void;
+    
+}
