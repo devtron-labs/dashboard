@@ -57,6 +57,8 @@ export class LogFilter {
         return bufferedLogs
     }
 
+
+
     private distanceFromPreviousLessThanEqualTo(dist: number): boolean {
         return this.indexFromLastMatch <= 1 * dist
     }

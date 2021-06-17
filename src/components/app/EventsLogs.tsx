@@ -26,6 +26,7 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
+import { LogFilter } from './LogFilter';
 
 const commandLineParser = require('command-line-parser')
 
@@ -293,7 +294,11 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         let prefix = '';
         if (process.env.NODE_ENV === 'production') {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+        } else {
+            prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
+        console.log(prefix)
+        console.log( Host )
         return `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${nodeName}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`;
     }
 
@@ -332,7 +337,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { grepTokens: grepTokens, url, timeout: 300 },
+            payload: { url: [url], grepTokens: grepTokens, timeout: 300 },
         });
     }
 
