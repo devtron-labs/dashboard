@@ -105,7 +105,9 @@ export default function App() {
 					setErrorPage(true)
 					showError(err)
 				}
-				posthog.reset()
+				try {
+					posthog.reset();
+				} catch (e) { }
 			}
 			finally {
 				setValidating(false)
