@@ -13,7 +13,7 @@ import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
 import 'tippy.js/dist/tippy.css';
-import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError } from './components/common';
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo } from './components/common';
 import Hotjar from './components/Hotjar/Hotjar'
 import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
@@ -80,14 +80,19 @@ export default function App() {
 				if (location.search && location.search.includes("?continue=")) {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
-					console.log("Verified")
-					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY', { api_host: 'https://app.posthog.com' });
-					// posthog.capture('test-event', { property: 'test-value' });
-					// posthog.identify(
-					//     '[user unique id]', // distinct_id, required
-					//     { userProperty: '   ' }, // $set, optional
-					// );
-					posthog.capture('verify', { userid: 'userVerified' })
+					const loginInfo = getLoginInfo()
+					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
+					const encodedEmailId: string = btoa(email);
+					const isAdmin = email === 'admin';
+					console.log(email, isAdmin);
+					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY',
+						{
+							api_host: 'https://app.posthog.com',
+							loaded: function (posthog) {
+								posthog.identify(encodedEmailId, { isAdmin });
+								posthog.people.set({ id: encodedEmailId })
+							}
+						});
 				}
 			}
 			catch (err) {
@@ -100,6 +105,7 @@ export default function App() {
 					setErrorPage(true)
 					showError(err)
 				}
+				posthog.reset()
 			}
 			finally {
 				setValidating(false)

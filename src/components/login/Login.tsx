@@ -1,4 +1,3 @@
-import posthog from 'posthog-js';
 import React, { Component } from 'react';
 import dt from '../../assets/icons/logo/logo-dt.svg';
 import LoginIcons from '../../assets/icons/LoginSprite.svg';
@@ -92,14 +91,6 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 let queryString = this.props.location.search.split("continue=")[1];
                 let url = (queryString) ? `${queryString}` : URLS.APP;
                 this.props.history.push(`${url}`);
-                console.log("Login as admin")
-                posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY', { api_host: 'https://app.posthog.com' });
-                // posthog.capture('test-event', { property: 'test-value' });
-                // posthog.identify(
-                //     '[user unique id]', // distinct_id, required
-                //     { userProperty: '   ' }, // $set, optional
-                // );
-                posthog.capture('login-as-admin', { userid: 'admin-login' })
             }
         }).catch((errors: ServerErrors) => {
             showError(errors);
