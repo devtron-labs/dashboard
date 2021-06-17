@@ -43,7 +43,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             errors.push('Minimum 5 characters required')
         }
 
-        if (this.state.name.value.indexOf(" ")) {
+        if (this.state.name.value.indexOf("  ")) {
             errors.push('Do not Allowed space')
         }
 
