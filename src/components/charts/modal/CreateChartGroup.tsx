@@ -49,17 +49,29 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
         const spaceNotAllowedRegex = new RegExp('^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$')
 
+        let error = []
+
+        if (this.state.name.value.length < 5) {
+            error.push('Minimum 5 characters required')
+        }
+
+        if (!lowercaseRegexp.test(this.state.name.value)) {
+            error.push('Use only lowercase alphanumeric characters "-" or "."')
+        }
+
+        if (!startAndEndAlphanumericRegex.test(this.state.name.value)) {
+            error.push('Start and end with an alphanumeric character only')
+        }
+        
+        if (!spaceNotAllowedRegex.test(this.state.name.value)) {
+            error.push('Do not Allowed space')
+        }
+
         if (this.state.name.value.length) {
             this.setState({
                 name: {
                     ...this.state.name,
-                    error: [
-                        this.state.name.value.length < 5 ? <div>Minimum 5 characters required</div> : "",
-                        !lowercaseRegexp.test(this.state.name.value) ? <div>Use only lowercase alphanumeric characters "-" or "."  </div> : "",
-                        !startAndEndAlphanumericRegex.test(this.state.name.value) ? <div>Start and end with an alphanumeric character only</div> : "",
-                        !spaceNotAllowedRegex.test(this.state.name.value) ? <div>Do not Allowed space</div> : ""
-                        // this.handleErrors(this.state.name.value),
-                    ]
+                    error: error
                 }
             })
             return
@@ -72,6 +84,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 }
             })
         }
+        // this.state.name.value.length < 5 ? <div>Minimum 5 characters required</div> : "",
+        // !lowercaseRegexp.test(this.state.name.value) ? <div>Use only lowercase alphanumeric characters "-" or "."  </div> : "",
+        // !startAndEndAlphanumericRegex.test(this.state.name.value) ? <div>Start and end with an alphanumeric character only</div> : "",
+        // !spaceNotAllowedRegex.test(this.state.name.value) ? <div>Do not Allowed space</div> : ""
+        // // this.handleErrors(this.state.name.value),
 
         let requestBody = {
             name: this.state.name.value,
@@ -117,7 +134,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 <input className="form__input" autoComplete="off" type="text" name="name" value={this.state.name.value}
                     placeholder="e.g. elastic-stack" autoFocus={true} tabIndex={1} onChange={this.handleNameChange} required />
                 <span className="form__error">
-                    {this.state.name.error.length ? <> <div> <Error className="form__icon form__icon--error" /> {this.state.name.error} </div> </> : null}
+                    {this.state.name.error.map((itm) => {
+                        return <div>
+                            <Error className="form__icon form__icon--error" /> {itm}
+                        </div>
+                    })}
                 </span>
             </label>
 
