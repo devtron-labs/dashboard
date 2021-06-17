@@ -84,10 +84,11 @@ export default function App() {
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 					const encodedEmailId: string = btoa(email);
 					const isAdmin = email === 'admin';
-					console.log(email, isAdmin);
 					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY',
 						{
 							api_host: 'https://app.posthog.com',
+							autocapture: true,
+							capture_pageview: true,
 							loaded: function (posthog) {
 								posthog.identify(encodedEmailId, { isAdmin });
 								posthog.people.set({ id: encodedEmailId })
