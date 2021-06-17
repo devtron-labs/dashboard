@@ -18,7 +18,7 @@ import Hotjar from './components/Hotjar/Hotjar'
 import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload';
-import posthog from 'posthog-js';
+// import posthog from 'posthog-js';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -85,14 +85,14 @@ export default function App() {
 					const encodedEmailId: string = btoa(email);
 					const isAdmin = email === 'admin';
 					console.log(email, isAdmin);
-					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY',
-						{
-							api_host: 'https://app.posthog.com',
-							loaded: function (posthog) {
-								posthog.identify(encodedEmailId, { isAdmin });
-								posthog.people.set({ id: encodedEmailId })
-							}
-						});
+					// posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY',
+					// 	{
+					// 		api_host: 'https://app.posthog.com',
+					// 		loaded: function (posthog) {
+					// 			posthog.identify(encodedEmailId, { isAdmin });
+					// 			posthog.people.set({ id: encodedEmailId })
+					// 		}
+					// 	});
 				}
 			}
 			catch (err) {
@@ -105,7 +105,7 @@ export default function App() {
 					setErrorPage(true)
 					showError(err)
 				}
-				posthog.reset()
+				// posthog.reset()
 			}
 			finally {
 				setValidating(false)
