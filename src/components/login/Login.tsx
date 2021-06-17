@@ -1,3 +1,4 @@
+import posthog from 'posthog-js';
 import React, { Component } from 'react';
 import dt from '../../assets/icons/logo/logo-dt.svg';
 import LoginIcons from '../../assets/icons/LoginSprite.svg';
@@ -91,6 +92,13 @@ export default class Login extends Component<LoginProps, LoginFormState>{
                 let queryString = this.props.location.search.split("continue=")[1];
                 let url = (queryString) ? `${queryString}` : URLS.APP;
                 this.props.history.push(`${url}`);
+                posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY', { api_host: 'https://app.posthog.com' });
+                // posthog.capture('test-event', { property: 'test-value' });
+                // posthog.identify(
+                //     '[user unique id]', // distinct_id, required
+                //     { userProperty: '   ' }, // $set, optional
+                // );
+                posthog.capture('login', { userid: 'value' })
             }
         }).catch((errors: ServerErrors) => {
             showError(errors);
@@ -107,7 +115,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             {this.state.loginList.filter(sso => sso.active).map((item) => {
                 return <a href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
                     <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
-                        Login with <span className="ml-5 capitalize">{item.name}</span>
+                    Login with <span className="ml-5 capitalize">{item.name}</span>
                 </a>
             })}
             <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>Login as administrator</NavLink>
