@@ -38,7 +38,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         const lowercaseRegexp = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
         let errors = []
-        
+
         if (this.state.name.value.length < 5) {
             errors.push('Minimum 5 characters required')
         }
