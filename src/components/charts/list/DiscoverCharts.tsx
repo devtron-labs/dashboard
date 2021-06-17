@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-    Progressing,
-    Select,
-    mapByKey,
-    showError,
-    BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    multiSelectStyles,
-    ConfirmationDialog,
-    Checkbox,
-    Option
-} from '../../common';
+import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, ConfirmationDialog } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -33,23 +21,14 @@ import { DOCUMENTATION, URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters';
+import { QueryParams } from '../charts.util';
 
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-
-}
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts.filter(chart => chart.isEnabled).map(chart => {
@@ -113,15 +92,10 @@ function DiscoverChartList() {
     }, []);
 
     useEffect(() => {
-        if (!location.search) {
-            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
-        }
-        else {
             if (!state.loading) {
                 initialiseFromQueryParams(state.chartRepos);
                 callApplyFilterOnCharts();
             }
-        }
     }, [location.search, state.loading])
 
     function reloadCallback(event) {
@@ -211,49 +185,6 @@ function DiscoverChartList() {
         setChartListloading(false);
     }
 
-    function handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        history.push(`${url}?${qs}`);
-    }
-
-
-    function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        history.push(`${url}?${qs}`);
-    }
-
-    function handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
-    function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
     function handleViewAllCharts() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
@@ -312,10 +243,7 @@ function DiscoverChartList() {
                         includeDeprecated={includeDeprecated}
                         selectedChartRepo={selectedChartRepo}
                         setAppStoreName={setAppStoreName}
-                        clearSearch={clearSearch}
-                        handleAppStoreChange={handleAppStoreChange}
-                        handleChartRepoChange={handleChartRepoChange}
-                        handleDeprecateChange={handleDeprecateChange} />
+                    />
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
@@ -349,10 +277,6 @@ function DiscoverChartList() {
                                     includeDeprecated={includeDeprecated}
                                     selectedChartRepo={selectedChartRepo}
                                     setAppStoreName={setAppStoreName}
-                                    clearSearch={clearSearch}
-                                    handleAppStoreChange={handleAppStoreChange}
-                                    handleChartRepoChange={handleChartRepoChange}
-                                    handleDeprecateChange={handleDeprecateChange}
                                     handleCloseFilter={handleCloseFilter} />
                                 <div className="chart-grid">
                                     {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
@@ -500,11 +424,11 @@ export default function DiscoverCharts() {
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
+function ChartListHeader({ setSelectedChartRepo, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
-    return <div className="chart-group__header">
-        <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
-        <h5 className="form__subtitle">Select chart to deploy. &nbsp;
+    return <div>
+        <h3 className="chart-grid__title pl-20 pr-20 pt-16">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+        <h5 className="form__subtitle pl-20">Select chart to deploy. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
         <ChartHeaderFilter
@@ -515,11 +439,8 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
             includeDeprecated={includeDeprecated}
             selectedChartRepo={selectedChartRepo}
             setAppStoreName={setAppStoreName}
-            clearSearch={clearSearch}
             handleCloseFilter={handleCloseFilter}
-            handleChartRepoChange={handleChartRepoChange}
-            handleDeprecateChange={handleDeprecateChange}
-            handleAppStoreChange={handleAppStoreChange} />
+        />
     </div>
 }
 
