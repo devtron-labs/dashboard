@@ -37,11 +37,14 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     async saveChartGroup(e) {
         const lowercaseRegexp = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
-        const spaceNotAllowedRegex = new RegExp('^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$')
         let errors = []
         
         if (this.state.name.value.length < 5) {
             errors.push('Minimum 5 characters required')
+        }
+
+        if (this.state.name.value.indexOf(" ")) {
+            errors.push('Do not Allowed space')
         }
 
         if (!lowercaseRegexp.test(this.state.name.value)) {
@@ -50,10 +53,6 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
 
         if (!startAndEndAlphanumericRegex.test(this.state.name.value)) {
             errors.push('Start and end with an alphanumeric character only')
-        }
-
-        if (!spaceNotAllowedRegex.test(this.state.name.value)) {
-            errors.push('Do not Allowed space')
         }
 
         if (!this.state.name.value) {
