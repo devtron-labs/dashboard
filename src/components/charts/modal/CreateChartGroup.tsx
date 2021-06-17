@@ -27,7 +27,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        this.setState({ name: { value: event.target.value, error: [] } });
+        this.setState({ name: { value: event.target.value.trim(), error: [] } });
     }
 
     handleDescriptionChange(event) {
@@ -35,24 +35,26 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     async saveChartGroup(e) {
-        const lowercaseRegexp = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
-        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
-        let errors = []
+        const lowercaseRegex = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
+        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-z0-9A-Z ]$`)
+        const spacNotAllowedRegex = new RegExp('^[\s]$')
 
+        let errors = []
+        
         if (this.state.name.value.length < 5) {
             errors.push('Minimum 5 characters required')
         }
 
-        if (this.state.name.value.indexOf("  ")) {
-            errors.push('Do not Allowed space')
-        }
-
-        if (!lowercaseRegexp.test(this.state.name.value)) {
+        if (!lowercaseRegex.test(this.state.name.value)) {
             errors.push('Use only lowercase alphanumeric characters "-" or "."')
         }
 
         if (!startAndEndAlphanumericRegex.test(this.state.name.value)) {
             errors.push('Start and end with an alphanumeric character only')
+        }
+
+        if (!spacNotAllowedRegex.test(this.state.name.value)) {
+            errors.push( 'Do not Allowed space')
         }
 
         if (!this.state.name.value) {
@@ -71,7 +73,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         })
 
         let requestBody = {
-            name: this.state.name.value,
+            name: this.state.name.value.trim(),
             description: this.state.description
         }
         let api = saveChartGroup
