@@ -61,28 +61,20 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             errors.push('Do not Allowed space')
         }
 
-        if (this.state.name.value.length) {
-            this.setState({
-                name: {
-                    ...this.state.name,
-                    error: errors
-                }
-            })
-            return
+        if(!this.state.name.value) {
+            errors.push('This is a required field')
         }
-        else {
-            this.setState({
-                name: {
-                    ...this.state.name,
-                    error: ["This is a required field"]
-                }
-            })
+
+        if(this.state.name.value.length > 30 ) {
+            errors.push('Must not exceed 30 characters')
         }
-        // this.state.name.value.length < 5 ? <div>Minimum 5 characters required</div> : "",
-        // !lowercaseRegexp.test(this.state.name.value) ? <div>Use only lowercase alphanumeric characters "-" or "."  </div> : "",
-        // !startAndEndAlphanumericRegex.test(this.state.name.value) ? <div>Start and end with an alphanumeric character only</div> : "",
-        // !spaceNotAllowedRegex.test(this.state.name.value) ? <div>Do not Allowed space</div> : ""
-        // // this.handleErrors(this.state.name.value),
+
+        this.setState({
+            name: {
+                ...this.state.name,
+                error: errors
+            }
+        })
 
         let requestBody = {
             name: this.state.name.value,
