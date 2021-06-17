@@ -34,12 +34,6 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         this.setState({ description: event.target.value });
     }
 
-    //   handleErrors = (value) => {
-    //             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
-    //             if (value.length < 5) return 'Minimum 5 characters required.'
-    //             // if (!nameRegexp.test(value)) { return 'name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'}
-    //         }
-
     async saveChartGroup(e) {
         // if (!nameRegexp.test(this.state.name.value)) {
         //     this.setState({ name: { ...this.state.name, error: ['name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'] } })
@@ -49,29 +43,29 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
         const spaceNotAllowedRegex = new RegExp('^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$')
 
-        let error = []
+        let errors = []
 
         if (this.state.name.value.length < 5) {
-            error.push('Minimum 5 characters required')
+            errors.push('Minimum 5 characters required')
         }
 
         if (!lowercaseRegexp.test(this.state.name.value)) {
-            error.push('Use only lowercase alphanumeric characters "-" or "."')
+            errors.push('Use only lowercase alphanumeric characters "-" or "."')
         }
 
         if (!startAndEndAlphanumericRegex.test(this.state.name.value)) {
-            error.push('Start and end with an alphanumeric character only')
+            errors.push('Start and end with an alphanumeric character only')
         }
-        
+
         if (!spaceNotAllowedRegex.test(this.state.name.value)) {
-            error.push('Do not Allowed space')
+            errors.push('Do not Allowed space')
         }
 
         if (this.state.name.value.length) {
             this.setState({
                 name: {
                     ...this.state.name,
-                    error: error
+                    error: errors
                 }
             })
             return
@@ -135,9 +129,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     placeholder="e.g. elastic-stack" autoFocus={true} tabIndex={1} onChange={this.handleNameChange} required />
                 <span className="form__error">
                     {this.state.name.error.map((itm) => {
-                        return <div>
-                            <Error className="form__icon form__icon--error" /> {itm}
-                        </div>
+                        return <div> <Error className="form__icon form__icon--error" /> {itm} </div>
                     })}
                 </span>
             </label>
