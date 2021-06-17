@@ -35,16 +35,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     async saveChartGroup(e) {
-        // if (!nameRegexp.test(this.state.name.value)) {
-        //     this.setState({ name: { ...this.state.name, error: ['name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'] } })
-        //     return
-        // }
         const lowercaseRegexp = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-zA-Z0-9-. ]$')
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9].*[a-z0-9A-Z]$`)
         const spaceNotAllowedRegex = new RegExp('^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$')
-
         let errors = []
-
+        
         if (this.state.name.value.length < 5) {
             errors.push('Minimum 5 characters required')
         }
@@ -61,11 +56,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             errors.push('Do not Allowed space')
         }
 
-        if(!this.state.name.value) {
+        if (!this.state.name.value) {
             errors.push('This is a required field')
         }
 
-        if(this.state.name.value.length > 30 ) {
+        if (this.state.name.value.length > 30) {
             errors.push('Must not exceed 30 characters')
         }
 
