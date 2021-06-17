@@ -18,6 +18,7 @@ import Hotjar from './components/Hotjar/Hotjar'
 import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload';
+import posthog from 'posthog-js';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -79,6 +80,14 @@ export default function App() {
 				if (location.search && location.search.includes("?continue=")) {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
+					console.log("Verified")
+					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY', { api_host: 'https://app.posthog.com' });
+					// posthog.capture('test-event', { property: 'test-value' });
+					// posthog.identify(
+					//     '[user unique id]', // distinct_id, required
+					//     { userProperty: '   ' }, // $set, optional
+					// );
+					posthog.capture('verify', { userid: 'userVerified' })
 				}
 			}
 			catch (err) {
