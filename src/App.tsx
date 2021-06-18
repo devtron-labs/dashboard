@@ -85,7 +85,7 @@ export default function App() {
 				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
 					const loginInfo = getLoginInfo()
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-					const encrypted: string = SHA256(email);
+					const encryptedEmail: string = SHA256(email);
 					const isAdmin = email === 'admin';
 					posthog.init(window._env_.POSTHOG_TOKEN,
 						{
@@ -93,11 +93,12 @@ export default function App() {
 							autocapture: true,
 							capture_pageview: true,
 							loaded: function (posthog) {
-								posthog.identify(encrypted, {
+								posthog.identify(encryptedEmail, {
 									isAdmin,
+									name: encryptedEmail,
 									cluster: window._env_?.CLUSTER_NAME
 								});
-								posthog.people.set({ id: encodedEmailId })
+								posthog.people.set({ id: encryptedEmail })
 							}
 						});
 				}
