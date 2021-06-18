@@ -47,3 +47,4 @@ export * from './security/ScanDetailsModal';
 export * from './DatePickers/Calender';
 export * from './DatePickers/DayPickerRangeController';
 export * from './helpers/compareVersion';
+export * from './helpers/makeId';

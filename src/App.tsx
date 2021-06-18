@@ -13,13 +13,12 @@ import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
 import 'tippy.js/dist/tippy.css';
-import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo } from './components/common';
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo, makeId } from './components/common';
 import Hotjar from './components/Hotjar/Hotjar'
 import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload';
 import posthog from 'posthog-js';
-import Hash from "object-hash"
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -83,22 +82,17 @@ export default function App() {
 					push(newLocation);
 				}
 				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
-					const loginInfo = getLoginInfo()
-					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-					const encryptedEmail = Hash(email);
-					const isAdmin = email === 'admin';
+					const randomId = makeId(25);
 					posthog.init(window._env_?.POSTHOG_TOKEN,
 						{
 							api_host: 'https://app.posthog.com',
 							autocapture: false,
 							capture_pageview: true,
 							loaded: function (posthog) {
-								posthog.identify(encryptedEmail, {
-									isAdmin,
-									name: encryptedEmail,
-									cluster: window._env_?.CLUSTER_NAME
+								posthog.identify(randomId, {
+									name: randomId,
 								});
-								posthog.people.set({ id: encryptedEmail })
+								posthog.people.set({ id: randomId })
 							}
 						});
 				}
