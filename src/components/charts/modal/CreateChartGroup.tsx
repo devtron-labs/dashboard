@@ -27,40 +27,32 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        this.setState({ name: { value: event.target.value.trim(), error: [] } });
-    }
-
-    handleDescriptionChange(event) {
-        this.setState({ description: event.target.value });
-    }
-
-    async saveChartGroup(e) {
         const lowercaseRegex = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-z0-9A-Z ]$`)
 
         let errors = []
 
-        if (this.state.name.value.length < 5) {
+        if (event.target.value.length < 5) {
             errors.push('Minimum 5 characters required')
         }
 
-        if (!lowercaseRegex.test(this.state.name.value)) {
+        if (!lowercaseRegex.test(event.target.value.trim())) {
             errors.push('Use only lowercase alphanumeric characters "-" or "."')
         }
 
-        if (!startAndEndAlphanumericRegex.test(this.state.name.value)) {
+        if (!startAndEndAlphanumericRegex.test(event.target.value.trim())) {
             errors.push('Start and end with an alphanumeric character only')
         }
 
-        if (this.state.name.value.indexOf(" ") >= 0) {
-            errors.push('Do not use \`spaces\'')
+        if (event.target.value.trim().indexOf(" ") >= 0) {
+            errors.push('Do not use \'spaces\'')
         }
 
-        if (!this.state.name.value) {
+        if (!event.target.value) {
             errors.push('This is a required field')
         }
 
-        if (this.state.name.value.length > 30) {
+        if (event.target.value.length > 30) {
             errors.push('Must not exceed 30 characters')
         }
 
@@ -70,6 +62,23 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 error: errors
             }
         })
+        this.setState({ name: { value: event.target.value.trim(), error: errors } });
+
+    }
+
+    handleDescriptionChange(event) {
+        this.setState({ description: event.target.value });
+    }
+
+    async saveChartGroup(e) {
+        if (!this.state.name.value) {
+           this.setState({
+            name: { 
+                ...this.state.name, 
+                  error: ['This is a required field']
+              } 
+           })
+        }
 
         let requestBody = {
             name: this.state.name.value.trim(),
