@@ -3,14 +3,17 @@ import { wrap } from '@sentry/browser/dist/helpers';
 export default () => {
 
     // let filteredArray = []
-    var wrapper = {
+    var bp = {
+        // let eventSrc= undefined
+        // let filteredArray = []
+        // let grepTokens = undefined
+        // let indexFromLastMatch = -1000000
+        // let buffer = []
+        // let trailingLines= []
+        // let prefix = "",
         eventSrc: undefined,
         filteredArray: [],
-        //remove
-        logFilter: undefined,
         grepTokens: undefined,
-        //remove
-        filter: undefined,
         indexFromLastMatch: -1000000,
         buffer: [],
         trailingLines: [],
@@ -62,6 +65,7 @@ export default () => {
             }
         }
     }
+    var wrappers = []
     self.onmessage = e => { // eslint-disable-line no-restricted-globals
         if (!e) {
             console.log('no event found');
@@ -71,22 +75,26 @@ export default () => {
         switch (e.data.type) {
             case 'start':
                 const { url, grepTokens } = e.data.payload
-                try {
-                    wrapper.eventSrc.close()
-                }
-                catch (err) { }
-                console.log(url)
+                wrappers.forEach(wrapper => {
+                    try {
+                        wrapper.eventSrc.close()
+                    }
+                    catch (err) { }
+                })
+                // console.log(url)
                 for (let index = 0; index < url.length; index++) {
                     const element = url[index];
-                    wrapper.eventSrc = new EventSource(url, { withCredentials: true })
-                    wrapper.grepTokens = grepTokens
-                    const eventListener = wrapper.eventListener.bind(wrapper)
-                    wrapper.eventSrc.addEventListener('message', eventListener)
-                    wrapper.eventSrc.addEventListener('open', function (ev) {
-                        self.postMessage({ result: [], signal: 'open', readyState: wrapper.eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                    wrappers[index] = Object.assign({}, bp)
+                    wrappers[index].prefix = index + ": "
+                    wrappers[index].eventSrc = new EventSource(url, { withCredentials: true })
+                    wrappers[index].grepTokens = grepTokens
+                    const eventListener = wrappers[index].eventListener.bind(wrappers[index])
+                    wrappers[index].eventSrc.addEventListener('message', eventListener)
+                    wrappers[index].eventSrc.addEventListener('open', function (ev) {
+                        self.postMessage({ result: [], signal: 'open', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
                     })
-                    wrapper.eventSrc.addEventListener('error', function (ev) {
-                        self.postMessage({ result: [], signal: 'close', readyState: wrapper.eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                    wrappers[index].eventSrc.addEventListener('error', function (ev) {
+                        self.postMessage({ result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
                     })
                 }
                 break
@@ -94,21 +102,23 @@ export default () => {
                 // wrapper.filteredArray = logFilter.stop()
                 respond()
                 try {
-                    wrapper.eventSrc.close()
+                    wrappers.forEach(val => val.eventSrc.close())
                 }
                 catch (err) { }
                 finally {
-                    wrapper.filteredArray = []
+                    wrappers.forEach( val => val.filteredArray = [])
                 }
         }
 
     }
 
     function respond() {
-        console.log(wrapper.filteredArray.length)
-        if (wrapper.filteredArray.length === 0) return
-        self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null);// eslint-disable-line no-restricted-globals
-        wrapper.filteredArray.length = 0
+        // console.log(wrapper.filteredArray.length)
+        wrappers.forEach( wrapper => {
+            if (wrapper.filteredArray.length === 0) return
+            self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null);// eslint-disable-line no-restricted-globals
+            wrapper.filteredArray.length = 0
+        })
     }
     self.setInterval(respond, 500); // eslint-disable-line no-restricted-globals
 }

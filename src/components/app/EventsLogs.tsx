@@ -297,9 +297,9 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         } else {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
-        console.log(prefix)
-        console.log( Host )
-        return `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${nodeName}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`;
+        // return `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${nodeName}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`
+        let pods = ["logs-demo-597b67768f-khc2s", "logs-demo-597b67768f-86tjl"]
+        return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
 
     useEffect(() => {
@@ -337,7 +337,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { url: [url], grepTokens: grepTokens, timeout: 300 },
+            payload: { url: url, grepTokens: grepTokens, timeout: 300 },
         });
     }
 
