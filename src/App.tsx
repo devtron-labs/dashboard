@@ -82,6 +82,7 @@ export default function App() {
 					push(newLocation);
 				}
 				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
+					console.log("posthog init")
 					const loginInfo = getLoginInfo()
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 					const encodedEmailId: string = btoa(email);
