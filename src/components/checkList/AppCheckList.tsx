@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-chevron-down.svg';
 import { AppCheckListProps, AppCheckListState } from './checklist.type';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';

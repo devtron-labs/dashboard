@@ -6,11 +6,13 @@ import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, Confi
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
 import { deleteApp } from './appConfig.service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { ReactComponent as Dropdown } from '../../../../assets/icons/appstatus/ic-dropdown.svg'
+import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';
+import { DOCUMENTATION } from '../../../../config';
+import { AppOtherEnvironment } from '../../../../services/service.types';
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'));
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
@@ -372,14 +374,35 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
     </ErrorBoundary>
 }
 
+const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, environmentsLoading: boolean, url: string) => {
+    if (environmentsLoading) return null;
+
+    if (Array.isArray(environmentResult?.result)) {
+        return <div>
+            {(environmentResult.result).map(env => {
+                let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
+                return <NavLink key={env.environmentId}
+                    className="app-compose__nav-item"
+                    to={LINK}>{env.environmentName}
+                </NavLink>
+            })}
+        </div>
+    }
+    else {
+        return <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
+            Environment overrides allow you to manage environment specific configurations after you’ve created deployment pipelines. &nbsp;
+            <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
+        </div>
+    }
+}
+
 function EnvironmentOverrideRouter() {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId }>()
     const [collapsed, toggleCollapsed] = useState(false)
     const previousPathName = usePrevious(pathname)
-    const { url, path } = useRouteMatch()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(() => getAppOtherEnvironment(appId), [appId], !!appId)
-
+    const { url, path } = useRouteMatch()
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
             reloadEnvironments()
@@ -393,13 +416,7 @@ function EnvironmentOverrideRouter() {
             <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
             </div>
             {!collapsed && <div className="environment-routes">
-                {Array.isArray(environmentResult?.result) && (environmentResult.result).map(env => {
-                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
-                    return <NavLink key={env.environmentId}
-                        className="app-compose__nav-item"
-                        to={LINK}>{env.environmentName}
-                    </NavLink>
-                })}
+                {EnvironmentOverrideDropdown(environmentResult, environmentsLoading, url)}
             </div>}
         </div >
     )

@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-    Progressing,
-    Select,
-    mapByKey,
-    showError,
-    BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    multiSelectStyles,
-    ConfirmationDialog,
-    Checkbox,
-    Option
-} from '../../common';
+import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, ConfirmationDialog } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
@@ -33,21 +21,14 @@ import { DOCUMENTATION, URLS } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer } from '../charts.util';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+import ChartHeaderFilter from '../ChartHeaderFilters';
+import { QueryParams } from '../charts.util';
 
-const QueryParams = {
-    ChartRepoId: 'chartRepoId',
-    IncludeDeprecated: 'includeDeprecated',
-    AppStoreName: 'appStoreName',
-
-}
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts.filter(chart => chart.isEnabled).map(chart => {
@@ -66,7 +47,8 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 function DiscoverChartList() {
     const location = useLocation();
     const history = useHistory();
-    const { url } = useRouteMatch();
+    const match = useRouteMatch();
+    const { url } = match
     const { breadcrumbs, setCrumb } = useBreadcrumb({});
     const {
         state,
@@ -91,7 +73,7 @@ function DiscoverChartList() {
     const isLeavingPageNotAllowed = useRef(false);
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
     const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
-    const [openMenu, changeOpenMenu] = useState<'repository' | ''>('')
+    const [showChartGroupModal, toggleChartGroupModal] = useState(false)
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return acc = acc && chart.originalValuesYaml === chart.valuesYaml;
     }, true);
@@ -110,15 +92,10 @@ function DiscoverChartList() {
     }, []);
 
     useEffect(() => {
-        if (!location.search) {
-            history.push(`${url}?${QueryParams.IncludeDeprecated}=0`);
-        }
-        else {
             if (!state.loading) {
                 initialiseFromQueryParams(state.chartRepos);
                 callApplyFilterOnCharts();
             }
-        }
     }, [location.search, state.loading])
 
     function reloadCallback(event) {
@@ -208,49 +185,6 @@ function DiscoverChartList() {
         setChartListloading(false);
     }
 
-    function handleChartRepoChange(selected): void {
-        let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        history.push(`${url}?${qs}`);
-    }
-
-
-    function handleDeprecateChange(deprecated): void {
-        let searchParams = new URLSearchParams(location.search);
-        let app = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.IncludeDeprecated}=${deprecated}`;
-        if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-        history.push(`${url}?${qs}`);
-    }
-
-    function handleAppStoreChange(event): void {
-        event.preventDefault();
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
-    function clearSearch(event): void {
-        let searchParams = new URLSearchParams(location.search);
-        let deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        let chartRepoId = searchParams.get(QueryParams.ChartRepoId);
-        let qs: string = "";
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-        history.push(`${url}?${qs}`);
-    }
-
     function handleViewAllCharts() {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
     }
@@ -278,9 +212,10 @@ function DiscoverChartList() {
                 </ConditionalWrap>
                 <div className="page-header__cta-container flex">
                     {state.charts.length === 0 && (
-                        <NavLink className="cta no-decor flex" to={`${url}/create`}>
+                        <button type="button" className="cta flex"
+                            onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
-                        </NavLink>
+                        </button>
                     )}
                 </div>
             </div>
@@ -301,8 +236,6 @@ function DiscoverChartList() {
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : <> <ChartListHeader chartRepoList={state.chartRepos}
                         handleCloseFilter={handleCloseFilter}
-                        appliedChartRepoFilter={appliedChartRepoFilter}
-                        chartGroups={state.chartGroups.slice(0, 4)}
                         setSelectedChartRepo={setSelectedChartRepo}
                         charts={state.charts}
                         searchApplied={searchApplied}
@@ -310,19 +243,16 @@ function DiscoverChartList() {
                         includeDeprecated={includeDeprecated}
                         selectedChartRepo={selectedChartRepo}
                         setAppStoreName={setAppStoreName}
-                        clearSearch={clearSearch}
-                        handleAppStoreChange={handleAppStoreChange}
-                        handleChartRepoChange={handleChartRepoChange}
-                        handleDeprecateChange={handleDeprecateChange} />
-                        <span className='empty-height'>
-                            <EmptyState>
-                                <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                            </EmptyState>
-                        </span>
-                    </>}
+                    />
+                            <span className='empty-height'>
+                                <EmptyState>
+                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
+                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                                </EmptyState>
+                            </span>
+                        </>}
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
@@ -340,19 +270,13 @@ function DiscoverChartList() {
                                 /> </> : <>
                                 <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
                                 <ChartListHeader chartRepoList={state.chartRepos}
-                                    appliedChartRepoFilter={appliedChartRepoFilter}
                                     setSelectedChartRepo={setSelectedChartRepo}
-                                    chartGroups={state.chartGroups.slice(0, 4)}
                                     charts={state.charts}
                                     searchApplied={searchApplied}
                                     appStoreName={appStoreName}
                                     includeDeprecated={includeDeprecated}
                                     selectedChartRepo={selectedChartRepo}
                                     setAppStoreName={setAppStoreName}
-                                    clearSearch={clearSearch}
-                                    handleAppStoreChange={handleAppStoreChange}
-                                    handleChartRepoChange={handleChartRepoChange}
-                                    handleDeprecateChange={handleDeprecateChange}
                                     handleCloseFilter={handleCloseFilter} />
                                 <div className="chart-grid">
                                     {chartList.slice(0, showDeployModal ? 12 : chartList.length).map(chart => <ChartSelect
@@ -474,16 +398,17 @@ function DiscoverChartList() {
                 <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog> : null}
+        {showChartGroupModal ? <CreateChartGroup history={history}
+            location={location}
+            match={match}
+            closeChartGroupModal={() => { toggleChartGroupModal(!showChartGroupModal) }} /> : null}
     </>
 }
 
 
 export default function DiscoverCharts() {
-    const history = useHistory();
-    const location = useLocation();
     const match = useRouteMatch();
-    const { url, path } = match
-
+    const { path } = match;
 
     return <Switch>
         <Route path={`${path}/group`}>
@@ -495,74 +420,41 @@ export default function DiscoverCharts() {
         <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
         <Route>
             <DiscoverChartList />
-            <Route exact path={`${path}/create`}>
-                <CreateChartGroup
-                    history={history}
-                    location={location}
-                    match={match}
-                    closeChartGroupModal={() => history.push(url)}
-                />
-            </Route>
         </Route>
     </Switch>
 }
 
-function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleChartRepoChange, handleDeprecateChange, clearSearch, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, chartGroups, appliedChartRepoFilter, handleCloseFilter }) {
-    const MenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store"
-                        disabled={false}
-                        onClick={(selected: any) => { handleChartRepoChange(selectedChartRepo) }}>Apply Filter</button>
-                </div>
-            </components.MenuList>
-        );
-    };
+function ChartListHeader({ setSelectedChartRepo, setAppStoreName, chartRepoList, appStoreName, charts, selectedChartRepo, includeDeprecated, searchApplied, handleCloseFilter }) {
 
-    return <div className="chart-group__header">
-        <h3 className="chart-grid__title">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
-        <h5 className="form__subtitle">Select chart to deploy. &nbsp;
+    return <div>
+        <h3 className="chart-grid__title pl-20 pr-20 pt-16">{charts.length === 0 ? 'All Charts' : 'Select Charts'}</h3>
+        <h5 className="form__subtitle pl-20">Select chart to deploy. &nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">Learn more about deploying charts</a>
         </h5>
-        <div className="flexbox flex-justify">
-            <form onSubmit={handleAppStoreChange} className="search position-rel" >
-                <Search className="search__icon icon-dim-18" />
-                <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(event) => { setAppStoreName(event.target.value); }} />
-                {searchApplied ? <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                </button> : null}
-            </form>
-            <div className="flex">
-                <ReactSelect className="date-align-left fs-13"
-                    placeholder="Repository : All"
-                    name="repository "
-                    value={selectedChartRepo}
-                    options={chartRepoList}
-                    closeOnSelect={false}
-                    onChange={setSelectedChartRepo}
-                    isClearable={false}
-                    isMulti={true}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    onMenuClose={handleCloseFilter}
-                    components={{
-                        DropdownIndicator,
-                        Option,
-                        ValueContainer,
-                        IndicatorSeparator: null,
-                        ClearIndicator: null,
-                        MenuList,
-                    }}
-                    styles={{ ...multiSelectStyles }} />
-                <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                    isChecked={includeDeprecated === 1}
-                    value={"CHECKED"}
-                    onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleDeprecateChange(value) }} >
-                    <div className="ml-5"> Show deprecated</div>
-                </Checkbox>
-            </div>
+        <ChartHeaderFilter
+            chartRepoList={chartRepoList}
+            setSelectedChartRepo={setSelectedChartRepo}
+            searchApplied={searchApplied}
+            appStoreName={appStoreName}
+            includeDeprecated={includeDeprecated}
+            selectedChartRepo={selectedChartRepo}
+            setAppStoreName={setAppStoreName}
+            handleCloseFilter={handleCloseFilter}
+        />
+    </div>
+}
+
+export function EmptyChartGroup() {
+    const { url } = useRouteMatch();
+    return <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4' }}>
+        <img src={empty} className="" style={{ width: "200px", margin: "20px 42px" }} />
+        <div>
+            <div className="fs-16 fw-6">Chart group</div>
+            <div className="cn-7">Use chart groups to preconfigure and deploy frequently used charts together.</div>
+            <a href={DOCUMENTATION.CHART_DEPLOY} rel="noreferrer noopener" target="_blank" className="learn-more__href" >  Learn more about chart groups</a>
+            <NavLink to={`${url}/group/create`} className="en-2 br-4 bw-1 mt-16 cursor flex no-decor" style={{ width: "100px" }}>
+                <div className="fw-6 cn-7 p-6">Create group</div>
+            </NavLink>
         </div>
     </div>
 }
@@ -570,7 +462,7 @@ function ChartListHeader({ handleAppStoreChange, setSelectedChartRepo, handleCha
 export function ChartGroupListMin({ chartGroups }) {
     const history = useHistory();
     const match = useRouteMatch();
-
+    if (chartGroups.length == 0) { return <EmptyChartGroup /> }
     return <div className="chart-group" style={{ minHeight: "280px" }}>
         <div className="chart-group__header">
             <div className="flexbox">

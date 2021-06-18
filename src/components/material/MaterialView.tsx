@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
-import { ReactComponent as Down } from '../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
 import { Progressing, Checkbox } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
@@ -135,7 +135,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         autoFocus
                         name="Git Repo URL*"
                         type="text"
-                        placeholder="e.g. https://gitlab.com/abc/xyz.git"
+                        placeholder="e.g. https://gitlab.com/abc/xyz"
                         value={`${this.props.material.url}`}
                         onChange={this.props.handleUrlChange} />
                     <span className="form__error">

@@ -59,6 +59,9 @@
     font-weight: 500;
     line-height: 1.45;
     letter-spacing: -0.1px;
+    display: flex;
+    margin-bottom: 4px;
+    margin-top: 4px
 }
 
 .form__label {
@@ -93,6 +96,7 @@
     display: block;
     width: 100%;
     font-weight: 500;
+    margin-bottom: 4px ;
 }
 
 .form__input--error {
@@ -130,10 +134,13 @@ p.sentence-case:first-letter {
     width: 12px;
     margin-right: 5px;
     vertical-align: middle;
+    position: relative;
+    top: 2px;
 }
 
 .form__icon--error path[fill="#FFCB5D"] {
     fill: var(--R500);
+    
 }
 
 .form__icon--info path[fill="#06C"] {
@@ -459,6 +466,7 @@ p.sentence-case:first-letter {
     width: 250px;
     height: 36px;
     position: relative;
+    margin-right: 16px;
 }
 
 .search__input {

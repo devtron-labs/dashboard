@@ -10,14 +10,13 @@ import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullsc
 import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
 import { Link } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
+import { URLS } from '../../../../config';
+import { getHostURLConfiguration } from '../../../../services/service';
+import { toast } from 'react-toastify'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
-import { URLS } from '../../../../config';
-import { getHostURLConfiguration } from '../../../../services/service';
-import { toast } from 'react-toastify'
-
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion }> = ({ appName, environment, podMap, k8sVersion }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
@@ -141,11 +140,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION;
+
             toast.warn(<div className="toast">
                 <div className="toast__title">Error Parsing K8sVersion</div>
                 <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
             </div>)
         }
+
         let appInfo = {
             appId: appId,
             envId: envId,
@@ -181,10 +182,12 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
 
     //@ts-ignore
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
-        return <AppMetricsEmptyState isLoading={datasource.isLoading}
-            isConfigured={datasource.isConfigured}
-            isHealthy={datasource.isHealthy}
-            hostURLConfig={hostURLConfig} />
+        return <>
+            <AppMetricsEmptyState isLoading={datasource.isLoading}
+                isConfigured={datasource.isConfigured}
+                isHealthy={datasource.isHealthy}
+                hostURLConfig={hostURLConfig} />
+        </>
     }
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100`}

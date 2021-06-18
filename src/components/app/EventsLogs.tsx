@@ -1,6 +1,4 @@
-//@ts-nocheck
-
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
@@ -114,7 +112,6 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                         shell={shell}
                         isReconnection={isReconnection}
                         setIsReconnection={setIsReconnection}
-                        selectShell={selectShell}
                         setTerminalCleared={setTerminalCleared}
                         setSocketConnection={setSocketConnection}
                     />
@@ -124,16 +121,23 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
     );
 })
 
-export const NodeManifestView: React.FC<{ nodeName: string; nodes: AggregatedNodes, appName: string, environmentName: string }> = ({ nodeName, nodes, appName, environmentName }) => {
+interface NodeManifestViewProps {
+    nodeName: string;
+    nodes: AggregatedNodes;
+    appName: string;
+    environmentName: string;
+}
+
+export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, nodes, appName, environmentName }) => {
     const { queryParams, searchParams } = useSearchString()
     const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
-    const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
+    const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: appName, envName: environmentName }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
     const [manifest, setManifest] = useState(null)
-
     editor.defineTheme('vs-dark--dt', {
         base: 'vs-dark',
         inherit: true,
         rules: [
+            //@ts-ignore
             { background: '#0B0F22' }
         ],
         colors: {

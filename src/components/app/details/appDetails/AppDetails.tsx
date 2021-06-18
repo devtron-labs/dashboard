@@ -46,7 +46,7 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-dropdown.svg';
+import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';
@@ -781,8 +781,22 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     const nodesMap = nodes.nodes[kind] || new Map();
 
-    const containers =
+    let containers =
         (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.containers : null;
+
+    let initContainers =
+        (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.initContainers : null;
+
+    if (!containers) {
+        containers = []
+    }
+    if (!initContainers ) {
+        initContainers = []
+    }
+
+    if(params.tab === NodeDetailTabs.TERMINAL) initContainers = [];
+    
+    let allContainers = containers.concat(initContainers);
 
     function getPodNameSuffix(nodeName: string) {
         if (Nodes.Pod !== kind || !showOldOrNewSuffix) return ''
@@ -875,14 +889,14 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 />
             </div>
         </div>
-        {Array.isArray(containers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
+        {Array.isArray(allContainers) && (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
             <>
                 <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                 <div className="events-logs__dropdown-selector">
                     <span className="events-logs__label">Containers</span>
                     <div style={{ width: '175px' }}>
                         <Select placeholder="Select Container"
-                            options={containers.map((container) => ({ label: container, value: container }))}
+                            options={allContainers.map((container) => ({ label: container, value: container }))}
                             value={containerName ? { label: containerName, value: containerName } : null}
                             onChange={(selected) => {
                                 selectContainer((selected as any).value);

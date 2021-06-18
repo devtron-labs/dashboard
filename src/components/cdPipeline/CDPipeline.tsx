@@ -14,7 +14,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
-import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import yamlJsParser from 'yaml';
 import settings from '../../assets/icons/ic-settings.svg';
 import trash from '../../assets/icons/misc/delete.svg';
@@ -24,7 +23,7 @@ import config from './sampleConfig.json';
 import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
-import dropdown from '../../assets/icons/appstatus/ic-dropdown.svg';
+import dropdown from '../../assets/icons/ic-chevron-down.svg';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -745,6 +744,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="form__label">Deploy to environment</div>
                     <ReactSelect menuPortalTarget={document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
+                        isDisabled={!!this.props.match.params.cdPipelineId}
                         placeholder="Select Environment"
                         options={this.state.environments}
                         value={selectedEnv}

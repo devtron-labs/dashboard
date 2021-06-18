@@ -1,9 +1,9 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useRouteMatch, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
-import arrowTriangle from '../../assets/icons/appstatus/ic-dropdown.svg';
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg';
 import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
@@ -34,7 +34,7 @@ const ConfigRequired = [
 ]
 
 const ConfigOptional = [
-    { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
+    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
     { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
     { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
     { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
