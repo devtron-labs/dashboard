@@ -19,6 +19,7 @@ import * as serviceWorker from './serviceWorker';
 import { validateToken } from './services/service';
 import Reload from './components/Reload/Reload';
 import posthog from 'posthog-js';
+import SHA256 from "crypto-js/sha256"
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -86,7 +87,7 @@ export default function App() {
 					console.log("posthog init")
 					const loginInfo = getLoginInfo()
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-					const encodedEmailId: string = btoa(email);
+					const encryptedEmail: string = SHA256(email);
 					const isAdmin = email === 'admin';
 					posthog.init(window._env_.POSTHOG_TOKEN,
 						{
@@ -94,11 +95,12 @@ export default function App() {
 							autocapture: true,
 							capture_pageview: true,
 							loaded: function (posthog) {
-								posthog.identify(encodedEmailId, {
+								posthog.identify(encryptedEmail, {
 									isAdmin,
+									name: encryptedEmail,
 									cluster: window._env_?.CLUSTER_NAME
 								});
-								posthog.people.set({ id: encodedEmailId })
+								posthog.people.set({ id: encryptedEmail })
 							}
 						});
 				}
