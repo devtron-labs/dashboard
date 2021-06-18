@@ -86,7 +86,7 @@ export default function App() {
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 					const encodedEmailId: string = btoa(email);
 					const isAdmin = email === 'admin';
-					posthog.init('-HcQtUlt00wrD2pWAkRYHBTMr9qo53bXL_M0nuCq1bY',
+					posthog.init(window._env_.POSTHOG_TOKEN,
 						{
 							api_host: 'https://app.posthog.com',
 							autocapture: true,
