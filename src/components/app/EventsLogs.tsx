@@ -24,7 +24,6 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
-import { LogFilter } from './LogFilter';
 
 const commandLineParser = require('command-line-parser')
 

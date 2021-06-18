@@ -1,5 +1,3 @@
-import { getGrepTokens } from './EventsLogs';
-import { wrap } from '@sentry/browser/dist/helpers';
 export default () => {
 
     // let filteredArray = []
