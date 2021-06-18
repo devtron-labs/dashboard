@@ -82,26 +82,26 @@ export default function App() {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
 				}
-				// if (window._env_ && window._env_.POSTHOG_ENABLED) {
-				const loginInfo = getLoginInfo()
-				const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-				const encryptedEmail = Hash(email);
-				const isAdmin = email === 'admin';
-				posthog.init(window._env_?.POSTHOG_TOKEN,
-					{
-						api_host: 'https://app.posthog.com',
-						autocapture: false,
-						capture_pageview: true,
-						loaded: function (posthog) {
-							posthog.identify(encryptedEmail, {
-								isAdmin,
-								name: encryptedEmail,
-								cluster: window._env_?.CLUSTER_NAME
-							});
-							posthog.people.set({ id: encryptedEmail })
-						}
-					});
-				// }
+				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
+					const loginInfo = getLoginInfo()
+					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
+					const encryptedEmail = Hash(email);
+					const isAdmin = email === 'admin';
+					posthog.init(window._env_?.POSTHOG_TOKEN,
+						{
+							api_host: 'https://app.posthog.com',
+							autocapture: false,
+							capture_pageview: true,
+							loaded: function (posthog) {
+								posthog.identify(encryptedEmail, {
+									isAdmin,
+									name: encryptedEmail,
+									cluster: window._env_?.CLUSTER_NAME
+								});
+								posthog.people.set({ id: encryptedEmail })
+							}
+						});
+				}
 			}
 			catch (err) {
 				// push to login without breaking search
