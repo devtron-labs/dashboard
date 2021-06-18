@@ -27,35 +27,36 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        const lowercaseRegex = new RegExp('^[a-z0-9-. ][a-z0-9-. ]*[a-z0-9-. ]$')
-        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-z0-9A-Z ]$`)
 
+        const lowercaseRegex = new RegExp('^[a-z0-9-. ]*$')
+        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-zA-Z0-9 ]$`)
         let errors = []
 
-        if (event.target.value.length < 5) {
-            errors.push('Minimum 5 characters required')
-        }
-
-        if (!lowercaseRegex.test(event.target.value.trim())) {
-            errors.push('Use only lowercase alphanumeric characters "-" or "."')
-        }
-
-        if (!startAndEndAlphanumericRegex.test(event.target.value.trim())) {
-            errors.push('Start and end with an alphanumeric character only')
-        }
-
-        if (event.target.value.trim().indexOf(" ") >= 0) {
-            errors.push('Do not use \'spaces\'')
-        }
-
         if (!event.target.value) {
-            errors.push('This is a required field')
+            errors.push("This is a required field")
         }
+        else {
+            if (event.target.value.trim().length < 5 ) {
+                errors.push('Minimum 5 characters required')
+            }
 
-        if (event.target.value.length > 30) {
-            errors.push('Must not exceed 30 characters')
+            if (!lowercaseRegex.test(event.target.value)) {
+                errors.push('Use only lowercase alphanumeric characters "-" or "."')
+            }
+ 
+            if (!startAndEndAlphanumericRegex.test(event.target.value) && !(event.target.value.length ==1)) {
+                errors.push('Start and end with an alphanumeric character only')
+            }
+
+            if (event.target.value.trim().indexOf(" ") >= 0) {
+                errors.push('Do not use \'spaces\'')
+            }
+
+            if (event.target.value.length > 30) {
+                errors.push('Must not exceed 30 characters')
+            }
         }
-
+        
         this.setState({
             name: {
                 ...this.state.name,
@@ -72,12 +73,12 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
 
     async saveChartGroup(e) {
         if (!this.state.name.value) {
-           this.setState({
-            name: { 
-                ...this.state.name, 
-                  error: ['This is a required field']
-              } 
-           })
+            this.setState({
+                name: {
+                    ...this.state.name,
+                    error: ['This is a required field']
+                }
+            })
         }
 
         let requestBody = {
