@@ -9,9 +9,10 @@ interface customEnv{
     SENTRY_ENV ?: string,
     SENTRY_ENABLED ?: boolean,
     HOTJAR_ENABLED ?: boolean;
-    GA_ENABLED?: boolean;
+    POSTHOG_ENABLED?: boolean;
+    CLUSTER_NAME?: boolean;
     APPLICATION_METRICS_ENABLED?: boolean;
-    GTM_ID?: string;
+    GA_ENABLED?: boolean;
     GA_TRACKING_ID?: string;
 }
 declare global {

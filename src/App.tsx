@@ -80,6 +80,8 @@ export default function App() {
 				if (location.search && location.search.includes("?continue=")) {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
+				}
+				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
 					const loginInfo = getLoginInfo()
 					const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 					const encodedEmailId: string = btoa(email);
@@ -90,7 +92,10 @@ export default function App() {
 							autocapture: true,
 							capture_pageview: true,
 							loaded: function (posthog) {
-								posthog.identify(encodedEmailId, { isAdmin });
+								posthog.identify(encodedEmailId, {
+									isAdmin,
+									cluster: window._env_?.CLUSTER_NAME
+								});
 								posthog.people.set({ id: encodedEmailId })
 							}
 						});
