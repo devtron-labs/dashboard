@@ -74,10 +74,51 @@ export default function App() {
 	}, [isOnline])
 
 	useEffect(() => {
+		async function createUserId() {
+			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
+				let userId, posthogUcid, posthogUrl;
+				const cookies = document.cookie.split(';');
+				console.log(cookies)
+				let userIdCookie = cookies.find(a => a.indexOf("userid"));
+				try {
+					const { result: { ucid, url } } = await getPosthogData();
+					posthogUcid = ucid;
+					posthogUrl = url;
+				} catch (e) { }
+
+				if (userIdCookie) {
+					userId = userIdCookie.split("=")[1];
+					userId = userId.trim();
+					console.log("old id")
+				}
+				else {
+					userId = makeId(25);
+					userIdCookie = "userid=" + userId + ";expires=Tue, 31-Dec-2030 00:00:01 GMT; path=/";
+					document.cookie = `${userIdCookie}`;
+					console.log("make id")
+				}
+				console.log(userId)
+				posthog.init(window._env_?.POSTHOG_TOKEN,
+					{
+						api_host: 'https://app.posthog.com',
+						autocapture: false,
+						capture_pageview: true,
+						loaded: function (posthog) {
+							posthog.identify(userId, {
+								name: userId,
+								ucid: posthogUcid,
+							});
+							posthog.people.set({ id: userId })
+						}
+					});
+			}
+		}
+
 		async function validation() {
 			try {
 				await validateToken();
 				// check if admin then direct to admin otherwise router will redirect to app list
+				createUserId()
 				if (location.search && location.search.includes("?continue=")) {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
@@ -129,42 +170,7 @@ export default function App() {
 	}
 
 	useEffect(() => {
-		async function createUserId() {
-			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
-				let userId, ucid;
-				const cookies = document.cookie.split(';');
-				let userIdCookie = cookies.find(a => a.indexOf("userid"));
-				try {
-					const { result } = await getPosthogData();
-					ucid = result;
-				} catch (e) { }
 
-				if (userIdCookie) {
-					userId = userIdCookie.split("=")[1];
-					userId = userId.trim();
-				}
-				else {
-					userId = makeId(25);
-					userIdCookie = `userid:${userId};path=/;expires=Tue, 31-Dec-2030 00:00:01 GMT`;
-					document.cookie = `${userIdCookie}`;
-				}
-				posthog.init(window._env_?.POSTHOG_TOKEN,
-					{
-						api_host: 'https://app.posthog.com',
-						autocapture: false,
-						capture_pageview: true,
-						loaded: function (posthog) {
-							posthog.identify(userId, {
-								name: userId,
-								ucid: ucid,
-							});
-							posthog.people.set({ id: userId })
-						}
-					});
-			}
-		}
-
-		createUserId()
 
 		if (!navigator.serviceWorker) return
 		function onUpdate(reg) {
