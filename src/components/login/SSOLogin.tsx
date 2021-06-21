@@ -325,7 +325,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
         </div> : null;
-
+{console.log(ssoConfig)}
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
