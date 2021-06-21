@@ -43,17 +43,18 @@ const NavigationList = [
 		iconClass: 'nav-security',
 	},
 	{
-		title: 'Global Configurations',
-		type: 'link',
-		href: URLS.GLOBAL_CONFIG,
-		iconClass: 'nav-short-global'
-	},
-	{
 		title: 'Bulk Edits',
 		type: 'link',
 		href: URLS.BULK_EDITS,
 		iconClass: 'nav-short-code'
 	},
+	{
+		title: 'Global Configurations',
+		type: 'link',
+		href: URLS.GLOBAL_CONFIG,
+		iconClass: 'nav-short-global'
+	},
+	
 ];
 
 
