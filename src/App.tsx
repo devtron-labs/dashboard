@@ -78,8 +78,7 @@ export default function App() {
 			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
 				let userId, posthogUcid, posthogUrl;
 				const cookies = document.cookie.split(';');
-				console.log(cookies)
-				let userIdCookie = cookies.find(a => a.indexOf("userid"));
+				let userIdCookie = cookies.find(a => a.indexOf("userid") >= 0);
 				try {
 					const { result: { ucid, url } } = await getPosthogData();
 					posthogUcid = ucid;
@@ -89,15 +88,12 @@ export default function App() {
 				if (userIdCookie) {
 					userId = userIdCookie.split("=")[1];
 					userId = userId.trim();
-					console.log("old id")
 				}
 				else {
 					userId = makeId(25);
 					userIdCookie = "userid=" + userId + ";expires=Tue, 31-Dec-2030 00:00:01 GMT; path=/";
 					document.cookie = `${userIdCookie}`;
-					console.log("make id")
 				}
-				console.log(userId)
 				posthog.init(window._env_?.POSTHOG_TOKEN,
 					{
 						api_host: 'https://app.posthog.com',
