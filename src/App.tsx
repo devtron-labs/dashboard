@@ -81,21 +81,6 @@ export default function App() {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
 				}
-				if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
-					const randomId = makeId(25);
-					posthog.init(window._env_?.POSTHOG_TOKEN,
-						{
-							api_host: 'https://app.posthog.com',
-							autocapture: false,
-							capture_pageview: true,
-							loaded: function (posthog) {
-								posthog.identify(randomId, {
-									name: randomId,
-								});
-								posthog.people.set({ id: randomId })
-							}
-						});
-				}
 			}
 			catch (err) {
 				// push to login without breaking search
@@ -107,9 +92,6 @@ export default function App() {
 					setErrorPage(true)
 					showError(err)
 				}
-				try {
-					posthog.reset();
-				} catch (e) { }
 			}
 			finally {
 				setValidating(false)
@@ -146,6 +128,34 @@ export default function App() {
 	}
 
 	useEffect(() => {
+		// if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
+		let userId;
+		const cookies = document.cookie.split(';');
+		let userIdCookie = cookies.find(a => a.indexOf("userid"));
+		if (userIdCookie) {
+			userId = userIdCookie.split("=")[1];
+			userId = userId.trim();
+		}
+		else {
+			userId = makeId(25);
+			userIdCookie = `userid:${userId};path=/;expires=Tue, 31-Dec-2030 00:00:01 GMT`;
+		}
+		document.cookie = `${userIdCookie}`;
+		posthog.init(window._env_?.POSTHOG_TOKEN,
+			{
+				api_host: 'https://app.posthog.com',
+				autocapture: false,
+				capture_pageview: true,
+				loaded: function (posthog) {
+					posthog.identify(userId, {
+						name: userId,
+					});
+					posthog.people.set({ id: userId })
+				}
+			});
+		// }
+
+
 		if (!navigator.serviceWorker) return
 		function onUpdate(reg) {
 			const updateToastBody = <UpdateToast onClick={e => update()} text="A new version of Devtron is now available." buttonText="Update" />

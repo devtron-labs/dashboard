@@ -8,7 +8,6 @@ import NavSprite from '../../../assets/icons/navigation-sprite.svg';
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
-import posthog from 'posthog-js';
 import ReactGA from 'react-ga';
 import './navigation.scss';
 
@@ -99,9 +98,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	onLogout(): void {
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
-		try {
-			posthog.reset();
-		} catch (e) { }
 	}
 
 	renderLogout() {
