@@ -48,6 +48,12 @@ const NavigationList = [
 		href: URLS.GLOBAL_CONFIG,
 		iconClass: 'nav-short-global'
 	},
+	{
+		title: 'Bulk Edits',
+		type: 'link',
+		href: URLS.BULK_EDITS,
+		iconClass: 'nav-short-code'
+	},
 ];
 
 
