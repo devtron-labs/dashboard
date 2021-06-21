@@ -90,6 +90,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
+    renderImpactedObjectDrawer = () => {
+        return (
+            <div>
+                
+            </div>
+        )
+    }
+
     render() {
         return (
             <div>
@@ -97,6 +105,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {this.renderBulkEditHeaderDescription()}
                 {this.renderImpactedObjectButtons()}
                 {this.renderBulkCodeEditor()}
+                {this.renderImpactedObjectDrawer()}
             </div>
         )
     }
