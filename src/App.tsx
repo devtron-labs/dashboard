@@ -79,7 +79,8 @@ export default function App() {
 			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
 				let loginInfo = getLoginInfo()
 				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-				let hash = Hash(email)
+				let hash = Hash(email);
+				console.log(email, hash);
 				try {
 					const { result: { ucid, url } } = await getPosthogData();
 					posthog.init(window._env_?.POSTHOG_TOKEN,
@@ -92,7 +93,7 @@ export default function App() {
 									name: hash,
 									ucid: ucid,
 								});
-								posthog.people.set({ id: hash })
+								posthog.people.set({ id: hash });
 							}
 						});
 				} catch (e) { }
@@ -110,6 +111,9 @@ export default function App() {
 				}
 			}
 			catch (err) {
+				try {
+					posthog.reset();
+				} catch (e) { }
 				// push to login without breaking search
 				if (err?.code === 401) {
 					const loginPath = URLS.LOGIN_SSO;
