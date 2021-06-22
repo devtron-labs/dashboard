@@ -13,13 +13,14 @@ import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
 import 'tippy.js/dist/tippy.css';
-import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, makeId } from './components/common';
-import Hotjar from './components/Hotjar/Hotjar'
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, makeId, getLoginInfo } from './components/common';
 import * as serviceWorker from './serviceWorker';
+import Hotjar from './components/Hotjar/Hotjar';
 import { validateToken } from './services/service';
+import { getPosthogData } from './services/service';
 import Reload from './components/Reload/Reload';
 import posthog from 'posthog-js';
-import { getPosthogData } from './services/service';
+import Hash from 'object-hash';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -76,37 +77,25 @@ export default function App() {
 	useEffect(() => {
 		async function createUserId() {
 			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
-				let userId, posthogUcid, posthogUrl;
-				const cookies = document.cookie.split(';');
-				let userIdCookie = cookies.find(a => a.indexOf("userid") >= 0);
+				let loginInfo = getLoginInfo()
+				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
+				let hash = Hash(email)
 				try {
 					const { result: { ucid, url } } = await getPosthogData();
-					posthogUcid = ucid;
-					posthogUrl = url;
+					posthog.init(window._env_?.POSTHOG_TOKEN,
+						{
+							api_host: url,
+							autocapture: false,
+							capture_pageview: true,
+							loaded: function (posthog) {
+								posthog.identify(hash, {
+									name: hash,
+									ucid: ucid,
+								});
+								posthog.people.set({ id: hash })
+							}
+						});
 				} catch (e) { }
-
-				if (userIdCookie) {
-					userId = userIdCookie.split("=")[1];
-					userId = userId.trim();
-				}
-				else {
-					userId = makeId(25);
-					userIdCookie = "userid=" + userId + ";expires=Tue, 31-Dec-2030 00:00:01 GMT; path=/";
-					document.cookie = `${userIdCookie}`;
-				}
-				posthog.init(window._env_?.POSTHOG_TOKEN,
-					{
-						api_host: 'https://app.posthog.com',
-						autocapture: false,
-						capture_pageview: true,
-						loaded: function (posthog) {
-							posthog.identify(userId, {
-								name: userId,
-								ucid: posthogUcid,
-							});
-							posthog.people.set({ id: userId })
-						}
-					});
 			}
 		}
 
