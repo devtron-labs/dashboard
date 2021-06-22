@@ -19,5 +19,5 @@ export interface BulkEditsState {
 }
 
 export interface BulkEditsProps extends RouteComponentProps<{}> {
-
+    // close: (event) => void;
 }
