@@ -19,6 +19,7 @@
         "monaco-editor": "^0.19.3",
         "monaco-editor-webpack-plugin": "^1.8.2",
         "monaco-yaml": "^2.1.0",
+        "object-hash": "^2.2.0",
         "patternfly-react": "^2.30.3",
         "posthog-js": "^1.11.3",
         "prop-types": "^15.7.1",
