@@ -13,7 +13,7 @@
         "command-line-parser": "^0.1.10",
         "compute-histogram": "^0.9.7",
         "flexsearch": "^0.6.32",
-        "http-proxy-middleware": "^1.0.3",
+        "http-proxy-middleware": "^2.0.0",
         "marked": "^1.2.5",
         "moment": "^2.29.1",
         "monaco-editor": "^0.19.3",

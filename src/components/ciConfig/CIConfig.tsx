@@ -9,7 +9,7 @@ import { KeyValueInput } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify';
 import { URLS } from '../../config';
 import { NavLink } from 'react-router-dom';
-import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-chevron-down.svg';
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './CIConfig.scss';
 
