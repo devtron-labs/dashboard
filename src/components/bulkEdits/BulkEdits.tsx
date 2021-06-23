@@ -39,7 +39,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderBulkEditHeader = () => {
-        return (<div className="page-header pl-20">
+        return (<div className="page-header brdr-btm pl-20">
             <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Run Scripts
                 <Tippy className="default-tt " arrow={false} placement="top" content={
                     <span style={{ display: "block", width: "66px" }}> Learn more </span>}>
