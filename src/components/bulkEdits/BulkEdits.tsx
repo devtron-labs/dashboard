@@ -11,6 +11,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
+import { getReadme } from './bulkedits.service';
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
     constructor(props) {
@@ -18,11 +19,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             editsConfig: undefined,
-            showImpactedObjects: false
-
+            showImpactedObjects: false,
+            readmeResult: [],
+            showExamples: false,
+            showHeaderDescription: true
         }
     }
 
+    componentDidMount = () => {
+        getReadme().then((res) => {
+            this.setState({ readmeResult: res.result })
+        }).catch((error) => {
+            showError(error);
+        })
+    }
 
     renderBulkEditHeader = () => {
         return (<div className="page-header pl-20">
@@ -42,7 +52,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>Run scripts to bulk edit configurations for multiple devtron components.
                     <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
-                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
+                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })}
                     //  onClick={this.props.close}
                     />
 
@@ -55,6 +65,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({ showImpactedObjects: !this.state.showImpactedObjects })
     }
 
+    toggleShowExamples = () => {
+        this.setState({ showExamples: !this.state.showExamples })
+    }
+
     renderImpactedObjectButtons = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
@@ -64,13 +78,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" onClick={() => this.toggleImapactedObjects()}>
                     Show Impacted Objects
                 </button>
-                <div className="cb-5 fw-6" style={{ margin: "auto", marginRight: "0" }}>
+                <div className="cb-5 fw-6 pointer" onClick={() => this.toggleShowExamples()} style={{ margin: "auto", marginRight: "0" }}>
                     See Examples
                 </div>
             </div>
         )
     }
-
 
     renderBulkCodeEditor = () => {
         let codeEditorBody = yamlJsParser.stringify(sample)
@@ -79,7 +92,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="code-editor-container" >
                     <CodeEditor
                         // value={codeEditorBody}
-                        height={680}
+                        height={500}
                         mode='yaml'
                         lineDecorationsWidth={50}
                     // readOnly={this.state.configMap !== SwitchItemValues.Configuration}
@@ -98,31 +111,39 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    renderImpactedObjectDrawer = () => {
+    renderObjectOutputDrawer = () => {
         return (
-            <div className="bcn-0 pl-20 pr-20">
-                <div className="flex left">
-                    <button className="cta small cancel mr-16">Output</button>
-                    <button className="cta small cancel">Impacted Objects</button>
+            <div className="bcn-0 pt-6 " >
+                <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
+                    <button className="cta small cancel mr-16 flex " style={{ height: '20px' }}>Output</button>
+                    <button className="cta small cancel flex" style={{ height: '20px' }}>Impacted Objects</button>
                     <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                         onClick={() => this.setState({ showImpactedObjects: false })}
                     />
                 </div>
-                <div className="cn-9 fs-13" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px", height: "244px" }}>
+                <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px", height: "244px" }}>
                     Hello, playground
-                     <br /><br />
-                        Program exited.
                 </div>
             </div>
         )
     }
 
-    renderTemplateReadme = () => {
-        return (<div style={{ height: "100%"}} className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-            <div >
-               <MarkDown/>
-            </div>
+    renderReadmeDeploymentHeader = () => {
+        return (
+            <div>
 
+            </div>
+        )
+    }
+
+    renderTemplateReadme = () => {
+        return (<div style={{ height: "760px" }} className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
+            <div >{`"api":"/orchestrator/deployment/template/update",
+                      "method": "put",
+                      "action" : "run/show"
+                      "payload": { }
+                `}
+            </div>
         </div>)
     }
 
@@ -131,9 +152,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="flex">
                 <div style={{ width: "50%" }}>
                     {this.renderImpactedObjectButtons()}
-                    {this.renderBulkCodeEditor()}
+                    <div style={{ height: "760px" }}>{this.renderBulkCodeEditor()}</div>
                 </div>
                 <div style={{ height: "100%", width: "50%" }}>
+                    {this.renderReadmeDeploymentHeader()}
                     {this.renderTemplateReadme()}
                 </div>
             </div>
@@ -143,14 +165,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     render() {
         return (
             <div>
+                {/* {console.log(this.state.readmeResult)} */}
                 {this.renderBulkEditHeader()}
-                {this.renderBulkEditHeaderDescription()}
-                {/* {this.renderImpactedObjectButtons()} */}
-                {/*  {this.renderBulkCodeEditor()}
-                {this.state.showImpactedObjects ? this.renderImpactedObjectDrawer() : null}  */}
-
-                {this.renderUpdatedDeploymentTemplate()}
-
+                { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
+                {this.state.showExamples ? this.renderUpdatedDeploymentTemplate()
+                    : <div>
+                        {this.renderImpactedObjectButtons()}
+                        {this.renderBulkCodeEditor()}
+                    </div>}
+                {this.state.showImpactedObjects ? this.renderObjectOutputDrawer() : null}
             </div>
         )
     }

@@ -16,6 +16,9 @@ export interface BulkConfigType {
 export interface BulkEditsState {
   editsConfig: BulkConfigType | undefined;
   showImpactedObjects: boolean;
+  readmeResult;
+  showExamples: boolean;
+  showHeaderDescription: boolean;
 }
 
 export interface BulkEditsProps extends RouteComponentProps<{}> {
