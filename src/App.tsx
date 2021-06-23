@@ -85,7 +85,7 @@ export default function App() {
 					posthog.init(window._env_?.POSTHOG_TOKEN,
 						{
 							api_host: url,
-							autocapture: true,
+							autocapture: false,
 							capture_pageview: false,
 							loaded: function (posthog) {
 								posthog.identify(hash, {
