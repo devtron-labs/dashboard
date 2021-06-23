@@ -80,7 +80,6 @@ export default function App() {
 				let loginInfo = getLoginInfo()
 				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 				let hash = Hash(email);
-				console.log(email, hash);
 				try {
 					const { result: { ucid, url } } = await getPosthogData();
 					posthog.init(window._env_?.POSTHOG_TOKEN,
