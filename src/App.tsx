@@ -87,7 +87,7 @@ export default function App() {
 						{
 							api_host: url,
 							autocapture: true,
-							capture_pageview: true,
+							capture_pageview: false,
 							loaded: function (posthog) {
 								posthog.identify(hash, {
 									name: hash,
