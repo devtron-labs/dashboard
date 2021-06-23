@@ -73,7 +73,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({ showExamples: !this.state.showExamples })
     }
 
-    renderImpactedObjectButtons = () => {
+    renderCodeEditorHeader = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" style={{ borderRight: '1px solid #d0d4d9' }} >
                 <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} >
@@ -89,7 +89,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    renderBulkCodeEditor = () => {
+    renderCodeEditorBody = () => {
         let codeEditorBody = yamlJsParser.stringify(sample)
         return (
             <div className="">
@@ -141,7 +141,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="bcn-0 pt-5 pb-5 flex" style={{ borderBottom: '1px solid #d0d4d9',borderTop: '1px solid #d0d4d9', }}>
+            <div className="bcn-0 pt-5 pb-5 flex pr-20" style={{ borderBottom: '1px solid #d0d4d9' }}>
                 <ReactSelect
                     className="select-width"
                     placeholder="Update Deployment Template"
@@ -160,8 +160,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    renderSampleTemplate = () => {
-        return (<div style={{ height: "740px" }} className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
+    renderSampleTemplateBody = () => {
+        return (<div style={{ height: '700px' }} className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
             <div >{`"api":"/orchestrator/deployment/template/update",
                       "method": "put",
                       "action" : "run/show"
@@ -171,16 +171,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         </div>)
     }
 
+    renderBulkCodeEditor = () => {
+        return (<>
+            {this.renderCodeEditorHeader()}
+            {this.renderCodeEditorBody()}
+        </>)
+    }
+
     renderUpdatedDeploymentTemplate = () => {
         return (
-            <div className="flex">
-                <div style={{ width: "50%" }}>
-                    {this.renderImpactedObjectButtons()}
-                    <div style={{ height: "760px" }}>{this.renderBulkCodeEditor()}</div>
-                </div>
-                <div style={{ height: "100%", width: "50%" }} >
+            <div className="updated-container" style={{ gridTemplateColumns: "1fr 1fr" }}>
+                <div>{this.renderBulkCodeEditor()}</div>
+                <div  >
                     {this.renderSampleTemplateHeader()}
-                    {this.renderSampleTemplate()}
+                    {this.renderSampleTemplateBody()}
                 </div>
             </div>
         )
@@ -190,11 +194,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div>
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
-            {this.state.showExamples ? this.renderUpdatedDeploymentTemplate()
-                : <div>
-                    {this.renderImpactedObjectButtons()}
-                    {this.renderBulkCodeEditor()}
-                </div>}
+            {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
             {this.state.showImpactedObjects ? this.renderObjectOutputDrawer() : null}
         </div>
         )
