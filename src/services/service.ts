@@ -164,7 +164,7 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 }
 
 export function getPosthogData(): Promise<ResponseType> {
-    const URL = `sso/telemetry/ucid`;
+    const URL = `telemetry/ucid`;
     return get(URL);
 }
 
