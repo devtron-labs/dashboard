@@ -21,6 +21,11 @@ export interface BulkEditsState {
   showHeaderDescription: boolean;
 }
 
+export enum OutputObjectTabs {
+    OUTPUT = "Output",
+    IMPACTED_OBJECTS = "Impacred objects"
+}
+
 export interface BulkEditsProps extends RouteComponentProps<{}> {
     // close: (event) => void;
 }
