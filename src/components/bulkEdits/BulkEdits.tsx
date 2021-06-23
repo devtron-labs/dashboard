@@ -3,19 +3,19 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { BulkEditsProps, BulkEditsState, OutputObjectTabs } from './bulkEdits.type';
-import { Checkbox, Option, multiSelectStyles } from '../common';
+import { Option } from '../common';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
 import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import { getReadme } from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
 import './bulkEdit.css'
+import { multiSelectStyles } from './bulkedit.utils'
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
     constructor(props) {
@@ -79,7 +79,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
-                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" onClick={() => this.toggleImapactedObjects()}>
+                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px'}} onClick={() => this.toggleImapactedObjects()}>
                     Show Impacted Objects
                 </button>
                 <div className="cb-5 fw-6 pointer" onClick={() => this.toggleShowExamples()} style={{ margin: "auto", marginRight: "0" }}>
@@ -142,7 +142,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="en-2 bw-1 bcn-0">
+            <div className="bcn-0 pt-5 pb-5" style= {{borderBottom: '1px solid #d0d4d9'}}>
                 <ReactSelect
                 className="select-width"
                     placeholder="Update Deployment Template"
@@ -179,7 +179,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     {this.renderImpactedObjectButtons()}
                     <div style={{ height: "760px" }}>{this.renderBulkCodeEditor()}</div>
                 </div>
-                <div style={{ height: "100%", width: "50%" }}>
+                <div style={{ height: "100%", width: "50%" }} className="en-2 bw-1">
                     {this.renderSampleTemplateHeader()}
                     {this.renderSampleTemplate()}
                 </div>
