@@ -13,7 +13,7 @@ import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
 import 'tippy.js/dist/tippy.css';
-import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, makeId, getLoginInfo } from './components/common';
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo } from './components/common';
 import * as serviceWorker from './serviceWorker';
 import Hotjar from './components/Hotjar/Hotjar';
 import { validateToken } from './services/service';
