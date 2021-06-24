@@ -23,7 +23,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             editsConfig: undefined,
-            showImpactedObjects: false,
+            showObjectsOutputDrawer: false,
             readmeResult: [],
             showExamples: false,
             showHeaderDescription: true,
@@ -65,24 +65,22 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    toggleImapactedObjects = () => {
-        this.setState({ showImpactedObjects: !this.state.showImpactedObjects })
-    }
-
-    toggleShowExamples = () => {
-        this.setState({ showExamples: !this.state.showExamples })
+    handleRunButton = () => {
+        this.setState({
+            showObjectsOutputDrawer: true
+        })
     }
 
     renderCodeEditorHeader = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" style={{ borderRight: '1px solid #d0d4d9' }} >
-                <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} >
+                <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} onClick={() => this.handleRunButton()} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
-                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.toggleImapactedObjects()}>
+                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.setState({ showObjectsOutputDrawer: true })}>
                     Show Impacted Objects
                 </button>
-                <div className="cb-5 fw-6 pointer" onClick={() => this.toggleShowExamples()} style={{ margin: "auto", marginRight: "0" }}>
+                <div className="cb-5 fw-6 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
                     See Examples
                 </div>
             </div>
@@ -123,10 +121,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 isDetailedView={!!OutputObjectTabs.OUTPUT}>
                 <div className="bcn-0 pt-6 " >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
-                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }}>Output</button>
-                        <button className="cta small cancel flex" style={{ height: '20px' }}>Impacted Objects</button>
+                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }}>{OutputObjectTabs.OUTPUT}</button>
+                        <button className="cta small cancel flex" style={{ height: '20px' }}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
-                            onClick={() => this.setState({ showImpactedObjects: false })}
+                            onClick={() => this.setState({ showObjectsOutputDrawer: false })}
                         />
                     </div>
                     <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
@@ -154,19 +152,30 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     styles={{
                         ...multiSelectStyles,
                         ...menuList,
-                    }}></ReactSelect>
+                    }}/>
                 <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
     }
 
     renderSampleTemplateBody = () => {
+        let sampleConfig = yamlJsParser.stringify(sample)
         return (<div style={{ height: '700px' }} className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-            <div >{`"api":"/orchestrator/deployment/template/update",
-                      "method": "put",
-                      "action" : "run/show"
-                      "payload": { }
-                `}
+            <div >
+                {sampleConfig}
+                {/* {`
+                    "api":"/orchestrator/deployment/template/update",
+                    "method": "put",
+                    "action" : "run/show",
+                    "payload": {
+                        appNameInclude: 
+                        appNameExclude:
+                        envId:
+                        isGlobal;
+                        patch json:
+
+                     }
+               `} */}
             </div>
         </div>)
     }
@@ -195,7 +204,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
-            {this.state.showImpactedObjects ? this.renderObjectOutputDrawer() : null}
+            {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
         </div>
         )
     }

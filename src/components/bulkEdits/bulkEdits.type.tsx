@@ -15,7 +15,7 @@ export interface BulkConfigType {
 
 export interface BulkEditsState {
   editsConfig: BulkConfigType | undefined;
-  showImpactedObjects: boolean;
+  showObjectsOutputDrawer: boolean;
   readmeResult;
   showExamples: boolean;
   showHeaderDescription: boolean;
@@ -23,7 +23,7 @@ export interface BulkEditsState {
 
 export enum OutputObjectTabs {
     OUTPUT = "Output",
-    IMPACTED_OBJECTS = "Impacred objects"
+    IMPACTED_OBJECTS = "Impacted objects"
 }
 
 export interface BulkEditsProps extends RouteComponentProps<{}> {
