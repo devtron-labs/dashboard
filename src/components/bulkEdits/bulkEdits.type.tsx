@@ -19,6 +19,7 @@ export interface BulkEditsState {
   readmeResult;
   showExamples: boolean;
   showHeaderDescription: boolean;
+  showOutputData: boolean
 }
 
 export enum OutputObjectTabs {

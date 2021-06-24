@@ -27,6 +27,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             readmeResult: [],
             showExamples: false,
             showHeaderDescription: true,
+            showOutputData: false
         }
     }
 
@@ -114,6 +115,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
+    renderOutputList = () => {
+      return  <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
+            Pod Run : 2
+                </div>
+    }
+
+    renderImpactedObjectsList = () => {
+      return  <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
+            demo
+            </div>
+    }
+
     renderObjectOutputDrawer = () => {
         return (<>
             <ResponsiveDrawer
@@ -121,15 +134,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 isDetailedView={!!OutputObjectTabs.OUTPUT}>
                 <div className="bcn-0 pt-6 " >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
-                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }}>{OutputObjectTabs.OUTPUT}</button>
-                        <button className="cta small cancel flex" style={{ height: '20px' }}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
+                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick= {()=> this.setState({ showOutputData : true})}>{OutputObjectTabs.OUTPUT}</button>
+                        <button className="cta small cancel flex" style={{ height: '20px' }}  onClick= {()=> this.setState({ showOutputData : false})}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })}
                         />
                     </div>
-                    <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-                        Hello, playground
-                </div>
+                    {!this.state.showOutputData ?  this.renderImpactedObjectsList() : this.renderOutputList() }
                 </div>
             </ResponsiveDrawer>
             <div id="dummy-div" style={{ width: '100%', height: '36px' }}></div>
@@ -152,7 +163,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     styles={{
                         ...multiSelectStyles,
                         ...menuList,
-                    }}/>
+                    }} />
                 <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
