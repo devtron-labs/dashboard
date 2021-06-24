@@ -163,6 +163,11 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getPosthogData(): Promise<ResponseType> {
+    const URL = `telemetry/ucid`;
+    return get(URL);
+}
+
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     let vulnerabilities = response.result.vulnerabilities || [];
     let critical = vulnerabilities.filter((v) => v.severity === "critical").sort((a, b) => sortCallback('cveName', a, b));
