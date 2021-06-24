@@ -17,24 +17,38 @@ export function getOutputListMin(): Promise<{
     return new Promise((resolve, reject) => {
         resolve([{
             "appNameIncludes": "demo",
-            "appNameExcludes": "string",
+            "appNameExcludes": "docker-config",
             "envId": 5,
             "isGlobal": true,
             "patchJson": "string"
         },
         {
             "appNameIncludes": "demo-env",
-            "appNameExcludes": "string",
+            "appNameExcludes": "docker-config",
             "envId": 5,
             "isGlobal": true,
             "patchJson": "string"
         },
         {
             "appNameIncludes": "demo_live",
-            "appNameExcludes": "string",
+            "appNameExcludes": "docker-config",
             "envId": 5,
             "isGlobal": true,
             "patchJson": "string"
-        }])
+        },
+        {
+            "appNameIncludes": "demo-env",
+            "appNameExcludes": "docker-config",
+            "envId": 5,
+            "isGlobal": true,
+            "patchJson": "string"
+        },
+    ])
     })
 }
+
+// export function getImpactedObjectsListMin(): Promise<{
+    
+// }>{
+
+// }

@@ -1,17 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
 
-export interface BulkConfigType {
-    name?: string;
-    id?: number;
-    url?: string;
-    config: {
-        type: string;
-        id: string;
-        name: string;
-        config: string; //YAML string
-    },
-    active?: boolean;
-}
 export interface BulkEditResponse {
     task: string
     payload: OutputList[]
@@ -28,9 +16,8 @@ export interface OutputList {
 
 export interface BulkEditsState {
     view: string
-    bulkEditResponse:BulkEditResponse[] | [];
+    ImpactedObjectList: string ;
     outputList: OutputList[] 
-    editsConfig: BulkConfigType | undefined;
     showObjectsOutputDrawer: boolean;
     readmeResult;
     showExamples: boolean;

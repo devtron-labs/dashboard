@@ -11,12 +11,13 @@ import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, 
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { getReadme, getOutputListMin } from './bulkedits.service';
+import { getReadme, getOutputListMin} from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
+import { TLSSocket } from 'tls';
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
     constructor(props) {
@@ -24,10 +25,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
-            bulkEditResponse: [] || undefined,
+            ImpactedObjectList: "",
             outputList: [],
             readmeResult: [],
-            editsConfig: undefined,
             showObjectsOutputDrawer: false,
             showExamples: false,
             showHeaderDescription: true,
@@ -36,21 +36,24 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     componentDidMount = () => {
-        getReadme().then((res) => {
-            this.setState({ readmeResult: res.result })
-        }).catch((error) => {
-            showError(error);
-        })
-
         getOutputListMin().then((res) => {
-            let response = res
             this.setState({
                 view: ViewType.FORM,
-                outputList: response
+                outputList: res
             })
         }).catch((error) => {
             showError(error);
         })
+
+        // getImpactedListMin().then((res) => {
+        //     let response = res
+        //     this.setState({
+        //         view: ViewType.FORM,
+        //         outputList: response
+        //     })
+        // }).catch((error) => {
+        //     showError(error);
+        // })
     }
 
     renderBulkEditHeader = () => {
@@ -71,10 +74,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>Run scripts to bulk edit configurations for multiple devtron components.
                     <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
-                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })}
-                    //  onClick={this.props.close}
-                    />
-
+                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })}                    />
                 </div>
             </div>
         )
@@ -138,6 +138,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderImpactedObjectsList = () => {
         return <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
+            {this.state.outputList.map((itm) => {   return  <div> {itm.appNameExcludes} <br/><br/> </div>})}
             </div>
     }
 
