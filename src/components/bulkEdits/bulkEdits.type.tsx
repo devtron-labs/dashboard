@@ -12,14 +12,30 @@ export interface BulkConfigType {
     },
     active?: boolean;
 }
+export interface BulkEditResponse {
+    task: string
+    payload: OutputList[]
+    readme: ""
+}
+
+export interface OutputList {
+    appNameIncludes: string;
+    appNameExcludes: string;
+    envId: number;
+    isGlobal : boolean;
+    patchJson: string;
+}
 
 export interface BulkEditsState {
-  editsConfig: BulkConfigType | undefined;
-  showObjectsOutputDrawer: boolean;
-  readmeResult;
-  showExamples: boolean;
-  showHeaderDescription: boolean;
-  showOutputData: boolean
+    view: string
+    bulkEditResponse:BulkEditResponse[] | [];
+    outputList: OutputList[] 
+    editsConfig: BulkConfigType | undefined;
+    showObjectsOutputDrawer: boolean;
+    readmeResult;
+    showExamples: boolean;
+    showHeaderDescription: boolean;
+    showOutputData: boolean
 }
 
 export enum OutputObjectTabs {

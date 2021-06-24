@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
+import { ViewType } from '../../config';
 import { BulkEditsProps, BulkEditsState, OutputObjectTabs } from './bulkEdits.type';
 import { Option } from '../common';
 import yamlJsParser from 'yaml';
@@ -10,7 +11,7 @@ import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, 
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { getReadme } from './bulkedits.service';
+import { getReadme, getOutputListMin } from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
@@ -22,18 +23,31 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         super(props)
 
         this.state = {
+            view: ViewType.LOADING,
+            bulkEditResponse: [] || undefined,
+            outputList: [],
+            readmeResult: [],
             editsConfig: undefined,
             showObjectsOutputDrawer: false,
-            readmeResult: [],
             showExamples: false,
             showHeaderDescription: true,
-            showOutputData: false
+            showOutputData: true
         }
     }
 
     componentDidMount = () => {
         getReadme().then((res) => {
             this.setState({ readmeResult: res.result })
+        }).catch((error) => {
+            showError(error);
+        })
+
+        getOutputListMin().then((res) => {
+            let response = res
+            this.setState({
+                view: ViewType.FORM,
+                outputList: response
+            })
         }).catch((error) => {
             showError(error);
         })
@@ -116,14 +130,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderOutputList = () => {
-      return  <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            Pod Run : 2
-                </div>
+        // { console.log(this.state.outputList.map((itm) => { return itm.appNameIncludes.split("  ") })) }
+        return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
+            {this.state.outputList.map((itm) => {   return  <div> {itm.appNameIncludes} <br/><br/> </div>})}
+        </div>)
     }
 
     renderImpactedObjectsList = () => {
-      return  <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            demo
+        return <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
             </div>
     }
 
@@ -134,13 +148,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 isDetailedView={!!OutputObjectTabs.OUTPUT}>
                 <div className="bcn-0 pt-6 " >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
-                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick= {()=> this.setState({ showOutputData : true})}>{OutputObjectTabs.OUTPUT}</button>
-                        <button className="cta small cancel flex" style={{ height: '20px' }}  onClick= {()=> this.setState({ showOutputData : false})}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
+                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
+                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })}
                         />
                     </div>
-                    {!this.state.showOutputData ?  this.renderImpactedObjectsList() : this.renderOutputList() }
+                    {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
                 </div>
             </ResponsiveDrawer>
             <div id="dummy-div" style={{ width: '100%', height: '36px' }}></div>
