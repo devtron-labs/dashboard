@@ -35,7 +35,7 @@ editor.defineTheme('vs-gray--dt', {
 });
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
-    
+
     constructor(props) {
         super(props)
 
@@ -80,7 +80,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         //     showError(error);
         // })
     }
-    
+
 
     renderBulkEditHeader = () => {
         return (<div className="page-header brdr-btm pl-20">
@@ -96,9 +96,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderBulkEditHeaderDescription = () => {
         return (
             <div className="deployment-group-list-page">
-                <div className="flex left pt-10 pb-10 pl-20 pr-20" style={{ backgroundColor: "#f3f0ff" }}>
+                <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9" >
+                    <Question className="icon-dim-16 mr-13" style={{ stroke: "#664bee" }} />
                     <div>Run scripts to bulk edit configurations for multiple devtron components.
-                    <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
+                      <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
                     <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })} />
                 </div>
@@ -114,7 +115,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorHeader = () => {
         return (
-            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" style={{ borderRight: '1px solid #d0d4d9' }} >
+            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" style={{ borderBottom: '1px solid #d0d4d9' }} >
                 <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} onClick={() => this.handleRunButton()} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
@@ -131,34 +132,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorBody = () => {
         let codeEditorBody = yamlJsParser.stringify(sample)
         return (
-            // <div className="">
-            //     <div className="code-editor-container" >
-            //         <CodeEditor
-            //             // value={codeEditorBody}
-
-            //             height={710}
-            //             mode='yaml'
-            //             lineDecorationsWidth={50}
-                    // readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    // onChange={(event) => { this.handleConfigChange(event) }}>
-                    // <CodeEditor.Header >
-                    //     <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>
-                    //         <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
-                    //         <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
-                    //     </Switch>
-                    // <CodeEditor.ValidationError />
-                    // </CodeEditor.Header
-                    // >
-            //         </CodeEditor>
-            //     </div>
-            // </div>
             // <AutoSizer>
-                <MonacoEditor 
+            <MonacoEditor
                 height={700}
                 theme={'vs-gray--dt'}
-                >
-                    
-                </MonacoEditor>
+            >
+            </MonacoEditor>
             //  </AutoSizer>
         )
     }
@@ -214,7 +193,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="bcn-0 pt-5 pb-5 flex pr-20" style={{ borderBottom: '1px solid #d0d4d9' }}>
+            <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
                     className="select-width"
                     placeholder="Update Deployment Template"
