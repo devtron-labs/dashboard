@@ -4,14 +4,14 @@ import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
 import { BulkEditsProps, BulkEditsState, OutputObjectTabs } from './bulkEdits.type';
-import { Option } from '../common';
+import { Option, FragmentHOC, noop, } from '../common';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
 import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { getReadme, getOutputListMin} from './bulkedits.service';
+import { getReadme, getOutputListMin } from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
@@ -74,7 +74,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>Run scripts to bulk edit configurations for multiple devtron components.
                     <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
-                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })}                    />
+                    <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showHeaderDescription: false })} />
                 </div>
             </div>
         )
@@ -125,28 +125,42 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     </CodeEditor>
                 </div>
             </div>
-
         )
     }
 
     renderOutputList = () => {
         // { console.log(this.state.outputList.map((itm) => { return itm.appNameIncludes.split("  ") })) }
         return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => {   return  <div> {itm.appNameIncludes} <br/><br/> </div>})}
+            {this.state.outputList.map((itm) => { return <div> {itm.appNameIncludes} <br /><br /> </div> })}
         </div>)
     }
 
     renderImpactedObjectsList = () => {
         return <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => {   return  <div> {itm.appNameExcludes} <br/><br/> </div>})}
-            </div>
+            {this.state.outputList.map((itm) => { return <div> {itm.appNameExcludes} <br /><br /> </div> })}
+        </div>
     }
 
+    outputImpactedTabSelector = () => {
+        let onMouseDown = null
+        return <FragmentHOC
+            onMouseDown={onMouseDown || noop}
+        >
+            <div
+                className={OutputObjectTabs.OUTPUT == 'Output' ? 'active' : null} >
+
+            </div>
+
+        </FragmentHOC>
+
+    }
     renderObjectOutputDrawer = () => {
         return (<>
             <ResponsiveDrawer
-                onHeightChange={(height) => (document.getElementById('dummy-div').style.height = `${height}px`)}
-                isDetailedView={!!OutputObjectTabs.OUTPUT}>
+                className="output-drawer"
+                onHeightChange={(height) => { (document.getElementById('dummy-div').style.height = `${height}px`) }}
+                isDetailedView={!!OutputObjectTabs.OUTPUT}
+                anchor={this.outputImpactedTabSelector()}>
                 <div className="bcn-0 pt-6 " >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
