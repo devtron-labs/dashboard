@@ -106,6 +106,8 @@ export interface MaterialType {
     value: string;
     gitMaterialId: number;
     id: number;
+    gitHostId: number;
+    gitHostName: string;
     isSelected: boolean;
 }
 

@@ -161,6 +161,18 @@
     border-radius: 4px;
 }
 
+.configure-ci-webhook {
+    display: grid;
+    grid-template-columns: 32px auto;
+    gap: 12px;
+}
+
+.pull-request-fillter {
+    display: grid;
+    grid-template-columns: 200px auto;
+    gap: 16px;
+}
+
 .script-container .react-monaco-editor-container {
     min-height: 300px;
 }
@@ -168,4 +180,11 @@
 .script-container .shebang {
     padding: 0 60px;
     color: #e00000;
+}
+
+.pull-request-info {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 12px;
+    padding: 16px 10px;
 }

@@ -153,7 +153,7 @@
 }
 
 .workflow-node__CI-icon {
-    background-image: url('../assets/icons/ic-CI.svg');
+    background-image: url('../assets/icons/ic-ci.svg');
 }
 
 .workflow-node__CD-pre-post-icon {

@@ -291,14 +291,9 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
-    // return new Promise((resolve, reject) => {
-    //     resolve({
-    //         "code": 200, "status": "OK",
-    //         "result": {
-    //             "appChecklist": { "gitOps": 0, "project": 1, "git": 1, "environment": 1, "docker": 1, "hostUrl": 1 },
-    //             "chartChecklist": { "gitOps": 0, "project": 1, "environment": 1 },
-    //             "isAppCreated": false,
-    //         }
-    //     })
-    // })
+}
+
+export function getGitProviderList(): Promise<any> {
+    const URL = `${Routes.GIT_PROVIDER}`;
+    return get(URL);
 }

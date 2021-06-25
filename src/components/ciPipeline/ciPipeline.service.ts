@@ -1,8 +1,9 @@
 import { Routes } from '../../config';
 import { get, post } from '../../services/api';
-import { TriggerType, ViewType, TagOptions } from '../../config';
+import { TriggerType, ViewType } from '../../config';
 import { PatchAction } from './types';
-import { getSourceConfig } from '../../services/service';
+import { TagOptions } from './ciPipeline.util';
+import { getSourceConfig, getGitProviderList } from '../../services/service';
 
 export function savePipeline(request): Promise<any> {
     const URL = `${Routes.CI_PIPELINE}`;
@@ -14,31 +15,56 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL);
 }
 
+export function getCIPiplineInitData(appId: string | number): Promise<any> {
+    return Promise.all([getCIPipelineNameSuggestion(appId), getSourceConfigParsed(appId)]).then(([pipelineNameRes, sourceConfigRes]) => {
+        return {
+            result: {
+                form: {
+                    name: pipelineNameRes.result,
+                    args: [{ key: "", value: "" }],
+                    materials: sourceConfigRes.result.materials,
+                    triggerType: TriggerType.Auto,
+                    beforeDockerBuildScripts: [],
+                    afterDockerBuildScripts: [],
+                    scanEnabled: false,
+                },
+                gitMaterials: sourceConfigRes.result.gitMaterials,
+                loadingData: false,
+                isAdvanced: false,
+            }
+        }
+    })
+}
+
 function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
     return get(URL)
 }
 
 export function getSourceConfigParsed(appId): Promise<any> {
-    return getSourceConfig(appId).then((response) => {
-        let materials = response?.result?.material?.map((mat) => {
+    return Promise.all([getSourceConfig(appId), getGitProviderList()]).then(([sourceConfigRes, gitProvderRes]) => {
+        let materials = sourceConfigRes?.result?.material?.map((mat) => {
+            let gitHost = gitProvderRes.result?.find(gitProvider => gitProvider.gitHostId === mat.gitProviderId);
+
             return {
                 id: 0,
                 gitMaterialId: mat.id,
                 name: mat.name,
                 type: TagOptions[0].value,
                 value: "",
-                isSelected: true
+                isSelected: true,
+                gitHostId: gitHost?.gitHostId,
+                gitHostName: gitHost?.gitHostName,
             }
         });
-        let gitMaterials = response.result.material.map((mat) => {
+        let gitMaterials = sourceConfigRes.result.material.map((mat) => {
             return {
                 gitMaterialId: mat.id,
                 materialName: mat.name,
             }
         });
         return {
-            code: response.code,
+            code: sourceConfigRes.code,
             result: {
                 materials,
                 gitMaterials,
