@@ -17,7 +17,7 @@ import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
-import { TLSSocket } from 'tls';
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
     constructor(props) {
@@ -27,7 +27,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING,
             ImpactedObjectList: "",
             outputList: [],
-            readmeResult: [],
+            readmeResult: undefined,
             showObjectsOutputDrawer: false,
             showExamples: false,
             showHeaderDescription: true,
@@ -36,6 +36,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     componentDidMount = () => {
+
+        getReadme().then((res) => {
+            { console.log(res) }
+            { console.log(res.result.readme) }
+            this.setState({ readmeResult: res.result.readme })
+        }).catch((error) => {
+            showError(error);
+        })
+
         getOutputListMin().then((res) => {
             this.setState({
                 view: ViewType.FORM,
@@ -109,7 +118,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="code-editor-container" >
                     <CodeEditor
                         // value={codeEditorBody}
-                        height={700}
+                        height={710}
                         mode='yaml'
                         lineDecorationsWidth={50}
                     // readOnly={this.state.configMap !== SwitchItemValues.Configuration}
@@ -199,23 +208,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateBody = () => {
-        let sampleConfig = yamlJsParser.stringify(sample)
-        return (<div style={{ height: '700px' }} className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-            <div >
-                {sampleConfig}
-                {/* {`
-                    "api":"/orchestrator/deployment/template/update",
-                    "method": "put",
-                    "action" : "run/show",
-                    "payload": {
-                        appNameInclude: 
-                        appNameExclude:
-                        envId:
-                        isGlobal;
-                        patch json:
-
-                     }
-               `} */}
+        return (<div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
+            <div className="right-readme">
+                <MarkDown markdown={this.state.readmeResult} />
             </div>
         </div>)
     }

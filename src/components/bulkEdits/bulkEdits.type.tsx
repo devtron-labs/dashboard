@@ -19,7 +19,7 @@ export interface BulkEditsState {
     ImpactedObjectList: string ;
     outputList: OutputList[] 
     showObjectsOutputDrawer: boolean;
-    readmeResult;
+    readmeResult: undefined;
     showExamples: boolean;
     showHeaderDescription: boolean;
     showOutputData: boolean

@@ -11,7 +11,7 @@
 
 .updated-container--sample{
     align-items: flex-start;
-    height: "700px";
+    height: calc(100vh - 150px);
     border-bottom: 1px solid #d0d4d9;
 }
 
@@ -26,4 +26,9 @@
     width: calc(100vw - 64px);
     display: grid;
     z-index: var(--events-logs);
+}
+
+.right-readme{
+    height: 100%;
+    overflow: auto;
 }
