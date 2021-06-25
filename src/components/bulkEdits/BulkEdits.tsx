@@ -18,8 +18,24 @@ import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.ut
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
+import { AutoSizer } from 'react-virtualized'
+import MonacoEditor from 'react-monaco-editor';
+import { editor } from 'monaco-editor';
+
+editor.defineTheme('vs-gray--dt', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+        //@ts-ignore
+        { background: '#f2f4f7' }
+    ],
+    colors: {
+        'editor.background': '#f2f4f7',
+    }
+});
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
+    
     constructor(props) {
         super(props)
 
@@ -64,6 +80,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         //     showError(error);
         // })
     }
+    
 
     renderBulkEditHeader = () => {
         return (<div className="page-header brdr-btm pl-20">
@@ -114,13 +131,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorBody = () => {
         let codeEditorBody = yamlJsParser.stringify(sample)
         return (
-            <div className="">
-                <div className="code-editor-container" >
-                    <CodeEditor
-                        // value={codeEditorBody}
-                        height={710}
-                        mode='yaml'
-                        lineDecorationsWidth={50}
+            // <div className="">
+            //     <div className="code-editor-container" >
+            //         <CodeEditor
+            //             // value={codeEditorBody}
+
+            //             height={710}
+            //             mode='yaml'
+            //             lineDecorationsWidth={50}
                     // readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     // onChange={(event) => { this.handleConfigChange(event) }}>
                     // <CodeEditor.Header >
@@ -130,10 +148,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     //     </Switch>
                     // <CodeEditor.ValidationError />
                     // </CodeEditor.Header
-                    >
-                    </CodeEditor>
-                </div>
-            </div>
+                    // >
+            //         </CodeEditor>
+            //     </div>
+            // </div>
+            // <AutoSizer>
+                <MonacoEditor 
+                height={700}
+                theme={'vs-gray--dt'}
+                >
+                    
+                </MonacoEditor>
+            //  </AutoSizer>
         )
     }
 
