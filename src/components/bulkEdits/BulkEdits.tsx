@@ -44,10 +44,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             ImpactedObjectList: "",
             outputList: [],
             readmeResult: undefined,
-            showObjectsOutputDrawer: false,
             showExamples: false,
             showHeaderDescription: true,
-            showOutputData: true
+            showOutputData: true,
+            showObjectsOutputDrawer: false,
         }
     }
 
@@ -122,9 +122,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.setState({ showObjectsOutputDrawer: true })}>
                     Show Impacted Objects
                 </button>
-                <div className="cb-5 fw-6 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
-                    See Examples
-                </div>
+                {!this.state.showExamples ?
+                    <div className="cb-5 fw-6 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
+                        See Examples
+                </div> : null}
             </div>
         )
     }
@@ -150,7 +151,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderImpactedObjectsList = () => {
-        return <div className="cn-9 fs-13 pl-20 pr-20" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
+        return <div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
             {this.state.outputList.map((itm) => { return <div> {itm.appNameExcludes} <br /><br /> </div> })}
         </div>
     }
@@ -175,7 +176,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 onHeightChange={(height) => { (document.getElementById('dummy-div').style.height = `${height}px`) }}
                 isDetailedView={!!OutputObjectTabs.OUTPUT}
                 anchor={this.outputImpactedTabSelector()}>
-                <div className="bcn-0 pt-6 " >
+                <div className="bcn-0 pt-6 en-2 bw-1" >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
                         <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
