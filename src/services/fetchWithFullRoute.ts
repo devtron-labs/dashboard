@@ -1,4 +1,4 @@
-export async function fetchAPI(fullRoute: string, type: string, data?: object, signal?: AbortSignal): Promise<any> {
+export async function fetchWithFullRoute(fullRoute: string, type: string, data?: object, signal?: AbortSignal): Promise<any> {
     let options = {
         method: type,
         headers: {
