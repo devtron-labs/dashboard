@@ -1,29 +1,28 @@
-
-import React,{useState} from 'react'
-import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
-import {createGitCommitUrl, not} from './index'
-import moment from 'moment'
+import React, { useState } from 'react'
+import { createGitCommitUrl, not } from './index'
+import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
-import {GitTriggers, CiMaterial} from '../app/details/cIDetails/types'
+import { GitTriggers, CiMaterial } from '../app/details/cIDetails/types'
 import { Moment12HourFormat } from '../../config';
+import moment from 'moment'
 
-function getGitIcon(repoUrl){
-    for(let gitProvider of ['github', 'gitlab', 'bitbucket']){
-        if(repoUrl.includes(gitProvider)){
+function getGitIcon(repoUrl) {
+    for (let gitProvider of ['github', 'gitlab', 'bitbucket']) {
+        if (repoUrl.includes(gitProvider)) {
             return `${gitProvider}`
         }
     }
     return 'git'
 }
 
-export function RepoBranch({repoUrl = "", branch = "", style = {}, ...props}){
+export function RepoBranch({ repoUrl = "", branch = "", style = {}, ...props }) {
     repoUrl = repoUrl.replace(".git", "")
     const tokens = repoUrl.split("/")
-    const {length, [length - 1]: repo} = tokens
+    const { length, [length - 1]: repo } = tokens
     return (
         <div {...props} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '18px', ...style, }}>
             <div className={getGitIcon(repoUrl)}>
@@ -33,7 +32,7 @@ export function RepoBranch({repoUrl = "", branch = "", style = {}, ...props}){
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7 mono">
-                    <Branch className="icon-dim-12"/>{branch}
+                    <BranchIcon className="icon-dim-12" />{branch}
                 </div>
             </div>
         </div>
@@ -91,3 +90,50 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
         </div>
     );
 };
+
+export function GitCommitInfo(props) {
+
+    return <div className="p-12 bcn-0 br-4 mb-16 bw-1 en-2">
+        {props.children}
+        {props.author}
+        {props.date}
+        {props.message}
+    </div>
+};
+
+function Author({ email }) {
+
+    return <div className="flex left cn-7 fs-14 lh-1-5 mb-4">
+        <PersonIcon className="mr-8" />
+        {email}
+    </div>
+}
+
+function Date({ date }) {
+
+    return <div className="flex left cn-7 fs-14 lh-1-5 mb-4">
+        <CalendarIcon className="mr-8" />
+        {date}
+    </div>
+}
+
+function Message({ message }) {
+
+    return <div className="flex left mono cn-7 fs-14 lh-1-5">
+        <MessageIcon className="icon-dim-16 mr-8" />{message}
+    </div>
+}
+
+function Branch({ branch }) {
+
+    return <span className="mono cn-7 fs-14 lh-1-5 br-4 bcn-1 p-4">
+        <BranchIcon className="icon-dim-12 mr-8 vertical-align-middle" />{branch}
+    </span>
+}
+
+
+
+GitCommitInfo.Author = Author;
+GitCommitInfo.Date = Date;
+GitCommitInfo.Message = Message;
+GitCommitInfo.Branch = Branch;
