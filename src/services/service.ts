@@ -170,7 +170,7 @@ export function getPosthogData(): Promise<ResponseType> {
 }
 
 export function getPosthogApiKey(): Promise<ResponseType> {
-    const URL = `https://telemetry.devtron.ai/devtron/telemetry/apikey`;
+    const URL = window._env_.POSTHOG_TOKEN_API_ENDPOINT;
     return fetchWithFullRoute(URL, 'GET');
 }
 
