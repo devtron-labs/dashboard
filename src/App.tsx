@@ -78,12 +78,13 @@ export default function App() {
 		async function createUserId() {
 			if (process.env.NODE_ENV === 'production') {
 				const { result: apiKey } = await getPosthogApiKey();
+				let decodedApiKey = atob(apiKey)
 				let loginInfo = getLoginInfo()
 				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 				let hash = Hash(email);
 				try {
 					const { result: { ucid, url } } = await getPosthogData();
-					posthog.init(apiKey,
+					posthog.init(decodedApiKey,
 						{
 							api_host: url,
 							autocapture: false,
