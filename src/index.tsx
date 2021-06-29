@@ -13,7 +13,6 @@ interface customEnv {
     APPLICATION_METRICS_ENABLED?: boolean;
     GA_ENABLED?: boolean;
     GA_TRACKING_ID?: string;
-    POSTHOG_TOKEN_API_ENDPOINT?: string;
 }
 declare global {
     interface Window {
