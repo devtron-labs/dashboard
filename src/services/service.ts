@@ -165,13 +165,8 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 }
 
 export function getPosthogData(): Promise<ResponseType> {
-    const URL = `telemetry/ucid`;
+    const URL = `telemetry/meta`;
     return get(URL);
-}
-
-export function getPosthogApiKey(): Promise<ResponseType> {
-    const URL = window._env_.POSTHOG_TOKEN_API_ENDPOINT;
-    return fetchWithFullRoute(URL, 'GET');
 }
 
 function parseLastExecutionResponse(response): LastExecutionResponseType {
