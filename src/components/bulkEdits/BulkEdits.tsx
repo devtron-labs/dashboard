@@ -41,6 +41,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
+            statusCode:0,
             ImpactedObjectList: "",
             outputList: [],
             readmeResult: undefined,
@@ -107,8 +108,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     handleRunButton = () => {
         this.setState({
-            showObjectsOutputDrawer: true
+            view: ViewType.LOADING
         })
+        // this.setState({
+        //     showObjectsOutputDrawer: true
+        // })
     }
 
     renderCodeEditorHeader = () => {
@@ -214,7 +218,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderBulkCodeEditor = () => {
         return (<>
             {this.renderCodeEditorHeader()}
-            {this.renderCodeEditorBody()}
+            {(this.state.view === ViewType.LOADING) ?<div style={{ height: 'calc(100vh - 125px)', width: '100vw' }}> <Progressing pageLoader /> </div>: this.renderCodeEditorBody() }
+            
         </>)
     }
 
@@ -231,6 +236,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     render() {
+       
+        if (this.state.view === ViewType.ERROR) {
+            return <div className="global-configuration__component flex">
+                <ErrorScreenManager code={this.state.statusCode} />
+            </div>
+        }
         return (<div>
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}

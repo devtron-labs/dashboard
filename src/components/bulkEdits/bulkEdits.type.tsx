@@ -10,19 +10,20 @@ export interface OutputList {
     appNameIncludes: string;
     appNameExcludes: string;
     envId: number;
-    isGlobal : boolean;
+    isGlobal: boolean;
     patchJson: string;
 }
 
 export interface BulkEditsState {
-    view: string
-    ImpactedObjectList: string ;
-    outputList: OutputList[] 
+    view: string;
+    statusCode: number;
+    ImpactedObjectList: string;
+    outputList: OutputList[]
     showObjectsOutputDrawer: boolean;
     readmeResult: undefined;
     showExamples: boolean;
     showHeaderDescription: boolean;
-    showOutputData: boolean
+    showOutputData: boolean;
 }
 
 export enum OutputObjectTabs {
