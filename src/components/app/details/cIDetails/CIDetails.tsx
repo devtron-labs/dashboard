@@ -11,6 +11,7 @@ import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chev
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg';
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-commit.svg';
+import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg';
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
@@ -255,7 +256,6 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                             <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
                             <p className="fs-12 cn-7">{gitDetail?.Message}</p>
                         </div>
-
                     </div>
                 })}
             </div>
@@ -779,19 +779,48 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 // }
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-
+    let isPR = false;
     return <div key={gitTrigger?.Commit} style={{ width: 'min( 100%, 800px )' }}>
-        <GitCommitInfo author={<GitCommitInfo.Author email={"rashmi@devtron.ai"} />}
-            date={<GitCommitInfo.Date date={"21-06-1991"} />}
-            message={<GitCommitInfo.Message message={"console removed"} />}>
-            <div className="flex left">
-                <Git className="" />
-                <div>
-                    <p className="fs-12 fw-6 m-0 cn-9">/getting-started-nodejs</p>
-                    <a href="#" target="_blank" rel="noreferrer noopener" className="fs-12 fw-6 m-0 cn-9">PR #213 FEATURE: telemetry events from devtron.</a>
+        <GitCommitInfo email={"rashmi@devtron.ai"}
+            date={"21-06-1991"}
+            message={"console removed"} >
+            {isPR ? <>
+                <div className="git-commit-info__grid flex left mb-12">
+                    <Git className="icon-dim-24" />
+                    <div>
+                        <p className="fs-12 fw-6 m-0 cn-9">/getting-started-nodejs</p>
+                        <a href="#" target="_blank" rel="noreferrer noopener" className="fs-12 fw-5 m-0 cb-5">PR #213 FEATURE: telemetry events from devtron.</a>
+                    </div>
+                </div>
+            </>
+                : <>
+                    <div className="git-commit-info__grid flex left mb-12">
+                        <Git className="icon-dim-24" />
+                        <div>
+                            <p className="fs-12 fw-6 m-0 cn-9">/getting-started-nodejs</p>
+                            <p className="m-0 flex left"> <BranchIcon className="icon-dim-12 mr-4" />master</p>
+                        </div>
+                    </div>
+                    <div className="mt-12 mb-12 flex left">
+                        <GitCommitInfo.Commit commit="ewo3434" />
+                    </div>
+                </> }
+
+            <div className="git-commit-info__grid mono mb-12">
+                <BranchIcon className="" />
+                <div className="w-100">
+                    <p className="flex left mb-8">
+                        <GitCommitInfo.Branch branch="uat-testing" />
+                        <span className="mr-8" />
+                        <GitCommitInfo.Commit commit="ewo3434" />
+                    </p>
+                    <p className="flex left mb-0">
+                        <GitCommitInfo.Branch branch="uat-testing" />
+                        <span className="mr-8" />
+                        <GitCommitInfo.Commit commit="ewo3434" />
+                    </p>
                 </div>
             </div>
-            {/* <GitCommitInfo.Branch branch="uat-testing" /> */}
         </GitCommitInfo>
     </div>
 }
