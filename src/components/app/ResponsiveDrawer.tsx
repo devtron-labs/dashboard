@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useWindowSize, useEffectAfterMount } from '../common';
 
-export default function ResponsiveDrawer({ initialHeight = 36, minHeight = 100, defaultHeight = 500, minimumTopMargin = 100, isDetailedView, onHeightChange = null, className = "", children, anchor=null }) {
+export default function ResponsiveDrawer({ initialHeight = 36, minHeight = 100, defaultHeight = 300, minimumTopMargin = 100, isDetailedView, onHeightChange = null, className = "", children, anchor=null }) {
     let dimensions = useWindowSize()
     const { height: windowHeight, width } = dimensions || { height: 0, width: 0 }
     const [height, setHeight] = React.useState(initialHeight)

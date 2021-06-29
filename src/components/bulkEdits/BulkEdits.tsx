@@ -54,8 +54,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     componentDidMount = () => {
 
         getReadme().then((res) => {
-            { console.log(res) }
-            { console.log(res.result.readme) }
             this.setState({ readmeResult: res.result.readme })
         }).catch((error) => {
             showError(error);
@@ -133,13 +131,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorBody = () => {
         let codeEditorBody = yamlJsParser.stringify(sample)
         return (
-            // <AutoSizer>
             <MonacoEditor
-                height={700}
                 theme={'vs-gray--dt'}
+                height={700}
             >
             </MonacoEditor>
-            //  </AutoSizer>
         )
     }
 
@@ -158,14 +154,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     outputImpactedTabSelector = () => {
         let onMouseDown = null
-        return <FragmentHOC
-            onMouseDown={onMouseDown || noop}
-        >
-            <div
-                className={OutputObjectTabs.OUTPUT == 'Output' ? 'active' : null} >
-
+        return <FragmentHOC onMouseDown={onMouseDown || noop} >
+            <div className={OutputObjectTabs.OUTPUT == 'Output' ? 'active bcn-0' : null} >
+                <div className="bcn-0 pt-6 border-top" >
+                    <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
+                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
+                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
+                        <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
+                            onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
+                    </div>
+                    {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
+                </div>
             </div>
-
         </FragmentHOC>
 
     }
@@ -173,21 +173,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<>
             <ResponsiveDrawer
                 className="output-drawer"
-                onHeightChange={(height) => { (document.getElementById('dummy-div').style.height = `${height}px`) }}
+                onHeightChange={(height) => { return console.log(height), (document.getElementById('dummy-div').style.height = `${height}px`) }}
                 isDetailedView={!!OutputObjectTabs.OUTPUT}
                 anchor={this.outputImpactedTabSelector()}>
-                <div className="bcn-0 pt-6 en-2 bw-1" >
-                    <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
-                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
-                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
-                        <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
-                            onClick={() => this.setState({ showObjectsOutputDrawer: false })}
-                        />
-                    </div>
-                    {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
-                </div>
             </ResponsiveDrawer>
-            <div id="dummy-div" style={{ width: '100%', height: '36px' }}></div>
+            <div id="dummy-div" style={{ width: '100%', height: '0px' }}></div>
         </>
         )
     }
