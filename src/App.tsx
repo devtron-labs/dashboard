@@ -17,7 +17,7 @@ import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progr
 import * as serviceWorker from './serviceWorker';
 import Hotjar from './components/Hotjar/Hotjar';
 import { validateToken } from './services/service';
-import { getPosthogData, getPosthogApiKey } from './services/service';
+import { getPosthogData } from './services/service';
 import Reload from './components/Reload/Reload';
 import posthog from 'posthog-js';
 import Hash from 'object-hash';
@@ -77,13 +77,12 @@ export default function App() {
 	useEffect(() => {
 		async function createUserId() {
 			if (process.env.NODE_ENV === 'production') {
-				const { result: apiKey } = await getPosthogApiKey();
-				let decodedApiKey = atob(apiKey)
 				let loginInfo = getLoginInfo()
 				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 				let hash = Hash(email);
 				try {
-					const { result: { ucid, url } } = await getPosthogData();
+					const { result: { ucid, url, apiKey } } = await getPosthogData();
+					let decodedApiKey = atob(apiKey)
 					posthog.init(decodedApiKey,
 						{
 							api_host: url,
