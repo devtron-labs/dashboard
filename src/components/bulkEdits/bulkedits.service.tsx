@@ -1,10 +1,12 @@
-import react from 'react';
-import { resolve } from "dns"
-import { rejects } from "assert"
-import { get, post, put, trash } from '../../services/api';
+import { get, post } from '../../services/api';
 
 export function getReadme() {
     return get(`app-store/application/readme/240`)
+}
+
+export function updateBulkList(request): Promise<any>{
+    const URL = `bulk-update`;
+    return post(URL, request);
 }
 
 export function getOutputListMin(): Promise<{

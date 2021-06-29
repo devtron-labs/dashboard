@@ -14,6 +14,26 @@ export interface OutputList {
     patchJson: string;
 }
 
+export interface BulkConfiguration {
+   apiVersion: string;
+   kind: string;
+   payload: {
+       include: {
+           name: string;
+       }
+       exclude: {
+        name: string;
+    }
+    envId:number[];
+    isGlobal: boolean;
+    deploymentTemplate: {
+        spec: {
+            patchJson: string;
+        }
+    }
+   }
+}
+
 export interface BulkEditsState {
     view: string;
     statusCode: number;
@@ -24,6 +44,7 @@ export interface BulkEditsState {
     showExamples: boolean;
     showHeaderDescription: boolean;
     showOutputData: boolean;
+    bulkConfig: BulkConfiguration;
 }
 
 export enum OutputObjectTabs {
