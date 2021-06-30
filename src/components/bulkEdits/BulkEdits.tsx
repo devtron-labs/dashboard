@@ -11,7 +11,7 @@ import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, 
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { getReadme, getOutputListMin, updateBulkList } from './bulkedits.service';
+import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
@@ -21,6 +21,8 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import { AutoSizer } from 'react-virtualized'
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
+import { toast } from 'react-toastify';
+import { string } from 'prop-types';
 
 editor.defineTheme('vs-gray--dt', {
     base: 'vs-dark',
@@ -42,9 +44,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
-            ImpactedObjectList: "",
-            bulkConfig: undefined,
             outputList: [],
+            updatedTemplate: [],
+            bulkConfig: undefined,
+            ImpactedObjectList: "",
+            ImpactedObjectsConfig: "",
             readmeResult: undefined,
             showExamples: false,
             showHeaderDescription: true,
@@ -54,27 +58,26 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     componentDidMount = () => {
-        getReadme().then((res) => {
-            this.setState({ readmeResult: res.result.readme })
-        }).catch((error) => {
-            showError(error);
+        this.setState({
+            view: ViewType.LOADING,
         })
-
-        getOutputListMin().then((res) => {
+        getSeeExample().then((res) => {
+            let bulkConfig = res.result
+            let updatedTemplate = res.result.map((elm) => {
+                return {
+                    value: 1,
+                    label: elm.task,
+                }
+            })
             this.setState({
                 view: ViewType.FORM,
-                outputList: res
+                updatedTemplate: updatedTemplate,
+                bulkConfig: bulkConfig
             })
-        }).catch((error) => {
-            showError(error);
         })
 
-        // getImpactedListMin().then((res) => {
-        //     let response = res
-        //     this.setState({
-        //         view: ViewType.FORM,
-        //         outputList: response
-        //     })
+        // getReadme().then((res) => {
+        //     this.setState({ readmeResult: res.result.readme })
         // }).catch((error) => {
         //     showError(error);
         // })
@@ -111,22 +114,25 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING
         })
 
-        let patchJson: any = {}
-        patchJson = yamlJsParser.parse(this.state.bulkConfig?.payload?.deploymentTemplate?.spec?.patchJson)
-        
+        let patchJson: any = this.state.bulkConfig[0]?.payload?.deploymentTemplate?.spec?.patchJson
+        if (!patchJson) {
+            patchJson = {}
+        }
+        patchJson = yamlJsParser.stringify(patchJson)
+
         let payload = {
-            apiVersion: this.state.bulkConfig?.apiVersion,
-            kind: this.state.bulkConfig?.kind,
+            apiVersion: this.state.bulkConfig[0]?.apiVersion,
+            kind: this.state.bulkConfig[0]?.kind,
             payload: {
                 include: {
-                    name: this.state.bulkConfig?.payload?.include?.name,
+                    name: this.state.bulkConfig[0]?.payload?.include?.name,
                 },
                 exclude: {
-                    name: this.state.bulkConfig?.payload?.exclude?.name,
+                    name: this.state.bulkConfig[0]?.payload?.exclude?.name,
                 }
             },
-            envId: this.state.bulkConfig?.payload?.envId,
-            isGlobal: this.state.bulkConfig?.payload.isGlobal,
+            envId: this.state.bulkConfig[0]?.payload?.envId,
+            isGlobal: this.state.bulkConfig[0]?.payload.isGlobal,
             deploymentTemplate: {
                 spec: {
                     patchJson: patchJson
@@ -134,18 +140,34 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             }
         }
 
-        let promise = updateBulkList(payload)
-        promise.then((response)=>{
-            console.log(response);
-             })
-             .catch((error) => {
+        updateBulkList(payload).then((response) => {
+            let bulkConfig = response.result;
+            console.log(response)
+            this.setState({
+                view: ViewType.FORM,
+            })
+        })
+            .catch((error) => {
+                showError(error);
+                this.setState({ view: ViewType.FORM });
+            })
+        this.setState({
+            showObjectsOutputDrawer: true
+        })
+    }
+
+    handleShowImpactedObjectButton = () => {
+        let configJson: any = {}
+        configJson = this.state.ImpactedObjectsConfig
+        updateImpactedObjectsList(configJson).then((response) => {
+            console.log(response)
+            // console.log(this.state)
+
+        }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.FORM });
         })
-
-        // this.setState({
-        //     showObjectsOutputDrawer: true
-        // })
+        this.setState({ showObjectsOutputDrawer: true })
     }
 
     renderCodeEditorHeader = () => {
@@ -154,7 +176,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} onClick={() => this.handleRunButton()} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
-                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.setState({ showObjectsOutputDrawer: true })}>
+                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.handleShowImpactedObjectButton()}>
                     Show Impacted Objects
                 </button>
                 {!this.state.showExamples ?
@@ -171,6 +193,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <MonacoEditor
                 theme={'vs-gray--dt'}
                 height={700}
+
             >
             </MonacoEditor>
         )
@@ -210,7 +233,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<>
             <ResponsiveDrawer
                 className="output-drawer"
-                onHeightChange={(height) => { return console.log(height), (document.getElementById('dummy-div').style.height = `${height}px`) }}
+                onHeightChange={(height) => { (document.getElementById('dummy-div').style.height = `${height}px`) }}
                 isDetailedView={!!OutputObjectTabs.OUTPUT}
                 anchor={this.outputImpactedTabSelector()}>
             </ResponsiveDrawer>
@@ -221,19 +244,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
+
             <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
                     className="select-width"
                     placeholder="Update Deployment Template"
+                    options={this.state.updatedTemplate}
                     components={{
                         IndicatorSeparator: null,
-                        Option,
                         DropdownIndicator,
-                        ValueContainer,
                     }}
                     styles={{
                         ...multiSelectStyles,
-                        ...menuList,
+                        // ...menuList,
                     }} />
                 <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
@@ -243,6 +266,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateBody = () => {
         return (<div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
             <div className="right-readme">
+            {yamlJsParser.stringify(this.state.bulkConfig)}
                 <MarkDown markdown={this.state.readmeResult} />
             </div>
         </div>)

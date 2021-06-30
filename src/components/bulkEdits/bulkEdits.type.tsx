@@ -15,36 +15,43 @@ export interface OutputList {
 }
 
 export interface BulkConfiguration {
-   apiVersion: string;
-   kind: string;
-   payload: {
-       include: {
-           name: string;
-       }
-       exclude: {
-        name: string;
-    }
-    envId:number[];
-    isGlobal: boolean;
-    deploymentTemplate: {
-        spec: {
-            patchJson: string;
+    apiVersion: string;
+    kind: string;
+    payload: {
+        include: {
+            name: string;
+        }
+        exclude: {
+            name: string;
+        }
+        envId: number[];
+        isGlobal: boolean;
+        deploymentTemplate: {
+            spec: {
+                patchJson: any;
+            }
         }
     }
-   }
+}
+
+export interface UpdatedTemplate {
+    value: number,
+    label: string
 }
 
 export interface BulkEditsState {
     view: string;
     statusCode: number;
     ImpactedObjectList: string;
+    ImpactedObjectsConfig: string;
     outputList: OutputList[]
+    updatedTemplate: UpdatedTemplate[],
     showObjectsOutputDrawer: boolean;
     readmeResult: undefined;
     showExamples: boolean;
     showHeaderDescription: boolean;
     showOutputData: boolean;
-    bulkConfig: BulkConfiguration;
+    bulkConfig: BulkConfiguration[];
 }
 
 export enum OutputObjectTabs {
