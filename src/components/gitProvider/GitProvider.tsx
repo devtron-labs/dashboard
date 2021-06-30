@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useLocation, useHistory, useRouteMatch } from 'react-router'
-import { saveGitProviderConfig, updateGitProviderConfig } from './service';
+import React, { useState, useEffect } from 'react';
+import { getGitHostList, saveGitProviderConfig, updateGitProviderConfig } from './service';
 import { getGitProviderList } from '../../services/service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react';
@@ -11,17 +10,61 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { styles } from './gitProvider.util';
+import ReactSelect from 'react-select';
+import * as Select from 'react-select'
+interface Githost {
+    id: number;
+    name: string;
+    authMode: string;
+    url: string;
+    userName: string;
+    password: string;
+}
 
 export default function GitProvider({ ...props }) {
-    const location = useLocation();
-    const match = useRouteMatch();
-    const history = useHistory();
     const [loading, result, error, reload] = useAsync(getGitProviderList)
-    if (loading && !result) return <Progressing pageLoader />
-    if (error) {
-        showError(error)
-        if (!result) return null
+    const [providerList, setProviderList] = useState([])
+    const [hostList, setHostList] = useState<Githost[]>([])
+    const [isPageLoading, setIsPageLoading] = useState(true)
+    const [isErrorLoading, setIsErrorLoading] = useState(false)
+    const [errors, setErrors] = useState([])
+
+    async function getInitData() {
+        try {
+            const { result: providers = [] } = await getGitProviderList();
+            const { result: hosts = [] } = await getGitHostList();
+            providers.sort((a, b) => a.name.localeCompare(b.name))
+            hosts.sort((a, b) => a.name.localeCompare(b.name))
+            setProviderList(providers)
+            setHostList(hosts)
+        } catch (error) {
+            showError(error)
+            setErrors(error)
+            setIsErrorLoading(true)
+        } finally {
+            setIsPageLoading(false)
+        }
     }
+
+    useEffect(() => {
+        getInitData();
+    }, [])
+
+    if (isPageLoading) {
+        return <Progressing pageLoader />
+    }
+    if (isErrorLoading) {
+        return <ErrorScreenManager code={error?.code} />
+    }
+
+    // if (loading && !result) return <Progressing pageLoader />
+    // if (error) {
+    //     showError(error)
+    //     if (!result) return null
+    // }
+
+    let allProviders = [{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
     return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
         <h2 className="form__title">Git accounts</h2>
@@ -30,12 +73,24 @@ export default function GitProvider({ ...props }) {
                 Learn more about git accounts
             </a>
         </div>
-        {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+        {allProviders.map((provider) => {
+            return <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
+                hostList={hostList}
+                id={provider.id}
+                name={provider.name}
+                active={provider.active}
+                url={provider.url}
+                authMode={provider.authMode}
+                userName={provider.userName}
+                password={provider.password}
+                reload={getInitData} />
+        })}
+        {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
     </section>
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, hostList, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -89,12 +144,12 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, hostList, reload, toggleCollapse }} />}
         </article>
     )
 }
 
-function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", hostList, reload, toggleCollapse, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -159,15 +214,28 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form">
-                <div className="form__row form__row--two-third">
+                <div className="mb-16">
                     <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                </div>
+                <div className="form__row form__row--two-third">
+                    <div>
+                        <label className="form__label">Git provider*</label>
+                        <ReactSelect options={hostList}
+                            // getOptionLabel={option => `${option.id}`}
+                            // getOptionValue={option => `${option.name}`}
+                            styles={{
+                                ...styles,
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                            }} />
+                    </div>
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className="form__row form__row--auth-type pointer">
                     {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                         .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-
                             <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
                         </label>)}
 
