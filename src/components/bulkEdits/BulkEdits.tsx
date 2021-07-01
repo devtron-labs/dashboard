@@ -47,8 +47,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             updatedTemplate: [],
             outputList: [],
             bulkConfig: undefined,
-            ImpactedObjectList: "",
-            ImpactedObjectsConfig: "",
+            impactedObjectList: "",
             readmeResult: undefined,
             showExamples: false,
             showHeaderDescription: true,
@@ -151,11 +150,24 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleShowImpactedObjectButton = () => {
-        let configJson: any = {}
-        configJson = this.state.ImpactedObjectsConfig
-        
-        updateImpactedObjectsList(configJson).then((response) => {
-            console.log(response)
+        let configJson: any = {};
+        try {
+            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
+        }
+        catch (error) {
+            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            toast.error("Invalid Yaml");
+            this.setState({ view: ViewType.FORM });
+            return;
+        }
+
+        let payload = configJson
+
+        updateImpactedObjectsList(payload).then((response) => {
+            this.setState({
+                view: ViewType.FORM,
+                impactedObjectList: response.result
+            })
 
         }).catch((error) => {
             showError(error);
@@ -212,7 +224,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderImpactedObjectsList = () => {
         return <div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => { return <div> {itm } <br /><br /> </div> })}
+            <div> {this.state.impactedObjectList} </div>
         </div>
     }
 
@@ -301,9 +313,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-        // let codeEditorPayload = this.state.bulkConfig.map((elm) => { return elm })
+
         return (<div>
-            {/* { console.log(this.state.bulkConfig.map((elm) => elm ))} */}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}

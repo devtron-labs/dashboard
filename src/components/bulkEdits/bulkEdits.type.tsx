@@ -35,8 +35,7 @@ export interface UpdatedTemplate {
 export interface BulkEditsState {
     view: string;
     statusCode: number;
-    ImpactedObjectList: string;
-    ImpactedObjectsConfig: string;
+    impactedObjectList: "";
     outputList: [];
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
