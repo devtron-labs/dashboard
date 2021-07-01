@@ -4,17 +4,16 @@ import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
 import { BulkEditsProps, BulkEditsState, OutputObjectTabs } from './bulkEdits.type';
-import { Option, FragmentHOC, noop, } from '../common';
+import { FragmentHOC, noop, } from '../common';
 import yamlJsParser from 'yaml';
-import sample from './sampleConfig.json';
-import { Progressing, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common';
+import { Progressing, showError, ErrorScreenManager } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service';
 import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
-import { menuList, DropdownIndicator, ValueContainer } from '../charts/charts.util';
+import { DropdownIndicator } from '../charts/charts.util';
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
@@ -22,7 +21,6 @@ import { AutoSizer } from 'react-virtualized'
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { toast } from 'react-toastify';
-import { string } from 'prop-types';
 
 editor.defineTheme('vs-gray--dt', {
     base: 'vs-dark',
@@ -134,7 +132,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         updateBulkList(payload).then((response) => {
             let output = response.result;
-            console.log(response)
             this.setState({
                 view: ViewType.FORM,
                 outputList: output
@@ -164,6 +161,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
+            console.log(response)
             this.setState({
                 view: ViewType.FORM,
                 impactedObjectList: response.result
@@ -204,14 +202,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let codeEditorBody = this.state.codeEditorPayload
 
         return (<>
-            <MonacoEditor
-                theme={'vs-gray--dt'}
+            <CodeEditor
+                // theme={'vs-gray--dt'}
                 height={700}
                 value={codeEditorBody}
-                language="yaml"
+                mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
-            </MonacoEditor>
+            </CodeEditor>
         </>
         )
     }
