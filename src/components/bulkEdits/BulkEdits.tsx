@@ -62,20 +62,21 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({
             view: ViewType.LOADING,
         })
+
         getSeeExample().then((res) => {
             let bulkConfig = res.result
             this.setState({
                 view: ViewType.FORM,
                 bulkConfig: bulkConfig,
             })
+
             let updatedTemplate = this.state.bulkConfig.map((elm) => {
                 return {
                     value: 1,
                     label: elm.task,
                 }
             })
-            // let codeEditorPayload = this.state.bulkConfig.map((elm) => { return elm.script })
-            // {console.log(codeEditorPayload)}
+
             this.setState({
                 updatedTemplate: updatedTemplate,
             })
@@ -118,34 +119,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({
             view: ViewType.LOADING
         })
-
-       
-
-        // let patchJson: any = this.state.codeEditorPayload?.payload?.deploymentTemplate?.spec?.patchJson
-        // if (!patchJson) {
-        //     patchJson = {}
-        // }
-        // patchJson = yamlJsParser.stringify(patchJson)
-
-        // let payload = {
-        //     apiVersion: this.state.codeEditorPayload?.apiVersion,
-        //     kind: this.state.codeEditorPayload?.kind,
-        //     payload: {
-        //         include: {
-        //             name: this.state.codeEditorPayload?.payload?.include?.name,
-        //         },
-        //         exclude: {
-        //             name: this.state.codeEditorPayload?.payload?.exclude?.name,
-        //         },
-        //         envId: this.state.codeEditorPayload?.payload?.envId,
-        //         global: this.state.codeEditorPayload?.payload?.global,
-        //         deploymentTemplate: {
-        //             spec: {
-        //                 patchJson: patchJson
-        //             }
-        //         }
-        //     }
-        // }
 
         let configJson: any = {};
         try {
@@ -218,7 +191,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let codeEditorBody = this.state.codeEditorPayload
 
         return (<>
-            {console.log(this.state.bulkConfig)}
             <MonacoEditor
                 theme={'vs-gray--dt'}
                 height={700}
@@ -227,12 +199,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
             </MonacoEditor>
-            </>
+        </>
         )
     }
 
     renderOutputList = () => {
-        // { console.log(this.state.outputList.map((itm) => { return itm.appNameIncludes.split("  ") })) }
         return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
             {this.state.outputList.map((itm) => { return <div> {itm.appNameIncludes} <br /><br /> </div> })}
         </div>)
@@ -331,7 +302,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
         // let codeEditorPayload = this.state.bulkConfig.map((elm) => { return elm })
         return (<div>
-       {/* { console.log(this.state.bulkConfig.map((elm) => elm ))} */}
+            {/* { console.log(this.state.bulkConfig.map((elm) => elm ))} */}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
