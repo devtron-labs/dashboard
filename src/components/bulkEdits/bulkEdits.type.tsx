@@ -1,18 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
 
-export interface BulkEditResponse {
-    task: string
-    payload: OutputList[]
-    readme: ""
-}
-
-export interface OutputList {
-    appNameIncludes: string;
-    appNameExcludes: string;
-    envId: number;
-    isGlobal: boolean;
-    patchJson: string;
-}
 
 export interface CodeEditorScript {
     apiVersion: string;
@@ -50,8 +37,8 @@ export interface BulkEditsState {
     statusCode: number;
     ImpactedObjectList: string;
     ImpactedObjectsConfig: string;
-    outputList: OutputList[]
-    updatedTemplate: UpdatedTemplate[],
+    outputList: [];
+    updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
     readmeResult: undefined;
     showExamples: boolean;

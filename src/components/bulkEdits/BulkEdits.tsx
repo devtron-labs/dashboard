@@ -44,8 +44,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
-            outputList: [],
             updatedTemplate: [],
+            outputList: [],
             bulkConfig: undefined,
             ImpactedObjectList: "",
             ImpactedObjectsConfig: "",
@@ -134,11 +134,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
-            let bulkConfig = response.result;
+            let output = response.result;
             console.log(response)
             this.setState({
                 view: ViewType.FORM,
-                // codeEditorPayload: codeEditorPayload
+                outputList: output
             })
         })
             .catch((error) => {
@@ -153,6 +153,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleShowImpactedObjectButton = () => {
         let configJson: any = {}
         configJson = this.state.ImpactedObjectsConfig
+        
         updateImpactedObjectsList(configJson).then((response) => {
             console.log(response)
 
@@ -205,13 +206,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderOutputList = () => {
         return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => { return <div> {itm.appNameIncludes} <br /><br /> </div> })}
+            {this.state.outputList.map((itm) => { return <div> {itm} <br /><br /> </div> })}
         </div>)
     }
 
     renderImpactedObjectsList = () => {
         return <div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => { return <div> {itm.appNameExcludes} <br /><br /> </div> })}
+            {this.state.outputList.map((itm) => { return <div> {itm } <br /><br /> </div> })}
         </div>
     }
 
