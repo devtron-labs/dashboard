@@ -188,6 +188,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
+    handleConfigChange = (value) => {
+        let parsePayload = yamlJsParser.parse(value)
+        this.setState({
+            ...this.state,
+            codeEditorPayload: parsePayload
+        })
+        {console.log(this.state.codeEditorPayload)}
+    }
+
     renderCodeEditorBody = () => {
         let codeEditorBody = yamlJsParser.stringify(this.state.codeEditorPayload)
         return (
@@ -196,6 +205,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 height={700}
                 value={codeEditorBody}
                 language="yaml"
+                onChange={(event) => { this.handleConfigChange(event) }}
             >
             </MonacoEditor>
         )
@@ -294,15 +304,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     render() {
-
         if (this.state.view === ViewType.ERROR) {
             return <div className="global-configuration__component flex">
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
         return (<div>
-            
-            {console.log(yamlJsParser.stringify(this.state.codeEditorPayload))}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
