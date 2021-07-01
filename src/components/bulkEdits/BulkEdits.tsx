@@ -54,6 +54,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             showHeaderDescription: true,
             showOutputData: true,
             showObjectsOutputDrawer: false,
+            codeEditorPayload: undefined,
         }
     }
 
@@ -63,16 +64,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
         getSeeExample().then((res) => {
             let bulkConfig = res.result
-            let updatedTemplate = res.result.map((elm) => {
+            let updatedTemplate = bulkConfig.map((elm) => {
                 return {
                     value: 1,
                     label: elm.task,
                 }
             })
+            let codeEditorPayload = bulkConfig.map((elm) => { return elm.payload })
             this.setState({
                 view: ViewType.FORM,
                 updatedTemplate: updatedTemplate,
-                bulkConfig: bulkConfig
+                bulkConfig: bulkConfig,
+                codeEditorPayload: codeEditorPayload
             })
         })
 
@@ -114,35 +117,29 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING
         })
 
-        let patchJson: any = this.state.bulkConfig[0]?.payload?.deploymentTemplate?.spec?.patchJson
+        let patchJson: any = this.state.codeEditorPayload?.payload?.deploymentTemplate?.spec?.patchJson
         if (!patchJson) {
             patchJson = {}
         }
         patchJson = yamlJsParser.stringify(patchJson)
-
         let payload = {
-            apiVersion: this.state.bulkConfig[0]?.apiVersion,
-            kind: this.state.bulkConfig[0]?.kind,
+            apiVersion: this.state.codeEditorPayload?.apiVersion,
+            kind: this.state.codeEditorPayload?.kind,
             payload: {
                 include: {
-                    name: this.state.bulkConfig[0]?.payload?.include?.name,
+                    name: this.state.codeEditorPayload?.payload?.include?.name,
                 },
                 exclude: {
-                    name: this.state.bulkConfig[0]?.payload?.exclude?.name,
-                }
+                    name: this.state.codeEditorPayload?.payload?.exclude?.name,
+                },
             },
-            envId: this.state.bulkConfig[0]?.payload?.envId,
-            isGlobal: this.state.bulkConfig[0]?.payload.isGlobal,
-            deploymentTemplate: {
-                spec: {
-                    patchJson: patchJson
-                }
-            }
+
+           
         }
 
         updateBulkList(payload).then((response) => {
             let bulkConfig = response.result;
-            console.log(response)
+            console.log(bulkConfig)
             this.setState({
                 view: ViewType.FORM,
             })
@@ -161,7 +158,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         configJson = this.state.ImpactedObjectsConfig
         updateImpactedObjectsList(configJson).then((response) => {
             console.log(response)
-            // console.log(this.state)
 
         }).catch((error) => {
             showError(error);
@@ -188,11 +184,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderCodeEditorBody = () => {
+
         let codeEditorBody = yamlJsParser.stringify(sample)
         return (
+
             <MonacoEditor
                 theme={'vs-gray--dt'}
                 height={700}
+                // value=""
 
             >
             </MonacoEditor>
@@ -266,7 +265,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateBody = () => {
         return (<div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
             <div className="right-readme">
-            {yamlJsParser.stringify(this.state.bulkConfig)}
                 <MarkDown markdown={this.state.readmeResult} />
             </div>
         </div>)
@@ -300,6 +298,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
         return (<div>
+            {console.log(this.state)}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}

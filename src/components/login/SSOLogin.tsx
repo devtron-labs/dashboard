@@ -317,6 +317,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
+        {console.log(this.state.ssoConfig.config)}
+
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
@@ -328,6 +330,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         </div> : null;
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
+                {/* {console.log(codeEditorBody)} */}
                 <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'

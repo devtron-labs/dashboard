@@ -25,7 +25,7 @@ export interface BulkConfiguration {
             name: string;
         }
         envId: number[];
-        isGlobal: boolean;
+        global: boolean;
         deploymentTemplate: {
             spec: {
                 patchJson: any;
@@ -52,6 +52,7 @@ export interface BulkEditsState {
     showHeaderDescription: boolean;
     showOutputData: boolean;
     bulkConfig: BulkConfiguration[];
+    codeEditorPayload: BulkConfiguration
 }
 
 export enum OutputObjectTabs {
