@@ -5,12 +5,12 @@ import { get, post } from '../../services/api';
 // }
 
 export function updateBulkList(request): Promise<any>{
-    const URL = `app/bulk-update`;
+    const URL = `batch/v1beta1/application/dryrun`;
     return post(URL, request);
 }
 
 export function updateImpactedObjectsList(request): Promise<any>{
-    const URL = `app/impacted-objects`;
+    const URL = `batch/v1beta1/application`;
     return post(URL, request);
 }
 

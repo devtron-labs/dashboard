@@ -64,18 +64,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
         getSeeExample().then((res) => {
             let bulkConfig = res.result
-            let updatedTemplate = bulkConfig.map((elm) => {
+            this.setState({
+                view: ViewType.FORM,
+                bulkConfig: bulkConfig,
+            })
+            let updatedTemplate = this.state.bulkConfig.map((elm) => {
                 return {
                     value: 1,
                     label: elm.task,
                 }
             })
-            let codeEditorPayload = bulkConfig.map((elm) => { return elm.payload })
+            // let codeEditorPayload = this.state.bulkConfig.map((elm) => { return elm.script })
+            // {console.log(codeEditorPayload)}
             this.setState({
-                view: ViewType.FORM,
                 updatedTemplate: updatedTemplate,
-                bulkConfig: bulkConfig,
-                codeEditorPayload: codeEditorPayload
             })
         })
 
@@ -117,36 +119,53 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING
         })
 
-        let patchJson: any = this.state.codeEditorPayload?.payload?.deploymentTemplate?.spec?.patchJson
-        if (!patchJson) {
-            patchJson = {}
+       
+
+        // let patchJson: any = this.state.codeEditorPayload?.payload?.deploymentTemplate?.spec?.patchJson
+        // if (!patchJson) {
+        //     patchJson = {}
+        // }
+        // patchJson = yamlJsParser.stringify(patchJson)
+
+        // let payload = {
+        //     apiVersion: this.state.codeEditorPayload?.apiVersion,
+        //     kind: this.state.codeEditorPayload?.kind,
+        //     payload: {
+        //         include: {
+        //             name: this.state.codeEditorPayload?.payload?.include?.name,
+        //         },
+        //         exclude: {
+        //             name: this.state.codeEditorPayload?.payload?.exclude?.name,
+        //         },
+        //         envId: this.state.codeEditorPayload?.payload?.envId,
+        //         global: this.state.codeEditorPayload?.payload?.global,
+        //         deploymentTemplate: {
+        //             spec: {
+        //                 patchJson: patchJson
+        //             }
+        //         }
+        //     }
+        // }
+
+        let configJson: any = {};
+        try {
+            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         }
-        patchJson = yamlJsParser.stringify(patchJson)
-        let payload = {
-            apiVersion: this.state.codeEditorPayload?.apiVersion,
-            kind: this.state.codeEditorPayload?.kind,
-            payload: {
-                include: {
-                    name: this.state.codeEditorPayload?.payload?.include?.name,
-                },
-                exclude: {
-                    name: this.state.codeEditorPayload?.payload?.exclude?.name,
-                },
-                envId: this.state.codeEditorPayload?.payload?.envId,
-                global: this.state.codeEditorPayload?.payload?.global,
-                deploymentTemplate: {
-                    spec: {
-                        patchJson: patchJson
-                    }
-                }
-            }
+        catch (error) {
+            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            toast.error("Invalid Yaml");
+            this.setState({ view: ViewType.FORM });
+            return;
         }
+
+        let payload = configJson
 
         updateBulkList(payload).then((response) => {
             let bulkConfig = response.result;
-            console.log(bulkConfig)
+            console.log(response)
             this.setState({
                 view: ViewType.FORM,
+                // codeEditorPayload: codeEditorPayload
             })
         })
             .catch((error) => {
@@ -189,17 +208,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleConfigChange = (value) => {
-        let parsePayload = yamlJsParser.parse(value)
         this.setState({
             ...this.state,
-            codeEditorPayload: parsePayload
+            codeEditorPayload: value
         })
-        {console.log(this.state.codeEditorPayload)}
     }
 
     renderCodeEditorBody = () => {
-        let codeEditorBody = yamlJsParser.stringify(this.state.codeEditorPayload)
-        return (
+        let codeEditorBody = this.state.codeEditorPayload
+
+        return (<>
+            {console.log(this.state.bulkConfig)}
             <MonacoEditor
                 theme={'vs-gray--dt'}
                 height={700}
@@ -208,6 +227,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
             </MonacoEditor>
+            </>
         )
     }
 
@@ -309,7 +329,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
+        // let codeEditorPayload = this.state.bulkConfig.map((elm) => { return elm })
         return (<div>
+       {/* { console.log(this.state.bulkConfig.map((elm) => elm ))} */}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}

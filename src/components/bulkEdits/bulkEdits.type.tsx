@@ -14,7 +14,7 @@ export interface OutputList {
     patchJson: string;
 }
 
-export interface BulkConfiguration {
+export interface CodeEditorScript {
     apiVersion: string;
     kind: string;
     payload: {
@@ -32,6 +32,12 @@ export interface BulkConfiguration {
             }
         }
     }
+}
+
+export interface BulkConfiguration {
+    task:string;
+    script: CodeEditorScript;
+    readme: string;
 }
 
 export interface UpdatedTemplate {
@@ -52,7 +58,7 @@ export interface BulkEditsState {
     showHeaderDescription: boolean;
     showOutputData: boolean;
     bulkConfig: BulkConfiguration[];
-    codeEditorPayload: BulkConfiguration
+    codeEditorPayload: string;
 }
 
 export enum OutputObjectTabs {
