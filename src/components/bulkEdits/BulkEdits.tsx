@@ -132,9 +132,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 exclude: {
                     name: this.state.codeEditorPayload?.payload?.exclude?.name,
                 },
-            },
-
-           
+                envId: this.state.codeEditorPayload?.payload?.envId,
+                global: this.state.codeEditorPayload?.payload?.global,
+                deploymentTemplate: {
+                    spec: {
+                        patchJson: patchJson
+                    }
+                }
+            }
         }
 
         updateBulkList(payload).then((response) => {
@@ -184,15 +189,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderCodeEditorBody = () => {
-
-        let codeEditorBody = yamlJsParser.stringify(sample)
+        let codeEditorBody = yamlJsParser.stringify(this.state.codeEditorPayload)
         return (
-
             <MonacoEditor
                 theme={'vs-gray--dt'}
                 height={700}
-                // value=""
-
+                value={codeEditorBody}
+                language="yaml"
             >
             </MonacoEditor>
         )
@@ -298,7 +301,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
         return (<div>
-            {console.log(this.state)}
+            
+            {console.log(yamlJsParser.stringify(this.state.codeEditorPayload))}
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
