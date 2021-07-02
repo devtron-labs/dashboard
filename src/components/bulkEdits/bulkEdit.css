@@ -60,3 +60,8 @@
     height: 100%;
     font-family: monospace;
 }
+
+.bulk-output-header{
+    position: fixed;
+    width: 100%;
+}
