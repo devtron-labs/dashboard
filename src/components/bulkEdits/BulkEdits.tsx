@@ -62,28 +62,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         getSeeExample().then((res) => {
             let bulkConfig = res.result
-            this.setState({
-                view: ViewType.FORM,
-                bulkConfig: bulkConfig,
-            })
-
-            let updatedTemplate = this.state.bulkConfig.map((elm) => {
+            let updatedTemplate = bulkConfig.map((elm) => {
                 return {
                     value: 1,
                     label: elm.task,
                 }
             })
-
+            
             this.setState({
+                view: ViewType.FORM,
+                bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
             })
         })
 
-        // getReadme().then((res) => {
-        //     this.setState({ readmeResult: res.result.readme })
-        // }).catch((error) => {
-        //     showError(error);
-        // })
     }
 
 
@@ -233,7 +225,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                     </div>
-                    <div className=" cn-9 fs-13 pl-20 pr-20 pt-40" style={{letterSpacing: "0.2px" }}>
+                    <div className=" cn-9 fs-13 pl-20 pr-20 pt-40" style={{ letterSpacing: "0.2px" }}>
                         {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
                     </div>
                 </div>
@@ -311,6 +303,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (<div>
             {this.renderBulkEditHeader()}
+            {console.log(this.state.updatedTemplate)}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
             {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
