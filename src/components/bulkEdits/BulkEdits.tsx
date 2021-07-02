@@ -201,7 +201,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorBody = () => {
         let codeEditorBody = this.state.codeEditorPayload
 
-        return (<>
+        return (<div className="code-editor-container">
             <CodeEditor
                 // theme={'vs-gray--dt'}
                 height={700}
@@ -210,34 +210,32 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
             </CodeEditor>
-        </>
+        </div>
         )
     }
 
     renderOutputList = () => {
-        return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList }
-        </div>)
+        return (<div> {this.state.outputList} </div>)
     }
 
     renderImpactedObjectsList = () => {
-        return <div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-        {this.state.impactedObjectList.map((itm) => { return <div> {itm} <br /><br /> </div> })}
-    </div>
+        return <div>{this.state.impactedObjectList.map((itm) => { return <div> {itm} <br /><br /> </div> })} </div>
     }
 
     outputImpactedTabSelector = () => {
         let onMouseDown = null
         return <FragmentHOC onMouseDown={onMouseDown || noop} >
             <div className={OutputObjectTabs.OUTPUT == 'Output' ? 'active bcn-0' : null} >
-                <div className="bcn-0 pt-6 border-top" >
+                <div className="bulk-output-drawer bcn-0 pt-6 border-top" >
                     <div className="flex left pb-6 pl-20 pr-20" style={{ boxShadow: "inset 0 -1px 0 0 #d0d4d9" }}>
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
                         <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                     </div>
-                    {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
+                    <div className=" cn-9 fs-13 pl-20 pr-20 pt-8" style={{letterSpacing: "0.2px" }}>
+                        {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
+                    </div>
                 </div>
             </div>
         </FragmentHOC>
@@ -270,7 +268,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     }}
                     styles={{
                         ...multiSelectStyles,
-                        // ...menuList,
                     }} />
                 <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>

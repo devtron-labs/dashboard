@@ -27,6 +27,8 @@
     width: calc(100vw - 64px);
     display: grid;
     z-index: var(--events-logs);
+    overflow: scroll;
+    height: 100%;
 }
 
 .right-readme{
@@ -50,4 +52,11 @@
 
 .border-top{
     border-top: 1px solid #d0d4d9; 
+}
+
+.bulk-output-drawer{
+    overflow: scroll;
+    letter-spacing: 0.2px;
+    height: 100%;
+    font-family: monospace;
 }
