@@ -43,9 +43,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING,
             statusCode: 0,
             updatedTemplate: [],
-            outputList: [],
+            outputList: "",
             bulkConfig: undefined,
-            impactedObjectList: "",
+            impactedObjectList: [],
             readmeResult: undefined,
             showExamples: false,
             showHeaderDescription: true,
@@ -216,14 +216,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderOutputList = () => {
         return (<div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            {this.state.outputList.map((itm) => { return <div> {itm} <br /><br /> </div> })}
+            {this.state.outputList }
         </div>)
     }
 
     renderImpactedObjectsList = () => {
         return <div className="cn-9 fs-13 pl-20 pr-20 pt-8" style={{ fontFamily: "SourceCodePro", letterSpacing: "0.2px" }}>
-            <div> {this.state.impactedObjectList} </div>
-        </div>
+        {this.state.impactedObjectList.map((itm) => { return <div> {itm} <br /><br /> </div> })}
+    </div>
     }
 
     outputImpactedTabSelector = () => {
