@@ -92,7 +92,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Run Scripts
                 <Tippy className="default-tt " arrow={false} placement="top" content={
                     <span style={{ display: "block", width: "66px" }}> Learn more </span>}>
-                    <Question className="icon-dim-20 ml-16" />
+                    <Question className="icon-dim-20 ml-16 cursor" />
                 </Tippy>
             </div>
         </div>)
@@ -176,7 +176,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorHeader = () => {
         return (
-            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" style={{ borderBottom: '1px solid #d0d4d9' }} >
+            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 bw-1" >
                 <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} onClick={() => this.handleRunButton()} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
@@ -227,7 +227,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return <FragmentHOC onMouseDown={onMouseDown || noop} >
             <div className={OutputObjectTabs.OUTPUT == 'Output' ? 'active bcn-0' : null} >
                 <div className="bulk-output-drawer bcn-0 " >
-                    <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
+                    <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
                         <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"

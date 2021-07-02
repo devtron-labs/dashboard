@@ -13,7 +13,6 @@
     align-items: flex-start;
     height: calc(100vh - 150px);
     border-bottom: 1px solid #d0d4d9;
-    border-left: 1px solid #d0d4d9;
 }
 
 .brdr-btm{
