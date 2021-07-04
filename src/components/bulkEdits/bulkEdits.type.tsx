@@ -39,7 +39,7 @@ export interface BulkEditsState {
     outputList: "";
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
-    readmeResult: undefined;
+    readmeResult: string[];
     showExamples: boolean;
     showHeaderDescription: boolean;
     showOutputData: boolean;

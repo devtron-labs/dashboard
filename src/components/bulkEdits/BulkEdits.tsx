@@ -46,7 +46,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputList: "",
             bulkConfig: undefined,
             impactedObjectList: [],
-            readmeResult: undefined,
+            readmeResult: [],
             showExamples: false,
             showHeaderDescription: true,
             showOutputData: true,
@@ -59,20 +59,22 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({
             view: ViewType.LOADING,
         })
-
+        
         getSeeExample().then((res) => {
             let bulkConfig = res.result
+            let readmeResult = bulkConfig.map((elm) => elm.readme)
             let updatedTemplate = bulkConfig.map((elm) => {
                 return {
                     value: 1,
                     label: elm.task,
                 }
             })
-            
+
             this.setState({
                 view: ViewType.FORM,
                 bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
+                readmeResult: readmeResult
             })
         })
 
@@ -153,7 +155,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-            console.log(response)
             this.setState({
                 view: ViewType.FORM,
                 impactedObjectList: response.result
@@ -192,7 +193,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         let codeEditorBody = this.state.codeEditorPayload
-
         return (<div className="code-editor-container">
             <CodeEditor
                 // theme={'vs-gray--dt'}
@@ -246,14 +246,22 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
+    handleUpdateTemplate = () => {
+        let readmeResult = this.state.bulkConfig.map((elm) => elm.readme)
+        this.setState({ readmeResult: readmeResult})
+    }
+
     renderSampleTemplateHeader = () => {
+        
         return (
 
             <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
+                defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
                     placeholder="Update Deployment Template"
                     options={this.state.updatedTemplate}
+                    onChange={()=> this.handleUpdateTemplate()}
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,
@@ -267,9 +275,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateBody = () => {
+        let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
         return (<div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
             <div className="right-readme">
-                <MarkDown markdown={this.state.readmeResult} />
+                
+                <MarkDown markdown={readmeJson} />
             </div>
         </div>)
     }
@@ -303,7 +313,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (<div>
             {this.renderBulkEditHeader()}
-            {console.log(this.state.updatedTemplate)}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
             {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
