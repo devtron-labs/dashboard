@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { getGitHostList, saveGitProviderConfig, updateGitProviderConfig } from './service';
+import { getGitHostList, saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service';
 import { getGitProviderList } from '../../services/service';
 import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { styles } from './gitProvider.util';
-import ReactSelect from 'react-select';
-import * as Select from 'react-select'
+import Tippy from '@tippyjs/react';
+import CreatableSelect from 'react-select/creatable';
 interface Githost {
     id: number;
     name: string;
     authMode: string;
     url: string;
     userName: string;
+    gitHostId: number;
     password: string;
-}
+}   
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
@@ -32,8 +32,8 @@ export default function GitProvider({ ...props }) {
 
     async function getInitData() {
         try {
-            const { result: providers = [] } = await getGitProviderList();
-            const { result: hosts = [] } = await getGitHostList();
+            const { result: providers = [] } = await getGitProviderList()
+            const { result: hosts = [] } = await getGitHostList()
             providers.sort((a, b) => a.name.localeCompare(b.name))
             hosts.sort((a, b) => a.name.localeCompare(b.name))
             setProviderList(providers)
@@ -44,6 +44,29 @@ export default function GitProvider({ ...props }) {
             setIsErrorLoading(true)
         } finally {
             setIsPageLoading(false)
+        }
+    }
+
+    async function getHostList() {
+        try {
+            const { result: hosts = [] } = await getGitHostList();
+            hosts.sort((a, b) => a.name.localeCompare(b.name))
+            setHostList(hosts)
+
+        } catch (error) {
+            showError(error)
+            setIsErrorLoading(true)
+        }
+    }
+
+    async function getProviderList() {
+        try {
+            const { result: providers = [] } = await getGitProviderList();
+            providers.sort((a, b) => a.name.localeCompare(b.name))
+            setProviderList(providers)
+        } catch (error) {
+            showError(error)
+            setIsErrorLoading(true)
         }
     }
 
@@ -64,33 +87,37 @@ export default function GitProvider({ ...props }) {
     //     if (!result) return null
     // }
 
-    let allProviders = [{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
+    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: 0, authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
-    return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-        <h2 className="form__title">Git accounts</h2>
-        <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
-            <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
-                Learn more about git accounts
-            </a>
-        </div>
-        {allProviders.map((provider) => {
-            return <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
-                hostList={hostList}
-                id={provider.id}
-                name={provider.name}
-                active={provider.active}
-                url={provider.url}
-                authMode={provider.authMode}
-                userName={provider.userName}
-                password={provider.password}
-                reload={getInitData} />
-        })}
-        {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
-    </section>
+    return (
+        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+            <h2 className="form__title">Git accounts</h2>
+            <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
+                    Learn more about git accounts
+                </a>
+            </div>
+            {allProviders.map((provider) => {
+                return <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
+                    hostList={hostList}
+                    id={provider.id}
+                    name={provider.name}
+                    gitHostId={provider.gitHostId}
+                    active={provider.active}
+                    url={provider.url}
+                    authMode={provider.authMode}
+                    userName={provider.userName}
+                    password={provider.password}
+                    getHostList={getHostList}
+                    getProviderList={getProviderList}
+                    reload={getInitData} />
+            })}
+            {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
+        </section>
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, hostList, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostList, getHostList, getProviderList, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -133,28 +160,26 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable git account' : 'Enable git account'}>
                             <span style={{ marginLeft: 'auto' }}>
-                                {loading ? (
-                                    <Progressing />
-                                ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                )}
+                                {loading ? <Progressing />
+                                    : <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />}
                             </span>
                         </Tippy>
                     }
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, accessToken, userName, password, hostList, reload, toggleCollapse }} />}
+            {!collapsed && <GitForm {...{ id, name, active, url, authMode, gitHostId, accessToken, userName, password, hostList, getHostList, getProviderList, reload, toggleCollapse }} />}
         </article>
     )
 }
 
-function GitForm({ id = null, name = "", active = false, url = "", authMode = null, accessToken = "", userName = "", password = "", hostList, reload, toggleCollapse, ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostList, reload, toggleCollapse, getHostList, getProviderList, ...props }) {
+    let host = hostList.find(p => gitHostId === p.gitHostId);
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
-            auth: { value: authMode, error: "" }
+            auth: { value: authMode, error: "" },
         },
         {
             name: {
@@ -171,8 +196,16 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
             }
         }, onValidation);
     const [loading, setLoading] = useState(false)
+    const [gitHost, setGithost] = useState({ value: host, error: 'Githost is required' })
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
+
+    function handleGithostChange(gitHostValue) {
+        setGithost({
+            value: gitHostValue,
+            error: gitHostValue ? "" : "GitHost is required"
+        })
+    }
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
@@ -188,19 +221,35 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
             }
         }
 
+        let gitHostId = gitHost.value.id;
+        if (gitHost.value.__New__) {
+            let gitHostPayload = {
+                name: gitHost.value,
+            }
+            try {
+                const { result } = await saveGitHost(gitHostPayload);
+                // getHostList();
+                gitHostId = result.id;
+            } catch (error) {
+                showError(error)
+            }
+        }
+
         let payload = {
             id: id || 0,
             name: state.name.value,
+            gitHostId: gitHostId,
             url: state.url.value,
             authMode: state.auth.value,
             active,
             ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
         }
+
         const api = id ? updateGitProviderConfig : saveGitProviderConfig
         try {
             setLoading(true)
-            const { result } = await api(payload, id);
+            await api(payload, id);
             await reload();
             toast.success('Successfully saved.')
         }
@@ -211,6 +260,7 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
             setLoading(false);
         }
     }
+
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form">
@@ -220,12 +270,18 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
                 <div className="form__row form__row--two-third">
                     <div>
                         <label className="form__label">Git provider*</label>
-                        <ReactSelect options={hostList}
-                            // getOptionLabel={option => `${option.id}`}
-                            // getOptionValue={option => `${option.name}`}
+                        <CreatableSelect options={hostList}
+                            value={gitHost}
+                            name="host"
+                            placeholder="Select git provider"
+                            //@ts-ignore
+                            getOptionLabel={option => `${option.name}`}
+                            //@ts-ignore
+                            getOptionValue={option => `${option.id}`}
                             styles={{
                                 ...styles,
                             }}
+                            onChange={handleGithostChange}
                             components={{
                                 IndicatorSeparator: null,
                             }} />
@@ -234,7 +290,7 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className="form__row form__row--auth-type pointer">
-                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
+                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }]
                         .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
                             <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
                         </label>)}
@@ -252,9 +308,7 @@ function GitForm({ id = null, name = "", active = false, url = "", authMode = nu
                     <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                     <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
                 </div>
-
             </form>
         </>
     )
 }
-

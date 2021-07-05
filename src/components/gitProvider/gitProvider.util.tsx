@@ -24,7 +24,7 @@ export const styles = {
         return ({
             ...base,
             color: 'var(--N900)',
-            backgroundColor: 'var(--N100)',
+            backgroundColor: state.isFocused ? 'var(--B100)' : "var(--N000)",
         })
     }
 }

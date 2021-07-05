@@ -36,5 +36,16 @@ export function getGitHost(id: number | string): Promise<any> {
 
 export function saveGitHost(payload): Promise<any> {
     const URL = `${Routes.GIT_HOST}`;
-    return post(URL, payload);
+    // return post(URL, payload);
+    return new Promise((resolve, reject) => {
+        resolve({
+            result: {
+                "id": 3,
+                "name": "Github",
+                "active": true,
+                "webhookUrl": "",
+                "webhookSecret": ""
+            }
+        })
+    })
 }
