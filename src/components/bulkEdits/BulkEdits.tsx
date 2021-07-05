@@ -34,6 +34,13 @@ editor.defineTheme('vs-gray--dt', {
     }
 });
 
+// const OutputTabs = (handleOutputTabs) => {
+//   return <label className="tertiary-tab__radio">
+//         <input type="radio" name="status" value={`output`}  onChange={handleOutputTabs}/>
+//         <span className="tertiary-output-tab bulk-output-tabs "> Output </span>
+//     </label>
+// }
+
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
 
     constructor(props) {
@@ -59,7 +66,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({
             view: ViewType.LOADING,
         })
-        
+
         getSeeExample().then((res) => {
             let bulkConfig = res.result
             let readmeResult = bulkConfig.map((elm) => elm.readme)
@@ -69,7 +76,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     label: elm.task,
                 }
             })
-
             this.setState({
                 view: ViewType.FORM,
                 bulkConfig: bulkConfig,
@@ -155,16 +161,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
+            {console.log(response.result)}
+            let result = response.result.map((elm)=>elm.appName)
             this.setState({
                 view: ViewType.FORM,
-                impactedObjectList: response.result
+                impactedObjectList: result,
+                showObjectsOutputDrawer: true 
             })
 
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.FORM });
         })
-        this.setState({ showObjectsOutputDrawer: true })
     }
 
     renderCodeEditorHeader = () => {
@@ -221,7 +229,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="bulk-output-drawer bcn-0 " >
                     <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
+                        {/* <OutputTabs handleOutputTabs={() => this.setState({ showOutputData: true })}/> */}
                         <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: false })}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
+                        
                         <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                     </div>
@@ -247,21 +257,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleUpdateTemplate = () => {
-        let readmeResult = this.state.bulkConfig.map((elm) => elm.readme)
-        this.setState({ readmeResult: readmeResult})
+
+        this.setState({ readmeResult: this.state.bulkConfig.map((elm) => elm.readme) })
     }
 
     renderSampleTemplateHeader = () => {
-        
         return (
-
             <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
-                defaultValue={this.state.updatedTemplate[0]}
+                    defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
                     placeholder="Update Deployment Template"
                     options={this.state.updatedTemplate}
-                    onChange={()=> this.handleUpdateTemplate()}
+                    onChange={() => this.handleUpdateTemplate()}
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,
@@ -276,12 +284,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateBody = () => {
         let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
-        return (<div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-            <div className="right-readme">
-                
-                <MarkDown markdown={readmeJson} />
-            </div>
-        </div>)
+        return <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
+            <div className="right-readme">  <MarkDown markdown={readmeJson} /> </div>
+        </div>
     }
 
     renderBulkCodeEditor = () => {
@@ -315,7 +320,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             {this.renderBulkEditHeader()}
             { this.state.showHeaderDescription ? this.renderBulkEditHeaderDescription() : null}
             {this.state.showExamples ? this.renderUpdatedDeploymentTemplate() : this.renderBulkCodeEditor()}
-            {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
+            {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer()  : null} 
         </div>
         )
     }

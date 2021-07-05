@@ -64,3 +64,22 @@
     position: fixed;
     width: 100%;
 }
+
+.bulk-output-tabs {
+    position: relative;
+    border-radius: 4px;
+    margin-right: 12px;
+    border: solid 1px var(--N200);
+    cursor: pointer;
+    box-sizing: border-box;
+    display: block;
+    width: 70px;
+    padding: 0px 12px;
+    height: 20px;
+}
+
+.tertiary-tab__radio input:checked~.tertiary-output-tab{
+    background: var(--N700);
+    color: white;
+    border: 1px solid var(--N200);
+}

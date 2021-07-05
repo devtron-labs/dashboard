@@ -22,7 +22,7 @@ export interface CodeEditorScript {
 }
 
 export interface BulkConfiguration {
-    task:string;
+    task: string;
     script: CodeEditorScript;
     readme: string;
 }
@@ -32,10 +32,16 @@ export interface UpdatedTemplate {
     label: string
 }
 
+export interface ImpactedObjectList {
+    appId: number;
+    appName: string;
+    envId: number;
+}
+
 export interface BulkEditsState {
     view: string;
     statusCode: number;
-    impactedObjectList: [];
+    impactedObjectList: ImpactedObjectList[];
     outputList: "";
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
