@@ -225,9 +225,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
                         <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
                         {/* <OutputTabs handleOutputTabs={() => this.setState({ showOutputData: true })}/> */}
-                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => {return this.setState({ showOutputData: false }), this.handleShowImpactedObjectButton()}}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
-
-                        <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor"
+                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => { return this.setState({ showOutputData: false }), this.handleShowImpactedObjectButton() }}>{OutputObjectTabs.IMPACTED_OBJECTS}</button>
+                        <Close
+                            style={{ margin: "auto", marginRight: "70px" }}
+                            className="icon-dim-20 cursor"
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                     </div>
                     <div className=" cn-9 fs-13 pl-20 pr-20 pt-40" style={{ letterSpacing: "0.2px" }}>
@@ -252,7 +253,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleUpdateTemplate = () => {
-
         this.setState({ readmeResult: this.state.bulkConfig.map((elm) => elm.readme) })
     }
 
@@ -272,7 +272,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     styles={{
                         ...multiSelectStyles,
                     }} />
-                <Close style={{ margin: "auto", marginRight: "0" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
+                <Close style={{ margin: "auto", marginRight: "50px" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
     }
