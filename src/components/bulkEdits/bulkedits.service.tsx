@@ -1,14 +1,14 @@
 import { get, post } from '../../services/api';
 import { Routes } from '../../config';
 
-export function updateBulkList(request): Promise<any> {
-    const URL = `batch/v1beta1/application `;
+export function updateBulkList(request, apiVersion, kind): Promise<any> {
+    const URL = `${apiVersion}/${kind} `;
     return post(URL, request);
 }
 
-export function updateImpactedObjectsList(request): Promise<any> {
+export function updateImpactedObjectsList(request,apiVersion, kind): Promise<any> {
     console.log(request)
-    const URL = `batch/v1beta1/application/dryrun`;
+    const URL = `${apiVersion}/${kind}/dryrun`;
     return post(URL, request);
 }
 

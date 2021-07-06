@@ -55,7 +55,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
-            showExamples: false,
+            showExamples: true,
             showHeaderDescription: true,
             showOutputData: true,
             showObjectsOutputDrawer: false,
@@ -71,7 +71,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         getSeeExample().then((res) => {
             let bulkConfig = res.result
             let kind = bulkConfig.map((elm) => elm.script.kind)
-            kind = kind.toString()
+            kind = kind.toString().toLocaleLowerCase()
             let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
             apiVersion = apiVersion.toString()
             let readmeResult = bulkConfig.map((elm) => elm.readme)
@@ -140,8 +140,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateBulkList(payload).then((response) => {
-            { console.log(response) }
+        updateBulkList(payload, this.state.apiVersion, this.state.kind).then((response) => {
             let output = response.result;
             this.setState({
                 view: ViewType.FORM,
@@ -169,7 +168,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateImpactedObjectsList(payload).then((response) => {
+        updateImpactedObjectsList(payload, this.state.apiVersion, this.state.kind).then((response) => {
+            
             let result = response.result.map((elm) => elm.appNames)
             this.setState({
                 view: ViewType.FORM,
@@ -212,7 +212,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div className="code-editor-container">
             <CodeEditor
                 // theme={'vs-gray--dt'}
-                height={700}
+                height={730}
                 value={codeEditorBody}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
@@ -290,7 +290,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     styles={{
                         ...multiSelectStyles,
                     }} />
-                <Close style={{ margin: "auto", marginRight: "50px" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
+                <Close style={{ margin: "auto", marginRight: "0px" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
     }
@@ -332,7 +332,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div>
             {this.renderBulkEditHeader()}
             {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-            {this.state.showExamples ? this.renderBulkCodeEditor() : this.renderReadmeSection()}
+            {!this.state.showExamples ? this.renderBulkCodeEditor() : this.renderReadmeSection()}
             {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
         </div>
         )
