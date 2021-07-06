@@ -76,6 +76,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     label: elm.task,
                 }
             })
+
             this.setState({
                 view: ViewType.FORM,
                 bulkConfig: bulkConfig,
@@ -83,9 +84,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 readmeResult: readmeResult
             })
         })
-
     }
-
 
     renderBulkEditHeader = () => {
         return (<div className="page-header brdr-btm pl-20">
@@ -161,7 +160,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-            {console.log(response.result)}
             let result = response.result.map((elm)=>elm.appName)
             this.setState({
                 view: ViewType.FORM,

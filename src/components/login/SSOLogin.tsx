@@ -317,8 +317,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        {console.log(this.state.ssoConfig.config)}
-
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
         let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
@@ -330,7 +328,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         </div> : null;
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
-                {/* {console.log(codeEditorBody)} */}
                 <CodeEditor value={codeEditorBody}
                     height={300}
                     mode='yaml'
@@ -361,7 +358,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     getSSOLoginTabsArr() {
         let SSOLoginTabsArr = [
-            { provider: SSOProvider.google, SSOName: "Google" }, 
+            { provider: SSOProvider.google, SSOName: "Google" },
             { provider: SSOProvider.github, SSOName: "GitHub" },
             { provider: SSOProvider.microsoft, SSOName: "Microsoft" },
             { provider: SSOProvider.ldap, SSOName: "LDAP" },
@@ -387,7 +384,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
                     {this.getSSOLoginTabsArr().map((item) => {
-                        return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} /> })}
+                        return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
+                    })}
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
