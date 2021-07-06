@@ -6,10 +6,10 @@ export interface CodeEditorScript {
     kind: string;
     payload: {
         include: {
-            name: string[];
+            names: string[];
         }
         exclude: {
-            name: string[];
+            names: string[];
         }
         envId: number[];
         global: boolean;

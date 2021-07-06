@@ -7,7 +7,7 @@ export function updateBulkList(request, apiVersion, kind): Promise<any> {
 }
 
 export function updateImpactedObjectsList(request,apiVersion, kind): Promise<any> {
-    console.log(request)
+    // console.log(request.apiVersion)
     const URL = `${apiVersion}/${kind}/dryrun`;
     return post(URL, request);
 }
