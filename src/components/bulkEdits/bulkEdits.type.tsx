@@ -41,8 +41,8 @@ export interface ImpactedObjectList {
 export interface BulkEditsState {
     view: string;
     statusCode: number;
-    impactedObjectList: ImpactedObjectList[];
-    outputList: "";
+    impactedObjects: ImpactedObjectList[];
+    bulkOutput: "";
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
     readmeResult: string[];
