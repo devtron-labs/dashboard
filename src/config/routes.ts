@@ -26,6 +26,8 @@ export const URLS = {
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
     AUTHENTICATE: '/auth/login',
+    BULK_EDITS: '/bulk-edits',
+    DEPLOYMENT_GROUPS: '/deployment-groups',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
@@ -40,7 +42,6 @@ export const URLS = {
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
-    DEPLOYMENT_GROUPS: '/deployment-groups',
     SECURITY: '/security'
 };
 
