@@ -295,5 +295,74 @@ export function getAppCheckList(): Promise<any> {
 
 export function getGitProviderList(): Promise<any> {
     const URL = `${Routes.GIT_PROVIDER}`;
-    return get(URL);
+    // return get(URL);
+    return new Promise((resolve, reject) => {
+        resolve({ ...GitProviderList })
+    })
+}
+
+
+export function getGitHostList(): Promise<any> {
+    const URL = `${Routes.GIT_HOST}`;
+    // return get(URL);
+    return new Promise((resolve, reject) => {
+        resolve({ ...GitHostList })
+    })
+}
+
+const GitHostList = {
+    code: 200,
+    result: [
+        { "id": 1, "name": "Github", "active": true, "webhookUrl": "", "webhookSecret": "" },
+        { "id": 2, "name": "Bitbucket Cloud", "active": true, "webhookUrl": "", "webhookSecret": "" }
+    ]
+}
+
+const GitProviderList = {
+    "code": 200,
+    "status": "OK",
+    "result": [
+        {
+            "id": 1,
+            "name": "Github Public",
+            "url": "github.com",
+            "authMode": "ANONYMOUS",
+            "active": true,
+            "gitHostId": 1,
+        },
+        {
+            "id": 2,
+            "name": "testgit",
+            "url": "https://github.com/test",
+            "authMode": "ANONYMOUS",
+            "active": true,
+            "gitHostId": 1,
+        },
+        {
+            "id": 3,
+            "name": "azure-repo",
+            "url": "https://dev.azure.com",
+            "userName": "nishant",
+            "password": "nuqmoo25skffab6u33ne4rutkle2ffmrfv44micdl4s2beccr4ea",
+            "authMode": "USERNAME_PASSWORD",
+            "active": true,
+            "gitHostId": 1,
+        },
+        {
+            "id": 4,
+            "name": "manish",
+            "url": "https://www.github.com/manish-project.git",
+            "authMode": "ANONYMOUS",
+            "active": true,
+            "gitHostId": 1,
+        },
+        {
+            "id": 5,
+            "name": "manish-git-host-id-test",
+            "url": "http://www.github.com",
+            "authMode": "ANONYMOUS",
+            "active": true,
+            "gitHostId": 1
+        }
+    ]
 }

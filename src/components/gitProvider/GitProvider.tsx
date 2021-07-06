@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getGitHostList, saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service';
-import { getGitProviderList } from '../../services/service';
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service';
+import { getGitHostList, getGitProviderList } from '../../services/service';
 import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
@@ -20,7 +20,7 @@ interface Githost {
     userName: string;
     gitHostId: number;
     password: string;
-}   
+}
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)

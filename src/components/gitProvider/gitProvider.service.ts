@@ -16,22 +16,17 @@ export function saveGitProviderConfig(payload: any, id: any) {
     return post(URL, payload);
 }
 
-export function getGitHostList(): Promise<any> {
-    const URL = `${Routes.GIT_HOST}`;
+export function getGitHost(id: number | string): Promise<any> {
+    const URL = `${Routes.GIT_HOST}/${id}`;
     // return get(URL);
     return new Promise((resolve, reject) => {
         resolve({
-            result: [
-                { "id": 1, "name": "Github", "active": true, "webhookUrl": "", "webhookSecret": "" },
-                { "id": 2, "name": "Bitbucket Cloud", "active": true, "webhookUrl": "", "webhookSecret": "" }
-            ]
+            result: {
+                ...GitHost,
+                id: id
+            }
         })
     })
-}
-
-export function getGitHost(id: number | string): Promise<any> {
-    const URL = `${Routes.GIT_HOST}/${id}`;
-    return get(URL);
 }
 
 export function saveGitHost(payload): Promise<any> {
@@ -39,13 +34,15 @@ export function saveGitHost(payload): Promise<any> {
     // return post(URL, payload);
     return new Promise((resolve, reject) => {
         resolve({
-            result: {
-                "id": 3,
-                "name": "Github",
-                "active": true,
-                "webhookUrl": "",
-                "webhookSecret": ""
-            }
+            result: GitHost
         })
     })
+}
+
+const GitHost = {
+    "id": 1,
+    "name": "Github",
+    "active": true,
+    "webhookUrl": "http://google.com",
+    "webhookSecret": "webhook secret"
 }

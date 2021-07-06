@@ -64,7 +64,7 @@ export interface CIPipelineState {
         scanEnabled?: boolean;
     },
     sourcePipelineURL?: string; //required Linked CI
-    gitMaterials: { gitMaterialId: number, materialName: string }[];
+    // gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
     showPreBuild: boolean;
@@ -108,6 +108,7 @@ export interface MaterialType {
     id: number;
     gitHostId: number;
     gitHostName: string;
+    gitProviderId: number;
     isSelected: boolean;
 }
 

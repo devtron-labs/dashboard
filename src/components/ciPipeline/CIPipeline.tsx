@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getCIPiplineInitData } from './ciPipeline.service';
+import { saveCIPipeline, deleteCIPipeline, getInitDataWithCIPipeline, getInitData } from './ciPipeline.service';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
@@ -43,7 +43,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 linkedCount: 0,
                 scanEnabled: false,
             },
-            gitMaterials: [],
+            // gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -77,14 +77,14 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
-            getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+            getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response, loadingData: false, isAdvanced: true });
             }).catch((error: ServerErrors) => {
                 showError(error);
             })
         }
         else {
-            getCIPiplineInitData(this.props.match.params.appId).then((response) => {
+            getInitData(this.props.match.params.appId).then((response) => {
                 this.setState({
                     ...this.state,
                     ...response.result,
@@ -315,7 +315,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
             if (response) {
                 toast.success(msg);
                 this.setState({ loadingData: false });
@@ -329,7 +329,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });

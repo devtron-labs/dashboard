@@ -4,10 +4,10 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { components } from 'react-select';
 import { MaterialType } from './types';
 import { Link } from 'react-router-dom';
-import ReactSelect from 'react-select';
-import error from '../../assets/icons/misc/errorInfo.svg'
-import git from '../../assets/icons/git/git.svg';
 import { reactSelectStyles, TagOptions } from './ciPipeline.util';
+import ReactSelect from 'react-select';
+import error from '../../assets/icons/misc/errorInfo.svg';
+import git from '../../assets/icons/git/git.svg';
 interface SourceMaterialsProps {
     materials: MaterialType[];
     showError: boolean;
@@ -60,8 +60,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         {mat.name}
                     </p>
                     {!isMultiGit && !isGitProviderSelected ? <p className="cr-5 fs-12 mt-0 mb-0 ml-28">
-                        <span className="cr-5 mr-5">Git Provider is not selected for this accoount.</span>
-                        <Link to={URLS.GLOBAL_CONFIG_GIT}>Click here to select git provider</Link>
+                        <span className="cr-5 mr-5">Git host is not selected for this account.</span>
+                        <Link to={URLS.GLOBAL_CONFIG_GIT}>Click here to select git host</Link>
                     </p> : ''}
                 </div>
                 <div className="mt-16 flex left">
