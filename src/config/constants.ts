@@ -38,6 +38,9 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    
+    BULK_UPDATE_APIVERSION: 'batch/v1beta1',
+    BULK_UPDATE_KIND: 'application',
 
     DEPLOYMENT_GROUP_LIST: 'deployment-group/dg/fetch/all',
     DEPLOYMENT_GROUP_DEPLOY: 'deployment-group/release/trigger',
