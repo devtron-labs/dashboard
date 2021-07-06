@@ -6,10 +6,10 @@ export interface CodeEditorScript {
     kind: string;
     payload: {
         include: {
-            name: string;
+            name: string[];
         }
         exclude: {
-            name: string;
+            name: string[];
         }
         envId: number[];
         global: boolean;
@@ -32,7 +32,7 @@ export interface UpdatedTemplate {
     label: string
 }
 
-export interface ImpactedObjectList {
+export interface ImpactedObjects {
     appId: number;
     appName: string;
     envId: number;
@@ -41,8 +41,10 @@ export interface ImpactedObjectList {
 export interface BulkEditsState {
     view: string;
     statusCode: number;
-    impactedObjects: ImpactedObjectList[];
-    bulkOutput: "";
+    impactedObjects: ImpactedObjects[];
+    apiVersion:string[];
+    kind: string;
+    bulkOutput: string;
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
     readmeResult: string[];

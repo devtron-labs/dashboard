@@ -10,7 +10,8 @@ export function updateImpactedObjectsList(request): Promise<any> {
     return post(URL, request);
 }
 
-export function getSeeExample() {
-    const URL = 'batch/v1beta1/application/see-example'
+export function getSeeExample(apiVersion,kind) {
+    // const URL = `${apiVersion}/${kind}/see-example`
+    const URL = `batch/v1beta1/application/see-example`
     return get(URL)
 }

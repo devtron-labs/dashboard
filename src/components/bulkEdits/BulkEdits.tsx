@@ -50,6 +50,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             statusCode: 0,
             bulkConfig: undefined,
             bulkOutput: "",
+            apiVersion:[],
+            kind: "",
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
@@ -66,8 +68,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING,
         })
 
-        getSeeExample().then((res) => {
+        getSeeExample(this.state.apiVersion,this.state.kind).then((res) => {
+            {console.log(res)}
+
             let bulkConfig = res.result
+            let kind= bulkConfig.map((elm) => elm.script.kind)
+            let apiVersion= bulkConfig.map((elm) => elm.script.apiVersion)
             let readmeResult = bulkConfig.map((elm) => elm.readme)
             let updatedTemplate = bulkConfig.map((elm) => {
                 return {
@@ -80,7 +86,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 view: ViewType.FORM,
                 bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
-                readmeResult: readmeResult
+                readmeResult: readmeResult,
+                apiVersion: apiVersion,
+                kind: kind
             })
         })
         .catch((error) => {
@@ -133,6 +141,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
+            {console.log(response)}
             let output = response.result;
             this.setState({
                 view: ViewType.FORM,
@@ -161,6 +170,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
+            {console.log(response)}
             let result = response.result.map((elm) => elm.appName)
             this.setState({
                 view: ViewType.FORM,
@@ -213,11 +223,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    renderOutputList = () => {
+    renderOutputs = () => {
         return (<div> {this.state.bulkOutput} </div>)
     }
 
-    renderImpactedObjectsList = () => {
+    renderImpactedObjects = () => {
         return <div>{this.state.impactedObjects.map((itm) => { return <div> {itm} <br /><br /> </div> })} </div>
     }
 
@@ -241,7 +251,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                     </div>
                     <div className=" cn-9 fs-13 pl-20 pr-20 pt-40" style={{ letterSpacing: "0.2px" }}>
-                        {!this.state.showOutputData ? this.renderImpactedObjectsList() : this.renderOutputList()}
+                        {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
                     </div>
                 </div>
             </div>
@@ -321,6 +331,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         return (<div>
+            {console.log(this.state)}
             {this.renderBulkEditHeader()}
             {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
             {this.state.showExamples ? this.renderReadmeSection() : this.renderBulkCodeEditor()}
