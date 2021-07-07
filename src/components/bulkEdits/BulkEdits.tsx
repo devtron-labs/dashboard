@@ -122,7 +122,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="deployment-group-list-page">
                 <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9" >
-                    <Question className="icon-dim-16 mr-13" style={{ stroke: "#664bee" }} />
+                    <Question className="icon-dim-16 mr-13 fcv-5"  />
                     <div>Run scripts to bulk edit configurations for multiple devtron components.
                       <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
