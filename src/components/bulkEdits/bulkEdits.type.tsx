@@ -41,8 +41,9 @@ export interface ImpactedObjects {
 export interface BulkEditsState {
     view: string;
     statusCode: number;
+    outputName: string;
     impactedObjects: ImpactedObjects[];
-    apiVersion:string[];
+    apiVersion: string[];
     kind: string;
     bulkOutput: string;
     updatedTemplate: UpdatedTemplate[];
@@ -55,11 +56,12 @@ export interface BulkEditsState {
     codeEditorPayload: string;
 }
 
-export enum OutputObjectTabs {
-    OUTPUT = "Output",
-    IMPACTED_OBJECTS = "Impacted objects"
-}
-
 export interface BulkEditsProps extends RouteComponentProps<{}> {
     // close: (event) => void;
+}
+
+export interface OutputTabType {
+    handleOutputTabs: (e) => void;
+    outputName: string,
+    value: string
 }
