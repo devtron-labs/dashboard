@@ -62,6 +62,7 @@ export interface BulkEditsProps extends RouteComponentProps<{}> {
 
 export interface OutputTabType {
     handleOutputTabs: (e) => void;
-    outputName: string,
-    value: string
+    outputName: string;
+    value: string;
+    name: string;
 }

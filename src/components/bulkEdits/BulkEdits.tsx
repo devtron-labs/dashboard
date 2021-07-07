@@ -42,10 +42,10 @@ const STATUS = {
     EMPTY: "We could not find any matching devtron applications."
 }
 
-const OutputTabs: React.FC<OutputTabType> = ({handleOutputTabs, outputName, value}) => {
-  return <label className="tertiary-tab__radio flex">
-        <input type="radio" name="status" checked={outputName === value } value={outputName} onClick={handleOutputTabs}/>
-        <div className="tertiary-output-tab bulk-output-tabs "> {value} </div>
+const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
+    return <label className="tertiary-tab__radio flex">
+        <input type="radio" name="status" checked={outputName === value} value={outputName} onClick={handleOutputTabs} />
+        <div className="tertiary-output-tab bulk-output-tabs "> {name} </div>
     </label>
 }
 
@@ -189,9 +189,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         updateImpactedObjectsList(payload, this.state.apiVersion, this.state.kind).then((response) => {
             let impactedObjects = []
-            if(response.result.length === 0 ) { impactedObjects.push(STATUS.EMPTY)}
-            else response.result.map((elm) => {impactedObjects.push(elm.appName)}) 
-            console.log(impactedObjects)
+            if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
+            else response.result.map((elm) => { impactedObjects.push(elm.appName) })
             this.setState({
                 ...this.state,
                 view: ViewType.FORM,
@@ -266,8 +265,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="bulk-output-drawer bcn-0 " >
                     <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
                         {/* <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.handleRunButton()}>{OutputObjectTabs.OUTPUT}</button> */}
-                        <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'}/>
-                        <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton() } outputName={this.state.outputName} value={'impacted'}/>
+                        <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT}/>
+                        <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS}/>
 
                         {/* <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => { this.handleShowImpactedObjectButton() }}>
                             {OutputObjectTabs.IMPACTED_OBJECTS}
@@ -299,12 +298,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleUpdateTemplate = () => {
-        console.log(this.state.view)
-       
-            this.setState({
-                view: ViewType.FORM,
-                readmeResult: this.state.bulkConfig.map((elm) => elm.readme)
-            })
+        this.setState({
+            view: ViewType.FORM,
+            readmeResult: this.state.bulkConfig.map((elm) => elm.readme)
+        })
     }
 
     renderSampleTemplateHeader = () => {
