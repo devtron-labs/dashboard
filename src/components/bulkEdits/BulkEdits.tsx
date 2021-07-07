@@ -61,8 +61,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             statusCode: 0,
             bulkConfig: [],
             bulkOutput: "",
-            apiVersion: [],
-            kind: "",
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
@@ -100,8 +98,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
                 readmeResult: readmeResult,
-                apiVersion: apiVersion,
-                kind: kind,
                 outputName: 'output'
             })
         })
@@ -154,7 +150,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateBulkList(payload, this.state.apiVersion, this.state.kind).then((response) => {
+        updateBulkList(payload).then((response) => {
             this.setState({ view: ViewType.LOADING })
             let output = response.result;
             this.setState({
@@ -190,7 +186,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateImpactedObjectsList(payload, this.state.apiVersion, this.state.kind).then((response) => {
+        updateImpactedObjectsList(payload).then((response) => {
             let impactedObjects = []
             if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
             else response.result.map((elm) => { impactedObjects.push(elm.appName) })

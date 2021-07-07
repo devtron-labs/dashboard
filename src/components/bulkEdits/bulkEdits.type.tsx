@@ -44,8 +44,6 @@ export interface BulkEditsState {
     outputName: string;
     isReadmeLoading: boolean;
     impactedObjects: ImpactedObjects[];
-    apiVersion: string[];
-    kind: string;
     bulkOutput: string;
     updatedTemplate: UpdatedTemplate[];
     showObjectsOutputDrawer: boolean;
