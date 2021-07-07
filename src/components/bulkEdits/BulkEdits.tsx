@@ -39,7 +39,7 @@ export enum OutputObjectTabs {
 }
 
 const STATUS = {
-    empty: "We could not find any matching devtron applications."
+    EMPTY: "We could not find any matching devtron applications."
 }
 
 const OutputTabs: React.FC<OutputTabType> = ({handleOutputTabs, outputName, value}) => {
@@ -188,12 +188,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload, this.state.apiVersion, this.state.kind).then((response) => {
-            let result = response.result.map((elm) => elm.appNames)
-            // if (response.result === null) { return STATUS.empty }
+            let impactedObjects = []
+            if(response.result.length === 0 ) { impactedObjects.push(STATUS.EMPTY)}
+            else response.result.map((elm) => {impactedObjects.push(elm.appName)}) 
+            console.log(impactedObjects)
             this.setState({
                 ...this.state,
                 view: ViewType.FORM,
-                impactedObjects: result,
+                impactedObjects: impactedObjects,
                 showObjectsOutputDrawer: true,
                 showOutputData: false,
                 outputName: "impacted"
