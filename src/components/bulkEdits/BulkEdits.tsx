@@ -44,7 +44,7 @@ const STATUS = {
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return <label className="tertiary-tab__radio flex">
-        <input type="radio" name="status" checked={outputName === value} value={outputName} onClick={handleOutputTabs} />
+        <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
         <div className="tertiary-output-tab bulk-output-tabs "> {name} </div>
     </label>
 }
@@ -160,7 +160,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 view: ViewType.FORM,
                 bulkOutput: output,
                 showObjectsOutputDrawer: true,
-                showOutputData: true
+                showOutputData: true,
+                outputName: 'output'
             })
         })
             .catch((error) => {
@@ -235,7 +236,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div className="code-editor-container">
             <CodeEditor
                 // theme={'vs-gray--dt'}
-                height={730}
+                height={700}
                 value={codeEditorBody}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
@@ -308,6 +309,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
+               
                     defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
                     placeholder="Update Deployment Template"

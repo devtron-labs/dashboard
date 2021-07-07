@@ -82,3 +82,7 @@
     color: white;
     border: 1px solid var(--N200);
 }
+
+.height{
+    height: calc(100% - 100px);
+}
