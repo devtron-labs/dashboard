@@ -3,7 +3,7 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
-import { BulkEditsProps, BulkEditsState, OutputObjectTabs } from './bulkEdits.type';
+import { BulkEditsProps, BulkEditsState, OutputTabType } from './bulkEdits.type';
 import { FragmentHOC, noop, } from '../common';
 import yamlJsParser from 'yaml';
 import { Progressing, showError, ErrorScreenManager } from '../common';
@@ -33,12 +33,21 @@ editor.defineTheme('vs-gray--dt', {
     }
 });
 
-// const OutputTabs = (handleOutputTabs) => {
-//   return <label className="tertiary-tab__radio">
-//         <input type="radio" name="status" value={`output`}  onChange={handleOutputTabs}/>
-//         <span className="tertiary-output-tab bulk-output-tabs "> Output </span>
-//     </label>
-// }
+export enum OutputObjectTabs {
+    OUTPUT = "Output",
+    IMPACTED_OBJECTS = "Impacted objects"
+}
+
+const STATUS = {
+    EMPTY: "We could not find any matching devtron applications."
+}
+
+const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
+    return <label className="tertiary-tab__radio flex">
+        <input type="radio" name="status" checked={outputName === value} value={outputName} onClick={handleOutputTabs} />
+        <div className="tertiary-output-tab bulk-output-tabs "> {name} </div>
+    </label>
+}
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
 
@@ -47,6 +56,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
+            outputName: "",
             statusCode: 0,
             bulkConfig: [],
             bulkOutput: "",
@@ -55,7 +65,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
-            showExamples: false,
+            showExamples: true,
             showHeaderDescription: true,
             showOutputData: true,
             showObjectsOutputDrawer: false,
@@ -69,9 +79,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
 
         getSeeExample().then((res) => {
+            this.setState({ view: ViewType.LOADING })
             let bulkConfig = res.result
             let kind = bulkConfig.map((elm) => elm.script.kind)
-            kind = kind.toString()
+            kind = kind.toString().toLocaleLowerCase()
             let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
             apiVersion = apiVersion.toString()
             let readmeResult = bulkConfig.map((elm) => elm.readme)
@@ -88,12 +99,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 updatedTemplate: updatedTemplate,
                 readmeResult: readmeResult,
                 apiVersion: apiVersion,
-                kind: kind
+                kind: kind,
+                outputName: 'output'
             })
         })
             .catch((error) => {
                 showError(error);
-                this.setState({ view: ViewType.FORM });
+                this.setState({ view: ViewType.FORM, statusCode: error.code });
             })
     }
 
@@ -140,22 +152,28 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateBulkList(payload).then((response) => {
-            { console.log(response) }
+        updateBulkList(payload, this.state.apiVersion, this.state.kind).then((response) => {
+            this.setState({ view: ViewType.LOADING })
             let output = response.result;
             this.setState({
+                ...this.state,
                 view: ViewType.FORM,
                 bulkOutput: output,
-                showObjectsOutputDrawer: true
+                showObjectsOutputDrawer: true,
+                showOutputData: true
             })
         })
             .catch((error) => {
                 showError(error);
-                this.setState({ view: ViewType.FORM });
+                this.setState({ view: ViewType.FORM, statusCode: error.code });
             })
     }
 
     handleShowImpactedObjectButton = () => {
+        this.setState({
+            view: ViewType.LOADING
+        })
+
         let configJson: any = {};
         try {
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
@@ -169,17 +187,22 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         let payload = configJson
 
-        updateImpactedObjectsList(payload).then((response) => {
-            let result = response.result.map((elm) => elm.appNames)
+        updateImpactedObjectsList(payload, this.state.apiVersion, this.state.kind).then((response) => {
+            let impactedObjects = []
+            if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
+            else response.result.map((elm) => { impactedObjects.push(elm.appName) })
             this.setState({
+                ...this.state,
                 view: ViewType.FORM,
-                impactedObjects: result,
-                showObjectsOutputDrawer: true
+                impactedObjects: impactedObjects,
+                showObjectsOutputDrawer: true,
+                showOutputData: false,
+                outputName: "impacted"
             })
 
         }).catch((error) => {
             showError(error);
-            this.setState({ view: ViewType.FORM });
+            this.setState({ view: ViewType.FORM, statusCode: error.code });
         })
     }
 
@@ -212,7 +235,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div className="code-editor-container">
             <CodeEditor
                 // theme={'vs-gray--dt'}
-                height={700}
+                height={730}
                 value={codeEditorBody}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
@@ -223,11 +246,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderOutputs = () => {
-        return (<div> {this.state.bulkOutput} </div>)
+        return (
+            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 400px)', width: '100vw' }}><Progressing pageLoader /></div> : <div> {this.state.bulkOutput} </div>)
     }
 
     renderImpactedObjects = () => {
-        return <div>{this.state.impactedObjects.map((itm) => { return <div> {itm} <br /><br /> </div> })} </div>
+        return <div>
+            {(this.state.view === ViewType.LOADING) ? <div style={{ height: 'calc(100vh - 700px)', width: '100vw' }}> <Progressing pageLoader /> </div> :
+                this.state.impactedObjects.map((itm) => {
+                    return <div>{itm}<br /><br /></div>
+                })} </div>
     }
 
     outputImpactedTabSelector = () => {
@@ -236,14 +264,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className={OutputObjectTabs.OUTPUT == 'Output' ? 'active bcn-0' : null} >
                 <div className="bulk-output-drawer bcn-0 " >
                     <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
-                        <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.setState({ showOutputData: true })}>{OutputObjectTabs.OUTPUT}</button>
-                        {/* <OutputTabs handleOutputTabs={() => this.setState({ showOutputData: true })}/> */}
-                        <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => {
-                            return this.setState({ showOutputData: false, }),
-                                this.handleShowImpactedObjectButton()
-                        }}>
+                        {/* <button className="cta small cancel mr-16 flex " style={{ height: '20px' }} onClick={() => this.handleRunButton()}>{OutputObjectTabs.OUTPUT}</button> */}
+                        <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT}/>
+                        <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS}/>
+
+                        {/* <button className="cta small cancel flex" style={{ height: '20px' }} onClick={() => { this.handleShowImpactedObjectButton() }}>
                             {OutputObjectTabs.IMPACTED_OBJECTS}
-                        </button>
+                        </button> */}
                         <Close
                             style={{ margin: "auto", marginRight: "70px" }}
                             className="icon-dim-20 cursor"
@@ -271,7 +298,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleUpdateTemplate = () => {
-        this.setState({ readmeResult: this.state.bulkConfig.map((elm) => elm.readme) })
+        this.setState({
+            view: ViewType.FORM,
+            readmeResult: this.state.bulkConfig.map((elm) => elm.readme)
+        })
     }
 
     renderSampleTemplateHeader = () => {
@@ -290,22 +320,23 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     styles={{
                         ...multiSelectStyles,
                     }} />
-                <Close style={{ margin: "auto", marginRight: "50px" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
+                <Close style={{ margin: "auto", marginRight: "0px" }} className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
     }
 
     renderSampleTemplateBody = () => {
         let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
-        return <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-            <div className="right-readme">  <MarkDown markdown={readmeJson} /> </div>
-        </div>
+        return (this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
+            <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
+                <div className="right-readme">  <MarkDown markdown={readmeJson} /> </div>
+            </div>)
     }
 
     renderBulkCodeEditor = () => {
         return (<>
             {this.renderCodeEditorHeader()}
-            {(this.state.view === ViewType.LOADING) ? <div style={{ height: 'calc(100vh - 125px)', width: '100vw' }}> <Progressing pageLoader /> </div> : this.renderCodeEditorBody()}
+            {this.renderCodeEditorBody()}
 
         </>)
     }
@@ -332,7 +363,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (<div>
             {this.renderBulkEditHeader()}
             {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-            {this.state.showExamples ? this.renderBulkCodeEditor() : this.renderReadmeSection()}
+            {!this.state.showExamples && this.state.view === ViewType.LOADING ? this.renderBulkCodeEditor() : this.renderReadmeSection()}
             {this.state.showObjectsOutputDrawer ? this.renderObjectOutputDrawer() : null}
         </div>
         )
