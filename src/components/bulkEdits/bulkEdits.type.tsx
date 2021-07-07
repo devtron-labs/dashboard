@@ -28,7 +28,7 @@ export interface BulkConfiguration {
 }
 
 export interface UpdatedTemplate {
-    value: number,
+    value: string,
     label: string
 }
 
@@ -42,6 +42,7 @@ export interface BulkEditsState {
     view: string;
     statusCode: number;
     outputName: string;
+    isReadmeLoading: boolean;
     impactedObjects: ImpactedObjects[];
     apiVersion: string[];
     kind: string;

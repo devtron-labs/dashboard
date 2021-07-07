@@ -56,6 +56,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
+            isReadmeLoading: true,
             outputName: "",
             statusCode: 0,
             bulkConfig: [],
@@ -88,13 +89,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             let readmeResult = bulkConfig.map((elm) => elm.readme)
             let updatedTemplate = bulkConfig.map((elm) => {
                 return {
-                    value: 1,
+                    value: elm.task,
                     label: elm.task,
                 }
             })
 
             this.setState({
                 view: ViewType.FORM,
+                isReadmeLoading: false,
                 bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
                 readmeResult: readmeResult,
@@ -299,17 +301,27 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleUpdateTemplate = () => {
-        this.setState({
-            view: ViewType.FORM,
-            readmeResult: this.state.bulkConfig.map((elm) => elm.readme)
+        this.setState({isReadmeLoading: true })
+        getSeeExample().then((res)=>{
+            let readmeResult = res.result.map((elm) => elm.readme)
+            this.setState({
+                // view: ViewType.FORM,
+                isReadmeLoading: false,
+                readmeResult: readmeResult
+            })
         })
+        .catch((error) => {
+            showError(error);
+            this.setState({ isReadmeLoading: false, statusCode: error.code });
+        })
+
     }
 
     renderSampleTemplateHeader = () => {
         return (
             <div className="readme-header bcn-0 pt-5 pb-5 flex pr-20">
                 <ReactSelect
-               
+                    value={this.state.updatedTemplate[0]}
                     defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
                     placeholder="Update Deployment Template"
@@ -329,7 +341,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateBody = () => {
         let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
-        return (this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
+        return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
             <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
                 <div className="right-readme">  <MarkDown markdown={readmeJson} /> </div>
             </div>)
