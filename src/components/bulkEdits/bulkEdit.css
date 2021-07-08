@@ -53,7 +53,6 @@
 }
 
 .bulk-output-drawer{
-    overflow: scroll;
     height: 300px;
     letter-spacing: 0.2px;
     font-family: monospace;
@@ -97,4 +96,10 @@
     overflow: auto;
     height: calc(100vh - 150px);
     background: white;
+}
+
+.bulk-output-body{
+    letter-spacing: 0.2px;
+    height: 250px;
+    overflow: scroll;
 }

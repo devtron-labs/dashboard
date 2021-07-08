@@ -152,20 +152,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
-                this.setState({ view: ViewType.LOADING })
-                let output = response.result;
-                this.setState({
-                    ...this.state,
-                    view: ViewType.FORM,
-                    bulkOutput: output,
-                    showOutputData: true,
-                    outputName: 'output'
-                })
-            
+            this.setState({ view: ViewType.LOADING, outputName: 'output' })
+            let output = response.result;
+            this.setState({
+                ...this.state,
+                view: ViewType.FORM,
+                bulkOutput: output,
+                showOutputData: true,
+                outputName: 'output'
+            })
+
         })
             .catch((error) => {
                 showError(error);
-                this.setState({ view: ViewType.FORM, statusCode: error.code });
+                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'output' });
             })
     }
 
@@ -244,7 +244,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
                     <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
-                <div className=" cn-9 fs-13 pl-20 pr-20 pt-20" style={{ letterSpacing: "0.2px", height: "250px" }}>
+                <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
                     {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
                 </div>
             </div>
@@ -306,7 +306,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
         return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
             <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-                <div className="right-readme ">  <MarkDown markdown={readmeJson} /> </div>
+                <div className="right-readme "><MarkDown markdown={readmeJson} /></div>
             </div>)
     }
 
