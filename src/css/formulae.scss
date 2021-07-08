@@ -95,7 +95,8 @@ $colors: B,
 N,
 G,
 Y,
-R;
+R,
+V;
 $color-suffix: 00;
 
 @each $color in $colors {
