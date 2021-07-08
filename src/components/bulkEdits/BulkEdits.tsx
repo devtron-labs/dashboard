@@ -11,15 +11,16 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service';
-import ResponsiveDrawer from '../app/ResponsiveDrawer';
 import ReactSelect from 'react-select';
 import { DropdownIndicator } from '../charts/charts.util';
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
-import { AutoSizer } from 'react-virtualized'
 import { editor } from 'monaco-editor';
 import { toast } from 'react-toastify';
+import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
+import '../charts/modal/DeployChart.scss';
+
 
 editor.defineTheme('vs-gray--dt', {
     base: 'vs-dark',
@@ -303,10 +304,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateBody = () => {
-        let readmeJson = yamlJsParser.stringify(this.state.readmeResult)
+        let readmeJson = this.state.readmeResult.toString()
         return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
-            <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 ">
-                <div className="right-readme "><MarkDown markdown={readmeJson} /></div>
+            <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 deploy-chart__readme-column">
+                <div className="right-readme "><MarkDown markdown={readmeJson} className="deploy-chart__readme-markdown" /></div>
             </div>)
     }
 
