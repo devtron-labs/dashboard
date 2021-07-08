@@ -383,6 +383,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 <div className="border" />
             </div>
             <ReadmeColumn readmeCollapsed={readmeCollapsed} toggleReadmeCollapsed={toggleReadmeCollapsed} readme={readme} />
+            {console.log(readme)}
             <div className="deploy-chart-body">
                 <div className="overflown" ref={deployChartForm}>
                     <div className="hide-scroll">
@@ -547,6 +548,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 }
 
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
+    
     return (
         <div className="deploy-chart__readme-column">
             <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
