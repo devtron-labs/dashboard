@@ -67,7 +67,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             showExamples: true,
             showHeaderDescription: true,
             showOutputData: true,
-            showObjectsOutputDrawer: false,
             codeEditorPayload: undefined,
         }
     }
@@ -157,7 +156,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 ...this.state,
                 view: ViewType.FORM,
                 bulkOutput: output,
-                showObjectsOutputDrawer: true,
                 showOutputData: true,
                 outputName: 'output'
             })
@@ -194,7 +192,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 ...this.state,
                 view: ViewType.FORM,
                 impactedObjects: impactedObjects,
-                showObjectsOutputDrawer: true,
                 showOutputData: false,
                 outputName: "impacted"
             })
@@ -260,13 +257,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     outputImpactedTabSelector = () => {
          return   <div className="bulk-output-drawer bcn-0 " >
-                <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0 cursor--ns-resize" >
+                <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
                     <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
                     <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
-                    <Close
-                        style={{ margin: "auto", marginRight: "0px" }}
-                        className="icon-dim-20 cursor"
-                        onClick={() => this.setState({ showObjectsOutputDrawer: false })} />
                 </div>
                 <div className=" cn-9 fs-13 pl-20 pr-20 pt-20" style={{ letterSpacing: "0.2px", height: "250px" }}>
                     {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
