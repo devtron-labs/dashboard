@@ -16,23 +16,11 @@ import { DropdownIndicator } from '../charts/charts.util';
 import './bulkEdit.css'
 import { multiSelectStyles } from './bulkedit.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
-import { editor } from 'monaco-editor';
 import { toast } from 'react-toastify';
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
 import '../charts/modal/DeployChart.scss';
 
 
-editor.defineTheme('vs-gray--dt', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-        //@ts-ignore
-        { background: '#f2f4f7' }
-    ],
-    colors: {
-        'editor.background': '#f2f4f7',
-    }
-});
 
 export enum OutputObjectTabs {
     OUTPUT = "Output",
@@ -58,7 +46,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.state = {
             view: ViewType.LOADING,
             isReadmeLoading: true,
-            outputName: "",
+            outputName: "output",
             statusCode: 0,
             bulkConfig: [],
             bulkOutput: "",
@@ -98,7 +86,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 bulkConfig: bulkConfig,
                 updatedTemplate: updatedTemplate,
                 readmeResult: readmeResult,
-                outputName: 'output'
             })
         })
             .catch((error) => {
@@ -136,7 +123,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     handleRunButton = () => {
         this.setState({
-            view: ViewType.LOADING
+            view: ViewType.LOADING,
+            outputName: "output"
         })
 
         let configJson: any = {};
@@ -162,7 +150,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showOutputData: true,
                 outputName: 'output'
             })
-
         })
             .catch((error) => {
                 showError(error);
@@ -172,7 +159,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     handleShowImpactedObjectButton = () => {
         this.setState({
-            view: ViewType.LOADING
+            view: ViewType.LOADING,
+            outputName: "impacted"
         })
 
         let configJson: any = {};
@@ -209,14 +197,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm" >
-                <button type="button" className="cta ellipsis-right flex mr-12" style={{ maxHeight: '32px', minWidth: '72px' }} onClick={() => this.handleRunButton()} >
+                <button type="button" className="bulk-run-button cta ellipsis-right flex mr-12 pl-12 pr-12" onClick={() => this.handleRunButton()} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
                 </button>
                 <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.handleShowImpactedObjectButton()}>
                     Show Impacted Objects
                 </button>
                 {!this.state.showExamples ?
-                    <div className="cb-5 fw-6 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
+                    <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
                         See Examples
                 </div> : null}
             </div>
@@ -232,14 +220,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         let codeEditorBody = this.state.codeEditorPayload
-        return <div> <CodeEditor
-            // theme={'vs-gray--dt'}
-            height={400}
-            value={codeEditorBody}
-            mode="yaml"
-            onChange={(event) => { this.handleConfigChange(event) }}
-        >
-        </CodeEditor>
+        return <div>
+            <CodeEditor
+                theme='vs-gray--dt'
+                height={500}
+                value={codeEditorBody}
+                mode="yaml"
+                onChange={(event) => { this.handleConfigChange(event) }}
+            >
+            </CodeEditor>
             <div className="bulk-output-drawer bcn-0 " >
                 <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
                     <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />

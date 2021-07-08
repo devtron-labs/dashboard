@@ -53,9 +53,7 @@
 }
 
 .bulk-output-drawer{
-    height: 300px;
-    letter-spacing: 0.2px;
-    font-family: monospace;
+    height: 280px;
 }
 
 .bulk-output-tabs {
@@ -102,4 +100,10 @@
     letter-spacing: 0.2px;
     height: 250px;
     overflow: scroll;
+    font-family: monospace;
+}
+
+.bulk-run-button{
+    max-height: 32px;
+    min-width: 72px;
 }
