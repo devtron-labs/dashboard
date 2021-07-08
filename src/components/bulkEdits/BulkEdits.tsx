@@ -152,17 +152,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
-            console.log(response)
-            //     this.setState({ view: ViewType.LOADING })
-            //     let output = response.result;
-            //     this.setState({
-            //         ...this.state,
-            //         view: ViewType.FORM,
-            //         bulkOutput: output,
-            //         showOutputData: true,
-            //         outputName: 'output'
-            //     })
-            // 
+                this.setState({ view: ViewType.LOADING })
+                let output = response.result;
+                this.setState({
+                    ...this.state,
+                    view: ViewType.FORM,
+                    bulkOutput: output,
+                    showOutputData: true,
+                    outputName: 'output'
+                })
+            
         })
             .catch((error) => {
                 showError(error);
