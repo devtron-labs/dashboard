@@ -258,16 +258,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     outputImpactedTabSelector = () => {
-        // return 
-        // <div className="bulk-output-drawer bcn-0 " >
-        //     <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
-        //         <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
-        //         <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
-        //     </div>
-        //     <div className=" cn-9 fs-13 pl-20 pr-20 pt-20" style={{ letterSpacing: "0.2px", height: "250px" }}>
-        //         {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
-        //     </div>
-        // </div>
+         return   <div className="bulk-output-drawer bcn-0 " >
+                <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
+                    <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
+                    <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
+                </div>
+                <div className=" cn-9 fs-13 pl-20 pr-20 pt-20" style={{ letterSpacing: "0.2px", height: "250px" }}>
+                    {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
+                </div>
+            </div>
     }
 
 
