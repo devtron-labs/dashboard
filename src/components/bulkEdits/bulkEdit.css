@@ -89,5 +89,12 @@
 .bulk-container{
     display:grid;
     grid-template-columns: 1fr 1fr;
-     height: 100%
+     height: 100%;
+     background-color: white;
+}
+
+.code-editor-body{
+    overflow: auto;
+    height: calc(100vh - 150px);
+    background: white;
 }
