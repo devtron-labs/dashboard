@@ -16,6 +16,6 @@ export function updateImpactedObjectsList(request): Promise<any> {
 }
 
 export function getSeeExample() {
-    const URL = `${Routes.BULK_UPDATE_APIVERSION}/${Routes.BULK_UPDATE_KIND}/see-example`
+    const URL = `${Routes.BULK_UPDATE_APIVERSION}/${Routes.BULK_UPDATE_KIND}/readme`
     return get(URL)
 }
