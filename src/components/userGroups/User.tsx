@@ -385,7 +385,6 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                     <label htmlFor="" className="mb-8">
                         Email addresses*
                     </label>
-                    {console.log(emailState.emails)}
                     <Creatable
                         ref={creatableRef}
                         options={creatableOptions}
