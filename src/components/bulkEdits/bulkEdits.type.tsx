@@ -22,7 +22,7 @@ export interface CodeEditorScript {
 }
 
 export interface BulkConfiguration {
-    task: string;
+    operation: string;
     script: CodeEditorScript;
     readme: string;
 }
