@@ -1,11 +1,12 @@
-import { Routes } from '../../config';
+import { Routes, SourceTypeMap } from '../../config';
 import { get, post } from '../../services/api';
 import { TriggerType, ViewType } from '../../config';
 import { PatchAction } from './types';
 import { TagOptions } from './ciPipeline.util';
 import { getSourceConfig, getGitProviderList, getGitHostList } from '../../services/service';
-import { CiPipelineMonoGit } from './ciPipeline.data';
+import { CiPipelineMonoGit, WebhookEvents, CiPipelineWebhook } from './ciPipeline.data';
 import { MaterialType } from './types';
+import { ResponseType } from '../../services/service.types';
 
 export function savePipeline(request): Promise<any> {
     const URL = `${Routes.CI_PIPELINE}`;
@@ -41,13 +42,13 @@ function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
     // return get(URL)
     return new Promise((resolve, reject) => {
-        resolve({ ...CiPipelineMonoGit })
+        resolve({ ...CiPipelineWebhook })
     })
 }
 
-export function getSourceConfigParsed(appId): Promise<any> {
+export function getSourceConfigParsed(appId): Promise<ResponseType> {
     return Promise.all([getSourceConfig(appId), getGitProviderList(), getGitHostList()]).then(([sourceConfigRes, gitProvderRes, gitHostRes]) => {
-        let materials: MaterialType = sourceConfigRes?.result?.material?.map((mat) => {
+        let materials: MaterialType[] = sourceConfigRes?.result?.material?.map((mat) => {
             let gitProvider = gitProvderRes.result?.find(gitProvider => gitProvider.id === mat.gitProviderId);
             return {
                 id: 0,
@@ -60,15 +61,23 @@ export function getSourceConfigParsed(appId): Promise<any> {
                 gitHostId: gitProvider.gitHostId,
                 gitHostName: gitHostRes.result.find(gitHost => gitHost.id === gitProvider.gitHostId).name,
                 gitProviderId: mat.gitProviderId,
-
             }
         });
         return {
             code: sourceConfigRes.code,
+            status: sourceConfigRes.status,
             result: {
                 materials
             }
         }
+    }).then((parsedResponse) => {
+        parsedResponse.result.materials.forEach((material) => {
+            getWebhookEvents(material.gitHostId).then((response) => {
+                //@ts-ignore
+                material.webhookEvents = response.result.events;
+            })
+        })
+        return parsedResponse
     })
 }
 
@@ -136,6 +145,14 @@ export function deleteCIPipeline(formData, ciPipeline, gitMaterials, appId: numb
     })
 }
 
+export function getWebhookEvents(gitHostId: string | number) {
+    const URL = `git/host/${gitHostId}/event`;
+    // return get(URL);
+    return new Promise((resolve, reject) => {
+        resolve(WebhookEvents)
+    })
+}
+
 function formatStages(allStages): any[] {
     allStages = allStages.filter(stage => stage.name && stage.script);
     for (let i = 0; i < allStages.length; i++) {
@@ -161,10 +178,24 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean) {
         isManual: formData.triggerType == TriggerType.Manual ? true : false,
         ciMaterial: formData.materials.filter(mat => mat.isSelected)
             .map(mat => {
+                let value = mat.value;
+                if (mat.type === SourceTypeMap.PullRequest) {
+                    let webhookEventData = mat.webhookEvents.reduce((item, agg) => {
+                        agg['eventId'] = item.id;
+                        agg["condtion"] = item.selectors.reduce((selector, selectorAgg) => {
+                            selectorAgg[selector.id] = selector.name;
+                        }, {})
+                        return agg;
+                    }, {})
+                    value = JSON.stringify(webhookEventData)
+                }
                 return {
                     gitMaterialId: mat.gitMaterialId,
                     id: mat.id,
-                    source: { type: mat.type, value: mat.value }
+                    source: {
+                        type: mat.type,
+                        value: value,
+                    }
                 }
             }),
         name: formData.name,
@@ -186,16 +217,43 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[]): MaterialT
     if (ciPipeline) materials = ciPipeline.ciMaterial.map((mat) => {
         ciMaterialSet.add(mat.gitMaterialId);
         let gitM = gitMaterials.find(gm => gm.gitMaterialId === mat.gitMaterialId);
+        let sourceValue = mat.source.type !== SourceTypeMap.PullRequest ? mat.source.value : '';
+        let savedWebhookEvents = [];
+        //TODO:
+        if (mat.source.type === SourceTypeMap.PullRequest) {
+            try {
+                let parsedSourceValue = JSON.parse(mat.source.value);
+                savedWebhookEvents = parsedSourceValue.map((event) => {
+                    let webhookEvent = gitM.webhookEvents.find((e) => event.eventId === e.id)
+                    let selectorIds = Object.keys(event.condition).map(s => parseInt(s))
+                    return {
+                        id: event.eventId,
+                        name: webhookEvent.name,
+                        selectors: selectorIds.map((sId) => {
+                            return {
+                                id: sId,
+                                name: webhookEvent.selectors.find(selector => selector.id === sId).name,
+                                value: event.condition[sId]
+                            }
+                        })
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
         return {
             id: mat.id,
             gitMaterialId: mat.gitMaterialId,
             name: mat.gitMaterialName,
             type: mat.source.type,
-            value: mat.source.value,
+            value: sourceValue,
             isSelected: true,
             gitHostId: gitM.gitHostId,
             gitHostName: gitM.gitHostName,
             gitProviderId: gitM.gitProviderId,
+            webhookEvents: gitM.webhookEvents,
+            savedWebhookEvents: savedWebhookEvents,
         }
     })
 
@@ -214,6 +272,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[]): MaterialT
                 gitHostId: mat.gitHostId,
                 gitHostName: mat.gitHostName,
                 gitProviderId: mat.gitProviderId,
+                webhookEvents: mat.webhookEvents,
             })
         }
     }
@@ -221,7 +280,6 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[]): MaterialT
 }
 
 function parseCIResponse(responseCode: number, ciPipeline, gitMaterials: MaterialType[]) {
-
     if (ciPipeline) {
         if (!ciPipeline.beforeDockerBuildScripts) ciPipeline.beforeDockerBuildScripts = [];
         if (!ciPipeline.afterDockerBuildScripts) ciPipeline.afterDockerBuildScripts = [];

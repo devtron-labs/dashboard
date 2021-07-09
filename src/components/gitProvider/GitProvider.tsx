@@ -36,8 +36,14 @@ export default function GitProvider({ ...props }) {
             const { result: hosts = [] } = await getGitHostList()
             providers.sort((a, b) => a.name.localeCompare(b.name))
             hosts.sort((a, b) => a.name.localeCompare(b.name))
+            let hostOptions = hosts.map(host => {
+                return {
+                    value: host.id,
+                    label: host.name
+                }
+            })
             setProviderList(providers)
-            setHostList(hosts)
+            setHostList(hostOptions)
         } catch (error) {
             showError(error)
             setErrors(error)
@@ -201,6 +207,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
     function handleGithostChange(gitHostValue) {
+        console.log(gitHostValue)
         setGithost({
             value: gitHostValue,
             error: gitHostValue ? "" : "GitHost is required"
@@ -221,15 +228,15 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             }
         }
 
-        let gitHostId = gitHost.value.id;
-        if (gitHost.value.__New__) {
+        let gitHostId = gitHost.value.value;
+        if (gitHost.value.__isNew__) {
             let gitHostPayload = {
                 name: gitHost.value,
             }
             try {
                 const { result } = await saveGitHost(gitHostPayload);
                 // getHostList();
-                gitHostId = result.id;
+                gitHostId = result;
             } catch (error) {
                 showError(error)
             }
@@ -270,21 +277,21 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 <div className="form__row form__row--two-third">
                     <div>
                         <label className="form__label">Git provider*</label>
-                        <CreatableSelect options={hostList}
-                            value={gitHost}
-                            name="host"
+                        <CreatableSelect name="host"
+                            className="react-select--height-44"
                             placeholder="Select git provider"
-                            //@ts-ignore
-                            getOptionLabel={option => `${option.name}`}
-                            //@ts-ignore
-                            getOptionValue={option => `${option.id}`}
+                            isMulti={false}
+                            isSearchable
+                            isClearable={false}
+                            options={hostList}
                             styles={{
                                 ...styles,
                             }}
-                            onChange={handleGithostChange}
                             components={{
                                 IndicatorSeparator: null,
-                            }} />
+                            }}
+                            onChange={handleGithostChange}
+                        />
                     </div>
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>

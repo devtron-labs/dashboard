@@ -49,6 +49,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
         let sourceNodes = pipeline.ciMaterial
             .map((ciMaterial) => {
                 let materialName = ciMaterial.gitMaterialName || "";
+
                 return {
                     parents: [],
                     height: dimensions.staticNodeSizes.nodeHeight,

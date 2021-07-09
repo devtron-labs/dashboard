@@ -35,6 +35,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
     function Option(props) {
         const { selectOption, data } = props;
         const onClick = (e) => selectOption(data);
+
         return <div className="pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             <div className="flex left">
                 {props.isSelected ? <Check onClick={onClick} className="mr-8 icon-dim-16 scb-5" /> : <span onClick={onClick} className="mr-8 icon-dim-16" />}
@@ -53,6 +54,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             const isGitProviderSelected: boolean = !!mat.gitHostId;
             let selectedMaterial = { value: mat.type, label: SourceTypeReverseMap[mat.type], isDisabled: false }
             let errorObj = props.validationRules?.sourceValue(mat.value);
+
+            console.log(mat)
 
             return <div className="mt-20" key={mat.gitMaterialId}>
                 <div className="mb-10 fs-14 cn-9 fw-5 lh-1-43">

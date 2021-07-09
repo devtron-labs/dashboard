@@ -110,8 +110,18 @@ export interface MaterialType {
     gitHostName: string;
     gitProviderId: number;
     isSelected: boolean;
+    webhookEvents?: WebhookEvent[];
 }
 
+interface WebhookEvent {
+    id: number;
+    name: string;
+    selectors: {
+        id: number;
+        name: string;
+        value: string;
+    }[];
+}
 export interface CIPipelineProps extends RouteComponentProps<{ appId: string, ciPipelineId: string, workflowId: string }> {
     appName: string;
     connectCDPipelines: number;
