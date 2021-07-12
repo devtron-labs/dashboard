@@ -27,8 +27,8 @@ export interface BulkConfiguration {
 }
 
 export interface UpdatedTemplate {
-    value: string,
-    label: string
+    value: string;
+    label: string;
 }
 
 export interface ImpactedObjects {
@@ -39,15 +39,15 @@ export interface ImpactedObjects {
 
 export interface OutputKeys {
     appId: number;
-    appName: string,
+    appName: string;
     envId: number;
     message: string;
 }
 
 export interface BulkOutput {
-    message: string[],
-    failure: OutputKeys[],
-    successful: OutputKeys[]
+    message: string[];
+    failure: OutputKeys[];
+    successful: OutputKeys[];
  }
 
 export interface BulkEditsState {
@@ -61,6 +61,7 @@ export interface BulkEditsState {
     outputResult: BulkOutput;
     showExamples: boolean;
     showHeaderDescription: boolean;
+    showImpactedtData: boolean;
     showOutputData: boolean;
     bulkConfig: BulkConfiguration[];
     codeEditorPayload: string;

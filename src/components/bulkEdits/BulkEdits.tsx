@@ -53,6 +53,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             showExamples: true,
             showHeaderDescription: true,
             showOutputData: true,
+            showImpactedtData: false,
             codeEditorPayload: undefined,
         }
     }
@@ -148,6 +149,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showOutputData: true,
                 outputName: 'output',
                 outputResult: outputResult
+                
             })
         })
             .catch((error) => {
@@ -185,7 +187,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({
                 view: ViewType.FORM,
                 impactedObjects: impactedObjects,
-                showOutputData: false,
                 outputName: "impacted"
             })
 
@@ -214,7 +215,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     handleConfigChange = (value) => {
         this.setState({
-            ...this.state,
             codeEditorPayload: value
         })
     }
@@ -222,18 +222,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleOutputTab = (e, key: string) => {
         if (key == "output") {
             this.setState({
-                ...this.state,
                 outputName: "output",
                 impactedObjects: [],
-                showOutputData: !this.state.showOutputData,
+                showOutputData: true,
             })
         }
         if (key == "impacted") {
             this.setState({
-                ...this.state,
                 outputName: "impacted",
                 outputResult: undefined,
-                showOutputData: false,
+                showImpactedtData: true,
             })
         }
     }
@@ -255,7 +253,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
-                    {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
+                    {!this.state.showOutputData ? "" : this.renderOutputs()}
+                    {this.state.showImpactedtData? this.renderImpactedObjects() : null }
                 </div>
             </div>
         </div>
@@ -263,7 +262,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderOutputs = () => {
         return (
-            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 700px)' }}><Progressing pageLoader /></div> :
+            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
                 this.state.outputResult == undefined ? "" :
                     <div>
                         <div> #Message:  <br />
@@ -311,10 +310,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderImpactedObjects = () => {
         return <div>
-            {(this.state.view === ViewType.LOADING) ? <div style={{ height: 'calc(100vh - 700px)' }}> <Progressing pageLoader /> </div> :
-                this.state.impactedObjects.map((itm) => {
-                    return <div>{itm}<br /><br /></div>
-                })}
+                {this.state.impactedObjects.map((itm) => {
+                    return <div>{itm}<br /><br /></div>}
+                )}
         </div>
     }
 
