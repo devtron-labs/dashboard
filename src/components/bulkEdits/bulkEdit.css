@@ -12,7 +12,6 @@
 .updated-container--sample{
     height: calc(100vh - 150px);
     align-items: flex-start;
-    border-bottom: 1px solid #d0d4d9;
 }
 
 .brdr-btm{

@@ -218,6 +218,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
     }
 
+    handleOutputTab = (key: string) => {
+        if (key == "output") {
+            this.setState({
+                outputName: "output"
+            })
+        }
+        if (key == "impacted") {
+            this.setState({
+                outputName: "impacted"
+            })
+        }
+    }
+
     renderCodeEditorBody = () => {
         let codeEditorBody = this.state.codeEditorPayload
         return <div>
@@ -231,8 +244,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </CodeEditor>
             <div className="bulk-output-drawer bcn-0 " >
                 <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
-                    <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
-                    <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
+                    <OutputTabs handleOutputTabs={() => this.handleOutputTab("output")} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
+                    <OutputTabs handleOutputTabs={() => this.handleOutputTab("impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
                     {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
@@ -341,10 +354,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
 
-        return (<div>
+        return (<div style={{minHeight:"calc(100vh)", backgroundColor: "white"}}>
             {this.renderBulkEditHeader()}
+            <div >
             {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
             {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
+            </div>
         </div>
         )
     }
