@@ -163,7 +163,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleShowImpactedObjectButton = () => {
         var outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight;
-        
+
         this.setState({
             view: ViewType.LOADING,
             outputName: "impacted"
@@ -242,7 +242,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return <div>
             <CodeEditor
                 theme='vs-gray--dt'
-                height={500}
+                height={400}
                 value={codeEditorBody}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
@@ -313,7 +313,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateBody = () => {
         let readmeJson = this.state.readmeResult.toString()
-        return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
+        return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 150px)' }}><Progressing pageLoader /></div> :
             <div className="updated-container--sample flex left pb-8 deploy-chart__readme-column">
                 <div className="right-readme "><MarkDown markdown={readmeJson} className="deploy-chart__readme-markdown" /></div>
             </div>)
@@ -360,12 +360,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
 
-        return (<div style={{ minHeight: "calc(100vh)", backgroundColor: "white" }}>
+        return (<div style={{ backgroundColor: "white" }}>
             {this.renderBulkEditHeader()}
-            <div >
-                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-                {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
-            </div>
+            {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
+            {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
         </div>
         )
     }
