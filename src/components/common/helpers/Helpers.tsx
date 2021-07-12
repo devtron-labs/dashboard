@@ -84,13 +84,31 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             }
         }
 
-        if (validationSchema[name].validator && typeof validationSchema[name].validator === 'object') {
-            if (value && !validationSchema[name].validator.regex.test(value)) {
-                error = validationSchema[name].validator.error;
-            } else {
+        function validateSingleValidator(validator, value) {
+            if (value && !validator.regex.test(value)) {
+                return false;
             }
-        } else {
+            return true;
         }
+
+        // single validator
+        let _validator =  validationSchema[name].validator;
+        if (_validator && typeof _validator === 'object') {
+            if(!validateSingleValidator(_validator, value)){
+                error = _validator.error;
+            }
+        }
+
+        // multiple validators
+        let _validators =  validationSchema[name].validators
+        if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
+            _validators.forEach((_validator) => {
+                if(!validateSingleValidator(_validator, value)){
+                    return _validator.error;
+                }
+            })
+        }
+
         return error;
     }
 
