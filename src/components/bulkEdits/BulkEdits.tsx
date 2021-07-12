@@ -45,11 +45,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
+            empty: "",
             isReadmeLoading: true,
             outputName: "output",
             statusCode: 0,
             bulkConfig: [],
-            bulkOutput: "",
+            bulkOutputMessage: [],
+            failueOutput: [],
+            succesfullOutput: [],
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
@@ -144,12 +147,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
+            console.log(response.result)
             this.setState({ view: ViewType.LOADING, outputName: 'output' })
-            let output = response.result;
+            let output = response.result
             this.setState({
-                ...this.state,
                 view: ViewType.FORM,
-                bulkOutput: output,
+                bulkOutputMessage: output.message,
+                failueOutput: output.failure,
+                succesfullOutput: output.successfull,
                 showOutputData: true,
                 outputName: 'output'
             })
@@ -227,12 +232,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleOutputTab = (key: string) => {
         if (key == "output") {
             this.setState({
-                outputName: "output"
+                outputName: "output",
+                impactedObjects: [],
+                showOutputData: true,
             })
         }
         if (key == "impacted") {
             this.setState({
-                outputName: "impacted"
+                outputName: "impacted",
+
+                showOutputData: false,
             })
         }
     }
@@ -262,7 +271,46 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderOutputs = () => {
         return (
-            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 700px)' }}><Progressing pageLoader /></div> : <div> {this.state.bulkOutput} </div>)
+            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 700px)' }}><Progressing pageLoader /></div> :
+
+                <div>
+                    <div> #Message:<br />
+                        <> {this.state.bulkOutputMessage}  </></div>
+                    <br />
+                    {/* {this.state.failueOutput ? null : */}
+                    -----------------------------------------------------------------
+                    <br />
+                    <br />
+                    <> <div>#Failed Operations:<br />
+                        <>
+                            {this.state.failueOutput.map((elm) => {
+                                return <div>
+                                    App Id: {elm.appId} <br />
+                                    App Name: {elm.appName} <br />
+                                    Environment Id: {elm.envId} <br />
+                                    Message: {elm.message} <br /><br />
+                                </div>
+                            })}</>
+                        <br />
+                    </div>
+                    </>
+                    {/* } */}
+                    -----------------------------------------------------------------
+                    <br />
+                    <br />
+                    <div>#Successful Operations:
+                   <>
+                            {this.state.succesfullOutput.map((elm) => {
+                                return <div>
+                                    App Id: {elm.appId} <br />
+                                    App Name: {elm.appName} <br />
+                                    Environment Id: {elm.envId} <br />
+                                    Message: {elm.message} <br /><br />
+                                </div>
+                            })}</>
+                            </div>
+                </div>
+        )
     }
 
     renderImpactedObjects = () => {
@@ -313,7 +361,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateBody = () => {
         let readmeJson = this.state.readmeResult.toString()
-        return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 150px)' }}><Progressing pageLoader /></div> :
+        return (this.state.isReadmeLoading ? <div className="bcn-0" style={{ height: 'calc(100vh - 150px)' }}><Progressing pageLoader /></div> :
             <div className="updated-container--sample flex left pb-8 deploy-chart__readme-column">
                 <div className="right-readme "><MarkDown markdown={readmeJson} className="deploy-chart__readme-markdown" /></div>
             </div>)
@@ -362,8 +410,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (<div style={{ backgroundColor: "white" }}>
             {this.renderBulkEditHeader()}
-            {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-            {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
+            <div style={{ height: "" }}>
+                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
+                {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
+            </div>
         </div>
         )
     }
