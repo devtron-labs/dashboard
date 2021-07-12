@@ -38,32 +38,28 @@ export interface ImpactedObjects {
     envId: number;
 }
 
-export interface BulkOutput {
-    MESSAGE: any,
-    FAILURE: any,
-    SUCCESSFULL: any
- 
- }
+export interface OutputKeys {
+    appId: number;
+    appName: string,
+    envId: number;
+    message: string;
+}
 
- export interface FailureOutput {
-     appId: number;
-     appName: string,
-     envId: number;
-     message: string;
+export interface BulkOutput {
+    message: any,
+    failure: OutputKeys[],
+    successful: OutputKeys[]
  }
 
 export interface BulkEditsState {
     view: string;
-    empty: string;
     statusCode: number;
     outputName: string;
     isReadmeLoading: boolean;
     impactedObjects: ImpactedObjects[];
-    bulkOutputMessage: BulkOutput[];
-    failueOutput: FailureOutput[];
-    succesfullOutput:FailureOutput[];
     updatedTemplate: UpdatedTemplate[];
     readmeResult: string[];
+    outputResult: BulkOutput;
     showExamples: boolean;
     showHeaderDescription: boolean;
     showOutputData: boolean;

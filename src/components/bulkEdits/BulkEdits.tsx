@@ -4,7 +4,6 @@ import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
 import { BulkEditsProps, BulkEditsState, OutputTabType } from './bulkEdits.type';
-import { FragmentHOC, noop, } from '../common';
 import yamlJsParser from 'yaml';
 import { Progressing, showError, ErrorScreenManager } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
@@ -19,8 +18,6 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import { toast } from 'react-toastify';
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
 import '../charts/modal/DeployChart.scss';
-
-
 
 export enum OutputObjectTabs {
     OUTPUT = "Output",
@@ -45,14 +42,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
-            empty: "",
+            statusCode: 0,
+            outputResult: undefined,
             isReadmeLoading: true,
             outputName: "output",
-            statusCode: 0,
             bulkConfig: [],
-            bulkOutputMessage: [],
-            failueOutput: [],
-            succesfullOutput: [],
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
@@ -147,16 +141,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
-            console.log(response.result)
             this.setState({ view: ViewType.LOADING, outputName: 'output' })
-            let output = response.result
+            let outputResult = response.result
             this.setState({
                 view: ViewType.FORM,
-                bulkOutputMessage: output.message,
-                failueOutput: output.failure,
-                succesfullOutput: output.successfull,
                 showOutputData: true,
-                outputName: 'output'
+                outputName: 'output',
+                outputResult: outputResult
             })
         })
             .catch((error) => {
@@ -192,7 +183,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
             else response.result.map((elm) => { impactedObjects.push(elm.appName) })
             this.setState({
-                ...this.state,
                 view: ViewType.FORM,
                 impactedObjects: impactedObjects,
                 showOutputData: false,
@@ -229,9 +219,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
     }
 
-    handleOutputTab = (key: string) => {
+    handleOutputTab = (e, key: string) => {
         if (key == "output") {
             this.setState({
+                ...this.state,
                 outputName: "output",
                 impactedObjects: [],
                 showOutputData: true,
@@ -239,8 +230,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
         if (key == "impacted") {
             this.setState({
+                ...this.state,
                 outputName: "impacted",
-
+                outputResult: undefined,
                 showOutputData: false,
             })
         }
@@ -259,8 +251,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </CodeEditor>
             <div className="bulk-output-drawer bcn-0 " >
                 <div className="bulk-output-header flex left pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
-                    <OutputTabs handleOutputTabs={() => this.handleOutputTab("output")} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
-                    <OutputTabs handleOutputTabs={() => this.handleOutputTab("impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
+                    <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "output")} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
+                    <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
                     {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
@@ -272,44 +264,46 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderOutputs = () => {
         return (
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 700px)' }}><Progressing pageLoader /></div> :
-
-                <div>
-                    <div> #Message:<br />
-                        <> {this.state.bulkOutputMessage}  </></div>
-                    <br />
-                    {/* {this.state.failueOutput ? null : */}
-                    -----------------------------------------------------------------
-                    <br />
-                    <br />
-                    <> <div>#Failed Operations:<br />
-                        <>
-                            {this.state.failueOutput.map((elm) => {
-                                return <div>
-                                    App Id: {elm.appId} <br />
-                                    App Name: {elm.appName} <br />
-                                    Environment Id: {elm.envId} <br />
-                                    Message: {elm.message} <br /><br />
-                                </div>
-                            })}</>
+                this.state.outputResult == undefined ? "" :
+                    <div>
+                        <div> #Message:  <br />
+                            <>{this.state.outputResult.message} </>
+                        </div>
                         <br />
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+                        <div>#Failed Operations:<br />
+                            {this.state.outputResult.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.failure.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Message: {elm.message} <br /><br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+                        <div>#Successful Operations: <br />
+                            {this.state.outputResult.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.successful.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Message: {elm.message} <br /><br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                            <br />
+                        </div>
                     </div>
-                    </>
-                    {/* } */}
-                    -----------------------------------------------------------------
-                    <br />
-                    <br />
-                    <div>#Successful Operations:
-                   <>
-                            {this.state.succesfullOutput.map((elm) => {
-                                return <div>
-                                    App Id: {elm.appId} <br />
-                                    App Name: {elm.appName} <br />
-                                    Environment Id: {elm.envId} <br />
-                                    Message: {elm.message} <br /><br />
-                                </div>
-                            })}</>
-                            </div>
-                </div>
         )
     }
 
@@ -318,7 +312,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             {(this.state.view === ViewType.LOADING) ? <div style={{ height: 'calc(100vh - 700px)' }}> <Progressing pageLoader /> </div> :
                 this.state.impactedObjects.map((itm) => {
                     return <div>{itm}<br /><br /></div>
-                })} </div>
+                })}
+        </div>
     }
 
     handleUpdateTemplate = () => {
@@ -373,7 +368,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="code-editor-body">
                 {this.renderCodeEditorBody()}
             </div>
-
         </div>)
     }
 
@@ -389,7 +383,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>{this.renderBulkCodeEditor()}</div>
             <div>{this.renderReadmeSection()}</div>
         </div>
-
         )
     }
 
@@ -410,7 +403,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (<div style={{ backgroundColor: "white" }}>
             {this.renderBulkEditHeader()}
-            <div style={{ height: "" }}>
+            <div >
                 {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
                 {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
             </div>
