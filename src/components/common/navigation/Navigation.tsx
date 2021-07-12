@@ -44,7 +44,7 @@ const NavigationList = [
 		iconClass: 'nav-security',
 	},
 	{
-		title: 'Bulk Edits',
+		title: 'Bulk Edit',
 		type: 'link',
 		href: URLS.BULK_EDITS,
 		iconClass: 'nav-bulk-update'
