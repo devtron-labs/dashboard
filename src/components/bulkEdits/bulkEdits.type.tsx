@@ -1,6 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
 
-
 export interface CodeEditorScript {
     apiVersion: string;
     kind: string;
@@ -67,13 +66,14 @@ export interface BulkEditsState {
     codeEditorPayload: string;
 }
 
-export interface BulkEditsProps extends RouteComponentProps<{}> {
-    // close: (event) => void;
-}
-
 export interface OutputTabType {
     handleOutputTabs: (e) => void;
     outputName: string;
     value: string;
     name: string;
 }
+
+export interface BulkEditsProps extends RouteComponentProps<{}> {
+    // close: (event) => void;
+}
+
