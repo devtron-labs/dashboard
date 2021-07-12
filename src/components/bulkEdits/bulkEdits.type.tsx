@@ -1,6 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
 
-
 export interface CodeEditorScript {
     apiVersion: string;
     kind: string;
@@ -28,8 +27,8 @@ export interface BulkConfiguration {
 }
 
 export interface UpdatedTemplate {
-    value: string,
-    label: string
+    value: string;
+    label: string;
 }
 
 export interface ImpactedObjects {
@@ -38,24 +37,34 @@ export interface ImpactedObjects {
     envId: number;
 }
 
+export interface OutputKeys {
+    appId: number;
+    appName: string;
+    envId: number;
+    message: string;
+}
+
+export interface BulkOutput {
+    message: string[];
+    failure: OutputKeys[];
+    successful: OutputKeys[];
+ }
+
 export interface BulkEditsState {
     view: string;
     statusCode: number;
     outputName: string;
     isReadmeLoading: boolean;
     impactedObjects: ImpactedObjects[];
-    bulkOutput: string;
     updatedTemplate: UpdatedTemplate[];
     readmeResult: string[];
+    outputResult: BulkOutput;
     showExamples: boolean;
     showHeaderDescription: boolean;
+    showImpactedtData: boolean;
     showOutputData: boolean;
     bulkConfig: BulkConfiguration[];
     codeEditorPayload: string;
-}
-
-export interface BulkEditsProps extends RouteComponentProps<{}> {
-    // close: (event) => void;
 }
 
 export interface OutputTabType {
@@ -64,3 +73,8 @@ export interface OutputTabType {
     value: string;
     name: string;
 }
+
+export interface BulkEditsProps extends RouteComponentProps<{}> {
+    // close: (event) => void;
+}
+

@@ -4,7 +4,6 @@ import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
 import { BulkEditsProps, BulkEditsState, OutputTabType } from './bulkEdits.type';
-import { FragmentHOC, noop, } from '../common';
 import yamlJsParser from 'yaml';
 import { Progressing, showError, ErrorScreenManager } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
@@ -20,8 +19,6 @@ import { toast } from 'react-toastify';
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
 import '../charts/modal/DeployChart.scss';
 
-
-
 export enum OutputObjectTabs {
     OUTPUT = "Output",
     IMPACTED_OBJECTS = "Impacted objects"
@@ -34,7 +31,7 @@ const STATUS = {
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return <label className="tertiary-tab__radio flex">
         <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
-        <div className="tertiary-output-tab bulk-output-tabs "> {name} </div>
+        <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
     </label>
 }
 
@@ -45,17 +42,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         this.state = {
             view: ViewType.LOADING,
+            statusCode: 0,
+            outputResult: undefined,
             isReadmeLoading: true,
             outputName: "output",
-            statusCode: 0,
             bulkConfig: [],
-            bulkOutput: "",
             updatedTemplate: [],
             impactedObjects: [],
             readmeResult: [],
             showExamples: true,
             showHeaderDescription: true,
             showOutputData: true,
+            showImpactedtData: false,
             codeEditorPayload: undefined,
         }
     }
@@ -96,7 +94,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkEditHeader = () => {
         return (<div className="page-header brdr-btm pl-20">
-            <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Run Scripts
+            <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Bulk Edit
                 <Tippy className="default-tt " arrow={false} placement="top" content={
                     <span style={{ display: "block", width: "66px" }}> Learn more </span>}>
                     <a className="learn-more__href flex" href={DOCUMENTATION.BULK_UPDATE} rel="noreferrer noopener" target="_blank">
@@ -122,6 +120,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleRunButton = () => {
+        var outputDiv = document.querySelector('.code-editor-body')
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+
         this.setState({
             view: ViewType.LOADING,
             outputName: "output"
@@ -142,13 +143,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         updateBulkList(payload).then((response) => {
             this.setState({ view: ViewType.LOADING, outputName: 'output' })
-            let output = response.result;
+            let outputResult = response.result
             this.setState({
-                ...this.state,
                 view: ViewType.FORM,
-                bulkOutput: output,
                 showOutputData: true,
-                outputName: 'output'
+                outputName: 'output',
+                outputResult: outputResult
+                
             })
         })
             .catch((error) => {
@@ -158,6 +159,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleShowImpactedObjectButton = () => {
+        var outputDiv = document.querySelector('.code-editor-body')
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+
         this.setState({
             view: ViewType.LOADING,
             outputName: "impacted"
@@ -181,10 +185,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
             else response.result.map((elm) => { impactedObjects.push(elm.appName) })
             this.setState({
-                ...this.state,
                 view: ViewType.FORM,
                 impactedObjects: impactedObjects,
-                showOutputData: false,
                 outputName: "impacted"
             })
 
@@ -213,9 +215,25 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     handleConfigChange = (value) => {
         this.setState({
-            ...this.state,
             codeEditorPayload: value
         })
+    }
+
+    handleOutputTab = (e, key: string) => {
+        if (key == "output") {
+            this.setState({
+                outputName: "output",
+                impactedObjects: [],
+                showOutputData: true,
+            })
+        }
+        if (key == "impacted") {
+            this.setState({
+                outputName: "impacted",
+                outputResult: undefined,
+                showImpactedtData: true,
+            })
+        }
     }
 
     renderCodeEditorBody = () => {
@@ -223,19 +241,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return <div>
             <CodeEditor
                 theme='vs-gray--dt'
-                height={500}
+                height={400}
                 value={codeEditorBody}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
             </CodeEditor>
             <div className="bulk-output-drawer bcn-0 " >
-                <div className="bulk-output-header flex left pb-6 pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
-                    <OutputTabs handleOutputTabs={() => this.handleRunButton()} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
-                    <OutputTabs handleOutputTabs={() => this.handleShowImpactedObjectButton()} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
+                <div className="bulk-output-header flex left pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
+                    <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "output")} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
+                    <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
-                    {!this.state.showOutputData ? this.renderImpactedObjects() : this.renderOutputs()}
+                    {!this.state.showOutputData ? "" : this.renderOutputs()}
+                    {this.state.showImpactedtData? this.renderImpactedObjects() : null }
                 </div>
             </div>
         </div>
@@ -243,15 +262,58 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderOutputs = () => {
         return (
-            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 700px)' }}><Progressing pageLoader /></div> : <div> {this.state.bulkOutput} </div>)
+            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
+                this.state.outputResult == undefined ? "" :
+                    <div>
+                        <div> #Message:  <br />
+                            {this.state.outputResult.message.map((elm) => {
+                                return <>{elm}<br /></>
+                            })}
+                        </div>
+                        <br />
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+                        <div>#Failed Operations:<br />
+                            {this.state.outputResult.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.failure.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Message: {elm.message} <br /><br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+                        <div>#Successful Operations: <br />
+                            {this.state.outputResult.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.successful.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Message: {elm.message} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+        )
     }
 
     renderImpactedObjects = () => {
         return <div>
-            {(this.state.view === ViewType.LOADING) ? <div style={{ height: 'calc(100vh - 700px)' }}> <Progressing pageLoader /> </div> :
-                this.state.impactedObjects.map((itm) => {
-                    return <div>{itm}<br /><br /></div>
-                })} </div>
+                {this.state.impactedObjects.map((itm) => {
+                    return <div>{itm}<br /><br /></div>}
+                )}
+        </div>
     }
 
     handleUpdateTemplate = () => {
@@ -294,8 +356,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateBody = () => {
         let readmeJson = this.state.readmeResult.toString()
-        return (this.state.isReadmeLoading ? <div style={{ height: 'calc(100vh - 100px)' }}><Progressing pageLoader /></div> :
-            <div className="updated-container--sample flex left pt-8 pb-8 bcn-0 pl-20 pr-20 deploy-chart__readme-column">
+        return (this.state.isReadmeLoading ? <div className="bcn-0" style={{ height: 'calc(100vh - 150px)' }}><Progressing pageLoader /></div> :
+            <div className="updated-container--sample flex left pb-8 deploy-chart__readme-column">
                 <div className="right-readme "><MarkDown markdown={readmeJson} className="deploy-chart__readme-markdown" /></div>
             </div>)
     }
@@ -306,7 +368,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="code-editor-body">
                 {this.renderCodeEditorBody()}
             </div>
-
         </div>)
     }
 
@@ -322,7 +383,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>{this.renderBulkCodeEditor()}</div>
             <div>{this.renderReadmeSection()}</div>
         </div>
-
         )
     }
 
@@ -341,10 +401,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
 
-        return (<div>
+        return (<div style={{ backgroundColor: "white" }}>
             {this.renderBulkEditHeader()}
-            {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-            {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
+            <div >
+                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
+                {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
+            </div>
         </div>
         )
     }
