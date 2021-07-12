@@ -225,7 +225,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 ...this.state,
                 outputName: "output",
                 impactedObjects: [],
-                showOutputData: true,
+                showOutputData: !this.state.showOutputData,
             })
         }
         if (key == "impacted") {
@@ -267,7 +267,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.state.outputResult == undefined ? "" :
                     <div>
                         <div> #Message:  <br />
-                            <>{this.state.outputResult.message} </>
+                            {this.state.outputResult.message.map((elm) => {
+                                return <>{elm}<br /></>
+                            })}
                         </div>
                         <br />
                         -----------------------------------------------------------------
@@ -296,7 +298,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Message: {elm.message} <br /><br />
+                                        Message: {elm.message} <br />
                                     </div>
                                 })}</>
                             }

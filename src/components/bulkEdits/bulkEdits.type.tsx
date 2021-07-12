@@ -45,7 +45,7 @@ export interface OutputKeys {
 }
 
 export interface BulkOutput {
-    message: any,
+    message: string[],
     failure: OutputKeys[],
     successful: OutputKeys[]
  }
