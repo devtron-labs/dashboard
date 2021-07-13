@@ -149,7 +149,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showOutputData: true,
                 outputName: 'output',
                 outputResult: outputResult,
-                impactedObjects: [],
             })
         })
             .catch((error) => {
@@ -182,11 +181,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         updateImpactedObjectsList(payload).then((response) => {
             let impactedObjects = []
-            if (response.result.length === 0) { impactedObjects.push(STATUS.EMPTY) }
-            else response.result.map((elm) => { impactedObjects.push(elm.appName) })
+            impactedObjects.push(STATUS.EMPTY)
+            // if (response.result.length === 0) {
+            //     this.setState({
+            //         impactedObjects: impactedObjects
+            //     })
+            // }
+            // else {
+            // this.setState({
+            //     impactedObjects: response.result
+            // })
+            // }
             this.setState({
                 view: ViewType.FORM,
-                impactedObjects: impactedObjects,
+                impactedObjects: response.result,
                 outputName: "impacted",
                 outputResult: undefined,
             })
@@ -311,10 +319,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderImpactedObjects = () => {
         return <div>
-            {this.state.impactedObjects.map((itm) => {
-                return <div>{itm}<br /><br /></div>
-            }
-        )}
+            {this.state.impactedObjects.map((elm) => {
+                return <div>
+                    App Id: {elm.appId} <br />
+                    App Name: {elm.appNames} <br />
+                    Environment Id: {elm.envId} <br />
+                    <br /><br />
+                </div>
+            })}
         </div>
     }
 
