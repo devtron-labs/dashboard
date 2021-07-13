@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router-dom";
 export interface CodeEditorScript {
     apiVersion: string;
     kind: string;
-    payload: {
+    spec: {
         include: {
             names: string[];
         }
