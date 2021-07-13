@@ -33,7 +33,7 @@ export interface UpdatedTemplate {
 
 export interface ImpactedObjects {
     appId: number;
-    appNames: string;
+    appName: string;
     envId: number;
 }
 

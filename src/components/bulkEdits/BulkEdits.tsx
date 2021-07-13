@@ -149,6 +149,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showOutputData: true,
                 outputName: 'output',
                 outputResult: outputResult,
+                impactedObjects: [],
             })
         })
             .catch((error) => {
@@ -182,22 +183,21 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         updateImpactedObjectsList(payload).then((response) => {
             let impactedObjects = []
             impactedObjects.push(STATUS.EMPTY)
-            // if (response.result.length === 0) {
-            //     this.setState({
-            //         impactedObjects: impactedObjects
-            //     })
-            // }
-            // else {
-            // this.setState({
-            //     impactedObjects: response.result
-            // })
-            // }
+            if (response.result.length === 0) {
+                this.setState({
+                    view: ViewType.FORM,
+                    impactedObjects: impactedObjects
+                })
+            }
+            else {
             this.setState({
-                view: ViewType.FORM,
                 impactedObjects: response.result,
                 outputName: "impacted",
-                outputResult: undefined,
+                view: ViewType.FORM,
+                showImpactedtData:true,
+                outputResult: undefined
             })
+            }
 
         }).catch((error) => {
             showError(error);
@@ -323,7 +323,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             {this.state.impactedObjects.map((elm) => {
                 return <div>
                     App Id: {elm.appId} <br />
-                    App Name: {elm.appNames} <br />
+                    App Name: {elm.appName} <br />
                     Environment Id: {elm.envId} <br />
                     <br /><br />
                 </div>
