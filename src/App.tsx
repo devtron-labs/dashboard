@@ -76,13 +76,14 @@ export default function App() {
 
 	useEffect(() => {
 		async function createUserId() {
-			if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.POSTHOG_ENABLED) {
+			if (process.env.NODE_ENV === 'production') {
 				let loginInfo = getLoginInfo()
 				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
 				let hash = Hash(email);
 				try {
-					const { result: { ucid, url } } = await getPosthogData();
-					posthog.init(window._env_?.POSTHOG_TOKEN,
+					const { result: { ucid, url, apiKey } } = await getPosthogData();
+					let decodedApiKey = atob(apiKey)
+					posthog.init(decodedApiKey,
 						{
 							api_host: url,
 							autocapture: false,

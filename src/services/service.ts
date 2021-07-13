@@ -4,6 +4,7 @@ import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
 import { Chart } from '../components/charts/charts.types';
+import { fetchWithFullRoute } from './fetchWithFullRoute';
 
 export function getAppConfigStatus(appId: number): Promise<any> {
     const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
@@ -164,7 +165,7 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 }
 
 export function getPosthogData(): Promise<ResponseType> {
-    const URL = `telemetry/ucid`;
+    const URL = `telemetry/meta`;
     return get(URL);
 }
 
@@ -296,14 +297,4 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
-    // return new Promise((resolve, reject) => {
-    //     resolve({
-    //         "code": 200, "status": "OK",
-    //         "result": {
-    //             "appChecklist": { "gitOps": 0, "project": 1, "git": 1, "environment": 1, "docker": 1, "hostUrl": 1 },
-    //             "chartChecklist": { "gitOps": 0, "project": 1, "environment": 1 },
-    //             "isAppCreated": false,
-    //         }
-    //     })
-    // })
 }
