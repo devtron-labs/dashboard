@@ -225,16 +225,14 @@ export function List({ children = null, className = "", ...props }) {
 }
 
 function handleError(error: any): any[] {
-    if (!Array.isArray(error)) {
-        return [error]
-        // let errorElement = []
-        // for (let index = 0; index < error.length; index++) {
-        //     errorElement.push(<div className="form__error">error[index]</div>)
-        // }
-    }
     if (!error) {
         return []
     }
+
+    if (!Array.isArray(error)) {
+        return [error]
+    }
+
     return error
 }
 
