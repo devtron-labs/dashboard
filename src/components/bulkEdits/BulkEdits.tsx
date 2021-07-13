@@ -25,7 +25,8 @@ export enum OutputObjectTabs {
 }
 
 const STATUS = {
-    EMPTY: "We could not find any matching devtron applications."
+    ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
+    EMPTY_IMPACTED: "We could not find any matching devtron applications."
 }
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
@@ -119,7 +120,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    handleRunButton = () => {
+    handleRunButton = (e) => {
         var outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight;
 
@@ -138,6 +139,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({ view: ViewType.FORM });
             return;
         }
+        let errorMessage = []
+        errorMessage.push(STATUS.ERROR)
 
         let payload = configJson
 
@@ -145,11 +148,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({ view: ViewType.LOADING, outputName: 'output' })
             let outputResult = response.result
             this.setState({
+                statusCode:0,
                 view: ViewType.FORM,
                 showOutputData: true,
                 outputName: 'output',
                 outputResult: outputResult,
-                impactedObjects: [],
+                showImpactedtData: false,
+                impactedObjects: []
             })
         })
             .catch((error) => {
@@ -161,6 +166,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleShowImpactedObjectButton = () => {
         var outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight;
+
 
         this.setState({
             view: ViewType.LOADING,
@@ -181,25 +187,30 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-            
+
             let impactedObjects = []
-            impactedObjects.push(STATUS.EMPTY)
+            impactedObjects.push(STATUS.EMPTY_IMPACTED)
+
             if (response.result.length === 0) {
                 this.setState({
+                    statusCode:0,
                     view: ViewType.FORM,
                     impactedObjects: impactedObjects,
                     outputResult: undefined,
                     outputName: "impacted",
                     showImpactedtData: true,
+
                 })
             }
             else {
                 this.setState({
+                    statusCode:0,
                     impactedObjects: response.result,
                     outputName: "impacted",
                     view: ViewType.FORM,
                     showImpactedtData: true,
-                    outputResult: undefined
+                    outputResult: undefined,
+                    showOutputData: false,
                 })
             }
 
@@ -212,7 +223,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm" >
-                <button type="button" className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 " onClick={() => this.handleRunButton()} >
+                <button type="button" className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 " onClick={(e) => this.handleRunButton(e)} >
                     <span ><PlayButton className="flex icon-dim-16 mr-8 " /></span>
                     <div>Run</div>
                 </button>
@@ -267,8 +278,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
-                    {this.state.showOutputData ? this.renderOutputs() : null}
-                    {this.state.showImpactedtData ? this.renderImpactedObjects() : null}
+                    {this.state.showOutputData ? this.state.statusCode === 404 ? <>{STATUS.ERROR}</> : this.renderOutputs() : null }
+                    {this.state.showImpactedtData ? this.state.statusCode === 404 ? <>{STATUS.ERROR}</> : this.renderImpactedObjects() : null}
                 </div>
             </div>
         </div>
@@ -277,7 +288,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderOutputs = () => {
         return (
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
+
                 this.state.outputResult == undefined ? "" :
+                
                     <div>
                         <div> #Message:  <br />
                             {this.state.outputResult.message.map((elm) => {
@@ -323,18 +336,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderImpactedObjects = () => {
-        let impactedObjects = []
-        impactedObjects.push(STATUS.EMPTY)
         return <div>
-            {this.state.impactedObjects.map((elm) => {
-              return  elm.appId == undefined ? <>{STATUS.EMPTY}</>
-                    : <div>
-                        App Id: {elm.appId} <br />
-                        App Name: {elm.appName} <br />
-                        Environment Id: {elm.envId} <br />
-                        <br /><br />
-                    </div>
-            })}
+            {
+                    this.state.impactedObjects.map((elm) => {
+                        return elm.appId == undefined ? <>{STATUS.EMPTY_IMPACTED}</> :
+                            <div>
+                                App Id: {elm.appId} <br />
+                                App Name: {elm.appName} <br />
+                                Environment Id: {elm.envId} <br />
+                                <br /><br />
+                            </div>
+                    })
+                }
+            
         </div>
     }
 
@@ -422,6 +436,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
+
+        // if(this.state.statusCode === 404){
+        //     let errorMessage = []
+        //     errorMessage.push(STATUS.ERROR)
+        //     this.setState({
+        //         ...this.state,
+        //         impactedObjects: errorMessage
+        //     })
+
+        // }
 
         return (<div className="fs-13">
             {this.renderBulkEditHeader()}
