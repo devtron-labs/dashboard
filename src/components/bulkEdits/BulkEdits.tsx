@@ -148,8 +148,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 view: ViewType.FORM,
                 showOutputData: true,
                 outputName: 'output',
-                outputResult: outputResult
-                
+                outputResult: outputResult,
+                impactedObjects: [],
             })
         })
             .catch((error) => {
@@ -187,7 +187,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({
                 view: ViewType.FORM,
                 impactedObjects: impactedObjects,
-                outputName: "impacted"
+                outputName: "impacted",
+                outputResult: undefined,
             })
 
         }).catch((error) => {
@@ -223,15 +224,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         if (key == "output") {
             this.setState({
                 outputName: "output",
-                impactedObjects: [],
                 showOutputData: true,
+                showImpactedtData: false,
             })
         }
         if (key == "impacted") {
             this.setState({
                 outputName: "impacted",
-                outputResult: undefined,
                 showImpactedtData: true,
+                showOutputData: false
             })
         }
     }
@@ -253,8 +254,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
-                    {!this.state.showOutputData ? "" : this.renderOutputs()}
-                    {this.state.showImpactedtData? this.renderImpactedObjects() : null }
+                    {this.state.showOutputData ? this.renderOutputs() : null}
+                    {this.state.showImpactedtData ? this.renderImpactedObjects() : null}
                 </div>
             </div>
         </div>
@@ -310,9 +311,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderImpactedObjects = () => {
         return <div>
-                {this.state.impactedObjects.map((itm) => {
-                    return <div>{itm}<br /><br /></div>}
-                )}
+            {this.state.impactedObjects.map((itm) => {
+                return <div>{itm}<br /><br /></div>
+            }
+        )}
         </div>
     }
 
@@ -329,7 +331,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showError(error);
                 this.setState({ isReadmeLoading: false, statusCode: error.code });
             })
-
     }
 
     renderSampleTemplateHeader = () => {
