@@ -29,7 +29,7 @@ const STATUS = {
 }
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
-    return <label className="tertiary-tab__radio flex">
+    return <label className="tertiary-tab__radio flex fs-13">
         <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
         <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
     </label>
@@ -208,15 +208,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm" >
-                <button type="button" className="bulk-run-button cta ellipsis-right flex mr-12 pl-12 pr-12" onClick={() => this.handleRunButton()} >
-                    <span ><PlayButton className="flex icon-dim-16 mr-8" /></span> Run
+                <button type="button" className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 " onClick={() => this.handleRunButton()} >
+                    <span ><PlayButton className="flex icon-dim-16 mr-8 " /></span> 
+                    <div>Run</div>
                 </button>
-                <button className="en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.handleShowImpactedObjectButton()}>
+                <button className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.handleShowImpactedObjectButton()}>
                     Show Impacted Objects
                 </button>
                 {!this.state.showExamples ?
                     <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })} style={{ margin: "auto", marginRight: "0" }}>
-                        See Examples
+                        See Samples
                 </div> : null}
             </div>
         )
@@ -256,7 +257,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
             </CodeEditor>
-            <div className="bulk-output-drawer bcn-0 " >
+            <div className="bulk-output-drawer bcn-0 fs-13" >
                 <div className="bulk-output-header flex left pl-20 pr-20 pt-6 border-top border-btm bcn-0" >
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "output")} outputName={this.state.outputName} value={'output'} name={OutputObjectTabs.OUTPUT} />
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
@@ -348,6 +349,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateHeader = () => {
         return (
             <div className="border-btm bcn-0 pt-5 pb-5 flex pr-20">
+                <div className="fw-6 cn-9 pl-20">Sample:</div>
                 <ReactSelect
                     value={this.state.updatedTemplate[0]}
                     defaultValue={this.state.updatedTemplate[0]}
@@ -414,7 +416,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
 
-        return (<div style={{ backgroundColor: "white" }}>
+        return (<div className="fs-13">
             {this.renderBulkEditHeader()}
             <div >
                 {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
