@@ -437,16 +437,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
 
-        // if(this.state.statusCode === 404){
-        //     let errorMessage = []
-        //     errorMessage.push(STATUS.ERROR)
-        //     this.setState({
-        //         ...this.state,
-        //         impactedObjects: errorMessage
-        //     })
-
-        // }
-
         return (<div className="fs-13">
             {this.renderBulkEditHeader()}
             <div >
