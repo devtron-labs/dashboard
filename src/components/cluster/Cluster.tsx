@@ -226,7 +226,6 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                                 { error: 'Name is required',  regex: /^.*$/ },
                                 { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
                                 { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
-                                { error: "Do not use spaces, '-' or '.'", regex: /^\S+$/ },
                                 { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
                             ]
             },
@@ -400,7 +399,6 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                     { error: 'Environment name is required',  regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
                     { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
-                    { error: "Do not use spaces, '-' or '.'", regex: /^\S+$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
             },
@@ -410,7 +408,6 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                     { error: 'Namespace is required',  regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
                     { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
-                    { error: "Do not use spaces, '-' or '.'", regex: /^\S+$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
             },

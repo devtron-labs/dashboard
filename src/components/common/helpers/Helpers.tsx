@@ -84,7 +84,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             }
         }
 
-        function validateSingleValidator(validator, value) {
+        function _validateSingleValidator(validator, value) {
             if (value && !validator.regex.test(value)) {
                 return false;
             }
@@ -94,7 +94,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         // single validator
         let _validator =  validationSchema[name].validator;
         if (_validator && typeof _validator === 'object') {
-            if(!validateSingleValidator(_validator, value)){
+            if(!_validateSingleValidator(_validator, value)){
                 errors.push(_validator.error);
             }
         }
@@ -103,7 +103,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         let _validators =  validationSchema[name].validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             _validators.forEach((_validator) => {
-                if(!validateSingleValidator(_validator, value)){
+                if(!_validateSingleValidator(_validator, value)){
                     errors.push(_validator.error);
                 }
             })
