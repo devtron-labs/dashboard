@@ -77,10 +77,10 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     );
 
     function validateField(name, value) {
-        let error = '';
+        let errors = [];
         if (validationSchema[name].required) {
             if (!value) {
-                error = 'This is required field.';
+                errors.push('This is required field.');
             }
         }
 
@@ -95,7 +95,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         let _validator =  validationSchema[name].validator;
         if (_validator && typeof _validator === 'object') {
             if(!validateSingleValidator(_validator, value)){
-                error = _validator.error;
+                errors.push(_validator.error);
             }
         }
 
@@ -104,12 +104,12 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             _validators.forEach((_validator) => {
                 if(!validateSingleValidator(_validator, value)){
-                    return _validator.error;
+                    errors.push(_validator.error);
                 }
             })
         }
 
-        return error;
+        return errors;
     }
 
     const handleOnChange = useCallback(
