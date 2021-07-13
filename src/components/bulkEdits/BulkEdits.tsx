@@ -181,22 +181,26 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
+            
             let impactedObjects = []
             impactedObjects.push(STATUS.EMPTY)
             if (response.result.length === 0) {
                 this.setState({
                     view: ViewType.FORM,
-                    impactedObjects: impactedObjects
+                    impactedObjects: impactedObjects,
+                    outputResult: undefined,
+                    outputName: "impacted",
+                    showImpactedtData: true,
                 })
             }
             else {
-            this.setState({
-                impactedObjects: response.result,
-                outputName: "impacted",
-                view: ViewType.FORM,
-                showImpactedtData:true,
-                outputResult: undefined
-            })
+                this.setState({
+                    impactedObjects: response.result,
+                    outputName: "impacted",
+                    view: ViewType.FORM,
+                    showImpactedtData: true,
+                    outputResult: undefined
+                })
             }
 
         }).catch((error) => {
@@ -209,7 +213,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm" >
                 <button type="button" className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 " onClick={() => this.handleRunButton()} >
-                    <span ><PlayButton className="flex icon-dim-16 mr-8 " /></span> 
+                    <span ><PlayButton className="flex icon-dim-16 mr-8 " /></span>
                     <div>Run</div>
                 </button>
                 <button className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12" style={{ maxHeight: '32px' }} onClick={() => this.handleShowImpactedObjectButton()}>
@@ -319,14 +323,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderImpactedObjects = () => {
+        let impactedObjects = []
+        impactedObjects.push(STATUS.EMPTY)
         return <div>
             {this.state.impactedObjects.map((elm) => {
-                return <div>
-                    App Id: {elm.appId} <br />
-                    App Name: {elm.appName} <br />
-                    Environment Id: {elm.envId} <br />
-                    <br /><br />
-                </div>
+              return  elm.appId == undefined ? <>{STATUS.EMPTY}</>
+                    : <div>
+                        App Id: {elm.appId} <br />
+                        App Name: {elm.appName} <br />
+                        Environment Id: {elm.envId} <br />
+                        <br /><br />
+                    </div>
             })}
         </div>
     }
