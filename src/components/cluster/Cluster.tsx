@@ -224,7 +224,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 required: true,
                 validators: [
                                 { error: 'Name is required',  regex: /^.*$/ },
-                                { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                                { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
                                 { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
                                 { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
                             ]
@@ -397,7 +397,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 required: true,
                 validators: [
                     { error: 'Environment name is required',  regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
                     { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
@@ -406,7 +406,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 required: isNamespaceMandatory,
                 validators: [
                     { error: 'Namespace is required',  regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
                     { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
