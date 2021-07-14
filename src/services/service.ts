@@ -4,6 +4,7 @@ import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
 import { Chart } from '../components/charts/charts.types';
+import { fetchWithFullRoute } from './fetchWithFullRoute';
 
 export function getAppConfigStatus(appId: number): Promise<any> {
     const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
@@ -160,6 +161,11 @@ export function validateToken() {
 
 function getLastExecution(queryString: number | string): Promise<ResponseType> {
     const URL = `security/scan/executionDetail?${queryString}`;
+    return get(URL);
+}
+
+export function getPosthogData(): Promise<ResponseType> {
+    const URL = `telemetry/meta`;
     return get(URL);
 }
 
