@@ -107,7 +107,9 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
                     errors.push(_validator.error);
                 }
             })
-            return errors;
+            if (errors.length > 0){
+                return errors;
+            }
         }
 
         return '';
