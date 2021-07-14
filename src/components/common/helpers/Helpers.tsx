@@ -99,7 +99,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // multiple validators
-        let _validators =  validationSchema[name].validators
+        let _validators =  validationSchema[name].validators;
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             let errors = [];
             _validators.forEach((_validator) => {
