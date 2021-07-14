@@ -222,7 +222,12 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         {
             cluster_name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ }
+                validators: [
+                                { error: 'Name is required',  regex: /^.*$/ },
+                                { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                                { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
+                                { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
+                            ]
             },
             url: {
                 required: true,
@@ -390,11 +395,21 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         {
             environment_name: {
                 required: true,
-                validator: { error: 'This is required field(max 16 chars).', regex: /^.{1,16}$/ }
+                validators: [
+                    { error: 'Environment name is required',  regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
+                    { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
+                ]
             },
             namespace: {
                 required: isNamespaceMandatory,
-                validator: { error: '^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$ pattern should satisfy.', regex: /^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$/ }
+                validators: [
+                    { error: 'Namespace is required',  regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9_\.]+$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
+                    { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
+                ]
             },
             isProduction: {
                 required: true,

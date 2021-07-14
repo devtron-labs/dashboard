@@ -224,6 +224,18 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
+function handleError(error: any): any[] {
+    if (!error) {
+        return []
+    }
+
+    if (!Array.isArray(error)) {
+        return [error]
+    }
+
+    return error
+}
+
 export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off", labelClassName = "" }) {
     return <div className="flex column left top">
         <label className={`form__label ${labelClassName}`} >{label}</label>
@@ -235,7 +247,9 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
             value={value}
             disabled={disabled}
         />
-        {error && <div className="form__error">{error}</div>}
+        {handleError(error).map((err) => (
+            <div className="form__error">{err}</div>
+        ))}
     </div>
 }
 
