@@ -547,6 +547,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 }
 
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
+    
     return (
         <div className="deploy-chart__readme-column">
             <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
