@@ -108,6 +108,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     if (response.result) {
                         newConfig = this.parseResponse(response.result)
                     }
+
                     this.setState({
                         view: ViewType.FORM,
                         ssoConfig: newConfig,
@@ -325,7 +326,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
             <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
         </div> : null;
-
         return <div className="mt-0 ml-24 mr-24 mb-24">
             <div className="code-editor-container">
                 <CodeEditor value={codeEditorBody}
@@ -358,7 +358,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     getSSOLoginTabsArr() {
         let SSOLoginTabsArr = [
-            { provider: SSOProvider.google, SSOName: "Google" }, 
+            { provider: SSOProvider.google, SSOName: "Google" },
             { provider: SSOProvider.github, SSOName: "GitHub" },
             { provider: SSOProvider.microsoft, SSOName: "Microsoft" },
             { provider: SSOProvider.ldap, SSOName: "LDAP" },
@@ -384,7 +384,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
                     {this.getSSOLoginTabsArr().map((item) => {
-                        return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} /> })}
+                        return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
+                    })}
                 </div>
                 <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">

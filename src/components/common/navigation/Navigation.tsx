@@ -44,11 +44,18 @@ const NavigationList = [
 		iconClass: 'nav-security',
 	},
 	{
+		title: 'Bulk Edit',
+		type: 'link',
+		href: URLS.BULK_EDITS,
+		iconClass: 'nav-bulk-update'
+	},
+	{
 		title: 'Global Configurations',
 		type: 'link',
 		href: URLS.GLOBAL_CONFIG,
 		iconClass: 'nav-short-global'
 	},
+	
 ];
 
 
@@ -229,7 +236,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						}} className="" activeClassName="active-nav">
 							<div className="short-nav--flex">
 								<div className="svg-container flex">
-									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
+									<svg className={` ${item.iconClass === "nav-bulk-update" ? 'ml-4 mt-4 icon-dim-24' : '' } short-nav-icon icon-dim-20 `}  viewBox="0 0 24 24">
 										<use href={`${NavSprite}#${item.iconClass}`}></use>
 									</svg>
 								</div>
