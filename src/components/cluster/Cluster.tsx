@@ -253,7 +253,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ }
             },
-            token: {
+            token: id == 1 ? {} : {
                 required: true,
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
@@ -339,7 +339,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
-            <label htmlFor="" className="form__label">Bearer token*</label>
+            <label htmlFor="" className="form__label">Bearer token{id == 1 ? '' : '*'}</label>
             <div className="bearer-token">
                 <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
             </div>
