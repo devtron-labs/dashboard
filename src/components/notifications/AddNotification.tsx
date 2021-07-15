@@ -7,7 +7,7 @@ import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg';
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg';
-import { ReactComponent as CI } from '../../assets/icons/ic-ci.svg';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';

@@ -15,7 +15,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { ReactComponent as CI } from '../../assets/icons/ic-ci.svg';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
 import { ViewType, URLS } from '../../config';
