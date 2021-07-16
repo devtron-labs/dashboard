@@ -100,12 +100,12 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload />
         else return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">Clusters and Environments</h2>
-            <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
-            </h5>
-            {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
-        </section>
+                <h2 className="form__title">Clusters and Environments</h2>
+                <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
+                    <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+                </h5>
+                {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
+            </section>
     }
 }
 
@@ -168,35 +168,35 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
     return <>
         <article className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'}`}>
             {!editMode ? <>
-                <List key={clusterId} onClick={clusterId ? () => { } : e => toggleEditMode(t => !t)}>
-                    {!clusterId && <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
-                    <div className="flex left">
-                        {clusterId ? <ClusterIcon className="icon-dim-24 vertical-align-middle mr-16" /> : null}
-                        <List.Title title={cluster_name || "Add cluster"} subtitle={server_url} className="fw-6" />
-                    </div>
-                    {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
-                </List>
-                {clusterId ? <hr className="mt-0 mb-16" /> : null}
-                {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
-                    envName={envName}
-                    onClick={clusterInstallStatusOnclick} /> : null}
-                {showClusterComponentModal ? <ClusterComponentModal agentInstallationStage={agentInstallationStage}
-                    components={defaultClusterComponent}
-                    environmentName={envName}
-                    callRetryClusterInstall={callRetryClusterInstall}
-                    redirectToChartDeployment={redirectToChartDeployment}
-                    close={(e) => { toggleClusterComponentModal(!showClusterComponentModal) }} /> : null}
-                {Array.isArray(newEnvs) && newEnvs.length > 0 && <div className="environments-container">
-                    {newEnvs.map(({ id, environment_name, cluster_id, cluster_name, active, prometheus_url, namespace, default: isProduction }) => (
-                        <List onClick={e => setEnvironment({ id, environment_name, cluster_id: clusterId, namespace, prometheus_url, isProduction })} key={id} className={`cluster-environment cluster-environment--${id ? 'update' : 'create collapsed-list collapsed-list--create'}`}>
-                            <List.Logo>{id ? <Database className="icon-dim-24" /> : <Add className="icon-dim-24 fcb-5" />}</List.Logo>
-                            <div className="flex left">
-                                <List.Title title={environment_name || 'Add environment'} subtitle={id ? `namespace: ${namespace}` : ''} tag={isProduction ? 'PROD' : null} />
-                            </div>
-                        </List>
-                    ))}
-                </div>}
-            </>
+                    <List key={clusterId} onClick={clusterId ? () => { } : e => toggleEditMode(t => !t)}>
+                        {!clusterId && <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
+                        <div className="flex left">
+                            {clusterId ? <ClusterIcon className="icon-dim-24 vertical-align-middle mr-16" /> : null}
+                            <List.Title title={cluster_name || "Add cluster"} subtitle={server_url} className="fw-6" />
+                        </div>
+                        {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
+                    </List>
+                    {clusterId ? <hr className="mt-0 mb-16" /> : null}
+                    {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
+                                                       envName={envName}
+                                                       onClick={clusterInstallStatusOnclick} /> : null}
+                    {showClusterComponentModal ? <ClusterComponentModal agentInstallationStage={agentInstallationStage}
+                                                                        components={defaultClusterComponent}
+                                                                        environmentName={envName}
+                                                                        callRetryClusterInstall={callRetryClusterInstall}
+                                                                        redirectToChartDeployment={redirectToChartDeployment}
+                                                                        close={(e) => { toggleClusterComponentModal(!showClusterComponentModal) }} /> : null}
+                    {Array.isArray(newEnvs) && newEnvs.length > 0 && <div className="environments-container">
+                        {newEnvs.map(({ id, environment_name, cluster_id, cluster_name, active, prometheus_url, namespace, default: isProduction }) => (
+                            <List onClick={e => setEnvironment({ id, environment_name, cluster_id: clusterId, namespace, prometheus_url, isProduction })} key={id} className={`cluster-environment cluster-environment--${id ? 'update' : 'create collapsed-list collapsed-list--create'}`}>
+                                <List.Logo>{id ? <Database className="icon-dim-24" /> : <Add className="icon-dim-24 fcb-5" />}</List.Logo>
+                                <div className="flex left">
+                                    <List.Title title={environment_name || 'Add environment'} subtitle={id ? `namespace: ${namespace}` : ''} tag={isProduction ? 'PROD' : null} />
+                                </div>
+                            </List>
+                        ))}
+                    </div>}
+                </>
                 : <>
                     <ClusterForm {...{ id: clusterId, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }} /></>}
         </article>
@@ -206,7 +206,12 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
-    let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
+
+    const isDefaultCluster = () : boolean => {
+        return id == 1;
+    }
+
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: "" },
@@ -223,11 +228,12 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             cluster_name: {
                 required: true,
                 validators: [
-                                { error: 'Name is required',  regex: /^.*$/ },
-                                { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                                { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
-                                { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
-                            ]
+                    { error: 'Name is required',  regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
+                    { error: "Do not use spaces", regex: /^\S+$/ },
+                    { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
+                ]
             },
             url: {
                 required: true,
@@ -253,7 +259,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ }
             },
-            token: {
+            token: isDefaultCluster ? {} : {
                 required: true,
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
@@ -331,7 +337,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
         <h2 className="form__title">{clusterTitle()}</h2>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
+            <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
@@ -339,7 +345,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
-            <label htmlFor="" className="form__label">Bearer token*</label>
+            <label htmlFor="" className="form__label">Bearer token{isDefaultCluster ? '' : '*'}</label>
             <div className="bearer-token">
                 <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
             </div>
@@ -398,7 +404,8 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 validators: [
                     { error: 'Environment name is required',  regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                    { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
+                    { error: "Do not use spaces", regex: /^\S+$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
             },
@@ -407,7 +414,8 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 validators: [
                     { error: 'Namespace is required',  regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                    { error: "Start/End with an alphanumeric character", regex: /^[a-z0-9](.*[a-z0-9])?$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
+                    { error: "Do not use spaces", regex: /^\S+$/ },
                     { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
                 ]
             },
