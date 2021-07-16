@@ -27,6 +27,10 @@
         @include flex(align-items, justify-content);
         flex-direction: column;
     }
+
+    &.wrap {
+        flex-wrap: wrap;
+    }
 }
 
 .flexbox {
@@ -270,9 +274,6 @@ $color-suffix: 00;
     justify-content: center;
 }
 
-.lh-1-43 {
-    line-height: 1.43;
-}
 
 .divider {
     border-top: 1px solid #d0d4d9;
@@ -287,6 +288,14 @@ $color-suffix: 00;
     align-items: center;
     margin-right: 16px;
     border-radius: 4px;
+}
+
+.lh-1-43 {
+    line-height: 1.43;
+}
+
+.lh-1-5 {
+    line-height: 1.5;
 }
 
 .lh-1-54 {
@@ -309,6 +318,6 @@ $color-suffix: 00;
     width: 800px
 }
 
-.modal__top-fixed {
-    height: 50px;
+.o-5 {
+    opacity: 0.5;
 }

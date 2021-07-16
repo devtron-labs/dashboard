@@ -726,33 +726,6 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
-        font-weight: 600;
-        font-size: 12px;
-    }
-
-    .app-summary__status-name {
-
-        &.f-healthy,
-        &.f-scalingreplicasetdown {
-            color: var(--green);
-        }
-
-        &.f-suspended,
-        &.f-switchedtoactiveservice {
-            color: var(--orange);
-        }
-
-        &.f-degraded {
-            color: var(--red);
-        }
-
-        &.f-progressing,
-        &.f-inprogress,
-        &.f-unknown,
-        &.initiated {
-            color: var(--yellow);
-        }
-
         .tooltip-button {
             display: flex;
             align-items: center;
@@ -936,6 +909,10 @@ table.pod__table td:last-child {
             padding-left: 16px;
             border-left: 1px solid #2c3354;
         }
+    }
+
+    .events-logs__events-table-row{
+        width:100%
     }
 
     .events-logs__event,
@@ -1344,82 +1321,58 @@ table.pod__table td:last-child {
     width: 218px;
 }
 
-.visible-modal__body.app-status__material-modal {
-    .app-status-detai {
-        background: white;
-        margin: 80px auto 120px auto;
-        max-width: 1200px;
-        min-width: 800px;
-        padding: 24px;
-        border-radius: 8px;
-        height: calc(100% - 200px);
-        min-height: 300px;
+.app-details-status-modal {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.app-status__material-modal {
+    .kind-name {
+        width: 100%;
         display: grid;
-        grid-template-rows: 45px auto 1fr;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: 1fr;
 
-        .title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .ellipsis-left {
+            text-align: left;
         }
+    }
 
-        &>div {
-            overflow: auto;
-            position: relative;
-        }
+    table {
+        width: 100%;
+        table-layout: fixed;
 
-        .kind-name {
-            width: 100%;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-template-rows: 1fr;
+        thead {
+            height: 44px;
 
-            .ellipsis-left {
-                text-align: left;
-            }
-        }
-
-        table {
-            width: 100%;
-            table-layout: fixed;
-
-            thead {
-                height: 44px;
-
-                th {
-                    background: white;
-                    position: sticky;
-                    top: 0;
-                }
-            }
-
-            border-collapse: separate;
-            border-spacing: 15px;
-
-            tr,
             th {
-                height: 44px;
-            }
-
-            th:nth-child(1),
-            td:nth-child(1) {
-                width: 20%;
-            }
-
-            th:nth-child(2),
-            td:nth-child(2) {
-                width: 15%;
-            }
-
-            th:nth-child(3),
-            td:nth-child(3) {
-                width: 65%;
+                background: white;
+                position: sticky;
+                top: 0;
             }
         }
 
-        .fa.fa-close {
-            margin-left: auto;
-            cursor: pointer;
+        border-collapse: separate;
+        border-spacing: 15px;
+
+        tr,
+        th {
+            height: 44px;
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 20%;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 65%;
         }
     }
 }
@@ -1734,4 +1687,30 @@ table.resource-tree {
     color: var(--N700);
     height: 28px;
     align-items: center;
+}
+
+.add-line::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    left: 48px;
+    top: 0px;
+    background-color: #959ba1;
+}
+
+.add-line.add-line--git-push::before {
+    height: calc(100% - 44px);
+    top: unset;
+    bottom: 0px;
+}
+
+.add-line.add-line--rollout::before {
+    height: 44px;
+}
+
+.app-status__error-msg {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 12px;
 }

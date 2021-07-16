@@ -5,7 +5,7 @@
         top: 0;
         bottom: 0;
         width: 0;
-        transition: width 200ms;
+        transition: width 200ms cubic-bezier(0.25, 0.5, 0.5, 0.9);
         &.show{
             width: var(--width);
         }
@@ -15,22 +15,21 @@
         left: 0;
         right: 0;
         height: 0;
-        transition: height 200ms;
+        transition: height 200ms cubic-bezier(0.25, 0.5, 0.5, 0.9);
         &.show{
             height: var(--height);
         }
     }
+
     &.right{
         right: 0;
     }
     &.left{
         left: 0;
-
     }
     &.top{
         top: 0;
     }
-
     &.bottom{
         bottom: 0;
     }

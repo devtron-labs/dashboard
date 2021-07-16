@@ -259,6 +259,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ }
             },
+
             token: isDefaultCluster ? {} : {
                 required: true,
                 validator: { error: 'token is required', regex: /[^]+/ }
