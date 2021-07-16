@@ -179,7 +179,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         ))}
                                     </Select>
                                     {project.error && (
-                                        <span className="form__error flex left ">
+                                        <span className="form__error flex left " style={{display:"flex"}}>
                                             <WarningIcon className="mr-5 icon-dim-16" />
                                             {project.error}
                                         </span>
