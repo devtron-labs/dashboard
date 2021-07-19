@@ -9,6 +9,7 @@ import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
+import posthog from 'posthog-js';
 import './navigation.scss';
 
 const NavigationList = [
@@ -43,11 +44,18 @@ const NavigationList = [
 		iconClass: 'nav-security',
 	},
 	{
+		title: 'Bulk Edit',
+		type: 'link',
+		href: URLS.BULK_EDITS,
+		iconClass: 'nav-bulk-update'
+	},
+	{
 		title: 'Global Configurations',
 		type: 'link',
 		href: URLS.GLOBAL_CONFIG,
 		iconClass: 'nav-short-global'
 	},
+	
 ];
 
 
@@ -78,7 +86,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 			showMoreOptionCard: false,
 			isCommandBarActive: false,
 		}
-		this.deleteCookie = this.deleteCookie.bind(this);
+		this.onLogout = this.onLogout.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
 		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
@@ -95,9 +103,12 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		this.setState({ isCommandBarActive: flag });
 	}
 
-	deleteCookie(): void {
+	onLogout(): void {
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
+		try {
+			posthog.reset();
+		} catch (e) { }
 	}
 
 	renderLogout() {
@@ -111,7 +122,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</div>
 					<p className="logout-card__initial fs-16 icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
-				<div className="logout-card__logout cursor" onClick={this.deleteCookie}>Logout</div>
+				<div className="logout-card__logout cursor" onClick={this.onLogout}>Logout</div>
 			</div>
 		</div>, document.getElementById('root'))
 	}
@@ -225,7 +236,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						}} className="" activeClassName="active-nav">
 							<div className="short-nav--flex">
 								<div className="svg-container flex">
-									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
+									<svg className={` ${item.iconClass === "nav-bulk-update" ? 'ml-4 mt-4 icon-dim-24' : '' } short-nav-icon icon-dim-20 `}  viewBox="0 0 24 24">
 										<use href={`${NavSprite}#${item.iconClass}`}></use>
 									</svg>
 								</div>

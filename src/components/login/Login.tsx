@@ -107,7 +107,7 @@ export default class Login extends Component<LoginProps, LoginFormState>{
             {this.state.loginList.filter(sso => sso.active).map((item) => {
                 return <a href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`} className="login__google flex">
                     <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24"><use href={`${LoginIcons}#${item.name}`}></use></svg>
-                        Login with <span className="ml-5 capitalize">{item.name}</span>
+                    Login with <span className="ml-5 capitalize">{item.name}</span>
                 </a>
             })}
             <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>Login as administrator</NavLink>

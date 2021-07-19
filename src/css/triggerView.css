@@ -167,6 +167,7 @@
     color: var(--B500);
     width: 150px;
     text-align: right;
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 .material-history__scan-error {

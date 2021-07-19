@@ -1,9 +1,9 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useRouteMatch, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
 import { Toggle, Progressing, ErrorBoundary } from '../common';
-import arrowTriangle from '../../assets/icons/appstatus/ic-chevron-down.svg';
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg';
 import { AddNotification } from '../notifications/AddNotification';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
@@ -224,6 +224,18 @@ export function List({ children = null, className = "", ...props }) {
     </div>
 }
 
+function handleError(error: any): any[] {
+    if (!error) {
+        return []
+    }
+
+    if (!Array.isArray(error)) {
+        return [error]
+    }
+
+    return error
+}
+
 export function CustomInput({ name, value, error, onChange, label, type = "text", disabled = false, autoComplete = "off", labelClassName = "" }) {
     return <div className="flex column left top">
         <label className={`form__label ${labelClassName}`} >{label}</label>
@@ -235,7 +247,9 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
             value={value}
             disabled={disabled}
         />
-        {error && <div className="form__error">{error}</div>}
+        {handleError(error).map((err) => (
+            <div className="form__error">{err}</div>
+        ))}
     </div>
 }
 

@@ -938,6 +938,10 @@ table.pod__table td:last-child {
         }
     }
 
+    .events-logs__events-table-row{
+        width:100%
+    }
+
     .events-logs__event,
     .events-logs__log {
         color: white;

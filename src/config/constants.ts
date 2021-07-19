@@ -38,6 +38,9 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    
+    BULK_UPDATE_APIVERSION: 'batch/v1beta1',
+    BULK_UPDATE_KIND: 'application',
 
     DEPLOYMENT_GROUP_LIST: 'deployment-group/dg/fetch/all',
     DEPLOYMENT_GROUP_DEPLOY: 'deployment-group/release/trigger',
@@ -127,7 +130,7 @@ export const FullRoutes = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '(?:[a-z0-9]+(?:[.-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*',
+    APP_NAME: '^[a-z0-9][a-z0-9-.]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
@@ -177,7 +180,7 @@ export const DOCUMENTATION = {
     APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
     APP_CREATE_ENVIRONMENT_OVERRIDE: "https://docs.devtron.ai/user-guide/creating-application/environment-overrides",
-
+    BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',
     CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
     GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
