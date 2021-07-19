@@ -230,9 +230,8 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validators: [
                                 { error: 'Name is required',  regex: /^.*$/ },
                                 { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
-                                { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
-                                { error: "Do not use spaces", regex: /^\S+$/ },
-                                { error: "Minimum 5 and Maximum 16 characters required", regex: /^.{5,16}$/ }
+                                { error: "Start/End with an alphanumeric character", regex: /^(?![-._]).*[^-._]$/ },
+                                { error: "Minimum 3 and Maximum 63 characters required", regex: /^.{3,63}$/ }
                             ]
             },
             url: {
@@ -404,19 +403,17 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 validators: [
                     { error: 'Environment name is required',  regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                    { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
-                    { error: "Do not use spaces", regex: /^\S+$/ },
-                    { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
+                    { error: "Start/End with an alphanumeric character", regex: /^(?![-.]).*[^-.]$/ },
+                    { error: "Minimum 3 and Maximum 16 characters required", regex: /^.{3,16}$/ }
                 ]
             },
             namespace: {
                 required: isNamespaceMandatory,
                 validators: [
                     { error: 'Namespace is required',  regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                    { error: "Start/End with an alphanumeric character", regex: /^[A-Za-z0-9](.*[A-Za-z0-9])?$/ },
-                    { error: "Do not use spaces", regex: /^\S+$/ },
-                    { error: "Minimum 5 and Maximum 25 characters required", regex: /^.{5,25}$/ }
+                    { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
+                    { error: "Start/End with an alphanumeric character", regex: /^(?![-]).*[^-]$/ },
+                    { error: "Maximum 63 characters required", regex: /^.{1,63}$/ }
                 ]
             },
             isProduction: {
