@@ -111,7 +111,8 @@ export function deleteChartValues(chartId: number): Promise<any> {
 }
 
 export function getInstalledCharts() {
-    return get(`${Routes.CHART_INSTALLED}`).then(response => {
+    let url = `${Routes.CHART_INSTALLED}`
+    return get(url).then(response => {
         return {
             ...response,
             result: Array.isArray(response.result) ? response.result.map((chart) => {
