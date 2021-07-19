@@ -3,6 +3,8 @@ import { SourceTypeMap } from '../../config';
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
+import ReactSelect from 'react-select';
+import { styles, menuList, DropdownIndicator } from '../charts/charts.util';
 
 export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
     if (materials.length === 1 && materials[0].type === SourceTypeMap.PullRequest) {
@@ -34,13 +36,31 @@ export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
             <div >
                 <p className="mt-16 mb-16 fs-13 cn-7">Build pull requests which match below filters only</p>
                 <div className="pull-request-fillter mb-16">
+                    <ReactSelect
+                        className="w-200"
+                        autoFocus
+                        components={{
+                            DropdownIndicator,
+                        }}
+                        tabIndex="1"
+                        placeholder="Select Project"
+                        styles={{
+                            ...styles,
+                            ...menuList,
+                        }}
+                    // onChange={(selected) => { this.props.handleProjectChange(parseInt((selected as any).value)) }}
+                    // options={projects}
+                    />
+                    <input type="text" className="form__input" placeholder="Enter target branch" />
+                </div>
+                <div className="pull-request-fillter mb-16">
                     <input type="text" className="form__input" value="Source branch (regex)" disabled placeholder="" />
                     <input type="text" className="form__input" placeholder="Enter target branch" />
                 </div>
-                <div className="pull-request-fillter">
+                {/* <div className="pull-request-fillter">
                     <input type="text" className="form__input" value="Target branch (regex)" disabled placeholder="" />
                     <input type="text" className="form__input" placeholder="Enter Source branch" />
-                </div>
+                </div> */}
             </div>
         </>
     }

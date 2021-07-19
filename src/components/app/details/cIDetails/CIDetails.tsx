@@ -769,7 +769,6 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 //             className="pt-0 bcn-0 br-4 mb-16"
 //             style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
 //         >
-//             
 //             <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
 //                 <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
 //             </div>
@@ -807,7 +806,7 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMateria
                 </> }
 
             <div className="git-commit-info__grid mono mb-12">
-                <BranchIcon className="" />
+               <div style={{transform: "rotateZ(270deg)"}}><BranchIcon className="" /></div> 
                 <div className="w-100">
                     <p className="flex left mb-8">
                         <GitCommitInfo.Branch branch="uat-testing" />

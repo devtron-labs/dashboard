@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg';
 import { ReactComponent as Arrow } from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
 import { ReactComponent as Commit } from '../../../../assets/icons/ic-commit.svg';
+import { ReactComponent as PersonIcon } from '../../../../assets/icons/ic-person.svg';
+import { ReactComponent as CalendarIcon } from '../../../../assets/icons/ic-calendar.svg';
+import { ReactComponent as MessageIcon } from '../../../../assets/icons/ic-message.svg';
+import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
 
 export interface CommitHistory {
     author: string;
@@ -73,13 +77,39 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             {history.isSelected ? <Check className="align-right" /> : "Select"}
                         </div> : null}
                     </div>
-                    <div className="material-history__text">Author: {history.author}</div>
-                    <div className="material-history__text">Date: {history.date}</div>
-                    <div className="material-history__text material-history-text--padded">{history.message}</div>
-                    {history.showChanges ? <div className="material-history__all-changes">
+                    <div className="material-history__body" >
+                        {/* <div style={{ transform: "rotateZ(270deg)" }}><BranchIcon className="" /></div> */}
+                        <div className="material-history__text flex left">
+                            <PersonIcon className="icon-dim-16 mr-8" /> {history.author}
+                        </div>
+                        <div className="material-history__text flex left">
+                            <CalendarIcon className="icon-dim-16 mr-8" />{history.date}
+                        </div>
+                        <div className="material-history__text material-history-text--padded flex left">
+                            <MessageIcon className="icon-dim-16 mr-8" />{history.message}
+                        </div>
+                    </div>
+                    {console.log(history)}
+                    {/* {history.showChanges ? <div className="material-history__all-changes">
                         {history.changes.map((change, index) => {
                             return <div key={index}>{change}</div>
-                        })}
+                        })} </div>*/}
+                    {history.showChanges ? <div className="material-history__all-changes">
+                        <div className="material-history__body" >
+                            {/* <div style={{ transform: "rotateZ(270deg)" }}><BranchIcon className="" /></div> */}
+                             <div className="material-history__text left bcn-1">
+                             <div >Author</div><div>{history.author}</div>  
+                            </div>
+                            <div className="material-history__text left ">
+                            <div >Key</div><div> {history.changes}</div>
+                            </div>
+                            <div className="material-history__text left bcn-1">
+                            <div >Date</div><div>{history.date}</div>
+                            </div>
+                            <div className="material-history__text material-history-text--padded left">
+                            <div >Message</div><div> {history.message}</div>
+                            </div>
+                        </div>
                     </div> : null}
                     {this.renderShowChangeButton(history)}
                 </div>
