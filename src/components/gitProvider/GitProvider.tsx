@@ -1,37 +1,123 @@
-import React, { useState } from 'react';
-import { useLocation, useHistory, useRouteMatch } from 'react-router'
-import { getGitProviderList, saveGitProviderConfig, updateGitProviderConfig } from './service'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common'
+import React, { useState, useEffect } from 'react';
+import { getGitHostList, getGitProviderList } from '../../services/service';
+import { saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react';
 import { DOCUMENTATION } from '../../config';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+// import { styles } from './gitProvider.util';
+import Tippy from '@tippyjs/react';
+import CreatableSelect from 'react-select/creatable';
+interface Githost {
+    id: number;
+    name: string;
+    authMode: string;
+    url: string;
+    userName: string;
+    gitHostId: number;
+    password: string;
+}
 
 export default function GitProvider({ ...props }) {
-    const location = useLocation();
-    const match = useRouteMatch();
-    const history = useHistory();
     const [loading, result, error, reload] = useAsync(getGitProviderList)
-    if (loading && !result) return <Progressing pageLoader />
-    if (error) {
-        showError(error)
-        if (!result) return null
+    const [providerList, setProviderList] = useState([])
+    const [hostList, setHostList] = useState<Githost[]>([])
+    const [isPageLoading, setIsPageLoading] = useState(true)
+    const [isErrorLoading, setIsErrorLoading] = useState(false)
+    const [errors, setErrors] = useState([])
+
+    async function getInitData() {
+        try {
+            const { result: providers = [] } = await getGitProviderList()
+            const { result: hosts = [] } = await getGitHostList()
+            providers.sort((a, b) => a.name.localeCompare(b.name))
+            hosts.sort((a, b) => a.name.localeCompare(b.name))
+            let hostOptions = hosts.map(host => {
+                return {
+                    value: host.id,
+                    label: host.name
+                }
+            })
+            setProviderList(providers)
+            setHostList(hostOptions)
+        } catch (error) {
+            showError(error)
+            setErrors(error)
+            setIsErrorLoading(true)
+        } finally {
+            setIsPageLoading(false)
+        }
     }
 
-    return (<section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-        <h2 className="form__title">Git accounts</h2>
-        <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
-            <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
-                Learn more about git accounts
-            </a>
-        </div>
-        {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
-    </section>
+    async function getHostList() {
+        try {
+            const { result: hosts = [] } = await getGitHostList();
+            hosts.sort((a, b) => a.name.localeCompare(b.name))
+            setHostList(hosts)
+
+        } catch (error) {
+            showError(error)
+            setIsErrorLoading(true)
+        }
+    }
+
+    async function getProviderList() {
+        try {
+            const { result: providers = [] } = await getGitProviderList();
+            providers.sort((a, b) => a.name.localeCompare(b.name))
+            setProviderList(providers)
+        } catch (error) {
+            showError(error)
+            setIsErrorLoading(true)
+        }
+    }
+
+    useEffect(() => {
+        getInitData();
+    }, [])
+
+    if (isPageLoading) {
+        return <Progressing pageLoader />
+    }
+    if (isErrorLoading) {
+        return <ErrorScreenManager code={error?.code} />
+    }
+    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: 0, authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
+    // if (loading && !result) return <Progressing pageLoader />
+    // if (error) {
+    //     showError(error)
+    //     if (!result) return null
+    // }
+
+    return (
+        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+            <h2 className="form__title">Git accounts</h2>
+            <div className="form__subtitle">Manage your organization’s git accounts. &nbsp;
+                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT} rel="noopener noreferrer" target="_blank">
+                    Learn more about git accounts
+                </a>
+            </div>
+            {allProviders.map((provider) => {
+                return <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
+                    hostList={hostList}
+                    id={provider.id}
+                    name={provider.name}
+                    gitHostId={provider.gitHostId}
+                    active={provider.active}
+                    url={provider.url}
+                    authMode={provider.authMode}
+                    userName={provider.userName}
+                    password={provider.password}
+                    getHostList={getHostList}
+                    getProviderList={getProviderList}
+                    reload={getInitData} />
+            })}
+            {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
+        </section>
     )
 }
 
@@ -70,8 +156,8 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                         {url.includes("gitlab") ? <GitLab /> : null}
                         {url.includes("github") ? <GitHub /> : null}
                         {url.includes("bitbucket") ? <BitBucket /> : null}
-                        {url.includes("gitlab")  || url.includes("github")  ||  url.includes("bitbucket") ? null : <Git/>}
-                        </span></div> :
+                        {url.includes("gitlab") || url.includes("github") || url.includes("bitbucket") ? null : <Git />}
+                    </span></div> :
                     <div className="add-icon" />}</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
