@@ -298,3 +298,13 @@ export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
 }
+
+export const getGitProviderList = () => {
+    const URL = `${Routes.GIT_PROVIDER}`;
+    return get(URL);
+}
+
+export function getGitHostList(): Promise<any> {
+    const URL = `${Routes.GIT_HOST}`;
+    return get(URL);
+}
