@@ -79,7 +79,7 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                                 MenuList,
                             }}
                             styles={{ ...multiSelectStyles }} />
-                        <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
+                        <Checkbox rootClassName="ml-16 mb-0 fs-13 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={onlyDeprecated == true}
                             value={"CHECKED"}
                             onChange={(e) => { 
