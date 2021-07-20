@@ -19,7 +19,7 @@ import EmptyState from '../../EmptyState/EmptyState';
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
     EnvironmentId: 'envs',
-    IncludeDeprecated: 'includeDeprecated',
+    onlyDeprecated: 'onlyDeprecated',
     AppStoreName: 'appName',
 }
 
@@ -40,7 +40,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             environment: [],
             selectedChartRepo: [],
             selectedEnvironment: [],
-            includeDeprecated: 0,
+            onlyDeprecated: false,
             appStoreName: "",
             searchApplied: false,
             appliedChartRepoFilter: [],
@@ -161,7 +161,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     handleFilterQueryChanges = (selected, key): void => {
         const searchParams = new URLSearchParams(this.props.location.search);
         const app = searchParams.get(QueryParams.AppStoreName);
-        const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
+        const deprecate = searchParams.get(QueryParams.onlyDeprecated);
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId);
         const envId = searchParams.get(QueryParams.EnvironmentId)
 
@@ -171,13 +171,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let chartRepoId = selected?.map((e) => { return e.value }).join(",");
             let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`)
         };
 
         if (key == "deprecated") {
-            let qs = `${QueryParams.IncludeDeprecated}=${selected}`;
+            let qs = `${QueryParams.onlyDeprecated}=${selected}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
             if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
@@ -187,7 +187,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (key == "search") {
             selected.preventDefault();
             let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
             if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`);
@@ -197,14 +197,14 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let environmentId = selected?.map((e) => { return e.value }).join(",");
             let qs = `${QueryParams.EnvironmentId}=${environmentId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
             this.props.history.push(`${url}?${qs}`);
         }
 
         if (key == "clear") {
             let qs: string = "";
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+            if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
             if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`);
@@ -231,7 +231,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
     initialiseFromQueryParams = () => {
         let searchParams = new URLSearchParams(this.props.location.search);
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
-        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
+        let deprecated: string = searchParams.get(QueryParams.onlyDeprecated);
         let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
         let allenvironmentIds: string = searchParams.get(QueryParams.EnvironmentId);
 
@@ -252,8 +252,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             let environment = this.state.environment.find(item => item.value === environmentIdArray[i]);
             if (environment) selectedEnvironment.push(environment);
         }
-        if (selectedEnvironment) { this.setState({ selectedEnvironment: selectedEnvironment }) }
-        if (deprecated) { this.setState({ includeDeprecated: parseInt(deprecated) }) }
+        if (selectedEnvironment) { this.setState({ ...this.state,selectedEnvironment: selectedEnvironment }) }
+        if (deprecated) { this.setState({ onlyDeprecated: JSON.parse(deprecated) }) }
         if (appStoreName) {
             this.setState({
                 searchApplied: true,
@@ -268,7 +268,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         }
         if (selectedRepos) { this.handleAppliedEnvironmentAndChartRepoFilter(selectedRepos, FilterName.ChartRepo) }
         if (selectedEnvironment) { this.setState({ appliedEnvironmentFilter: selectedEnvironment }) }
-
     }
 
     async callApplyFilterOnCharts() {
@@ -293,7 +292,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             </div>
         }
         if (this.state.installedCharts.length === 0) {
-            if (!this.props.location.search || (this.props.location.search && this.state.includeDeprecated == 1)) {
+            if (!this.props.location.search ) {
                 return (<div>
                     {this.renderPageHeader()}
                     <div style={{ width: "600px", margin: "auto", marginTop: '20px' }} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
@@ -309,7 +308,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         appStoreName={this.state.appStoreName}
                         searchApplied={this.state.searchApplied}
                         handleCloseFilter={this.handleCloseFilter}
-                        includeDeprecated={this.state.includeDeprecated}
+                        onlyDeprecated={this.state.onlyDeprecated}
                         chartRepos={this.state.chartRepos}
                         handleAppStoreName={this.handleAppStoreName}
                         environment={this.state.environment}
@@ -337,7 +336,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     appStoreName={this.state.appStoreName}
                     searchApplied={this.state.searchApplied}
                     handleCloseFilter={this.handleCloseFilter}
-                    includeDeprecated={this.state.includeDeprecated}
+                    onlyDeprecated={this.state.onlyDeprecated}
                     chartRepos={this.state.chartRepos}
                     handleAppStoreName={this.handleAppStoreName}
                     environment={this.state.environment}
@@ -348,6 +347,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
+                        
                     })}
                 </div>
             </div>

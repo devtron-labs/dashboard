@@ -5,7 +5,7 @@ import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Checkbox, Option } from '../../common';
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
-export default function DeployedChartFilters({ handleFilterQueryChanges, appStoreName, searchApplied, handleCloseFilter, handleAppStoreName, selectedChartRepo, includeDeprecated, chartRepos, environment, handleSelectedFilters, selectedEnvironment }) {
+export default function DeployedChartFilters({ handleFilterQueryChanges, appStoreName, searchApplied, handleCloseFilter, handleAppStoreName, selectedChartRepo, onlyDeprecated, chartRepos, environment, handleSelectedFilters, selectedEnvironment }) {
 
     function keys(key) {
         if (key == "repository") { handleFilterQueryChanges(selectedChartRepo, "repository") }
@@ -80,9 +80,11 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                             }}
                             styles={{ ...multiSelectStyles }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                            isChecked={includeDeprecated === 1}
+                            isChecked={onlyDeprecated == true}
                             value={"CHECKED"}
-                            onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterQueryChanges(value, "deprecated") }} >
+                            onChange={(e) => { 
+                                let value =  !onlyDeprecated; 
+                                handleFilterQueryChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
                         </Checkbox>
                     </div>

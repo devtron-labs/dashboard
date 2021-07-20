@@ -43,7 +43,7 @@ export interface DeployedChartState {
     environment: Array<{ label: string; value: number; }>;
     selectedChartRepo: any[];
     selectedEnvironment: any[];
-    includeDeprecated: number;
+    onlyDeprecated: boolean;
     appStoreName: string;
     searchApplied: boolean;
     appliedChartRepoFilter: any[];
