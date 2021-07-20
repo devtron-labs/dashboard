@@ -60,7 +60,6 @@ export const Routes = {
     GITOPS: 'gitops/config',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
-    GIT_HOST: 'git/host',
     CHART_LIST: 'app-store/repo/list',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
@@ -160,7 +159,6 @@ export const SourceTypeReverseMap = {
     SOURCE_TYPE_BRANCH_REGEX: 'Branch Regex',
     SOURCE_TYPE_TAG_ANY: 'Tag Any',
     SOURCE_TYPE_TAG_REGEX: 'Tag Regex',
-    Webhook: 'Pull Request'
 };
 
 export const TagOptions = [
