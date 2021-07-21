@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
-import {saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service'
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service'
 import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
@@ -15,21 +15,21 @@ import CreatableSelect from 'react-select/creatable';
 interface Githost {
     id: number;
     name: string;
-    authMode: string;
-    url: string;
-    userName: string;
-    gitHostId: number;
-    password: string;
+    active: boolean;
+    eventTypeHeader: string;
+    secretHeader: string;
+    webhookSecret: string;
+    webhookUrl: string;
 }
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     const [providerList, setProviderList] = useState([])
-    const [hostList, setHostList] = useState<Githost[]>([])
+    const [hostList, setHostList] = useState([])
+    const [hostListOption, setHostListOption] = useState([])
     const [isPageLoading, setIsPageLoading] = useState(true)
     const [isErrorLoading, setIsErrorLoading] = useState(false)
     const [errors, setErrors] = useState([])
-
     async function getInitData() {
         try {
             const { result: providers = [] } = await getGitProviderList()
@@ -43,7 +43,8 @@ export default function GitProvider({ ...props }) {
                 }
             })
             setProviderList(providers)
-            setHostList(hostOptions)
+            setHostListOption(hostOptions)
+            setHostList(hosts)
         } catch (error) {
             showError(error)
             setErrors(error)
@@ -58,7 +59,6 @@ export default function GitProvider({ ...props }) {
             const { result: hosts = [] } = await getGitHostList();
             hosts.sort((a, b) => a.name.localeCompare(b.name))
             setHostList(hosts)
-
         } catch (error) {
             showError(error)
             setIsErrorLoading(true)
@@ -79,6 +79,9 @@ export default function GitProvider({ ...props }) {
     useEffect(() => {
         getInitData();
     }, [])
+    useEffect(()=>{
+        
+    },[])
 
     if (isPageLoading) {
         return <Progressing pageLoader />
@@ -93,7 +96,7 @@ export default function GitProvider({ ...props }) {
     //     if (!result) return null
     // }
 
-    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: 0, authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
+    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
@@ -105,9 +108,11 @@ export default function GitProvider({ ...props }) {
             </div>
             {allProviders.map((provider) => {
                 return <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
-                    hostList={hostList}
                     id={provider.id}
                     name={provider.name}
+                    hostList={hostList}
+                    providerList={providerList}
+                    hostListOption={hostListOption}
                     gitHostId={provider.gitHostId}
                     active={provider.active}
                     url={provider.url}
@@ -116,14 +121,15 @@ export default function GitProvider({ ...props }) {
                     password={provider.password}
                     getHostList={getHostList}
                     getProviderList={getProviderList}
-                    reload={getInitData} />
+                    reload={getInitData}
+                />
             })}
             {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
         </section>
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostList, getHostList, getProviderList, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, hostList, getHostList, getProviderList, providerList, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -174,13 +180,12 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, gitHostId, accessToken, userName, password, hostList, getHostList, getProviderList, reload, toggleCollapse }} />}
+            {!collapsed && <GitForm {...{ id, name, active, url, authMode, gitHostId, accessToken, userName, password, hostList, hostListOption, getHostList, getProviderList, reload, providerList, toggleCollapse, }} />}
         </article>
     )
 }
 
-function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostList, reload, toggleCollapse, getHostList, getProviderList, ...props }) {
-    let host = hostList.find(p => gitHostId === p.gitHostId);
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostList, reload, toggleCollapse, getHostList, getProviderList, providerList, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -202,17 +207,18 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             }
         }, onValidation);
     const [loading, setLoading] = useState(false)
-    const [gitHost, setGithost] = useState({ value: host, error: 'Githost is required' })
+    let selectedGitHost = hostListOption.find((p)=>p.value===gitHostId)
+    const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
-
-    function handleGithostChange(gitHostValue) {
-        console.log(gitHostValue)
+   
+    function handleGithostChange(host) {
         setGithost({
-            value: gitHostValue,
-            error: gitHostValue ? "" : "GitHost is required"
+            value: host,
+            error: host ? "" : "GitHost is required"
         })
     }
+    
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
@@ -231,17 +237,19 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         let gitHostId = gitHost.value.value;
         if (gitHost.value.__isNew__) {
             let gitHostPayload = {
-                name: gitHost.value,
+                name: gitHost.value.value,
+                active:true
             }
             try {
                 const { result } = await saveGitHost(gitHostPayload);
-                // getHostList();
+                getHostList();
                 gitHostId = result;
             } catch (error) {
                 showError(error)
             }
         }
 
+        console.log(hostListOption)
         let payload = {
             id: id || 0,
             name: state.name.value,
@@ -271,26 +279,27 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form">
-                 <div className="mb-16">
+                <div className="mb-16">
                     <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 </div>
                 <div className="form__row form__row--two-third">
                     <div>
                         <label className="form__label">Git provider*</label>
                         <CreatableSelect name="host"
+                             value={gitHost.value}
                             className="react-select--height-44"
                             placeholder="Select git provider"
                             isMulti={false}
                             isSearchable
                             isClearable={false}
-                            options={hostList}
+                            options={hostListOption}
                             styles={{
                                 ...styles,
                             }}
                             components={{
                                 IndicatorSeparator: null,
                             }}
-                            onChange={handleGithostChange}
+                            onChange={(e) => handleGithostChange(e)}
                         />
                     </div>
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
