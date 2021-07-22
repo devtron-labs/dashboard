@@ -148,14 +148,14 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (key == FilterName.ChartRepo) {
             this.setState({ selectedChartRepo: selected })
         }
-        if (key == FilterName.Environemnt) {
+        else if (key == FilterName.Environemnt) {
             this.setState({ selectedEnvironment: selected })
         }
     }
 
     handleAppliedEnvironmentAndChartRepoFilter = (selected, key) => {
         if (key == FilterName.ChartRepo) { this.setState({ appliedChartRepoFilter: selected }) }
-        if (key == FilterName.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
+        else if (key == FilterName.Environemnt) { this.setState({ appliedEnvironmentFilter: selected }) }
     }
 
     handleFilterQueryChanges = (selected, key): void => {
@@ -174,9 +174,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (envId) qs = `${qs}&${QueryParams.EnvironmentId}=${envId}`;
             this.props.history.push(`${url}?${qs}`)
-        };
+        }
 
-        if (key == "deprecated") {
+        else if(key == "deprecated") {
             let qs = `${QueryParams.onlyDeprecated}=${selected}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
@@ -184,7 +184,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             this.props.history.push(`${url}?${qs}`);
         }
 
-        if (key == "search") {
+        else if (key == "search") {
             selected.preventDefault();
             let qs = `${QueryParams.AppStoreName}=${this.state.appStoreName}`;
             if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
@@ -193,7 +193,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             this.props.history.push(`${url}?${qs}`);
         }
 
-        if (key == "environment") {
+        else if (key == "environment") {
             let environmentId = selected?.map((e) => { return e.value }).join(",");
             let qs = `${QueryParams.EnvironmentId}=${environmentId}`;
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
@@ -202,7 +202,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             this.props.history.push(`${url}?${qs}`);
         }
 
-        if (key == "clear") {
+        else if (key == "clear") {
             let qs: string = "";
             if (deprecate) qs = `${qs}&${QueryParams.onlyDeprecated}=${deprecate}`;
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
@@ -221,7 +221,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 selectedChartRepo: this.state.appliedChartRepoFilter
             })
         }
-        if (key == FilterName.Environemnt) {
+        else if (key == FilterName.Environemnt) {
             this.setState({
                 selectedEnvironment: this.state.appliedEnvironmentFilter
             })
