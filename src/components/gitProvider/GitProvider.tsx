@@ -9,8 +9,9 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { styles } from './gitProvider.util';
+import { styles, DropdownIndicator } from './gitProvider.util';
 import Tippy from '@tippyjs/react';
+import ReactSelect, { components } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 interface Githost {
     id: number;
@@ -22,6 +23,7 @@ interface Githost {
     webhookUrl: string;
 }
 
+
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     const [providerList, setProviderList] = useState([])
@@ -30,21 +32,11 @@ export default function GitProvider({ ...props }) {
     const [isPageLoading, setIsPageLoading] = useState(true)
     const [isErrorLoading, setIsErrorLoading] = useState(false)
     const [errors, setErrors] = useState([])
+
     async function getInitData() {
         try {
-            const { result: providers = [] } = await getGitProviderList()
-            const { result: hosts = [] } = await getGitHostList()
-            providers.sort((a, b) => a.name.localeCompare(b.name))
-            hosts.sort((a, b) => a.name.localeCompare(b.name))
-            let hostOptions = hosts.map(host => {
-                return {
-                    value: host.id,
-                    label: host.name
-                }
-            })
-            setProviderList(providers)
-            setHostListOption(hostOptions)
-            setHostList(hosts)
+            getProviderList()
+            getHostList()
         } catch (error) {
             showError(error)
             setErrors(error)
@@ -59,12 +51,20 @@ export default function GitProvider({ ...props }) {
             const { result: hosts = [] } = await getGitHostList();
             hosts.sort((a, b) => a.name.localeCompare(b.name))
             setHostList(hosts)
+            let hostOptions = hosts.map(host => {
+                return {
+                    value: host.id,
+                    label: host.name
+                }
+            })
+            setHostListOption(hostOptions)
+
         } catch (error) {
             showError(error)
             setIsErrorLoading(true)
         }
     }
-
+    
     async function getProviderList() {
         try {
             const { result: providers = [] } = await getGitProviderList();
@@ -79,9 +79,6 @@ export default function GitProvider({ ...props }) {
     useEffect(() => {
         getInitData();
     }, [])
-    useEffect(()=>{
-        
-    },[])
 
     if (isPageLoading) {
         return <Progressing pageLoader />
@@ -206,19 +203,20 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             }
         }, onValidation);
+
+    let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [loading, setLoading] = useState(false)
-    let selectedGitHost = hostListOption.find((p)=>p.value===gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
-   
+
     function handleGithostChange(host) {
         setGithost({
             value: host,
             error: host ? "" : "GitHost is required"
         })
     }
-    
+
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
@@ -235,10 +233,11 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         }
 
         let gitHostId = gitHost.value.value;
+        console.log(gitHost.value.__isNew__)
         if (gitHost.value.__isNew__) {
             let gitHostPayload = {
                 name: gitHost.value.value,
-                active:true
+                active: true
             }
             try {
                 const { result } = await saveGitHost(gitHostPayload);
@@ -249,7 +248,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             }
         }
 
-        console.log(hostListOption)
         let payload = {
             id: id || 0,
             name: state.name.value,
@@ -264,8 +262,12 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         const api = id ? updateGitProviderConfig : saveGitProviderConfig
         try {
             setLoading(true)
-            await api(payload, id);
-            await reload();
+            // const [{result: apiRes},{result: reloadRes}] = await Promise.all([api(payload, id), reload() ])
+            // apiRes()
+            // reloadRes()
+             api(payload, id);
+             reload();
+
             toast.success('Successfully saved.')
         }
         catch (err) {
@@ -275,18 +277,34 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             setLoading(false);
         }
     }
+    const handleMenuOption = (value) => {
+    }
+
+    const MenuList = (props) => {
+        const isNew = props.options.map((p)=>p.label)
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="w-100 bcn-0 pl-10 pt-5 pb-5">
+                    <button className="no-decor bcn-0 cta--chart-store bw-0" onClick={(selected: any) => {handleMenuOption(props) }}>Option</button>
+                </div>
+            </components.MenuList>
+        );
+    };
 
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form">
+                
                 <div className="mb-16">
                     <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 </div>
                 <div className="form__row form__row--two-third">
                     <div>
                         <label className="form__label">Git provider*</label>
-                        <CreatableSelect name="host"
-                             value={gitHost.value}
+                        <CreatableSelect
+                            name="host"
+                            value={gitHost.value}
                             className="react-select--height-44"
                             placeholder="Select git provider"
                             isMulti={false}
@@ -298,6 +316,8 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                             }}
                             components={{
                                 IndicatorSeparator: null,
+                                DropdownIndicator,
+                                MenuList,
                             }}
                             onChange={(e) => handleGithostChange(e)}
                         />
