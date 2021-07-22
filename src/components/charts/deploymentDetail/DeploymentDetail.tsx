@@ -32,6 +32,7 @@ export default function AppDetail() {
                 ':appId(\\d+)': {
                     component: (
                         <AppSelector
+                         //@ts-ignore
                             api={getInstalledCharts}
                             primaryKey="appId"
                             primaryValue="appName"

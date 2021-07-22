@@ -39,6 +39,16 @@ export interface DeployedChartState {
     code: number;
     view: string;
     installedCharts: InstalledChartGroup[];
+    chartRepos: any[],
+    environment: Array<{ label: string; value: number; }>;
+    selectedChartRepo: any[];
+    selectedEnvironment: any[];
+    onlyDeprecated: boolean;
+    appStoreName: string;
+    searchApplied: boolean;
+    appliedChartRepoFilter: any[];
+    appliedEnvironmentFilter: any[]
+    chartListloading: boolean
 }
 
 export interface InstalledChartGroup {
