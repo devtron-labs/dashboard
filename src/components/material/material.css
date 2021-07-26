@@ -54,7 +54,4 @@
     display: grid;
     grid-template-columns: 240px 1fr;
     grid-column-gap: 16px;
-   
-      
-    
 }

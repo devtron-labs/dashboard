@@ -181,7 +181,11 @@ a:focus {
 }
 
 .react-select__bottom {
-    border-top: solid 1px var(--N100);
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    border-radius: 4px;
+    z-index: 1;
 }
 
 @mixin tab-container($bgColor,
@@ -1566,4 +1570,12 @@ button.anchor {
 
 .w-200{
     width: 200px;
-} 
+}
+
+.w-400{
+    width: 400px;
+}
+
+.border-top{
+    border-top: solid 1px var(--N100);
+}

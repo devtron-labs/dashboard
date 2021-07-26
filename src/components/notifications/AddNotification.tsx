@@ -92,6 +92,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     componentDidMount() {
         this.getInitialData();
+       
     }
 
     getInitialData() {
@@ -522,6 +523,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     render() {
         return <ErrorBoundary>
+           
             <div className="add-notification-page">
                 <div className="form__title mb-16">Add Notifications</div>
                 {this.renderAddCard()}
