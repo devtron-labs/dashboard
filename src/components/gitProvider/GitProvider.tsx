@@ -103,6 +103,9 @@ export default function GitProvider({ ...props }) {
 
     let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
+    function onSaveGitProviderName () {
+        // return console.log("hi")
+    }
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
@@ -135,6 +138,7 @@ export default function GitProvider({ ...props }) {
                             <GitProviderConfigModal
                                 closeGitConfigModal={() => setGitProviderConfigModal(false)}
                                 hostListOption={hostListOption}
+                                onSaveGitProviderName={onSaveGitProviderName()}
                             />
                         </VisibleModal>}
                 </>

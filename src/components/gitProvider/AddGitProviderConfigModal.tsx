@@ -4,7 +4,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 interface GitConfigModalProps {
     closeGitConfigModal: (event) => void;
     hostListOption: {value:number, label:string}[]
-    // onSaveGitProviderName: () => void
+    onSaveGitProviderName:  void
 }
 
 interface GitConfigModalState {
@@ -46,7 +46,7 @@ export class GitProviderConfigModal extends Component<GitConfigModalProps, GitCo
                 >Cancel
                     </button>
                 <button type="submit" className="cta" tabIndex={4}
-                //  onClick={()=>this.props.onSaveGitProviderName()}
+                 onClick={()=>this.props.onSaveGitProviderName}
                 >Save
                         {/* {this.state.form.isLoading ? <Progressing /> : "Save"} */}
                 </button>
