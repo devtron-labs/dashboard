@@ -4,8 +4,8 @@ export const TagOptions = [
     { label: 'Branch Fixed', value: 'SOURCE_TYPE_BRANCH_FIXED', isDisabled: false },
     // { label: "Branch Regex", value: "SOURCE_TYPE_BRANCH_REGEX" },
     // { label: "Tag Any", value: "SOURCE_TYPE_TAG_ANY" },
-    { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX', isDisabled: false, },
-    { label: 'Pull Request', value: 'SOURCE_TYPE_PULL_REQUEST', isDisabled: true, },
+    // { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX', isDisabled: false, },
+    { label: 'Pull Request', value: 'Webhook', isDisabled: false, },
 ];
 
 export const reactSelectStyles = {

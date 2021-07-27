@@ -40,10 +40,10 @@ export function getInitData(appId: string | number): Promise<any> {
 
 function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
-    // return get(URL)
-    return new Promise((resolve, reject) => {
-        resolve({ ...CiPipelineWebhook })
-    })
+    return get(URL)
+    // return new Promise((resolve, reject) => {
+    //     resolve({ ...CiPipelineWebhook })
+    // })
 }
 
 export function getSourceConfigParsed(appId): Promise<ResponseType> {
@@ -74,6 +74,7 @@ export function getSourceConfigParsed(appId): Promise<ResponseType> {
         parsedResponse.result.materials.forEach((material) => {
             getWebhookEvents(material.gitHostId).then((response) => {
                 //@ts-ignore
+                console.log(response)
                 material.webhookEvents = response.result.events;
             })
         })
@@ -146,11 +147,12 @@ export function deleteCIPipeline(formData, ciPipeline, gitMaterials, appId: numb
 }
 
 export function getWebhookEvents(gitHostId: string | number) {
+    // console.log(gitHostId)
     const URL = `git/host/${gitHostId}/event`;
-    // return get(URL);
-    return new Promise((resolve, reject) => {
-        resolve(WebhookEvents)
-    })
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve(WebhookEvents)
+    // })
 }
 
 function formatStages(allStages): any[] {

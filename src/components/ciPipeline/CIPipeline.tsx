@@ -85,6 +85,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
         else {
             getInitData(this.props.match.params.appId).then((response) => {
+                console.log(response)
                 this.setState({
                     ...this.state,
                     ...response.result,

@@ -18,25 +18,25 @@ export function saveGitProviderConfig(payload: any, id: any) {
 
 export function getGitHost(id: number | string): Promise<any> {
     const URL = `${Routes.GIT_HOST}/${id}`;
-    // return get(URL);
-    return new Promise((resolve, reject) => {
-        resolve({
-            result: {
-                ...GitHost,
-                id: id
-            }
-        })
-    })
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve({
+    //         result: {
+    //             ...GitHost,
+    //             id: id
+    //         }
+    //     })
+    // })
 }
 
 export function saveGitHost(payload): Promise<any> {
     const URL = `${Routes.GIT_HOST}`;
-    // return post(URL, payload);
-    return new Promise((resolve, reject) => {
-        resolve({
-            result: GitHost
-        })
-    })
+    return post(URL, payload);
+    // return new Promise((resolve, reject) => {
+    //     resolve({
+    //         result: GitHost
+    //     })
+    // })
 }
 
 const GitHost = {

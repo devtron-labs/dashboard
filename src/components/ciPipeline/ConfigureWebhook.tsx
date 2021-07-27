@@ -7,6 +7,7 @@ import ReactSelect from 'react-select';
 import { styles, menuList, DropdownIndicator } from '../charts/charts.util';
 
 export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
+    {console.log(materials[0].type, SourceTypeMap.PullRequest)}
     if (materials.length === 1 && materials[0].type === SourceTypeMap.PullRequest) {
         return <>
             <div className="pull-request-info bcb-1 bw-1 eb-5 br-4 mt-16">

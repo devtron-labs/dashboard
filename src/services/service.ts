@@ -301,19 +301,19 @@ export function getAppCheckList(): Promise<any> {
 
 export function getGitProviderList(): Promise<any> {
     const URL = `${Routes.GIT_PROVIDER}`;
-    // return get(URL);
-    return new Promise((resolve, reject) => {
-        resolve({ ...GitProviderList })
-    })
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve({ ...GitProviderList })
+    // })
 }
 
 
 export function getGitHostList(): Promise<any> {
     const URL = `${Routes.GIT_HOST}`;
-    // return get(URL);
-    return new Promise((resolve, reject) => {
-        resolve({ ...GitHostList })
-    })
+    return get(URL);
+    // return new Promise((resolve, reject) => {
+    //     resolve({ ...GitHostList })
+    // })
 }
 
 const GitHostList = {

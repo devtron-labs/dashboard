@@ -235,7 +235,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             }
             try {
                 const { result } = await saveGitHost(gitHostPayload);
-                // getHostList();
+                getHostList();
                 gitHostId = result;
             } catch (error) {
                 showError(error)

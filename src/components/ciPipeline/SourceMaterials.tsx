@@ -51,6 +51,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
     return <>
         <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
         {props.materials.map((mat, index) => {
+            
             const isGitProviderSelected: boolean = !!mat.gitHostId;
             let selectedMaterial = { value: mat.type, label: SourceTypeReverseMap[mat.type], isDisabled: false }
             let errorObj = props.validationRules?.sourceValue(mat.value);
@@ -69,9 +70,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 </div>
                 <div className="mt-16 flex left">
                     <div className="w-50 mr-8">
-                        <label className="form__label mb-6">Source Type*</label>
+                        <label className="form__label mb-6">Source type*</label>
                         <ReactSelect
-                            className=""
+                            className="workflow-ci__source"
                             placeholder="Source Type"
                             isSearchable={false}
                             options={TagOptions}
