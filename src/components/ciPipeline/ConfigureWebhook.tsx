@@ -31,10 +31,10 @@ export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
                     </div>
                 </div>
                 <div className="flex left fs-12 fw-6 mt-12">
-                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12">Click to copy webhook URL
+                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left">Click to copy webhook URL
                         <Copy className="icon-dim-16 ml-4 cursor" onClick={copyWebhookURL} />
                     </div>
-                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2">Click to copy secret key
+                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left">Click to copy secret key
                         <Copy className="icon-dim-16 ml-4 cursor" onClick={copySecretKey} />
                     </div>
                 </div>

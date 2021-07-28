@@ -170,6 +170,18 @@
     color: #e00000;
 }
 
+.configure-ci-webhook {
+    display: grid;
+    grid-template-columns: 32px auto;
+    gap: 12px;
+}
+
+.pull-request-fillter {
+    display: grid;
+    grid-template-columns: 200px auto;
+    gap: 16px;
+}
+
 .pull-request-info {
     display: grid;
     grid-template-columns: 20px auto;
