@@ -77,8 +77,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             className="workflow-ci__source"
                             placeholder="Source Type"
                             isSearchable={false}
-                            options={mat.webhookEvents}
-                            // value={selectedMaterial}
+                            options={TagOptions}
+                            value={selectedMaterial}
                             closeOnSelect={false}
                             onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
                             isClearable={false}
