@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SourceTypeMap } from '../../config';
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
@@ -8,9 +8,18 @@ import { styles, menuList, DropdownIndicator } from '../charts/charts.util';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 
 export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
+    const [showAddFilters, setAddFilters] = useState(false)
+    let material = materials.map((mat)=> mat)
+    let materialId = material.map(m=>m.id)
+    let webhookEvents = material.map(m=>m.webhookEvents)
+    
+    console.log(material.map(m=>m))
+    const selectr = webhookEvents ? webhookEvents.map((s)=>s) : ""
+    console.log(selectr)
+    
 
-    function handleAddFilter(){
-
+    function handleAddFilter() {
+        setAddFilters(true)
     }
 
     if (materials.length === 1 && materials[0].type === SourceTypeMap.PullRequest) {
@@ -24,7 +33,7 @@ export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
             </div>
             <div className="bcn-1 pl-16 pr-16 pt-12 pb-12 cn-9 br-5 mt-16">
                 <div className="configure-ci-webhook flex left">
-                    <Webhook className="icon-dim-32" />
+                    <Webhook className="icon-dim-24" />
                     <div>
                         <p className="fs-13 fw-6 m-0">Pre Requisite: Configure Webhook</p>
                         <p className="fs-13 m-0">Use below details to add a webhook to the git repository.</p>
@@ -55,7 +64,7 @@ export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
                             ...menuList,
                         }}
                     // onChange={(selected) => { this.props.handleProjectChange(parseInt((selected as any).value)) }}
-                    // options={projects}
+                    // options={}
                     />
                     <input type="text" className="form__input" placeholder="Enter target branch" />
                 </div>
@@ -63,6 +72,26 @@ export function ConfigureWebhook({ materials, copySecretKey, copyWebhookURL }) {
                     <input type="text" className="form__input" value="Source branch (regex)" disabled placeholder="" />
                     <input type="text" className="form__input" placeholder="Enter target branch" />
                 </div>
+                {showAddFilters ?
+                    <div className="pull-request-fillter mb-16">
+                        <ReactSelect
+                            className="w-200"
+                            autoFocus
+                            components={{
+                                DropdownIndicator,
+                            }}
+                            tabIndex="1"
+                            placeholder="Select Project"
+                            styles={{
+                                ...styles,
+                                ...menuList,
+                            }}
+                        // onChange={(selected) => { this.props.handleProjectChange(parseInt((selected as any).value)) }}
+                        // options={projects}
+                        />
+                        <input type="text" className="form__input" placeholder="Enter target branch" />
+                    </div> : null}
+
                 {/* <div className="pull-request-fillter">
                     <input type="text" className="form__input" value="Target branch (regex)" disabled placeholder="" />
                     <input type="text" className="form__input" placeholder="Enter Source branch" />

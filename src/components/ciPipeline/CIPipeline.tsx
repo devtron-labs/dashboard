@@ -52,6 +52,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDocker: false,
             showPostBuild: false,
             isAdvanced: false,
+           
         }
         this.validationRules = new ValidationRules();
         this.handlePipelineName = this.handlePipelineName.bind(this);
@@ -467,7 +468,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="pl-20 pr-20 pt-20 pb-20" style={{ maxHeight: "calc(100vh - 164px)", overflowY: "scroll" }}>
+                <div className="pl-20 pr-20 pt-20 pb-20" style={{ minHeight: "calc(100vh - 690px)", overflowY: "scroll" }}>
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>
