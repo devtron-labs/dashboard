@@ -153,6 +153,7 @@ export const SourceTypeMap = {
     BranchReges: 'SOURCE_TYPE_BRANCH_REGEX',
     TagAny: 'SOURCE_TYPE_TAG_ANY',
     TagRegex: 'SOURCE_TYPE_TAG_REGEX',
+    PullRequest: 'Webhook',
 };
 
 export const SourceTypeReverseMap = {
@@ -162,14 +163,6 @@ export const SourceTypeReverseMap = {
     SOURCE_TYPE_TAG_REGEX: 'Tag Regex',
     Webhook: 'Pull Request'
 };
-
-export const TagOptions = [
-    { label: 'Branch Fixed', value: 'SOURCE_TYPE_BRANCH_FIXED' },
-    // { label: "Branch Regex", value: "SOURCE_TYPE_BRANCH_REGEX" },
-    // { label: "Tag Any", value: "SOURCE_TYPE_TAG_ANY" },
-    { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX' },
-];
-
 
 export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
 

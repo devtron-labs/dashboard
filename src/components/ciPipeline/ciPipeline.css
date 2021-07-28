@@ -169,3 +169,14 @@
     padding: 0 60px;
     color: #e00000;
 }
+
+.pull-request-info {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 12px;
+    padding: 16px 10px;
+}
+
+.workflow-ci__source{
+    z-index: 1;
+}

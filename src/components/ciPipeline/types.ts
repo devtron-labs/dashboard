@@ -64,7 +64,7 @@ export interface CIPipelineState {
         scanEnabled?: boolean;
     },
     sourcePipelineURL?: string; //required Linked CI
-    gitMaterials: { gitMaterialId: number, materialName: string }[];
+    // gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
     showPreBuild: boolean;
@@ -107,8 +107,21 @@ export interface MaterialType {
     gitMaterialId: number;
     id: number;
     isSelected: boolean;
+    gitHostId: number;
+    gitHostName: string;
+    gitProviderId: number;
+    webhookEvents?: WebhookEvent[];
 }
 
+interface WebhookEvent {
+    id: number;
+    name: string;
+    selectors: {
+        id: number;
+        name: string;
+        value: string;
+    }[];
+}
 export interface CIPipelineProps extends RouteComponentProps<{ appId: string, ciPipelineId: string, workflowId: string }> {
     appName: string;
     connectCDPipelines: number;

@@ -11,8 +11,11 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import { SourceMaterials } from './SourceMaterials';
 import { CIPipelineState } from './types';
+import { ConfigureWebhook } from './ConfigureWebhook';
 
 interface CIPipelineAdvancedProps extends CIPipelineState {
+    copySecretKey: () => void;
+    copyWebhookURL: () => void;
     validationRules: any;
     closeCIDeleteModal: () => void;
     deletePipeline: () => void;
@@ -231,6 +234,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             </label>
             {this.renderTriggerType()}
             {this.renderMaterials()}
+            <ConfigureWebhook materials={this.props.form.materials}
+                copySecretKey={this.props.copySecretKey}
+                copyWebhookURL={this.props.copyWebhookURL} />
             <hr className="divider" />
             {this.renderStages('beforeDockerBuildScripts')}
             <hr className="divider" />

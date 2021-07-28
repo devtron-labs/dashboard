@@ -16,23 +16,22 @@ import { components } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
-import { GitProviderConfigModal } from './AddGitProviderConfigModal';
+import { GitHostConfigModal } from './AddGitHostConfigModal';
+import DiscoverCharts from '../charts/list/DiscoverCharts';
 
-interface Githost {
-    id: number;
-    name: string;
-    active: boolean;
-    eventTypeHeader: string;
-    secretHeader: string;
-    webhookSecret: string;
-    webhookUrl: string;
-}
-
+// interface Githost {
+//     id: number;
+//     name: string;
+//     active: boolean;
+//     eventTypeHeader: string;
+//     secretHeader: string;
+//     webhookSecret: string;
+//     webhookUrl: string;
+// }
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     const [providerList, setProviderList] = useState([])
-    const [hostList, setHostList] = useState([])
     const [hostListOption, setHostListOption] = useState([])
     const [isPageLoading, setIsPageLoading] = useState(true)
     const [isErrorLoading, setIsErrorLoading] = useState(false)
@@ -66,7 +65,13 @@ export default function GitProvider({ ...props }) {
         try {
             const { result: hosts = [] } = await getGitHostList();
             hosts.sort((a, b) => a.name.localeCompare(b.name))
-            setHostList(hosts)
+            let host = hosts.map(host => {
+                return {
+                    value: host.id,
+                    label: host.name
+                }
+            })
+            setHostListOption(host)
         } catch (error) {
             showError(error)
             setIsErrorLoading(true)
@@ -103,9 +108,7 @@ export default function GitProvider({ ...props }) {
 
     let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
-    function onSaveGitProviderName () {
-        // return console.log("hi")
-    }
+
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
@@ -135,10 +138,9 @@ export default function GitProvider({ ...props }) {
 
                     {showGitProviderConfigModal &&
                         <VisibleModal className="app-status__material-modal">
-                            <GitProviderConfigModal
+                            <GitHostConfigModal
                                 closeGitConfigModal={() => setGitProviderConfigModal(false)}
-                                hostListOption={hostListOption}
-                                onSaveGitProviderName={onSaveGitProviderName()}
+                                getHostList={getHostList}
                             />
                         </VisibleModal>}
                 </>
@@ -208,13 +210,13 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
 }
 
 
-function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName=undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
             auth: { value: authMode, error: "" },
-            hostName: {value: gitHost.value, error: ""}
+            // hostName: { value: gitHost.value, error: "" }
         },
         {
             name: {
@@ -229,16 +231,16 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
-            hostName: {
-                required: true,
-                validator: { error: 'Host Name is required', regex: /^.*$/ },
-            }
+            // hostName: {
+            //     required: true,
+            //     validator: { error: 'Host Name is required', regex: /^.*$/ },
+            // }
         }, onValidation);
 
     const [loading, setLoading] = useState(false)
-    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' }, hostName: {value: gitHost.value, error: ''} })
+    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' }, hostName: { value: gitHost.value, error: '' } })
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
-   
+
     function handleGithostChange(host) {
         setGithost({
             value: host,
@@ -247,6 +249,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     }
 
     async function onValidation() {
+       
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
@@ -259,9 +262,16 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 return
             }
         }
-        else if (state.hostName.value === undefined) {
-                setCustomState(state => ({ ...state, hostName: { value: '', error: 'Required' } }))
-                return
+        // else if (state.hostName.value) {
+        //     setCustomState(state => ({ ...state, hostName: { value: '', error: 'Required' } }))
+        //     return
+        // }
+
+        if (gitHost.value === undefined ){
+             setGithost({
+                 ...gitHost,
+                 error: "This is a required field"
+             })
         }
 
         let gitHostId = gitHost.value.value;
@@ -328,38 +338,39 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 <div className="form__row form__row--two-third">
                     <div>
                         <div>
-                        <label className="form__label">Git provider*</label>
-                        <CreatableSelect
-                            name="host"
-                            value={gitHost.value}
-                            className="react-select--height-44 fs-13 bcn-0"
-                            placeholder="Select git provider"
-                            isMulti={false}
-                            isSearchable
-                            isClearable={false}
-                            options={hostListOption}
-                            styles={{
-                                ...multiSelectStyles,
-                                menuList: (base) => {
-                                    return {
-                                        ...base,
-                                        position: 'relative',
-                                        paddingBottom: '0px',
-                                        maxHeight: '190px',
+                            <label className="form__label">Git provider*</label>
+                            <CreatableSelect
+                                name="host"
+                                value={gitHost.value}
+                                className="react-select--height-44 fs-13 bcn-0"
+                                placeholder="Select git provider"
+                                isMulti={false}
+                                isSearchable
+                                isClearable={false}
+                                options={hostListOption}
+                                styles={{
+                                    ...multiSelectStyles,
+                                    menuList: (base) => {
+                                        return {
+                                            ...base,
+                                            position: 'relative',
+                                            paddingBottom: '0px',
+                                            maxHeight: '176px',
+                                        }
                                     }
-                                }
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                MenuList,
-                                Option
-                            }}
-                            onChange={(e) => handleGithostChange(e)}
-                        />
-                    </div>
-                    
-                    { saveGitHost && gitHost.value == undefined  ? <div className="cr-5 fs-12">This is a required field</div> : null }
+                                }}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator,
+                                    MenuList,
+                                    Option
+                                }}
+                                onChange={(e) => handleGithostChange(e)}
+                            />
+                        </div>
+
+                         <div className="cr-5 fs-12">{gitHost.error}</div>
+                         { gitHost.value == undefined ? <div className="cr-5 fs-11">This is a required field</div> : ""}
                     </div>
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>

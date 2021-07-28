@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigParsed, getCIPipelineNameSuggestion } from './ciPipeline.service';
+import { saveCIPipeline, deleteCIPipeline, getInitDataWithCIPipeline, getInitData } from './ciPipeline.service';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
-import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
+import { CIPipelineProps, CIPipelineState } from './types';
 import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDialog, showError } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { CIPipelineAdvanced } from './CIPipelineAdvanced';
 import { SourceMaterials } from './SourceMaterials';
+import { ConfigureWebhook } from './ConfigureWebhook';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
 import { classNames } from 'react-select/src/utils';
@@ -43,7 +44,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 linkedCount: 0,
                 scanEnabled: false,
             },
-            gitMaterials: [],
+            // gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -67,45 +68,32 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.handleDockerArgs = this.handleDockerArgs.bind(this);
         this.handlePostBuild = this.handlePostBuild.bind(this);
         this.discardChanges = this.discardChanges.bind(this);
-        this.handleDockerArgChange=this.handleDockerArgChange.bind(this);
-        this.addDockerArg=this.addDockerArg.bind(this);
-        this.removeDockerArgs=this.removeDockerArgs.bind(this);
+        this.handleDockerArgChange = this.handleDockerArgChange.bind(this);
+        this.addDockerArg = this.addDockerArg.bind(this);
+        this.removeDockerArgs = this.removeDockerArgs.bind(this);
         this.handleSourceChange = this.handleSourceChange.bind(this);
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.toggleCIPipelineView = this.toggleCIPipelineView.bind(this);
     }
-
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
-            getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+            getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response, loadingData: false, isAdvanced: true });
             }).catch((error: ServerErrors) => {
                 showError(error);
-                this.setState({ loadingData: false });
             })
         }
         else {
-            getCIPipelineNameSuggestion(this.props.match.params.appId).then((response) => {
+            getInitData(this.props.match.params.appId).then((response) => {
+                // console.log(response)
                 this.setState({
-                    form: {
-                        ...this.state.form,
-                        name: response.result
-                    },
-                })
-            }).catch((error) => {
-
-            })
-            getSourceConfigParsed(this.props.match.params.appId).then((response) => {
-                this.setState({
+                    ...this.state,
+                    ...response.result,
                     view: ViewType.FORM,
-                    form: {
-                        ...this.state.form,
-                        materials: response.result.materials
-                    },
-                    gitMaterials: response.result.gitMaterials,
-                    loadingData: false,
-                    isAdvanced: false,
-                });
+                })
+            }).catch((error: ServerErrors) => {
+               console.error(error);
+                showError(error);
             })
         }
     }
@@ -164,12 +152,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState(state);
     }
 
-    selectSourceType(event, gitMaterialId: number): void {
+    selectSourceType(selectedMaterial, gitMaterialId: number): void {
         let { form } = { ...this.state };
         let allMaterials = this.state.form.materials.map((mat) => {
             return {
                 ...mat,
-                type: (gitMaterialId == mat.gitMaterialId) ? event.target.value : mat.type,
+                type: (gitMaterialId === mat.gitMaterialId) ? selectedMaterial.value : mat.type,
             }
         })
         form.materials = allMaterials;
@@ -187,21 +175,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             }
             else return mat;
         })
-        form.materials = allMaterials;
-        this.setState({ form });
-    }
-
-    selectMaterial(material: MaterialType): void {
-        let allMaterials = this.state.form.materials.map((mat) => {
-            if (mat.gitMaterialId == material.gitMaterialId) {
-                return {
-                    ...mat,
-                    isSelected: !mat.isSelected,
-                }
-            }
-            else return mat;
-        })
-        let { form } = { ...this.state };
         form.materials = allMaterials;
         this.setState({ form });
     }
@@ -304,6 +277,26 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
+    copySecretKey(): void {
+        let textarea = document.createElement("textarea");
+        let main = document.getElementsByClassName("main")[0];
+        main.appendChild(textarea)
+        textarea.value = 'secret key';
+        textarea.select();
+        document.execCommand("copy");
+        main.removeChild(textarea);
+    }
+
+    copyWebhookURL(): void {
+        let textarea = document.createElement("textarea");
+        let main = document.getElementsByClassName("main")[0];
+        main.appendChild(textarea)
+        textarea.value = 'webhoook url';
+        textarea.select();
+        document.execCommand("copy");
+        main.removeChild(textarea);
+    }
+
     savePipeline() {
         let isUnique = this.checkUniqueness();
         if (!isUnique) {
@@ -324,7 +317,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
             if (response) {
                 toast.success(msg);
                 this.setState({ loadingData: false });
@@ -338,7 +331,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -409,17 +402,24 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderBasicCI() {
-        return <SourceMaterials showError={this.state.showError}
-            validationRules={this.validationRules}
-            materials={this.state.form.materials}
-            selectSourceType={this.selectSourceType}
-            handleSourceChange={this.handleSourceChange}
-        />
+        return <>
+            <SourceMaterials showError={this.state.showError}
+                validationRules={this.validationRules}
+                materials={this.state.form.materials}
+                selectSourceType={this.selectSourceType}
+                handleSourceChange={this.handleSourceChange}
+            />
+            <ConfigureWebhook materials={this.state.form.materials}
+                copySecretKey={this.copySecretKey}
+                copyWebhookURL={this.copyWebhookURL} />
+        </>
     }
 
     renderAdvanceCI() {
         return <CIPipelineAdvanced {...this.state}
             validationRules={this.validationRules}
+            copySecretKey={this.copySecretKey}
+            copyWebhookURL={this.copyWebhookURL}
             closeCIDeleteModal={this.closeCIDeleteModal}
             deletePipeline={this.deletePipeline}
             handlePreBuild={this.handlePreBuild}
@@ -444,13 +444,15 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
-            return <div style={{minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
+            return <div style={{ minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
         }
         else if (this.state.isAdvanced) {
             return this.renderAdvanceCI()
         }
         else {
-            return this.renderBasicCI()
+            return <>
+                {this.renderBasicCI()}
+            </>
         }
     }
 

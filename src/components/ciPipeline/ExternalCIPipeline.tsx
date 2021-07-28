@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getCIPipelineParsed, saveCIPipeline, deleteCIPipeline, getSourceConfigParsed } from './ciPipeline.service';
+import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getSourceConfigParsed } from './ciPipeline.service';
 import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
@@ -72,7 +72,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     componentDidMount() {
         this.getHostURLConfig();
         if (this.props.match.params.ciPipelineId) {
-            getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+            getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response });
             }).catch((error: ServerErrors) => {
                 this.setState({ loadingData: false });
@@ -157,7 +157,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, true).then((response) => {
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, true).then((response) => {
             if (response) {
                 toast.success(msg);
                 let state = { ...this.state };

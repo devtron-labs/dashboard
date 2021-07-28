@@ -330,3 +330,10 @@
 .security-scan-table--w-18 {
     width: 18%;
 }
+
+.git-commit-info__grid {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 16px;
+    place-items: center center;
+}

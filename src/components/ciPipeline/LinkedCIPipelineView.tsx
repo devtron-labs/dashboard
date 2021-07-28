@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
+import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
@@ -43,7 +43,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 name: "",
                 linkedCount: 0,
             },
-            gitMaterials: [],
+            // gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -57,7 +57,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     componentDidMount() {
-        getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
             this.setState({ ...response, loadingData: false }, () => {
                 this.generateSourceUrl();
             });
@@ -100,7 +100,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
