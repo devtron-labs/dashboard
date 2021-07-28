@@ -249,7 +249,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     }
 
     async function onValidation() {
-       
+
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
@@ -262,31 +262,31 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 return
             }
         }
-        // else if (state.hostName.value) {
+        // else if (!gitHost.value) {
         //     setCustomState(state => ({ ...state, hostName: { value: '', error: 'Required' } }))
         //     return
         // }
 
-        if (gitHost.value === undefined ){
-             setGithost({
-                 ...gitHost,
-                 error: "This is a required field"
-             })
+        if (gitHost.value === undefined) {
+            setGithost({
+                ...gitHost,
+                error: "This is a required field"
+            })
         }
-
-        let gitHostId = gitHost.value.value;
-
-        if (gitHost.value.__isNew__) {
-            let gitHostPayload = {
-                name: gitHost.value.value,
-                active: true
-            }
-            try {
-                const { result } = await saveGitHost(gitHostPayload);
-                getHostList();
-                gitHostId = result;
-            } catch (error) {
-                showError(error)
+        else {
+            if (gitHost.value.__isNew__) {
+                let gitHostPayload = {
+                    name: gitHost.value.value,
+                    active: true
+                }
+                try {
+                    let gitHostId = gitHost.value;
+                    const { result } = await saveGitHost(gitHostPayload);
+                    getHostList();
+                    gitHostId = result.value;
+                } catch (error) {
+                    showError(error)
+                }
             }
         }
 
@@ -369,8 +369,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                             />
                         </div>
 
-                         <div className="cr-5 fs-12">{gitHost.error}</div>
-                         { gitHost.value == undefined ? <div className="cr-5 fs-11">This is a required field</div> : ""}
+                        <div className="cr-5 fs-11">{gitHost.error}</div>
                     </div>
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>
