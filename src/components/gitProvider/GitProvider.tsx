@@ -323,7 +323,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             <components.MenuList {...props}>
                 {props.children}
                 <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => setGitProviderConfigModal(!showGitProviderConfigModal)}>
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Provider
+                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Host
                </div>
             </components.MenuList>
         );
@@ -338,7 +338,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 <div className="form__row form__row--two-third">
                     <div>
                         <div>
-                            <label className="form__label">Git provider*</label>
+                            <label className="form__label">Git host*</label>
                             <CreatableSelect
                                 name="host"
                                 value={gitHost.value}
