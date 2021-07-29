@@ -12,7 +12,7 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { styles, DropdownIndicator, Option } from './gitProvider.util';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { components } from 'react-select';
+import ReactSelect, { components }from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
@@ -37,7 +37,9 @@ export default function GitProvider({ ...props }) {
     const [isErrorLoading, setIsErrorLoading] = useState(false)
     const [errors, setErrors] = useState([])
     const [showGitProviderConfigModal, setGitProviderConfigModal] = useState(false)
-
+    const [collapsed, toggleCollapse] = useState(true);
+  
+    console.log(collapsed)
     async function getInitData() {
         try {
             const { result: providers = [] } = await getGitProviderList()
@@ -109,6 +111,10 @@ export default function GitProvider({ ...props }) {
     let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
 
+
+    function toggleCollapsed () {
+        toggleCollapse(!collapsed)
+    }
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
@@ -134,6 +140,8 @@ export default function GitProvider({ ...props }) {
                     getHostList={getHostList}
                     getProviderList={getProviderList}
                     reload={getInitData}
+                    collapsed={collapsed}
+                    toggleCollapse={toggleCollapse}
                 />
 
                     {showGitProviderConfigModal &&
@@ -150,8 +158,8 @@ export default function GitProvider({ ...props }) {
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, ...props }) {
-    const [collapsed, toggleCollapse] = useState(true);
+function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, collapsed,toggleCollapse, ...props }) {
+    // const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
     let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
@@ -250,6 +258,14 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
     async function onValidation() {
 
+        if (!gitHost.value) {
+            setGithost({
+                ...gitHost,
+                error: "This is a required field"
+            })
+            return
+        }
+           
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
@@ -267,26 +283,18 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         //     return
         // }
 
-        if (gitHost.value === undefined) {
-            setGithost({
-                ...gitHost,
-                error: "This is a required field"
-            })
-        }
-        else {
-            if (gitHost.value.__isNew__) {
-                let gitHostPayload = {
-                    name: gitHost.value.value,
-                    active: true
-                }
-                try {
-                    let gitHostId = gitHost.value;
-                    const { result } = await saveGitHost(gitHostPayload);
-                    getHostList();
-                    gitHostId = result.value;
-                } catch (error) {
-                    showError(error)
-                }
+        if (gitHost.value && gitHost.value.__isNew__) {
+            let gitHostPayload = {
+                name: gitHost.value.value,
+                active: true
+            }
+            try {
+                let gitHostId = gitHost.value;
+                const { result } = await saveGitHost(gitHostPayload);
+                getHostList();
+                gitHostId = result.value;
+            } catch (error) {
+                showError(error)
             }
         }
 
@@ -339,7 +347,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     <div>
                         <div>
                             <label className="form__label">Git host*</label>
-                            <CreatableSelect
+                            <ReactSelect
                                 name="host"
                                 value={gitHost.value}
                                 className="react-select--height-44 fs-13 bcn-0"

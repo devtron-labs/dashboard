@@ -33,7 +33,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
     }
     else return <div className="select-material select-material--trigger-view">
       <div className="material-list__title"> Select Material </div>
-      <MaterialHistory material={material}
+      <MaterialHistory
+        material={material}
         pipelineName={this.props.pipelineName}
         selectCommit={context.selectCommit}
         toggleChanges={context.toggleChanges} />
@@ -48,7 +49,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
     }
     return <div className="material-list">
       <div className="material-list__title material-list__title--border-bottom">Material Source</div>
-      <MaterialSource material={this.props.material}
+      <MaterialSource
+        material={this.props.material}
         selectMaterial={context.selectMaterial}
         refreshMaterial={refreshMaterial}
       />

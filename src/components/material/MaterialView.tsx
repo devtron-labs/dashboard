@@ -97,7 +97,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                     {props.children}
                                     <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top p-10 cb-5 block fw-5 anchor cursor no-decor">
                                         <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                        Add Git Provider
+                                        Add Git Account
                                     </NavLink>
                                 </components.MenuList>
                             },

@@ -21,8 +21,8 @@ export class CDMaterial extends Component<CDMaterialProps> {
           <a rel="noreferrer noopener" target="_blank" href={mat.commitLink} className="commit-hash commit-hash--cd" >
             <img src={commit} alt="commit" className="commit-hash__icon" />{mat.revision}
           </a>
-          <div>Date: {mat.modifiedTime}</div>
-          <div>Author: {mat.author}</div>
+          <div>{mat.modifiedTime}</div>
+          <div> {mat.author}</div>
           <div className="material-history__commit-msg">{mat.message}</div>
         </div>
       })}

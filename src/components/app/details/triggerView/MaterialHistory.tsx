@@ -2,6 +2,30 @@ import React, { Component } from 'react';
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg';
 import { ReactComponent as Arrow } from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
 import { ReactComponent as Commit } from '../../../../assets/icons/ic-commit.svg';
+import { ReactComponent as PersonIcon } from '../../../../assets/icons/ic-person.svg';
+import { ReactComponent as CalendarIcon } from '../../../../assets/icons/ic-calendar.svg';
+import { ReactComponent as MessageIcon } from '../../../../assets/icons/ic-message.svg';
+import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
+import { ReactComponent as BranchMain } from '../../../../assets/icons/ic-branch-main.svg';
+import { string } from 'prop-types';
+import TriggerViewMergedCI from './TriggerViewSelectCiMaterial';
+
+export interface Data {
+    author: string;
+    date: string;
+    gitUrl: string;
+    header: string;
+    sourceBranchName: string;
+    sourceCheckout: string;
+    targetBranchName: string;
+    targetCheckout: string;
+}
+
+export interface WebHookData {
+    id: number;
+    eventActionType: string;
+    data: Data
+}
 
 export interface CommitHistory {
     author: string;
@@ -12,6 +36,7 @@ export interface CommitHistory {
     message: string;
     isSelected: boolean;
     showChanges: boolean;
+    webhookData: WebHookData
 }
 
 export interface CIMaterialType {
@@ -65,22 +90,35 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                     if (this.props.selectCommit)
                         this.props.selectCommit(this.props.material.id.toString(), history.commit);
                 }}>
-                    <div className="material-history__header">
-                        <a href={history.commitURL} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
-                            <Commit className="commit-hash__icon" />{history.commit}
-                        </a>
-                        {this.props.selectCommit ? <div className="material-history__select-text" >
-                            {history.isSelected ? <Check className="align-right" /> : "Select"}
+
+                    <div>
+                        {history.webhookData && history.webhookData.eventActionType == "merged" ?
+                            <TriggerViewMergedCI
+                                history={history}
+                                selectCommit={this.props.selectCommit}
+                                toggleChanges={this.props.toggleChanges}
+                                material={this.props.material}
+                            /> :
+                            <>
+                                <div className="ml-16 mr-16 flex left" style={{ justifyContent: "space-between" }}>
+                                    <a href={history.commitURL} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
+                                        <Commit className="commit-hash__icon" />{history.commit}
+                                    </a>
+                                    {this.props.selectCommit ? <div className="material-history__select-text" >
+                                        {history.isSelected ? <Check className="align-right" /> : "Select"}
+                                    </div> : null}
+                                </div>
+                                <div className="material-history__text">Author: {history.author}</div>
+                                <div className="material-history__text">Date: {history.date}</div>
+                                <div className="material-history__text material-history-text--padded">{history.message}</div>
+                            </>}
+                        {history.showChanges ? <div className="material-history__all-changes">
+                            {history.changes.map((change, index) => {
+                                return <div className="pl-1" key={index}>{change}</div>
+                            })}
                         </div> : null}
                     </div>
-                    <div className="material-history__text">Author: {history.author}</div>
-                    <div className="material-history__text">Date: {history.date}</div>
-                    <div className="material-history__text material-history-text--padded">{history.message}</div>
-                    {history.showChanges ? <div className="material-history__all-changes">
-                        {history.changes.map((change, index) => {
-                            return <div key={index}>{change}</div>
-                        })}
-                    </div> : null}
+
                     {this.renderShowChangeButton(history)}
                 </div>
             })}
