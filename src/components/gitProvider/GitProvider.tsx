@@ -9,15 +9,13 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { styles, DropdownIndicator, Option } from './gitProvider.util';
+import { DropdownIndicator, Option } from './gitProvider.util';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import ReactSelect, { components }from 'react-select';
-import CreatableSelect from 'react-select/creatable';
 import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
 import { GitHostConfigModal } from './AddGitHostConfigModal';
-import DiscoverCharts from '../charts/list/DiscoverCharts';
 
 // interface Githost {
 //     id: number;
@@ -167,7 +165,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
         if (!collapsed) return
         async function update() {
             let payload = {
-                id: id || 0, name, url, authMode, active: enabled,
+                id: id || 0, name, url, authMode, active: enabled, gitHostId,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {})
             }
@@ -222,7 +220,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             name: { value: name, error: "" },
             url: { value: url, error: "" },
             auth: { value: authMode, error: "" },
-            // hostName: { value: gitHost.value, error: "" }
         },
         {
             name: {
@@ -237,10 +234,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
-            // hostName: {
-            //     required: true,
-            //     validator: { error: 'Host Name is required', regex: /^.*$/ },
-            // }
         }, onValidation);
 
     const [loading, setLoading] = useState(false)
@@ -372,7 +365,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                                     Option
                                 }}
                                 onChange={(e) => handleGithostChange(e)}
-                                isDisabled={gitHost.value}
+                                isDisabled={gitHostId}
                             />
                         </div>
 
