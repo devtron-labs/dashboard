@@ -247,7 +247,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         })
     }
 
-
     async function onValidation() {
 
         if (!gitHost.value) {
@@ -293,7 +292,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         let payload = {
             id: id || 0,
             name: state.name.value,
-            gitHostId: gitHost.value.value,
+            gitHostId: gitHostId,
             url: state.url.value,
             authMode: state.auth.value,
             active,
