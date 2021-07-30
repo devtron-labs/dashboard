@@ -150,18 +150,7 @@ export const TriggerTypeMap = {
 
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
-    BranchReges: 'SOURCE_TYPE_BRANCH_REGEX',
-    TagAny: 'SOURCE_TYPE_TAG_ANY',
-    TagRegex: 'SOURCE_TYPE_TAG_REGEX',
-    PullRequest: 'Webhook',
-};
-
-export const SourceTypeReverseMap = {
-    SOURCE_TYPE_BRANCH_FIXED: 'Branch Fixed',
-    SOURCE_TYPE_BRANCH_REGEX: 'Branch Regex',
-    SOURCE_TYPE_TAG_ANY: 'Tag Any',
-    SOURCE_TYPE_TAG_REGEX: 'Tag Regex',
-    Webhook: 'Pull Request'
+    WEBHOOK: 'WEBHOOK',
 };
 
 export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";

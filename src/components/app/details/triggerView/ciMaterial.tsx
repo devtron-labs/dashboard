@@ -14,11 +14,10 @@ import { MaterialSource } from '../../details/triggerView/MaterialSource';
 export class CIMaterial extends Component<CIMaterialProps> {
 
   renderMaterialHistory(context, material: CIMaterialType) {
-    let isTagRegex = material.type === SourceTypeMap.TagRegex && material.history.length === 0;
-    if (material.isMaterialLoading || isTagRegex || material.isRepoError || material.isBranchError) { //Error or Empty State
+    if (material.isMaterialLoading || material.isRepoError || material.isBranchError) { //Error or Empty State
       return <div className="select-material select-material--trigger-view">
         <div className="select-material__empty-state-container">
-          <EmptyStateCIMaterial isTagRegex={isTagRegex}
+          <EmptyStateCIMaterial
             isRepoError={material.isRepoError}
             isBranchError={material.isBranchError}
             gitMaterialName={material.gitMaterialName}

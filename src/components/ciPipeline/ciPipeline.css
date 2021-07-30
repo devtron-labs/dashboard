@@ -176,13 +176,13 @@
     gap: 12px;
 }
 
-.pull-request-fillter {
+.ci-webhook-condition {
     display: grid;
-    grid-template-columns: 200px auto;
+    grid-template-columns: 200px 500px 30px;
     gap: 16px;
 }
 
-.pull-request-info {
+.ci-webhook-info {
     display: grid;
     grid-template-columns: 20px auto;
     gap: 12px;
@@ -191,4 +191,8 @@
 
 .workflow-ci__source{
     z-index: 1;
+}
+
+.webhook-config-container .add-filter {
+    width : 100px;
 }

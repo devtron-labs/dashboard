@@ -3,7 +3,6 @@ import img from '../../../../assets/img/ic-empty-error@2x.png';
 import EmptyState from '../../../EmptyState/EmptyState';
 
 interface EmptyStateCIMaterialProps {
-  isTagRegex: boolean;
   isRepoError: boolean;
   isBranchError: boolean;
   gitMaterialName: string;
@@ -18,15 +17,7 @@ interface EmptyStateCIMaterialProps {
 export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
 
   getData(): { img, title, subtitle, cta } {
-    if (this.props.isTagRegex) {
-      return {
-        img: <img src={img} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title">Create a tag on your repository, no commits are available.</h1>,
-        subtitle: null,
-        cta: null
-      }
-    }
-    else if (this.props.isRepoError) {
+    if (this.props.isRepoError) {
       return {
         img: <img src={img} alt="no commits found" className="empty-state__img--ci-material" />,
         title: <h1 className="empty__title">{this.props.repoErrorMsg}</h1>,

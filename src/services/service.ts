@@ -308,3 +308,18 @@ export function getGitHostList(): Promise<any> {
     const URL = `${Routes.GIT_HOST}`;
     return get(URL);
 }
+
+export const getGitProviderConfig = (id: number): Promise<any> => {
+    const URL = `${Routes.GIT_PROVIDER}/${id}`;
+    return get(URL);
+}
+
+export const getGitHostConfig = (id: number): Promise<any> => {
+    const URL = `${Routes.GIT_HOST}/${id}`;
+    return get(URL);
+}
+
+export function getWebhookEvents(gitHostId: string | number) {
+    const URL = `git/host/${gitHostId}/event`;
+    return get(URL);
+}

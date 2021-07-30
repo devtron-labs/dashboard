@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { TriggerType } from '../../config';
+import { TriggerType, SourceTypeMap } from '../../config';
 import { Trash, Page, Toggle } from '../common';
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -14,8 +14,7 @@ import { CIPipelineState } from './types';
 import { ConfigureWebhook } from './ConfigureWebhook';
 
 interface CIPipelineAdvancedProps extends CIPipelineState {
-    copySecretKey: () => void;
-    copyWebhookURL: () => void;
+    copyToClipboard: (text : string) => void;
     validationRules: any;
     closeCIDeleteModal: () => void;
     deletePipeline: () => void;
@@ -36,6 +35,12 @@ interface CIPipelineAdvancedProps extends CIPipelineState {
     handleSourceChange: (event, gitMaterialId: number) => void;
     handlePipelineName: (event) => void;
     selectSourceType: (event, gitMaterialId: number) => void;
+    getSelectedWebhookEvent : () => any;
+    addWebhookCondition : () => void;
+    deleteWebhookCondition : (index : number) => void;
+    onWebhookConditionSelectorChange : (index : number, selectorId : number) => void;
+    onWebhookConditionSelectorValueChange : (index : number, value : string) => void;
+
 }
 
 export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
@@ -217,7 +222,24 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             materials={this.props.form.materials}
             selectSourceType={this.props.selectSourceType}
             handleSourceChange={this.props.handleSourceChange}
+            includeWebhookEvents={true}
+            ciPipelineSourceTypeOptions={this.props.form.ciPipelineSourceTypeOptions}
         />
+    }
+
+    renderWebhookConfiguration() {
+        let _materials = this.props.form.materials;
+        if (_materials.length === 1 && _materials[0].type === SourceTypeMap.WEBHOOK ){
+            return <ConfigureWebhook webhookConditionList={this.props.form.webhookConditionList}
+                                     gitHost={this.props.form.gitHost}
+                                     selectedWebhookEvent={this.props.getSelectedWebhookEvent()}
+                                     copyToClipboard={this.props.copyToClipboard}
+                                     addWebhookCondition={this.props.addWebhookCondition}
+                                     deleteWebhookCondition={this.props.deleteWebhookCondition}
+                                     onWebhookConditionSelectorChange={this.props.onWebhookConditionSelectorChange}
+                                     onWebhookConditionSelectorValueChange={this.props.onWebhookConditionSelectorValueChange}
+                    />
+        }
     }
 
     render() {
@@ -234,9 +256,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             </label>
             {this.renderTriggerType()}
             {this.renderMaterials()}
-            <ConfigureWebhook materials={this.props.form.materials}
-                copySecretKey={this.props.copySecretKey}
-                copyWebhookURL={this.props.copyWebhookURL} />
+            {this.renderWebhookConfiguration()}
             <hr className="divider" />
             {this.renderStages('beforeDockerBuildScripts')}
             <hr className="divider" />
