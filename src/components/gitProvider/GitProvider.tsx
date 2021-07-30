@@ -292,7 +292,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         let payload = {
             id: id || 0,
             name: state.name.value,
-            gitHostId: gitHostId,
+            gitHostId: gitHost.value.value,
             url: state.url.value,
             authMode: state.auth.value,
             active,
