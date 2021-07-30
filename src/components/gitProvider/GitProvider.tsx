@@ -247,7 +247,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         })
     }
 
-
     async function onValidation() {
 
         if (!gitHost.value) {
