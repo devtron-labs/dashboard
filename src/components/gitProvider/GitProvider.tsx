@@ -37,9 +37,7 @@ export default function GitProvider({ ...props }) {
     const [isErrorLoading, setIsErrorLoading] = useState(false)
     const [errors, setErrors] = useState([])
     const [showGitProviderConfigModal, setGitProviderConfigModal] = useState(false)
-    const [collapsed, toggleCollapse] = useState(true);
-  
-    console.log(collapsed)
+    // const [collapsed, toggleCollapse] = useState(true);
     async function getInitData() {
         try {
             const { result: providers = [] } = await getGitProviderList()
@@ -112,9 +110,9 @@ export default function GitProvider({ ...props }) {
 
 
 
-    function toggleCollapsed () {
-        toggleCollapse(!collapsed)
-    }
+    // function toggleCollapsed () {
+    //     toggleCollapse(!collapsed)
+    // }
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
@@ -140,8 +138,8 @@ export default function GitProvider({ ...props }) {
                     getHostList={getHostList}
                     getProviderList={getProviderList}
                     reload={getInitData}
-                    collapsed={collapsed}
-                    toggleCollapse={toggleCollapse}
+                    // collapsed={collapsed}
+                    // toggleCollapse={toggleCollapse}
                 />
 
                     {showGitProviderConfigModal &&
@@ -158,8 +156,8 @@ export default function GitProvider({ ...props }) {
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, collapsed,toggleCollapse, ...props }) {
-    // const [collapsed, toggleCollapse] = useState(true);
+function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, ...props }) {
+    const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
     let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
@@ -351,7 +349,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                                 name="host"
                                 value={gitHost.value}
                                 className="react-select--height-44 fs-13 bcn-0"
-                                placeholder="Select git provider"
+                                placeholder="Select git host"
                                 isMulti={false}
                                 isSearchable
                                 isClearable={false}
@@ -374,6 +372,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                                     Option
                                 }}
                                 onChange={(e) => handleGithostChange(e)}
+                                isDisabled={gitHost.value}
                             />
                         </div>
 
