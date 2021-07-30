@@ -361,12 +361,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let history = node.inputMaterialList[i].history.filter(hstry => hstry.isSelected);
                 if (!history.length) history.push(node.inputMaterialList[i].history[0]);
                 history.map((element) => {
-                    return ciPipelineMaterials.push({
+                    let historyItem = {
                         Id: node.inputMaterialList[i].id,
                         GitCommit: {
                             Commit: element.commit,
                         }
-                    });
+                    }
+                    if(!element.commit){
+                        historyItem.GitCommit['WebhookData'] = {
+                           id: element.webhookData.id
+                        }
+                    }
+                    return ciPipelineMaterials.push(historyItem);
                 })
             }
         }

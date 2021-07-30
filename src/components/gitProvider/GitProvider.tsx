@@ -12,7 +12,7 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { DropdownIndicator, Option } from './gitProvider.util';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import ReactSelect, { components }from 'react-select';
+import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
 import { GitHostConfigModal } from './AddGitHostConfigModal';
@@ -89,6 +89,7 @@ export default function GitProvider({ ...props }) {
 
     useEffect(() => {
         getInitData();
+
     }, [])
 
     if (isPageLoading) {
@@ -136,8 +137,8 @@ export default function GitProvider({ ...props }) {
                     getHostList={getHostList}
                     getProviderList={getProviderList}
                     reload={getInitData}
-                    // collapsed={collapsed}
-                    // toggleCollapse={toggleCollapse}
+                // collapsed={collapsed}
+                // toggleCollapse={toggleCollapse}
                 />
 
                     {showGitProviderConfigModal &&
@@ -160,7 +161,6 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
     const [loading, setLoading] = useState(false);
     let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
-
     useEffectAfterMount(() => {
         if (!collapsed) return
         async function update() {
@@ -249,14 +249,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
     async function onValidation() {
 
-        if (!gitHost.value) {
-            setGithost({
-                ...gitHost,
-                error: "This is a required field"
-            })
-            return
-        }
-           
+
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
@@ -269,10 +262,14 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 return
             }
         }
-        // else if (!gitHost.value) {
-        //     setCustomState(state => ({ ...state, hostName: { value: '', error: 'Required' } }))
-        //     return
-        // }
+        
+        if (!gitHost.value) {
+            setGithost({
+                ...gitHost,
+                error: "This is a required field"
+            })
+            return
+        }
 
         if (gitHost.value && gitHost.value.__isNew__) {
             let gitHostPayload = {
@@ -280,15 +277,15 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 active: true
             }
             try {
-                let gitHostId = gitHost.value;
+                let gitHostId = gitHost.value.value;
                 const { result } = await saveGitHost(gitHostPayload);
-                getHostList();
-                gitHostId = result.value;
+                await getHostList();
+
+                gitHostId = result;
             } catch (error) {
                 showError(error)
             }
         }
-
         let payload = {
             id: id || 0,
             name: state.name.value,
@@ -303,9 +300,8 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         const api = id ? updateGitProviderConfig : saveGitProviderConfig
         try {
             setLoading(true)
-            api(payload, id);
+            await api(payload, id);
             reload();
-
             toast.success('Successfully saved.')
         }
         catch (err) {
@@ -321,7 +317,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => setGitProviderConfigModal(!showGitProviderConfigModal)}>
+                <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => {setGitProviderConfigModal(true); toggleCollapse(false)}}>
                     <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Host
                </div>
             </components.MenuList>

@@ -166,7 +166,7 @@ export const getCIMaterialList = (params) => {
                         author: history.Author,
                         message: history.Message,
                         date: history.Date ? moment(history.Date).format(Moment12HourFormat) : "",
-                        commit: history.Commit ? history.Commit : yamlJsParser.stringify(history.webhookData),
+                        commit: history?.Commit,
                         isSelected: indx == 0,
                         showChanges: false,
                         webhookData: history.webhookData ? {
