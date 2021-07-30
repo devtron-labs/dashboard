@@ -21,7 +21,6 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
     }
     return (
         <div>
-            {console.log(history.webhookData.data["source checkout"])}
             <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
                 <div className="ml-16 ">
                     <div className="flex left cn-9 fw-6 fs-13"><BranchIcon className="icon-dim-16 mr-8" style={{ transform: "rotateZ(90deg)" }} /><div className="cn-9">{history.webhookData.data.header}</div></div>
@@ -69,7 +68,6 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
 
             {history.showChanges ? <div className="material-history__all-changes">
                 <div className="material-history__body" >
-                    <div style={{ transform: "rotateZ(270deg)" }}><BranchIcon className="" /> </div>
                     <div className="material-history__text material-history__grid left bcn-1">
                         <div >Author</div><div>{history.webhookData.data.author}</div>
                     </div>

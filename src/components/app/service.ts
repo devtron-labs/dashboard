@@ -8,6 +8,7 @@ import { sortCallback } from '../common';
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types';
 import { CDMdalTabType } from './details/triggerView/types'
+import yamlJsParser from 'yaml';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -157,13 +158,15 @@ export const getCIMaterialList = (params) => {
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : "",
                 isMaterialLoading: false,
                 history: material.history ? material.history.map((history, indx) => {
+                    console.log(history.webhookData)
+                    console.log(yamlJsParser.stringify(history.webhookData))
                     return {
                         commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : "",
                         changes: history.Changes || [],
                         author: history.Author,
                         message: history.Message,
                         date: history.Date ? moment(history.Date).format(Moment12HourFormat) : "",
-                        commit: history.Commit ? history.Commit : history.webhookData,
+                        commit: history.Commit ? history.Commit : yamlJsParser.stringify(history.webhookData),
                         isSelected: indx == 0,
                         showChanges: false,
                         webhookData: history.webhookData ? {
