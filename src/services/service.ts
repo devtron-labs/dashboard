@@ -323,3 +323,8 @@ export function getWebhookEvents(gitHostId: string | number) {
     const URL = `git/host/${gitHostId}/event`;
     return get(URL);
 }
+
+export function getWebhookEventsForEventId(eventId: string | number) {
+    const URL = `git/host/event/${eventId}`;
+    return get(URL);
+}

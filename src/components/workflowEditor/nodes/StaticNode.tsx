@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import branch from '../../../assets/icons/misc/branch.svg';
 import Tippy from '@tippyjs/react';
+import {CiPipelineSourceConfig} from '../../ciPipeline/CiPipelineSourceConfig';
 
 export interface StaticNodeProps {
     x: number;
@@ -13,6 +14,7 @@ export interface StaticNodeProps {
     height: number;
     width: number;
     downstreams: any[];
+    sourceType: string;
 }
 
 export class StaticNode extends Component<StaticNodeProps>{
@@ -22,12 +24,7 @@ export class StaticNode extends Component<StaticNodeProps>{
             <div className={`workflow-node__git-icon`} />
             <div className="workflow-node__title workflow-node__title--static">
                 <span>/{this.props.title}</span>
-                <div className="branch-name">
-                    <img src={branch} alt="branch" className="icon-dim-12 mr-5" />
-                    <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.branch}>
-                        <span className="ellipsis-right" >{this.props.branch}</span>
-                    </Tippy>
-                </div>
+                <CiPipelineSourceConfig sourceType={this.props.sourceType} sourceValue={this.props.branch}></CiPipelineSourceConfig>
             </div>
         </div>
     }
