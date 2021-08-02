@@ -91,6 +91,12 @@ export function getPipelineMetaConfiguration(appId: string, includeWebhookData: 
         return getGitProviderConfig(_material.gitProviderId).then((_gitProvider) => {
             let _gitHostId = _gitProvider.result.gitHostId;
             _material.gitHostId = _gitHostId;
+
+            // if git host Id is not set, then return
+            if (!_gitHostId || _gitHostId == 0){
+                return baseResponse;
+            }
+
             return Promise.all([getGitHostConfig(_gitHostId), getWebhookEvents(_gitHostId)]).then(([_gitHost, _webhookEvents]) => {
                 baseResponse.result.gitHost = _gitHost.result;
                 baseResponse.result.webhookEvents = _webhookEvents.result;

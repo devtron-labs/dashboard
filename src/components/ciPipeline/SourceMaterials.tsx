@@ -23,30 +23,46 @@ interface SourceMaterialsProps {
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const isMultiGit = props.materials.length > 1;
 
-    function MenuList(props) {
-        return <components.MenuList {...props}>
-            {props.children}
-            {isMultiGit && props.includeWebhookEvents ? <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+    function MenuList(_props) {
+        return <components.MenuList {..._props}>
+            {_props.children}
+            {props.includeWebhookEvents && isMultiGit &&
+            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
                 <p className="m-0">
-                    Need a PR based build pipeline for apps with multiple git repos?
-                    <a href="#" target="_blank" rel="noreferrer noopener" className="ml-5">Upvote github issue here</a>
+                    If you need webhook based CI for apps with multiple code sources,&nbsp;
+                    <a href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" className="ml-5">Create a github issue</a>
                 </p>
-            </div> : ''}
+            </div>
+            }
+            {props.includeWebhookEvents && !isMultiGit && !props.materials[0].gitHostId &&
+            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                <p className="m-0">
+                    Select git host for this git account to view all supported options.&nbsp;
+                    <Link to={URLS.GLOBAL_CONFIG_GIT} target="_blank">Select git host</Link>
+                </p>
+            </div>
+            }
+            {props.includeWebhookEvents && !isMultiGit && (props.materials[0].gitHostId > 0) &&
+            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                <p className="m-0">
+                    If you want to trigger CI using any other mechanism,&nbsp;
+                    <a href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" className="ml-5">Create a github issue</a>
+                </p>
+            </div>
+            }
         </components.MenuList>
     }
 
-    function Option(props) {
-        const { selectOption, data } = props;
+    function Option(_props) {
+        const { selectOption, data } = _props;
         const onClick = (e) => selectOption(data);
 
-        return <div className="pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+        return <div className="pl-12" style={{ background: _props.isFocused ? 'var(--N100)' : 'transparent' }}>
             <div className="flex left">
-                {props.isSelected ? <Check onClick={onClick} className="mr-8 icon-dim-16 scb-5" /> : <span onClick={onClick} className="mr-8 icon-dim-16" />}
-                <components.Option {...props} >
-                    {props.children}
-                    {props.value === SourceTypeMap.WEBHOOK && isMultiGit ? <p className="cr-5 fs-11 m-0">Not supported for applications with multiple git repos</p> : ''}
+                {_props.data.isSelected ? <Check onClick={onClick} className="mr-8 icon-dim-16 scb-5" /> : <span onClick={onClick} className="mr-8 icon-dim-16" />}
+                <components.Option {..._props} >
+                    {_props.children}
                 </components.Option>
-
             </div>
         </div>
     };
@@ -69,10 +85,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                     <p className="m-0"><img src={git} alt="" className="ci-artifact__icon" />
                         {mat.name}
                     </p>
-                    {props.includeWebhookEvents && !isMultiGit && !mat.gitHostId ? <p className="cr-5 fs-12 mt-0 mb-0 ml-28">
-                        <span className="cr-5 mr-5">Git host is not selected for this account.</span>
-                        <Link to={URLS.GLOBAL_CONFIG_GIT}>Click here to select git host</Link>
-                    </p> : ''}
                 </div>
                 <div className="mt-16 flex left">
                     <div className="w-50 mr-8">
@@ -101,9 +113,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : ""}
                         </label>
                         <input className="form__input" autoComplete="off" placeholder="Name" type="text"
-                            disabled={!props.handleSourceChange}
-                            value={mat.value}
-                            onChange={(event) => { props?.handleSourceChange(event, mat.gitMaterialId) }} />
+                               disabled={!props.handleSourceChange}
+                               value={mat.value}
+                               onChange={(event) => { props?.handleSourceChange(event, mat.gitMaterialId) }} />
                         {props.showError && !errorObj.isValid ? <span className="form__error">
                             <img src={error} className="form__icon" />
                             {props.validationRules?.sourceValue(props.materials[index].value).message}
