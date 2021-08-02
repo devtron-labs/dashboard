@@ -68,7 +68,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
 
     renderShowChangeButton(history) {
         if (history.changes.length) {
-            return <button type="button" className="material-history__changes-btn" onClick={(event) => {
+            return <button type="button" className="material-history__changes-btn " onClick={(event) => {
                 event.stopPropagation();
                 this.props.toggleChanges(this.props.material.id.toString(), history.commit)
             }}>
@@ -112,7 +112,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                                 <div className="material-history__text">Date: {history.date}</div>
                                 <div className="material-history__text material-history-text--padded">{history.message}</div>
                             </>}
-                        {history.showChanges ? <div className="material-history__all-changes">
+                        {history.showChanges ? <div className="material-history__all-changes pl-16">
                             {history.changes.map((change, index) => {
                                 return <div className="pl-1" key={index}>{change}</div>
                             })}

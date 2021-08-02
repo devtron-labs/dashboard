@@ -11,12 +11,11 @@ import { ReactComponent as Arrow } from '../../../../assets/icons/misc/arrow-che
 export default function TriggerViewMergedCI({ material, history, selectCommit, toggleChanges }) {
 
     function renderShowChangeButton(history) {
-        return <button type="button" className="material-history__changes-btn" onClick={(event) => {
+        return <button type="button" className="material-history__changes-btn cb-5" onClick={(event) => {
             event.stopPropagation();
             toggleChanges(material.id.toString(), history.commit)
         }}>
-            {history.showChanges ? "Hide Changes" : "Show Changes"}
-            <Arrow style={{ 'transform': `${history.showChanges ? 'rotate(-180deg)' : ''}` }} />
+            {history.showChanges ? "See Less" : "See More"}
         </button>
     }
     return (
