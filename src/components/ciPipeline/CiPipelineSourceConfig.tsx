@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import branch from '../../assets/icons/misc/branch.svg';
+import webhook from '../../assets/icons/misc/webhook.svg';
 import Tippy from '@tippyjs/react';
 import { SourceTypeMap } from '../../config';
 import { getWebhookEventsForEventId } from '../../services/service';
@@ -62,7 +63,7 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue  }) {
             }
             {!loading &&
                 <>
-                    <img src={branch} alt="branch" className="icon-dim-12 mr-5" />
+                    <img src={_isWebhook ? webhook : branch} alt="branch" className="icon-dim-12 mr-5" />
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={sourceValueAdv}>
                         <span className="ellipsis-right" >{sourceValueBase}</span>
                     </Tippy>
