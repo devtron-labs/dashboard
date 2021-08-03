@@ -19,9 +19,6 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
             {history.showChanges ? "See Less" : "See More"}
         </button>
     }
-    // let key = Object.keys(history.webhookData.data).map((_key) => _key)
-    // {(key.map((elm) => elm !== "author" && elm !== "date" && elm !== "git url" && elm !== "source branch name" && elm !== "source checkout" && elm !== "target branch name" && elm !== "target checkout"))
-    // ? :null}
 
     return (
         <div>
@@ -76,11 +73,10 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
                 <div className="material-history__all-changes">
                     <div className="material-history__body" >
                         {Object.keys(history.webhookData.data).map((_key) => <>
-                            <div key={_key} className="material-history__text material-history__grid left bcn-1">
-                                {/* { _key == "author" || "date" || "git url" || "source branch name" || "source checkout" || "target branch name" || "target checkout" ? */}
-                                <><div >{_key}</div><div>{history.webhookData.data[_key]}</div> </>
-                                {/* : null } */}
-                            </div> </>
+                                {(_key == "author" || _key == "date" || _key == "git url" || _key == "source branch name" || _key == "source checkout" || _key == "target branch name" || _key == "target checkout" || _key == "header") ? null
+                                    : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{history.webhookData.data[_key]}</div> </div>
+                                }
+                             </>
                         )}
                     </div>
                 </div>

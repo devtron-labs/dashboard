@@ -10,6 +10,7 @@ import error from '../../assets/icons/misc/errorInfo.svg';
 import git from '../../assets/icons/git/git.svg';
 import { reactSelectStyles } from './ciPipeline.util';
 import { DropdownIndicator } from '../charts/charts.util';
+import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 
 interface SourceMaterialsProps {
     materials: MaterialType[];
@@ -17,8 +18,8 @@ interface SourceMaterialsProps {
     validationRules?;
     selectSourceType?: (event, gitMaterialId) => void;
     handleSourceChange?: (event, gitMaterialId) => void;
-    includeWebhookEvents : boolean;
-    ciPipelineSourceTypeOptions : CiPipelineSourceTypeOption[];
+    includeWebhookEvents: boolean;
+    ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[];
 }
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
@@ -28,28 +29,34 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         return <components.MenuList {..._props}>
             {_props.children}
             {props.includeWebhookEvents && isMultiGit &&
-            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
-                <p className="m-0">
-                    If you need webhook based CI for apps with multiple code sources,&nbsp;
-                    <a href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" className="ml-5">Create a github issue</a>
-                </p>
-            </div>
+                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                    <p className="m-0">
+                        <div className="flex left">
+                            <Info className="icon-dim-20 mr-8 fcv-5" />
+                        If you need webhook based CI for apps with multiple code sources,&nbsp;</div>
+                        <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
+                    </p>
+                </div>
             }
             {props.includeWebhookEvents && !isMultiGit && !props.materials[0].gitHostId &&
-            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
-                <p className="m-0">
-                    Select git host for this git account to view all supported options.&nbsp;
-                    <Link to={URLS.GLOBAL_CONFIG_GIT} target="_blank">Select git host</Link>
-                </p>
-            </div>
+                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                    <p className="m-0">
+                        <div className="flex left">
+                            <Info className="icon-dim-20 mr-8 fcv-5" />
+                        Select git host for this git account to view all supported options.&nbsp;</div>
+                        <Link className="learn-more__href" to={URLS.GLOBAL_CONFIG_GIT} target="_blank">Select git host</Link>
+                    </p>
+                </div>
             }
             {props.includeWebhookEvents && !isMultiGit && (props.materials[0].gitHostId > 0) &&
-            <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
-                <p className="m-0">
-                    If you want to trigger CI using any other mechanism,&nbsp;
-                    <a href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" className="ml-5">Create a github issue</a>
-                </p>
-            </div>
+                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 flex left">
+                    <p className="m-0">
+                        <div className="flex left">
+                            <Info className="icon-dim-20 mr-8 fcv-5" />
+                          If you want to trigger CI using any other mechanism,&nbsp;</div>
+                        <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" >Create a github issue</a>
+                    </p>
+                </div>
             }
         </components.MenuList>
     }
@@ -73,9 +80,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         {props.materials.map((mat, index) => {
             let selectedMaterial;
 
-            if(props.ciPipelineSourceTypeOptions.length == 1){
+            if (props.ciPipelineSourceTypeOptions.length == 1) {
                 selectedMaterial = props.ciPipelineSourceTypeOptions[0];
-            }else{
+            } else {
                 selectedMaterial = props.ciPipelineSourceTypeOptions.find(i => i.isSelected === true);
             }
 
@@ -115,14 +122,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             {mat.type === SourceTypeMap.BranchFixed ? "Branch Name*" : ""}
                         </label>
                         <input className="form__input" autoComplete="off" placeholder="Name" type="text"
-                               disabled={!props.handleSourceChange}
-                               value={mat.value}
-                               onChange={(event) => { props?.handleSourceChange(event, mat.gitMaterialId) }} />
+                            disabled={!props.handleSourceChange}
+                            value={mat.value}
+                            onChange={(event) => { props?.handleSourceChange(event, mat.gitMaterialId) }} />
                         {props.showError && !errorObj.isValid ? <span className="form__error">
                             <img src={error} className="form__icon" />
                             {props.validationRules?.sourceValue(props.materials[index].value).message}
                         </span> : null}
-                    </div>: ''}
+                    </div> : ''}
                 </div>
             </div>
         })}

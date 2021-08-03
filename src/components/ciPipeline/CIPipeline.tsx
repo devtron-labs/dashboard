@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { saveCIPipeline, deleteCIPipeline, getInitDataWithCIPipeline, getInitData, createWebhookConditionList } from './ciPipeline.service';
 import { TriggerType, ViewType, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
-import { CIPipelineProps, CIPipelineState} from './types';
+import { CIPipelineProps, CIPipelineState } from './types';
 import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDialog, showError } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
@@ -30,10 +30,10 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 beforeDockerBuildScripts: [],
                 afterDockerBuildScripts: [],
                 scanEnabled: false,
-                gitHost : undefined,
-                webhookEvents : [],
+                gitHost: undefined,
+                webhookEvents: [],
                 ciPipelineSourceTypeOptions: [],
-                webhookConditionList : []
+                webhookConditionList: []
             },
             ciPipeline: {
                 active: true,
@@ -56,7 +56,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDocker: false,
             showPostBuild: false,
             isAdvanced: false,
-           
+
         }
         this.validationRules = new ValidationRules();
         this.handlePipelineName = this.handlePipelineName.bind(this);
@@ -102,7 +102,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     view: ViewType.FORM,
                 })
             }).catch((error: ServerErrors) => {
-               console.error(error);
+                console.error(error);
                 showError(error);
             })
         }
@@ -185,10 +185,10 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         form.ciPipelineSourceTypeOptions = _ciPipelineSourceTypeOptions;
 
         // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list
-        if(selectedSource.isWebhook){
+        if (selectedSource.isWebhook) {
             let _material = form.materials[0];
             let _selectedWebhookEvent = form.webhookEvents.find(we => we.name === selectedSource.label);
-            _material.value = JSON.stringify({eventId : _selectedWebhookEvent.id, condition : {}});
+            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition: {} });
 
             // update condition list
             form.webhookConditionList = createWebhookConditionList(_material.value);
@@ -310,7 +310,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
-    copyToClipboard(text : string): void {
+    copyToClipboard(text: string): void {
         let textarea = document.createElement("textarea");
         let main = document.getElementsByClassName("main")[0];
         main.appendChild(textarea)
@@ -342,16 +342,16 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
         saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId,
             false, this.state.form.webhookConditionList, this.state.form.ciPipelineSourceTypeOptions).then((response) => {
-            if (response) {
-                toast.success(msg);
+                if (response) {
+                    toast.success(msg);
+                    this.setState({ loadingData: false });
+                    this.props.close();
+                    this.props.getWorkflows();
+                }
+            }).catch((error: ServerErrors) => {
+                showError(error)
                 this.setState({ loadingData: false });
-                this.props.close();
-                this.props.getWorkflows();
-            }
-        }).catch((error: ServerErrors) => {
-            showError(error)
-            this.setState({ loadingData: false });
-        })
+            })
     }
 
     deletePipeline() {
@@ -382,32 +382,32 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
-    getSelectedWebhookEvent () {
+    getSelectedWebhookEvent() {
         let _materialValue = JSON.parse(this.state.form.materials[0].value);
         let _selectedEventId = _materialValue.eventId;
         return this.state.form.webhookEvents.find(we => we.id === _selectedEventId);
     }
 
     addWebhookCondition(): void {
-        let newConditonList = this.state.form.webhookConditionList.push({"selectorId" : 0, "value" : ""});
-        this.setState(form => ({ ...form, webhookConditionList : newConditonList }));
+        let newConditonList = this.state.form.webhookConditionList.push({ "selectorId": 0, "value": "" });
+        this.setState(form => ({ ...form, webhookConditionList: newConditonList }));
     }
 
-    deleteWebhookCondition(index : number): void {
+    deleteWebhookCondition(index: number): void {
         let newConditonList = this.state.form.webhookConditionList.splice(index, 1);
-        this.setState(form => ({ ...form, webhookConditionList : newConditonList }));
+        this.setState(form => ({ ...form, webhookConditionList: newConditonList }));
     }
 
-    onWebhookConditionSelectorChange(index : number, selectorId : number): void {
-        let _form  = { ...this.state.form };
+    onWebhookConditionSelectorChange(index: number, selectorId: number): void {
+        let _form = { ...this.state.form };
         let _condition = _form.webhookConditionList[index];
         _condition.selectorId = selectorId;
         _condition.value = "";
         this.setState({ form: _form });
     }
 
-    onWebhookConditionSelectorValueChange(index : number, value : string): void {
-        let _form  = { ...this.state.form };
+    onWebhookConditionSelectorValueChange(index: number, value: string): void {
+        let _form = { ...this.state.form };
         let _condition = _form.webhookConditionList[index];
         _condition.value = value;
         this.setState({ form: _form });
@@ -468,13 +468,13 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             />
             {this.state.form.materials.length === 1 && this.state.form.materials[0].type === SourceTypeMap.WEBHOOK &&
                 <ConfigureWebhook webhookConditionList={this.state.form.webhookConditionList}
-                                  gitHost={this.state.form.gitHost}
-                                  selectedWebhookEvent={this.getSelectedWebhookEvent()}
-                                  copyToClipboard={this.copyToClipboard}
-                                  addWebhookCondition={this.addWebhookCondition}
-                                  deleteWebhookCondition={this.deleteWebhookCondition}
-                                  onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
-                                  onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
+                    gitHost={this.state.form.gitHost}
+                    selectedWebhookEvent={this.getSelectedWebhookEvent()}
+                    copyToClipboard={this.copyToClipboard}
+                    addWebhookCondition={this.addWebhookCondition}
+                    deleteWebhookCondition={this.deleteWebhookCondition}
+                    onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
+                    onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
                 />
             }
         </>
@@ -536,7 +536,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="pl-20 pr-20 pt-20 pb-20" style={{ minHeight: "calc(100vh - 690px)", overflowY: "scroll" }}>
+                <div className="pl-20 pr-20 pt-20 pb-20" style={{ minHeight: "calc(100vh - 690px)" }}>
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>
