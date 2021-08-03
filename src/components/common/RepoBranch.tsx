@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react'
 import { createGitCommitUrl, not } from './index'
-import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
@@ -10,6 +9,7 @@ import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-
 import { GitTriggers, CiMaterial } from '../app/details/cIDetails/types'
 import { Moment12HourFormat } from '../../config';
 import moment from 'moment'
+import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';
 
 function getGitIcon(repoUrl) {
     for (let gitProvider of ['github', 'gitlab', 'bitbucket']) {
@@ -20,7 +20,7 @@ function getGitIcon(repoUrl) {
     return 'git'
 }
 
-export function RepoBranch({ repoUrl = "", branch = "", style = {}, ...props }) {
+export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
     repoUrl = repoUrl.replace(".git", "")
     const tokens = repoUrl.split("/")
     const { length, [length - 1]: repo } = tokens
@@ -33,7 +33,7 @@ export function RepoBranch({ repoUrl = "", branch = "", style = {}, ...props }) 
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7 mono">
-                    <BranchIcon className="icon-dim-12" />{branch}
+                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue}></CiPipelineSourceConfig>
                 </div>
             </div>
         </div>

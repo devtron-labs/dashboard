@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service';
-import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, RepoBranch, GitCommitDetailCard, ConditionalWrap, GitCommitInfo } from '../../../common';
-import { Host, Routes, URLS } from '../../../../config';
+import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, GitMaterialInfo, GitCommitDetailCard, ConditionalWrap, GitCommitInfo } from '../../../common';
+import { Host, Routes, URLS, SourceTypeMap } from '../../../../config';
 import { toast } from 'react-toastify';
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -34,7 +34,7 @@ import TippyHeadless from '@tippyjs/react/headless'
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import './ciDetails.scss';
-import { SourceTypeMap } from '../../../../config'
+import {CiPipelineSourceConfig} from '../../../ciPipeline/CiPipelineSourceConfig';
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt']);
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -255,8 +255,19 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
 
                         </div>
                         <div className="flex left column">
-                            <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
-                            <p className="fs-12 cn-7">{gitDetail?.Message}</p>
+                            {
+                                ciMaterial.type != SourceTypeMap.WEBHOOK &&
+                                <>
+                                    <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
+                                    <p className="fs-12 cn-7">{gitDetail?.Message}</p>
+                                </>
+                            }
+                            {
+                                ciMaterial.type == SourceTypeMap.WEBHOOK &&
+                                <>
+                                    <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value}></CiPipelineSourceConfig>
+                                </>
+                            }
                         </div>
                     </div>
                 })}
@@ -818,7 +829,7 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMateria
                 style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
             >
                 <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
-                    <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
+                    <GitMaterialInfo repoUrl={ciMaterial.url} materialType={ciMaterial.type} materialValue={ciMaterial.value} />
                 </div>
                 <GitCommitDetailCard ciMaterial={ciMaterial} gitTrigger={gitTrigger} />
             </div>}

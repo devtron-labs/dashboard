@@ -22,7 +22,6 @@ export class StaticNode extends Component<StaticNodeProps>{
 
     renderCardContent() {
         return <div className="workflow-node workflow-node--static">
-            {console.log(this.props.url)}
             <div className={`workflow-node__git-icon`} />
             <div className="workflow-node__title workflow-node__title--static">
                 <span>/{this.props.title}</span>
@@ -34,7 +33,6 @@ export class StaticNode extends Component<StaticNodeProps>{
     render() {
         return <foreignObject className="data-hj-whitelist" key={`static-${this.props.id}`} x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
             {this.renderCardContent()}
-            {console.log(this.props)}
         </foreignObject>
     }
 }

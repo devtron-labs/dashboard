@@ -4,6 +4,7 @@ import { ReactComponent as Branch } from '../../../../assets/icons/ic-branch.svg
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg';
 import { SourceTypeMap } from '../../../../config';
+import {CiPipelineSourceConfig} from '../../../ciPipeline/CiPipelineSourceConfig';
 
 interface MaterialSourceProps {
     material: CIMaterialType[];
@@ -54,14 +55,12 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                 }}>
                     <div className="material-info">
                         <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
-                        {/* {console.log(material)} */}
                         <div className="icon-dim-22 git"></div>
                     </div>
                     <div className="branch-name">
-                        {material.type === SourceTypeMap.BranchFixed ? <Branch className="icon-dim-12 mr-5" /> : null}
-                        <span className="ellipsis-right">{material.value}</span>
+                        <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value}></CiPipelineSourceConfig>
                     </div>
-                    {this.props.refreshMaterial ? <div className="material-info">
+                    {(this.props.refreshMaterial && material.type != SourceTypeMap.WEBHOOK) ? <div className="material-info">
                         {this.renderMaterialUpdateInfo(material)}
                         {this.renderRefreshButton(material)}
                     </div> : null}
