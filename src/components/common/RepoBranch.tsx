@@ -52,7 +52,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                     href={createGitCommitUrl(ciMaterial?.url, gitTrigger?.Commit)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="commit-hash mono fs-14"
+                    className="commit-hash mono fs-14 ml-16"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <CommitIcon className="icon-dim-16 mr-4" />
@@ -74,7 +74,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
             {changes && (
                 <div className="material-history__all-changes w-100 mono fs-14">
                     {gitTrigger?.Changes.map((change, index) => {
-                        return <div key={index}>{change}</div>;
+                        return <div className="pl-16 " key={index}>{change}</div>;
                     })}
                 </div>
             )}

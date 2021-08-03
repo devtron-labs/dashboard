@@ -1,36 +1,40 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service';
-import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, RepoBranch, GitCommitDetailCard, ConditionalWrap } from '../../../common';
+import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, RepoBranch, GitCommitDetailCard, ConditionalWrap, GitCommitInfo } from '../../../common';
 import { Host, Routes, URLS } from '../../../../config';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
 import { toast } from 'react-toastify';
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
 import { default as AnsiUp } from 'ansi_up';
-import EmptyState from '../../../EmptyState/EmptyState';
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import Reload from '../../../Reload/Reload';
-import moment from 'moment'
-import './ciDetails.scss';
 import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
+import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg';
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-commit.svg';
+import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg';
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
+import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg';
+import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg';
+import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
+import { ReactComponent as BranchMain } from '../../../../assets/icons/ic-branch-main.svg';
+import { statusColor as colorMap } from '../../config'
+import { getLastExecutionByArtifactId } from "../../../../services/service"
+import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
+import { Moment12HourFormat } from '../../../../config';
+import EmptyState from '../../../EmptyState/EmptyState';
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import Reload from '../../../Reload/Reload';
+import moment from 'moment';
 import docker from '../../../../assets/icons/misc/docker.svg';
 import folder from '../../../../assets/icons/ic-folder.svg';
 import warn from '../../../../assets/icons/ic-warning.svg';
 import TippyHeadless from '@tippyjs/react/headless'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg';
-import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg';
-import { statusColor as colorMap } from '../../config'
+import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
-import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
-import { getLastExecutionByArtifactId } from "../../../../services/service"
-import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
-import {Moment12HourFormat} from '../../../../config';
+import './ciDetails.scss';
+import { SourceTypeMap } from '../../../../config'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt']);
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -93,9 +97,7 @@ export default function CIDetails() {
     const [pagination, setPagination] = useState<{ offset: number, size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
-
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
-
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(() => getTriggerHistory(+pipelineId, pagination), [pipelineId, pagination], !!pipelineId)
     const { path } = useRouteMatch()
@@ -151,7 +153,7 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if (loading || pipelinesLoading ) return <Progressing pageLoader />
+    if (loading || pipelinesLoading) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter(pipeline => (pipeline.pipelineType !== 'EXTERNAL')) // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -227,7 +229,7 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
                     </div>
                     <div className="flex column left ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}
-                       </div>
+                        </div>
                         <div className="cn-7 fs-12">{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                     </div>
                 </div>
@@ -256,7 +258,6 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                             <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
                             <p className="fs-12 cn-7">{gitDetail?.Message}</p>
                         </div>
-
                     </div>
                 })}
             </div>
@@ -763,19 +764,65 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
     )
 }
 
+// const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
+//     return (
+//         <div
+//             key={gitTrigger?.Commit}
+//             className="pt-0 bcn-0 br-4 mb-16"
+//             style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
+//         >
+//             <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
+//                 <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
+//             </div>
+//             <GitCommitDetailCard ciMaterial={ciMaterial} gitTrigger={gitTrigger} />
+//         </div>
+//     );
+// }
+
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    return (
-        <div
-            key={gitTrigger?.Commit}
-            className="pt-0 bcn-0 br-4 mb-16"
-            style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
-        >
-            <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
-                <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
-            </div>
-            <GitCommitDetailCard ciMaterial={ciMaterial} gitTrigger={gitTrigger} />
-        </div>
-    );
+    console.log(gitTrigger.WebhookData.Data["source branch name"])
+    // console.log(gitTrigger)
+
+    return <div key={gitTrigger?.Commit} style={{ width: 'min( 100%, 800px )' }}>
+        {(ciMaterial.type === SourceTypeMap.WEBHOOK && gitTrigger.WebhookData.EventActionType === "merged") ?
+            <GitCommitInfo
+                email={gitTrigger.WebhookData.Data.author}
+                date={gitTrigger.WebhookData.Data.date}
+                message={gitTrigger.Message} >
+                    <div className="git-commit-info__grid flex left mb-12">
+                        <Git className="icon-dim-24" />
+                        <div>
+                            <p className="fs-12 fw-6 m-0 cn-9">/{gitTrigger.WebhookData.Data.header}</p>
+                            <a href={`${gitTrigger.WebhookData.Data["git url"]}`}target="_blank" rel="noreferrer noopener" className="fs-12 fw-5 m-0 cb-5">View git url</a>
+                        </div>
+                    </div>
+                <div className="git-commit-info__grid mono mb-12">
+                    <div><BranchMain className="" /></div>
+                    <div className="w-100">
+                        <p className="flex left mb-8">
+                            <GitCommitInfo.Branch branch={gitTrigger.WebhookData.Data["source branch name"]} />
+                            <span className="mr-8" />
+                            <GitCommitInfo.Commit commit={gitTrigger.WebhookData.Data["source checkout"]} />
+                        </p>
+                        <p className="flex left mb-0">
+                            <GitCommitInfo.Branch branch={gitTrigger.WebhookData.Data["target branch name"]} />
+                            <span className="mr-8" />
+                            <GitCommitInfo.Commit commit={gitTrigger.WebhookData.Data["target checkout"]} />
+                        </p>
+                    </div>
+                </div>
+            </GitCommitInfo> :
+            <div
+                key={gitTrigger?.Commit}
+                className="pt-0 bcn-0 br-4 mb-16"
+                style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
+            >
+                <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
+                    <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
+                </div>
+                <GitCommitDetailCard ciMaterial={ciMaterial} gitTrigger={gitTrigger} />
+            </div>}
+    </div>
 }
 
 const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {

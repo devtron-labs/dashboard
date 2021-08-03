@@ -18,6 +18,10 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
             {history.showChanges ? "See Less" : "See More"}
         </button>
     }
+    // let key = Object.keys(history.webhookData.data).map((_key) => _key)
+    // {(key.map((elm) => elm !== "author" && elm !== "date" && elm !== "git url" && elm !== "source branch name" && elm !== "source checkout" && elm !== "target branch name" && elm !== "target checkout"))
+    // ? :null}
+
     return (
         <div>
             <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
@@ -60,17 +64,23 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
                 <div className="material-history__text flex left">
                     <CalendarIcon className="icon-dim-16 mr-8" />{history.date}
                 </div>
-                <div className="material-history__text material-history-text--padded flex left">
-                    <MessageIcon className="icon-dim-16 mr-8" />{history.message}
-                </div>
+                {history.message ?
+                    <div className="material-history__text material-history-text--padded flex left">
+                        <MessageIcon className="icon-dim-16 mr-8" />{history.message}
+                    </div> : null}
             </div>
 
-            {history.showChanges ? <div className="material-history__all-changes">
-                <div className="material-history__body" >
-                    <div className="material-history__text material-history__grid left bcn-1">
-                        <div >Author</div><div>{history.webhookData.data.author}</div>
-                    </div>
-                    <div className="material-history__text material-history__grid left ">
+            {history.showChanges ?
+                <div className="material-history__all-changes">
+                    <div className="material-history__body" >
+                        {Object.keys(history.webhookData.data).map((_key) => <>
+                            <div key={_key} className="material-history__text material-history__grid left bcn-1">
+                                {/* { _key == "author" || "date" || "git url" || "source branch name" || "source checkout" || "target branch name" || "target checkout" ? */}
+                                <><div >{_key}</div><div>{history.webhookData.data[_key]}</div> </>
+                                {/* : null } */}
+                            </div> </>
+                        )}
+                        {/* <div className="material-history__text material-history__grid left ">
                         <div >Key</div><div> {history.changes}</div>
                     </div>
                     <div className="material-history__text material-history__grid left bcn-1">
@@ -78,9 +88,9 @@ export default function TriggerViewMergedCI({ material, history, selectCommit, t
                     </div>
                     <div className="material-history__text material-history__grid material-history-text--padded left">
                         <div >Message</div><div> {history.message}</div>
+                    </div> */}
                     </div>
                 </div>
-            </div>
                 : null}
             {renderShowChangeButton(history)}
         </div>

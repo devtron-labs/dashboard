@@ -158,8 +158,6 @@ export const getCIMaterialList = (params) => {
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : "",
                 isMaterialLoading: false,
                 history: material.history ? material.history.map((history, indx) => {
-                    console.log(history.webhookData)
-                    console.log(yamlJsParser.stringify(history.webhookData))
                     return {
                         commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : "",
                         changes: history.Changes || [],

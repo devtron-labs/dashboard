@@ -9,9 +9,9 @@ export function GitCommitInfo({ children, email, date, message }) {
 
     return <div className="p-12 bcn-0 br-4 mb-16 bw-1 en-2">
         {children}
-        <GitCommitInfo.Author email={email} />
-        <GitCommitInfo.Date date={date} />
-        <GitCommitInfo.Message message={message} />
+        {email ? <GitCommitInfo.Author email={email} /> : null}
+        {date ? <GitCommitInfo.Date date={date} /> : null}
+        {message ? <GitCommitInfo.Message message={message} /> : null}
     </div>
 };
 
