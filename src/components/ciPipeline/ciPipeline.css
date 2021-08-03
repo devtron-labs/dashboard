@@ -173,7 +173,6 @@
 .configure-ci-webhook {
     display: grid;
     grid-template-columns: 32px auto;
-    gap: 12px;
 }
 
 .ci-webhook-condition {

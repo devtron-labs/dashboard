@@ -7,7 +7,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
     return (
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect
-                className="w-200"
+                className="w-200 bcn-1"
                 autoFocus
                 components={{
                     IndicatorSeparator: null,
@@ -27,7 +27,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 }
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
             />
-            <input type="text" className="form__input" placeholder="Enter regex"
+            <input type="text" className="form__input bcn-1" placeholder="Enter regex"
                    onChange={(event) => { onSelectorValueChange(conditionIndex, event.target.value) }}
                    value={selectorCondition.value}
             />

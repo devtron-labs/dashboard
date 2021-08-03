@@ -9,6 +9,7 @@ import ReactSelect from 'react-select';
 import error from '../../assets/icons/misc/errorInfo.svg';
 import git from '../../assets/icons/git/git.svg';
 import { reactSelectStyles } from './ciPipeline.util';
+import { DropdownIndicator } from '../charts/charts.util';
 
 interface SourceMaterialsProps {
     materials: MaterialType[];
@@ -101,10 +102,11 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             isDisabled={!!mat.id}
                             isMulti={false}
                             components={{
+                                DropdownIndicator,
+                                Option,
                                 IndicatorSeparator: null,
                                 ClearIndicator: null,
-                                Option: Option,
-                                MenuList: MenuList,
+                                MenuList,
                             }}
                             styles={{ ...reactSelectStyles }} />
                     </div>
