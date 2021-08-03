@@ -780,7 +780,7 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 // }
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    console.log(gitTrigger.WebhookData.Data["source branch name"])
+    // console.log(gitTrigger.WebhookData.Data["source branch name"])
     // console.log(gitTrigger)
 
     return <div key={gitTrigger?.Commit} style={{ width: 'min( 100%, 800px )' }}>

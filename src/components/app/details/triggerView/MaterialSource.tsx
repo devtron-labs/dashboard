@@ -54,6 +54,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                 }}>
                     <div className="material-info">
                         <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
+                        {/* {console.log(material)} */}
                         <div className="icon-dim-22 git"></div>
                     </div>
                     <div className="branch-name">

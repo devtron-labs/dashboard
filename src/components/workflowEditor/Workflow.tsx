@@ -89,6 +89,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         </foreignObject>
     }
     renderSourceNode(node) {
+        {console.log(node.url)}
         return <StaticNode
             x={node.x}
             y={node.y}
