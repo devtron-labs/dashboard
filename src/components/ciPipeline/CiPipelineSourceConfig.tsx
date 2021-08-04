@@ -5,7 +5,7 @@ import Tippy from '@tippyjs/react';
 import { SourceTypeMap } from '../../config';
 import { getWebhookEventsForEventId } from '../../services/service';
 
-export function CiPipelineSourceConfig({ sourceType, sourceValue  }) {
+export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip  }) {
 
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK;
 
@@ -42,7 +42,7 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue  }) {
         return <>
                     <span> {eventName} Filters </span>
                     <br/>
-                    <ul className="pl-12">
+                    <ul>
                         {_conditions.map((_condition, index) => (
                             <li key={index}>{_condition.name} : {_condition.value}</li>
                         ))}
@@ -56,16 +56,25 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue  }) {
 
 
     return (
-        <div className="branch-name">
+        <div className={showTooltip ? "branch-name" : ""}>
             {loading &&
                 <span className="loading-dots">loading</span>
             }
             {!loading &&
                 <>
                     <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
-                    <Tippy className="default-tt" arrow={true} placement="bottom" content={sourceValueAdv}>
-                        <span className="ellipsis-right" >{sourceValueBase}</span>
-                    </Tippy>
+                    { showTooltip &&
+                        <Tippy className="default-tt" arrow={true} placement="bottom" content={sourceValueAdv}>
+                            <span className="ellipsis-right" >{sourceValueBase}</span>
+                        </Tippy>
+                    }
+                    { !showTooltip &&
+                    <>
+                        <span className="ellipsis-right">{sourceValueAdv}</span>
+                    </>
+
+                    }
+
                 </>
             }
         </div>
