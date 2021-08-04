@@ -28,9 +28,9 @@ export class CDMaterial extends Component<CDMaterialProps> {
         }
 
         return <div className="bcn-0 pt-12">
-          < GitCommitInfoGeneric
+          <GitCommitInfoGeneric
                 materialUrl={mat.url}
-                showMaterialInfo={true}
+                showMaterialInfo={false}
                 commitInfo={_gitCommit}
                 materialSourceType={""}
                 selectedCommitInfo={""}

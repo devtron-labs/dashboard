@@ -405,6 +405,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                             triggerDetails.ciMaterials.map((ciMaterial) => {
                                 const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id];
                                 return (
+                                    ciMaterial.type != 'WEBHOOK' &&
                                     <a
                                         target="_blank"
                                         rel="noopener noreferer"
@@ -780,7 +781,7 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMateria
     return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1" style={{ width: 'min( 100%, 800px )' }}>
         <GitCommitInfoGeneric
             materialUrl={ciMaterial.url}
-            showMaterialInfo={false}
+            showMaterialInfo={true}
             commitInfo={gitTrigger}
             materialSourceType={ciMaterial.type}
             selectedCommitInfo={""}
