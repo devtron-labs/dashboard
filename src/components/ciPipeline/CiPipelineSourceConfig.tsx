@@ -19,7 +19,6 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue  }) {
         if(!_isWebhook) {
             return;
         }
-
         let _sourceValueObj = JSON.parse(sourceValue);
         let _eventId = _sourceValueObj.eventId;
         let _condition = _sourceValueObj.condition;
