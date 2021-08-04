@@ -66,7 +66,8 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import { GitTriggers } from '../cIDetails/types';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -602,7 +603,7 @@ function CommitInfo({ onHide, material }) {
     return (
         <section className="app-summary__source-info">
             <div className="app-summary__source-table">
-                <div className="p-20">
+                <div className="p-20 box-shadow">
                     <div className="flex" style={{ justifyContent: "space-between" }}>
                         <div className="fs-20 fw-6 cn-9">Deployment details</div>
                         <button type="button" className="transparent" onClick={onHide}>
@@ -611,23 +612,43 @@ function CommitInfo({ onHide, material }) {
                     </div>
                     <div className="fs-14">Deployed on Prod at Thu, 16 Jan 2020, 08:19 pm by nishant@devtron.ai</div>
                 </div>
-                {material?.map(({ author, branch, message, modifiedTime, revision, url }, idx) => (
-                    <div className="app-summary__source-row" key={idx}>
-                        <span>{modifiedTime}</span>
-                        <span>{message}</span>
-                        <span>{author}</span>
-                        <div className="app-summary__commit-url-container">
-                            <a rel="noreferrer noopener" target="_blank" href={createGitCommitUrl(url, revision)}>
-                                <div className="app-summary__commit-url">{revision}</div>
-                                <RedirectIcon style={{ width: '12px', height: '12px' }} />
-                            </a>
-                        </div>
-                        <div className="flex tag-container">
-                            <Branch style={{ width: '12px', height: '12px', marginRight: '4px' }} color="#06c" />
-                            <div className="tag ellipsis-right">{branch}</div>
-                        </div>
+                {material?.map((mat, idx) => {
+                    // let _gitCommit: GitTriggers = {
+                    //     Commit: mat.revision,
+                    //     Author: mat.author,
+                    //     Date: mat.modifiedTime,
+                    //     Message: mat.message,
+                    //     WebhookData: JSON.parse(mat.webhookdata),
+                    //     Changes: []
+                    // }
+
+                    return <div key={idx}>
+                        <GitCommitInfoGeneric
+                            materialUrl={""}
+                            showMaterialInfo={false}
+                            commitInfo={""}
+                            materialSourceType={""}
+                            selectedCommitInfo={""}
+                            materialSourceValue={""}
+                        />
                     </div>
-                ))}
+                })}
+                {/* {material?.map(({ author, branch, message, modifiedTime, revision, url }, idx) => ( */}
+                {/* // <div className="app-summary__source-row" key={idx}>
+                    //     <span>{modifiedTime}</span>
+                    //     <span>{message}</span>
+                    //     <span>{author}</span>
+                    //     <div className="app-summary__commit-url-container">
+                    //         <a rel="noreferrer noopener" target="_blank" href={createGitCommitUrl(url, revision)}>
+                    //             <div className="app-summary__commit-url">{revision}</div>
+                    //             <RedirectIcon style={{ width: '12px', height: '12px' }} />
+                    //         </a>
+                    //     </div>
+                    //     <div className="flex tag-container">
+                    //         <Branch style={{ width: '12px', height: '12px', marginRight: '4px' }} color="#06c" />
+                    //         <div className="tag ellipsis-right">{branch}</div>
+                    //     </div>
+                    // </div>) */}
             </div>
         </section>
     );

@@ -7,7 +7,6 @@ import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circl
 import deploy from '../../../../assets/icons/misc/deploy.svg';
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg';
 import docker from '../../../../assets/icons/misc/docker.svg';
-import commit from '../../../../assets/icons/ic-commit.svg';
 import { VisibleModal, ButtonWithLoader, ScanVulnerabilitiesTable, Progressing } from '../../../common';
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial';
 import { getCDModalHeader, CDButtonLabelMap } from './config';
