@@ -86,7 +86,6 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                         commitInfo={history}
                         materialSourceType={this.props.material.type}
                         selectedCommitInfo={this.props.selectCommit}
-                        toggleChanges={this.props.toggleChanges}
                         materialSourceValue={this.props.material.value}
 
                     />

@@ -34,7 +34,7 @@ import TippyHeadless from '@tippyjs/react/headless'
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import './ciDetails.scss';
-import {CiPipelineSourceConfig} from '../../../ciPipeline/CiPipelineSourceConfig';
+import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt']);
@@ -776,16 +776,13 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 }
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    console.log(gitTrigger)
-
-    return <div key={gitTrigger?.Commit} style={{ width: 'min( 100%, 800px )' }}>
+    return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1" style={{ width: 'min( 100%, 800px )' }}>
         <GitCommitInfoGeneric
-            materialUrl={""}
+            materialUrl={ciMaterial.url}
             showMaterialInfo={false}
             commitInfo={gitTrigger}
             materialSourceType={ciMaterial.type}
             selectedCommitInfo={""}
-            toggleChanges={true}
             materialSourceValue={ciMaterial.value} />
     </div>
 }
