@@ -9,6 +9,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
 import { SourceTypeMap } from '../../config';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { createGitCommitUrl } from '../common/helpers/git';
+import { GitMaterialInfo } from './RepoBranch';
 
 export default function GitCommitInfoGeneric({ materialSourceType, materialSourceValue, commitInfo, selectedCommitInfo, materialUrl, showMaterialInfo }) {
 
@@ -17,7 +18,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
     let _isWebhook = (materialSourceType === SourceTypeMap.WEBHOOK) || (_lowerCaseCommitInfo && _lowerCaseCommitInfo.webhookdata && _lowerCaseCommitInfo.webhookdata.id !== 0);
     let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {};
     let _commitUrl = _isWebhook ? null : (_lowerCaseCommitInfo.commiturl ? _lowerCaseCommitInfo.commiturl : createGitCommitUrl(materialUrl, _lowerCaseCommitInfo.commit));
-
+    
     function renderShowChangeButton() {
 
         return <button type="button" className="fs-12 fw-6 pt-8 pb-8 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
@@ -48,10 +49,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
     return (<>
         {
             showMaterialInfo &&
-            <div>
-                <span>{materialUrl}</span>
-                <CiPipelineSourceConfig sourceType={materialSourceType} sourceValue={materialSourceValue} showTooltip={true} />
-            </div>
+            <GitMaterialInfo repoUrl={materialUrl} materialType={materialSourceType} materialValue={materialSourceValue} />
         }
         {
             (!_isWebhook) &&
