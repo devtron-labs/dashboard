@@ -9,7 +9,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
 import { SourceTypeMap } from '../../config';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { createGitCommitUrl } from '../common/helpers/git';
-import { GitMaterialInfo } from './RepoBranch';
+import { GitMaterialInfo } from './GitMaterialInfo';
 
 export default function GitCommitInfoGeneric({ materialSourceType, materialSourceValue, commitInfo, selectedCommitInfo, materialUrl, showMaterialInfo }) {
 
