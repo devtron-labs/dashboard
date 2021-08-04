@@ -33,7 +33,7 @@ export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValu
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7 mono">
-                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue}></CiPipelineSourceConfig>
+                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue} showTooltip={true}></CiPipelineSourceConfig>
                 </div>
             </div>
         </div>

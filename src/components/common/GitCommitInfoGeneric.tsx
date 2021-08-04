@@ -52,7 +52,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
             showMaterialInfo &&
             <div>
                 <span>{materialUrl}</span>
-                <CiPipelineSourceConfig sourceType={materialSourceType} sourceValue={materialSourceValue} />
+                <CiPipelineSourceConfig sourceType={materialSourceType} sourceValue={materialSourceValue} showTooltip={true} />
             </div>
         }
         {
