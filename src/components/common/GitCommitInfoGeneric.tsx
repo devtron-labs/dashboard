@@ -16,10 +16,11 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
     const [showSeeMore, setShowSeeMore] = useState(true)
 
-    let _isWebhook = (commitInfo.webhookData && commitInfo.webhookData.id !== 0) || (materialSourceType === SourceTypeMap.WEBHOOK)
-    let xyz= abcd(commitInfo)
-    console.log(xyz)
-    function renderShowChangeButton(commitInfo) {
+    let _isWebhook = (materialSourceType === SourceTypeMap.WEBHOOK) || (commitInfo && commitInfo.webhookData && commitInfo.webhookData.id !== 0);
+    let _lowerCaseCommitInfo = lowerCaseObject(commitInfo);
+    let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {};
+
+    function renderShowChangeButton() {
 
         return <button type="button" className="material-history__changes-btn cb-5" onClick={(event) => {
             event.stopPropagation();
@@ -29,18 +30,21 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         </button>
     }
 
-    function abcd (input) {
-            let _output = {};
-    
-            Object.keys(input).forEach((_key) => {
-                let _modifiedKey = _key.toLowerCase();
-                if (typeof (input[_key]) === "object") {
-                    _output[_modifiedKey] = abcd(input[_key]);
-                } else {
-                    _output[_modifiedKey] = input[_key];
-                }
-            })
+    function lowerCaseObject (input) : any {
+        let _output = {};
+        if(!input){
             return _output;
+        }
+        Object.keys(input).forEach((_key) => {
+            let _modifiedKey = _key.toLowerCase();
+            let _value = input[_key];
+            if (_value && (typeof _value === "object")) {
+                _output[_modifiedKey] = lowerCaseObject(_value);
+            } else {
+                _output[_modifiedKey] = _value;
+            }
+        })
+        return _output;
     }
 
     return (<>
@@ -55,29 +59,29 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
             (!_isWebhook) &&
             <>
                 <div className="ml-16 mr-16 flex left" style={{ justifyContent: "space-between" }}>
-                    {commitInfo?.commitURL ? <a href={commitInfo.commitURL} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
-                        <Commit className="commit-hash__icon" />{commitInfo.commit}
+                    {_lowerCaseCommitInfo?.commiturl ? <a href={_lowerCaseCommitInfo.commiturl} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
+                        <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit}
                     </a> : null}
                     {selectedCommitInfo ? <div className="material-history__select-text" >
-                        {commitInfo.isSelected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
-                { commitInfo.author ? <div className="material-history__text">Author: {commitInfo.author}</div> : null}
-                { commitInfo.date ? <div className="material-history__text">Date: {commitInfo.date}</div> : null}
-                { commitInfo.message ? <div className="material-history__text material-history-text--padded">{commitInfo.message}</div> : null}
+                { _lowerCaseCommitInfo.author ? <div className="material-history__text">Author: {_lowerCaseCommitInfo.author}</div> : null}
+                { _lowerCaseCommitInfo.date ? <div className="material-history__text">Date: {_lowerCaseCommitInfo.date}</div> : null}
+                { _lowerCaseCommitInfo.message ? <div className="material-history__text material-history-text--padded">{_lowerCaseCommitInfo.message}</div> : null}
             </>
         }
 
         {
-            _isWebhook && commitInfo?.webhookData?.eventActionType == "merged" &&
+            _isWebhook && _webhookData.eventactiontype == "merged" &&
             <>
                 <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
                     <div className="ml-16 ">
-                        {commitInfo.webhookData.data.header ? <div className="flex left cn-9 fw-6 fs-13">{commitInfo.webhookData.data.header}</div> : null}
-                        {commitInfo.webhookData.data["git url"] ? <a href={`${commitInfo.webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="no-decor cb-5 "> View git url</a> : null}
+                        {_webhookData.data.header ? <div className="flex left cn-9 fw-6 fs-13">{_webhookData.data.header}</div> : null}
+                        {_webhookData.data["git url"] ? <a href={`${_webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="no-decor cb-5 "> View git url</a> : null}
                     </div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
-                        {commitInfo.isSelected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
 
@@ -86,67 +90,65 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         <BranchMain className="icon-dim-32" />
                         <div>
                             <div className="flex left mb-8">
-                                {commitInfo.webhookData.data["source branch name"] ? <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
-                                    <BranchIcon className="icon-dim-12 vertical-align-middle" /> {commitInfo.webhookData.data["source branch name"]}
+                                {_webhookData.data["source branch name"] ? <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
+                                    <BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["source branch name"]}
                                 </div> : null}
-                                {commitInfo.webhookData.data["source checkout"] ? <a href={commitInfo.commitURL} target="_blank" rel="noopener" className="commit-hash " onClick={e => e.stopPropagation()}>
-                                    <Commit className="commit-hash__icon" />{commitInfo.webhookData.data["source checkout"]}
-                                </a> : null}
+                                {_webhookData.data["source checkout"] ?
+                                    <><Commit className="commit-hash__icon" />{_webhookData.data["source checkout"]}</>
+                                : null}
                             </div>
                             <div className="flex left">
                                 <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
-                                    <BranchIcon className="icon-dim-12 vertical-align-middle" /> {commitInfo.webhookData.data["target branch name"]}  </div>
-                                <a href={commitInfo.commitURL} target="_blank" rel="noopener" className="commit-hash " onClick={e => e.stopPropagation()}>
-                                    <Commit className="commit-hash__icon" />{commitInfo.webhookData.data["target checkout"]}
-                                </a>
+                                    <BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["target branch name"]}  </div>
+                                    <Commit className="commit-hash__icon" />{_webhookData.data["target checkout"]}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div>
-                { commitInfo.webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {commitInfo.webhookData.data.author}</div> : null}
-                { commitInfo.webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {commitInfo.webhookData.data.date}</div> : null}
-                { commitInfo.webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{commitInfo.webhookData.data.message}</div> : null}
+                { _webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
+                { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {_webhookData.data.date}</div> : null}
+                { _webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
                 </div>
 
                 {!showSeeMore ? <div className="material-history__all-changes">
                     <div className="material-history__body" >
-                        {Object.keys(commitInfo.webhookData.data).map((_key) => <>
+                        {Object.keys(_webhookData.data).map((_key) => <>
                             {( _key=="author" || _key == "date" || _key == "git url" || _key == "source branch name" || _key == "source checkout" || _key == "target branch name" || _key == "target checkout" || _key == "header") ? null
-                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{commitInfo.webhookData.data[_key]}</div> </div>
+                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{_webhookData.data[_key]}</div> </div>
                             }
                         </>
                         )}
                     </div>
                 </div> : null}
 
-                {renderShowChangeButton(commitInfo)}
+                {renderShowChangeButton()}
             </>
 
         }
         {
-            _isWebhook && commitInfo.webhookData.eventActionType == "non-merged" && <>
+            _isWebhook && _webhookData.eventactiontype == "non-merged" && <>
                 <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
-                    <div className="flex left cn-9 fw-6 fs-13 ml-16 box-shadow"> {commitInfo.webhookData.data["target checkout"]}</div>
+                    <div className="flex left cn-9 fw-6 fs-13 ml-16 box-shadow"> {_webhookData.data["target checkout"]}</div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
-                        {commitInfo.isSelected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
-                { commitInfo.webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {commitInfo.webhookData.data.author}</div> : null}
-                { commitInfo.webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {commitInfo.webhookData.data.date}</div> : null}
-                { commitInfo.webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{commitInfo.webhookData.data.message}</div> : null}
+                { _webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
+                { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {_webhookData.data.date}</div> : null}
+                { _webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
                 {!showSeeMore ? <div className="material-history__all-changes">
                     <div className="material-history__body" >
-                        {Object.keys(commitInfo.webhookData.data).map((_key) => <>
+                        {Object.keys(_webhookData.data).map((_key) => <>
                             {(_key == "author" || _key == "date" || _key == "target checkout" ) ? null
-                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{commitInfo.webhookData.data[_key]}</div> </div>
+                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{_webhookData.data[_key]}</div> </div>
                             }
                         </>
                         )}
                     </div>
                 </div> : null}
 
-                {renderShowChangeButton(commitInfo)}
+                {renderShowChangeButton()}
             </>
 
         }
