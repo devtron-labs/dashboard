@@ -233,7 +233,9 @@
     line-height: 1.5;
     letter-spacing: normal;
     color: var(--N700);
-    margin: 6px auto;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin: 0px auto;
     margin-left: 16px;
     font-family: monospace;
 }
