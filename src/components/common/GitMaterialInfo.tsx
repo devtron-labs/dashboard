@@ -25,14 +25,14 @@ export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValu
     const tokens = repoUrl.split("/")
     const { length, [length - 1]: repo } = tokens
     return (
-        <div {...props} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '18px', ...style, }}>
+        <div {...props} className="pl-16 box-shadow mb-12 pb-12 fs-12 fw-6 " style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style, }}>
             <div className={getGitIcon(repoUrl)}>
             </div>
             <div className="flex column left">
                 <div className="repo fs-12 cn-9 fw-6">
                     /{repo}
                 </div>
-                <div className="branch flex left fs-14 cn-7 mono">
+                <div className="branch flex left fs-14 cn-7">
                     <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue} showTooltip={true}></CiPipelineSourceConfig>
                 </div>
             </div>

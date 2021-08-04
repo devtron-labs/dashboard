@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service';
-import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, GitMaterialInfo, GitCommitDetailCard, ConditionalWrap } from '../../../common';
+import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, ConditionalWrap } from '../../../common';
 import { Host, Routes, URLS, SourceTypeMap } from '../../../../config';
 import { toast } from 'react-toastify';
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
@@ -8,17 +8,14 @@ import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 
 import { default as AnsiUp } from 'ansi_up';
 import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg';
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-commit.svg';
-import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg';
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg';
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg';
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
-import { ReactComponent as BranchMain } from '../../../../assets/icons/ic-branch-main.svg';
 import { statusColor as colorMap } from '../../config'
 import { getLastExecutionByArtifactId } from "../../../../services/service"
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
@@ -393,6 +390,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                 <div className="trigger-details__start flex column left">
                     <div className="cn-9 fs-14 fw-6">Start</div>
                     <div className="flex left">
+                        {console.log(triggerDetails.startedOn)}
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>

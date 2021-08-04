@@ -6,10 +6,10 @@ import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg
 import { ReactComponent as BranchIcon } from '../../assets/icons/ic-branch.svg';
 import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg';
-import { SourceTypeMap } from '../../config';
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
+import { SourceTypeMap, Moment12HourFormat } from '../../config';
 import { createGitCommitUrl } from '../common/helpers/git';
 import { GitMaterialInfo } from './GitMaterialInfo';
+import moment from 'moment';
 
 export default function GitCommitInfoGeneric({ materialSourceType, materialSourceValue, commitInfo, selectedCommitInfo, materialUrl, showMaterialInfo }) {
 
@@ -18,7 +18,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
     let _isWebhook = (materialSourceType === SourceTypeMap.WEBHOOK) || (_lowerCaseCommitInfo && _lowerCaseCommitInfo.webhookdata && _lowerCaseCommitInfo.webhookdata.id !== 0);
     let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {};
     let _commitUrl = _isWebhook ? null : (_lowerCaseCommitInfo.commiturl ? _lowerCaseCommitInfo.commiturl : createGitCommitUrl(materialUrl, _lowerCaseCommitInfo.commit));
-    
+
     function renderShowChangeButton() {
 
         return <button type="button" className="fs-12 fw-6 pt-8 pb-8 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
@@ -51,6 +51,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
             showMaterialInfo &&
             <GitMaterialInfo repoUrl={materialUrl} materialType={materialSourceType} materialValue={materialSourceValue} />
         }
+
         {
             (!_isWebhook) &&
             <>
@@ -71,9 +72,9 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         {
             _isWebhook && _webhookData.eventactiontype == "merged" &&
             <>
-                <div className="flex left pr-16 box-shadow pb-12" style={{ justifyContent: "space-between" }}>
+                <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
                     <div className="ml-16 ">
-                        {_webhookData.data.header ? <div className="flex left cn-9 fw-6 fs-13">{_webhookData.data.header}</div> : null}
+                        {_webhookData.data.header ? <div className="flex left cn-9  fs-13">{_webhookData.data.header}</div> : null}
                         {_webhookData.data["git url"] ? <a href={`${_webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="no-decor cb-5 "> View git url</a> : null}
                     </div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
@@ -123,14 +124,18 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         }
         {
             _isWebhook && _webhookData.eventactiontype == "non-merged" && <>
-                <div className="flex left pr-16 pb-12" style={{ justifyContent: "space-between" }}>
-                    <div className="flex left cn-9 fw-6 fs-13 ml-16"> {_webhookData.data["target checkout"]}</div>
+                <div className="flex left pr-16 pb-12 " style={{ justifyContent: "space-between" }}>
+                    <div className="flex left cn-9 fs-13 ml-16"> {_webhookData.data["target checkout"]}</div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
                         {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
                 { _webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
-                { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {_webhookData.data.date}</div> : null}
+                { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" />
+                    <time className="cn-7 fs-12">
+                        {moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                    </time>
+                    { }</div> : null}
                 { _webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
                 {!showSeeMore ? <div className="material-history__all-changes">
                     <div className="material-history__body" >
