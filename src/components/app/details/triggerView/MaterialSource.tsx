@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { CIMaterialType } from '../triggerView/MaterialHistory';
-import { ReactComponent as Branch } from '../../../../assets/icons/ic-branch.svg';
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg';
 import { SourceTypeMap } from '../../../../config';
-import {CiPipelineSourceConfig} from '../../../ciPipeline/CiPipelineSourceConfig';
+import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig';
 
 interface MaterialSourceProps {
     material: CIMaterialType[];

@@ -48,7 +48,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 linkedCount: 0,
                 scanEnabled: false,
             },
-            // gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -95,7 +94,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         }
         else {
             getInitData(this.props.match.params.appId, true).then((response) => {
-                // console.log(response)
                 this.setState({
                     ...this.state,
                     ...response.result,

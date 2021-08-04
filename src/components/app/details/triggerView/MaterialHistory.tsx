@@ -1,14 +1,4 @@
 import React, { Component } from 'react';
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg';
-import { ReactComponent as Arrow } from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
-import { ReactComponent as Commit } from '../../../../assets/icons/ic-commit.svg';
-import { ReactComponent as PersonIcon } from '../../../../assets/icons/ic-person.svg';
-import { ReactComponent as CalendarIcon } from '../../../../assets/icons/ic-calendar.svg';
-import { ReactComponent as MessageIcon } from '../../../../assets/icons/ic-message.svg';
-import { ReactComponent as BranchIcon } from '../../../../assets/icons/ic-branch.svg';
-import { ReactComponent as BranchMain } from '../../../../assets/icons/ic-branch-main.svg';
-import { string } from 'prop-types';
-import TriggerViewMergedCI from './TriggerViewSelectCiMaterial';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
 
 export interface Data {
@@ -79,7 +69,6 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                     if (this.props.selectCommit)
                         this.props.selectCommit(this.props.material.id.toString(), history.commit);
                 }}>
-
                     <GitCommitInfoGeneric
                         materialUrl={""}
                         showMaterialInfo={false}

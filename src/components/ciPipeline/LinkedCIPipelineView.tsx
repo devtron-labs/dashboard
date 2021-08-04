@@ -29,10 +29,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 triggerType: TriggerType.Auto,
                 beforeDockerBuildScripts: [],
                 afterDockerBuildScripts: [],
-                gitHost : undefined,
-                webhookEvents : [],
+                gitHost: undefined,
+                webhookEvents: [],
                 ciPipelineSourceTypeOptions: [],
-                webhookConditionList : []
+                webhookConditionList: []
             },
             ciPipeline: {
                 parentCiPipeline: 0,
@@ -47,7 +47,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 name: "",
                 linkedCount: 0,
             },
-            // gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,

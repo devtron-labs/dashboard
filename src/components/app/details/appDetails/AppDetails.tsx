@@ -26,7 +26,6 @@ import {
     useAsync,
     SingleSelectOption as Option,
     ScanDetailsModal,
-    GitCommitInfo
 } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link } from 'react-router-dom';
@@ -604,7 +603,7 @@ function CommitInfo({ onHide, material }) {
         <section className="app-summary__source-info">
             <div className="app-summary__source-table">
                 <div className="p-20">
-                    <div className="flex" style={{justifyContent: "space-between"}}>
+                    <div className="flex" style={{ justifyContent: "space-between" }}>
                         <div className="fs-20 fw-6 cn-9">Deployment details</div>
                         <button type="button" className="transparent" onClick={onHide}>
                             <Close className="icon-dim-24" />
@@ -612,44 +611,6 @@ function CommitInfo({ onHide, material }) {
                     </div>
                     <div className="fs-14">Deployed on Prod at Thu, 16 Jan 2020, 08:19 pm by nishant@devtron.ai</div>
                 </div>
-                {console.log(material.WebhookData)}
-                {/* <GitCommitInfo
-                email={gitTrigger.WebhookData.Data.author}
-                date={gitTrigger.WebhookData.Data.date}
-                message={gitTrigger.Message} >
-                    <div className="git-commit-info__grid flex left mb-12">
-                        <Git className="icon-dim-24" />
-                        <div>
-                            <p className="fs-12 fw-6 m-0 cn-9">/{gitTrigger.WebhookData.Data.header}</p>
-                            <a href={`${gitTrigger.WebhookData.Data["git url"]}`}target="_blank" rel="noreferrer noopener" className="fs-12 fw-5 m-0 cb-5">View git url</a>
-                        </div>
-                    </div>
-                <div className="git-commit-info__grid mono mb-12">
-                    <div><BranchMain className="" /></div>
-                    <div className="w-100">
-                        <p className="flex left mb-8">
-                            <GitCommitInfo.Branch branch={gitTrigger.WebhookData.Data["source branch name"]} />
-                            <span className="mr-8" />
-                            <GitCommitInfo.Commit commit={gitTrigger.WebhookData.Data["source checkout"]} />
-                        </p>
-                        <p className="flex left mb-0">
-                            <GitCommitInfo.Branch branch={gitTrigger.WebhookData.Data["target branch name"]} />
-                            <span className="mr-8" />
-                            <GitCommitInfo.Commit commit={gitTrigger.WebhookData.Data["target checkout"]} />
-                        </p>
-                    </div>
-                </div>
-            </GitCommitInfo> */}
-                {/* <div className="app-summary__source-row app-summary__source-row--header">
-                    {['Date', 'Commit Msg', 'Author', 'Revision'].map((title, idx) => (
-                        <span key={idx}>{title}</span>
-                    ))}
-                    <span>
-                        <div className="flex">
-                            <span>Branch / Tag</span>
-                        </div>
-                    </span>
-                </div> */}
                 {material?.map(({ author, branch, message, modifiedTime, revision, url }, idx) => (
                     <div className="app-summary__source-row" key={idx}>
                         <span>{modifiedTime}</span>

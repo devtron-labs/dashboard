@@ -172,7 +172,7 @@ export const getCIMaterialList = (params) => {
                             eventActionType: history.WebhookData.eventActionType,
                             data: history.WebhookData.data
                         } : null
-                       
+
                     }
                 }) : []
             }
@@ -208,7 +208,6 @@ function cdMaterialListModal(artifacts) {
     if (!artifacts || !artifacts.length) return [];
 
     let materials = artifacts.map((material, index) => {
-        console.log(artifacts)
         return {
             id: material.id,
             deployedTime: material.deployed_time ? moment(material.deployed_time).format(Moment12HourFormat) : "Not Deployed",

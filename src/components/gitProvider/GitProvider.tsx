@@ -17,16 +17,6 @@ import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
 import { GitHostConfigModal } from './AddGitHostConfigModal';
 
-// interface Githost {
-//     id: number;
-//     name: string;
-//     active: boolean;
-//     eventTypeHeader: string;
-//     secretHeader: string;
-//     webhookSecret: string;
-//     webhookUrl: string;
-// }
-
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList)
     const [providerList, setProviderList] = useState([])
@@ -99,19 +89,8 @@ export default function GitProvider({ ...props }) {
         return <ErrorScreenManager code={error?.code} />
     }
 
-    // if (loading && !result) return <Progressing pageLoader />
-    // if (error) {
-    //     showError(error)
-    //     if (!result) return null
-    // }
-
     let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
 
-
-
-    // function toggleCollapsed () {
-    //     toggleCollapse(!collapsed)
-    // }
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Git accounts</h2>
@@ -137,8 +116,6 @@ export default function GitProvider({ ...props }) {
                     getHostList={getHostList}
                     getProviderList={getProviderList}
                     reload={getInitData}
-                // collapsed={collapsed}
-                // toggleCollapse={toggleCollapse}
                 />
 
                     {showGitProviderConfigModal &&
@@ -262,7 +239,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 return
             }
         }
-        
+
         if (!gitHost.value) {
             setGithost({
                 ...gitHost,
@@ -317,7 +294,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => {setGitProviderConfigModal(true); toggleCollapse(false)}}>
+                <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => { setGitProviderConfigModal(true); toggleCollapse(false) }}>
                     <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Host
                </div>
             </components.MenuList>

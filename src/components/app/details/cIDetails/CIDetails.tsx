@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service';
-import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, GitMaterialInfo, GitCommitDetailCard, ConditionalWrap, GitCommitInfo } from '../../../common';
+import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, GitMaterialInfo, GitCommitDetailCard, ConditionalWrap } from '../../../common';
 import { Host, Routes, URLS, SourceTypeMap } from '../../../../config';
 import { toast } from 'react-toastify';
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'

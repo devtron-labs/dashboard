@@ -39,7 +39,6 @@ export { BreadCrumb, useBreadcrumb } from './BreadCrumb/BreadCrumb'
 export { default as BreadcrumbStore } from './BreadCrumb/BreadcrumbStore'
 export { GitMaterialInfo, GitCommitDetailCard } from './RepoBranch';
 export * from './RepoBranch';
-export * from './GitCommitInfo';
 export * from './Contexts';
 export { CustomPassword } from './formFields/CustomPassword';
 export { default as Drawer } from './Drawer/Drawer';

@@ -12,7 +12,7 @@ export interface ExternalCIPipelineState {
         materials: MaterialType[],
         triggerType: string;
         externalCiConfig: string;
-        ciPipelineSourceTypeOptions : []
+        ciPipelineSourceTypeOptions: []
     },
     ciPipeline: {
         id: number,
@@ -45,10 +45,10 @@ export interface CIPipelineState {
         name: string,
         args: { key: string, value: string }[],
         materials: MaterialType[],
-        gitHost : Githost,
-        webhookEvents : WebhookEvent[],
+        gitHost: Githost,
+        webhookEvents: WebhookEvent[],
         ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[],
-        webhookConditionList : {selectorId : number; value : string}[],
+        webhookConditionList: { selectorId: number; value: string }[],
         triggerType: string,
         scanEnabled?: boolean,
         beforeDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
@@ -69,7 +69,6 @@ export interface CIPipelineState {
         scanEnabled?: boolean;
     },
     sourcePipelineURL?: string; //required Linked CI
-    // gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
     showPreBuild: boolean;
@@ -139,7 +138,7 @@ interface WebhookEventSelectors {
     name: string;
     selector: string;
     toShow: boolean;
-    possibleValues : string;
+    possibleValues: string;
     isActive: boolean;
 }
 

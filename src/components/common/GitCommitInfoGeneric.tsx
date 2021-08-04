@@ -6,8 +6,6 @@ import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg
 import { ReactComponent as BranchIcon } from '../../assets/icons/ic-branch.svg';
 import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg';
-import { ReactComponent as Arrow } from '../../assets/icons/misc/arrow-chevron-down-black.svg';
-import { ReactComponent as WebhookIcon } from '../../assets/icons/misc/webhook.svg';
 import { SourceTypeMap } from '../../config';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { createGitCommitUrl } from '../common/helpers/git';
@@ -16,14 +14,13 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = lowerCaseObject(commitInfo);
-
     let _isWebhook = (materialSourceType === SourceTypeMap.WEBHOOK) || (_lowerCaseCommitInfo && _lowerCaseCommitInfo.webhookdata && _lowerCaseCommitInfo.webhookdata.id !== 0);
     let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {};
     let _commitUrl = _isWebhook ? null : (_lowerCaseCommitInfo.commiturl ? _lowerCaseCommitInfo.commiturl : createGitCommitUrl(materialUrl, _lowerCaseCommitInfo.commit));
 
     function renderShowChangeButton() {
 
-        return <button type="button" className="fs-12 fw-6 pt-8 pb-8 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{border: "none"}} onClick={(event) => {
+        return <button type="button" className="fs-12 fw-6 pt-8 pb-8 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
             event.stopPropagation();
             setShowSeeMore(!showSeeMore)
         }}>
@@ -59,7 +56,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         {
             (!_isWebhook) &&
             <>
-                <div className="ml-16 mr-16  flex left" style={{ justifyContent: "space-between" }}>
+                <div className="ml-16 mr-16 mono flex left" style={{ justifyContent: "space-between" }}>
                     {_commitUrl ? <a href={_commitUrl} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
                         <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit}
                     </a> : null}
@@ -125,7 +122,6 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
                 {renderShowChangeButton()}
             </>
-
         }
         {
             _isWebhook && _webhookData.eventactiontype == "non-merged" && <>
@@ -151,12 +147,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
                 {renderShowChangeButton()}
             </>
-
         }
-
     </>
-
     )
-
-
 }
