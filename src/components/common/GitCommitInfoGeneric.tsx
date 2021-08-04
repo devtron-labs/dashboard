@@ -29,6 +29,18 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         </button>
     }
 
+    function renderSeeMoreButton() {
+        return <>
+            {!showSeeMore ? <div className="material-history__all-changes">
+                <div className="material-history__body" >
+                    {Object.keys(_webhookData.data).map((_key) => <>
+                        {(_key == "author" || _key == "date" || _key == "git url" || _key == "source branch name" || _key == "source checkout" || _key == "target branch name" || _key == "target checkout" || _key == "header") ? null
+                            : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{_webhookData.data[_key]}</div> </div>
+                        } </>
+                    )}
+                </div>
+            </div> : null}</>
+    }
     function lowerCaseObject(input): any {
         let _output = {};
         if (!input) {
@@ -44,6 +56,18 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
             }
         })
         return _output;
+    }
+
+    function renderGitCommitInfo() {
+        return <>
+            { _webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
+            { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" />
+                <time className="cn-7 fs-12">
+                    {moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                </time>
+            </div> : null}
+            { _webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
+        </>
     }
 
     return (<>
@@ -64,7 +88,9 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                     </div> : null}
                 </div>
                 { _lowerCaseCommitInfo.author ? <div className="material-history__text flex left"><PersonIcon className="icon-dim-16 mr-8" /> {_lowerCaseCommitInfo.author}</div> : null}
-                { _lowerCaseCommitInfo.date ? <div className="material-history__text flex left"><CalendarIcon className="icon-dim-16 mr-8" />{_lowerCaseCommitInfo.date}</div> : null}
+                <time className="cn-7 fs-12">
+                    {moment(_lowerCaseCommitInfo.date, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                </time>
                 { _lowerCaseCommitInfo.message ? <div className="material-history__text material-history-text--padded flex left"><MessageIcon className="icon-dim-16 mr-8" />{_lowerCaseCommitInfo.message}</div> : null}
             </>
         }
@@ -102,23 +128,8 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         </div>
                     </div>
                 </div>
-                <div>
-                    {_webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
-                    {_webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" /> {_webhookData.data.date}</div> : null}
-                    {_webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
-                </div>
-
-                {!showSeeMore ? <div className="material-history__all-changes">
-                    <div className="material-history__body" >
-                        {Object.keys(_webhookData.data).map((_key) => <>
-                            {(_key == "author" || _key == "date" || _key == "git url" || _key == "source branch name" || _key == "source checkout" || _key == "target branch name" || _key == "target checkout" || _key == "header") ? null
-                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{_webhookData.data[_key]}</div> </div>
-                            }
-                        </>
-                        )}
-                    </div>
-                </div> : null}
-
+                {renderGitCommitInfo()}
+                {renderSeeMoreButton()}
                 {renderShowChangeButton()}
             </>
         }
@@ -130,24 +141,8 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
-                { _webhookData.data.author ? <div className="material-history__text flex left"> <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}</div> : null}
-                { _webhookData.data.date ? <div className="material-history__text flex left">  <CalendarIcon className="icon-dim-16 mr-8" />
-                    <time className="cn-7 fs-12">
-                        {moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                    </time>
-                    { }</div> : null}
-                { _webhookData.data.message ? <div className="material-history__text flex left material-history-text--padded"><MessageIcon className="icon-dim-16 mr-8" />{_webhookData.data.message}</div> : null}
-                {!showSeeMore ? <div className="material-history__all-changes">
-                    <div className="material-history__body" >
-                        {Object.keys(_webhookData.data).map((_key) => <>
-                            {(_key == "author" || _key == "date" || _key == "target checkout") ? null
-                                : <div key={_key} className="material-history__text material-history__grid left bcn-1"><div >{_key}</div><div>{_webhookData.data[_key]}</div> </div>
-                            }
-                        </>
-                        )}
-                    </div>
-                </div> : null}
-
+                {renderGitCommitInfo()}
+                {renderSeeMoreButton()}
                 {renderShowChangeButton()}
             </>
         }
