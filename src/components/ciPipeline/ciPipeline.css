@@ -9,7 +9,6 @@
 
 .ci-pipeline-advance{
     min-height: calc(100vh - 690px) ;
-    overflow: hidden;
     max-height: 700px;
 }
 

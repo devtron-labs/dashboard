@@ -10,12 +10,11 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
     const [copiedUrl, setCopiedUrl] = useState(false)
     const [copiedKey, setCopiedKey] = useState(false)
 
-
     let _masterSelectorList = [];
-    console.log(selectedWebhookEvent)
     selectedWebhookEvent.selectors.forEach((_selector) => {
         _masterSelectorList.push({ label: _selector.name, value: _selector.id })
     })
+    _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label));
 
     return <>
         <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4 mt-16">

@@ -31,9 +31,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {props.includeWebhookEvents && isMultiGit &&
                 <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
                     <p className="m-0">
-                        <div className="flex left">
+                        <span className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />
-                        If you need webhook based CI for apps with multiple code sources,&nbsp;</div>
+                        If you need webhook based CI for apps with multiple code sources,&nbsp;
+                        </span>
                         <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
                     </p>
                 </div>
@@ -41,9 +42,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {props.includeWebhookEvents && !isMultiGit && !props.materials[0].gitHostId &&
                 <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
                     <p className="m-0">
-                        <div className="flex left">
+                        <span className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />
-                        Select git host for this git account to view all supported options.&nbsp;</div>
+                        Select git host for this git account to view all supported options.&nbsp;
+                        </span>
                         <Link className="learn-more__href" to={URLS.GLOBAL_CONFIG_GIT} target="_blank">Select git host</Link>
                     </p>
                 </div>
@@ -51,9 +53,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {props.includeWebhookEvents && !isMultiGit && (props.materials[0].gitHostId > 0) &&
                 <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 mt-8 flex left">
                     <p className="m-0">
-                        <div className="flex left">
+                        <span className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />
-                          If you want to trigger CI using any other mechanism,&nbsp;</div>
+                          If you want to trigger CI using any other mechanism,&nbsp;
+                        </span>
                         <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" >Create a github issue</a>
                     </p>
                 </div>
