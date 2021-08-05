@@ -65,11 +65,11 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                 if (this.props.selectCommit) {
                     classes = `${classes} cursor`;
                 }
-                return <div key={history.commit} className={classes} onClick={(e) => {
+                let _commitId = (this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData ? history.webhookData.id.toString() : history.commit);
+                return <div key={_commitId} className={classes} onClick={(e) => {
                     e.stopPropagation();
                     if (this.props.selectCommit){
-                        let _commit = (this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData ? history.webhookData.id.toString() : history.commit);
-                        this.props.selectCommit(this.props.material.id.toString(), _commit);
+                        this.props.selectCommit(this.props.material.id.toString(), _commitId);
                     }
                 }}>
                     <GitCommitInfoGeneric

@@ -284,9 +284,10 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost
             // assume single git material
             let _material = materials[0];
             let _materialValue = _material.value;
-            _webhookConditionList = createWebhookConditionList(_materialValue);
 
             if (_material.type == SourceTypeMap.WEBHOOK) {
+                _webhookConditionList = createWebhookConditionList(_materialValue);
+                
                 let _eventId = getEventIdFromMaterialValue(_materialValue);
                 let _webhookEvent = webhookEvents.find(i => i.id === _eventId);
                 ciPipelineSourceTypeOptions.forEach((_ciPipelineSourceTypeOption) => {
