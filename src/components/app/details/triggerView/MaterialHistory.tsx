@@ -70,7 +70,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                         this.props.selectCommit(this.props.material.id.toString(), history.commit);
                 }}>
                     <GitCommitInfoGeneric
-                        materialUrl={""}
+                        materialUrl={this.props.material.gitURL}
                         showMaterialInfo={false}
                         commitInfo={history}
                         materialSourceType={this.props.material.type}
