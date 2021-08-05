@@ -11,7 +11,7 @@ import { createGitCommitUrl } from '../common/helpers/git';
 import { GitMaterialInfo } from './GitMaterialInfo';
 import moment from 'moment';
 
-export default function GitCommitInfoGeneric({ materialSourceType, materialSourceValue, commitInfo, selectedCommitInfo, materialUrl, showMaterialInfo }) {
+export default function GitCommitInfoGeneric({ materialSourceType, materialSourceValue, commitInfo, selectedCommitInfo, materialUrl, showMaterialInfo, canTriggerBuild = false }) {
 
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo);
@@ -156,11 +156,16 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                                     : null }
                                 </div>
                                 <div className="flex left cb-5 bcb-1 br-4 pl-8 pr-8">
-                                    { _webhookData.data["target checkout"] ?
+                                    { canTriggerBuild &&
+                                        <>
+                                            <Commit className="commit-hash__icon" />HEAD
+                                        </>
+                                    }
+                                    { !canTriggerBuild &&
                                         <a href={createGitCommitUrl(materialUrl, _webhookData.data["target checkout"])} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
                                             <Commit className="commit-hash__icon" />{_webhookData.data["target checkout"]}
                                         </a>
-                                    : null }
+                                    }
                                 </div>
                             </div>
                         </div>

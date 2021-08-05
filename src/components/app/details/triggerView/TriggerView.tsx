@@ -7,7 +7,7 @@ import { Workflow } from './workflow/Workflow';
 import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType } from './types';
 import { CIMaterial } from './ciMaterial';
 import { CDMaterial } from './cdMaterial';
-import { URLS, ViewType } from '../../../../config';
+import { URLS, ViewType, SourceTypeMap } from '../../../../config';
 import { AppNotConfigured } from '../appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import ReactGA from 'react-ga';
@@ -408,7 +408,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                hist.isSelected = (hash == hist.commit)
+                                if(material.type == SourceTypeMap.WEBHOOK){
+                                    hist.isSelected = hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id;
+                                }else{
+                                    hist.isSelected = (hash == hist.commit)
+                                }
                             })
                         }
                     })

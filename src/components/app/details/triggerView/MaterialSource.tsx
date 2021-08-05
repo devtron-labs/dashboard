@@ -29,7 +29,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
             </div>
         }
         else {
-            return <div className="material-last-update">Last Updated<span className="fw-6 ml-5"> {material.lastFetchTime}</span></div>
+            return <div className="material-last-update">{material.lastFetchTime ? 'Last Updated' : ''}<span className="fw-6 ml-5"> {material.lastFetchTime}</span></div>
         }
     }
 
@@ -59,9 +59,9 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                     <div className="branch-name">
                         <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true}></CiPipelineSourceConfig>
                     </div>
-                    {(this.props.refreshMaterial && material.type != SourceTypeMap.WEBHOOK) ? <div className="material-info">
+                    {this.props.refreshMaterial ? <div className="material-info">
                         {this.renderMaterialUpdateInfo(material)}
-                        {this.renderRefreshButton(material)}
+                        {material.type != SourceTypeMap.WEBHOOK && this.renderRefreshButton(material)}
                     </div> : null}
                 </div>
             })}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import { SourceTypeMap } from '../../../../config';
 
 export interface Data {
     author: string;
@@ -66,8 +67,10 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                 }
                 return <div key={history.commit} className={classes} onClick={(e) => {
                     e.stopPropagation();
-                    if (this.props.selectCommit)
-                        this.props.selectCommit(this.props.material.id.toString(), history.commit);
+                    if (this.props.selectCommit){
+                        let _commit = (this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData ? history.webhookData.id.toString() : history.commit);
+                        this.props.selectCommit(this.props.material.id.toString(), _commit);
+                    }
                 }}>
                     <GitCommitInfoGeneric
                         materialUrl={this.props.material.gitURL}
@@ -76,7 +79,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                         materialSourceType={this.props.material.type}
                         selectedCommitInfo={this.props.selectCommit}
                         materialSourceValue={this.props.material.value}
-
+                        canTriggerBuild={true}
                     />
                 </div>
             })}
