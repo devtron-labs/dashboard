@@ -7,6 +7,12 @@
     border-top: solid 1px var(--N100);
 }
 
+.ci-pipeline-advance{
+    min-height: calc(100vh - 690px) ;
+    overflow: hidden;
+    max-height: 700px;
+}
+
 .repo-name {
     font-size: 12px;
     font-weight: 600;
@@ -185,7 +191,7 @@
     display: grid;
     grid-template-columns: 20px auto;
     gap: 12px;
-    padding: 16px 10px;
+    padding: 10px 16px;
 }
 
 .workflow-ci__source{

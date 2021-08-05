@@ -244,7 +244,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
 
     render() {
         let errorObj = this.props.validationRules.name(this.props.form.name);
-        return <div className="" >
+        return <div className="" style={{ maxHeight: "800px", overflow:"scroll"}} >
             <label className="form__row">
                 <span className="form__label">Pipeline Name*</span>
                 <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}

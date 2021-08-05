@@ -72,7 +72,6 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip  }
                     <>
                         <span className="ellipsis-right">{sourceValueAdv}</span>
                     </>
-
                     }
 
                 </>

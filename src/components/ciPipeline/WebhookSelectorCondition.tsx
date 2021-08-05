@@ -13,7 +13,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                     IndicatorSeparator: null,
                     ClearIndicator: null
                 }}
-                isSearchable={false}
+                isSearchable={true}
                 tabIndex="1"
                 placeholder="Select Key"
                 styles={{

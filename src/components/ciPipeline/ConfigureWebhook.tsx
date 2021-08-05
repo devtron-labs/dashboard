@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg';
-import ReactSelect from 'react-select';
-import { styles, menuList, DropdownIndicator } from '../charts/charts.util';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { WebhookSelectorCondition } from './WebhookSelectorCondition';
+import Tippy from '@tippyjs/react';
 
 export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHost, selectedWebhookEvent, addWebhookCondition, deleteWebhookCondition, onWebhookConditionSelectorChange, onWebhookConditionSelectorValueChange }) {
+    const [copiedUrl, setCopiedUrl] = useState(false)
+    const [copiedKey, setCopiedKey] = useState(false)
+
 
     let _masterSelectorList = [];
+    console.log(selectedWebhookEvent)
     selectedWebhookEvent.selectors.forEach((_selector) => {
         _masterSelectorList.push({ label: _selector.name, value: _selector.id })
     })
@@ -30,14 +33,18 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             <p className="fs-13 ml-32">Use below details to add a webhook to the git repository.</p>
             <div className="flex left fs-12 fw-6 mt-12">
                 {gitHost.webhookUrl &&
-                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left">Click to copy webhook URL
-                        <Copy className="icon-dim-16 ml-4 cursor" onClick={() => copyToClipboard(gitHost.webhookUrl)} />
-                    </div>
+                    <Tippy content={copiedUrl ? 'Copied!' : 'Copy to clipboard.'}>
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookUrl); setCopiedUrl(true) }}>Click to copy webhook URL
+                        <Copy className="icon-dim-16 ml-4" />
+                        </div>
+                    </Tippy>
                 }
                 {gitHost.webhookSecret &&
-                    <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left">Click to copy secret key
-                        <Copy className="icon-dim-16 ml-4 cursor" onClick={() => copyToClipboard(gitHost.webhookSecret)} />
-                    </div>
+                    <Tippy content={copiedKey ? 'Copied!' : 'Copy to clipboard.'}>
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookSecret); setCopiedKey(true) }}>Click to copy secret key
+                        <Copy className="icon-dim-16 ml-4 " />
+                        </div>
+                    </Tippy>
                 }
             </div>
         </div>
@@ -46,8 +53,11 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
 
             {webhookConditionList.map((_condition, index) => {
                 return <div key={index}>
-                    <WebhookSelectorCondition conditionIndex={index} masterSelectorList={_masterSelectorList}
-                        selectorCondition={_condition} onSelectorChange={onWebhookConditionSelectorChange}
+                    <WebhookSelectorCondition
+                        conditionIndex={index} 
+                        masterSelectorList={_masterSelectorList}
+                        selectorCondition={_condition} 
+                        onSelectorChange={onWebhookConditionSelectorChange}
                         onSelectorValueChange={onWebhookConditionSelectorValueChange}
                         deleteWebhookCondition={deleteWebhookCondition} />
                 </div>

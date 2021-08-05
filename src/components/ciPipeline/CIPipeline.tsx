@@ -527,14 +527,14 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
         return <VisibleModal className="" >
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
-                <div className="p-20 flex flex-align-center flex-justify">
+                <div className="box-shadow p-20 flex flex-align-center flex-justify bcn-0 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
                     <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="pl-20 pr-20 pt-20 pb-20" style={{ minHeight: "calc(100vh - 690px)" }}>
+                <div className="ci-pipeline-advance pl-20 pr-20 pb-20">
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>

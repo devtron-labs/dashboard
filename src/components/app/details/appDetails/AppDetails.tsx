@@ -68,6 +68,12 @@ import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
 import { GitTriggers } from '../cIDetails/types';
+import { MaterialSource } from '../../details/triggerView/MaterialSource';
+import { EmptyStateCIMaterial } from '../../details/triggerView/EmptyStateCIMaterial';
+import { MaterialHistory } from '../../details/triggerView/MaterialHistory';
+import { TriggerViewContext } from '../triggerView/TriggerView';
+import { CIMaterial } from '../triggerView/ciMaterial';
+import GitInfoMaterial from '../../../common/GitInfoMaterial';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -361,6 +367,7 @@ export const Details: React.FC<{
 
             {commitInfo && (
                 <VisibleModal className="app-status__material-modal">
+                {    console.log(appDetails)}
                     <CommitInfo onHide={() => showCommitInfo(false)} material={appDetails?.materialInfo} />
                 </VisibleModal>
             )}
@@ -599,6 +606,7 @@ export function EnvSelector({ environments, disabled }) {
     );
 }
 
+
 function CommitInfo({ onHide, material }) {
     return (
         <section className="app-summary__source-info">
@@ -613,42 +621,35 @@ function CommitInfo({ onHide, material }) {
                     <div className="fs-14">Deployed on Prod at Thu, 16 Jan 2020, 08:19 pm by nishant@devtron.ai</div>
                 </div>
                 {material?.map((mat, idx) => {
-                    // let _gitCommit: GitTriggers = {
-                    //     Commit: mat.revision,
-                    //     Author: mat.author,
-                    //     Date: mat.modifiedTime,
-                    //     Message: mat.message,
-                    //     WebhookData: JSON.parse(mat.webhookdata),
-                    //     Changes: []
-                    // }
-
-                    return <div key={idx}>
-                        <GitCommitInfoGeneric
-                            materialUrl={""}
-                            showMaterialInfo={false}
-                            commitInfo={""}
-                            materialSourceType={""}
-                            selectedCommitInfo={""}
-                            materialSourceValue={""}
-                        />
+                    let _gitCommit: GitTriggers = {
+                        Commit: mat.revision,
+                        Author: mat.author,
+                        Date: mat.modifiedTime,
+                        Message: mat.message,
+                        WebhookData: JSON.parse(mat.webhookData),
+                        Changes: []
+                    }
+                    return <div className="w-100 br-4 en-2 bw-1 m-lr-0 flexbox" style={{ minHeight: "600px", background: "#f2f4f7" }}>
+                        <div className="material-list" style={{ minHeight: "600px" }}>
+                            <MaterialSource
+                                material={material}
+                                selectMaterial={() => { }}
+                            />
+                        </div>
+                        <div>
+                            <div className="bcn-0 pr-16 pt-12 br-4 en-2 bw-1 m-12">
+                                <GitCommitInfoGeneric
+                                    materialUrl={""}
+                                    showMaterialInfo={false}
+                                    commitInfo={_gitCommit}
+                                    materialSourceType={""}
+                                    selectedCommitInfo={""}
+                                    materialSourceValue={""}
+                                />
+                            </div>
+                        </div>
                     </div>
                 })}
-                {/* {material?.map(({ author, branch, message, modifiedTime, revision, url }, idx) => ( */}
-                {/* // <div className="app-summary__source-row" key={idx}>
-                    //     <span>{modifiedTime}</span>
-                    //     <span>{message}</span>
-                    //     <span>{author}</span>
-                    //     <div className="app-summary__commit-url-container">
-                    //         <a rel="noreferrer noopener" target="_blank" href={createGitCommitUrl(url, revision)}>
-                    //             <div className="app-summary__commit-url">{revision}</div>
-                    //             <RedirectIcon style={{ width: '12px', height: '12px' }} />
-                    //         </a>
-                    //     </div>
-                    //     <div className="flex tag-container">
-                    //         <Branch style={{ width: '12px', height: '12px', marginRight: '4px' }} color="#06c" />
-                    //         <div className="tag ellipsis-right">{branch}</div>
-                    //     </div>
-                    // </div>) */}
             </div>
         </section>
     );

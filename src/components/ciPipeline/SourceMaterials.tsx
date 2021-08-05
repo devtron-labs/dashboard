@@ -49,7 +49,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 </div>
             }
             {props.includeWebhookEvents && !isMultiGit && (props.materials[0].gitHostId > 0) &&
-                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 flex left">
+                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 mt-8 flex left">
                     <p className="m-0">
                         <div className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />
