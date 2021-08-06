@@ -29,7 +29,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         return <components.MenuList {..._props}>
             {_props.children}
             {props.includeWebhookEvents && isMultiGit &&
-                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                <div className="bcv-1 p-8 br-4 ml-8 mt-8 pt-8 mb-4">
                     <p className="m-0">
                         <span className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />
@@ -40,7 +40,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 </div>
             }
             {props.includeWebhookEvents && !isMultiGit && !props.materials[0].gitHostId &&
-                <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4">
+                <div className="bcv-1 p-8 br-4 ml-8 pt-8 mr-8 mb-4">
                     <p className="m-0">
                         <span className="flex left">
                             <Info className="icon-dim-20 mr-8 fcv-5" />

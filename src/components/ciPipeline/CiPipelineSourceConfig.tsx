@@ -42,7 +42,7 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip  }
         return <>
                     <span> {eventName} Filters </span>
                     <br/>
-                    <ul>
+                    <ul className="m-0">
                         {_conditions.map((_condition, index) => (
                             <li key={index}>{_condition.name} : {_condition.value}</li>
                         ))}
@@ -64,7 +64,7 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip  }
                 <>
                     <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
                     { showTooltip &&
-                        <Tippy className="default-tt" arrow={true} placement="bottom" content={sourceValueAdv}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
                             <span className="ellipsis-right" >{sourceValueBase}</span>
                         </Tippy>
                     }

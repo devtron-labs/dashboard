@@ -38,7 +38,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
     function renderBasicGitCommitInfoForWebhook() {
         let _date;
-        if(_webhookData.data.date){
+        if (_webhookData.data.date) {
             let _moment = moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ');
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _webhookData.data.date;
         }
@@ -75,13 +75,13 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
 
     function handleMoreDataForWebhook() {
         let _moreData = {};
-        if(_webhookData.eventactiontype == "merged"){
+        if (_webhookData.eventactiontype == "merged") {
             Object.keys(_webhookData.data).forEach((_key) => {
                 if (_key != "author" && _key != "date" && _key != "git url" && _key != "source branch name" && _key != "source checkout" && _key != "target branch name" && _key != "target checkout" && _key != "header") {
                     _moreData[_key] = _webhookData.data[_key];
                 }
             })
-        }else if(_webhookData.eventactiontype == "non-merged"){
+        } else if (_webhookData.eventactiontype == "non-merged") {
             Object.keys(_webhookData.data).forEach((_key) => {
                 if (_key != "author" && _key != "date" && _key != "target checkout") {
                     _moreData[_key] = _webhookData.data[_key];
@@ -142,7 +142,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                                     <BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["source branch name"]}
                                 </div> : null}
                                 {_webhookData.data["source checkout"] ?
-                                    <div className="flex left cb-5 bcb-1 br-4 pl-8 pr-8">
+                                    <div className="flex left cb-5 br-4 pl-8 pr-8">
                                         <a href={createGitCommitUrl(materialUrl, _webhookData.data["source checkout"])} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
                                             <Commit className="commit-hash__icon" />{_webhookData.data["source checkout"]}
                                         </a>
@@ -151,17 +151,17 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                             </div>
                             <div className="flex left">
                                 <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
-                                    { _webhookData.data["target branch name"] ?
+                                    {_webhookData.data["target branch name"] ?
                                         <><BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["target branch name"]} </>
-                                    : null }
+                                        : null}
                                 </div>
-                                <div className="flex left cb-5 bcb-1 br-4 pl-8 pr-8">
-                                    { canTriggerBuild &&
-                                        <>
-                                            <Commit className="commit-hash__icon" />HEAD
-                                        </>
+                                <div className="flex left cb-5 br-4 pl-8 pr-8">
+                                    {canTriggerBuild &&
+                                        <div className="flex left bcn-1 br-4 cn-5 pl-8 pr-8">
+                                            <Commit className="commit-hash__icon cn-5" />HEAD
+                                        </div>
                                     }
-                                    { !canTriggerBuild &&
+                                    {!canTriggerBuild &&
                                         <a href={createGitCommitUrl(materialUrl, _webhookData.data["target checkout"])} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
                                             <Commit className="commit-hash__icon" />{_webhookData.data["target checkout"]}
                                         </a>

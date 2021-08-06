@@ -9,7 +9,6 @@
 
 .ci-pipeline-advance{
     min-height: calc(100vh - 690px) ;
-    max-height: 700px;
 }
 
 .repo-name {
@@ -191,10 +190,6 @@
     grid-template-columns: 20px auto;
     gap: 12px;
     padding: 10px 16px;
-}
-
-.workflow-ci__source{
-    z-index: 1;
 }
 
 .webhook-config-container .add-filter {

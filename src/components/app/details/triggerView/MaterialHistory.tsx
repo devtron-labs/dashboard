@@ -63,7 +63,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
             {this.props.material.history.map((history) => {
                 let classes = `material-history ${history.isSelected ? 'material-history-selected' : ''}`;
                 if (this.props.selectCommit) {
-                    classes = `${classes} cursor`;
+                    classes = `${classes}`;
                 }
                 let _commitId = (this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData ? history.webhookData.id.toString() : history.commit);
                 return <div key={_commitId} className={classes} onClick={(e) => {

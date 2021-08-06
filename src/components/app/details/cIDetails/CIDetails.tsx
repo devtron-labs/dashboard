@@ -778,7 +778,7 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 }
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1" style={{ width: 'min( 100%, 800px )' }}>
+    return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12" style={{ width: 'min( 100%, 800px )' }}>
         <GitCommitInfoGeneric
             materialUrl={ciMaterial.url}
             showMaterialInfo={true}
