@@ -389,7 +389,6 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                 <div className="trigger-details__start flex column left">
                     <div className="cn-9 fs-14 fw-6">Start</div>
                     <div className="flex left">
-                        {console.log(triggerDetails.startedOn)}
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
