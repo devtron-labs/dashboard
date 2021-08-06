@@ -23,9 +23,6 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
     }
 
     function renderMaterialHistory(context, material: CIMaterialType) {
-        console.log(context)
-        console.log(material)
-
         if (material.isMaterialLoading || material.isRepoError || material.isBranchError) { //Error or Empty State
             return <div className="select-material select-material--trigger-view">
                 <div className="select-material__empty-state-container">

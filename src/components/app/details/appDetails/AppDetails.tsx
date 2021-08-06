@@ -367,7 +367,6 @@ export const Details: React.FC<{
 
             {commitInfo && (
                 <VisibleModal className="app-status__material-modal">
-                {    console.log(appDetails)}
                     <CommitInfo onHide={() => showCommitInfo(false)} material={appDetails?.materialInfo} />
                 </VisibleModal>
             )}
