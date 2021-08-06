@@ -479,7 +479,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAdvanceCI() {
-        return <CIPipelineAdvanced {...this.state}
+        return <div className="" style={{maxHeight: "700px", overflow: "auto"}}> 
+        <CIPipelineAdvanced {...this.state}
             copyToClipboard={this.copyToClipboard}
             validationRules={this.validationRules}
             closeCIDeleteModal={this.closeCIDeleteModal}
@@ -507,6 +508,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
             onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
         />
+        </div>
     }
 
     renderCIPipelineBody() {
