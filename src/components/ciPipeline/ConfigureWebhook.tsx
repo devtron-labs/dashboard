@@ -10,11 +10,10 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
     const [copiedUrl, setCopiedUrl] = useState(false)
     const [copiedKey, setCopiedKey] = useState(false)
 
-    let _masterSelectorList = [];
-    selectedWebhookEvent.selectors.forEach((_selector) => {
-        _masterSelectorList.push({ label: _selector.name, value: _selector.id })
+    let _allSelectorIdsInConditions = [];
+    webhookConditionList.map((_condition, index) => {
+        _allSelectorIdsInConditions.push(Number(_condition.selectorId));
     })
-    _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label));
 
     return <>
         <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4 mt-16">
@@ -51,6 +50,14 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             <p className="mt-16 mb-16 fs-13 cn-7">Build {selectedWebhookEvent.name} Webhook CI which match below filters only (Only regex is supported for values)</p>
 
             {webhookConditionList.map((_condition, index) => {
+                let _masterSelectorList = [];
+                selectedWebhookEvent.selectors.forEach((_selector) => {
+                    let _selectorId = _selector.id;
+                    if(!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId){
+                        _masterSelectorList.push({ label: _selector.name, value: _selector.id })
+                    }
+                })
+                _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label));
                 return <div key={index}>
                     <WebhookSelectorCondition
                         conditionIndex={index} 
