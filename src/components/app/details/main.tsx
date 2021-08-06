@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb } from '../../common';
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config';
@@ -10,7 +10,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
 import './app.css';
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-warn.svg';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
 import Tippy from '@tippyjs/react';
 import { fetchAppDetailsInTime } from '../service';
 
@@ -52,31 +52,33 @@ export default function AppDetailsPage() {
 
 export function AppHeader() {
     const { appId } = useParams<{ appId }>();
-    // const { envId} = useParams<{ envId }>();
     const match = useRouteMatch();
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
-    const [appDetailsResult, setAppDetailsResult] = useState(undefined);
+    const [appDetailsResult, setAppDetailsResult] = useState(undefined)
+    const [loading, result, error, reload] = useAsync(() => fetchAppDetailsInTime(appId, 2, 25000))
 
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
 
-    // useEffect(()=>{
-    //     callAppDetailsAPI()
-    // }, [])
+    useEffect(() => {
+        callAppDetailsAPI()
+    }, [result])
 
-    // async function callAppDetailsAPI(){
-    //     try {
-    //         let response = await fetchAppDetailsInTime(appId, 2, 25000);
-    //         setAppDetailsResult(response);
-    //     } catch (error) {
-    //         if (!appDetailsResult) {
-    //             // setAppDetailsError(error);
-    //         }
-    //     }
-    // }
+    // 
+    async function callAppDetailsAPI() {
+         if (loading && !result) return <Progressing pageLoader />
+        try {
+            setAppDetailsResult(result);
+        } catch (error) {
+            if (error) {
+                showError(error)
+                if (!result) return null
+            }
+        }
+    }
 
     const handleAppChange = useCallback(({ label, value }) => {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];
@@ -116,9 +118,10 @@ export function AppHeader() {
 
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
+   {     }
             <BreadCrumb breadcrumbs={breadcrumbs} />
-            <Tippy className="default-tt" arrow={false} content="project name">
-                <Info className= "icon-dim-20 "/>
+            <Tippy className="default-tt" arrow={false} content={result?.result.projectName}>
+                <Info className="icon-dim-20 fcn-5" />
             </Tippy>
         </h1>
         <ul role="tablist" className="tab-list">

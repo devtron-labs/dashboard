@@ -39,6 +39,7 @@ export interface AppDetails {
     instanceDetail?: any;
     otherEnvironment: OtherEnvironment[];
     resourceTree: ResourceTree;
+    projectName? : string;
 }
 
 interface ResourceTree {
