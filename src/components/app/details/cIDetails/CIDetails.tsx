@@ -9,7 +9,6 @@ import { default as AnsiUp } from 'ansi_up';
 import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-commit.svg';
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg';
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
@@ -402,8 +401,8 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                             Array.isArray(triggerDetails.ciMaterials) &&
                             triggerDetails.ciMaterials.map((ciMaterial) => {
                                 const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id];
-                                return (
-                                    ciMaterial.type != 'WEBHOOK' &&
+                                return<>
+                                { ciMaterial.type != 'WEBHOOK' &&
                                     <a
                                         target="_blank"
                                         rel="noopener noreferer"
@@ -411,10 +410,13 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                                         href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
                                         className="app-commit__hash mr-12 bcn-1 cn-7"
                                     >
-                                        <CommitIcon className="icon-dim-16" />
                                         {gitDetail?.Commit?.substr(0, 8)}
                                     </a>
-                                );
+                                }
+                                { ciMaterial.type == 'WEBHOOK' && gitDetail.WebhookData && gitDetail.WebhookData.Data &&
+                                    <span className="app-commit__hash">{gitDetail.WebhookData.EventActionType == 'merged' ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8) : gitDetail.WebhookData.Data['target checkout']}</span>
+                                }
+                                </>
                             })}
                         {type === 'CD' && (
                             <div className="app-commit__hash ">
