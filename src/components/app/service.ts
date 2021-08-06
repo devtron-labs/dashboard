@@ -1,4 +1,4 @@
-import { Routes, Moment12HourFormat } from '../../config';
+import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
@@ -52,12 +52,16 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
                         message: hist.Message || "",
                         changes: hist.Changes || [],
                         showChanges: index === 0,
+                        webhookData: hist.WebhookData
                     }
                 }),
-                isSelected: mat.history.find(h => h.Commit === commit) || false,
+                isSelected: mat.history.find(h => (mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit)) || false,
                 lastFetchTime: mat.lastFetchTime || "",
             }
         })
+        if(!materials.find(mat => mat.isSelected)){
+            materials[0].isSelected = true;
+        }
         return {
             code: response.code,
             result: {

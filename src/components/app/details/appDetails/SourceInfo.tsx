@@ -10,7 +10,9 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import {useParams} from 'react-router'
 import { Nodes } from '../../types';
 
+
 export function SourceInfo({ appDetails, setDetailed=null, environments, showCommitInfo=null, showHibernateModal=null }) {
+
     const status=appDetails?.resourceTree?.status || ""
     const params = useParams<{appId: string; envId?: string}>()
     const conditions = appDetails?.resourceTree?.conditions;
@@ -26,6 +28,7 @@ export function SourceInfo({ appDetails, setDetailed=null, environments, showCom
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message;
     }
+    
     return (
         <div
             className="flex left w-100 column bcn-0 pt-16 pb-16 br-8 w-100"
