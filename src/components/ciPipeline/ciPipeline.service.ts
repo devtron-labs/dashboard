@@ -3,7 +3,7 @@ import { get, post } from '../../services/api';
 import { TriggerType, ViewType } from '../../config';
 import { PatchAction } from './types';
 import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util';
-import { getSourceConfig, getGitProviderConfig, getGitHostConfig, getWebhookEvents } from '../../services/service';
+import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service';
 import { MaterialType, Githost } from './types';
 
 export function savePipeline(request): Promise<any> {
@@ -86,8 +86,9 @@ export function getPipelineMetaConfiguration(appId: string, includeWebhookData: 
 
         // if webhook data to include// assume single git material
         let _material = _materials[0];
-        return getGitProviderConfig(_material.gitProviderId).then((_gitProvider) => {
-            let _gitHostId = _gitProvider.result.gitHostId;
+        return getWebhookDataMetaConfig(_material.gitProviderId).then((_webhookDataMetaConfig) => {
+            let _result = _webhookDataMetaConfig.result;
+            let _gitHostId = _result.gitHostId;
             _material.gitHostId = _gitHostId;
 
             // if git host Id is not set, then return
@@ -95,16 +96,15 @@ export function getPipelineMetaConfiguration(appId: string, includeWebhookData: 
                 return baseResponse;
             }
 
-            return Promise.all([getGitHostConfig(_gitHostId), getWebhookEvents(_gitHostId)]).then(([_gitHost, _webhookEvents]) => {
-                baseResponse.result.gitHost = _gitHost.result;
-                baseResponse.result.webhookEvents = _webhookEvents.result;
+            baseResponse.result.gitHost = _result.gitHost;
+            baseResponse.result.webhookEvents = _result.webhookEvents;
 
-                baseResponse.result.webhookEvents.forEach((_webhookEvent) => {
-                    baseResponse.result.ciPipelineSourceTypeOptions.push({ label: _webhookEvent.name, value: 'WEBHOOK', isDisabled: false, isSelected: false, isWebhook: true });
-                });
+            baseResponse.result.webhookEvents.forEach((_webhookEvent) => {
+                baseResponse.result.ciPipelineSourceTypeOptions.push({ label: _webhookEvent.name, value: 'WEBHOOK', isDisabled: false, isSelected: false, isWebhook: true });
+            });
 
-                return baseResponse;
-            })
+            return baseResponse;
+
         })
     })
 
@@ -287,7 +287,7 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost
 
             if (_material.type == SourceTypeMap.WEBHOOK) {
                 _webhookConditionList = createWebhookConditionList(_materialValue);
-                
+
                 let _eventId = getEventIdFromMaterialValue(_materialValue);
                 let _webhookEvent = webhookEvents.find(i => i.id === _eventId);
                 ciPipelineSourceTypeOptions.forEach((_ciPipelineSourceTypeOption) => {
