@@ -66,12 +66,6 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-import { GitTriggers } from '../cIDetails/types';
-import { MaterialSource } from '../../details/triggerView/MaterialSource';
-import { EmptyStateCIMaterial } from '../../details/triggerView/EmptyStateCIMaterial';
-import { MaterialHistory } from '../../details/triggerView/MaterialHistory';
-import { TriggerViewContext } from '../triggerView/TriggerView';
-import { CIMaterial } from '../triggerView/ciMaterial';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
@@ -150,7 +144,6 @@ export const Details: React.FC<{
 }> = ({ appDetailsAPI, setAppDetailResultInParent, environment, isAppDeployment = false, environments, isPollingRequired = true }) => {
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
-    const history = useHistory();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const { url, path } = useRouteMatch();
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
@@ -629,6 +622,7 @@ const AppSyncDetails: React.FC<{ streamData: AppStreamData }> = ({ streamData })
 export function EventsLogsTabSelector({ onMouseDown = null }) {
     const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>();
     const { queryParams, searchParams } = useSearchString()
+    const history = useHistory();
     const { path } = useRouteMatch();
     const location = useLocation()
     const kind = searchParams.kind || params.kind
