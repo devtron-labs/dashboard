@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useRef, useEffect } from 'react';
+import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb } from '../../common';
 import { getAppListMin } from '../../../services/service';
@@ -10,6 +10,9 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
 import './app.css';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-warn.svg';
+import Tippy from '@tippyjs/react';
+import { fetchAppDetailsInTime } from '../service';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -49,14 +52,31 @@ export default function AppDetailsPage() {
 
 export function AppHeader() {
     const { appId } = useParams<{ appId }>();
+    // const { envId} = useParams<{ envId }>();
     const match = useRouteMatch();
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
+    const [appDetailsResult, setAppDetailsResult] = useState(undefined);
 
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
+
+    // useEffect(()=>{
+    //     callAppDetailsAPI()
+    // }, [])
+
+    // async function callAppDetailsAPI(){
+    //     try {
+    //         let response = await fetchAppDetailsInTime(appId, 2, 25000);
+    //         setAppDetailsResult(response);
+    //     } catch (error) {
+    //         if (!appDetailsResult) {
+    //             // setAppDetailsError(error);
+    //         }
+    //     }
+    // }
 
     const handleAppChange = useCallback(({ label, value }) => {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];
@@ -97,6 +117,9 @@ export function AppHeader() {
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
+            <Tippy className="default-tt" arrow={false} content="project name">
+                <Info className= "icon-dim-20 "/>
+            </Tippy>
         </h1>
         <ul role="tablist" className="tab-list">
             <li className="tab-list__tab ellipsis-right">
