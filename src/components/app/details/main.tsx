@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useRef, useEffect } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError } from '../../common';
 import { getAppListMin } from '../../../services/service';
@@ -10,9 +10,9 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
 import './app.css';
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
-import {fetchAppDetailsInTime, fetchAppMetaInfo} from '../service';
+import { fetchAppMetaInfo } from '../service';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -61,22 +61,6 @@ export function AppHeader() {
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
-
-    useEffect(() => {
-        callAppDetailsAPI()
-    }, [result])
-
-    async function callAppDetailsAPI() {
-         if (loading && !result) return <Progressing pageLoader />
-        try {
-            console.log(result)
-        } catch (error) {
-            if (error) {
-                showError(error)
-                if (!result) return null
-            }
-        }
-    }
 
     const handleAppChange = useCallback(({ label, value }) => {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];
