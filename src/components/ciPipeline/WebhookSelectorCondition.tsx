@@ -9,7 +9,6 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect
                 className="w-200 bcn-1"
-                autoFocus
                 components={{
                     IndicatorSeparator: null,
                     ClearIndicator: null,
