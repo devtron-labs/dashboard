@@ -127,11 +127,8 @@ interface MaterialInfo {
     modifiedTime: string;
     revision: string;
     url: string;
+    webhookData: string
 }
-
-
-
-
 
 interface Source {
     repoURL: string;

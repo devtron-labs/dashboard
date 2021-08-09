@@ -91,23 +91,23 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // single validator
-        let _validator =  validationSchema[name].validator;
+        let _validator = validationSchema[name].validator;
         if (_validator && typeof _validator === 'object') {
-            if(!_validateSingleValidator(_validator, value)){
+            if (!_validateSingleValidator(_validator, value)) {
                 return _validator.error;
             }
         }
 
         // multiple validators
-        let _validators =  validationSchema[name].validators;
+        let _validators = validationSchema[name].validators;
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             let errors = [];
             _validators.forEach((_validator) => {
-                if(!_validateSingleValidator(_validator, value)){
+                if (!_validateSingleValidator(_validator, value)) {
                     errors.push(_validator.error);
                 }
             })
-            if (errors.length > 0){
+            if (errors.length > 0) {
                 return errors;
             }
         }

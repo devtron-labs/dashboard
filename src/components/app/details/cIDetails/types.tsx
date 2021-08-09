@@ -48,7 +48,22 @@ export interface CiMaterial {
     branchErrorMsg: string;
     url: string;
 }
+export interface Data {
+    author: string;
+    date: string;
+    gitUrl: string;
+    header: string;
+    sourceBranchName: string;
+    sourceCheckout: string;
+    targetBranchName: string;
+    targetCheckout: string;
+}
 
+export interface WebHookData {
+    Id: number;
+    EventActionType: string;
+    Data: Data
+}
 
 export interface GitTriggers {
     Commit: string;
@@ -56,6 +71,7 @@ export interface GitTriggers {
     Date: Date;
     Message: string;
     Changes: string[];
+    WebhookData: WebHookData
 }
 
 

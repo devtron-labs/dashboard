@@ -1,4 +1,4 @@
-import { Routes, Moment12HourFormat } from '../../config';
+import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
@@ -8,6 +8,7 @@ import { sortCallback } from '../common';
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types';
 import { CDMdalTabType } from './details/triggerView/types'
+import yamlJsParser from 'yaml';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -51,12 +52,16 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
                         message: hist.Message || "",
                         changes: hist.Changes || [],
                         showChanges: index === 0,
+                        webhookData: hist.WebhookData
                     }
                 }),
-                isSelected: mat.history.find(h => h.Commit === commit) || false,
+                isSelected: mat.history.find(h => (mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit)) || false,
                 lastFetchTime: mat.lastFetchTime || "",
             }
         })
+        if(!materials.find(mat => mat.isSelected)){
+            materials[0].isSelected = true;
+        }
         return {
             code: response.code,
             result: {
@@ -163,9 +168,15 @@ export const getCIMaterialList = (params) => {
                         author: history.Author,
                         message: history.Message,
                         date: history.Date ? moment(history.Date).format(Moment12HourFormat) : "",
-                        commit: history.Commit,
+                        commit: history?.Commit,
                         isSelected: indx == 0,
                         showChanges: false,
+                        webhookData: history.WebhookData ? {
+                            id: history.WebhookData.id,
+                            eventActionType: history.WebhookData.eventActionType,
+                            data: history.WebhookData.data
+                        } : null
+
                     }
                 }) : []
             }
@@ -225,6 +236,8 @@ function cdMaterialListModal(artifacts) {
                     message: mat.message || "",
                     revision: mat.revision || "",
                     tag: mat.tag || "",
+                    webhookData: mat.webhookData || "",
+                    url: mat.url || ""
                 }
             }) : [],
         }
