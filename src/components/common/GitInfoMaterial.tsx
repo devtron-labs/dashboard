@@ -23,7 +23,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
     }
 
     function renderMaterialHistory(context, material: CIMaterialType) {
-        if (material.isMaterialLoading || material.isRepoError || material.isBranchError) { //Error or Empty State
+        let anyCommit = (material.history && material.history.length > 0);
+        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) { //Error or Empty State
             return <div className="select-material select-material--trigger-view">
                 <div className="select-material__empty-state-container">
                     <EmptyStateCIMaterial
@@ -35,7 +36,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                         branchErrorMsg={material.branchErrorMsg}
                         repoUrl={material.gitURL}
                         isMaterialLoading={material.isMaterialLoading}
-                        onRetry={(e) => { e.stopPropagation(); context.onClickCIMaterial(pipelineId, pipelineName) }} />
+                        onRetry={(e) => { e.stopPropagation(); context.onClickCIMaterial(pipelineId, pipelineName) }}
+                        anyCommit={anyCommit} />
                 </div>
             </div>
         }

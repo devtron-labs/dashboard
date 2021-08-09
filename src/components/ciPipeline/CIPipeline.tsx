@@ -8,8 +8,7 @@ import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { CIPipelineAdvanced } from './CIPipelineAdvanced';
-import { SourceMaterials } from './SourceMaterials';
-import { ConfigureWebhook } from './ConfigureWebhook';
+import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
 import { classNames } from 'react-select/src/utils';
@@ -33,7 +32,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 gitHost: undefined,
                 webhookEvents: [],
                 ciPipelineSourceTypeOptions: [],
-                webhookConditionList: []
+                webhookConditionList: [],
+                ciPipelineEditable: true
             },
             ciPipeline: {
                 active: true,
@@ -380,8 +380,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState({ form });
     }
 
-    getSelectedWebhookEvent() {
-        let _materialValue = JSON.parse(this.state.form.materials[0].value);
+    getSelectedWebhookEvent(material) {
+        let _materialValue = JSON.parse(material.value);
         let _selectedEventId = _materialValue.eventId;
         return this.state.form.webhookEvents.find(we => we.id === _selectedEventId);
     }
@@ -455,31 +455,32 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderBasicCI() {
-        return <>
-            <SourceMaterials showError={this.state.showError}
+
+        let _webhookData: WebhookCIProps = {
+            webhookConditionList : this.state.form.webhookConditionList,
+            gitHost : this.state.form.gitHost,
+            getSelectedWebhookEvent : this.getSelectedWebhookEvent,
+            copyToClipboard: this.copyToClipboard,
+            addWebhookCondition: this.addWebhookCondition,
+            deleteWebhookCondition: this.deleteWebhookCondition,
+            onWebhookConditionSelectorChange: this.onWebhookConditionSelectorChange,
+            onWebhookConditionSelectorValueChange: this.onWebhookConditionSelectorValueChange
+        };
+
+        return <SourceMaterials showError={this.state.showError}
                 validationRules={this.validationRules}
                 materials={this.state.form.materials}
                 selectSourceType={this.selectSourceType}
                 handleSourceChange={this.handleSourceChange}
                 includeWebhookEvents={true}
                 ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
+                webhookData={_webhookData}
+                canEditPipeline={this.state.form.ciPipelineEditable}
             />
-            {this.state.form.materials.length === 1 && this.state.form.materials[0].type === SourceTypeMap.WEBHOOK &&
-                <ConfigureWebhook webhookConditionList={this.state.form.webhookConditionList}
-                    gitHost={this.state.form.gitHost}
-                    selectedWebhookEvent={this.getSelectedWebhookEvent()}
-                    copyToClipboard={this.copyToClipboard}
-                    addWebhookCondition={this.addWebhookCondition}
-                    deleteWebhookCondition={this.deleteWebhookCondition}
-                    onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
-                    onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
-                />
-            }
-        </>
     }
 
     renderAdvanceCI() {
-        return <div className="" style={{maxHeight: "700px", overflow: 'scroll'}}> 
+        return <div className="" style={{maxHeight: "calc(100vh - 200px)", overflowY: "scroll"}}> 
         <CIPipelineAdvanced {...this.state}
             copyToClipboard={this.copyToClipboard}
             validationRules={this.validationRules}
@@ -527,27 +528,32 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     render() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+
         return <VisibleModal className="" >
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
-                <div className="box-shadow p-20 flex flex-align-center flex-justify bcn-0 ">
+                <div className="p-20 flex flex-align-center flex-justify bcn-0 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
                     <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="ci-pipeline-advance pl-20 pr-20 pb-20">
+                <div className="ci-pipeline-advance pl-20 pr-20 pb-20" >
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderSecondaryButtton()}
-                        <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
-                            loaderColor="white"
-                            onClick={this.savePipeline}
-                            isLoading={this.state.loadingData}>
-                            {text}
-                        </ButtonWithLoader>
+                        {
+                            this.state.form.ciPipelineEditable &&
+                            <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
+                                              loaderColor="white"
+                                              onClick={this.savePipeline}
+                                              isLoading={this.state.loadingData}>
+                                {text}
+                            </ButtonWithLoader>
+                        }
+
                     </div>
                 </>}
                 {this.renderDeleteCIModal()}

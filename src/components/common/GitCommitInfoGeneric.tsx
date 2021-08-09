@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { ReactComponent as Commit } from '../../assets/icons/ic-commit.svg';
+import { ReactComponent as CommitIcon } from '../../assets/icons/ic-code-commit.svg';
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
@@ -138,7 +139,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         <BranchMain className="icon-dim-32" />
                         <div>
                             <div className="flex left mb-8">
-                                {_webhookData.data["source branch name"] ? <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
+                                {_webhookData.data["source branch name"] ? <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
                                     <BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["source branch name"]}
                                 </div> : null}
                                 {_webhookData.data["source checkout"] ?
@@ -150,15 +151,15 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                                     : null}
                             </div>
                             <div className="flex left">
-                                <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6 mr-8">
-                                    {_webhookData.data["target branch name"] ?
+                                <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
+                                    {_webhookData.data["target branch name"]?
                                         <><BranchIcon className="icon-dim-12 vertical-align-middle" /> {_webhookData.data["target branch name"]} </>
                                         : null}
                                 </div>
                                 <div className="flex left cb-5 br-4 pl-8 pr-8">
                                     {canTriggerBuild &&
                                         <div className="flex left bcn-1 br-4 cn-5 pl-8 pr-8">
-                                            <Commit className="commit-hash__icon cn-5" />HEAD
+                                            <CommitIcon className="commit-hash__icon " />HEAD
                                         </div>
                                     }
                                     {!canTriggerBuild &&

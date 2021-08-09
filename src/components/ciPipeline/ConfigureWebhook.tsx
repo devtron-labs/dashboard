@@ -6,7 +6,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { WebhookSelectorCondition } from './WebhookSelectorCondition';
 import Tippy from '@tippyjs/react';
 
-export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHost, selectedWebhookEvent, addWebhookCondition, deleteWebhookCondition, onWebhookConditionSelectorChange, onWebhookConditionSelectorValueChange }) {
+export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHost, selectedWebhookEvent, addWebhookCondition, deleteWebhookCondition, onWebhookConditionSelectorChange, onWebhookConditionSelectorValueChange, canEditPipeline }) {
     const [copiedUrl, setCopiedUrl] = useState(false)
     const [copiedKey, setCopiedKey] = useState(false)
 
@@ -65,13 +65,19 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                         selectorCondition={_condition} 
                         onSelectorChange={onWebhookConditionSelectorChange}
                         onSelectorValueChange={onWebhookConditionSelectorValueChange}
-                        deleteWebhookCondition={deleteWebhookCondition} />
+                        deleteWebhookCondition={deleteWebhookCondition}
+                        canEditPipeline={canEditPipeline}
+                    />
                 </div>
             })}
 
-            <div className="cb-5 fw-6 fs-14 cursor add-filter" onClick={addWebhookCondition}>
-                <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />Add Filter
-            </div>
+            {
+                canEditPipeline &&
+                <div className="cb-5 fw-6 fs-14 cursor add-filter" onClick={addWebhookCondition}>
+                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />Add Filter
+                </div>
+            }
+
 
         </div>
     </>
