@@ -1,13 +1,13 @@
-import { Routes, Moment12HourFormat } from '../../config';
-import { get, post, trash } from '../../services/api';
-import { ResponseType } from '../../services/service.types';
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
+import {Moment12HourFormat, Routes} from '../../config';
+import {get, post, trash} from '../../services/api';
+import {ResponseType} from '../../services/service.types';
+import {createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback} from '../common';
 import moment from 'moment-timezone';
-import { ServerErrors } from '../../modals/commonTypes';
-import { sortCallback } from '../common';
-import { History } from './details/cIDetails/types'
-import { AppDetails } from './types';
-import { CDMdalTabType } from './details/triggerView/types'
+import {ServerErrors} from '../../modals/commonTypes';
+import {History} from './details/cIDetails/types'
+import {AppDetails} from './types';
+import {CDMdalTabType} from './details/triggerView/types'
+import {AppMetaInfo} from './types';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -71,7 +71,7 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
     })
 }
 
-export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
+export function deleteResource({appName, env, name, kind, group, namespace, version, appId, envId}) {
     if (!group) group = '';
     const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
@@ -81,12 +81,16 @@ interface AppDetailsResponse extends ResponseType {
     result?: AppDetails;
 }
 
+interface AppMetaInfoResponse extends ResponseType {
+    result?: AppMetaInfo;
+}
+
 export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`)
 }
 
 export function fetchAppDetailsInTime(appId: number | string, envId: number | string, reloadTimeOut: number): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut });
+    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, {timeout: reloadTimeOut});
 }
 
 export function getEvents(pathParams) {
@@ -113,9 +117,8 @@ export function getCITriggerDetails(params: { appId: number | string, pipelineId
                     gitTriggers: response.result.gitTriggers ? gitTriggersModal(response.result.gitTriggers, response.result.ciMaterials) : []
                 }
             }
-        }
-        else {
-            throw new ServerErrors({ code: response.code, errors: response.errors })
+        } else {
+            throw new ServerErrors({code: response.code, errors: response.errors})
         }
     })
 }
@@ -170,7 +173,9 @@ export const getCIMaterialList = (params) => {
                 }) : []
             }
         }) : [];
-        materials.sort((a, b) => { sortCallback('id', a, b) });
+        materials.sort((a, b) => {
+            sortCallback('id', a, b)
+        });
         return {
             code: response.code,
             status: response.status,
@@ -229,7 +234,9 @@ function cdMaterialListModal(artifacts) {
             }) : [],
         }
     })
-    materials.sort((a, b) => { sortCallback('id', a, b) });
+    materials.sort((a, b) => {
+        sortCallback('id', a, b)
+    });
     return materials;
 }
 
@@ -290,7 +297,7 @@ export function refreshGitMaterial(gitMaterialId: string) {
 
 export const getCDTriggerStatus = (appId) => {
     let URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`;
-    return get(URL, { timeout: 3 * 60000 }).then(response => {
+    return get(URL, {timeout: 3 * 60000}).then(response => {
         return response.result ? response?.result?.map(status => {
             return {
                 ciPipelineId: status.ciPipelineId,
@@ -346,7 +353,11 @@ export function getArtifact(pipelineId, workflowId) {
     })
 }
 
-export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
+export function getNodeStatus({appName, envName, version, namespace, group, kind, name}) {
     if (!group) group = '';
     return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
+}
+
+export function fetchAppMetaInfo(appId: number | string, reloadTimeOut: number): Promise<AppMetaInfoResponse> {
+    return get(`${Routes.APP_META_INFO}/${appId}`, {timeout: reloadTimeOut});
 }

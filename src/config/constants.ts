@@ -102,6 +102,7 @@ export const Routes = {
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
+    APP_META_INFO: 'app/meta/info',
 };
 
 export const ViewType = {

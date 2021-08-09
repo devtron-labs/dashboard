@@ -12,7 +12,7 @@ import './appDetails/appDetails.scss';
 import './app.css';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outline.svg';
 import Tippy from '@tippyjs/react';
-import { fetchAppDetailsInTime } from '../service';
+import {fetchAppDetailsInTime, fetchAppMetaInfo} from '../service';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -56,8 +56,8 @@ export function AppHeader() {
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
-    const [appDetailsResult, setAppDetailsResult] = useState(undefined)
-    const [loading, result, error, reload] = useAsync(() => fetchAppDetailsInTime(appId, 2, 25000))
+    const [appMetaInfoResult, setAppMetaInfoResult] = useState(undefined)
+    const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId, 25000))
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -71,7 +71,7 @@ export function AppHeader() {
     async function callAppDetailsAPI() {
          if (loading && !result) return <Progressing pageLoader />
         try {
-            setAppDetailsResult(result);
+            setAppMetaInfoResult(result);
         } catch (error) {
             if (error) {
                 showError(error)
