@@ -4,7 +4,7 @@ import { Option } from './ciPipeline.util';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
 import { multiSelectStyles } from '../common'
 
-export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition}) {
+export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition, canEditPipeline}) {
     return (
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect
@@ -34,12 +34,17 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                         _selector.value == selectorCondition.selectorId)
                 }
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
+                isDisabled={!canEditPipeline}
             />
-            <input type="text" className="form__input" placeholder="Enter regex"
+            <input type="text" className="form__input" placeholder="Enter regex" disabled={!canEditPipeline}
                    onChange={(event) => { onSelectorValueChange(conditionIndex, event.target.value) }}
                    value={selectorCondition.value}
             />
-            <CloseIcon className="pointer icon-dim-20" onClick={(e) => deleteWebhookCondition(conditionIndex)} />
+            {
+                canEditPipeline &&
+                <CloseIcon className="pointer icon-dim-20" onClick={(e) => deleteWebhookCondition(conditionIndex)} />
+            }
+
         </div>
     )
 }

@@ -17,7 +17,7 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
 }
 
 export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
-    return Promise.all([getCIPipelineNameSuggestion(appId), getPipelineMetaConfiguration(appId.toString(), includeWebhookData)]).then(([pipelineNameRes, pipelineMetaConfig]) => {
+    return Promise.all([getCIPipelineNameSuggestion(appId), getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true)]).then(([pipelineNameRes, pipelineMetaConfig]) => {
         return {
             result: {
                 form: {
@@ -31,7 +31,8 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
                     triggerType: TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
-                    scanEnabled: false
+                    scanEnabled: false,
+                    ciPipelineEditable: true
                 },
                 loadingData: false,
                 isAdvanced: false,
@@ -76,15 +77,15 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
 }
 
 
-export function getPipelineMetaConfiguration(appId: string, includeWebhookData: boolean = false): Promise<any> {
+export function getPipelineMetaConfiguration(appId: string, includeWebhookData: boolean = false, isNewPipeline: boolean = true ): Promise<any> {
     return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
-        // if webhook data is not to be included, or not single git case, then return
+        // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         let _materials = baseResponse.result.materials
-        if (!includeWebhookData || _materials.length != 1) {
+        if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
             return baseResponse;
         }
 
-        // if webhook data to include// assume single git material
+        // if webhook data to include// assume first git material
         let _material = _materials[0];
         return getWebhookDataMetaConfig(_material.gitProviderId).then((_webhookDataMetaConfig) => {
             let _result = _webhookDataMetaConfig.result;
@@ -112,7 +113,7 @@ export function getPipelineMetaConfiguration(appId: string, includeWebhookData: 
 
 
 export function getInitDataWithCIPipeline(appId: string, ciPipelineId: string, includeWebhookData: boolean = false): Promise<any> {
-    return Promise.all([getCIPipeline(appId, ciPipelineId), getPipelineMetaConfiguration(appId, includeWebhookData)]).then(([ciPipelineRes, pipelineMetaConfig]) => {
+    return Promise.all([getCIPipeline(appId, ciPipelineId), getPipelineMetaConfiguration(appId, includeWebhookData, false)]).then(([ciPipelineRes, pipelineMetaConfig]) => {
         let ciPipeline = ciPipelineRes?.result;
         let pipelineMetaConfigResult = pipelineMetaConfig?.result;
         return parseCIResponse(pipelineMetaConfig.code, ciPipeline, pipelineMetaConfigResult.materials,
@@ -278,6 +279,11 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost
         if (!ciPipeline.afterDockerBuildScripts) ciPipeline.afterDockerBuildScripts = [];
         let materials = createMaterialList(ciPipeline, gitMaterials, gitHost);
 
+        let _isCiPipelineEditable = true;
+        if(materials.length > 1 && materials.some(_material => _material.type == SourceTypeMap.WEBHOOK)){
+            _isCiPipelineEditable = false;
+        }
+
         // do webhook event specific
         let _webhookConditionList = [];
         if (webhookEvents && webhookEvents.length > 0) {
@@ -320,7 +326,8 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost
                 gitHost: gitHost,
                 webhookEvents: webhookEvents,
                 ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
-                webhookConditionList: _webhookConditionList
+                webhookConditionList: _webhookConditionList,
+                ciPipelineEditable : _isCiPipelineEditable
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

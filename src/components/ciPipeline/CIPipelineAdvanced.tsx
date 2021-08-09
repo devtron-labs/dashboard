@@ -9,9 +9,8 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import trash from '../../assets/icons/misc/delete.svg';
-import { SourceMaterials } from './SourceMaterials';
+import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import { CIPipelineState } from './types';
-import { ConfigureWebhook } from './ConfigureWebhook';
 
 interface CIPipelineAdvancedProps extends CIPipelineState {
     copyToClipboard: (text : string) => void;
@@ -35,7 +34,7 @@ interface CIPipelineAdvancedProps extends CIPipelineState {
     handleSourceChange: (event, gitMaterialId: number) => void;
     handlePipelineName: (event) => void;
     selectSourceType: (event, gitMaterialId: number) => void;
-    getSelectedWebhookEvent : () => any;
+    getSelectedWebhookEvent : (material: any) => any;
     addWebhookCondition : () => void;
     deleteWebhookCondition : (index : number) => void;
     onWebhookConditionSelectorChange : (index : number, selectorId : number) => void;
@@ -216,6 +215,17 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     renderMaterials() {
+        let _webhookData: WebhookCIProps = {
+            webhookConditionList : this.props.form.webhookConditionList,
+            gitHost : this.props.form.gitHost,
+            getSelectedWebhookEvent : this.props.getSelectedWebhookEvent,
+            copyToClipboard: this.props.copyToClipboard,
+            addWebhookCondition: this.props.addWebhookCondition,
+            deleteWebhookCondition: this.props.deleteWebhookCondition,
+            onWebhookConditionSelectorChange: this.props.onWebhookConditionSelectorChange,
+            onWebhookConditionSelectorValueChange: this.props.onWebhookConditionSelectorValueChange
+        };
+
         return <SourceMaterials
             showError={this.props.showError}
             validationRules={this.props.validationRules}
@@ -224,27 +234,27 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             handleSourceChange={this.props.handleSourceChange}
             includeWebhookEvents={true}
             ciPipelineSourceTypeOptions={this.props.form.ciPipelineSourceTypeOptions}
+            webhookData={_webhookData}
+            canEditPipeline={this.props.form.ciPipelineEditable}
         />
-    }
-
-    renderWebhookConfiguration() {
-        let _materials = this.props.form.materials;
-        if (_materials.length === 1 && _materials[0].type === SourceTypeMap.WEBHOOK ){
-            return <ConfigureWebhook webhookConditionList={this.props.form.webhookConditionList}
-                                     gitHost={this.props.form.gitHost}
-                                     selectedWebhookEvent={this.props.getSelectedWebhookEvent()}
-                                     copyToClipboard={this.props.copyToClipboard}
-                                     addWebhookCondition={this.props.addWebhookCondition}
-                                     deleteWebhookCondition={this.props.deleteWebhookCondition}
-                                     onWebhookConditionSelectorChange={this.props.onWebhookConditionSelectorChange}
-                                     onWebhookConditionSelectorValueChange={this.props.onWebhookConditionSelectorValueChange}
-                    />
-        }
     }
 
     render() {
         let errorObj = this.props.validationRules.name(this.props.form.name);
+
         return <div className="pt-20">
+            {
+                !this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) &&
+                <div>
+                    <p>Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.</p>
+                    <p>You can continue running the pipeline based on existing configurations.</p>
+                    <p>NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
+                        <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
+                        &nbsp;for feature request.
+                    </p>
+                </div>
+            }
+
             <label className="form__row">
                 <span className="form__label">Pipeline Name*</span>
                 <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}
@@ -256,7 +266,6 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             </label>
             {this.renderTriggerType()}
             {this.renderMaterials()}
-            {this.renderWebhookConfiguration()}
             <hr className="divider" />
             {this.renderStages('beforeDockerBuildScripts')}
             <hr className="divider" />

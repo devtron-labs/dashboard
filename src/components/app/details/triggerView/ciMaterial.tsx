@@ -32,7 +32,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
 
   renderMaterialHistory(context, material: CIMaterialType) {
 
-    if (material.isMaterialLoading || material.isRepoError || material.isBranchError) { //Error or Empty State
+    let anyCommit = (material.history && material.history.length > 0);
+    if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) { //Error or Empty State
       return <div className="select-material select-material--trigger-view">
         <div className="select-material__empty-state-container">
           <EmptyStateCIMaterial
@@ -44,7 +45,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
             branchErrorMsg={material.branchErrorMsg}
             repoUrl={material.gitURL}
             isMaterialLoading={material.isMaterialLoading}
-            onRetry={(e) => { e.stopPropagation(); context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName) }} />
+            onRetry={(e) => { e.stopPropagation(); context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName) }}
+            anyCommit={anyCommit} />
         </div>
       </div>
     }

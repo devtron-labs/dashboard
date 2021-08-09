@@ -32,7 +32,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 gitHost: undefined,
                 webhookEvents: [],
                 ciPipelineSourceTypeOptions: [],
-                webhookConditionList: []
+                webhookConditionList: [],
+                ciPipelineEditable: true
             },
             ciPipeline: {
                 parentCiPipeline: 0,
@@ -158,7 +159,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         return <SourceMaterials materials={this.state.form.materials}
             showError={this.state.showError}
             includeWebhookEvents={false}
-            ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions} />
+            ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
+            canEditPipeline={true} />
     }
 
     renderHeader() {

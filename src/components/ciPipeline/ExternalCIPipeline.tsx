@@ -229,6 +229,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             handleSourceChange={this.handleSourceChange}
             includeWebhookEvents={false}
             ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
+            canEditPipeline={true}
         />
     }
 
