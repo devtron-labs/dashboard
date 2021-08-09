@@ -18,8 +18,11 @@ interface TriggerInfoModalState {
     appName: string;
 }
 
-interface TriggerInfoModalProps extends RouteComponentProps<{ appId: string; commit: string; ciArtifactId: string }> {
+interface TriggerInfoModalProps {
     close: () => void;
+    appId: number | string;
+    ciArtifactId: number | string;
+    commit?: string;
 }
 
 export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerInfoModalState> {
@@ -42,10 +45,10 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     componentDidMount() {
         let params = {
-            appId: this.props.match.params.appId,
-            ciArtifactId: this.props.match.params.ciArtifactId,
+            appId: this.props.appId,
+            ciArtifactId: this.props.ciArtifactId
         }
-        getCITriggerInfoModal(params, this.props.match.params.commit).then((response) => {
+        getCITriggerInfoModal(params, this.props.commit).then((response) => {
             this.setState({
                 statusCode: response.code,
                 view: ViewType.FORM,

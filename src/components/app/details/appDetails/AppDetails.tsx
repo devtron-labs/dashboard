@@ -4,7 +4,7 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
-    getAppCDURL,
+    getAppCDURL
 } from '../../../../config';
 import {
     NavigationArrow,
@@ -66,14 +66,7 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
-import { GitTriggers } from '../cIDetails/types';
-import { MaterialSource } from '../../details/triggerView/MaterialSource';
-import { EmptyStateCIMaterial } from '../../details/triggerView/EmptyStateCIMaterial';
-import { MaterialHistory } from '../../details/triggerView/MaterialHistory';
-import { TriggerViewContext } from '../triggerView/TriggerView';
-import { CIMaterial } from '../triggerView/ciMaterial';
-import GitInfoMaterial from '../../../common/GitInfoMaterial';
+import { TriggerInfoModal } from '../../list/TriggerInfo';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -299,24 +292,6 @@ export const Details: React.FC<{
 
     return (
         <React.Fragment>
-            {/* <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    width: '100%',
-                    gridTemplateRows: '146px',
-                    gridColumnGap:'12px',
-                }}
-                className="pl-16 pr-16 pb-16"
-            >
-                {appDetailsResult?.result && <MaterialCard
-                    streamData={streamData}
-                    appDetails={appDetailsResult?.result}
-                    Rollout={aggregatedNodes.nodes?.Rollout}
-                    nodes={aggregatedNodes}
-                />}
-                <AppSyncDetails streamData={streamData} />
-            </div> */}
             <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                 <SourceInfo
                     appDetails={appDetails}
@@ -366,9 +341,7 @@ export const Details: React.FC<{
                 close={() => { toggleScanDetailsModal(false) }} /> : null}
 
             {commitInfo && (
-                <VisibleModal className="app-status__material-modal">
-                    <CommitInfo onHide={() => showCommitInfo(false)} material={appDetails?.materialInfo} />
-                </VisibleModal>
+                <TriggerInfoModal appId={appDetails?.appId} ciArtifactId={appDetails?.ciArtifactId} close={() => showCommitInfo(false)} />
             )}
 
             {hibernateConfirmationModal && (
@@ -605,54 +578,6 @@ export function EnvSelector({ environments, disabled }) {
     );
 }
 
-
-function CommitInfo({ onHide, material }) {
-    return (
-        <section className="app-summary__source-info">
-            <div className="app-summary__source-table">
-                <div className="p-20 box-shadow">
-                    <div className="flex" style={{ justifyContent: "space-between" }}>
-                        <div className="fs-20 fw-6 cn-9">Deployment details</div>
-                        <button type="button" className="transparent" onClick={onHide}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    <div className="fs-14">Deployed on Prod at Thu, 16 Jan 2020, 08:19 pm by nishant@devtron.ai</div>
-                </div>
-                {material?.map((mat, idx) => {
-                    let _gitCommit: GitTriggers = {
-                        Commit: mat.revision,
-                        Author: mat.author,
-                        Date: mat.modifiedTime,
-                        Message: mat.message,
-                        WebhookData: JSON.parse(mat.webhookData),
-                        Changes: []
-                    }
-                    return <div className="w-100 br-4 en-2 bw-1 m-lr-0 flexbox" style={{ minHeight: "600px", background: "#f2f4f7" }}>
-                        <div className="material-list" style={{ minHeight: "600px" }}>
-                            <MaterialSource
-                                material={material}
-                                selectMaterial={() => { }}
-                            />
-                        </div>
-                        <div>
-                            <div className="bcn-0 pr-16 pt-12 br-4 en-2 bw-1 m-12">
-                                <GitCommitInfoGeneric
-                                    materialUrl={""}
-                                    showMaterialInfo={false}
-                                    commitInfo={_gitCommit}
-                                    materialSourceType={""}
-                                    selectedCommitInfo={""}
-                                    materialSourceValue={""}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                })}
-            </div>
-        </section>
-    );
-}
 
 const AppSyncDetails: React.FC<{ streamData: AppStreamData }> = ({ streamData }) => {
     const gitStatus = streamData?.result?.application?.status?.sync?.status || ''
@@ -1101,155 +1026,6 @@ export function TimeRangeSelector({
         </div>
     );
 }
-
-const MaterialCard: React.FC<{
-    Rollout: any;
-    nodes: AggregatedNodes;
-    appDetails: AppDetails;
-    streamData: AppStreamData;
-}> = ({ Rollout, nodes, appDetails, streamData }) => {
-    const status = appDetails.resourceTree.status;
-    const lastDeployedBy = appDetails.lastDeployedBy;
-    const lastDeployedTime = appDetails.lastDeployedTime;
-    const conditions = appDetails.resourceTree.conditions;
-    const [detailed, toggleDetailed] = React.useState(false);
-    const [detailedStatus, toggleDetailedStatus] = useState(false);
-    const [hibernating, setHibernating] = useState(false);
-    const { appId, envId } = useParams<{ appId, envId }>();
-    const [hiberbateConfirmationModal, setHibernateConfirmationModal] = useState('');
-    async function handleHibernate(e) {
-        try {
-            setHibernating(true);
-            await stopStartApp(Number(appId), Number(envId), status.toLowerCase() === 'hibernating' ? 'START' : 'STOP');
-            toast.success('Deployment initiated.');
-            setHibernateConfirmationModal('');
-        } catch (err) {
-            showError(err);
-        } finally {
-            setHibernating(false);
-        }
-    }
-    let message = null;
-    if (
-        ['progressing', 'degraded'].includes(status.toLowerCase()) &&
-        Array.isArray(conditions) &&
-        conditions.length > 0 &&
-        conditions[0].message
-    ) {
-        message = conditions[0].message;
-    } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0].health.message;
-    }
-    return (
-        <>
-            <div className="material-sync-card bcn-0">
-                <div className="flex left">
-                    <figure className={`${status.toLocaleLowerCase()} app-status-icon icon-dim-40`}></figure>
-                    <div className="flex left column">
-                        <span className="fs-12 cn-9">Application Status</span>
-                        <b
-                            className={`fs-14 fw-6 pointer flex left app-summary__status-name f-${status.toLowerCase()}`}
-                            onClick={status.toLowerCase() !== 'missing' ? (e) => toggleDetailedStatus(true) : (e) => { }}
-                        >
-                            {status}
-                            {status.toLowerCase() !== 'missing' && <div className="fa fa-angle-right fw-6 ml-6"></div>}
-                        </b>
-                    </div>
-                </div>
-                <div className="w-100 flex left" style={{ flexWrap: 'wrap' }}>
-                    <button
-                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6 mt-6"
-                        onClick={(e) => toggleDetailed(true)}
-                    >
-                        <CommitIcon className="icon-dim-16" />
-                        Commit(s)
-                    </button>
-                    <button
-                        className="cta cta-with-img small cancel fs-12 fw-6 mt-6"
-                        onClick={(e) =>
-                            setHibernateConfirmationModal(
-                                status.toLowerCase() === 'hibernating' ? 'resume' : 'hibernate',
-                            )
-                        }
-                    >
-                        <ScaleDown className="icon-dim-16" />
-                        {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
-                    </button>
-                </div>
-            </div>
-            <div className="material-sync-card bcn-0">
-                <div className="fs-14 fw-6 cn-9">Last deployed</div>
-
-                <div className="material-sync-card--message">
-                    <div className="ellipsis-right">
-                        Deployed{' '}
-                        <span className="fw-6 fs-12">{moment(lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</span>{' '}
-                        by <span className="fw-6 fs-12">{lastDeployedBy}</span>
-                    </div>
-                    <Link to={getAppCDURL(appId, envId)} type="button" className="anchor fs-12 fw-6 p-0">
-                        Details
-                    </Link>
-                </div>
-            </div>
-            {detailed && (
-                <VisibleModal className="app-status__material-modal">
-                    <CommitInfo onHide={() => toggleDetailed(false)} material={appDetails?.materialInfo} />
-                </VisibleModal>
-            )}
-            {detailedStatus && (
-                <ProgressStatus
-                    message={message}
-                    nodes={nodes}
-                    streamData={streamData}
-                    status={status}
-                    close={(e) => toggleDetailedStatus(false)}
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
-                />
-            )}
-            {hiberbateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hiberbateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                    />
-                    <ConfirmationDialog.Body
-                        title={`${hiberbateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
-                            }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be{' '}
-                                <b>
-                                    scaled{' '}
-                                    {hiberbateConfirmationModal === 'hibernate'
-                                        ? 'down to 0'
-                                        : ' upto its original count'}{' '}
-                                    on {appDetails.environmentName}
-                                </b>{' '}
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hiberbateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                        'Restore App'
-                                    )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-        </>
-    );
-};
 
 export const ProgressStatus: React.FC<{
     streamData: AppStreamData;

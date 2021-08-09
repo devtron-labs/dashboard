@@ -163,27 +163,24 @@ export class AppListView extends Component<AppListViewProps>{
                 {this.props.apps.map((app) => {
                     let commits = app.defaultEnv.materialInfo.map(mat => {
                         let _isWebhook = false;
-                        let _commit = mat.revision;
-                        if(mat && !mat.revision && mat.webhookData){
+                        let _commit = mat.revision.substr(0, 8);
+                        let _commitId = mat.revision;
+                        if(mat && mat.webhookData){
                             let _webhookData = JSON.parse(mat.webhookData);
                             _isWebhook = _webhookData.Id > 0;
                             if(_isWebhook){
                                 _commit = _webhookData.EventActionType == 'merged' ? _webhookData.Data["target checkout"].substr(0, 8) : _webhookData.Data["target checkout"];
+                                _commitId = _webhookData.Id;
                             }
                         }
                         return(
-                            <div key={_commit} className="app-commit">
-                                {!_isWebhook &&
-                                    <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
-                                        event.preventDefault();
-                                        this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, mat.revision);
-                                    }}>
-                                        <span>{_commit.substr(0, 8)}</span>
-                                    </button>
-                                }
-                                {_isWebhook &&
-                                    <span className="app-commit__hash">{_commit}</span>
-                                }
+                            <div key={_commitId} className="app-commit">
+                                <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, _commitId);
+                                }}>
+                                    <span>{_commit}</span>
+                                </button>
                             </div>
                         )
                     })
@@ -230,7 +227,10 @@ export class AppListView extends Component<AppListViewProps>{
                     match={props.match} location={props.location} history={props.history} />}
             />
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
-                render={(props) => <TriggerInfoModal {...props}
+                render={(props) => <TriggerInfoModal appId={props.match.params.appId}
+                    ciArtifactId={props.match.params.ciArtifactId}
+                    commit={props.match.params.commit}
+                    {...props}
                     close={this.props.closeModal} />}
             />
         </Switch>

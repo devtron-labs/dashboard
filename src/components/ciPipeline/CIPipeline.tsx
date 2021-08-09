@@ -479,7 +479,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderAdvanceCI() {
-        return <div className="" style={{maxHeight: "700px", overflow: "auto"}}> 
+        return <div className="" style={{maxHeight: "700px", overflow: 'scroll'}}> 
         <CIPipelineAdvanced {...this.state}
             copyToClipboard={this.copyToClipboard}
             validationRules={this.validationRules}
