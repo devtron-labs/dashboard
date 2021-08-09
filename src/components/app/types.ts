@@ -39,6 +39,14 @@ export interface AppDetails {
     instanceDetail?: any;
     otherEnvironment: OtherEnvironment[];
     resourceTree: ResourceTree;
+    projectName? : string;
+}
+export interface AppMetaInfo {
+    appId: number;
+    appName: string;
+    environmentId: number;
+    environmentName: string;
+    projectName? : string;
 }
 
 interface ResourceTree {
