@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
-import { styles, menuList, DropdownIndicator } from '../charts/charts.util';
+import { Option } from './ciPipeline.util';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
+import { multiSelectStyles } from '../common'
 
 export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition}) {
     return (
@@ -11,14 +12,22 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 autoFocus
                 components={{
                     IndicatorSeparator: null,
-                    ClearIndicator: null
+                    ClearIndicator: null,
+                    // Option,
                 }}
                 isSearchable={true}
                 tabIndex="1"
                 placeholder="Select Key"
                 styles={{
-                    ...styles,
-                    ...menuList,
+                    ...multiSelectStyles,
+                    menuList: (base) => {
+                        return {
+                            ...base,
+                            position: 'relative',
+                            paddingBottom: '0px',
+                            maxHeight: '176px',
+                        }
+                    }
                 }}
                 options={masterSelectorList}
                 value = {

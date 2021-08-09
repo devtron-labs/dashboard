@@ -1,10 +1,7 @@
 import React from 'react';
 import { components } from 'react-select';
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Smiley } from '../../assets/icons/ic-smiley-party.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
-import { ReactComponent as Help } from '../../assets/icons/ic-help-outline.svg';
-import Tippy from '@tippyjs/react';
 
 export const styles = {
     control: (base, state) => ({

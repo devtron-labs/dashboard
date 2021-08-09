@@ -1,4 +1,5 @@
-import { components } from 'react-select';
+import React,{ components } from 'react-select';
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 
 export const CiPipelineSourceTypeBaseOptions = [
     { label: 'Branch Fixed', value: 'SOURCE_TYPE_BRANCH_FIXED', isDisabled: false, isSelected: true, isWebhook: false },
@@ -37,3 +38,17 @@ export const reactSelectStyles = {
         })
     }
 } 
+
+export function Option(props) {
+    const { selectOption, data } = props;
+    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
+    const onClick = (e) => selectOption(data);
+    return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+        {/* {props.isSelected ? ( */}
+            {/* // <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} /> */}
+        {/* // ) : ( */}
+            <span onClick={onClick} className="mr-8" style={style} />
+        {/* )} */}
+        <components.Option {...props} />
+    </div>
+};
