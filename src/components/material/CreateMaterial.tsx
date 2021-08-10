@@ -5,7 +5,6 @@ import { showError, VisibleModal } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
-import SaveModal from './SaveModal';
 
 interface CreateMaterialProps {
     appId: number;
