@@ -9,6 +9,7 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import trash from '../../assets/icons/misc/delete.svg';
+import {ReactComponent as InfoIcon} from '../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import { CIPipelineState } from './types';
 
@@ -245,13 +246,19 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
         return <div className="pt-20">
             {
                 !this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) &&
-                <div>
-                    <p>Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.</p>
-                    <p>You can continue running the pipeline based on existing configurations.</p>
-                    <p>NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
+                <div className="bcr-1 pl-20 pr-20 pt-10 pb-10 er-5 bw-1">
+                    <div className="flex left">
+                        <InfoIcon className="scr-5 icon-dim-20 mr-8" />
+                        Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.
+                    </div>
+                    <div className="ml-24">
+                        You can continue running the pipeline based on existing configurations.
+                    </div>
+                    <div className="ml-24">
+                        NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
                         <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
                         &nbsp;for feature request.
-                    </p>
+                    </div>
                 </div>
             }
 
