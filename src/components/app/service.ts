@@ -1,13 +1,13 @@
 import { Routes, Moment12HourFormat } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
+import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback} from '../common';
 import moment from 'moment-timezone';
 import { ServerErrors } from '../../modals/commonTypes';
-import { sortCallback } from '../common';
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types';
 import { CDMdalTabType } from './details/triggerView/types'
+import {AppMetaInfo} from './types';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -81,6 +81,10 @@ interface AppDetailsResponse extends ResponseType {
     result?: AppDetails;
 }
 
+interface AppMetaInfoResponse extends ResponseType {
+    result?: AppMetaInfo;
+}
+
 export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`)
 }
@@ -113,9 +117,8 @@ export function getCITriggerDetails(params: { appId: number | string, pipelineId
                     gitTriggers: response.result.gitTriggers ? gitTriggersModal(response.result.gitTriggers, response.result.ciMaterials) : []
                 }
             }
-        }
-        else {
-            throw new ServerErrors({ code: response.code, errors: response.errors })
+        } else {
+            throw new ServerErrors({code: response.code, errors: response.errors})
         }
     })
 }
@@ -349,4 +352,8 @@ export function getArtifact(pipelineId, workflowId) {
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
     if (!group) group = '';
     return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
+}
+
+export function fetchAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
+    return get(`${Routes.APP_META_INFO}/${appId}`);
 }
