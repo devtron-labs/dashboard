@@ -538,7 +538,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="ci-pipeline-advance pl-20 pr-20 pb-20" >
+                <div className="ci-pipeline-advance" >
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>
