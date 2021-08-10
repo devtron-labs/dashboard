@@ -241,7 +241,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     renderWebhookWarning() {
-        return <div className="bcr-1 cn-9 pl-20 pr-20 pt-10 pb-10 er-5 bw-1" style={{ position: 'fixed', zIndex: 2, width: '800px' }}>
+        return <div className="bcr-1 cn-9 pl-20 pr-20 pt-10 pb-10" style={{ position: 'fixed', zIndex: 2, minWidth: '799px', borderBottom: '1px solid #fcbcbc' }}>
             <div className="flex left">
                 <InfoIcon className="icon-dim-20 mr-8" />
                     Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.
