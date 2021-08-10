@@ -13,6 +13,7 @@ interface CreateMaterialProps {
     isGitProviderValid;
     isGitUrlValid;
     isCheckoutPathValid;
+    isWorkflowEditorUnlocked: boolean;
 }
 
 export class CreateMaterial extends Component<CreateMaterialProps, CreateMaterialState> {
@@ -164,7 +165,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             toggleCollapse={this.toggleCollapse}
             save={this.save}
             cancel={this.cancel}
-
+            isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
         />
     }
 }
