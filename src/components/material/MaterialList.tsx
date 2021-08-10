@@ -128,7 +128,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     refreshMaterials={this.refreshMaterials}
                     isGitUrlValid={this.isGitUrlValid}
                     isGitProviderValid={this.isGitProviderValid}
-                    isCheckoutPathValid={this.isCheckoutPathValid} />
+                    isCheckoutPathValid={this.isCheckoutPathValid}
+                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
                 {this.state.materials.map((mat) => {
                     return <UpdateMaterial key={mat.name}
                         appId={Number(this.props.match.params.appId)}
@@ -138,7 +139,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         refreshMaterials={this.refreshMaterials}
                         isGitUrlValid={this.isGitUrlValid}
                         isGitProviderValid={this.isGitProviderValid}
-                        isCheckoutPathValid={this.isCheckoutPathValid} />
+                        isCheckoutPathValid={this.isCheckoutPathValid}
+                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
                 })}
             </div>
         }
