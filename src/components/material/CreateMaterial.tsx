@@ -5,7 +5,6 @@ import { showError, VisibleModal } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
-import SaveModal from './SaveModal';
 
 interface CreateMaterialProps {
     appId: number;
@@ -162,7 +161,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     renderSavePopupModal = () => {
         return <VisibleModal className="app-status__material-modal">
-            {console.log('hi')}
             <div className="modal__body pl-24 pr-24" onClick={e => e.stopPropagation()}>
                 <Info className="icon-dim-40" />
                 <div className="mt-16 cn-9 fw-6 fs-18 mb-8">Configure existing build pipelines to use changes</div>
@@ -177,7 +175,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     <button className="cta" type="submit" onClick={(e) => this.save(e)} >Okay, Save changes</button>
                 </div>
             </div>
-            {console.log('testing')}
         </VisibleModal>
     }
 
