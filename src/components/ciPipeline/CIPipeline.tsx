@@ -457,9 +457,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     renderBasicCI() {
 
         let _webhookData: WebhookCIProps = {
-            webhookConditionList : this.state.form.webhookConditionList,
-            gitHost : this.state.form.gitHost,
-            getSelectedWebhookEvent : this.getSelectedWebhookEvent,
+            webhookConditionList: this.state.form.webhookConditionList,
+            gitHost: this.state.form.gitHost,
+            getSelectedWebhookEvent: this.getSelectedWebhookEvent,
             copyToClipboard: this.copyToClipboard,
             addWebhookCondition: this.addWebhookCondition,
             deleteWebhookCondition: this.deleteWebhookCondition,
@@ -467,7 +467,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             onWebhookConditionSelectorValueChange: this.onWebhookConditionSelectorValueChange
         };
 
-        return <SourceMaterials showError={this.state.showError}
+        return <div className="pl-20 pr-20 pt-20 pb-20">
+            <SourceMaterials showError={this.state.showError}
                 validationRules={this.validationRules}
                 materials={this.state.form.materials}
                 selectSourceType={this.selectSourceType}
@@ -477,38 +478,39 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 webhookData={_webhookData}
                 canEditPipeline={this.state.form.ciPipelineEditable}
             />
+        </div>
     }
 
     renderAdvanceCI() {
-        return <div className="" style={{maxHeight: "calc(100vh - 200px)", overflowY: "scroll"}}> 
-        <CIPipelineAdvanced {...this.state}
-            copyToClipboard={this.copyToClipboard}
-            validationRules={this.validationRules}
-            closeCIDeleteModal={this.closeCIDeleteModal}
-            deletePipeline={this.deletePipeline}
-            handlePreBuild={this.handlePreBuild}
-            handlePostBuild={this.handlePostBuild}
-            handleDockerArgs={this.handleDockerArgs}
-            addEmptyStage={this.addEmptyStage}
-            toggleCollapse={this.toggleCollapse}
-            deleteStage={this.deleteStage}
-            handleChange={this.handleChange}
-            discardChanges={this.discardChanges}
-            handleTriggerChange={this.handleTriggerChange}
-            handleDocker={this.handleDocker}
-            addDockerArg={this.addDockerArg}
-            handleDockerArgChange={this.handleDockerArgChange}
-            removeDockerArgs={this.removeDockerArgs}
-            handleScanToggle={this.handleScanToggle}
-            handleSourceChange={this.handleSourceChange}
-            handlePipelineName={this.handlePipelineName}
-            selectSourceType={this.selectSourceType}
-            getSelectedWebhookEvent={this.getSelectedWebhookEvent}
-            addWebhookCondition={this.addWebhookCondition}
-            deleteWebhookCondition={this.deleteWebhookCondition}
-            onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
-            onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
-        />
+        return <div className="" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "scroll" }}>
+            <CIPipelineAdvanced {...this.state}
+                copyToClipboard={this.copyToClipboard}
+                validationRules={this.validationRules}
+                closeCIDeleteModal={this.closeCIDeleteModal}
+                deletePipeline={this.deletePipeline}
+                handlePreBuild={this.handlePreBuild}
+                handlePostBuild={this.handlePostBuild}
+                handleDockerArgs={this.handleDockerArgs}
+                addEmptyStage={this.addEmptyStage}
+                toggleCollapse={this.toggleCollapse}
+                deleteStage={this.deleteStage}
+                handleChange={this.handleChange}
+                discardChanges={this.discardChanges}
+                handleTriggerChange={this.handleTriggerChange}
+                handleDocker={this.handleDocker}
+                addDockerArg={this.addDockerArg}
+                handleDockerArgChange={this.handleDockerArgChange}
+                removeDockerArgs={this.removeDockerArgs}
+                handleScanToggle={this.handleScanToggle}
+                handleSourceChange={this.handleSourceChange}
+                handlePipelineName={this.handlePipelineName}
+                selectSourceType={this.selectSourceType}
+                getSelectedWebhookEvent={this.getSelectedWebhookEvent}
+                addWebhookCondition={this.addWebhookCondition}
+                deleteWebhookCondition={this.deleteWebhookCondition}
+                onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
+                onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
+            />
         </div>
     }
 
@@ -547,9 +549,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                         {
                             this.state.form.ciPipelineEditable &&
                             <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
-                                              loaderColor="white"
-                                              onClick={this.savePipeline}
-                                              isLoading={this.state.loadingData}>
+                                loaderColor="white"
+                                onClick={this.savePipeline}
+                                isLoading={this.state.loadingData}>
                                 {text}
                             </ButtonWithLoader>
                         }
