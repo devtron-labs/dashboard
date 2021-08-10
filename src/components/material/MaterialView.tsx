@@ -3,7 +3,7 @@ import ReactSelect, { components } from 'react-select';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
-import { Progressing, Checkbox } from '../common';
+import { Progressing, Checkbox, VisibleModal } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
@@ -12,9 +12,9 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
-
 
     renderCollapsedView() {
         if ((this.props.material).id) {
@@ -172,8 +172,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 {this.props.isMultiGit ?
                     <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>Cancel</button>
                     : null}
-                <button type="button" className="cta" disabled={this.props.isLoading}
-                    onClick={this.props.save}>
+                <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
                     {this.props.isLoading ? <Progressing /> : "Save"}
                 </button>
             </div>
@@ -185,7 +184,9 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             return this.renderCollapsedView();
         }
         else {
-            return this.renderForm();
+            return <>
+                {this.renderForm()}
+            </>
         }
     }
 }

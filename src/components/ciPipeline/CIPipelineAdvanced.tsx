@@ -9,12 +9,12 @@ import CodeEditor from '../CodeEditor/CodeEditor';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import trash from '../../assets/icons/misc/delete.svg';
-import {ReactComponent as InfoIcon} from '../../assets/icons/appstatus/ic-appstatus-failed.svg';
+import { ReactComponent as InfoIcon } from '../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import { CIPipelineState } from './types';
 
 interface CIPipelineAdvancedProps extends CIPipelineState {
-    copyToClipboard: (text : string) => void;
+    copyToClipboard: (text: string) => void;
     validationRules: any;
     closeCIDeleteModal: () => void;
     deletePipeline: () => void;
@@ -35,11 +35,11 @@ interface CIPipelineAdvancedProps extends CIPipelineState {
     handleSourceChange: (event, gitMaterialId: number) => void;
     handlePipelineName: (event) => void;
     selectSourceType: (event, gitMaterialId: number) => void;
-    getSelectedWebhookEvent : (material: any) => any;
-    addWebhookCondition : () => void;
-    deleteWebhookCondition : (index : number) => void;
-    onWebhookConditionSelectorChange : (index : number, selectorId : number) => void;
-    onWebhookConditionSelectorValueChange : (index : number, value : string) => void;
+    getSelectedWebhookEvent: (material: any) => any;
+    addWebhookCondition: () => void;
+    deleteWebhookCondition: (index: number) => void;
+    onWebhookConditionSelectorChange: (index: number, selectorId: number) => void;
+    onWebhookConditionSelectorValueChange: (index: number, value: string) => void;
 
 }
 
@@ -217,9 +217,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
 
     renderMaterials() {
         let _webhookData: WebhookCIProps = {
-            webhookConditionList : this.props.form.webhookConditionList,
-            gitHost : this.props.form.gitHost,
-            getSelectedWebhookEvent : this.props.getSelectedWebhookEvent,
+            webhookConditionList: this.props.form.webhookConditionList,
+            gitHost: this.props.form.gitHost,
+            getSelectedWebhookEvent: this.props.getSelectedWebhookEvent,
             copyToClipboard: this.props.copyToClipboard,
             addWebhookCondition: this.props.addWebhookCondition,
             deleteWebhookCondition: this.props.deleteWebhookCondition,
@@ -240,55 +240,57 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
         />
     }
 
+    renderWebhookWarning() {
+        return <div className="bcr-1 cn-9 pl-20 pr-20 pt-10 pb-10 er-5 bw-1" style={{ position: 'fixed', zIndex: 2, width: '800px' }}>
+            <div className="flex left">
+                <InfoIcon className="icon-dim-20 mr-8" />
+                    Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.
+                </div>
+            <div className="ml-28">
+                You can continue running the pipeline based on existing configurations.
+                </div>
+            <div className="ml-28">
+                NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
+                    <a className="learn-more__href ml-4 mr-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
+                    for feature request.
+                </div>
+        </div>
+    }
+
     render() {
         let errorObj = this.props.validationRules.name(this.props.form.name);
 
-        return <div className="pt-20">
-            {
-                !this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) &&
-                <div className="bcr-1 pl-20 pr-20 pt-10 pb-10 er-5 bw-1">
-                    <div className="flex left">
-                        <InfoIcon className="scr-5 icon-dim-20 mr-8" />
-                        Editing for this webhook CI pipeline is disabled as more than one git repository is connected to this application.
+        return <>
+            {!this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) && this.renderWebhookWarning()}
+            <div className="pt-20 pl-20 pr-20 pb-20">
+                <label className="form__row">
+                    <span className="form__label">Pipeline Name*</span>
+                    <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}
+                        onChange={this.props.handlePipelineName} />
+                    {this.props.showError && !errorObj.isValid ? <span className="form__error">
+                        <img src={error} className="form__icon" />
+                        {this.props.validationRules.name(this.props.form.name).message}
+                    </span> : null}
+                </label>
+                {this.renderTriggerType()}
+                {this.renderMaterials()}
+                <hr className="divider" />
+                {this.renderStages('beforeDockerBuildScripts')}
+                <hr className="divider" />
+                {this.renderDockerArgs()}
+                <hr className="divider" />
+                {this.renderStages('afterDockerBuildScripts')}
+                <hr className="divider" />
+                <div className="white-card flexbox flex-justify mb-20">
+                    <div>
+                        <p className="ci-stage__title">Scan for vulnerabilities</p>
+                        <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
                     </div>
-                    <div className="ml-24">
-                        You can continue running the pipeline based on existing configurations.
+                    <div className="" style={{ width: "32px", height: "20px" }}>
+                        <Toggle selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
                     </div>
-                    <div className="ml-24">
-                        NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
-                        <a className="learn-more__href ml-4" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener">Create a github issue</a>
-                        &nbsp;for feature request.
-                    </div>
-                </div>
-            }
-
-            <label className="form__row">
-                <span className="form__label">Pipeline Name*</span>
-                <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}
-                    onChange={this.props.handlePipelineName} />
-                {this.props.showError && !errorObj.isValid ? <span className="form__error">
-                    <img src={error} className="form__icon" />
-                    {this.props.validationRules.name(this.props.form.name).message}
-                </span> : null}
-            </label>
-            {this.renderTriggerType()}
-            {this.renderMaterials()}
-            <hr className="divider" />
-            {this.renderStages('beforeDockerBuildScripts')}
-            <hr className="divider" />
-            {this.renderDockerArgs()}
-            <hr className="divider" />
-            {this.renderStages('afterDockerBuildScripts')}
-            <hr className="divider" />
-            <div className="white-card flexbox flex-justify mb-20">
-                <div>
-                    <p className="ci-stage__title">Scan for vulnerabilities</p>
-                    <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
-                </div>
-                <div className="" style={{ width: "32px", height: "20px" }}>
-                    <Toggle selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
                 </div>
             </div>
-        </div>
+        </>
     }
 }
