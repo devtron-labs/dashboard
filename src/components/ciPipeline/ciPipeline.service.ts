@@ -98,7 +98,7 @@ export function getPipelineMetaConfiguration(appId: string, includeWebhookData: 
             }
 
             baseResponse.result.gitHost = _result.gitHost;
-            baseResponse.result.webhookEvents = _result.webhookEvents;
+            baseResponse.result.webhookEvents = _result.webhookEvents || [];
 
             baseResponse.result.webhookEvents.forEach((_webhookEvent) => {
                 baseResponse.result.ciPipelineSourceTypeOptions.push({ label: _webhookEvent.name, value: 'WEBHOOK', isDisabled: false, isSelected: false, isWebhook: true });
