@@ -2,21 +2,10 @@ import React, { Component } from 'react';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
 import { SourceTypeMap } from '../../../../config';
 
-export interface Data {
-    author: string;
-    date: string;
-    gitUrl: string;
-    header: string;
-    sourceBranchName: string;
-    sourceCheckout: string;
-    targetBranchName: string;
-    targetCheckout: string;
-}
-
 export interface WebhookData {
     id: number;
     eventActionType: string;
-    data: Data
+    data: any
 }
 
 export interface CommitHistory {

@@ -48,21 +48,11 @@ export interface CiMaterial {
     branchErrorMsg: string;
     url: string;
 }
-export interface Data {
-    author: string;
-    date: string;
-    gitUrl: string;
-    header: string;
-    sourceBranchName: string;
-    sourceCheckout: string;
-    targetBranchName: string;
-    targetCheckout: string;
-}
 
 export interface WebHookData {
     Id: number;
     EventActionType: string;
-    Data: Data
+    Data: any
 }
 
 export interface GitTriggers {
