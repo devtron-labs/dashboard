@@ -279,6 +279,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 
                     <div>
                         <div> *DeploymentTemplate: <br />
+                            <br/>
+                            <br/>
                         </div>
                         <br/>
                         <div> #Message:  <br />
@@ -297,7 +299,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Message: {elm.message} <br /><br />
+                                        Message: {elm.message} <br />
+                                        <br /><br/>
                                     </div>
                                 })}</>
                             }
@@ -314,6 +317,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Message: {elm.message} <br />
+                                        <br/><br/>
                                     </div>
                                 })}</>
                             }
@@ -322,6 +326,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         ----------------------------------------------------
                         <div> *Secrets: <br />
+                            <br/>
+                            <br/>
                         </div>
                         <br/>
                         <div> #Message:  <br />
@@ -341,7 +347,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
-                                        Message: {elm.message} <br /><br />
+                                        Message: {elm.message} <br />
+                                        <br/><br />
                                     </div>
                                 })}</>
                             }
@@ -359,6 +366,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
+                                        <br/><br/>
                                     </div>
                                 })}</>
                             }
@@ -367,6 +375,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         ----------------------------------------------------
                         <div> *ConfigMaps: <br />
+                            <br/>
+                            <br/>
                         </div>
                         <br/>
                         <div> #Message:  <br />
@@ -386,7 +396,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
-                                        Message: {elm.message} <br /><br />
+                                        Message: {elm.message} <br />
+                                        <br/><br />
                                     </div>
                                 })}</>
                             }
@@ -404,6 +415,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
+                                        <br/>
                                     </div>
                                 })}</>
                             }
@@ -429,6 +441,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
+                                        <br/><br/>
                                     </div>
                                 })}</>
                             }
@@ -446,6 +459,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
+                                        <br/><br/>
                                     </div>
                                 })}</>
                             }
@@ -463,6 +477,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
+                                        <br/><br/>
                                     </div>
                                 })}</>
                             }
