@@ -78,7 +78,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         let _moreData = {};
         if (_webhookData.eventactiontype == "merged") {
             Object.keys(_webhookData.data).forEach((_key) => {
-                if (_key != "author" && _key != "date" && _key != "git url" && _key != "source branch name" && _key != "source checkout" && _key != "target branch name" && _key != "target checkout" && _key != "header") {
+                if (_key != "author" && _key != "date" && _key != "git url" && _key != "source branch name" && _key != "source checkout" && _key != "target branch name" && _key != "target checkout" && _key != "title") {
                     _moreData[_key] = _webhookData.data[_key];
                 }
             })
@@ -126,7 +126,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
             <>
                 <div className="flex left pr-16" style={{ justifyContent: "space-between" }}>
                     <div className="ml-16 ">
-                        {_webhookData.data.header ? <div className="flex left cn-9  fs-13">{_webhookData.data.header}</div> : null}
+                        {_webhookData.data.title ? <div className="flex left cn-9  fs-13">{_webhookData.data.title}</div> : null}
                         {_webhookData.data["git url"] ? <a href={`${_webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="no-decor cb-5 "> View git url</a> : null}
                     </div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >

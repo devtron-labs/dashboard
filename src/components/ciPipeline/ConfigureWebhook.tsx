@@ -53,7 +53,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                 let _masterSelectorList = [];
                 selectedWebhookEvent.selectors.forEach((_selector) => {
                     let _selectorId = _selector.id;
-                    if(!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId){
+                    if(_selector.toShowInCiFilter && (!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId)){
                         _masterSelectorList.push({ label: _selector.name, value: _selector.id })
                     }
                 })
