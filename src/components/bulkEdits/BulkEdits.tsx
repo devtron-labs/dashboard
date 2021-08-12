@@ -49,7 +49,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputName: "output",
             bulkConfig: [],
             updatedTemplate: [],
-            impactedObjects: [],
+            impactedObjects: undefined,
             readmeResult: [],
             showExamples: true,
             showHeaderDescription: true,
@@ -154,7 +154,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 outputName: 'output',
                 outputResult: outputResult,
                 showImpactedtData: false,
-                impactedObjects: []
+                impactedObjects: undefined
             })
         })
             .catch((error) => {
@@ -187,11 +187,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-
-            let impactedObjects = []
-            impactedObjects.push(STATUS.EMPTY_IMPACTED)
-
-            if (response.result.length === 0) {
+            this.setState({ view: ViewType.LOADING, outputName: 'output' })
+            let impactedObjects = response.result
                 this.setState({
                     statusCode:0,
                     view: ViewType.FORM,
@@ -201,18 +198,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     showImpactedtData: true,
 
                 })
-            }
-            else {
-                this.setState({
-                    statusCode:0,
-                    impactedObjects: response.result,
-                    outputName: "impacted",
-                    view: ViewType.FORM,
-                    showImpactedtData: true,
-                    outputResult: undefined,
-                    showOutputData: false,
-                })
-            }
+
 
         }).catch((error) => {
             showError(error);
@@ -292,18 +278,21 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.state.outputResult == undefined ? "" :
                 
                     <div>
+                        <div> *DeploymentTemplate: <br />
+                        </div>
+                        <br/>
                         <div> #Message:  <br />
-                            {this.state.outputResult.message.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate.message.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
                         </div>
                         <br />
-                        -----------------------------------------------------------------
+                        --------------------------
                         <br />
                         <br />
                         <div>#Failed Operations:<br />
-                            {this.state.outputResult.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.failure.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.deploymentTemplate.failure.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
@@ -314,12 +303,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             }
                             <br />
                         </div>
-                        -----------------------------------------------------------------
+                        --------------------------
                         <br />
                         <br />
                         <div>#Successful Operations: <br />
-                            {this.state.outputResult.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.successful.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.deploymentTemplate.successful.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
@@ -331,25 +320,156 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             <br />
                             <br />
                         </div>
+                        ----------------------------------------------------
+                        <div> *Secrets: <br />
+                        </div>
+                        <br/>
+                        <div> #Message:  <br />
+                            {this.state.outputResult.secret.message.map((elm) => {
+                                return <>{elm}<br /></>
+                            })}
+                        </div>
+                        <br />
+                        --------------------------
+                        <br />
+                        <br />
+                        <div>#Failed Operations:<br />
+                            {this.state.outputResult.secret.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.secret.failure.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                        Message: {elm.message} <br /><br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        --------------------------
+                        <br />
+                        <br />
+                        <div>#Successful Operations: <br />
+                            {this.state.outputResult.secret.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.secret.successful.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                        Message: {elm.message} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                            <br />
+                        </div>
+                        ----------------------------------------------------
+                        <div> *ConfigMaps: <br />
+                        </div>
+                        <br/>
+                        <div> #Message:  <br />
+                            {this.state.outputResult.configMap.message.map((elm) => {
+                                return <>{elm}<br /></>
+                            })}
+                        </div>
+                        <br />
+                        --------------------------
+                        <br />
+                        <br />
+                        <div>#Failed Operations:<br />
+                            {this.state.outputResult.configMap.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.configMap.failure.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                        Message: {elm.message} <br /><br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        --------------------------
+                        <br />
+                        <br />
+                        <div>#Successful Operations: <br />
+                            {this.state.outputResult.configMap.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.configMap.successful.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                        Message: {elm.message} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                            <br />
+                        </div>
+
                     </div>
         )
     }
 
     renderImpactedObjects = () => {
-        return <div>
-            {
-                    this.state.impactedObjects.map((elm) => {
-                        return elm.appId == undefined ? <>{STATUS.EMPTY_IMPACTED}</> :
-                            <div>
-                                App Id: {elm.appId} <br />
-                                App Name: {elm.appName} <br />
-                                Environment Id: {elm.envId} <br />
-                                <br /><br />
-                            </div>
-                    })
-                }
-            
-        </div>
+        return (
+            this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
+
+                this.state.impactedObjects == undefined ? "" :
+
+                    <div>
+                        <div> *DeploymentTemplate: <br />
+                            {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
+                                <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+
+                        <div> *Secrets: <br />
+                            {this.state.impactedObjects.secret == null ? <>No Result Found</> :
+                                <>{this.state.impactedObjects.secret.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                        -----------------------------------------------------------------
+                        <br />
+                        <br />
+
+                        <div> *ConfigMaps: <br />
+                            {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
+                                <>{this.state.impactedObjects.configMap.map((elm) => {
+                                    return <div>
+                                        App Id: {elm.appId} <br />
+                                        App Name: {elm.appName} <br />
+                                        Environment Id: {elm.envId} <br />
+                                        Names : {elm.names} <br />
+                                    </div>
+                                })}</>
+                            }
+                            <br />
+                        </div>
+                    </div>
+        )
     }
 
     handleUpdateTemplate = () => {
