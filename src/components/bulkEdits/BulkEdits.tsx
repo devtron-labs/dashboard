@@ -187,7 +187,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-            this.setState({ view: ViewType.LOADING, outputName: 'output' })
+            this.setState({ view: ViewType.LOADING, outputName: 'impacted' })
             let impactedObjects = response.result
                 this.setState({
                     statusCode:0,
@@ -202,7 +202,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         }).catch((error) => {
             showError(error);
-            this.setState({ view: ViewType.FORM, statusCode: error.code });
+            this.setState({ view: ViewType.FORM, statusCode: error.code,  outputName: 'impacted' });
         })
     }
 
