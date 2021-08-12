@@ -145,7 +145,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         </div> : ''}
                     </div>
                 </div>
-                { mat.type == SourceTypeMap.WEBHOOK &&
+                { props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK &&
                     <ConfigureWebhook webhookConditionList={props.webhookData.webhookConditionList}
                                       gitHost={props.webhookData.gitHost}
                                       selectedWebhookEvent={props.webhookData.getSelectedWebhookEvent(mat)}
