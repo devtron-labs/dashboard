@@ -45,11 +45,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             view: ViewType.LOADING,
             statusCode: 0,
             outputResult: undefined,
+            impactedObjects: undefined,
             isReadmeLoading: true,
             outputName: "output",
             bulkConfig: [],
             updatedTemplate: [],
-            impactedObjects: undefined,
             readmeResult: [],
             showExamples: true,
             showHeaderDescription: true,
@@ -145,10 +145,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateBulkList(payload).then((response) => {
-            this.setState({ view: ViewType.LOADING, outputName: 'output' })
             let outputResult = response.result
             this.setState({
-                statusCode:0,
+                statusCode: 0,
                 view: ViewType.FORM,
                 showOutputData: true,
                 outputName: 'output',
@@ -166,7 +165,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     handleShowImpactedObjectButton = () => {
         var outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight;
-
 
         this.setState({
             view: ViewType.LOADING,
@@ -187,22 +185,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let payload = configJson
 
         updateImpactedObjectsList(payload).then((response) => {
-            this.setState({ view: ViewType.LOADING, outputName: 'impacted' })
             let impactedObjects = response.result
-                this.setState({
-                    statusCode:0,
-                    view: ViewType.FORM,
-                    impactedObjects: impactedObjects,
-                    outputResult: undefined,
-                    outputName: "impacted",
-                    showImpactedtData: true,
-
-                })
-
-
+            this.setState({
+                statusCode: 0,
+                view: ViewType.FORM,
+                impactedObjects: impactedObjects,
+                outputResult: undefined,
+                outputName: "impacted",
+                showImpactedtData: true,
+            })
         }).catch((error) => {
             showError(error);
-            this.setState({ view: ViewType.FORM, statusCode: error.code,  outputName: 'impacted' });
+            this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'impacted' });
         })
     }
 
@@ -248,12 +242,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderCodeEditorBody = () => {
-        let codeEditorBody = this.state.codeEditorPayload
         return <div>
             <CodeEditor
                 theme='vs-gray--dt'
                 height={400}
-                value={codeEditorBody}
+                value={this.state.codeEditorPayload}
                 mode="yaml"
                 onChange={(event) => { this.handleConfigChange(event) }}
             >
@@ -264,7 +257,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <OutputTabs handleOutputTabs={(e) => this.handleOutputTab(e, "impacted")} outputName={this.state.outputName} value={'impacted'} name={OutputObjectTabs.IMPACTED_OBJECTS} />
                 </div>
                 <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
-                    {this.state.showOutputData ? this.state.statusCode === 404 ? <>{STATUS.ERROR}</> : this.renderOutputs() : null }
+                    {this.state.showOutputData ? this.state.statusCode === 404 ? <>{STATUS.ERROR}</> : this.renderOutputs() : null}
                     {this.state.showImpactedtData ? this.state.statusCode === 404 ? <>{STATUS.ERROR}</> : this.renderImpactedObjects() : null}
                 </div>
             </div>
@@ -276,13 +269,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
 
                 this.state.outputResult == undefined ? "" :
-                
+
                     <div>
                         <div> *DeploymentTemplate: <br />
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                         </div>
-                        <br/>
+                        <br />
                         <div> #Message:  <br />
                             {this.state.outputResult.deploymentTemplate.message.map((elm) => {
                                 return <>{elm}<br /></>
@@ -300,7 +293,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Message: {elm.message} <br />
-                                        <br /><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -317,7 +310,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Message: {elm.message} <br />
-                                        <br/><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -326,12 +319,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         ----------------------------------------------------
                         <div> *Secrets: <br />
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                         </div>
-                        <br/>
+                        <br />
                         <div> #Message:  <br />
-                            {this.state.outputResult.secret.message.map((elm) => {
+                            {this.state.outputResult.secret?.message.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
                         </div>
@@ -340,15 +333,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Failed Operations:<br />
-                            {this.state.outputResult.secret.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.secret.failure.map((elm) => {
+                            {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.secret?.failure.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
-                                        <br/><br />
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -358,15 +351,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Successful Operations: <br />
-                            {this.state.outputResult.secret.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.secret.successful.map((elm) => {
+                            {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.secret?.successful.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
-                                        <br/><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -375,12 +368,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         ----------------------------------------------------
                         <div> *ConfigMaps: <br />
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                         </div>
-                        <br/>
+                        <br />
                         <div> #Message:  <br />
-                            {this.state.outputResult.configMap.message.map((elm) => {
+                            {this.state.outputResult.configMap?.message?.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
                         </div>
@@ -389,15 +382,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Failed Operations:<br />
-                            {this.state.outputResult.configMap.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.configMap.failure.map((elm) => {
+                            {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.configMap?.failure.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
-                                        <br/><br />
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -407,15 +400,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Successful Operations: <br />
-                            {this.state.outputResult.configMap.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.configMap.successful.map((elm) => {
+                            {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.configMap?.successful.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
                                         Message: {elm.message} <br />
-                                        <br/>
+                                        <br />
                                     </div>
                                 })}</>
                             }
@@ -441,7 +434,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        <br/><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -459,7 +452,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
-                                        <br/><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
@@ -477,7 +470,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
                                         Names : {elm.names} <br />
-                                        <br/><br/>
+                                        <br /><br />
                                     </div>
                                 })}</>
                             }
