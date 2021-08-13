@@ -277,7 +277,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         <br />
                         <div> #Message:  <br />
-                            {this.state.outputResult.deploymentTemplate.message.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
                         </div>
@@ -286,8 +286,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Failed Operations:<br />
-                            {this.state.outputResult.deploymentTemplate.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.deploymentTemplate.failure.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
@@ -303,8 +303,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <br />
                         <br />
                         <div>#Successful Operations: <br />
-                            {this.state.outputResult.deploymentTemplate.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.deploymentTemplate.successful.map((elm) => {
+                            {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
+                                <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
