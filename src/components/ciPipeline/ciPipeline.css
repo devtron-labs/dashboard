@@ -195,3 +195,7 @@
 .webhook-config-container .add-filter {
     width : 100px;
 }
+
+.webhook-warning-padding{
+    padding-top: 100px;
+}

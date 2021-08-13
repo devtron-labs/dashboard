@@ -262,7 +262,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
 
         return <>
             {!this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) && this.renderWebhookWarning()}
-            <div className="pt-20 pl-20 pr-20 pb-20">
+            <div className={`pl-20 pr-20 pb-20 ${!this.props.form.ciPipelineEditable && this.props.form.materials.some(_material => _material.type == SourceTypeMap.WEBHOOK) ? 'webhook-warning-padding' : 'pt-20'}`} >
                 <label className="form__row">
                     <span className="form__label">Pipeline Name*</span>
                     <input className="form__input" autoComplete="off" disabled={!!this.props.ciPipeline.id} placeholder="e.g. my-first-pipeline" type="text" value={this.props.form.name}
