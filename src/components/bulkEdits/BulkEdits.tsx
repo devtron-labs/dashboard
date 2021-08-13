@@ -273,17 +273,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>
                         <div> *DeploymentTemplate: <br />
                             <br />
-                            <br />
                         </div>
-                        <br />
                         <div> #Message:  <br />
                             {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
+                            <br/>
                         </div>
-                        <br />
                         --------------------------
-                        <br />
                         <br />
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
@@ -301,7 +298,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         --------------------------
                         <br />
-                        <br />
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
@@ -315,22 +311,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                 })}</>
                             }
                             <br />
-                            <br />
                         </div>
                         ----------------------------------------------------
                         <div> *Secrets: <br />
                             <br />
-                            <br />
                         </div>
-                        <br />
                         <div> #Message:  <br />
                             {this.state.outputResult.secret?.message.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
+                            <br/>
                         </div>
-                        <br />
                         --------------------------
-                        <br />
                         <br />
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
@@ -339,7 +331,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         Message: {elm.message} <br />
                                         <br /><br />
                                     </div>
@@ -348,7 +340,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             <br />
                         </div>
                         --------------------------
-                        <br />
                         <br />
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
@@ -357,29 +348,25 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         Message: {elm.message} <br />
                                         <br /><br />
                                     </div>
                                 })}</>
                             }
                             <br />
-                            <br />
                         </div>
                         ----------------------------------------------------
                         <div> *ConfigMaps: <br />
                             <br />
-                            <br />
                         </div>
-                        <br />
                         <div> #Message:  <br />
                             {this.state.outputResult.configMap?.message?.map((elm) => {
                                 return <>{elm}<br /></>
                             })}
+                            <br/>
                         </div>
-                        <br />
                         --------------------------
-                        <br />
                         <br />
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
@@ -388,7 +375,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         Message: {elm.message} <br />
                                         <br /><br />
                                     </div>
@@ -398,7 +385,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         </div>
                         --------------------------
                         <br />
-                        <br />
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.configMap?.successful.map((elm) => {
@@ -406,16 +392,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         Message: {elm.message} <br />
                                         <br />
                                     </div>
                                 })}</>
                             }
                             <br />
-                            <br />
                         </div>
-
                     </div>
         )
     }
@@ -427,7 +411,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.state.impactedObjects == undefined ? "" :
 
                     <div>
-                        <div> *DeploymentTemplate: <br />
+                        <div> *DeploymentTemplate: <br /> <br/>
                             {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
                                     return <div>
@@ -441,17 +425,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             <br />
                         </div>
                         -----------------------------------------------------------------
-                        <br />
-                        <br />
-
-                        <div> *Secrets: <br />
+                        <div> *Secrets: <br /> <br/>
                             {this.state.impactedObjects.secret == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.secret.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         <br /><br />
                                     </div>
                                 })}</>
@@ -459,17 +440,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             <br />
                         </div>
                         -----------------------------------------------------------------
-                        <br />
-                        <br />
-
-                        <div> *ConfigMaps: <br />
+                        <div> *ConfigMaps: <br /> <br/>
                             {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.configMap.map((elm) => {
                                     return <div>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
-                                        Names : {elm.names} <br />
+                                        Names : {elm.names.join(', ')} <br />
                                         <br /><br />
                                     </div>
                                 })}</>
