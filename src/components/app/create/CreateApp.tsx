@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, DialogForm, DialogFormSubmit, Progressing, showError, ErrorScreenManager } from '../../common';
+import { Select, DialogForm, DialogFormSubmit, Progressing, showError, ErrorScreenManager, ClearIndicator, MultiValueRemove, } from '../../common';
 import { AddNewAppProps, AddNewAppState } from '../types';
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE } from '../../../config';
 import { ValidationRules } from './validationRules';
@@ -10,6 +10,29 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import './createApp.css';
+import Creatable from 'react-select/creatable'
+
+
+const CreatableStyle = {
+    multiValue: (base, state) => {
+        return ({
+            ...base,
+            // border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+            borderRadius: `4px`,
+            // background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
+            height: '30px',
+            margin: '0 8px 4px 0',
+            padding: '1px',
+            fontSize: '12px',
+        })
+    },
+    control: (base, state) => ({
+        ...base,
+        border: state.isFocused ? '1px solid #06c' : '1px solid #d0d4d9', // default border color
+        boxShadow: 'none', // no box-shadow
+        minHeight: '72px',
+    }),
+}
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -192,6 +215,33 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         })}
                     </Select>
                 </div>
+                <span className="form__label"> Tags (only key:value allowed)</span>
+                <Creatable
+                    className={"create-app_tags"}
+                    components={{
+                        DropdownIndicator: () => null,
+                        ClearIndicator,
+                        MultiValueRemove,
+                        // MultiValueContainer: ({ ...props }) =>""
+                        // //  <MultiValueContainer {...props} validator={validateEmail} />,
+                        IndicatorSeparator: () => null,
+                        Menu: () => null
+                    }
+                    }
+                    styles={CreatableStyle}
+                    autoFocus
+                    isMulti
+                    isClearable
+                    // inputValue={emailState.inputEmailValue}
+                    placeholder="Add a tag..."
+                    isValidNewOption={() => false}
+                    backspaceRemovesValue
+                // value={emailState.emails}
+                // onBlur={handleCreatableBlur}
+                // onInputChange={handleInputChange}
+                // onKeyDown={handleKeyDown}
+                // onChange={handleEmailChange}
+                />
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">
@@ -199,7 +249,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <div className="info__subtitle">Do not forget to modify git repositories, corresponding branches and docker repositories to be used for each CI Pipeline if required.</div>
                     </div>
                 </div>}
-                <DialogFormSubmit tabIndex={3}>{this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}</DialogFormSubmit>
+                <div className=" mt-40">
+                    <DialogFormSubmit tabIndex={3}>{this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}</DialogFormSubmit>
+                </div>
             </DialogForm >
         }
     }
