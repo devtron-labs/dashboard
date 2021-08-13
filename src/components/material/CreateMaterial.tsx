@@ -109,7 +109,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: this.props.isGitUrlValid(this.state.material.url),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
-            
+
         }, () => {
             if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
@@ -161,7 +161,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     renderSavePopupModal = () => {
         return <VisibleModal className="app-status__material-modal">
-            <div className="modal__body pl-24 pr-24" onClick={e => e.stopPropagation()}>
+            <div className="modal__body pl-24 pr-24 pb-0" onClick={e => e.stopPropagation()}>
                 <Info className="icon-dim-40" />
                 <div className="mt-16 cn-9 fw-6 fs-18 mb-8">Configure existing build pipelines to use changes</div>
                 <div className="fs-14 cn-7">
@@ -171,7 +171,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                         NOTE: Already created build pipelines will continue running based on previous configurations.
                    </div>
                 <div className="form__row form__buttons mt-40">
-                    <button className="cta cancel mr-16" type="button" onClick={()=>this.setState({showSaveModal: false})}>Cancel</button>
+                    <button className="cta cancel mr-16" type="button" onClick={() => this.setState({ showSaveModal: false })}>Cancel</button>
                     <button className="cta" type="submit" onClick={(e) => this.save(e)} >Okay, Save changes</button>
                 </div>
             </div>
