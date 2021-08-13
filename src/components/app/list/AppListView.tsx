@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { AppListViewType } from '../config';
 import { ErrorScreenManager, Filter, Pagination, FilterOption, Progressing } from '../../common';
-import { ReactComponent as Commit } from '../../../assets/icons/ic-commit.svg';
 import { Link, Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { AppStatus } from './appStatus/AppStatus';
@@ -163,14 +162,27 @@ export class AppListView extends Component<AppListViewProps>{
                 </div>
                 {this.props.apps.map((app) => {
                     let commits = app.defaultEnv.materialInfo.map(mat => {
-                        return <div key={mat.revision} className="app-commit">
-                            <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
-                                event.preventDefault();
-                                this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, mat.revision);
-                            }}>
-                                <Commit className="icon-dim-16" />{mat.revision.substr(0, 8)}
-                            </button>
-                        </div>
+                        let _isWebhook = false;
+                        let _commit = mat.revision.substr(0, 8);
+                        let _commitId = mat.revision;
+                        if(mat && mat.webhookData){
+                            let _webhookData = JSON.parse(mat.webhookData);
+                            _isWebhook = _webhookData.Id > 0;
+                            if(_isWebhook){
+                                _commit = _webhookData.EventActionType == 'merged' ? _webhookData.Data["target checkout"].substr(0, 8) : _webhookData.Data["target checkout"];
+                                _commitId = _webhookData.Id;
+                            }
+                        }
+                        return(
+                            <div key={_commitId} className="app-commit">
+                                <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.openTriggerInfoModal(app.id, app.defaultEnv.ciArtifactId, _commitId);
+                                }}>
+                                    <span>{_commit}</span>
+                                </button>
+                            </div>
+                        )
                     })
                     return <React.Fragment key={app.id} >
                         {!(this.props.appData && this.props.appData.id == app.id) ?
@@ -215,7 +227,10 @@ export class AppListView extends Component<AppListViewProps>{
                     match={props.match} location={props.location} history={props.history} />}
             />
             <Route path={`${URLS.APP}/:appId(\\d+)/material-info/:ciArtifactId(\\d+)/commit/:commit`}
-                render={(props) => <TriggerInfoModal {...props}
+                render={(props) => <TriggerInfoModal appId={props.match.params.appId}
+                    ciArtifactId={props.match.params.ciArtifactId}
+                    commit={props.match.params.commit}
+                    {...props}
                     close={this.props.closeModal} />}
             />
         </Switch>

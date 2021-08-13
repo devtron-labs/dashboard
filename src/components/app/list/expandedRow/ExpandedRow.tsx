@@ -34,16 +34,29 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                 </div>
                 <div className="app-list__cell app-list__cell--env">{env.name}</div>
                 <div className="app-list__cell app-list__cell--material-info">
-                    <div key={env.id} className="app-commit">
-                        {env.materialInfo.map((mat) => {
-                            return <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
-                                event.preventDefault();
-                                this.props.openTriggerInfoModal(this.props.app.id, env.ciArtifactId, mat.revision);
-                            }}>
-                                <Commit className="icon-dim-16" /> {mat.revision.substr(0, 8)}
-                            </button>
-                        })}
-                    </div>
+                    {env.materialInfo.map((mat) => {
+                        let _isWebhook = false;
+                        let _commit = mat.revision.substr(0, 8);
+                        let _commitId = mat.revision;
+                        if(mat && mat.webhookData){
+                            let _webhookData = JSON.parse(mat.webhookData);
+                            _isWebhook = _webhookData.Id > 0;
+                            if(_isWebhook){
+                                _commit = _webhookData.EventActionType == 'merged' ? _webhookData.Data["target checkout"].substr(0, 8) : _webhookData.Data["target checkout"];
+                                _commitId = _webhookData.Id;
+                            }
+                        }
+                        return(
+                            <div key={env.id} className="app-commit">
+                                <button type="button" className="app-commit__hash block mr-16" onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.openTriggerInfoModal(this.props.app.id, env.ciArtifactId, _commitId);
+                                }}>
+                                    <span>{_commit}</span>
+                                </button>
+                            </div>
+                        )
+                    })}
                 </div>
                 <div className="app-list__cell app-list__cell--time">{env.lastDeployedTime}</div>
                 <div className="app-list__cell app-list__cell--action">

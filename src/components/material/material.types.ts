@@ -2,6 +2,7 @@ import { RouteComponentProps } from 'react-router';
 
 export interface MaterialListProps extends RouteComponentProps<{ appId: string; }> {
     respondOnSuccess: () => void;
+    isWorkflowEditorUnlocked: boolean;
 }
 
 export interface GitMaterialType {
@@ -33,6 +34,7 @@ export interface CreateMaterialState {
     isChecked: boolean;
     isLoading: boolean;
     isError: MaterialError;
+    showSaveModal: boolean;
 }
 
 interface MaterialError {
@@ -64,4 +66,5 @@ export interface MaterialViewProps {
     toggleCollapse: (event) => void;
     save: (event) => void;
     cancel: (event) => void;
+    isWorkflowEditorUnlocked : boolean;
 }

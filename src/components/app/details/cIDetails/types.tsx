@@ -49,6 +49,11 @@ export interface CiMaterial {
     url: string;
 }
 
+export interface WebHookData {
+    Id: number;
+    EventActionType: string;
+    Data: any
+}
 
 export interface GitTriggers {
     Commit: string;
@@ -56,6 +61,7 @@ export interface GitTriggers {
     Date: Date;
     Message: string;
     Changes: string[];
+    WebhookData: WebHookData
 }
 
 

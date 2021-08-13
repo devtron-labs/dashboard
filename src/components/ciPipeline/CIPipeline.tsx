@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { saveCIPipeline, deleteCIPipeline, getCIPipelineParsed, getSourceConfigParsed, getCIPipelineNameSuggestion } from './ciPipeline.service';
-import { TriggerType, ViewType } from '../../config';
+import { saveCIPipeline, deleteCIPipeline, getInitDataWithCIPipeline, getInitData, createWebhookConditionList } from './ciPipeline.service';
+import { TriggerType, ViewType, SourceTypeMap } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
-import { CIPipelineProps, CIPipelineState, MaterialType } from './types';
+import { CIPipelineProps, CIPipelineState } from './types';
 import { VisibleModal, Progressing, ButtonWithLoader, ConditionalWrap, DeleteDialog, showError } from '../common';
 import { toast } from 'react-toastify';
 import { ValidationRules } from './validationRules';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { CIPipelineAdvanced } from './CIPipelineAdvanced';
-import { SourceMaterials } from './SourceMaterials';
+import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
 import { classNames } from 'react-select/src/utils';
@@ -29,6 +29,11 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 beforeDockerBuildScripts: [],
                 afterDockerBuildScripts: [],
                 scanEnabled: false,
+                gitHost: undefined,
+                webhookEvents: [],
+                ciPipelineSourceTypeOptions: [],
+                webhookConditionList: [],
+                ciPipelineEditable: true
             },
             ciPipeline: {
                 active: true,
@@ -43,7 +48,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 linkedCount: 0,
                 scanEnabled: false,
             },
-            gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -51,6 +55,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDocker: false,
             showPostBuild: false,
             isAdvanced: false,
+
         }
         this.validationRules = new ValidationRules();
         this.handlePipelineName = this.handlePipelineName.bind(this);
@@ -67,45 +72,36 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.handleDockerArgs = this.handleDockerArgs.bind(this);
         this.handlePostBuild = this.handlePostBuild.bind(this);
         this.discardChanges = this.discardChanges.bind(this);
-        this.handleDockerArgChange=this.handleDockerArgChange.bind(this);
-        this.addDockerArg=this.addDockerArg.bind(this);
-        this.removeDockerArgs=this.removeDockerArgs.bind(this);
+        this.handleDockerArgChange = this.handleDockerArgChange.bind(this);
+        this.addDockerArg = this.addDockerArg.bind(this);
+        this.removeDockerArgs = this.removeDockerArgs.bind(this);
         this.handleSourceChange = this.handleSourceChange.bind(this);
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.toggleCIPipelineView = this.toggleCIPipelineView.bind(this);
+        this.getSelectedWebhookEvent = this.getSelectedWebhookEvent.bind(this);
+        this.addWebhookCondition = this.addWebhookCondition.bind(this);
+        this.deleteWebhookCondition = this.deleteWebhookCondition.bind(this);
+        this.onWebhookConditionSelectorChange = this.onWebhookConditionSelectorChange.bind(this);
+        this.onWebhookConditionSelectorValueChange = this.onWebhookConditionSelectorValueChange.bind(this);
     }
-
     componentDidMount() {
         if (this.props.match.params.ciPipelineId) {
-            getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+            getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true).then((response) => {
                 this.setState({ ...response, loadingData: false, isAdvanced: true });
             }).catch((error: ServerErrors) => {
                 showError(error);
-                this.setState({ loadingData: false });
             })
         }
         else {
-            getCIPipelineNameSuggestion(this.props.match.params.appId).then((response) => {
+            getInitData(this.props.match.params.appId, true).then((response) => {
                 this.setState({
-                    form: {
-                        ...this.state.form,
-                        name: response.result
-                    },
-                })
-            }).catch((error) => {
-
-            })
-            getSourceConfigParsed(this.props.match.params.appId).then((response) => {
-                this.setState({
+                    ...this.state,
+                    ...response.result,
                     view: ViewType.FORM,
-                    form: {
-                        ...this.state.form,
-                        materials: response.result.materials
-                    },
-                    gitMaterials: response.result.gitMaterials,
-                    loadingData: false,
-                    isAdvanced: false,
-                });
+                })
+            }).catch((error: ServerErrors) => {
+                console.error(error);
+                showError(error);
             })
         }
     }
@@ -164,15 +160,38 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         this.setState(state);
     }
 
-    selectSourceType(event, gitMaterialId: number): void {
+    selectSourceType(selectedSource, gitMaterialId: number): void {
         let { form } = { ...this.state };
+
+        // update source type in material
         let allMaterials = this.state.form.materials.map((mat) => {
             return {
                 ...mat,
-                type: (gitMaterialId == mat.gitMaterialId) ? event.target.value : mat.type,
+                type: (gitMaterialId === mat.gitMaterialId) ? selectedSource.value : mat.type,
+                value: ""
             }
         })
         form.materials = allMaterials;
+
+        // update source type selected option in dropdown
+        let _ciPipelineSourceTypeOptions = this.state.form.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
+            return {
+                ...sourceTypeOption,
+                isSelected: sourceTypeOption.label === selectedSource.label,
+            }
+        })
+        form.ciPipelineSourceTypeOptions = _ciPipelineSourceTypeOptions;
+
+        // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list
+        if (selectedSource.isWebhook) {
+            let _material = form.materials[0];
+            let _selectedWebhookEvent = form.webhookEvents.find(we => we.name === selectedSource.label);
+            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition: {} });
+
+            // update condition list
+            form.webhookConditionList = createWebhookConditionList(_material.value);
+        }
+
         this.setState({ form });
     }
 
@@ -187,21 +206,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             }
             else return mat;
         })
-        form.materials = allMaterials;
-        this.setState({ form });
-    }
-
-    selectMaterial(material: MaterialType): void {
-        let allMaterials = this.state.form.materials.map((mat) => {
-            if (mat.gitMaterialId == material.gitMaterialId) {
-                return {
-                    ...mat,
-                    isSelected: !mat.isSelected,
-                }
-            }
-            else return mat;
-        })
-        let { form } = { ...this.state };
         form.materials = allMaterials;
         this.setState({ form });
     }
@@ -304,6 +308,16 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
+    copyToClipboard(text: string): void {
+        let textarea = document.createElement("textarea");
+        let main = document.getElementsByClassName("main")[0];
+        main.appendChild(textarea)
+        textarea.value = text;
+        textarea.select();
+        document.execCommand("copy");
+        main.removeChild(textarea);
+    }
+
     savePipeline() {
         let isUnique = this.checkUniqueness();
         if (!isUnique) {
@@ -324,21 +338,22 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return;
         }
         let msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created';
-        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
-            if (response) {
-                toast.success(msg);
+        saveCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId,
+            false, this.state.form.webhookConditionList, this.state.form.ciPipelineSourceTypeOptions).then((response) => {
+                if (response) {
+                    toast.success(msg);
+                    this.setState({ loadingData: false });
+                    this.props.close();
+                    this.props.getWorkflows();
+                }
+            }).catch((error: ServerErrors) => {
+                showError(error)
                 this.setState({ loadingData: false });
-                this.props.close();
-                this.props.getWorkflows();
-            }
-        }).catch((error: ServerErrors) => {
-            showError(error)
-            this.setState({ loadingData: false });
-        })
+            })
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -363,6 +378,37 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         let { form } = { ...this.state };
         form.args = newArgs;
         this.setState({ form });
+    }
+
+    getSelectedWebhookEvent(material) {
+        let _materialValue = JSON.parse(material.value);
+        let _selectedEventId = _materialValue.eventId;
+        return this.state.form.webhookEvents.find(we => we.id === _selectedEventId);
+    }
+
+    addWebhookCondition(): void {
+        let newConditonList = this.state.form.webhookConditionList.push({ "selectorId": 0, "value": "" });
+        this.setState(form => ({ ...form, webhookConditionList: newConditonList }));
+    }
+
+    deleteWebhookCondition(index: number): void {
+        let newConditonList = this.state.form.webhookConditionList.splice(index, 1);
+        this.setState(form => ({ ...form, webhookConditionList: newConditonList }));
+    }
+
+    onWebhookConditionSelectorChange(index: number, selectorId: number): void {
+        let _form = { ...this.state.form };
+        let _condition = _form.webhookConditionList[index];
+        _condition.selectorId = selectorId;
+        _condition.value = "";
+        this.setState({ form: _form });
+    }
+
+    onWebhookConditionSelectorValueChange(index: number, value: string): void {
+        let _form = { ...this.state.form };
+        let _condition = _form.webhookConditionList[index];
+        _condition.value = value;
+        this.setState({ form: _form });
     }
 
     renderDeleteCIModal() {
@@ -409,74 +455,107 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     renderBasicCI() {
-        return <SourceMaterials showError={this.state.showError}
-            validationRules={this.validationRules}
-            materials={this.state.form.materials}
-            selectSourceType={this.selectSourceType}
-            handleSourceChange={this.handleSourceChange}
-        />
+
+        let _webhookData: WebhookCIProps = {
+            webhookConditionList: this.state.form.webhookConditionList,
+            gitHost: this.state.form.gitHost,
+            getSelectedWebhookEvent: this.getSelectedWebhookEvent,
+            copyToClipboard: this.copyToClipboard,
+            addWebhookCondition: this.addWebhookCondition,
+            deleteWebhookCondition: this.deleteWebhookCondition,
+            onWebhookConditionSelectorChange: this.onWebhookConditionSelectorChange,
+            onWebhookConditionSelectorValueChange: this.onWebhookConditionSelectorValueChange
+        };
+
+        return <div className="pl-20 pr-20 pt-20 pb-20">
+            <SourceMaterials showError={this.state.showError}
+                validationRules={this.validationRules}
+                materials={this.state.form.materials}
+                selectSourceType={this.selectSourceType}
+                handleSourceChange={this.handleSourceChange}
+                includeWebhookEvents={true}
+                ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
+                webhookData={_webhookData}
+                canEditPipeline={this.state.form.ciPipelineEditable}
+            />
+        </div>
     }
 
     renderAdvanceCI() {
-        return <CIPipelineAdvanced {...this.state}
-            validationRules={this.validationRules}
-            closeCIDeleteModal={this.closeCIDeleteModal}
-            deletePipeline={this.deletePipeline}
-            handlePreBuild={this.handlePreBuild}
-            handlePostBuild={this.handlePostBuild}
-            handleDockerArgs={this.handleDockerArgs}
-            addEmptyStage={this.addEmptyStage}
-            toggleCollapse={this.toggleCollapse}
-            deleteStage={this.deleteStage}
-            handleChange={this.handleChange}
-            discardChanges={this.discardChanges}
-            handleTriggerChange={this.handleTriggerChange}
-            handleDocker={this.handleDocker}
-            addDockerArg={this.addDockerArg}
-            handleDockerArgChange={this.handleDockerArgChange}
-            removeDockerArgs={this.removeDockerArgs}
-            handleScanToggle={this.handleScanToggle}
-            handleSourceChange={this.handleSourceChange}
-            handlePipelineName={this.handlePipelineName}
-            selectSourceType={this.selectSourceType}
-        />
+        return <div className="" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "scroll" }}>
+            <CIPipelineAdvanced {...this.state}
+                copyToClipboard={this.copyToClipboard}
+                validationRules={this.validationRules}
+                closeCIDeleteModal={this.closeCIDeleteModal}
+                deletePipeline={this.deletePipeline}
+                handlePreBuild={this.handlePreBuild}
+                handlePostBuild={this.handlePostBuild}
+                handleDockerArgs={this.handleDockerArgs}
+                addEmptyStage={this.addEmptyStage}
+                toggleCollapse={this.toggleCollapse}
+                deleteStage={this.deleteStage}
+                handleChange={this.handleChange}
+                discardChanges={this.discardChanges}
+                handleTriggerChange={this.handleTriggerChange}
+                handleDocker={this.handleDocker}
+                addDockerArg={this.addDockerArg}
+                handleDockerArgChange={this.handleDockerArgChange}
+                removeDockerArgs={this.removeDockerArgs}
+                handleScanToggle={this.handleScanToggle}
+                handleSourceChange={this.handleSourceChange}
+                handlePipelineName={this.handlePipelineName}
+                selectSourceType={this.selectSourceType}
+                getSelectedWebhookEvent={this.getSelectedWebhookEvent}
+                addWebhookCondition={this.addWebhookCondition}
+                deleteWebhookCondition={this.deleteWebhookCondition}
+                onWebhookConditionSelectorChange={this.onWebhookConditionSelectorChange}
+                onWebhookConditionSelectorValueChange={this.onWebhookConditionSelectorValueChange}
+            />
+        </div>
     }
 
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
-            return <div style={{minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
+            return <div style={{ minHeight: "200px" }} className="flex"><Progressing pageLoader /></div>
         }
         else if (this.state.isAdvanced) {
             return this.renderAdvanceCI()
         }
         else {
-            return this.renderBasicCI()
+            return <>
+                {this.renderBasicCI()}
+            </>
         }
     }
 
     render() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+
         return <VisibleModal className="" >
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
-                <div className="p-20 flex flex-align-center flex-justify">
+                <div className="p-20 flex flex-align-center flex-justify bcn-0 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
                     <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
                 <hr className="divider m-0" />
-                <div className="pl-20 pr-20 pt-20 pb-20" style={{ maxHeight: "calc(100vh - 164px)", overflowY: "scroll" }}>
+                <div className="ci-pipeline-advance" >
                     {this.renderCIPipelineBody()}
                 </div>
                 {this.state.view !== ViewType.LOADING && <>
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         {this.renderSecondaryButtton()}
-                        <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
-                            loaderColor="white"
-                            onClick={this.savePipeline}
-                            isLoading={this.state.loadingData}>
-                            {text}
-                        </ButtonWithLoader>
+                        {
+                            this.state.form.ciPipelineEditable &&
+                            <ButtonWithLoader rootClassName="cta cta--workflow flex-1"
+                                loaderColor="white"
+                                onClick={this.savePipeline}
+                                isLoading={this.state.loadingData}>
+                                {text}
+                            </ButtonWithLoader>
+                        }
+
                     </div>
                 </>}
                 {this.renderDeleteCIModal()}

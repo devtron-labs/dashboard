@@ -41,6 +41,7 @@ export class Workflow extends Component<WorkflowProps> {
             title={node.title}
             url={node.url}
             downstreams={node.downstreams}
+            sourceType={node.sourceType}
         />
     }
 
