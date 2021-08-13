@@ -56,7 +56,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                         <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
                         <div className="icon-dim-22 git"></div>
                     </div>
-                    <div className="branch-name">
+                    <div className="branch-name ">
                         <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true}></CiPipelineSourceConfig>
                     </div>
                     {this.props.refreshMaterial ? <div className="material-info">

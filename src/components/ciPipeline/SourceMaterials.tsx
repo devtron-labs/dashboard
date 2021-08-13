@@ -34,7 +34,7 @@ export interface WebhookCIProps {
     deleteWebhookCondition : (index : number) => void;
     onWebhookConditionSelectorChange : (index : number, selectorId : number) => void;
     onWebhookConditionSelectorValueChange : (index : number, value : string) => void;
-    copyToClipboard: (text : string) => void;
+    copyToClipboard: (text : string, callback) => void;
 }
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {

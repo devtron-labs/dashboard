@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg';
@@ -15,6 +15,16 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
         _allSelectorIdsInConditions.push(Number(_condition.selectorId));
     })
 
+    useEffect(() => {
+        if (!copiedUrl) return
+        setTimeout(() => setCopiedUrl(false), 2000)
+    }, [copiedUrl])
+
+    useEffect(() => {
+        if (!copiedKey) return
+        setTimeout(() => setCopiedKey(false), 2000)
+    }, [copiedKey])
+
     return <>
         <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4 mt-16">
             <Info className="icon-dim-20" />
@@ -28,18 +38,18 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                 <Webhook className="icon-dim-24" />
                 <p className="fs-13 fw-6 m-0">Pre Requisite: Configure Webhook</p>
             </div>
-            <p className="fs-13 ml-32">Use below details to add a webhook to the git repository.</p>
+            <p className="fs-13 ml-32">Use below details to add a webhook to the git repository.<span className="cn-9 fw-6"> NOTE: Set Content type as “application/json” for Github.</span></p>
             <div className="flex left fs-12 fw-6 mt-12">
                 {gitHost.webhookUrl &&
                     <Tippy content={copiedUrl ? 'Copied!' : 'Copy to clipboard.'}>
-                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookUrl); setCopiedUrl(true) }}>Click to copy webhook URL
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookUrl,()=> setCopiedUrl(true)) }}>Click to copy webhook URL
                         <Copy className="icon-dim-16 ml-4" />
                         </div>
                     </Tippy>
                 }
                 {gitHost.webhookSecret &&
                     <Tippy content={copiedKey ? 'Copied!' : 'Copy to clipboard.'}>
-                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookSecret); setCopiedKey(true) }}>Click to copy secret key
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookSecret,()=> setCopiedKey(true)) }}>Click to copy secret key
                         <Copy className="icon-dim-16 ml-4 " />
                         </div>
                     </Tippy>
@@ -47,8 +57,9 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             </div>
         </div>
         <div className="webhook-config-container">
-            <p className="mt-16 mb-16 fs-13 cn-7">Build {selectedWebhookEvent.name} Webhook CI which match below filters only (Only regex is supported for values)</p>
-
+            <p className="mt-16 fs-13 mb-0 cn-7">Build {selectedWebhookEvent.name} Webhook CI which match below filters only <span className="cn-9 fw-6">(NOTE: Only regex is supported for values)</span></p>
+            <p className="mb-16 fs-13">Devtron uses regexp library, <a className="learn-more-href" href="https://yourbasic.org/golang/regexp-cheat-sheet/" target="_blank" rel="noreferrer noopener" >view regexp cheatsheet</a>.
+             You can test your regex <a className="learn-more__href" href="https://regex101.com/r/lHHuaE/1" rel="noreferrer noopener" target="_blank">here</a></p>
             {webhookConditionList.map((_condition, index) => {
                 let _masterSelectorList = [];
                 selectedWebhookEvent.selectors.forEach((_selector) => {
@@ -60,9 +71,9 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                 _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label));
                 return <div key={index}>
                     <WebhookSelectorCondition
-                        conditionIndex={index} 
+                        conditionIndex={index}
                         masterSelectorList={_masterSelectorList}
-                        selectorCondition={_condition} 
+                        selectorCondition={_condition}
                         onSelectorChange={onWebhookConditionSelectorChange}
                         onSelectorValueChange={onWebhookConditionSelectorValueChange}
                         deleteWebhookCondition={deleteWebhookCondition}
@@ -77,8 +88,6 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                     <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />Add Filter
                 </div>
             }
-
-
         </div>
     </>
 } 

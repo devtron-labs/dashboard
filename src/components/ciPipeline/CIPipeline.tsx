@@ -308,7 +308,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         })
     }
 
-    copyToClipboard(text: string): void {
+    noop = () => { }
+    
+    copyToClipboard(text: string, callback = this.noop): void {
         let textarea = document.createElement("textarea");
         let main = document.getElementsByClassName("main")[0];
         main.appendChild(textarea)
@@ -316,6 +318,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         textarea.select();
         document.execCommand("copy");
         main.removeChild(textarea);
+        callback()
     }
 
     savePipeline() {
