@@ -1,7 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
     <g fill="none" fill-rule="evenodd">
-        <path d="M0 0h32v32H0z"/>
-        <path fill="#e5f2ff" d="M16 2.667C8.64 2.667 2.667 8.64 2.667 16S8.64 29.333 16 29.333 29.333 23.36 29.333 16 23.36 2.667 16 2.667z"/>
-        <path fill="#06C" d="M16 14.667c.736 0 1.333.597 1.333 1.333v5.333a1.333 1.333 0 1 1-2.666 0V16c0-.736.597-1.333 1.333-1.333zm0-5.334A1.333 1.333 0 1 1 16 12a1.333 1.333 0 0 1 0-2.667z"/>
+        <g>
+            <g>
+                <g>
+                    <path fill="#E5F2FF" stroke="#06C" stroke-linejoin="round" stroke-width="2" d="M24 4C12.96 4 4 12.96 4 24s8.96 20 20 20 20-8.96 20-20S35.04 4 24 4z" transform="translate(-508.000000, -107.000000) translate(484.000000, 83.000000) translate(24.000000, 24.000000)"/>
+                    <path fill="#06C" fill-rule="nonzero" d="M24 22c1.105 0 2 .895 2 2v8c0 1.105-.895 2-2 2s-2-.895-2-2v-8c0-1.105.895-2 2-2zm0-8c1.105 0 2 .895 2 2s-.895 2-2 2-2-.895-2-2 .895-2 2-2z" transform="translate(-508.000000, -107.000000) translate(484.000000, 83.000000) translate(24.000000, 24.000000)"/>
+                </g>
+            </g>
+        </g>
     </g>
 </svg>
