@@ -17,6 +17,18 @@ export interface CodeEditorScript {
                 patchJson: any;
             }
         }
+        configMap: {
+            spec: {
+                names: string[];
+                patchJson: any;
+            }
+        }
+        secret: {
+            spec: {
+                names: string[];
+                patchJson: any;
+            }
+        }
     }
 }
 
@@ -31,31 +43,64 @@ export interface UpdatedTemplate {
     label: string;
 }
 
-export interface ImpactedObjects {
+export interface DTImpactedObjects {
     appId: number;
     appName: string;
     envId: number;
 }
 
-export interface OutputKeys {
+export interface CMandSecretImpactedObjects{
+    appId: number;
+    appName: string;
+    envId: number;
+    names: string[];
+}
+
+export interface ImpactedObjects {
+    deploymentTemplate: DTImpactedObjects[];
+    configMap: CMandSecretImpactedObjects[];
+    secret: CMandSecretImpactedObjects[];
+}
+
+export interface DtOutputKeys {
     appId: number;
     appName: string;
     envId: number;
     message: string;
 }
 
-export interface BulkOutput {
+export interface CMandSecretOutputKeys {
+    appId: number;
+    appName: string;
+    envId: number;
+    message: string;
+    names: string[];
+}
+
+export interface DTBulkOutput {
     message: string[];
-    failure: OutputKeys[];
-    successful: OutputKeys[];
- }
+    failure: DtOutputKeys[];
+    successful: DtOutputKeys[];
+}
+
+export interface CMandSecretBulkOutput {
+    message: string[];
+    failure: CMandSecretOutputKeys[];
+    successful: CMandSecretOutputKeys[];
+}
+
+export interface BulkOutput {
+    deploymentTemplate: DTBulkOutput;
+    configMap: CMandSecretBulkOutput;
+    secret: CMandSecretBulkOutput;
+}
 
 export interface BulkEditsState {
     view: string;
     statusCode: number;
     outputName: string;
     isReadmeLoading: boolean;
-    impactedObjects: ImpactedObjects[];
+    impactedObjects: ImpactedObjects;
     updatedTemplate: UpdatedTemplate[];
     readmeResult: string[];
     outputResult: BulkOutput;
@@ -77,4 +122,3 @@ export interface OutputTabType {
 export interface BulkEditsProps extends RouteComponentProps<{}> {
     // close: (event) => void;
 }
-
