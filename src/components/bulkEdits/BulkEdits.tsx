@@ -36,9 +36,6 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
     </label>
 }
 
-
-
-
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
 
     constructor(props) {

@@ -71,7 +71,7 @@
 
 .bulk-container{
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 50% 50%;
      height: 100%;
      background-color: white;
 }
