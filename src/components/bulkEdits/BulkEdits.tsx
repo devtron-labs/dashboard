@@ -270,31 +270,28 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div> *CONFIGMAPS: <br />
                     <br />
                 </div>
-                <div> #Message:  <br />
+                <div> #Message:  <br /><br/>
                     {this.state.outputResult.configMap?.message?.map((elm) => {
-                        return <>{elm}<br /></>
+                        return <>{elm}<br/></>
                     })}
-                    <br />
                 </div>
                 --------------------------
                 <br />
-                <div>#Failed Operations:<br />
+                <div>#Failed Operations:<br /><br/>
                     {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
                         <>{this.state.outputResult.configMap?.failure.map((elm) => {
                             return this.renderCmAndSecretResponseForOneApp(elm)
                         })}</>
                     }
-                    <br />
                 </div>
                 --------------------------
                 <br />
-                <div>#Successful Operations: <br />
+                <div>#Successful Operations: <br /><br/>
                     {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
                         <>{this.state.outputResult.configMap?.successful.map((elm) => {
                             return this.renderCmAndSecretResponseForOneApp(elm)
                         })}</>
                     }
-                    <br />
                 </div>
                 ----------------------------------------------------
             </div>
@@ -307,7 +304,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             App Name: {DTOutputKeys.appName} <br />
             Environment Id: {DTOutputKeys.envId} <br />
             Message: {DTOutputKeys.message} <br />
-            <br /><br />
+            <br />
         </div>
     }
 
@@ -318,7 +315,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             Environment Id: {CMandSecretOutputKeys.envId} <br />
             Names : {CMandSecretOutputKeys.names.join(', ')} <br />
             Message: {CMandSecretOutputKeys.message} <br />
-            <br /><br />
+            <br />
         </div>
     }
 
@@ -328,7 +325,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             App Name: {CMandSecretImpactedObject.appName} <br />
             Environment Id: {CMandSecretImpactedObject.envId} <br />
             Names : {CMandSecretImpactedObject.names.join(', ')} <br />
-            <br /><br />
+            <br/>
         </div>
     }
 
@@ -338,15 +335,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div> *DEPLOYMENT TEMPLATE: <br />
                     <br />
                 </div>
-                <div> #Message:  <br />
+                <div> #Message:  <br /><br/>
                     {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
-                        return <>{elm}<br /></>
+                        return <>{elm}<br/></>
                     })}
-                    <br />
                 </div>
                 --------------------------
                 <br />
-                <div>#Failed Operations:<br />
+                <div>#Failed Operations:<br /><br/>
                     {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
                         <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
                             return this.renderDTResponseForOneApp(elm)
@@ -356,13 +352,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 </div>
                 --------------------------
                 <br />
-                <div>#Successful Operations: <br />
+                <div>#Successful Operations: <br /><br/>
                     {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
                         <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
                             return this.renderDTResponseForOneApp(elm)
                         })}</>
                     }
-                    <br />
                 </div>
                 ----------------------------------------------------
             </div>
@@ -374,15 +369,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div> *SECRETS: <br />
                 <br />
             </div>
-            <div> #Message:  <br />
+            <div> #Message:  <br /><br/>
                 {this.state.outputResult.secret?.message.map((elm) => {
-                    return <>{elm}<br /></>
+                    return <>{elm}<br/></>
                 })}
-                <br />
             </div>
             --------------------------
             <br />
-            <div>#Failed Operations:<br />
+            <div>#Failed Operations:<br /><br/>
                 {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
                     <>{this.state.outputResult.secret?.failure.map((elm) => {
                         return this.renderCmAndSecretResponseForOneApp(elm)
@@ -392,15 +386,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
             --------------------------
             <br />
-            <div>#Successful Operations: <br />
+            <div>#Successful Operations: <br /><br/>
                 {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
                     <>{this.state.outputResult.secret?.successful.map((elm) => {
                         return this.renderCmAndSecretResponseForOneApp(elm)
                     })}</>
                 }
-                <br />
             </div>
-                -----------------------------------------------------------------
+            -----------------------------------------------------------------
         </div>
         )
     }
@@ -430,7 +423,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             return this.renderCMAndSecretImpObj(elm)
                         })}</>
                     }
-                    <br /><br />
                 </div>
              -----------------------------------------------------------------
             </div>
@@ -441,17 +433,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div> *DEPLOYMENT TEMPLATE: <br /> <br />
-                    {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
+                    {this.state.impactedObjects.deploymentTemplate.length === 0 ? <>No Result Found</> :
                         <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
                             return <div>
                                 App Id: {elm.appId} <br />
                                 App Name: {elm.appName} <br />
                                 Environment Id: {elm.envId} <br />
-                                <br /><br />
+                                <br />
                             </div>
                         })}</>
                     }
-                    <br />
                 </div>
                 -----------------------------------------------------------------
             </div>
@@ -462,12 +453,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div> *SECRETS: <br /> <br />
-                    {this.state.impactedObjects.secret == null ? <>No Result Found</> :
+                    {this.state.impactedObjects.secret.length === 0 ? <>No Result Found</> :
                         <>{this.state.impactedObjects.secret.map((elm) => {
                             return this.renderCMAndSecretImpObj(elm)
                         })}</>
                     }
-                    <br />
                 </div>
                 -----------------------------------------------------------------
             </div>
