@@ -15,6 +15,8 @@ import Tippy from '@tippyjs/react';
 import { fetchAppMetaInfo } from '../service';
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import { components } from 'react-select';
+import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
 const CreatableStyle = {
     multiValue: (base, state) => {
@@ -73,6 +75,26 @@ export default function AppDetailsPage() {
     </div>
 }
 
+interface OptionType {
+    label: string;
+    value: string;
+}
+
+const MultiValueContainer = ({ validator, ...props }) => {
+    const { children, data, innerProps, selectProps } = props
+    const { label, value } = data
+    const isValidEmail = validator ? validator(value) : true
+    return (
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+            <div className={`flex fs-12 ml-4`}>
+                {!isValidEmail && <RedWarning className="mr-4" />}
+                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    );
+};
+
 export function AppHeader() {
     const { appId } = useParams<{ appId }>();
     const match = useRouteMatch();
@@ -81,6 +103,56 @@ export function AppHeader() {
     const currentPathname = useRef("");
     const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId))
     const [showInfoModal, setShowModal] = useState(false)
+    const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
+    const [submitting, setSubmitting] = useState(false)
+
+
+    useEffect(() => {
+        // setLabelTags({ tags: [{ label: id, value: id }], inputTagValue: '', tagError: '' })
+    })
+
+    function validateTags(tag) {
+        var re = /^[a-zA-Z0-9]+:[.*]$/;
+        const result = re.test(String(tag).toLowerCase());
+        return result;
+    }
+
+    function validateForm(): boolean {
+        if (labelTags.tags.length !== labelTags.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
+            setLabelTags(labelTags => ({ ...labelTags, tagError: 'Please provide tags in key:value format only' }))
+            return false
+        }
+        return true
+    }
+
+    async function handleSubmit(e) {
+        const validForm = validateForm()
+        if (!validForm) {
+            return
+        }
+        setSubmitting(true)
+        const payload = {
+
+        }
+        try {
+            return ' hi'
+            // const { result } = await saveUser(payload)
+            // if (id) {
+            //     updateCallback(index, result)
+            //     toast.success('Update successfully');
+            // }
+            // else {
+            //     createCallback(result)
+            //     toast.success('Saved Successfully');
+            // }
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setSubmitting(false)
+        }
+    }
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -122,9 +194,52 @@ export function AppHeader() {
         [appId],
     );
 
-    function onSave() {
-        return
+    function handleInputChange(inputTagValue) {
+        setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
     }
+
+    const createOption = (label: string) => ({
+        label,
+        value: label,
+    });
+
+    const handleKeyDown = useCallback((event) => {
+        let { tags, inputTagValue } = labelTags;
+        inputTagValue = inputTagValue.trim();
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+            case ',':
+            case ' ': // space
+                if (inputTagValue) {
+                    let newTag = inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+                    setLabelTags({
+                        inputTagValue: '',
+                        tags: [...tags, ...newTag],
+                        tagError: '',
+                    });
+                }
+                if (event.key !== 'Tab') {
+                    event.preventDefault();
+                }
+                break;
+        }
+    }, [labelTags])
+
+    function handleCreatableBlur(e) {
+        let { tags, inputTagValue } = labelTags
+        labelTags.inputTagValue = inputTagValue.trim()
+        if (!inputTagValue) return
+        setLabelTags({
+            inputTagValue: '',
+            tags: [...tags, createOption(e.target.value)],
+            tagError: '',
+        });
+    };
+
+    function handleEmailChange(newValue: any, actionMeta: any) {
+        setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
+    };
 
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
@@ -166,8 +281,7 @@ export function AppHeader() {
                                     DropdownIndicator: () => null,
                                     ClearIndicator,
                                     MultiValueRemove,
-                                    // MultiValueContainer: ({ ...props }) =>""
-                                    //  <MultiValueContainer {...props} validator={validateEmail} />,
+                                    MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateTags} />,
                                     IndicatorSeparator: () => null,
                                     Menu: () => null,
                                 }
@@ -176,23 +290,20 @@ export function AppHeader() {
                                 autoFocus
                                 isMulti
                                 isClearable
-                                // inputValue={emailState.inputEmailValue}
+                                inputValue={labelTags.inputTagValue}
                                 placeholder="Add a tag..."
                                 isValidNewOption={() => false}
                                 backspaceRemovesValue
-                            // value={emailState.emails}
-                            // onBlur={handleCreatableBlur}
-                            // onInputChange={handleInputChange}
-                            // onKeyDown={handleKeyDown}
-                            // onChange={handleEmailChange}
+                                value={labelTags.tags}
+                                onBlur={handleCreatableBlur}
+                                onInputChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                onChange={handleEmailChange}
                             />
-                            <div className="form__buttons mt-40">
-                                <button type="submit" onClick={(e) => { e.preventDefault(); onSave() }} tabIndex={5} className="cta"> Save
-                            {/* {this.state.saveLoading ? <Progressing /> : "Save"} */}
-                                </button>
+                            <div className='form__buttons mt-40'>
+                                <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>
                         </div>
-
                     </form>
                 </VisibleModal>}
         </h1>
