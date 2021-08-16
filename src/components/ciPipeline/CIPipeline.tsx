@@ -186,7 +186,18 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
         if (selectedSource.isWebhook) {
             let _material = form.materials[0];
             let _selectedWebhookEvent = form.webhookEvents.find(we => we.name === selectedSource.label);
-            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition: {} });
+            let _condition = {};
+
+            // create initial data with fix values
+            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors){
+                _selectedWebhookEvent.selectors.forEach((_selector) => {
+                    if(_selector.fixValue){
+                        _condition[_selector.id] = _selector.fixValue;
+                    }
+                })
+            }
+
+            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition : _condition });
 
             // update condition list
             form.webhookConditionList = createWebhookConditionList(_material.value);

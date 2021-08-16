@@ -62,10 +62,14 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
              You can test your regex <a className="learn-more__href" href="https://regex101.com/r/lHHuaE/1" rel="noreferrer noopener" target="_blank">here</a></p>
             {webhookConditionList.map((_condition, index) => {
                 let _masterSelectorList = [];
+                let _canEditSelectorCondition = canEditPipeline;
                 selectedWebhookEvent.selectors.forEach((_selector) => {
                     let _selectorId = _selector.id;
                     if(_selector.toShowInCiFilter && (!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId)){
                         _masterSelectorList.push({ label: _selector.name, value: _selector.id })
+                    }
+                    if (_canEditSelectorCondition && (_condition.selectorId == _selector.id) && !!_selector.fixValue){
+                        _canEditSelectorCondition = false;
                     }
                 })
                 _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label));
@@ -77,7 +81,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                         onSelectorChange={onWebhookConditionSelectorChange}
                         onSelectorValueChange={onWebhookConditionSelectorValueChange}
                         deleteWebhookCondition={deleteWebhookCondition}
-                        canEditPipeline={canEditPipeline}
+                        canEditSelectorCondition={_canEditSelectorCondition}
                     />
                 </div>
             })}

@@ -138,6 +138,8 @@ interface WebhookEventSelectors {
     eventId: number;
     name: string;
     selector: string;
+    toShowInCiFilter: boolean;
+    fixValue: string;
     toShow: boolean;
     possibleValues: string;
     isActive: boolean;
