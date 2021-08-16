@@ -293,144 +293,193 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         </div>
     }
 
+    renderConfigMapOutput = () => {
+        return(
+            <div>
+                <div> *CONFIGMAPS: <br />
+                    <br />
+                </div>
+                <div> #Message:  <br />
+                    {this.state.outputResult.configMap?.message?.map((elm) => {
+                        return <>{elm}<br /></>
+                    })}
+                    <br/>
+                </div>
+                --------------------------
+                <br />
+                <div>#Failed Operations:<br />
+                    {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
+                        <>{this.state.outputResult.configMap?.failure.map((elm) => {
+                            return CmAndSecretResponseForOneApp(elm)
+                        })}</>
+                    }
+                    <br />
+                </div>
+                --------------------------
+                <br />
+                <div>#Successful Operations: <br />
+                    {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
+                        <>{this.state.outputResult.configMap?.successful.map((elm) => {
+                            return CmAndSecretResponseForOneApp(elm)
+                        })}</>
+                    }
+                    <br />
+                </div>
+                ----------------------------------------------------
+            </div>
+        )
+    }
+    renderDeploymentTemplateOutput = () => {
+        return(
+            <div>
+                <div> *DEPLOYMENT TEMPLATE: <br />
+                    <br />
+                </div>
+                <div> #Message:  <br />
+                    {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
+                        return <>{elm}<br /></>
+                    })}
+                    <br/>
+                </div>
+                --------------------------
+                <br />
+                <div>#Failed Operations:<br />
+                    {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
+                        <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
+                            return DTResponseForOneApp(elm)
+                        })}</>
+                    }
+                    <br />
+                </div>
+                --------------------------
+                <br />
+                <div>#Successful Operations: <br />
+                    {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
+                        <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
+                            return DTResponseForOneApp(elm)
+                        })}</>
+                    }
+                    <br />
+                </div>
+                ----------------------------------------------------
+            </div>
+        )
+    }
+    renderSecretOutput = () => {
+        return(<div>
+            <div> *SECRETS: <br />
+                <br />
+            </div>
+            <div> #Message:  <br />
+                {this.state.outputResult.secret?.message.map((elm) => {
+                    return <>{elm}<br /></>
+                })}
+                <br/>
+            </div>
+            --------------------------
+            <br />
+            <div>#Failed Operations:<br />
+                {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
+                    <>{this.state.outputResult.secret?.failure.map((elm) => {
+                        return CmAndSecretResponseForOneApp(elm)
+                    })}</>
+                }
+                <br />
+            </div>
+            --------------------------
+            <br />
+            <div>#Successful Operations: <br />
+                {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
+                    <>{this.state.outputResult.secret?.successful.map((elm) => {
+                        return CmAndSecretResponseForOneApp(elm)
+                    })}</>
+                }
+                <br />
+            </div>
+                -----------------------------------------------------------------
+            </div>
+        )
+    }
     renderOutputs = () => {
+        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(" ").join("")
+        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes("deploymentTemplate:\nspec:")
+        let configMapInPayload = payloadStringWithoutSpaces?.includes("configMap:\nspec:")
+        let secretInPayload = payloadStringWithoutSpaces?.includes("secret:\nspec:")
         return (
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
 
                 this.state.outputResult == undefined ? "" :
-
                     <div>
-                        <div> *DEPLOYMENT TEMPLATE: <br />
-                            <br />
-                        </div>
-                        <div> #Message:  <br />
-                            {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
-                                return <>{elm}<br /></>
-                            })}
-                            <br/>
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Failed Operations:<br />
-                            {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
-                                    return DTResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Successful Operations: <br />
-                            {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
-                                    return DTResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        ----------------------------------------------------
-                        <div> *SECRETS: <br />
-                            <br />
-                        </div>
-                        <div> #Message:  <br />
-                            {this.state.outputResult.secret?.message.map((elm) => {
-                                return <>{elm}<br /></>
-                            })}
-                            <br/>
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Failed Operations:<br />
-                            {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.secret?.failure.map((elm) => {
-                                    return CmAndSecretResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Successful Operations: <br />
-                            {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.secret?.successful.map((elm) => {
-                                    return CmAndSecretResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        ----------------------------------------------------
-                        <div> *CONFIGMAPS: <br />
-                            <br />
-                        </div>
-                        <div> #Message:  <br />
-                            {this.state.outputResult.configMap?.message?.map((elm) => {
-                                return <>{elm}<br /></>
-                            })}
-                            <br/>
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Failed Operations:<br />
-                            {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.configMap?.failure.map((elm) => {
-                                    return CmAndSecretResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        --------------------------
-                        <br />
-                        <div>#Successful Operations: <br />
-                            {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
-                                <>{this.state.outputResult.configMap?.successful.map((elm) => {
-                                    return CmAndSecretResponseForOneApp(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
+                        {configMapInPayload ? this.renderConfigMapOutput() : null}
+                        {deploymentTemplateInPayload ? this.renderDeploymentTemplateOutput() : null}
+                        {secretInPayload ? this.renderSecretOutput() : null}
                     </div>
+
         )
     }
-
+    renderConfigMapImpObj = () => {
+     return (
+         <div>
+             <div> *CONFIGMAPS: <br /> <br/>
+                 {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
+                     <>{this.state.impactedObjects.configMap.map((elm) => {
+                         return CMAndSecretImpObj(elm)
+                     })}</>
+                 }
+                 <br />
+             </div>
+             -----------------------------------------------------------------
+         </div>
+     )
+    }
+    renderDeploymentTemplateImpObj = () => {
+        return(
+            <div>
+                <div> *DEPLOYMENT TEMPLATE: <br /> <br/>
+                    {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
+                        <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
+                            return <div>
+                                App Id: {elm.appId} <br />
+                                App Name: {elm.appName} <br />
+                                Environment Id: {elm.envId} <br />
+                                <br /><br />
+                            </div>
+                        })}</>
+                    }
+                    <br />
+                </div>
+                -----------------------------------------------------------------
+            </div>
+        )
+    }
+    renderSecretImpObj = () => {
+        return(
+            <div>
+                <div> *SECRETS: <br /> <br/>
+                    {this.state.impactedObjects.secret == null ? <>No Result Found</> :
+                        <>{this.state.impactedObjects.secret.map((elm) => {
+                            return CMAndSecretImpObj(elm)
+                        })}</>
+                    }
+                    <br />
+                </div>
+                -----------------------------------------------------------------
+            </div>
+        )
+    }
     renderImpactedObjects = () => {
+        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(" ").join("")
+        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes("deploymentTemplate:\nspec:")
+        let configMapInPayload = payloadStringWithoutSpaces?.includes("configMap:\nspec:")
+        let secretInPayload = payloadStringWithoutSpaces?.includes("secret:\nspec:")
         return (
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
 
                 this.state.impactedObjects == undefined ? "" :
-
                     <div>
-                        <div> *DEPLOYMENT TEMPLATE: <br /> <br/>
-                            {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
-                                <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        <br /><br />
-                                    </div>
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        -----------------------------------------------------------------
-                        <div> *SECRETS: <br /> <br/>
-                            {this.state.impactedObjects.secret == null ? <>No Result Found</> :
-                                <>{this.state.impactedObjects.secret.map((elm) => {
-                                    return CMAndSecretImpObj(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
-                        -----------------------------------------------------------------
-                        <div> *CONFIGMAPS: <br /> <br/>
-                            {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
-                                <>{this.state.impactedObjects.configMap.map((elm) => {
-                                    return CMAndSecretImpObj(elm)
-                                })}</>
-                            }
-                            <br />
-                        </div>
+                        {configMapInPayload ? this.renderConfigMapImpObj() : null}
+                        {deploymentTemplateInPayload ? this.renderDeploymentTemplateImpObj() : null}
+                        {secretInPayload ? this.renderSecretImpObj() : null}
                     </div>
         )
     }
@@ -519,7 +568,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <ErrorScreenManager code={this.state.statusCode} />
             </div>
         }
-
         return (<div className="fs-13">
                 {this.renderBulkEditHeader()}
                 <div >
