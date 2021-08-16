@@ -3,7 +3,7 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { ViewType } from '../../config';
-import { BulkEditsProps, BulkEditsState, OutputTabType } from './bulkEdits.type';
+import { BulkEditsProps, BulkEditsState, OutputTabType, CMandSecretOutputKeys, DtOutputKeys, CMandSecretImpactedObjects } from './bulkEdits.type';
 import yamlJsParser from 'yaml';
 import { Progressing, showError, ErrorScreenManager } from '../common';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
@@ -34,6 +34,35 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
         <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
         <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
     </label>
+}
+function DTResponseForOneApp (DTOutputKeys : DtOutputKeys){
+    return <div>
+        App Id: {DTOutputKeys.appId} <br />
+        App Name: {DTOutputKeys.appName} <br />
+        Environment Id: {DTOutputKeys.envId} <br />
+        Message: {DTOutputKeys.message} <br />
+        <br /><br />
+    </div>
+}
+function CmAndSecretResponseForOneApp (CMandSecretOutputKeys : CMandSecretOutputKeys){
+    return <div>
+        App Id: {CMandSecretOutputKeys.appId} <br />
+        App Name: {CMandSecretOutputKeys.appName} <br />
+        Environment Id: {CMandSecretOutputKeys.envId} <br />
+        Names : {CMandSecretOutputKeys.names.join(', ')} <br />
+        Message: {CMandSecretOutputKeys.message} <br />
+        <br /><br />
+    </div>
+}
+
+function CMAndSecretImpObj (CMandSecretImpactedObject : CMandSecretImpactedObjects){
+    return <div>
+        App Id: {CMandSecretImpactedObject.appId} <br />
+        App Name: {CMandSecretImpactedObject.appName} <br />
+        Environment Id: {CMandSecretImpactedObject.envId} <br />
+        Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+        <br /><br />
+    </div>
 }
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
@@ -271,7 +300,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.state.outputResult == undefined ? "" :
 
                     <div>
-                        <div> *DeploymentTemplate: <br />
+                        <div> *DEPLOYMENT TEMPLATE: <br />
                             <br />
                         </div>
                         <div> #Message:  <br />
@@ -285,13 +314,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Message: {elm.message} <br />
-                                        <br /><br />
-                                    </div>
+                                    return DTResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
@@ -301,19 +324,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Message: {elm.message} <br />
-                                        <br /><br />
-                                    </div>
+                                    return DTResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
                         </div>
                         ----------------------------------------------------
-                        <div> *Secrets: <br />
+                        <div> *SECRETS: <br />
                             <br />
                         </div>
                         <div> #Message:  <br />
@@ -327,14 +344,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.secret?.failure.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        Message: {elm.message} <br />
-                                        <br /><br />
-                                    </div>
+                                    return CmAndSecretResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
@@ -344,20 +354,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.secret?.successful.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        Message: {elm.message} <br />
-                                        <br /><br />
-                                    </div>
+                                    return CmAndSecretResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
                         </div>
                         ----------------------------------------------------
-                        <div> *ConfigMaps: <br />
+                        <div> *CONFIGMAPS: <br />
                             <br />
                         </div>
                         <div> #Message:  <br />
@@ -371,14 +374,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Failed Operations:<br />
                             {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.configMap?.failure.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        Message: {elm.message} <br />
-                                        <br /><br />
-                                    </div>
+                                    return CmAndSecretResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
@@ -388,14 +384,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         <div>#Successful Operations: <br />
                             {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
                                 <>{this.state.outputResult.configMap?.successful.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        Message: {elm.message} <br />
-                                        <br />
-                                    </div>
+                                    return CmAndSecretResponseForOneApp(elm)
                                 })}</>
                             }
                             <br />
@@ -411,7 +400,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.state.impactedObjects == undefined ? "" :
 
                     <div>
-                        <div> *DeploymentTemplate: <br /> <br/>
+                        <div> *DEPLOYMENT TEMPLATE: <br /> <br/>
                             {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
                                     return <div>
@@ -425,31 +414,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             <br />
                         </div>
                         -----------------------------------------------------------------
-                        <div> *Secrets: <br /> <br/>
+                        <div> *SECRETS: <br /> <br/>
                             {this.state.impactedObjects.secret == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.secret.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        <br /><br />
-                                    </div>
+                                    return CMAndSecretImpObj(elm)
                                 })}</>
                             }
                             <br />
                         </div>
                         -----------------------------------------------------------------
-                        <div> *ConfigMaps: <br /> <br/>
+                        <div> *CONFIGMAPS: <br /> <br/>
                             {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
                                 <>{this.state.impactedObjects.configMap.map((elm) => {
-                                    return <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        Names : {elm.names.join(', ')} <br />
-                                        <br /><br />
-                                    </div>
+                                    return CMAndSecretImpObj(elm)
                                 })}</>
                             }
                             <br />
