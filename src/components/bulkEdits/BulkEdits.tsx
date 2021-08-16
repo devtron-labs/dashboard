@@ -35,35 +35,9 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
         <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
     </label>
 }
-function DTResponseForOneApp (DTOutputKeys : DtOutputKeys){
-    return <div>
-        App Id: {DTOutputKeys.appId} <br />
-        App Name: {DTOutputKeys.appName} <br />
-        Environment Id: {DTOutputKeys.envId} <br />
-        Message: {DTOutputKeys.message} <br />
-        <br /><br />
-    </div>
-}
-function CmAndSecretResponseForOneApp (CMandSecretOutputKeys : CMandSecretOutputKeys){
-    return <div>
-        App Id: {CMandSecretOutputKeys.appId} <br />
-        App Name: {CMandSecretOutputKeys.appName} <br />
-        Environment Id: {CMandSecretOutputKeys.envId} <br />
-        Names : {CMandSecretOutputKeys.names.join(', ')} <br />
-        Message: {CMandSecretOutputKeys.message} <br />
-        <br /><br />
-    </div>
-}
 
-function CMAndSecretImpObj (CMandSecretImpactedObject : CMandSecretImpactedObjects){
-    return <div>
-        App Id: {CMandSecretImpactedObject.appId} <br />
-        App Name: {CMandSecretImpactedObject.appName} <br />
-        Environment Id: {CMandSecretImpactedObject.envId} <br />
-        Names : {CMandSecretImpactedObject.names.join(', ')} <br />
-        <br /><br />
-    </div>
-}
+
+
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>{
 
@@ -294,7 +268,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderConfigMapOutput = () => {
-        return(
+        return (
             <div>
                 <div> *CONFIGMAPS: <br />
                     <br />
@@ -303,14 +277,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     {this.state.outputResult.configMap?.message?.map((elm) => {
                         return <>{elm}<br /></>
                     })}
-                    <br/>
+                    <br />
                 </div>
                 --------------------------
                 <br />
                 <div>#Failed Operations:<br />
                     {this.state.outputResult.configMap?.failure == null ? <>No Result Found</> :
                         <>{this.state.outputResult.configMap?.failure.map((elm) => {
-                            return CmAndSecretResponseForOneApp(elm)
+                            return this.renderCmAndSecretResponseForOneApp(elm)
                         })}</>
                     }
                     <br />
@@ -320,7 +294,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div>#Successful Operations: <br />
                     {this.state.outputResult.configMap?.successful == null ? <>No Result Found</> :
                         <>{this.state.outputResult.configMap?.successful.map((elm) => {
-                            return CmAndSecretResponseForOneApp(elm)
+                            return this.renderCmAndSecretResponseForOneApp(elm)
                         })}</>
                     }
                     <br />
@@ -329,8 +303,40 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         )
     }
+
+    renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
+        return <div>
+            App Id: {DTOutputKeys.appId} <br />
+            App Name: {DTOutputKeys.appName} <br />
+            Environment Id: {DTOutputKeys.envId} <br />
+            Message: {DTOutputKeys.message} <br />
+            <br /><br />
+        </div>
+    }
+
+    renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
+        return <div>
+            App Id: {CMandSecretOutputKeys.appId} <br />
+            App Name: {CMandSecretOutputKeys.appName} <br />
+            Environment Id: {CMandSecretOutputKeys.envId} <br />
+            Names : {CMandSecretOutputKeys.names.join(', ')} <br />
+            Message: {CMandSecretOutputKeys.message} <br />
+            <br /><br />
+        </div>
+    }
+
+    renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
+        return <div>
+            App Id: {CMandSecretImpactedObject.appId} <br />
+            App Name: {CMandSecretImpactedObject.appName} <br />
+            Environment Id: {CMandSecretImpactedObject.envId} <br />
+            Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+            <br /><br />
+        </div>
+    }
+
     renderDeploymentTemplateOutput = () => {
-        return(
+        return (
             <div>
                 <div> *DEPLOYMENT TEMPLATE: <br />
                     <br />
@@ -339,14 +345,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
                         return <>{elm}<br /></>
                     })}
-                    <br/>
+                    <br />
                 </div>
                 --------------------------
                 <br />
                 <div>#Failed Operations:<br />
                     {this.state.outputResult.deploymentTemplate?.failure == null ? <>No Result Found</> :
                         <>{this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
-                            return DTResponseForOneApp(elm)
+                            return this.renderDTResponseForOneApp(elm)
                         })}</>
                     }
                     <br />
@@ -356,7 +362,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div>#Successful Operations: <br />
                     {this.state.outputResult.deploymentTemplate?.successful == null ? <>No Result Found</> :
                         <>{this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
-                            return DTResponseForOneApp(elm)
+                            return this.renderDTResponseForOneApp(elm)
                         })}</>
                     }
                     <br />
@@ -365,8 +371,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         )
     }
+
     renderSecretOutput = () => {
-        return(<div>
+        return (<div>
             <div> *SECRETS: <br />
                 <br />
             </div>
@@ -374,14 +381,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {this.state.outputResult.secret?.message.map((elm) => {
                     return <>{elm}<br /></>
                 })}
-                <br/>
+                <br />
             </div>
             --------------------------
             <br />
             <div>#Failed Operations:<br />
                 {this.state.outputResult.secret?.failure == null ? <>No Result Found</> :
                     <>{this.state.outputResult.secret?.failure.map((elm) => {
-                        return CmAndSecretResponseForOneApp(elm)
+                        return this.renderCmAndSecretResponseForOneApp(elm)
                     })}</>
                 }
                 <br />
@@ -391,15 +398,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>#Successful Operations: <br />
                 {this.state.outputResult.secret?.successful == null ? <>No Result Found</> :
                     <>{this.state.outputResult.secret?.successful.map((elm) => {
-                        return CmAndSecretResponseForOneApp(elm)
+                        return this.renderCmAndSecretResponseForOneApp(elm)
                     })}</>
                 }
                 <br />
             </div>
                 -----------------------------------------------------------------
-            </div>
+        </div>
         )
     }
+
     renderOutputs = () => {
         let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(" ").join("")
         let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes("deploymentTemplate:\nspec:")
@@ -407,35 +415,35 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let secretInPayload = payloadStringWithoutSpaces?.includes("secret:\nspec:")
         return (
             this.state.view === ViewType.LOADING ? <div style={{ height: 'calc(100vh - 600px)' }}><Progressing pageLoader /></div> :
-
                 this.state.outputResult == undefined ? "" :
                     <div>
                         {configMapInPayload ? this.renderConfigMapOutput() : null}
                         {deploymentTemplateInPayload ? this.renderDeploymentTemplateOutput() : null}
                         {secretInPayload ? this.renderSecretOutput() : null}
                     </div>
-
         )
     }
+
     renderConfigMapImpObj = () => {
-     return (
-         <div>
-             <div> *CONFIGMAPS: <br /> <br/>
-                 {this.state.impactedObjects.configMap == null ? <>No Result Found</> :
-                     <>{this.state.impactedObjects.configMap.map((elm) => {
-                         return CMAndSecretImpObj(elm)
-                     })}</>
-                 }
-                 <br />
-             </div>
-             -----------------------------------------------------------------
-         </div>
-     )
-    }
-    renderDeploymentTemplateImpObj = () => {
-        return(
+        return (
             <div>
-                <div> *DEPLOYMENT TEMPLATE: <br /> <br/>
+                <div> *CONFIGMAPS: <br /> <br />
+                    {this.state.impactedObjects.configMap.length === 0 ? <>No Result Found </>  :
+                        <>{this.state.impactedObjects.configMap.map((elm) => {
+                            return this.renderCMAndSecretImpObj(elm)
+                        })}</>
+                    }
+                    <br /><br />
+                </div>
+             -----------------------------------------------------------------
+            </div>
+        )
+    }
+
+    renderDeploymentTemplateImpObj = () => {
+        return (
+            <div>
+                <div> *DEPLOYMENT TEMPLATE: <br /> <br />
                     {this.state.impactedObjects.deploymentTemplate == null ? <>No Result Found</> :
                         <>{this.state.impactedObjects.deploymentTemplate.map((elm) => {
                             return <div>
@@ -452,13 +460,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         )
     }
+
     renderSecretImpObj = () => {
-        return(
+        return (
             <div>
-                <div> *SECRETS: <br /> <br/>
+                <div> *SECRETS: <br /> <br />
                     {this.state.impactedObjects.secret == null ? <>No Result Found</> :
                         <>{this.state.impactedObjects.secret.map((elm) => {
-                            return CMAndSecretImpObj(elm)
+                            return this.renderCMAndSecretImpObj(elm)
                         })}</>
                     }
                     <br />
@@ -548,9 +557,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorAndReadme = () => {
         return (<div className="bulk-container" >
-                <div>{this.renderBulkCodeEditor()}</div>
-                <div>{this.renderReadmeSection()}</div>
-            </div>
+            <div>{this.renderBulkCodeEditor()}</div>
+            <div>{this.renderReadmeSection()}</div>
+        </div>
         )
     }
 
@@ -558,7 +567,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return <div className={`${this.state.showExamples ? "code-editor-readme" : null}`}>
             <div>{this.renderBulkCodeEditor()}</div>
             {this.state.showExamples ? <div className="flex end" style={{ transition: "all .2s ease-out" }}>{this.renderReadmeSection()}</div> : null}
-
         </div>
     }
 
@@ -569,12 +577,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         }
         return (<div className="fs-13">
-                {this.renderBulkEditHeader()}
-                <div >
-                    {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
-                    {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
-                </div>
+            {this.renderBulkEditHeader()}
+            <div >
+                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
+                {!this.state.showExamples ? <div> {this.renderBulkCodeEditor()}</div> : this.renderCodeEditorAndReadme()}
             </div>
+        </div>
         )
     }
 }
