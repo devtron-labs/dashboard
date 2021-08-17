@@ -402,8 +402,8 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 required: true,
                 validators: [
                     { error: 'Environment name is required',  regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-' or '.'", regex: /^[a-z0-9-\.]+$/ },
-                    { error: "Cannot start/end with '-' or '.'", regex: /^(?![-.]).*[^-.]$/ },
+                    { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
+                    { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
                     { error: "Minimum 3 and Maximum 16 characters required", regex: /^.{3,16}$/ }
                 ]
             },
