@@ -44,9 +44,11 @@ export interface AppDetails {
 export interface AppMetaInfo {
     appId: number;
     appName: string;
-    environmentId: number;
-    environmentName: string;
+    createdBy: string;
+    createdOn: string;
+    projectId?: number;
     projectName? : string;
+    labels?: undefined;
 }
 
 interface ResourceTree {

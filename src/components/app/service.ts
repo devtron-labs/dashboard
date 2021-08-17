@@ -357,3 +357,8 @@ export function getNodeStatus({ appName, envName, version, namespace, group, kin
 export function fetchAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`);
 }
+
+export const createAppLabels = (request) => {
+    let URL = `${Routes.APP_LABELS}`;
+    return post(URL, request);
+}

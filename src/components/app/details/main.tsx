@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, ClearIndicator, MultiValueRemove, VisibleModal, } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { URLS } from '../../../config';
+import { URLS, Moment12HourFormat } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
@@ -12,11 +12,13 @@ import './appDetails/appDetails.scss';
 import './app.css';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
-import { fetchAppMetaInfo } from '../service';
+import { fetchAppMetaInfo, createAppLabels } from '../service';
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { components } from 'react-select';
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
+import moment from 'moment'
+import { toast } from 'react-toastify';
 
 const CreatableStyle = {
     multiValue: (base, state) => {
@@ -112,7 +114,7 @@ export function AppHeader() {
     })
 
     function validateTags(tag) {
-        var re = /^[a-zA-Z0-9]+:[.*]$/;
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const result = re.test(String(tag).toLowerCase());
         return result;
     }
@@ -132,19 +134,19 @@ export function AppHeader() {
         }
         setSubmitting(true)
         const payload = {
-
+            appId: 0,
+            labels: [
+                {
+                    key: labelTags.tags.map(tag => tag.value),
+                    value: labelTags.tags.map(tag => tag.label)
+                }
+            ]
         }
         try {
-            return ' hi'
-            // const { result } = await saveUser(payload)
-            // if (id) {
-            //     updateCallback(index, result)
-            //     toast.success('Update successfully');
-            // }
-            // else {
-            //     createCallback(result)
-            //     toast.success('Saved Successfully');
-            // }
+            const { result } = await createAppLabels(payload)
+            console.log(result)
+            await reload()
+            toast.success('Successfully saved.')
         }
         catch (err) {
             showError(err)
@@ -260,19 +262,19 @@ export function AppHeader() {
                             </div>
                             <div className="pt-12">
                                 <div className="cn-6 fs-12 mb-2">App name</div>
-                                <div className="cn-9 fs-14 mb-16">mrinalinin-test</div>
+                                <div className="cn-9 fs-14 mb-16">{result.result.appName}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Created on</div>
-                                <div className="cn-9 fs-14 mb-16">Mon, 12 Jun 2019, 09:27 AM</div>
+                                <div className="cn-9 fs-14 mb-16">{moment(result.result.createdOn).format(Moment12HourFormat)}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Created by</div>
-                                <div className="cn-9 fs-14 mb-16">Sam Billings</div>
+                                <div className="cn-9 fs-14 mb-16">{result.result.createdBy}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Project</div>
-                                <div className="cn-9 fs-14 mb-16">Devtron demo</div>
+                                <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
                             </div>
                             <span className="form__label"> Tags (only key:value allowed)</span>
                             <Creatable
