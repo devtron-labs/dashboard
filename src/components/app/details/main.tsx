@@ -13,33 +13,10 @@ import './app.css';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
 import { fetchAppMetaInfo, createAppLabels } from '../service';
-import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import { components } from 'react-select';
-import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 import moment from 'moment'
 import { toast } from 'react-toastify';
-
-const CreatableStyle = {
-    multiValue: (base, state) => {
-        return ({
-            ...base,
-            // border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
-            borderRadius: `4px`,
-            // background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
-            height: '30px',
-            margin: '0 8px 4px 0',
-            padding: '1px',
-            fontSize: '12px',
-        })
-    },
-    control: (base, state) => ({
-        ...base,
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d0d4d9', // default border color
-        boxShadow: 'none', // no box-shadow
-        minHeight: '72px',
-    }),
-}
+import TagLabelSelect from './TagLabelSelect';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -81,21 +58,6 @@ interface OptionType {
     label: string;
     value: string;
 }
-
-const MultiValueContainer = ({ validator, ...props }) => {
-    const { children, data, innerProps, selectProps } = props
-    const { label, value } = data
-    const isValidEmail = validator ? validator(value) : true
-    return (
-        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-            <div className={`flex fs-12 ml-4`}>
-                {!isValidEmail && <RedWarning className="mr-4" />}
-                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
-            </div>
-            {children[1]}
-        </components.MultiValueContainer>
-    );
-};
 
 export function AppHeader() {
     const { appId } = useParams<{ appId }>();
@@ -144,7 +106,6 @@ export function AppHeader() {
         }
         try {
             const { result } = await createAppLabels(payload)
-            console.log(result)
             await reload()
             toast.success('Successfully saved.')
         }
@@ -196,53 +157,7 @@ export function AppHeader() {
         [appId],
     );
 
-    function handleInputChange(inputTagValue) {
-        setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
-    }
-
-    const createOption = (label: string) => ({
-        label,
-        value: label,
-    });
-
-    const handleKeyDown = useCallback((event) => {
-        let { tags, inputTagValue } = labelTags;
-        inputTagValue = inputTagValue.trim();
-        switch (event.key) {
-            case 'Enter':
-            case 'Tab':
-            case ',':
-            case ' ': // space
-                if (inputTagValue) {
-                    let newTag = inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-                    setLabelTags({
-                        inputTagValue: '',
-                        tags: [...tags, ...newTag],
-                        tagError: '',
-                    });
-                }
-                if (event.key !== 'Tab') {
-                    event.preventDefault();
-                }
-                break;
-        }
-    }, [labelTags])
-
-    function handleCreatableBlur(e) {
-        let { tags, inputTagValue } = labelTags
-        labelTags.inputTagValue = inputTagValue.trim()
-        if (!inputTagValue) return
-        setLabelTags({
-            inputTagValue: '',
-            tags: [...tags, createOption(e.target.value)],
-            tagError: '',
-        });
-    };
-
-    function handleEmailChange(newValue: any, actionMeta: any) {
-        setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
-    };
-
+ 
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -276,32 +191,7 @@ export function AppHeader() {
                                 <div className="cn-6 fs-12 mb-2">Project</div>
                                 <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
                             </div>
-                            <span className="form__label"> Tags (only key:value allowed)</span>
-                            <Creatable
-                                className={"create-app_tags"}
-                                components={{
-                                    DropdownIndicator: () => null,
-                                    ClearIndicator,
-                                    MultiValueRemove,
-                                    MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateTags} />,
-                                    IndicatorSeparator: () => null,
-                                    Menu: () => null,
-                                }
-                                }
-                                styles={CreatableStyle}
-                                autoFocus
-                                isMulti
-                                isClearable
-                                inputValue={labelTags.inputTagValue}
-                                placeholder="Add a tag..."
-                                isValidNewOption={() => false}
-                                backspaceRemovesValue
-                                value={labelTags.tags}
-                                onBlur={handleCreatableBlur}
-                                onInputChange={handleInputChange}
-                                onKeyDown={handleKeyDown}
-                                onChange={handleEmailChange}
-                            />
+                            {/* <TagLabelSelect validateTags={validateTags}/> */}
                             <div className='form__buttons mt-40'>
                                 <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>

@@ -5,6 +5,11 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
 
+export interface Label {
+    key: string;
+    value: string;
+}
+
 export interface AddNewAppState {
     view: string;
     code: number;
@@ -17,6 +22,7 @@ export interface AddNewAppState {
         appId: number;
         projectId: number;
         cloneId: number;
+        labels: Label[]
     };
     isValid: {
         projectId: boolean;
@@ -39,7 +45,7 @@ export interface AppDetails {
     instanceDetail?: any;
     otherEnvironment: OtherEnvironment[];
     resourceTree: ResourceTree;
-    projectName? : string;
+    projectName?: string;
 }
 export interface AppMetaInfo {
     appId: number;
@@ -47,7 +53,7 @@ export interface AppMetaInfo {
     createdBy: string;
     createdOn: string;
     projectId?: number;
-    projectName? : string;
+    projectName?: string;
     labels?: undefined;
 }
 
