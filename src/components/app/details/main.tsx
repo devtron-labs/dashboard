@@ -76,7 +76,7 @@ export function AppHeader() {
     })
 
     function validateTags(tag) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var re = /^.+:.+$/;
         const result = re.test(String(tag).toLowerCase());
         return result;
     }
@@ -95,15 +95,22 @@ export function AppHeader() {
             return
         }
         setSubmitting(true)
+
+        let _optionTypes = [];
+        if (labelTags.tags && labelTags.tags.length > 0) {
+            labelTags.tags.forEach((_label) => {
+                _optionTypes.push({
+                    key: _label.value,
+                    value: _label.label
+                })
+            })
+        }
+
         const payload = {
             appId: 0,
-            labels: [
-                {
-                    key: labelTags.tags.map(tag => tag.value),
-                    value: labelTags.tags.map(tag => tag.label)
-                }
-            ]
+            labels: _optionTypes
         }
+        
         try {
             const { result } = await createAppLabels(payload)
             await reload()
@@ -157,7 +164,6 @@ export function AppHeader() {
         [appId],
     );
 
- 
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -191,7 +197,7 @@ export function AppHeader() {
                                 <div className="cn-6 fs-12 mb-2">Project</div>
                                 <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
                             </div>
-                            {/* <TagLabelSelect validateTags={validateTags}/> */}
+                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} setLabelTags={setLabelTags} />
                             <div className='form__buttons mt-40'>
                                 <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>

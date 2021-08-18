@@ -1,18 +1,10 @@
-import React, { useState,  useCallback, } from 'react';
+import React, { useState, useCallback, } from 'react';
 import Creatable from 'react-select/creatable';
 import { components } from 'react-select';
 import { ClearIndicator, MultiValueRemove } from '../../common';
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
-interface OptionType {
-    label: string;
-    value: string;
-}
-
-export default function TagLabelSelect({labels, validateTags }) {
-
-    const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
-   
+export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }) {
 
     const CreatableStyle = {
         multiValue: (base, state) => {
@@ -56,7 +48,6 @@ export default function TagLabelSelect({labels, validateTags }) {
     });
 
     const handleKeyDown = useCallback((event) => {
-        // let { tags, inputTagValue } = ;
         labelTags.inputTagValue = labelTags.inputTagValue.trim();
         switch (event.key) {
             case 'Enter':
@@ -65,6 +56,7 @@ export default function TagLabelSelect({labels, validateTags }) {
             case ' ': // space
                 if (labelTags.inputTagValue) {
                     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+                    console.log(newTag)
                     setLabelTags({
                         inputTagValue: '',
                         tags: [...labelTags.tags, ...newTag],
@@ -89,18 +81,6 @@ export default function TagLabelSelect({labels, validateTags }) {
     };
 
     function handleTagsChange(newValue: any, actionMeta: any) {
-         
-    let _optionTypes = [];
-    if (labels && labels.length > 0) {
-        labels.forEach((_label)=>{
-            _optionTypes.push({
-                label: _label.value,
-                value: _label.key
-            })
-        })
-    }
-
-
         setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
     };
 
@@ -111,8 +91,7 @@ export default function TagLabelSelect({labels, validateTags }) {
     return (
         <div>
             {console.log(labelTags.tags)}
-            {console.log(labels)}
-
+            {console.log(labelTags.inputTagValue)}
             <span className="form__label"> Tags (only key:value allowed)</span>
             <Creatable
                 className={"create-app_tags"}
@@ -123,8 +102,7 @@ export default function TagLabelSelect({labels, validateTags }) {
                     MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateTags} />,
                     IndicatorSeparator: () => null,
                     Menu: () => null,
-                }
-                }
+                }}
                 styles={CreatableStyle}
                 autoFocus
                 isMulti
@@ -134,7 +112,7 @@ export default function TagLabelSelect({labels, validateTags }) {
                 isValidNewOption={() => false}
                 backspaceRemovesValue
                 value={labelTags.tags}
-                onBlur={handleCreatableBlur}
+                // onBlur={handleCreatableBlur}
                 onInputChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 onChange={handleTagsChange}

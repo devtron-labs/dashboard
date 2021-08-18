@@ -206,7 +206,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         })}
                     </Select>
                 </div>
-                <TagLabelSelect  validateTags={validateTags} labels={this.state.form.labels} />
+                {/* <TagLabelSelect  validateTags={validateTags} /> */}
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">
