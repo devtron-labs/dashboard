@@ -82,7 +82,7 @@ function handleLogout() {
 async function handleServerError(contentType, response) {
     //Test for HTTP Status Code
     let code: number = response.status;
-    let status: string = response.statusText;
+    let status: string = response.statusText || responseMessages[code] ;
     let serverError = new ServerErrors({ code, errors: [] })
     if (contentType !== 'application/json') {
         //used for better debugging,

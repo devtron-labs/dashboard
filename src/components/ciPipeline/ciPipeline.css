@@ -7,6 +7,10 @@
     border-top: solid 1px var(--N100);
 }
 
+.ci-pipeline-advance{
+    min-height: calc(100vh - 690px) ;
+}
+
 .repo-name {
     font-size: 12px;
     font-weight: 600;
@@ -168,4 +172,30 @@
 .script-container .shebang {
     padding: 0 60px;
     color: #e00000;
+}
+
+.configure-ci-webhook {
+    display: grid;
+    grid-template-columns: 32px auto;
+}
+
+.ci-webhook-condition {
+    display: grid;
+    grid-template-columns: 200px 500px 30px;
+    gap: 16px;
+}
+
+.ci-webhook-info {
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.webhook-config-container .add-filter {
+    width : 100px;
+}
+
+.webhook-warning-padding{
+    padding-top: 100px;
 }
