@@ -1,21 +1,20 @@
-import React, { useState, useCallback, } from 'react';
+import React from 'react';
 import Creatable from 'react-select/creatable';
 import { components } from 'react-select';
-import { ClearIndicator, MultiValueRemove } from '../../common';
-import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
+import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../../common';
 
 export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {
 
-    const CreatableStyle = {
+    const CreatableChipStyle = {
         multiValue: (base, state) => {
             return ({
                 ...base,
                 border: validateTags(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
                 borderRadius: `4px`,
                 background: validateTags(state.data.value) ? 'white' : 'var(--R100)',
-                height: '30px',
-                margin: '0 8px 4px 0',
-                padding: '2px',
+                height: '28px',
+                margin: '8px 8px 4px 0px',
+                paddingLeft: '4px',
                 fontSize: '12px',
             })
         },
@@ -26,23 +25,11 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
             minHeight: '72px',
             alignItems: "end",
         }),
+        indicatorsContainer: () => ({
+            height: '28px'
+        })
     }
 
-    const MultiValueContainer = ({ validator, ...props }) => {
-        const { children, data, innerProps, selectProps } = props
-        const { label, value } = data
-        const isValidEmail = validator ? validator(value) : true
-        return (
-            <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-                <div className={`flex fs-12 ml-4`}>
-                    {!isValidEmail && <RedWarning className="mr-4" />}
-                    <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
-                </div>
-                {children[1]}
-            </components.MultiValueContainer>
-        );
-    };
-  
     return (
         <div>
             <span className="form__label cn-6"> Tags (only key:value allowed)</span>
@@ -52,11 +39,11 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
                     DropdownIndicator: () => null,
                     ClearIndicator,
                     MultiValueRemove,
-                    MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateTags} />,
+                    MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateTags} />,
                     IndicatorSeparator: () => null,
                     Menu: () => null,
                 }}
-                styles={CreatableStyle}
+                styles={CreatableChipStyle}
                 autoFocus
                 isMulti
                 isClearable
