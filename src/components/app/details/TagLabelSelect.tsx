@@ -10,12 +10,12 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
         multiValue: (base, state) => {
             return ({
                 ...base,
-                // border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+                border: validateTags(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
                 borderRadius: `4px`,
-                // background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
+                background: validateTags(state.data.value) ? 'white' : 'var(--R100)',
                 height: '30px',
                 margin: '0 8px 4px 0',
-                padding: '1px',
+                padding: '2px',
                 fontSize: '12px',
             })
         },
@@ -24,6 +24,7 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
             border: state.isFocused ? '1px solid #06c' : '1px solid #d0d4d9', // default border color
             boxShadow: 'none', // no box-shadow
             minHeight: '72px',
+            alignItems: "end",
         }),
     }
 
@@ -90,9 +91,7 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
 
     return (
         <div>
-            {console.log(labelTags.tags)}
-            {console.log(labelTags.inputTagValue)}
-            <span className="form__label"> Tags (only key:value allowed)</span>
+            <span className="form__label form__label-color"> Tags (only key:value allowed)</span>
             <Creatable
                 className={"create-app_tags"}
                 components={{

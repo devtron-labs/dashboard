@@ -167,7 +167,7 @@ export function AppHeader() {
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
-            <div className="tab-list__info-icon" onClick={() => setShowModal(true)}><Info className="icon-dim-20 fcn-5" /></div>
+            <div className="tab-list__info-icon ml-4" onClick={() => setShowModal(true)}><Info className="icon-dim-20 fcn-5" /></div>
             {/* <Tippy className="default-tt" arrow={false} content={result?.result.projectName}>
                 <Info className="icon-dim-20 fcn-5" />
             </Tippy> */}

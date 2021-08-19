@@ -10,8 +10,59 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import './createApp.css';
-import TagLabelSelect from '../details/TagLabelSelect';
+import Creatable from 'react-select/creatable';
+import { components } from 'react-select';
+import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
+const createOption = (label: string) => ({
+    label: label,
+    value: label,
+});
+
+const MultiValueContainer = ({ validator, ...props }) => {
+    const { children, data, innerProps, selectProps } = props
+    const { label, value } = data
+    const isValidEmail = validator ? validator(value) : true
+    return (
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+            <div className={`flex fs-12 ml-4`}>
+                {!isValidEmail && <RedWarning className="mr-4" />}
+                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    );
+};
+
+// function validateForm(): boolean {
+//     if (this.state.form.labelTags.tags.length !== labelTags.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
+//         setLabelTags(labelTags => ({ ...labelTags, tagError: 'Please provide tags in key:value format only' }))
+//         return false
+//     }
+//     return true
+// }
+
+const CreatableStyle = {
+    multiValue: (base, state) => {
+        return ({
+            ...base,
+            // border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+            borderRadius: `4px`,
+            // background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
+            height: '30px',
+            margin: '0 8px 4px 0',
+            padding: '1px',
+            fontSize: '12px',
+        })
+    },
+    control: (base, state) => ({
+        ...base,
+        border: state.isFocused ? '1px solid #06c' : '1px solid #d0d4d9', // default border color
+        boxShadow: 'none', // no box-shadow
+        minHeight: '72px',
+        alignItems: "end"
+    }),
+}
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
     _inputAppName: HTMLInputElement;
@@ -30,7 +81,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: 0,
                 appName: "",
                 cloneId: 0,
-                labels: []
+                labelTags: {
+                    tags: [],
+                    inputTagValue: '',
+                    tagError: ''
+                }
             },
             isValid: {
                 projectId: false,
@@ -79,11 +134,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }, true);
         if (!isFormValid) return;
 
+        let _optionTypes = [];
+        if (this.state.form.labelTags.tags && this.state.form.labelTags.tags.length > 0) {
+            this.state.form.labelTags.tags.forEach((_label) => {
+                _optionTypes.push({
+                    key: _label.value,
+                    value: _label.label
+                })
+            })
+        }
         let request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
-            labels: this.state.form.labels
+            labels: _optionTypes
         }
 
         this.setState({ disableForm: true });
@@ -93,7 +157,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 let { form, isValid } = { ...this.state };
                 form.appId = response.result.id;
                 form.appName = response.result.appName;
-                form.labels = response.result.labels;
+                form.labelTags = response.result.labels;
                 isValid.appName = true;
                 isValid.projectId = true;
                 this.setState({ code: response.code, form, isValid, disableForm: false, showErrors: false }, () => {
@@ -122,14 +186,65 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.props.history.push(url);
     }
 
-    render() {
+    handleTagsChange = (newValue: any,) => {
+        this.setState({
+            form:{
+                ...this.state.form,
+                labelTags : { 
+                    ...this.state.form.labelTags, 
+                    tags: newValue || [], 
+                    tagError: '' }
+            }
+        })
+    }
 
-        function validateTags(tag) {
-            var re = /^.+:.+$/;
-            const result = re.test(String(tag).toLowerCase());
-            return result;
+    handleKeyDown = (event) => {
+        this.state.form.labelTags.inputTagValue = this.state.form.labelTags.inputTagValue.trim();
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+            case ',':
+            case ' ': // space
+                if (this.state.form.labelTags.inputTagValue) {
+                    let newTag = this.state.form.labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+                    console.log(newTag)
+                    this.setState({
+                        form:{
+                            ...this.state.form,
+                            labelTags : { 
+                                inputTagValue: '',
+                                tags: [...this.state.form.labelTags.tags, ...newTag],
+                                tagError: '',
+                            }
+                        }
+                    })
+                }
+                if (event.key !== 'Tab') {
+                    event.preventDefault();
+                }
+                break;
         }
+    }
+
+    handleInputChange = (inputTagValue) => {
+        this.setState({
+            form:{
+                ...this.state.form,
+                labelTags : { 
+                    ...this.state.form.labelTags, 
+                    inputTagValue: inputTagValue,
+                    tagError: '' }
+            }
+        })
+    }
     
+   validateTags = (tag) => {
+        var re = /^.+:.+$/;
+        const result = re.test(String(tag).toLowerCase());
+        return result;
+    }
+
+    render() {
         let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
         let showError = this.state.showErrors;
         let provider = this.state.projects.find(project => this.state.form.projectId === project.id);
@@ -157,7 +272,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             </DialogForm>
         }
         else {
-            
+
             return <DialogForm title="Add New App"
                 isLoading={this.state.disableForm}
                 className=""
@@ -206,6 +321,32 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         })}
                     </Select>
                 </div>
+                <span className="form__label form__label-color"> Tags (only key:value allowed)</span>
+                <Creatable
+                    className={"create-app_tags"}
+                    components={{
+                        DropdownIndicator: () => null,
+                        ClearIndicator,
+                        MultiValueRemove,
+                         MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={this.validateTags} />,
+                        IndicatorSeparator: () => null,
+                        Menu: () => null
+                    }
+                    }
+                    styles={CreatableStyle}
+                    autoFocus
+                    isMulti
+                    isClearable
+                    inputValue={this.state.form.labelTags.inputTagValue}
+                    placeholder="Add a tag..."
+                    isValidNewOption={() => false}
+                    backspaceRemovesValue
+                    value={this.state.form.labelTags.tags}
+                    // onBlur={handleCreatableBlur}
+                    onInputChange={this.handleInputChange}
+                    onKeyDown={this.handleKeyDown}
+                    onChange={this.handleTagsChange}
+                />
                 {/* <TagLabelSelect  validateTags={validateTags} /> */}
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />

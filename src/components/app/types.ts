@@ -5,9 +5,15 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
 
-export interface Label {
-    key: string;
+interface OptionType {
+    label: string;
     value: string;
+}
+
+export interface LabelTags {
+    tags: OptionType[];
+    inputTagValue: string;
+    tagError: string;
 }
 
 export interface AddNewAppState {
@@ -22,7 +28,7 @@ export interface AddNewAppState {
         appId: number;
         projectId: number;
         cloneId: number;
-        labels: Label[]
+        labelTags: LabelTags
     };
     isValid: {
         projectId: boolean;
