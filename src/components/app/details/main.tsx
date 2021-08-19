@@ -177,8 +177,8 @@ export function AppHeader() {
                         <div className="modal__body  br-4 bcn-0 p-20">
                             <div className="modal__header">
                                 <div className="fs-20 cn-9 fw-6 box-shadow">About</div>
-                                <button type="button" className="transparent" onClick={() => setShowModal(false)}>
-                                    <Close className="icon-dim-24" />
+                                <button className="transparent" onClick={() => setShowModal(false)}>
+                                    <Close className="icon-dim-24 cursor" />
                                 </button>
                             </div>
                             <div className="pt-12">

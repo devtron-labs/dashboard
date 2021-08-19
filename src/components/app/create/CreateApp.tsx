@@ -34,21 +34,19 @@ const MultiValueContainer = ({ validator, ...props }) => {
     );
 };
 
-// function validateForm(): boolean {
-//     if (this.state.form.labelTags.tags.length !== labelTags.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
-//         setLabelTags(labelTags => ({ ...labelTags, tagError: 'Please provide tags in key:value format only' }))
-//         return false
-//     }
-//     return true
-// }
+function validateTags(tag) {
+    var re = /^.+:.+$/;
+    const result = re.test(String(tag).toLowerCase());
+    return result;
+}
 
 const CreatableStyle = {
     multiValue: (base, state) => {
         return ({
             ...base,
-            // border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+            border: validateTags(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
             borderRadius: `4px`,
-            // background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
+            background: validateTags(state.data.value) ? 'white' : 'var(--R100)',
             height: '30px',
             margin: '0 8px 4px 0',
             padding: '1px',
@@ -90,6 +88,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             isValid: {
                 projectId: false,
                 appName: false,
+                labelTags: false
             }
         }
         this.createApp = this.createApp.bind(this);
@@ -238,11 +237,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         })
     }
     
-   validateTags = (tag) => {
-        var re = /^.+:.+$/;
-        const result = re.test(String(tag).toLowerCase());
-        return result;
-    }
+//    validateTags = (tag) => {
+//         var re = /^.+:.+$/;
+//         const result = re.test(String(tag).toLowerCase());
+//         return result;
+//     }
 
     render() {
         let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
@@ -328,7 +327,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         DropdownIndicator: () => null,
                         ClearIndicator,
                         MultiValueRemove,
-                         MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={this.validateTags} />,
+                         MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateTags} />,
                         IndicatorSeparator: () => null,
                         Menu: () => null
                     }
