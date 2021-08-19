@@ -381,7 +381,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return <section className="global-configuration__component">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization.
-              <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_SSO}> Learn more about Git Material</a> </span>
+              <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_SSO}> Learn more about SSO Login</a> </span>
             </h5>
 
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
