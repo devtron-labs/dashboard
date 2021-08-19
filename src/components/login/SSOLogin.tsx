@@ -1,6 +1,14 @@
 
 import React, { Component } from 'react'
 import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common'
+import CodeEditor from '../CodeEditor/CodeEditor';
+import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
+import { SSOConfigType } from './ssoConfig.types'
+import { ViewType, DOCUMENTATION } from '../../config'
+import { toast } from 'react-toastify';
+import yamlJsParser from 'yaml';
+import sample from './sampleConfig.json';
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -10,14 +18,6 @@ import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import warn from '../../assets/icons/ic-warning.svg';
-import CodeEditor from '../CodeEditor/CodeEditor';
-import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
-import { SSOConfigType } from './ssoConfig.types'
-import { ViewType } from '../../config'
-import { toast } from 'react-toastify';
-import yamlJsParser from 'yaml';
-import sample from './sampleConfig.json';
 import './login.css';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
@@ -380,7 +380,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         return <section className="global-configuration__component">
             <h2 className="form__title">SSO Login Services</h2>
-            <h5 className="form__subtitle">Configure and manage login service for your organization. &nbsp;</h5>
+            <h5 className="form__subtitle">Configure and manage login service for your organization.
+              <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_SSO}> Learn more about SSO Login</a> </span>
+            </h5>
+
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                 <div className="login__sso-flex pl-24">
                     {this.getSSOLoginTabsArr().map((item) => {
