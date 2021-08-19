@@ -4,7 +4,7 @@ import { components } from 'react-select';
 import { ClearIndicator, MultiValueRemove } from '../../common';
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
-export default function TagLabelSelect({ validateTags, labelTags, setLabelTags, handleTagsChange }) {
+export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {
 
     const CreatableStyle = {
         multiValue: (base, state) => {
@@ -42,52 +42,10 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags, 
             </components.MultiValueContainer>
         );
     };
-
   
-    const createOption = (label: string) => ({
-        label: label,
-        value: label,
-    });
-    
-    const handleKeyDown = useCallback((event) => {
-        labelTags.inputTagValue = labelTags.inputTagValue.trim();
-        switch (event.key) {
-            case 'Enter':
-            case 'Tab':
-            case ',':
-            case ' ': // space
-                if (labelTags.inputTagValue) {
-                    let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-                    setLabelTags({
-                        inputTagValue: '',
-                        tags: [...labelTags.tags, ...newTag],
-                        tagError: '',
-                    });
-                }
-                if (event.key !== 'Tab') {
-                    event.preventDefault();
-                }
-                break;
-        }
-    }, [labelTags])
-
-    function handleCreatableBlur(e) {
-        labelTags.inputTagValue = labelTags.inputTagValue.trim()
-        if (!labelTags.inputTagValue) return
-        setLabelTags({
-            inputTagValue: '',
-            tags: [...labelTags.tags, createOption(e.target.value)],
-            tagError: '',
-        });
-    };
-
-    function handleInputChange(inputTagValue) {
-        setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
-    }
-
     return (
         <div>
-            <span className="form__label form__label-color"> Tags (only key:value allowed)</span>
+            <span className="form__label cn-6"> Tags (only key:value allowed)</span>
             <Creatable
                 className={"create-app_tags"}
                 components={{
@@ -107,10 +65,10 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags, 
                 isValidNewOption={() => false}
                 backspaceRemovesValue
                 value={labelTags.tags}
-                // onBlur={handleCreatableBlur}
-                onInputChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onChange={handleTagsChange}
+                onBlur={onCreatableBlur}
+                onInputChange={onInputChange}
+                onKeyDown={onKeyDown}
+                onChange={onTagsChange}
             />
         </div>
     )

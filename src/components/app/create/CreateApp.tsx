@@ -11,6 +11,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import './createApp.css';
 import TagLabelSelect from '../details/TagLabelSelect';
+
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
     _inputAppName: HTMLInputElement;
@@ -39,6 +40,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.handleAppname = this.handleAppname.bind(this);
         this.handleProject = this.handleProject.bind(this);
     }
+
     async componentDidMount() {
         try {
             const [{ result: projects }, { result: apps }] = await Promise.all([getTeamListMin(), getAppListMin()])
@@ -52,18 +54,21 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             if (this._inputAppName) this._inputAppName.focus();
         }
     }
+
     handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
         let { form, isValid } = { ...this.state };
         form.appName = event.target.value;
         isValid.appName = this.rules.appName(event.target.value).isValid;
         this.setState({ form, isValid });
     }
+
     handleProject(item: number, appId): void {
         let { form, isValid } = { ...this.state };
         form.projectId = item;
         isValid.projectId = !!item;
         this.setState({ form, isValid });
     }
+
     createApp(): void {
         this.setState({ showErrors: true });
         let allKeys = Object.keys(this.state.isValid);
@@ -104,13 +109,16 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.setState({ disableForm: false, showErrors: false });
         })
     }
+    
     handleClone(cloneId, appId) {
         this.setState(state => ({ ...state, form: { ...state.form, cloneId } }));
     }
+
     redirectToArtifacts(appId): void {
         let url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG);
         this.props.history.push(url);
     }
+
     render() {
         function validateTags(tag) {
             var re = /^.+:.+$/;

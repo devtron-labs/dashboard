@@ -71,14 +71,39 @@ export function AppHeader() {
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [submitting, setSubmitting] = useState(false)
     const [resultRes, setResultResp] = useState([])
-
-    console.log(resultRes)
     console.log(labelTags.tags)
-
+    console.log(labelTags.inputTagValue)
     useEffect(() => {
         // setLabelTags({ tags: resultRes, inputTagValue: '', tagError: '' })
-
     }, [])
+
+    const createOption = (label: string) => (
+        {
+            label: label,
+            value: label,
+        });
+
+    const handleKeyDown = useCallback((event) => {
+        labelTags.inputTagValue = labelTags.inputTagValue.trim();
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+            case ',':
+            case ' ': // space
+                if (labelTags.inputTagValue) {
+                    let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+                    setLabelTags({
+                        inputTagValue: '',
+                        tags: [...labelTags.tags, ...newTag],
+                        tagError: '',
+                    });
+                }
+                if (event.key !== 'Tab') {
+                    event.preventDefault();
+                }
+                break;
+        }
+    }, [labelTags])
 
     function validateTags(tag) {
         var re = /^.+:.+$/;
@@ -95,8 +120,22 @@ export function AppHeader() {
     }
 
 
+    function handleInputChange(inputTagValue) {
+        setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
+    }
+
     function handleTagsChange(newValue: any, actionMeta: any) {
         setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
+    };
+
+    function handleCreatableBlur(e) {
+        labelTags.inputTagValue = labelTags.inputTagValue.trim()
+        if (!labelTags.inputTagValue) return
+        setLabelTags({
+            inputTagValue: '',
+            tags: [...labelTags.tags, createOption(e.target.value)],
+            tagError: '',
+        });
     };
 
     async function onSave(payload) {
@@ -195,16 +234,17 @@ export function AppHeader() {
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
-            <div className="tab-list__info-icon ml-4" onClick={() => setShowModal(true)}><Info className="icon-dim-20 fcn-5" /></div>
-            {/* <Tippy className="default-tt" arrow={false} content={result?.result.projectName}>
-                <Info className="icon-dim-20 fcn-5" />
-            </Tippy> */}
+            <div className="tab-list__info-icon ml-4 cursor" onClick={() => setShowModal(true)}>
+                <Tippy className="default-tt " arrow={false} content={'About app'}>
+                    <Info className="icon-dim-20 fcn-5" />
+                </Tippy>
+            </div>
             {showInfoModal &&
                 <VisibleModal className="app-status__material-modal">
                     <form >
-                        <div className="modal__body  br-4 bcn-0 p-20">
+                        <div className="modal__body br-8 bcn-0 p-20">
                             <div className="modal__header">
-                                <div className="fs-20 cn-9 fw-6 box-shadow">About</div>
+                                <div className="fs-20 cn-9 fw-6">About</div>
                                 <button className="transparent" onClick={() => setShowModal(false)}>
                                     <Close className="icon-dim-24 cursor" />
                                 </button>
@@ -225,11 +265,11 @@ export function AppHeader() {
                                 <div className="cn-6 fs-12 mb-2">Project</div>
                                 <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
                             </div>
-                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} setLabelTags={setLabelTags} handleTagsChange={handleTagsChange} />
+                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
                             <div className="cr-5 fs-11">
                                 {/* <Error className="form__icon form__icon--error" /> */}
                                 {labelTags.tagError}
-                                </div>
+                            </div>
                             <div className='form__buttons mt-40'>
                                 <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>
