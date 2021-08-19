@@ -17,6 +17,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import moment from 'moment'
 import { toast } from 'react-toastify';
 import TagLabelSelect from './TagLabelSelect';
+import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -69,11 +70,15 @@ export function AppHeader() {
     const [showInfoModal, setShowModal] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [submitting, setSubmitting] = useState(false)
+    const [resultRes, setResultResp] = useState([])
 
+    console.log(resultRes)
+    console.log(labelTags.tags)
 
     useEffect(() => {
-        // setLabelTags({ tags: [{ label: id, value: id }], inputTagValue: '', tagError: '' })
-    })
+        // setLabelTags({ tags: resultRes, inputTagValue: '', tagError: '' })
+
+    }, [])
 
     function validateTags(tag) {
         var re = /^.+:.+$/;
@@ -89,6 +94,28 @@ export function AppHeader() {
         return true
     }
 
+
+    function handleTagsChange(newValue: any, actionMeta: any) {
+        setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
+    };
+
+    async function onSave(payload) {
+        const { result } = await createAppLabels(payload)
+        // console.log(result.labels)
+        let _labelType = [];
+        if (result?.labels && result?.labels.length > 0) {
+            result?.labels.forEach((_label) => {
+                _labelType.push({
+                    label: _label.value,
+                    value: _label.key,
+
+                })
+            })
+        }
+        // console.log(_labelType)
+        setResultResp(_labelType)
+    }
+
     async function handleSubmit(e) {
         const validForm = validateForm()
         if (!validForm) {
@@ -99,9 +126,10 @@ export function AppHeader() {
         let _optionTypes = [];
         if (labelTags.tags && labelTags.tags.length > 0) {
             labelTags.tags.forEach((_label) => {
+                let _splittedTag = _label.value.split(':');
                 _optionTypes.push({
-                    key: _label.value,
-                    value: _label.label
+                    key: _splittedTag[0],
+                    value: _splittedTag[1]
                 })
             })
         }
@@ -110,9 +138,9 @@ export function AppHeader() {
             appId: 0,
             labels: _optionTypes
         }
-        
+
         try {
-            const { result } = await createAppLabels(payload)
+            onSave(payload)
             await reload()
             toast.success('Successfully saved.')
         }
@@ -191,13 +219,17 @@ export function AppHeader() {
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Created by</div>
-                                <div className="cn-9 fs-14 mb-16">{result.result.createdBy}</div>
+                                <div className="cn-9 fs-14 mb-16">{result.result.createdBy}testing</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Project</div>
                                 <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
                             </div>
-                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} setLabelTags={setLabelTags} />
+                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} setLabelTags={setLabelTags} handleTagsChange={handleTagsChange} />
+                            <div className="cr-5 fs-11">
+                                {/* <Error className="form__icon form__icon--error" /> */}
+                                {labelTags.tagError}
+                                </div>
                             <div className='form__buttons mt-40'>
                                 <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>

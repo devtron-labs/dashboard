@@ -4,7 +4,7 @@ import { components } from 'react-select';
 import { ClearIndicator, MultiValueRemove } from '../../common';
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
-export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }) {
+export default function TagLabelSelect({ validateTags, labelTags, setLabelTags, handleTagsChange }) {
 
     const CreatableStyle = {
         multiValue: (base, state) => {
@@ -43,11 +43,12 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
         );
     };
 
+  
     const createOption = (label: string) => ({
         label: label,
         value: label,
     });
-
+    
     const handleKeyDown = useCallback((event) => {
         labelTags.inputTagValue = labelTags.inputTagValue.trim();
         switch (event.key) {
@@ -57,7 +58,6 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
             case ' ': // space
                 if (labelTags.inputTagValue) {
                     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-                    console.log(newTag)
                     setLabelTags({
                         inputTagValue: '',
                         tags: [...labelTags.tags, ...newTag],
@@ -79,10 +79,6 @@ export default function TagLabelSelect({ validateTags, labelTags, setLabelTags }
             tags: [...labelTags.tags, createOption(e.target.value)],
             tagError: '',
         });
-    };
-
-    function handleTagsChange(newValue: any, actionMeta: any) {
-        setLabelTags(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
     };
 
     function handleInputChange(inputTagValue) {

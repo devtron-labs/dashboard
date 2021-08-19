@@ -28,12 +28,11 @@ export interface AddNewAppState {
         appId: number;
         projectId: number;
         cloneId: number;
-        labelTags: LabelTags
+        labels: [];
     };
     isValid: {
         projectId: boolean;
         appName: boolean;
-        labelTags:boolean;
     };
 }
 
@@ -54,6 +53,11 @@ export interface AppDetails {
     resourceTree: ResourceTree;
     projectName?: string;
 }
+
+export interface LabelTag{
+    key: string;
+    value: string;
+}
 export interface AppMetaInfo {
     appId: number;
     appName: string;
@@ -61,7 +65,7 @@ export interface AppMetaInfo {
     createdOn: string;
     projectId?: number;
     projectName?: string;
-    labels?: undefined;
+    labels?: LabelTag[];
 }
 
 interface ResourceTree {
