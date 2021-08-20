@@ -1,6 +1,5 @@
 import React from 'react';
 import Creatable from 'react-select/creatable';
-import { components } from 'react-select';
 import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../../common';
 
 export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {

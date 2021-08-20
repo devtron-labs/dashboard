@@ -28,11 +28,13 @@ export interface AddNewAppState {
         appId: number;
         projectId: number;
         cloneId: number;
-        labels: [];
+        labels: []
     };
+    labels: LabelTags;
     isValid: {
         projectId: boolean;
         appName: boolean;
+        appTag: boolean;
     };
 }
 

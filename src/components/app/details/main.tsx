@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, ClearIndicator, MultiValueRemove, VisibleModal, } from '../../common';
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal, } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS, Moment12HourFormat } from '../../../config';
@@ -72,9 +72,17 @@ export function AppHeader() {
     const [submitting, setSubmitting] = useState(false)
     const [resultRes, setResultResp] = useState([])
     console.log(labelTags.tags)
-    console.log(labelTags.inputTagValue)
+    console.log(resultRes)
+
+    let labelOption = labelTags.tags.map((_label)=>{
+        return {
+            label: _label.label.split(':')[0],
+            value: _label.label.split(':')[1],
+        }
+    })
+   console.log(labelOption)
     useEffect(() => {
-        // setLabelTags({ tags: resultRes, inputTagValue: '', tagError: '' })
+        setLabelTags({ tags: resultRes, inputTagValue: '', tagError: '' })
     }, [])
 
     const createOption = (label: string) => (
@@ -351,5 +359,6 @@ export function AppHeader() {
                     </NavLink>
                 </li> */}
         </ul>
+        
     </div>
 }
