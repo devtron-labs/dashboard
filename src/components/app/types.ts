@@ -34,7 +34,6 @@ export interface AddNewAppState {
     isValid: {
         projectId: boolean;
         appName: boolean;
-        appTag: boolean;
     };
 }
 

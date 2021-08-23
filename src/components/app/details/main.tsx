@@ -17,7 +17,6 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import moment from 'moment'
 import { toast } from 'react-toastify';
 import TagLabelSelect from './TagLabelSelect';
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -69,8 +68,6 @@ export function AppHeader() {
     const currentPathname = useRef("");
     const [showInfoModal, setShowModal] = useState(false)
     const [submitting, setSubmitting] = useState(false)
-    const [keyRes, setKeyRes] = useState("")
-    const [labelRes, setLabelRes] = useState("")
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
     
@@ -78,13 +75,11 @@ export function AppHeader() {
         try {
             fetchAppMetaInfo(appId).then((_result)=>{
                 let labelOptionRes = _result?.result?.labels?.map((_label) => {
-                    console.log(`${_label.key.toString()}:${_label.value.toString()}`)
                     return {
                         label: `${_label.key.toString()}:${_label.value.toString()}`,
                         value: `${_label.key.toString()}:${_label.value.toString()}`,
                     }
                 })
-                console.log(_result?.result)
                 setResult(_result)
                 setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
             })
@@ -94,7 +89,6 @@ export function AppHeader() {
             }
             
     }, [])
-
 
     const createOption = (label: string) => (
         {
@@ -109,7 +103,6 @@ export function AppHeader() {
             case 'Tab':
             case ',':
             case ' ': // space
-                console.log(labelTags)
                 if (labelTags.inputTagValue) {
                     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
                     setLabelTags({
@@ -140,7 +133,6 @@ export function AppHeader() {
     }
 
     function handleInputChange(inputTagValue) {
-        // console.log(labelTags)
         setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
     }
 
@@ -244,7 +236,6 @@ export function AppHeader() {
             </div>
             {showInfoModal && 
                 <VisibleModal className="app-status__material-modal">
-                    {/* {console.log(result)} */}
                     <form >
                         <div className="modal__body br-8 bcn-0 p-20">
                             <div className="modal__header">

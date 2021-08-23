@@ -39,7 +39,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             isValid: {
                 projectId: false,
                 appName: false,
-                appTag: true
             }
         }
         this.createApp = this.createApp.bind(this);
@@ -72,7 +71,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     handleInputChange = (inputTagValue) => {
         let { form, isValid } = { ...this.state };
-        isValid.appTag = !!this.validateTags(inputTagValue);
         this.setState({ form, isValid });
         this.setState({
             labels: {
@@ -202,7 +200,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 form.labels = response.result.labels.tags;
                 isValid.appName = true;
                 isValid.projectId = true;
-                isValid.appTag = true;
                 this.setState({ code: response.code, form, isValid, disableForm: false, showErrors: false }, () => {
                     toast.success('Your application is created. Go ahead and set it up.');
                     this.redirectToArtifacts(this.state.form.appId);
@@ -316,11 +313,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     onKeyDown={this.handleKeyDown}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
-                {/* <span className="form__error">
-                    {showError && !this.state.isValid.appTag 
-                        ? <><Error className="form__icon form__icon--error" />{errorObject[2].message} <br /></>
-                        : null}
-                </span> */}
                 <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
@@ -332,7 +324,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className=" mt-40">
                     <DialogFormSubmit tabIndex={3}>{this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}</DialogFormSubmit>
                 </div>
-                {console.log(this.state.labels.tags)}
             </DialogForm >
         }
     }
