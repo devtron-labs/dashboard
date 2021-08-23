@@ -354,7 +354,7 @@ export function getNodeStatus({ appName, envName, version, namespace, group, kin
     return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
 }
 
-export function fetchAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
+export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`);
 }
 

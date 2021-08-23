@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal, } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { URLS, Moment12HourFormat } from '../../../config';
+import { URLS, Moment12HourFormat, PATTERNS } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
@@ -12,11 +12,12 @@ import './appDetails/appDetails.scss';
 import './app.css';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
-import { fetchAppMetaInfo, createAppLabels } from '../service';
+import { getAppMetaInfo, createAppLabels } from '../service';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import moment from 'moment'
 import { toast } from 'react-toastify';
 import TagLabelSelect from './TagLabelSelect';
+import { OptionType } from '../types'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -55,39 +56,38 @@ export default function AppDetailsPage() {
     </div>
 }
 
-interface OptionType {
-    label: string;
-    value: string;
-}
-
 export function AppHeader() {
     const { appId } = useParams<{ appId }>();
     const match = useRouteMatch();
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
-    const [showInfoModal, setShowModal] = useState(false)
+    const [showInfoModal, setShowInfoModal] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
-    
-    useEffect ( () => {
-        try {
-            fetchAppMetaInfo(appId).then((_result)=>{
-                let labelOptionRes = _result?.result?.labels?.map((_label) => {
-                    return {
-                        label: `${_label.key.toString()}:${_label.value.toString()}`,
-                        value: `${_label.key.toString()}:${_label.value.toString()}`,
-                    }
-                })
-                setResult(_result)
-                setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+
+    const getAppMetaInfoRes=()=>{
+        getAppMetaInfo(appId).then((_result) => {
+            let labelOptionRes = _result?.result?.labels?.map((_label) => {
+                return {
+                    label: `${_label.key.toString()}:${_label.value.toString()}`,
+                    value: `${_label.key.toString()}:${_label.value.toString()}`,
+                }
             })
-            }
-            catch (err) {
-                showError(err)
-            }
-            
+            setResult(_result)
+            setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+        })
+
+    }
+    
+    useEffect(() => {
+        try {
+            getAppMetaInfoRes()
+        }
+        catch (err) {
+            showError(err)
+        }
     }, [])
 
     const createOption = (label: string) => (
@@ -119,8 +119,9 @@ export function AppHeader() {
     }, [labelTags])
 
     function validateTags(tag) {
-        var re = /^.+:.+$/;
-        const result = re.test(String(tag).toLowerCase());
+        var re = PATTERNS.APP_LABEL_CHIP;
+        let regExp = new RegExp(re);
+        let result = regExp.test(tag.toLowerCase());
         return result;
     }
 
@@ -175,7 +176,7 @@ export function AppHeader() {
 
         try {
             const { result } = await createAppLabels(payload)
-            setShowModal(false)
+            setShowInfoModal(false)
             toast.success('Successfully saved.')
         }
         catch (err) {
@@ -229,18 +230,18 @@ export function AppHeader() {
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
-            <div className="tab-list__info-icon ml-4 cursor" onClick={() => setShowModal(true)}>
+            <div className="tab-list__info-icon ml-4 cursor" onClick={() => setShowInfoModal(true)}>
                 <Tippy className="default-tt " arrow={false} content={'About app'}>
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div>
-            {showInfoModal && 
+            {showInfoModal &&
                 <VisibleModal className="app-status__material-modal">
                     <form >
                         <div className="modal__body br-8 bcn-0 p-20">
                             <div className="modal__header">
                                 <div className="fs-20 cn-9 fw-6">About</div>
-                                <button className="transparent" onClick={() => setShowModal(false)}>
+                                <button className="transparent" onClick={() => setShowInfoModal(false)}>
                                     <Close className="icon-dim-24 cursor" />
                                 </button>
                             </div>

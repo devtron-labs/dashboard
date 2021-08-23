@@ -4,7 +4,6 @@ import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../..
 
 export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {
     const creatableOptions = useMemo(() => ([]), [])
-    // {console.log(labelTags.tags)}
     const CreatableChipStyle = {
         multiValue: (base, state) => {
             return ({

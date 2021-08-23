@@ -29,7 +29,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: 0,
                 appName: "",
                 cloneId: 0,
-                labels: []
             },
             labels: {
                 tags: [],
@@ -61,7 +60,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     validateTags = (tag) => {
-        if(!tag){
+        if (!tag) {
             return true
         }
         var re = /^.+:.+$/;
@@ -197,7 +196,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 let { form, isValid } = { ...this.state };
                 form.appId = response.result.id;
                 form.appName = response.result.appName;
-                form.labels = response.result.labels.tags;
+                this.state.labels.tags = response.result.labels.tags;
                 isValid.appName = true;
                 isValid.projectId = true;
                 this.setState({ code: response.code, form, isValid, disableForm: false, showErrors: false }, () => {
@@ -227,9 +226,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     render() {
-        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId),
-        this.rules.appTag(this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length)
-        ];
+        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)]
         let showError = this.state.showErrors;
         let provider = this.state.projects.find(project => this.state.form.projectId === project.id);
         let clone = this.state.apps.find(app => this.state.form.cloneId === app.id);
@@ -256,7 +253,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             </DialogForm>
         }
         else {
-
             return <DialogForm title="Add New App"
                 isLoading={this.state.disableForm}
                 className=""
@@ -313,6 +309,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     onKeyDown={this.handleKeyDown}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
+
                 <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />

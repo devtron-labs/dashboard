@@ -136,7 +136,8 @@ export const PATTERNS = {
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
-    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/
+    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
+    APP_LABEL_CHIP: /^.+:.+$/
 };
 
 export const TriggerType = {
