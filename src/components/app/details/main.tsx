@@ -18,6 +18,7 @@ import TagLabelSelect from './TagLabelSelect';
 import { OptionType } from '../types'
 import AboutAppInfoModal from './AboutAppInfoModal';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
+import { validateTags, TAG_VALIDATION_MESSAGE } from '../appLabelCommon'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -66,6 +67,7 @@ export function AppHeader() {
     const [submitting, setSubmitting] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
+    const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
     const getAppMetaInfoRes = () => {
         getAppMetaInfo(appId).then((_result) => {
@@ -88,7 +90,7 @@ export function AppHeader() {
         catch (err) {
             showError(err)
         }
-    }, [])
+    }, [appId])
 
     const createOption = (label: string) => (
         {
@@ -118,16 +120,9 @@ export function AppHeader() {
         }
     }, [labelTags])
 
-    function validateTags(tag) {
-        var re = PATTERNS.APP_LABEL_CHIP;
-        let regExp = new RegExp(re);
-        let result = regExp.test(tag.toLowerCase());
-        return result;
-    }
-
     function validateForm(): boolean {
         if (labelTags.tags.length !== labelTags.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
-            setLabelTags(labelTags => ({ ...labelTags, tagError: 'Please provide tags in key:value format only' }))
+            setLabelTags(labelTags => ({ ...labelTags, tagError: TAG_VALIDATION_MESSAGE.error }))
             return false
         }
         return true
@@ -233,7 +228,27 @@ export function AppHeader() {
                 <Error className="form__icon form__icon--error" />{labelTags.tagError}
             </div>
         }
+    }
 
+
+    const renderAppInfo = () => {
+        if (!result) {
+            return <div className="flex" style={{ minHeight: '300px' }}>
+                <Progressing pageLoader />
+            </div>
+        }
+        else {
+            return <div>
+                <AboutAppInfoModal appMetaResult={result?.result} onClose={setShowInfoModal} />
+                <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
+                {renderValidationMessaging()}
+                <div className='form__buttons mt-40'>
+                    <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} >
+                        {submitting ? <Progressing /> : ' Save'}
+                    </button>
+                </div>
+            </div>
+        }
     }
 
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
@@ -246,16 +261,9 @@ export function AppHeader() {
             </div>
             {showInfoModal &&
                 <VisibleModal className="app-status__material-modal">
-                    <form >
-                        <div className="modal__body br-8 bcn-0 p-20">
-                            <AboutAppInfoModal appMetaResult={result?.result} onClose={setShowInfoModal} />
-                            <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
-                            {renderValidationMessaging()}
-                            <div className='form__buttons mt-40'>
-                                <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
-                            </div>
-                        </div>
-                    </form>
+                    <div className="modal__body br-8 bcn-0 p-20">
+                        {renderAppInfo()}
+                    </div>
                 </VisibleModal>}
         </h1>
 
@@ -332,6 +340,5 @@ export function AppHeader() {
                     </NavLink>
                 </li> */}
         </ul>
-
     </div>
 }

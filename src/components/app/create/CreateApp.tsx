@@ -7,10 +7,11 @@ import { getTeamListMin, getAppListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
+import './createApp.css';
+import { TAG_VALIDATION_MESSAGE, validateTags } from '../appLabelCommon'
+import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
-import './createApp.css';
-import TagLabelSelect from '../details/TagLabelSelect';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -59,19 +60,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
-    validateTags = (tag) => {
-        if (!tag) {
-            return true
-        }
-        var re = /^.+:.+$/;
-        const result = re.test(String(tag).toLowerCase());
-        return result;
-    }
-
     handleInputChange = (inputTagValue) => {
         let { form, isValid } = { ...this.state };
-        this.setState({ form, isValid });
-        this.setState({
+        // this.setState({ form, isValid });
+        this.setState({form, isValid,
             labels: {
                 ...this.state.labels,
                 inputTagValue: inputTagValue,
@@ -147,11 +139,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     validateForm = (): boolean => {
-        if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length) {
+        if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
             this.setState({
                 labels: {
                     ...this.state.labels,
-                    tagError: 'Please provide tags in key:value format only'
+                    tagError: TAG_VALIDATION_MESSAGE.error
                 }
             })
             return false
@@ -191,15 +183,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
         this.setState({ disableForm: true });
         createApp(request).then((response) => {
-
             if (response.result) {
                 let { form, isValid } = { ...this.state };
                 form.appId = response.result.id;
                 form.appName = response.result.appName;
-                this.state.labels.tags = response.result.labels.tags;
                 isValid.appName = true;
                 isValid.projectId = true;
-                this.setState({ code: response.code, form, isValid, disableForm: false, showErrors: false }, () => {
+                this.setState({
+                    code: response.code, form, isValid, disableForm: false, showErrors: false,
+                    labels: {
+                        ...this.state.labels,
+                        tags: response.result?.labels?.tags
+                    }
+
+                }, () => {
                     toast.success('Your application is created. Go ahead and set it up.');
                     this.redirectToArtifacts(this.state.form.appId);
                 })
@@ -302,7 +299,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     </Select>
                 </div>
                 <TagLabelSelect
-                    validateTags={this.validateTags}
+                    validateTags={validateTags}
                     labelTags={this.state.labels}
                     onInputChange={this.handleInputChange}
                     onTagsChange={this.handleTagsChange}
