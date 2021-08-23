@@ -62,9 +62,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     validateTags = (tag) => {
-        if(!tag){
-            return true
-        }
         var re = /^.+:.+$/;
         const result = re.test(String(tag).toLowerCase());
         return result;
@@ -149,11 +146,28 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
+    validateForm = (): boolean => {
+        if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length) {
+            this.setState({
+                labels: {
+                    ...this.state.labels,
+                    tagError: 'Please provide tags in key:value format only'
+                }
+            })
+            return false
+        }
+        return true
+    }
+
     createApp(): void {
+        const validForm = this.validateForm()
+        if (!validForm) {
+            return
+        }
         this.setState({ showErrors: true });
         let allKeys = Object.keys(this.state.isValid);
         let isFormValid = allKeys.reduce((valid, key) => {
-            valid = valid && this.state.isValid[key];
+            valid = valid && this.state.isValid[key] && validForm;
             return valid;
         }, true);
         if (!isFormValid) return;
@@ -214,8 +228,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     render() {
         let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId),
-            //  this.rules.appTag(this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length)
-            this.rules.appTag(this.state.labels.tags.map(tag=>tag.value).filter(tag => this.validateTags(tag)).length)
+        this.rules.appTag(this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length)
         ];
         let showError = this.state.showErrors;
         let provider = this.state.projects.find(project => this.state.form.projectId === project.id);
@@ -301,10 +314,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     onCreatableBlur={this.handleCreatableBlur}
                 />
                 <span className="form__error">
-                    {showError && !this.state.isValid.appTag
+                    {showError && !this.state.isValid.appTag 
                         ? <><Error className="form__icon form__icon--error" />{errorObject[2].message} <br /></>
                         : null}
                 </span>
+                <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">

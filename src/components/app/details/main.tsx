@@ -74,24 +74,7 @@ export function AppHeader() {
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId))
 
-    // useEffect(()=>{
-    //   result?.result?.labels?.map((_label) => {
-    //     let _resLabel = `${_label.value.toString()}`
-    //     let _resKey = `${_label.key.toString()}`
-    //     setLabelRes(_resLabel)
-    //     setKeyRes(_resKey)
-    //     })
-
-    // },[])
-
-    // let labelOptionRes = [
-    //     {
-    //         value: `hi`,
-    //         label: `testing`
-    //     }
-    // ]
     useEffect(() => {
-            
             fetchAppMetaInfo(appId).then((_result)=>{
                 let labelOptionRes = _result?.result?.labels?.map((_label) => {
                     console.log(`${_label.key.toString()}:${_label.value.toString()}`)
@@ -104,7 +87,6 @@ export function AppHeader() {
                
                 setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
             })
-
     }, [])
 
     const createOption = (label: string) => (
