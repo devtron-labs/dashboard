@@ -72,9 +72,10 @@ export function AppHeader() {
     const [keyRes, setKeyRes] = useState("")
     const [labelRes, setLabelRes] = useState("")
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
-    const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId))
-
-    useEffect(() => {
+    const [result, setResult] = useState(undefined)
+    
+    useEffect ( () => {
+        try {
             fetchAppMetaInfo(appId).then((_result)=>{
                 let labelOptionRes = _result?.result?.labels?.map((_label) => {
                     console.log(`${_label.key.toString()}:${_label.value.toString()}`)
@@ -84,10 +85,16 @@ export function AppHeader() {
                     }
                 })
                 console.log(_result?.result)
-               
+                setResult(_result)
                 setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
             })
+            }
+            catch (err) {
+                showError(err)
+            }
+            
     }, [])
+
 
     const createOption = (label: string) => (
         {
@@ -176,7 +183,6 @@ export function AppHeader() {
 
         try {
             const { result } = await createAppLabels(payload)
-            await reload()
             toast.success('Successfully saved.')
         }
         catch (err) {
