@@ -62,6 +62,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     validateTags = (tag) => {
+        if(!tag){
+            return true
+        }
         var re = /^.+:.+$/;
         const result = re.test(String(tag).toLowerCase());
         return result;
@@ -313,11 +316,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     onKeyDown={this.handleKeyDown}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
-                <span className="form__error">
+                {/* <span className="form__error">
                     {showError && !this.state.isValid.appTag 
                         ? <><Error className="form__icon form__icon--error" />{errorObject[2].message} <br /></>
                         : null}
-                </span>
+                </span> */}
                 <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />

@@ -183,6 +183,7 @@ export function AppHeader() {
 
         try {
             const { result } = await createAppLabels(payload)
+            setShowModal(false)
             toast.success('Successfully saved.')
         }
         catch (err) {
@@ -241,7 +242,7 @@ export function AppHeader() {
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div>
-            {showInfoModal &&
+            {showInfoModal && 
                 <VisibleModal className="app-status__material-modal">
                     {/* {console.log(result)} */}
                     <form >
