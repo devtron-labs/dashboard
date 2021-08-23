@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal, } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { URLS, Moment12HourFormat, PATTERNS } from '../../../config';
+import { URLS, PATTERNS } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
@@ -13,11 +13,11 @@ import './app.css';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
 import { getAppMetaInfo, createAppLabels } from '../service';
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import moment from 'moment'
 import { toast } from 'react-toastify';
 import TagLabelSelect from './TagLabelSelect';
 import { OptionType } from '../types'
+import AboutAppInfoModal from './AboutAppInfoModal';
+import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -67,7 +67,7 @@ export function AppHeader() {
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
 
-    const getAppMetaInfoRes=()=>{
+    const getAppMetaInfoRes = () => {
         getAppMetaInfo(appId).then((_result) => {
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
@@ -80,7 +80,7 @@ export function AppHeader() {
         })
 
     }
-    
+
     useEffect(() => {
         try {
             getAppMetaInfoRes()
@@ -227,6 +227,15 @@ export function AppHeader() {
         [appId],
     );
 
+    const renderValidationMessaging = () => {
+        if (labelTags.tagError !== "") {
+            return <div className="cr-5 fs-11">
+                <Error className="form__icon form__icon--error" />{labelTags.tagError}
+            </div>
+        }
+
+    }
+
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -239,33 +248,9 @@ export function AppHeader() {
                 <VisibleModal className="app-status__material-modal">
                     <form >
                         <div className="modal__body br-8 bcn-0 p-20">
-                            <div className="modal__header">
-                                <div className="fs-20 cn-9 fw-6">About</div>
-                                <button className="transparent" onClick={() => setShowInfoModal(false)}>
-                                    <Close className="icon-dim-24 cursor" />
-                                </button>
-                            </div>
-                            <div className="pt-12">
-                                <div className="cn-6 fs-12 mb-2">App name</div>
-                                <div className="cn-9 fs-14 mb-16">{result?.result?.appName}</div>
-                            </div>
-                            <div>
-                                <div className="cn-6 fs-12 mb-2">Created on</div>
-                                <div className="cn-9 fs-14 mb-16">{moment(result?.result?.createdOn).format(Moment12HourFormat)}</div>
-                            </div>
-                            <div>
-                                <div className="cn-6 fs-12 mb-2">Created by</div>
-                                <div className="cn-9 fs-14 mb-16">{result?.result?.createdBy}</div>
-                            </div>
-                            <div>
-                                <div className="cn-6 fs-12 mb-2">Project</div>
-                                <div className="cn-9 fs-14 mb-16">{result?.result?.projectName}</div>
-                            </div>
+                            <AboutAppInfoModal appMetaResult={result?.result} onClose={setShowInfoModal} />
                             <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
-                            <div className="cr-5 fs-11">
-                                {/* <Error className="form__icon form__icon--error" /> */}
-                                {labelTags.tagError}
-                            </div>
+                            {renderValidationMessaging()}
                             <div className='form__buttons mt-40'>
                                 <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} > Save </button>
                             </div>
