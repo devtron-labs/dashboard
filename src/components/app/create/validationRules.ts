@@ -19,4 +19,23 @@ export class ValidationRules {
         else return { isValid: false, message: 'This is a required field' };
     }
 
+    appTag = (tag): { isValid: boolean, message: string } => {
+
+        let _isValid = true;
+        let _message;
+
+        if (tag) {
+            let re = /^.+:.+$/
+            let regExp = new RegExp(re);
+            let test = regExp.test(String(tag).toLowerCase());
+            if (!test) {
+                _isValid = false;
+                _message = 'Please provide tags in key:value format only';
+            }
+        }
+        return {
+            isValid: _isValid,
+            message: _message
+        }
+    }
 } 

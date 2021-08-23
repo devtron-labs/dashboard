@@ -39,7 +39,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             isValid: {
                 projectId: false,
                 appName: false,
-                appTag:false
+                appTag: true
             }
         }
         this.createApp = this.createApp.bind(this);
@@ -62,26 +62,19 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     validateTags = (tag) => {
+        if(!tag){
+            return true
+        }
         var re = /^.+:.+$/;
         const result = re.test(String(tag).toLowerCase());
         return result;
     }
 
-     validateForm = (): boolean => {
-        if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length) {
-            this.setState({ 
-                labels: {
-                    ...this.state.labels,
-                    tagError: 'Please provide tags in key:value format only'
-                }})
-            return false
-        }
-        return true
-    }
-
     handleInputChange = (inputTagValue) => {
+        let { form, isValid } = { ...this.state };
+        isValid.appTag = !!this.validateTags(inputTagValue);
+        this.setState({ form, isValid });
         this.setState({
-            // labels:{ ...labels, inputTagValue: inputTagValue, tagError: '' }
             labels: {
                 ...this.state.labels,
                 inputTagValue: inputTagValue,
@@ -91,7 +84,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     handleTagsChange = (newValue: any, actionMeta: any) => {
-        this.setState(tags => ({ ...tags, tags: newValue || [], tagError: '' }))
+        this.setState({
+            labels: {
+                ...this.state.labels,
+                tags: newValue || [],
+                tagError: ''
+            }
+        })
     };
 
     createOption = (label: string) => (
@@ -151,7 +150,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     createApp(): void {
-       
         this.setState({ showErrors: true });
         let allKeys = Object.keys(this.state.isValid);
         let isFormValid = allKeys.reduce((valid, key) => {
@@ -179,9 +177,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
         this.setState({ disableForm: true });
         createApp(request).then((response) => {
-           
-            let isTagValid = this.validateTags
-            console.log(isTagValid)
+
             if (response.result) {
                 let { form, isValid } = { ...this.state };
                 form.appId = response.result.id;
@@ -217,9 +213,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     render() {
-        
-
-        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
+        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId),
+            //  this.rules.appTag(this.state.labels.tags.map(tag => tag.value).filter(tag => this.validateTags(tag)).length)
+            this.rules.appTag(this.state.labels.tags.map(tag=>tag.value).filter(tag => this.validateTags(tag)).length)
+        ];
         let showError = this.state.showErrors;
         let provider = this.state.projects.find(project => this.state.form.projectId === project.id);
         let clone = this.state.apps.find(app => this.state.form.cloneId === app.id);
@@ -303,7 +300,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     onKeyDown={this.handleKeyDown}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
-                {this.state.labels.tagError}
+                <span className="form__error">
+                    {showError && !this.state.isValid.appTag
+                        ? <><Error className="form__icon form__icon--error" />{errorObject[2].message} <br /></>
+                        : null}
+                </span>
                 {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">

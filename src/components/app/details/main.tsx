@@ -29,6 +29,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 export default function AppDetailsPage() {
     const { path } = useRouteMatch();
     const { appId } = useParams<{ appId }>();
+
     return <div className="app-details-page">
         <AppHeader />
         <ErrorBoundary>
@@ -66,23 +67,44 @@ export function AppHeader() {
     const history = useHistory();
     const location = useLocation();
     const currentPathname = useRef("");
-    const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId))
     const [showInfoModal, setShowModal] = useState(false)
-    const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [submitting, setSubmitting] = useState(false)
-    const [resultRes, setResultResp] = useState([])
-    console.log(labelTags.tags)
-    console.log(resultRes)
+    const [keyRes, setKeyRes] = useState("")
+    const [labelRes, setLabelRes] = useState("")
+    const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
+    const [loading, result, error, reload] = useAsync(() => fetchAppMetaInfo(appId))
 
-    let labelOption = labelTags.tags.map((_label)=>{
-        return {
-            label: _label.label.split(':')[0],
-            value: _label.label.split(':')[1],
-        }
-    })
-   console.log(labelOption)
+    // useEffect(()=>{
+    //   result?.result?.labels?.map((_label) => {
+    //     let _resLabel = `${_label.value.toString()}`
+    //     let _resKey = `${_label.key.toString()}`
+    //     setLabelRes(_resLabel)
+    //     setKeyRes(_resKey)
+    //     })
+
+    // },[])
+
+    // let labelOptionRes = [
+    //     {
+    //         value: `hi`,
+    //         label: `testing`
+    //     }
+    // ]
     useEffect(() => {
-        setLabelTags({ tags: resultRes, inputTagValue: '', tagError: '' })
+            
+            fetchAppMetaInfo(appId).then((_result)=>{
+                let labelOptionRes = _result?.result?.labels?.map((_label) => {
+                    console.log(`${_label.key.toString()}:${_label.value.toString()}`)
+                    return {
+                        label: `${_label.key.toString()}:${_label.value.toString()}`,
+                        value: `${_label.key.toString()}:${_label.value.toString()}`,
+                    }
+                })
+                console.log(_result?.result)
+               
+                setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+            })
+
     }, [])
 
     const createOption = (label: string) => (
@@ -98,6 +120,7 @@ export function AppHeader() {
             case 'Tab':
             case ',':
             case ' ': // space
+                console.log(labelTags)
                 if (labelTags.inputTagValue) {
                     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
                     setLabelTags({
@@ -127,8 +150,8 @@ export function AppHeader() {
         return true
     }
 
-
     function handleInputChange(inputTagValue) {
+        // console.log(labelTags)
         setLabelTags(tags => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
     }
 
@@ -145,23 +168,6 @@ export function AppHeader() {
             tagError: '',
         });
     };
-
-    async function onSave(payload) {
-        const { result } = await createAppLabels(payload)
-        // console.log(result.labels)
-        let _labelType = [];
-        if (result?.labels && result?.labels.length > 0) {
-            result?.labels.forEach((_label) => {
-                _labelType.push({
-                    label: _label.value,
-                    value: _label.key,
-
-                })
-            })
-        }
-        // console.log(_labelType)
-        setResultResp(_labelType)
-    }
 
     async function handleSubmit(e) {
         const validForm = validateForm()
@@ -182,12 +188,12 @@ export function AppHeader() {
         }
 
         const payload = {
-            appId: 0,
+            appId: parseInt(appId),
             labels: _optionTypes
         }
 
         try {
-            onSave(payload)
+            const { result } = await createAppLabels(payload)
             await reload()
             toast.success('Successfully saved.')
         }
@@ -249,6 +255,7 @@ export function AppHeader() {
             </div>
             {showInfoModal &&
                 <VisibleModal className="app-status__material-modal">
+                    {/* {console.log(result)} */}
                     <form >
                         <div className="modal__body br-8 bcn-0 p-20">
                             <div className="modal__header">
@@ -259,19 +266,19 @@ export function AppHeader() {
                             </div>
                             <div className="pt-12">
                                 <div className="cn-6 fs-12 mb-2">App name</div>
-                                <div className="cn-9 fs-14 mb-16">{result.result.appName}</div>
+                                <div className="cn-9 fs-14 mb-16">{result?.result?.appName}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Created on</div>
-                                <div className="cn-9 fs-14 mb-16">{moment(result.result.createdOn).format(Moment12HourFormat)}</div>
+                                <div className="cn-9 fs-14 mb-16">{moment(result?.result?.createdOn).format(Moment12HourFormat)}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Created by</div>
-                                <div className="cn-9 fs-14 mb-16">{result.result.createdBy}testing</div>
+                                <div className="cn-9 fs-14 mb-16">{result?.result?.createdBy}</div>
                             </div>
                             <div>
                                 <div className="cn-6 fs-12 mb-2">Project</div>
-                                <div className="cn-9 fs-14 mb-16">{result.result.projectName}</div>
+                                <div className="cn-9 fs-14 mb-16">{result?.result?.projectName}</div>
                             </div>
                             <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
                             <div className="cr-5 fs-11">
@@ -359,6 +366,6 @@ export function AppHeader() {
                     </NavLink>
                 </li> */}
         </ul>
-        
+
     </div>
 }

@@ -1,9 +1,10 @@
-import React from 'react';
+import React,{useMemo} from 'react';
 import Creatable from 'react-select/creatable';
 import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../../common';
 
 export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {
-
+    const creatableOptions = useMemo(() => ([]), [])
+    // {console.log(labelTags.tags)}
     const CreatableChipStyle = {
         multiValue: (base, state) => {
             return ({
@@ -34,6 +35,7 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
             <span className="form__label cn-6"> Tags (only key:value allowed)</span>
             <Creatable
                 className={"create-app_tags"}
+                options={creatableOptions}
                 components={{
                     DropdownIndicator: () => null,
                     ClearIndicator,
