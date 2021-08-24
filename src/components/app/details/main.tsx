@@ -233,7 +233,7 @@ export function AppHeader() {
         }
         else {
             return <div>
-                <AboutAppInfoModal appMetaResult={result?.result} onClose={setShowInfoModal} />
+                <AboutAppInfoModal appMetaResult={result?.result}  />
                 <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
                 {renderValidationMessaging()}
                 <div className='form__buttons mt-40'>
@@ -254,7 +254,7 @@ export function AppHeader() {
                 </Tippy>
             </div>
             {showInfoModal &&
-                <VisibleModal className="app-status__material-modal">
+                <VisibleModal className="app-status__material-modal" close={()=>setShowInfoModal(false)}>
                     <div className="modal__body br-8 bcn-0 p-20">
                         {renderAppInfo()}
                     </div>

@@ -4,12 +4,12 @@ import moment from 'moment'
 import { Moment12HourFormat } from '../../../config';
 
 
-export default function AboutAppInfoModal({onClose, appMetaResult}) {
+export default function AboutAppInfoModal({ appMetaResult}) {
     return (
         <div>
              <div className="modal__header">
                                 <div className="fs-20 cn-9 fw-6">About</div>
-                                <button className="transparent" onClick={() => onClose(false)}>
+                                <button className="transparent" >
                                     <Close className="icon-dim-24 cursor" />
                                 </button>
                             </div>
