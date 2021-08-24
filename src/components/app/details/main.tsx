@@ -12,10 +12,8 @@ import './app.css';
 import Tippy from '@tippyjs/react';
 import { getAppMetaInfo, createAppLabels } from '../service';
 import { toast } from 'react-toastify';
-import TagLabelSelect from './TagLabelSelect';
 import { OptionType } from '../types'
 import AboutAppInfoModal from './AboutAppInfoModal';
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { validateTags, TAG_VALIDATION_MESSAGE, createOption } from '../appLabelCommon'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
@@ -67,17 +65,19 @@ export function AppHeader() {
     const [submitting, setSubmitting] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
-    const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const getAppMetaInfoRes = () => {
-        getAppMetaInfo(appId).then((_result) => {
+        setIsLoading(true)
+        const res = getAppMetaInfo(appId).then((_result) => {
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
-                    label: `${_label.key.toString()}:${_label.value.toString()}`,
-                    value: `${_label.key.toString()}:${_label.value.toString()}`,
+                    label: `${_label.key?.toString()}:${_label.value?.toString()}`,
+                    value: `${_label.key?.toString()}:${_label.value?.toString()}`,
                 }
             })
             setResult(_result)
+            setIsLoading(false)
             setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
         })
 
@@ -216,47 +216,29 @@ export function AppHeader() {
         [appId],
     );
 
-    const renderValidationMessaging = () => {
-        if (labelTags.tagError !== "") {
-            return <div className="cr-5 fs-11">
-                <Error className="form__icon form__icon--error" />{labelTags.tagError}
-            </div>
-        }
-    }
-
-
-    const renderAppInfo = () => {
-        if (!result) {
-            return <div className="flex" style={{ minHeight: '300px' }}>
-                <Progressing pageLoader />
-            </div>
-        }
-        else {
-            return <div>
-                <AboutAppInfoModal appMetaResult={result?.result}  />
-                <TagLabelSelect validateTags={validateTags} labelTags={labelTags} onInputChange={handleInputChange} onTagsChange={handleTagsChange} onKeyDown={handleKeyDown} onCreatableBlur={handleCreatableBlur} />
-                {renderValidationMessaging()}
-                <div className='form__buttons mt-40'>
-                    <button className=' cta' type="submit" disabled={submitting} onClick={(e) => { e.preventDefault(); handleSubmit(e) }} tabIndex={5} >
-                        {submitting ? <Progressing /> : ' Save'}
-                    </button>
-                </div>
-            </div>
-        }
-    }
-
     return <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
-            <div className="tab-list__info-icon ml-4 cursor" onClick={() => setShowInfoModal(true)}>
+            <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
                 <Tippy className="default-tt " arrow={false} content={'About app'}>
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div>
             {showInfoModal &&
-                <VisibleModal className="app-status__material-modal" close={()=>setShowInfoModal(false)}>
+                <VisibleModal className="app-status__material-modal"  >
                     <div className="modal__body br-8 bcn-0 p-20">
-                        {renderAppInfo()}
+                        <AboutAppInfoModal
+                            appMetaResult={result?.result}
+                            onClose={setShowInfoModal}
+                            isLoading={isLoading}
+                            labelTags={labelTags}
+                            handleCreatableBlur={handleCreatableBlur}
+                            handleInputChange={handleInputChange}
+                            handleKeyDown={handleKeyDown}
+                            handleSubmit={handleSubmit}
+                            handleTagsChange={handleTagsChange}
+                            submitting={submitting}
+                        />
                     </div>
                 </VisibleModal>}
         </h1>
