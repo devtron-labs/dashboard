@@ -92,28 +92,6 @@ export function AppHeader() {
         }
     }, [appId])
 
-    // const handleKeyDown = useCallback((event) => {
-    //     labelTags.inputTagValue = labelTags.inputTagValue.trim();
-    //     switch (event.key) {
-    //         case 'Enter':
-    //         case 'Tab':
-    //         case ',':
-    //         case ' ': // space
-    //             if (labelTags.inputTagValue) {
-    //                 let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-    //                 setLabelTags({
-    //                     inputTagValue: '',
-    //                     tags: [...labelTags.tags, ...newTag],
-    //                     tagError: '',
-    //                 });
-    //             }
-    //             if (event.key !== 'Tab') {
-    //                 event.preventDefault();
-    //             }
-    //             break;
-    //     }
-    // }, [labelTags])
-
     function validateForm(): boolean {
         if (labelTags.tags.length !== labelTags.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
             setLabelTags(labelTags => ({ ...labelTags, tagError: TAG_VALIDATION_MESSAGE.error }))
