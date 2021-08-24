@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { CIMaterialType } from '../triggerView/MaterialHistory';
-import { ReactComponent as Branch } from '../../../../assets/icons/ic-branch.svg';
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg';
 import { SourceTypeMap } from '../../../../config';
+import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig';
 
 interface MaterialSourceProps {
     material: CIMaterialType[];
@@ -29,7 +29,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
             </div>
         }
         else {
-            return <div className="material-last-update">Last Updated<span className="fw-6 ml-5"> {material.lastFetchTime}</span></div>
+            return <div className="material-last-update">{material.lastFetchTime ? 'Last Updated' : ''}<span className="fw-6 ml-5"> {material.lastFetchTime}</span></div>
         }
     }
 
@@ -56,13 +56,12 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                         <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
                         <div className="icon-dim-22 git"></div>
                     </div>
-                    <div className="branch-name">
-                        {material.type === SourceTypeMap.BranchFixed ? <Branch className="icon-dim-12 mr-5" /> : null}
-                        <span className="ellipsis-right">{material.value}</span>
+                    <div className="branch-name ">
+                        <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true}></CiPipelineSourceConfig>
                     </div>
                     {this.props.refreshMaterial ? <div className="material-info">
                         {this.renderMaterialUpdateInfo(material)}
-                        {this.renderRefreshButton(material)}
+                        {material.type != SourceTypeMap.WEBHOOK && this.renderRefreshButton(material)}
                     </div> : null}
                 </div>
             })}

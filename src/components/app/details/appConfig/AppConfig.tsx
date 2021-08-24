@@ -316,7 +316,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
                     <>
-                        <MaterialList respondOnSuccess={respondOnSuccess} />
+                        <MaterialList respondOnSuccess={respondOnSuccess} isWorkflowEditorUnlocked={isUnlocked.workflowEditor}/>
                         <NextButton currentStageName={STAGE_NAME.GIT_MATERIAL}
                             navItems={navItems}
                             isDisabled={!isUnlocked.dockerBuildConfig}

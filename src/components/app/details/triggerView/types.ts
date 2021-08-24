@@ -25,6 +25,7 @@ export interface CDMaterialType {
     message: string;
     commitLink: string;
     tag: string;
+    webhookData: string;
   }[];
   tab: CDMdalTabType;
   scanEnabled: boolean;
