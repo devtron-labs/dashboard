@@ -8,7 +8,7 @@ import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
 import './createApp.css';
-import { TAG_VALIDATION_MESSAGE, validateTags, createOption } from '../appLabelCommon'
+import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } from '../appLabelCommon'
 import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
@@ -62,8 +62,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     handleInputChange = (inputTagValue) => {
         let { form, isValid } = { ...this.state };
-        // this.setState({ form, isValid });
-        this.setState({form, isValid,
+        this.setState({
+            form, isValid,
             labels: {
                 ...this.state.labels,
                 inputTagValue: inputTagValue,
@@ -107,31 +107,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         isValid.projectId = !!item;
         this.setState({ form, isValid });
     }
-
-    handleKeyDown = (event) => {
-        this.state.labels.inputTagValue = this.state.labels.inputTagValue.trim();
-        switch (event.key) {
-            case 'Enter':
-            case 'Tab':
-            case ',':
-            case ' ': // space
-                if (this.state.labels.inputTagValue) {
-                    let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-                    this.setState({
-                        labels: {
-                            inputTagValue: '',
-                            tags: [...this.state.labels.tags, ...newTag],
-                            tagError: '',
-                        }
-                    });
-                }
-                if (event.key !== 'Tab') {
-                    event.preventDefault();
-                }
-                break;
-        }
-    }
-
     validateForm = (): boolean => {
         if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
             this.setState({
@@ -216,6 +191,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.props.history.push(url);
     }
 
+    setAppTagLabel = () => {
+     let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+
+        this.setState({
+            labels: {
+                inputTagValue: '',
+                tags: [...this.state.labels.tags, ...newTag],
+                tagError: '',
+            }
+        });
+    }
+
     render() {
         let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)]
         let showError = this.state.showErrors;
@@ -297,7 +284,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     labelTags={this.state.labels}
                     onInputChange={this.handleInputChange}
                     onTagsChange={this.handleTagsChange}
-                    onKeyDown={this.handleKeyDown}
+                    onKeyDown={(event)=>handleKeyDown(this.state.labels,this.setAppTagLabel, event)}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
 
