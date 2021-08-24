@@ -7,14 +7,15 @@ import { getTeamListMin, getAppListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
+import './createApp.css';
+import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } from '../appLabelCommon'
+import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
-import './createApp.css';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
     _inputAppName: HTMLInputElement;
-
     constructor(props) {
         super(props);
         this.state = {
@@ -29,6 +30,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: 0,
                 appName: "",
                 cloneId: 0,
+            },
+            labels: {
+                tags: [],
+                inputTagValue: '',
+                tagError: ''
             },
             isValid: {
                 projectId: false,
@@ -54,6 +60,40 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
+    handleInputChange = (inputTagValue) => {
+        let { form, isValid } = { ...this.state };
+        this.setState({
+            form, isValid,
+            labels: {
+                ...this.state.labels,
+                inputTagValue: inputTagValue,
+                tagError: ''
+            },
+        })
+    }
+
+    handleTagsChange = (newValue: any, actionMeta: any) => {
+        this.setState({
+            labels: {
+                ...this.state.labels,
+                tags: newValue || [],
+                tagError: ''
+            }
+        })
+    };
+
+    handleCreatableBlur = (e) => {
+        this.state.labels.inputTagValue = this.state.labels?.inputTagValue.trim()
+        if (!this.state.labels.inputTagValue) return
+        this.setState({
+            labels: {
+                inputTagValue: '',
+                tags: [...this.state.labels.tags, createOption(e.target.value)],
+                tagError: '',
+            }
+        });
+    };
+
     handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
         let { form, isValid } = { ...this.state };
         form.appName = event.target.value;
@@ -67,20 +107,48 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         isValid.projectId = !!item;
         this.setState({ form, isValid });
     }
+    validateForm = (): boolean => {
+        if (this.state.labels.tags.length !== this.state.labels.tags.map(tag => tag.value).filter(tag => validateTags(tag)).length) {
+            this.setState({
+                labels: {
+                    ...this.state.labels,
+                    tagError: TAG_VALIDATION_MESSAGE.error
+                }
+            })
+            return false
+        }
+        return true
+    }
 
     createApp(): void {
+        const validForm = this.validateForm()
+        if (!validForm) {
+            return
+        }
         this.setState({ showErrors: true });
         let allKeys = Object.keys(this.state.isValid);
         let isFormValid = allKeys.reduce((valid, key) => {
-            valid = valid && this.state.isValid[key];
+            valid = valid && this.state.isValid[key] && validForm;
             return valid;
         }, true);
         if (!isFormValid) return;
+
+        let _optionTypes = [];
+        if (this.state.labels.tags && this.state.labels.tags.length > 0) {
+            this.state.labels.tags.forEach((_label) => {
+                let _splittedTag = _label.value.split(':');
+                _optionTypes.push({
+                    key: _splittedTag[0],
+                    value: _splittedTag[1]
+                })
+            })
+        }
 
         let request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
+            labels: _optionTypes
         }
         this.setState({ disableForm: true });
         createApp(request).then((response) => {
@@ -90,7 +158,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 form.appName = response.result.appName;
                 isValid.appName = true;
                 isValid.projectId = true;
-                this.setState({ code: response.code, form, isValid, disableForm: false, showErrors: false }, () => {
+                this.setState({
+                    code: response.code, form, isValid, disableForm: false, showErrors: false,
+                    labels: {
+                        ...this.state.labels,
+                        tags: response.result?.labels?.tags
+                    }
+
+                }, () => {
                     toast.success('Your application is created. Go ahead and set it up.');
                     this.redirectToArtifacts(this.state.form.appId);
                 })
@@ -116,8 +191,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.props.history.push(url);
     }
 
+    setAppTagLabel = () => {
+     let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+
+        this.setState({
+            labels: {
+                inputTagValue: '',
+                tags: [...this.state.labels.tags, ...newTag],
+                tagError: '',
+            }
+        });
+    }
+
     render() {
-        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
+        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)]
         let showError = this.state.showErrors;
         let provider = this.state.projects.find(project => this.state.form.projectId === project.id);
         let clone = this.state.apps.find(app => this.state.form.cloneId === app.id);
@@ -192,14 +279,26 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         })}
                     </Select>
                 </div>
-                {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
+                <TagLabelSelect
+                    validateTags={validateTags}
+                    labelTags={this.state.labels}
+                    onInputChange={this.handleInputChange}
+                    onTagsChange={this.handleTagsChange}
+                    onKeyDown={(event)=>handleKeyDown(this.state.labels,this.setAppTagLabel, event)}
+                    onCreatableBlur={this.handleCreatableBlur}
+                />
+
+                <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
+                {this.state.form.cloneId > 0 && <div className="mt-20 info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">
                         <div className="info__title">Important</div>
                         <div className="info__subtitle">Do not forget to modify git repositories, corresponding branches and docker repositories to be used for each CI Pipeline if required.</div>
                     </div>
                 </div>}
-                <DialogFormSubmit tabIndex={3}>{this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}</DialogFormSubmit>
+                <div className=" mt-40">
+                    <DialogFormSubmit tabIndex={3}>{this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}</DialogFormSubmit>
+                </div>
             </DialogForm >
         }
     }

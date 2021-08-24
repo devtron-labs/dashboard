@@ -38,6 +38,7 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    APP_LABELS: 'app/labels',
     
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -136,7 +137,8 @@ export const PATTERNS = {
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
-    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/
+    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
+    APP_LABEL_CHIP: /^.+:.+$/
 };
 
 export const TriggerType = {

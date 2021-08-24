@@ -5,6 +5,17 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
 
+export interface OptionType {
+    label: string;
+    value: string;
+}
+
+export interface LabelTags {
+    tags: OptionType[];
+    inputTagValue: string;
+    tagError: string;
+}
+
 export interface AddNewAppState {
     view: string;
     code: number;
@@ -18,6 +29,7 @@ export interface AddNewAppState {
         projectId: number;
         cloneId: number;
     };
+    labels: LabelTags;
     isValid: {
         projectId: boolean;
         appName: boolean;
@@ -39,14 +51,21 @@ export interface AppDetails {
     instanceDetail?: any;
     otherEnvironment: OtherEnvironment[];
     resourceTree: ResourceTree;
-    projectName? : string;
+    projectName?: string;
+}
+
+export interface LabelTag{
+    key: string;
+    value: string;
 }
 export interface AppMetaInfo {
     appId: number;
     appName: string;
-    environmentId: number;
-    environmentName: string;
-    projectName? : string;
+    createdBy: string;
+    createdOn: string;
+    projectId?: number;
+    projectName?: string;
+    labels?: LabelTag[];
 }
 
 interface ResourceTree {
