@@ -8,7 +8,7 @@ import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
 import './createApp.css';
-import { TAG_VALIDATION_MESSAGE, validateTags } from '../appLabelCommon'
+import { TAG_VALIDATION_MESSAGE, validateTags, createOption } from '../appLabelCommon'
 import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
@@ -82,19 +82,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         })
     };
 
-    createOption = (label: string) => (
-        {
-            label: label,
-            value: label,
-        });
-
     handleCreatableBlur = (e) => {
         this.state.labels.inputTagValue = this.state.labels?.inputTagValue.trim()
         if (!this.state.labels.inputTagValue) return
         this.setState({
             labels: {
                 inputTagValue: '',
-                tags: [...this.state.labels.tags, this.createOption(e.target.value)],
+                tags: [...this.state.labels.tags, createOption(e.target.value)],
                 tagError: '',
             }
         });
@@ -122,7 +116,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             case ',':
             case ' ': // space
                 if (this.state.labels.inputTagValue) {
-                    let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return this.createOption(e) });
+                    let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
                     this.setState({
                         labels: {
                             inputTagValue: '',
@@ -308,7 +302,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 />
 
                 <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
-                {this.state.form.cloneId > 0 && <div className="info__container info__container--create-app">
+                {this.state.form.cloneId > 0 && <div className="mt-20 info__container info__container--create-app">
                     <Info />
                     <div className="flex column left">
                         <div className="info__title">Important</div>

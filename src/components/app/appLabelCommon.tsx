@@ -11,3 +11,8 @@ export const TAG_VALIDATION_MESSAGE = {
      error: 'Please provide tags in key:value format only'
 }
 
+export const createOption = (label: string) => (
+    {
+        label: label,
+        value: label,
+    });

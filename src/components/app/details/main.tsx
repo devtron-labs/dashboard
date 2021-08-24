@@ -3,14 +3,12 @@ import { Switch, Route, Redirect, NavLink } from 'react-router-dom';
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal, } from '../../common';
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { URLS, PATTERNS } from '../../../config';
+import { URLS } from '../../../config';
 import AppSelector from '../../AppSelector'
 import ReactGA from 'react-ga';
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
 import './app.css';
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import Tippy from '@tippyjs/react';
 import { getAppMetaInfo, createAppLabels } from '../service';
 import { toast } from 'react-toastify';
@@ -18,7 +16,9 @@ import TagLabelSelect from './TagLabelSelect';
 import { OptionType } from '../types'
 import AboutAppInfoModal from './AboutAppInfoModal';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
-import { validateTags, TAG_VALIDATION_MESSAGE } from '../appLabelCommon'
+import { validateTags, TAG_VALIDATION_MESSAGE, createOption } from '../appLabelCommon'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -91,12 +91,6 @@ export function AppHeader() {
             showError(err)
         }
     }, [appId])
-
-    const createOption = (label: string) => (
-        {
-            label: label,
-            value: label,
-        });
 
     const handleKeyDown = useCallback((event) => {
         labelTags.inputTagValue = labelTags.inputTagValue.trim();
