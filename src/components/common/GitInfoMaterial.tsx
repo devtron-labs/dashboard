@@ -4,7 +4,7 @@ import { MaterialSource } from '../app/details/triggerView/MaterialSource';
 import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMaterial';
 
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo,  showWebhookModal, toggleWebhookModal }) {
 
     function renderMaterialSource(context) {
         let refreshMaterial = {
@@ -42,7 +42,13 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             </div>
         }
         else return <div className="select-material select-material--trigger-view">
-            <div className="material-list__title"> Select Material </div>
+            <div className="material-list__title pb-0">
+                Select Material
+           
+            </div>
+            <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching configured filters. &nbsp;
+            <span className="learn-more__href cursor" onClick={()=>toggleWebhookModal()}>View all incoming webhook payloads</span>
+                </div>
             <MaterialHistory
                 material={material}
                 pipelineName={pipelineName}

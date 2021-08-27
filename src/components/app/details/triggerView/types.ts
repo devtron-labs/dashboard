@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 import { CIMaterialType } from './MaterialHistory';
-import { HostURLConfig} from '../../../../services/service.types';
+import { HostURLConfig } from '../../../../services/service.types';
 export type CDMdalTabType = "SECURITY" | "CHANGES";
 
 export interface CDMaterialProps {
@@ -57,6 +57,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
   title: string;
   isLoading: boolean;
   pipelineName: string;
+  showWebhookModal: boolean;
+  toggleWebhookModal: () => void;
 }
 
 export interface NodeAttr {
@@ -194,6 +196,7 @@ export interface TriggerViewState {
   isLoading: boolean;
   invalidateCache: boolean;
   hostURLConfig: HostURLConfig;
+  showWebhookModal: boolean;
 }
 
 //-- begining of response type objects for trigger view

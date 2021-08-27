@@ -52,6 +52,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isLoading: false,
             invalidateCache: false,
             hostURLConfig: undefined,
+            showWebhookModal: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -570,6 +571,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCDModal: false })
     }
 
+    toggleWebhookModal = () => {
+        this.setState({
+            showWebhookModal: !this.state.showWebhookModal
+        })
+    }
     renderCIMaterial = () => {
         if (this.state.ciNodeId && this.state.showCIModal) {
             let nd: NodeAttr;
@@ -587,6 +593,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 isLoading={this.state.isLoading}
                 title={this.state.ciPipelineName}
                 pipelineId={this.state.ciNodeId}
+                showWebhookModal= {this.state.showWebhookModal}
+                toggleWebhookModal={this.toggleWebhookModal}
             />
         }
     }

@@ -11,6 +11,8 @@ import Tippy from '@tippyjs/react';
 import { MaterialHistory, CIMaterialType } from '../../details/triggerView/MaterialHistory';
 import { MaterialSource } from '../../details/triggerView/MaterialSource';
 import GitInfoMaterial from '../../../common/GitInfoMaterial';
+import CiWebhookModal from './CiWebhookModal';
+import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 
 export class CIMaterial extends Component<CIMaterialProps> {
 
@@ -86,7 +88,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
 
   renderCIModal(context) {
     let selectedMaterial = this.props.material.find(mat => mat.isSelected);
-    let commitInfo =  this.props.material.find((mat)=>mat.history);
+    let commitInfo = this.props.material.find((mat) => mat.history);
     let canTrigger = this.props.material.reduce((isValid, mat) => {
       isValid = isValid && !mat.isMaterialLoading && !!mat.history.find(history => history.isSelected);
       return isValid
@@ -94,6 +96,12 @@ export class CIMaterial extends Component<CIMaterialProps> {
     if (this.props.material.length > 0) {
       return <>
         <div >
+          <div className="trigger-modal__header">
+            <h1 className="modal__title">{this.props.title}</h1>
+            <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
+              <Close className="" />
+            </button>
+          </div>
           <GitInfoMaterial
             context={context}
             material={this.props.material}
@@ -102,6 +110,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
             pipelineId={this.props.pipelineId}
             pipelineName={this.props.pipelineName}
             selectedMaterial={selectedMaterial}
+            showWebhookModal={this.props.showWebhookModal}
+            toggleWebhookModal={this.props.toggleWebhookModal}
           />
         </div>
         {this.renderMaterialStartBuild(context, canTrigger)}
@@ -109,18 +119,36 @@ export class CIMaterial extends Component<CIMaterialProps> {
     }
   }
 
+  renderWebhookModalHeader = (context) => {
+    return (<div className="trigger-modal__header">
+      <div className="flex left">
+        <button type="button" className="transparent" onClick={() => this.props.toggleWebhookModal()}>
+          <Back className="" />
+        </button>
+        <h1 className="modal__title fs-16 pl-16">pull-request-prbranch1000 / All incoming webhook payloads</h1>
+      </div>
+      <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
+        <Close className="" />
+      </button>
+    </div>)
+  }
+
+  renderWebhookModal = (context) => {
+    return <div>
+      {this.renderWebhookModalHeader(context)}
+      <CiWebhookModal />
+    </div>
+  }
+
   render() {
     return <TriggerViewContext.Consumer>
       {(context) => {
         return <VisibleModal className="" close={context.closeCIModal}>
           <div className="modal-body--ci-material" onClick={(e) => { e.stopPropagation() }}>
-            <div className="trigger-modal__header">
-              <h1 className="modal__title">{this.props.title}</h1>
-              <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
-                <Close className="" />
-              </button>
-            </div>
-            {this.renderCIModal(context)}
+            {this.props.showWebhookModal ? this.renderWebhookModal(context) : this.renderCIModal(context)}
+            {console.log(this.props.material)}
+            {console.log(context.selectMaterial)}
+
           </div>
         </VisibleModal>
       }}
