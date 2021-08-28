@@ -1,26 +1,15 @@
-import React, { useState, useEffect } from 'react';
-// import { getCIWebhookRes } from './ciWebhook.service'
-import { Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen } from '../../../common'
+import React, { useState } from 'react';
+import { getCIWebhookPayload } from './ciWebhook.service';
+import { Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen } from '../../../common';
+import moment from 'moment';
+import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 
-export default function CiWebhookModal(context, toggleWebhookModal) {
+export default function CiWebhookModal({ context, webhookPayloads, id }) {
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
-    const [result, setResult] = useState(undefined)
-    const [isLoading, setIsLoading] = useState(false)
-
-    // useEffect(() => {
-    //     getCIWebhookResponse()
-    // }, [])
-
-    // const getCIWebhookResponse = () =>
-    //     getCIWebhookRes().then((result) => {
-    //         setIsLoading(true)
-    //         setResult(result)
-    //         setIsLoading(false)
-    //     }
-    //     )
-
+    const [isPayloadLoading, setIsPayloadLoading] = useState(false)
+    const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
 
     const renderConfiguredFilters = () => {
         return <div>
@@ -29,29 +18,29 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
                 <div>Selector/Key</div>
                 <div>Configured filter</div>
             </div>
-            <div className="cn-7 pt-8 pl-4 pb-8 bcn-1" style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                <div>Source branch name</div>
-                <div>master-feature*</div>
-            </div>
-            <div className="cn-7 pt-8 pl-4 pb-8" style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                <div>Target branch name</div>
-                <div>master-feature*</div>
-            </div>
-            <div className="cn-7 pt-8 pl-4 pb-8 bcn-1" style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                <div>Author</div>
-                <div>master-feature*</div>
-            </div>
-            <div className="cn-7 pt-8 pl-4 pb-8" style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                <div>Title</div>
-                <div>master-feature*</div>
-            </div>
+            {Object.keys(webhookPayloads.filters).map((selectorName, index) => {
+                return <div key={index} className="cn-7 pt-8 pl-4 pb-8 bcn-1" style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
+                    <div>{selectorName}</div>
+                    <div>{webhookPayloads.filters[selectorName]}</div>
+                </div>
+            })}
         </div>
+    }
+
+    const getCIWebhookPayloadRes = (pipelineMaterialId, parsedDataId) => {
+        setShowDeatailedPayload(true);
+        setIsPayloadLoading(true)
+        getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
+            setWebhookIncomingPayloadRes(result)
+        })
+        setIsPayloadLoading(false)
     }
 
     const renderWebhookPayloads = () => {
         return <div className="pt-20 pb-8">
             <div className="fs-14 cn-9 fw-6">
-                All incoming webhook payloads for <span className="cb-5">/repo_name</span>
+                All incoming webhook payloads for
+            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /repo_name</a>
             </div>
             <div>
                 <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
@@ -60,12 +49,13 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
                     <div>Filters failed</div>
                     <div>Result</div>
                 </div>
-                {result?.result?.result.payloads.map((elm) =>
-                    <div className="cn-5 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                        <div className="cb-5 cursor" onClick={() => setShowDeatailedPayload(true)}>{elm.EventTime}</div>
-                        <div>{elm.MatchedFiltersCount}</div>
-                        <div>{elm.FailedFiltersCount}</div>
-                        <div className={elm.MatchedFilters == 'Failed' ? `deprecated-warn__text` : `cg-5 ml-4`}>{elm.MatchedFilters}</div>
+
+                {webhookPayloads?.payloads?.map((payload, index) =>
+                    <div key={index} className="cn-5 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                        <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(id, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
+                        <div>{payload.matchedFiltersCount}</div>
+                        <div>{payload.failedFiltersCount}</div>
+                        <div className={payload.matchedFilters == false ? `deprecated-warn__text` : `cg-5 ml-4`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
                     </div>
                 )}
             </div>
@@ -84,7 +74,7 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
     const renderWebhookDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
-                <button type="button" className="transparent" onClick={() => { setShowDeatailedPayload(!showDeatailedPayload) }}>
+                <button type="button" className="transparent" onClick={() => { setShowDeatailedPayload(!showDeatailedPayload); }}>
                     <Back />
                 </button>
                 <h1 className="modal__title fs-16 pl-16">All incoming webhook payloads, Wed, 19 Jun 2019, 04:02:05 PM </h1>
@@ -98,17 +88,14 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
     const renderWebhookDetailedDescription = () => {
         return (
             <div style={{ height: "calc(100vh - 72px" }} className="bcn-0 pl-16 mt-20 ">
-                <div className="pb-20" style={{ background: "#f2f4f7", }}>
+                <div className="" style={{ background: "#f2f4f7", }}>
                     <div className="cn-9 fs-12 fw-6 pt-12 pl-12">Incoming Payload</div>
-                    <div className="cn-9 fs-13 pl-12 pr-12" style={{ overflow: "scroll", maxHeight: '200px' }}>
-                        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-                        The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-                        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-                        The standard
+                    <div className="cn-9 fs-13 pl-12 pr-12 pb-20" style={{ overflow: "scroll", maxHeight: '200px' }}>
+                        {webhookIncomingPayloadRes?.result?.payloadJson}
                     </div>
                 </div>
                 <div>
-                    <div className="cb-5 pt-8 pb-8">
+                    <div className="cb-5 pt-8 pb-8 cursor">
                         Expand
                     </div>
                     <div className="cn-9 fw-6 fs-14">
@@ -121,30 +108,18 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
                             <div>Configured filter</div>
                             <div>Result</div>
                         </div>
-                        <div className="cn-7 bcn-1 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div >Source branch name</div>
-                            <div>staging</div>
-                            <div>feature-*</div>
-                            <div>Did not match</div>
-                        </div>
-                        <div className="cn-7 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div >Target branch name</div>
-                            <div>main</div>
-                            <div>^main$</div>
-                            <div>Matched</div>
-                        </div>
-                        <div className="cn-7 bcn-1 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div  >Author</div>
-                            <div>shivani@devtron.ai</div>
-                            <div>p*@devtron.ai</div>
-                            <div>Matched</div>
-                        </div>
-                        <div className="cn-7 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div >Title</div>
-                            <div>FIX: telemetry meta info api changes</div>
-                            <div>FIX-*</div>
-                            <div>Matched</div>
-                        </div>
+                        {isPayloadLoading ?
+                            <div style={{ minHeight: '200px', width: '100vw' }}>
+                                <Progressing pageLoader />
+                            </div> :
+                            webhookIncomingPayloadRes?.result?.selectorsData?.map((selectedData, index) => {
+                                return <div key={index} className="cn-7 bcn-1 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                                    <div >{selectedData?.selectorName}</div>
+                                    <div>{selectedData?.selectorValue}</div>
+                                    <div>{selectedData?.selectorCondition}</div>
+                                    <div className={selectedData?.match == false ? `deprecated-warn__text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
+                                </div>
+                            })}
                     </div>
                 </div>
             </div>
@@ -155,21 +130,23 @@ export default function CiWebhookModal(context, toggleWebhookModal) {
         return <>
             <div className="pl-20" style={{ height: "calc(100vh - 72px" }}>
                 {renderConfiguredFilters()}
-                {!result?.result?.payload ? 
-                <div className="flex column" style={{ 
-                    height: "calc(100vh - 400px)",
-                     width: '100vw' }}>
-                    <div  className="flex pb-12"><Progressing  pageLoader /></div>
-                    <div>
-                        Fetching webhook payloads.<br/>
+                {isPayloadLoading ?
+                    <div className="flex column" style={{
+                        height: "calc(100vh - 400px)",
+                        width: '100vw'
+                    }}>
+                        <div className="flex pb-12"><Progressing pageLoader /></div>
+                        <div>
+                            Fetching webhook payloads.<br />
                         This might take some time.
                     </div>
-                </div>
+                    </div>
                     : <div>
                         {renderWebhookPayloads()}
                         {renderWebhookPagination
                         }
-                    </div>}
+                    </div>
+                }
             </div>
         </>
     }

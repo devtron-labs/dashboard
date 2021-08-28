@@ -122,7 +122,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
   renderWebhookModalHeader = (context) => {
     return (<div className="trigger-modal__header">
       <div className="flex left">
-        <button type="button" className="transparent" onClick={() => this.props.toggleWebhookModal()}>
+        <button type="button" className="transparent" onClick={() => this.props.toggleWebhookModal(this.props.material[0].id)}>
           <Back className="" />
         </button>
         <h1 className="modal__title fs-16 pl-16">pull-request-prbranch1000 / All incoming webhook payloads</h1>
@@ -136,7 +136,11 @@ export class CIMaterial extends Component<CIMaterialProps> {
   renderWebhookModal = (context) => {
     return <div>
       {this.renderWebhookModalHeader(context)}
-      <CiWebhookModal />
+      <CiWebhookModal
+        context={context}
+        webhookPayloads={this.props.webhookPayloads}
+        id={this.props.material[0].id}
+      />
     </div>
   }
 
@@ -146,9 +150,6 @@ export class CIMaterial extends Component<CIMaterialProps> {
         return <VisibleModal className="" close={context.closeCIModal}>
           <div className="modal-body--ci-material" onClick={(e) => { e.stopPropagation() }}>
             {this.props.showWebhookModal ? this.renderWebhookModal(context) : this.renderCIModal(context)}
-            {console.log(this.props.material)}
-            {console.log(context.selectMaterial)}
-
           </div>
         </VisibleModal>
       }}

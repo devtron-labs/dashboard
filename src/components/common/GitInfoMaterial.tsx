@@ -47,7 +47,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
            
             </div>
             <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching configured filters. &nbsp;
-            <span className="learn-more__href cursor" onClick={()=>toggleWebhookModal()}>View all incoming webhook payloads</span>
+            <span className="learn-more__href cursor" onClick={()=>toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
                 </div>
             <MaterialHistory
                 material={material}

@@ -58,7 +58,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
   isLoading: boolean;
   pipelineName: string;
   showWebhookModal: boolean;
-  toggleWebhookModal: () => void;
+  toggleWebhookModal: (id) => void;
+  webhookPayloads: WebhookPayloads
 }
 
 export interface NodeAttr {
@@ -182,6 +183,20 @@ export interface WorkflowType {
   dag: any;
 }
 
+export interface WebhookPayloadDataResponse {
+  ParsedDataId: number;  
+  EventTime: string;           
+  MatchedFiltersCount: number;
+  FailedFiltersCount: number;
+  MatchedFilters: boolean;
+}
+
+export interface WebhookPayloads {
+  filters: Map<string, string>
+  repositoryUrl: string
+  payloads: WebhookPayloadDataResponse[] | null
+}
+
 export interface TriggerViewState {
   code: number;
   view: string;
@@ -197,6 +212,7 @@ export interface TriggerViewState {
   invalidateCache: boolean;
   hostURLConfig: HostURLConfig;
   showWebhookModal: boolean;
+  webhookPayloads: WebhookPayloads;
 }
 
 //-- begining of response type objects for trigger view
