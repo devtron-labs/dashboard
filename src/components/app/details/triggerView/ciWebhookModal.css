@@ -1,0 +1,7 @@
+.expand-incoming-payload{
+    height: calc(100vh - 400px);
+}
+
+.collapsed-incoming-payload{
+    max-height: 200px;
+}

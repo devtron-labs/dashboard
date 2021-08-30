@@ -5,11 +5,13 @@ import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
+import './ciWebhookModal.css';
 
 export default function CiWebhookModal({ context, webhookPayloads, id }) {
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
+    const [expandIncomingPayload, setIncomingPayload] = useState(false)
 
     const renderConfiguredFilters = () => {
         return <div>
@@ -90,14 +92,14 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
             <div style={{ height: "calc(100vh - 72px" }} className="bcn-0 pl-16 mt-20 ">
                 <div className="" style={{ background: "#f2f4f7", }}>
                     <div className="cn-9 fs-12 fw-6 pt-12 pl-12">Incoming Payload</div>
-                    <div className="cn-9 fs-13 pl-12 pr-12 pb-20" style={{ overflow: "scroll", maxHeight: '200px' }}>
+                    <div className={`${expandIncomingPayload ? `expand-incoming-payload` : `collapsed-incoming-payload`} cn-9 fs-13 pl-12 pr-12 pb-20`} style={{ overflow: "scroll" }}>
                         {webhookIncomingPayloadRes?.result?.payloadJson}
                     </div>
                 </div>
                 <div>
-                    <div className="cb-5 pt-8 pb-8 cursor">
-                        Expand
-                    </div>
+                    <button type="button" className="fs-12 fw-6 pt-8 pb-8 w-100 bcn-0 flex left cb-5 cursor" style={{ border: "none" }} onClick={() => setIncomingPayload(!expandIncomingPayload)}>
+                        {expandIncomingPayload ? 'Collapsed' : 'Expand'}
+                    </button>
                     <div className="cn-9 fw-6 fs-14">
                         Filter matching results
                     </div>
