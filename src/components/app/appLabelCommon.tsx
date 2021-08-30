@@ -25,7 +25,6 @@ export function handleKeyDown(labelTags, setAppTagLabel, event) {
         case 'Enter':
         case 'Tab':
         case ',':
-        case ' ': // space
             if (labelTags.inputTagValue) {
                 setAppTagLabel()
             }
