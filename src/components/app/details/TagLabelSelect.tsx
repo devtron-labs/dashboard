@@ -11,9 +11,10 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
                 border: validateTags(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
                 borderRadius: `4px`,
                 background: validateTags(state.data.value) ? 'white' : 'var(--R100)',
-                height: '28px',
+                minHeight: '28px',
                 margin: '8px 8px 4px 0px',
                 paddingLeft: '4px',
+                paddingRight: '2px',
                 fontSize: '12px',
             })
         },
@@ -24,9 +25,6 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
             minHeight: '72px',
             alignItems: "end",
         }),
-        indicatorsContainer: () => ({
-            height: '28px'
-        })
     }
 
     return (
