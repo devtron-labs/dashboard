@@ -11,8 +11,6 @@ import Tippy from '@tippyjs/react';
 import { MaterialHistory, CIMaterialType } from '../../details/triggerView/MaterialHistory';
 import { MaterialSource } from '../../details/triggerView/MaterialSource';
 import GitInfoMaterial from '../../../common/GitInfoMaterial';
-import CiWebhookModal from './CiWebhookModal';
-import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 
 export class CIMaterial extends Component<CIMaterialProps> {
 
@@ -105,6 +103,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
             pipelineName={this.props.pipelineName}
             selectedMaterial={selectedMaterial}
             showWebhookModal={this.props.showWebhookModal}
+            hideWebhookModal={this.props.hideWebhookModal}
             toggleWebhookModal={this.props.toggleWebhookModal}
             webhookPayloads={this.props.webhookPayloads}
             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
@@ -121,7 +120,6 @@ export class CIMaterial extends Component<CIMaterialProps> {
         return <VisibleModal className="" close={context.closeCIModal}>
           <div className="modal-body--ci-material" onClick={(e) => { e.stopPropagation() }}>
             {this.renderCIModal(context)}
-            {/* {this.props.showWebhookModal ? this.renderWebhookModal(context) : this.renderCIModal(context)} */}
           </div>
         </VisibleModal>
       }}

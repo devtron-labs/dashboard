@@ -573,6 +573,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCDModal: false })
     }
 
+    hideWebhookModal = () => {
+        this.setState({
+            showWebhookModal: false
+        })
+    }
     toggleWebhookModal = (id) => {
         this.setState({isWebhookPayloadLoading : true})
         getCIWebhookRes(id).then((result) => {
@@ -603,6 +608,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 title={this.state.ciPipelineName}
                 pipelineId={this.state.ciNodeId}
                 showWebhookModal={this.state.showWebhookModal}
+                hideWebhookModal={this.hideWebhookModal}
                 toggleWebhookModal={this.toggleWebhookModal}
                 webhookPayloads={this.state.webhookPayloads}
                 isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}

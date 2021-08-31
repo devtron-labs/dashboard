@@ -61,6 +61,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
   toggleWebhookModal: (id) => void;
   webhookPayloads: WebhookPayloads;
   isWebhookPayloadLoading: boolean;
+  hideWebhookModal : () => void;
 }
 
 export interface NodeAttr {

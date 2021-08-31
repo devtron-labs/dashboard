@@ -8,7 +8,7 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info-outlined.svg';
 import './ciWebhookModal.css';
 
-export default function CiWebhookModal({ context, webhookPayloads, id, isWebhookPayloadLoading }) {
+export default function CiWebhookModal({ context, webhookPayloads, id, isWebhookPayloadLoading, hideWebhookModal }) {
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
@@ -19,8 +19,6 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
 
     const renderConfiguredFilters = () => {
         return <div>
-            {console.log(isWebhookPayloadLoading)}
-            
                     <div className="cn-9 fs-14 pt-20 pb-8 fw-6"> Configured filters </div>
                     <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
                         <div>Selector/Key</div>
@@ -98,6 +96,11 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
             changePageSize={changePageSize} /> : null
     }
 
+    const onClose = () => {
+       return context.closeCIModal(),
+       hideWebhookModal()
+    }
+
     const renderWebhookDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
@@ -106,7 +109,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
                 </button>
                 <h1 className="modal__title fs-16 pl-16">All incoming webhook payloads, {webhookPayloads.payloads.map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
             </div>
-            <button type="button" className="transparent" onClick={() => { setShowDeatailedPayload(false) }}>
+            <button type="button" className="transparent" onClick={() =>  onClose() }>
                 <Close />
             </button>
         </div>
@@ -115,7 +118,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
     const renderWebhookDetailedDescription = () => {
         return (
             <div style={{ height: "calc(100vh - 72px" }} className="bcn-0 pl-16 mt-20 ">
-                {isPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
+                {isPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)' }}>
                     <Progressing pageLoader />
                 </div> :
                     <>

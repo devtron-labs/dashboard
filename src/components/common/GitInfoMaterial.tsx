@@ -7,7 +7,7 @@ import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal }) {
 
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
@@ -17,7 +17,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 </button> : null}
                 {title} {showWebhookModal ? '/ All incoming webhook payloads' : null}
             </h1>
-            <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
+            <button type="button" className="transparent" onClick={() => { context.closeCIModal(); hideWebhookModal()  }}>
                 <Close className="" />
             </button>
         </div>
@@ -81,6 +81,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 webhookPayloads={webhookPayloads}
                 id={material[0].id}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
+                hideWebhookModal={hideWebhookModal}
             />
         </div>
     }
@@ -88,7 +89,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
         <>
             {renderMaterialHeader(selectedMaterial)}
             <div className={`m-lr-0 ${showWebhookModal ? null : 'flexbox'}`}>
-                {showWebhookModal ? renderWebhookModal(context) :
+                {showWebhookModal == true ? 
+                renderWebhookModal(context) :
                     <>
                         {renderMaterialSource(context)}
                         {renderMaterialHistory(context, selectedMaterial)}
