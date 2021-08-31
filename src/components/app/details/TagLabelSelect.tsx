@@ -1,4 +1,4 @@
-import React,{useMemo} from 'react';
+import React, { useMemo } from 'react';
 import Creatable from 'react-select/creatable';
 import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../../common';
 
