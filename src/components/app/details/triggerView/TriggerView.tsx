@@ -575,8 +575,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     toggleWebhookModal = (id) => {
         getCIWebhookRes(id).then((result) => {
             this.setState({
+                showWebhookModal: !this.state.showWebhookModal,
                 webhookPayloads: result?.result,
-                showWebhookModal: !this.state.showWebhookModal
             })
         })
     }

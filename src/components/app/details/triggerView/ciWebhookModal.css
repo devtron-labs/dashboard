@@ -5,3 +5,7 @@
 .collapsed-incoming-payload{
     max-height: 200px;
 }
+
+.empty-payload{
+   min-height: 186px;
+}

@@ -96,12 +96,6 @@ export class CIMaterial extends Component<CIMaterialProps> {
     if (this.props.material.length > 0) {
       return <>
         <div >
-          <div className="trigger-modal__header">
-            <h1 className="modal__title">{this.props.title}</h1>
-            <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
-              <Close className="" />
-            </button>
-          </div>
           <GitInfoMaterial
             context={context}
             material={this.props.material}
@@ -112,36 +106,12 @@ export class CIMaterial extends Component<CIMaterialProps> {
             selectedMaterial={selectedMaterial}
             showWebhookModal={this.props.showWebhookModal}
             toggleWebhookModal={this.props.toggleWebhookModal}
+            webhookPayloads={this.props.webhookPayloads}
           />
         </div>
-        {this.renderMaterialStartBuild(context, canTrigger)}
+        {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
       </>
     }
-  }
-
-  renderWebhookModalHeader = (context) => {
-    return (<div className="trigger-modal__header">
-      <div className="flex left">
-        <button type="button" className="transparent" onClick={() => this.props.toggleWebhookModal(this.props.material[0].id)}>
-          <Back className="" />
-        </button>
-        <h1 className="modal__title fs-16 pl-16">pull-request-prbranch1000 / All incoming webhook payloads</h1>
-      </div>
-      <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
-        <Close className="" />
-      </button>
-    </div>)
-  }
-
-  renderWebhookModal = (context) => {
-    return <div>
-      {this.renderWebhookModalHeader(context)}
-      <CiWebhookModal
-        context={context}
-        webhookPayloads={this.props.webhookPayloads}
-        id={this.props.material[0].id}
-      />
-    </div>
   }
 
   render() {
@@ -149,7 +119,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
       {(context) => {
         return <VisibleModal className="" close={context.closeCIModal}>
           <div className="modal-body--ci-material" onClick={(e) => { e.stopPropagation() }}>
-            {this.props.showWebhookModal ? this.renderWebhookModal(context) : this.renderCIModal(context)}
+            {this.renderCIModal(context)}
+            {/* {this.props.showWebhookModal ? this.renderWebhookModal(context) : this.renderCIModal(context)} */}
           </div>
         </VisibleModal>
       }}

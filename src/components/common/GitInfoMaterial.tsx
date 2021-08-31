@@ -1,10 +1,27 @@
 import React from 'react'
+import { SourceTypeMap } from '../../config';
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory';
 import { MaterialSource } from '../app/details/triggerView/MaterialSource';
 import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMaterial';
+import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
+import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads }) {
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo,  showWebhookModal, toggleWebhookModal }) {
+    function renderMaterialHeader(material: CIMaterialType) {
+        return <div className="trigger-modal__header">
+            <h1 className="modal__title flex left">
+                {showWebhookModal ? <button type="button" className="transparent flex" onClick={() => toggleWebhookModal(material.id)}>
+                    <Back className="mr-16" />
+                </button> : null}
+                {title} {showWebhookModal ? '/ All incoming webhook payloads' : null}
+            </h1>
+            <button type="button" className="transparent" onClick={() => { context.closeCIModal() }}>
+                <Close className="" />
+            </button>
+        </div>
+    }
 
     function renderMaterialSource(context) {
         let refreshMaterial = {
@@ -44,11 +61,11 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
         else return <div className="select-material select-material--trigger-view">
             <div className="material-list__title pb-0">
                 Select Material
-           
             </div>
-            <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching configured filters. &nbsp;
-            <span className="learn-more__href cursor" onClick={()=>toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
-                </div>
+            {material.type === SourceTypeMap.WEBHOOK ?
+                <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching configured filters. &nbsp;
+            <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
+                </div> : null}
             <MaterialHistory
                 material={material}
                 pipelineName={pipelineName}
@@ -56,10 +73,26 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 toggleChanges={context.toggleChanges} />
         </div >
     }
-    return (
-        <div className="m-lr-0 flexbox">
-            {renderMaterialSource(context)}
-            {renderMaterialHistory(context, selectedMaterial)}
+
+    const renderWebhookModal = (context) => {
+        return <div>
+            <CiWebhookModal
+                context={context}
+                webhookPayloads={webhookPayloads}
+                id={material[0].id}
+            />
         </div>
+    }
+    return (
+        <>
+            {renderMaterialHeader(selectedMaterial)}
+            <div className={`m-lr-0 ${showWebhookModal ? null : 'flexbox'}`}>
+                {showWebhookModal ? renderWebhookModal(context) :
+                    <>
+                        {renderMaterialSource(context)}
+                        {renderMaterialHistory(context, selectedMaterial)}
+                    </>}
+            </div>
+        </>
     )
 }
