@@ -59,7 +59,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
   pipelineName: string;
   showWebhookModal: boolean;
   toggleWebhookModal: (id) => void;
-  webhookPayloads: WebhookPayloads
+  webhookPayloads: WebhookPayloads;
+  isWebhookPayloadLoading: boolean;
 }
 
 export interface NodeAttr {
@@ -213,6 +214,7 @@ export interface TriggerViewState {
   hostURLConfig: HostURLConfig;
   showWebhookModal: boolean;
   webhookPayloads: WebhookPayloads;
+  isWebhookPayloadLoading: boolean;
 }
 
 //-- begining of response type objects for trigger view

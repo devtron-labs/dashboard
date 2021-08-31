@@ -7,7 +7,7 @@ import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading }) {
 
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
@@ -80,6 +80,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 context={context}
                 webhookPayloads={webhookPayloads}
                 id={material[0].id}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
             />
         </div>
     }

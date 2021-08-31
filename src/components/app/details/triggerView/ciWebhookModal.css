@@ -9,3 +9,11 @@
 .empty-payload{
    min-height: 186px;
 }
+
+.empty-payload-wrapper{
+    height: calc(100vh - 70px);
+}
+
+.payload-wrapper{
+    height: calc(100vh - 130px);   
+}

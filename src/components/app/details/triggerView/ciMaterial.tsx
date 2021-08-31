@@ -107,6 +107,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
             showWebhookModal={this.props.showWebhookModal}
             toggleWebhookModal={this.props.toggleWebhookModal}
             webhookPayloads={this.props.webhookPayloads}
+            isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
           />
         </div>
         {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}

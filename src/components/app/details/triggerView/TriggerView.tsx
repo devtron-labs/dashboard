@@ -54,6 +54,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             hostURLConfig: undefined,
             showWebhookModal: false,
             webhookPayloads: undefined,
+            isWebhookPayloadLoading: false
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -573,10 +574,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     toggleWebhookModal = (id) => {
+        this.setState({isWebhookPayloadLoading : true})
         getCIWebhookRes(id).then((result) => {
             this.setState({
                 showWebhookModal: !this.state.showWebhookModal,
                 webhookPayloads: result?.result,
+                isWebhookPayloadLoading: false,
             })
         })
     }
@@ -602,6 +605,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 showWebhookModal={this.state.showWebhookModal}
                 toggleWebhookModal={this.toggleWebhookModal}
                 webhookPayloads={this.state.webhookPayloads}
+                isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
             />
         }
     }

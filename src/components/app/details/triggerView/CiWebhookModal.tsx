@@ -6,10 +6,9 @@ import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info-outlined.svg';
-
 import './ciWebhookModal.css';
 
-export default function CiWebhookModal({ context, webhookPayloads, id }) {
+export default function CiWebhookModal({ context, webhookPayloads, id, isWebhookPayloadLoading }) {
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
@@ -20,28 +19,29 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
 
     const renderConfiguredFilters = () => {
         return <div>
-            <div className="cn-9 fs-14 pt-20 pb-8 fw-6"> Configured filters </div>
-            <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                <div>Selector/Key</div>
-                <div>Configured filter</div>
-            </div>
-            {Object.keys(webhookPayloads.filters).map((selectorName, index) => {
-                let classes = "cn-7 pt-8 pl-4 pb-8"
-                if (index % 2 == 0) {
-                    classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
-                }
-                return <div key={index} className={classes} style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                    <div>{selectorName}</div>
-                    <div>{webhookPayloads.filters[selectorName]}</div>
-                </div>
-            })}
+            {console.log(isWebhookPayloadLoading)}
+            
+                    <div className="cn-9 fs-14 pt-20 pb-8 fw-6"> Configured filters </div>
+                    <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
+                        <div>Selector/Key</div>
+                        <div>Configured filter</div>
+                    </div>
+                    {Object.keys(webhookPayloads.filters).map((selectorName, index) => {
+                        let classes = "cn-7 pt-8 pl-4 pb-8"
+                        if (index % 2 == 0) {
+                            classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
+                        }
+                        return <div key={index} className={classes} style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
+                            <div>{selectorName}</div>
+                            <div>{webhookPayloads.filters[selectorName]}</div>
+                        </div>
+                    })}
         </div>
     }
 
     const getCIWebhookPayloadRes = (pipelineMaterialId, parsedDataId) => {
         setShowDeatailedPayload(true);
         setIsPayloadLoading(true)
-        console.log(pipelineMaterialId, parsedDataId)
         getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
             setWebhookIncomingPayloadRes(result)
             setIsPayloadLoading(false)
@@ -56,7 +56,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
             <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /repo_name</a>
             </div>
             <div>
-                {!webhookPayloads?.payloads ? <div className="bcn-1 empty-payload flex column mt-20 mr-20">
+                {webhookPayloads?.payloads == null ? <div className="bcn-1 empty-payload flex column mt-20 mr-20">
                     <InfoOutlined className="fcn-5 " />
                     <div>Payload data not available</div>
                 </div> : <>
@@ -80,23 +80,23 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
         </div>
     }
 
-    // const changePage = (pageNo): void => {
-    //     pagination.offset = (pageNo - 1) * pagination.pageSize;
-    //     setPagination();
-    // }
+    const changePage = (pageNo): void => {
+        pagination.offset = (pageNo - 1) * pagination.pageSize;
+        setPagination({ size: 20, pageSize: 20, offset: 0 });
+    }
 
-    // const changePageSize = (pageSize): void => {
-    //     pagination.pageSize = pageSize;
-    //     setPagination();
-    // }
+    const changePageSize = (pageSize): void => {
+        pagination.pageSize = pageSize;
+        setPagination({ size: 20, pageSize: 20, offset: 0 });
+    }
 
-    // const renderWebhookPagination = () => {
-    //    pagination.size > 0 ? <Pagination offset={pagination.offset}
-    //             pageSize={pagination.pageSize}
-    //             size={pagination.size}
-    //             changePage={changePage}
-    //             changePageSize={changePageSize} /> : null
-    // }
+    const renderWebhookPagination = () => {
+        return pagination.size > 0 ? <Pagination offset={pagination.offset}
+            pageSize={pagination.pageSize}
+            size={pagination.size}
+            changePage={changePage}
+            changePageSize={changePageSize} /> : null
+    }
 
     const renderWebhookDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
@@ -160,9 +160,11 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
 
     const renderWebHookModal = () => {
         return <>
-            <div className="pl-20" style={{ height: "calc(100vh - 72px" }}>
-                {renderConfiguredFilters()}
-                {isPayloadLoading ?
+            <div className={`${webhookPayloads.payloads == null ? 'empty-payload-wrapper' : 'payload-wrapper'} pl-20`}>
+            {isWebhookPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
+                <Progressing pageLoader />
+            </div> : renderConfiguredFilters()}
+                {isWebhookPayloadLoading ?
                     <div className="flex column" style={{
                         height: "calc(100vh - 400px)",
                         width: '100vw'
@@ -175,7 +177,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
                     </div>
                     : <div>
                         {renderWebhookPayloads()}
-                        {/* {renderWebhookPagination()} */}
+
                     </div>
                 }
             </div>
@@ -194,6 +196,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id }) {
     return (
         <div>
             { showDeatailedPayload ? renderDeatailedPayload() : renderWebHookModal()}
+            {webhookPayloads.payloads !== null ? renderWebhookPagination() : null}
         </div>
     )
 }
