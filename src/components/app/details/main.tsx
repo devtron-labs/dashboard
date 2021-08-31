@@ -128,10 +128,12 @@ export function AppHeader() {
         let _optionTypes = [];
         if (labelTags.tags && labelTags.tags.length > 0) {
             labelTags.tags.forEach((_label) => {
-                let _splittedTag = _label.value.split(':');
+                let colonIndex = _label.value.indexOf(':');
+                let splittedTagBeforeColon = _label.value.substring(0, colonIndex)
+                let splittedTagAfterColon = _label.value.substring(colonIndex + 1)
                 _optionTypes.push({
-                    key: _splittedTag[0],
-                    value: _splittedTag[1]
+                    key: splittedTagBeforeColon,
+                    value: splittedTagAfterColon
                 })
             })
         }
@@ -195,7 +197,7 @@ export function AppHeader() {
     );
 
     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-    const setAppTagLabel =() =>setLabelTags({
+    const setAppTagLabel = () => setLabelTags({
         inputTagValue: '',
         tags: [...labelTags.tags, ...newTag],
         tagError: '',
@@ -219,7 +221,7 @@ export function AppHeader() {
                             labelTags={labelTags}
                             handleCreatableBlur={handleCreatableBlur}
                             handleInputChange={handleInputChange}
-                            handleKeyDown={(event)=>handleKeyDown(labelTags,setAppTagLabel, event)}
+                            handleKeyDown={(event) => handleKeyDown(labelTags, setAppTagLabel, event)}
                             handleSubmit={handleSubmit}
                             handleTagsChange={handleTagsChange}
                             submitting={submitting}

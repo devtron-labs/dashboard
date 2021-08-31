@@ -367,9 +367,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             Commit: element.commit,
                         }
                     }
-                    if(!element.commit){
+                    if (!element.commit) {
                         historyItem.GitCommit['WebhookData'] = {
-                           id: element.webhookData.id
+                            id: element.webhookData.id
                         }
                     }
                     return ciPipelineMaterials.push(historyItem);
@@ -408,9 +408,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                if(material.type == SourceTypeMap.WEBHOOK){
+                                if (material.type == SourceTypeMap.WEBHOOK) {
                                     hist.isSelected = hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id;
-                                }else{
+                                } else {
                                     hist.isSelected = (hash == hist.commit)
                                 }
                             })
