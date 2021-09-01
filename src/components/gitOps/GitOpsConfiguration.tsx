@@ -7,8 +7,12 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
+import Info from '../../assets/icons/ic-info-filled.svg';
+import Close from '../../assets/icons/ic-close.svg';
+import CheckGreen from '../../assets/icons/ic-check-green.svg';
+import Help from '../../assets/icons/ic-help-green.svg';
 import { toast } from 'react-toastify';
-import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList } from './gitops.service';
+import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
@@ -26,6 +30,17 @@ const GitHost = {
     AZURE_DEVOPS: 'https://dev.azure.com/'
 }
 
+const GitLink = {
+    GITHUB: "https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch",
+    GITLAB: "https://docs.gitlab.com/ee/user/group/#create-a-group",
+    AZURE_DEVOPS: 'https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page#create-a-project'
+}
+
+const AccessTokenLink = {
+    GITHUB: "https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token",
+    GITLAB: "https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html",
+    AZURE_DEVOPS: 'https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page'
+}
 const DefaultGitOpsConfig = {
     id: undefined,
     provider: GitProvider.GITHUB,
@@ -60,6 +75,81 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 }
 
 
+const GitInfoTab: React.FC<{ tab: string }> = ({ tab }) => {
+    return <div className="git_impt p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="flex left ">
+            <img src={Info} className="git-img" style={{ marginTop: 1 }} />
+            <div className="ml-8 fs-13">
+                <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> Group for gitops. Do not use GitLab Group containing your source code.
+       </div>
+        </div>
+        <a target="_blank" href={tab === GitProvider.GITLAB ? GitLink.GITLAB : tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB} className="ml-28 cursor fs-13">How to create {tab === GitProvider.GITLAB ? "group in GitLab" : tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"} ?</a>
+    </div>
+}
+
+const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; onSaveOrValidate: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, onSaveOrValidate, formData }) => {
+    return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="flex config_failure p-10 br-4 bw-1 flex-justify">
+            <div className="flex">
+                <img src={Close} className="git-img" />
+                <div className="fs-13">
+                    <span className="ml-8 fw-6">Configurations validation failed</span>
+                </div>
+            </div>
+            {formData.id &&
+                <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>}
+        </div>
+        <div className="flex left config_failure-actions p-10 br-4 bw-1">
+            <div className="fs-13">
+                <p>Devtron was unable to perform the following actions.</p>
+                {Object.entries(validationError).map(([value, name]) =>
+                   <p key={value}><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
+
+                )}
+            </div>
+        </div>
+    </div>
+}
+
+const ValidationSuccess: React.FC<{ validatedTime: string; onSaveOrValidate: () => void; }> = ({ validatedTime, onSaveOrValidate }) => {
+    return <div className="git_success p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="flex flex-justify">
+            <div className="flex">
+                <img src={CheckGreen} className="git-img" />
+                <div className="fs-13">
+                    <span className="ml-8 fw-6">Configurations validated</span>
+                </div>
+            </div>
+            <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>
+        </div>
+    </div>
+}
+
+const ValidateExisting: React.FC<{ tab: string; onSaveOrValidate: () => void; }> = ({ tab, onSaveOrValidate }) => {
+    return <div className="git_existing p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="flex flex-justify">
+            <div className="flex">
+                <img src={Help} className="git-img" />
+                <div className="fs-13">
+                    <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
+                </div>
+            </div>
+            <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>
+        </div>
+    </div>
+}
+
+const ValidateLoading: React.FC<{ tab: string; }> = ({ tab }) => {
+    return <div className="git_existing p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="flex left">
+            <div><Progressing /></div>
+            <div className="fs-13">
+                <span className="ml-8 fw-6">Validating GitOps configuration. Please wait…</span>
+            </div>
+        </div>
+    </div>
+}
+
 class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     constructor(props) {
@@ -84,7 +174,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitHubOrgId: "",
                 gitLabGroupId: "",
                 azureProjectName: ""
-            }
+            },
+            validateSuccess: false,
+            validateFailure: false,
+            validateLoading: false,
+            validatedTime: "",
+            validationError: []
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -177,7 +272,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return isError;
     }
 
-    onSave() {
+    onSaveOrValidate(type) {
         let isError = this.state.isError;
         if (!this.state.isFormEdited) {
             isError = this.getFormErrors(true, this.state.form);
@@ -203,11 +298,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return;
         }
 
-        this.saveGitOps();
+        if (type == "save") {
+            this.saveGitOps();
+        } else {
+            this.validateGitOps();
+        }
     }
 
     saveGitOps() {
-        this.setState({ saveLoading: true });
+        this.setState({ saveLoading: true, validateLoading: true });
         let payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
@@ -221,11 +320,49 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
-            toast.success("Saved Successful");
-            this.fetchGitOpsConfigurationList();
+            let resp = response.result
+            if (resp.active) {
+                toast.success("Configuration validated");
+                this.setState({ validateSuccess: true, validateFailure: false, validateLoading: false, saveLoading: false, isFormEdited: false });
+                toast.success("Saved Successful");
+                this.fetchGitOpsConfigurationList();
+            } else {
+                this.setState({ validateLoading: false, isFormEdited: false, validateFailure: true, validateSuccess: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
+                toast.error("Configuration validation failed");
+            }
         }).catch((error) => {
             showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
+            this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false, validateLoading: false });
+        })
+    }
+
+    validateGitOps() {
+        this.setState({ validateLoading: true });
+        let payload = {
+            id: this.state.form.id,
+            provider: this.state.form.provider,
+            username: this.state.form.username,
+            host: this.state.form.host,
+            token: this.state.form.token,
+            gitLabGroupId: this.state.form.gitLabGroupId,
+            gitHubOrgId: this.state.form.gitHubOrgId,
+            azureProjectName: this.state.form.azureProjectName,
+            active: true,
+        }
+        let promise = validateGitOpsConfiguration(payload);
+        promise.then((response) => {
+            let resp = response.result
+            let validate = resp.successfulStages ? resp.successfulStages : []
+            if (validate != null && validate.length > 0) {
+                this.setState({ validateSuccess: true, validateFailure: false , validateLoading: false, isFormEdited: false })
+                toast.success("Configuration validated");
+            } else {
+                this.setState({ validateFailure: true,  validateSuccess: false, validateLoading: false, isFormEdited: false, validationError: resp.stageErrorMap || [] })
+                toast.error("Configuration validation failed");
+            }
+        }).catch((error) => {
+            showError(error);
+            this.setState({ view: ViewType.ERROR, statusCode: error.code, validateLoading: false });
         })
     }
 
@@ -261,6 +398,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" />
                     <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" />
                 </div>
+                <GitInfoTab tab={this.state.tab} />
+                {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
+                    <ValidateExisting tab={this.state.tab} onSaveOrValidate={() => this.onSaveOrValidate('validate')} />}
+                {this.state.validateLoading &&
+                    <ValidateLoading tab={this.state.tab} />}
+                {this.state.validateFailure && this.state.validateLoading != true &&
+                    <ValidationFailureTab validatedTime={this.state.validatedTime} validationError={this.state.validationError} onSaveOrValidate={() => this.onSaveOrValidate('validate')} formData={this.state.form} />}
+                {this.state.validateSuccess && this.state.validateLoading != true &&
+                    <ValidationSuccess validatedTime={this.state.validatedTime} onSaveOrValidate={() => this.onSaveOrValidate('validate')} />}
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
@@ -273,6 +419,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
                         error={this.state.isError[key]}
+                        showLink={true}
+                        link={this.state.tab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB}
+                        linkText={this.state.tab === GitProvider.GITLAB ? " (How to create group in GitLab?)" : this.state.tab === GitProvider.AZURE_DEVOPS ? " (How to create project in Azure?)" : " (How to create organization in GithHub?)"}
                         label={this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : "GitHub Organisation Name*"}
                         onChange={(event) => { this.handleChange(event, key); }}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
@@ -290,6 +439,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             label={this.state.tab === GitProvider.GITLAB ? "GitLab Username*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
+                    <div>
+                        <span className={this.state.tab === GitProvider.AZURE_DEVOPS ?"azure_access_token":"access_token"}>
+                        <a target="_blank" href={this.state.tab === GitProvider.GITLAB ? AccessTokenLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? AccessTokenLink.AZURE_DEVOPS : AccessTokenLink.GITHUB} className="cursor fs-13">(Check permissions required for PAT)</a>
+                        </span>
                     <ProtectedInput value={this.state.form.token}
                         onChange={(event) => this.handleChange(event, 'token')}
                         name="Enter token"
@@ -297,10 +450,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         error={this.state.isError.token}
                         label={this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token*" : "Personal Access Token*"}
                         labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
+                    </div>
                 </div>
 
                 <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSave() }} tabIndex={5} className="cta">
+                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSaveOrValidate("save") }} tabIndex={5} className="cta">
                         {this.state.saveLoading ? <Progressing /> : "Save"}
                     </button>
                 </div>

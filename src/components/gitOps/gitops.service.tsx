@@ -20,3 +20,8 @@ export function getGitOpsConfigurationList(): Promise<any> {
   const URL = `${Routes.GITOPS}`;
   return get(URL);
 }  
+
+export const validateGitOpsConfiguration = (request: any):Promise<any> => {
+  const URL = `${Routes.GITOPS_VALIDATE}`;
+  return post(URL, request);
+}

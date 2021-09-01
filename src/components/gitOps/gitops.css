@@ -5,3 +5,48 @@
 .form__label.form__label--fs-13{
     font-size: 13px;
 }
+
+.git_impt{
+    background-color: #F3F0FF;
+    border: solid 1px #c5bbfa;
+}
+
+.git-img{
+   height: 20px;
+}
+
+.config_failure{
+    border: 1px solid var(--R200);
+    background-color: var(--R100);
+    border-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.config_failure-actions{
+    border: 1px solid var(--N200);
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.validate{
+    color: var(--B500);
+}
+
+.git_success{
+    border: 1px solid #84d6b3;
+}
+
+.git_existing{
+    border: 1px solid var(--B500);
+}
+
+.access_token{
+    position: absolute;
+    margin-left: 148px;
+}
+
+.azure_access_token{
+    position: absolute;
+    margin-left: 180px; 
+}
