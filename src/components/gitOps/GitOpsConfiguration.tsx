@@ -61,9 +61,9 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     }
 }
 
-const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, gitops }) => {
+const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string, validationLoading: boolean }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, gitops, validationLoading }) => {
     return <label className="tertiary-tab__radio">
-        <input type="radio" name="status" value={provider} checked={tab === provider} onChange={handleGitopsTab} />
+        <input type="radio" name="status" value={provider} checked={tab === provider} onChange={!validationLoading && handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
             <aside className="login__text-alignment"> {gitops}</aside>
@@ -234,6 +234,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             form: form,
             isError: isError,
             isFormEdited: false,
+            validateSuccess: false,
+            validateFailure: false
         })
     }
 
@@ -394,9 +396,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20">
                 <div className="login__sso-flex">
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" validationLoading={this.state.validateLoading}/>
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" validationLoading={this.state.validateLoading}/>
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" validationLoading={this.state.validateLoading}/>
                 </div>
                 <GitInfoTab 
                  tab={this.state.tab}
