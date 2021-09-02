@@ -145,9 +145,12 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                             <button type="button" className="fs-12 fw-6 pt-8 pb-8 w-100 bcn-0 flex left cb-5 cursor" style={{ border: "none" }} onClick={() => setIncomingPayload(!expandIncomingPayload)}>
                                 {expandIncomingPayload ? 'Collapse' : 'Expand'}
                             </button>
-                            <div className="cn-9 fw-6 fs-14">
+                            <div className="cn-9 fw-6 fs-14 flex left">
                                 Filter matching results
-                           </div>
+                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciMaterialId, workflowId)}>
+                                    <Edit className=" icon-dim-24" />
+                                </button>
+                            </div>
                             <div>
                                 <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
                                     <div className="pl-8">Selector/Key</div>

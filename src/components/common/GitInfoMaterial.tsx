@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { SourceTypeMap } from '../../config';
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory';
 import { MaterialSource } from '../app/details/triggerView/MaterialSource';
@@ -9,7 +9,21 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import Tippy from '@tippyjs/react';
 
 export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
+    let _isWebhook = material.type === SourceTypeMap.WEBHOOK;
 
+    const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? "" : material.type);
+
+    function _buildHoverHtmlForWebhook(eventName, condition, selectors) {
+        let _conditions = [];
+        Object.keys(condition).forEach((_selectorId) => {
+            let _selector = selectors.find(i => i.id == _selectorId);
+            _conditions.push({ "name": _selector ? _selector.name : "", "value": condition[_selectorId] });
+        })
+    }
+
+    // useEffect(()=> {
+    //     setSourceValueAdv(_buildHoverHtmlForWebhook(_webhookEvent.name, _condition, _webhookEvent.selectors));
+    // },[])
 
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
@@ -69,12 +83,15 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 Select Material
             </div>
             {material.type === SourceTypeMap.WEBHOOK ?
-                <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching
-                   {/* <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
-                          <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info  className="icon-dim-12 fcn-5 ml-4"/></div> 
-                        </Tippy>  */}
-                configured filters.
-                 &nbsp;
+                <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching &nbsp;
+                   <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>
+                        {/* { sourceValueAdv} */}
+                        <div> Pull Request Filters</div>
+                        <div>target branch name: ˆmaster$</div>
+                        <div>source branch name: ^pr1000$</div>
+                    </div>}>
+                        <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>configured filters.</span>
+                    </Tippy> &nbsp;
             <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
                 </div> : null}
             <MaterialHistory
@@ -99,6 +116,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             />
         </div>
     }
+
     return (
         <>
             {renderMaterialHeader(selectedMaterial)}
