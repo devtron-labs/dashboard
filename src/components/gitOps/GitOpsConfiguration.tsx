@@ -9,7 +9,7 @@ import { CustomInput, ErrorScreenManager, Progressing, showError } from '../comm
 import Check from '../../assets/icons/ic-outline-check.svg';
 import Info from '../../assets/icons/ic-info-filled.svg';
 import Close from '../../assets/icons/ic-close.svg';
-import CheckGreen from '../../assets/icons/ic-check-green.svg';
+import {ReactComponent as CheckGreen} from '../../assets/icons/ic-check.svg';
 import Help from '../../assets/icons/ic-help-green.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
@@ -76,9 +76,9 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 
 
 const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({ tab, gitLink, title }) => {
-    return <div className="git_impt p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="git_impt p-10 br-4 bw-1 bcv-1 flexbox-col mb-16">
         <div className="flex left ">
-            <img src={Info} className="git-img" style={{ marginTop: 1 }} />
+            <img src={Info} className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
                 <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> Group for gitops. Do not use GitLab Group containing your source code.
        </div>
@@ -89,17 +89,17 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({
 
 const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; validateGitOps: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, validateGitOps, formData }) => {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex config_failure p-10 br-4 bw-1 flex-justify">
+        <div className="flex config_failure er-2 bcr-1 p-10 br-4 bw-1 flex-justify">
             <div className="flex">
-                <img src={Close} className="git-img" />
+                <img src={Close} className="icon-dim-20" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
             </div>
             {formData.id &&
-                <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>}
+                <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>}
         </div>
-        <div className="flex left config_failure-actions p-10 br-4 bw-1">
+        <div className="flex left config_failure-actions en-2 p-10 br-4 bw-1">
             <div className="fs-13">
                 <p>Devtron was unable to perform the following actions.</p>
                 {Object.entries(validationError).map(([value, name]) =>
@@ -115,32 +115,32 @@ const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () =>
     return <div className="git_success p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
-                <img src={CheckGreen} className="git-img" />
+                <CheckGreen className="icon-dim-20 scg-5" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validated</span>
                 </div>
             </div>
-            <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>
         </div>
     </div>
 }
 
 const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
-    return <div className="git_existing p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-5 p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
-                <img src={Help} className="git-img" />
+                <img src={Help} className="icon-dim-20" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
                 </div>
             </div>
-            <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>
         </div>
     </div>
 }
 
 const ValidateLoading: React.FC<{ tab: string; }> = ({ tab }) => {
-    return <div className="git_existing p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-5 p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex left">
             <div><Progressing /></div>
             <div className="fs-13">
