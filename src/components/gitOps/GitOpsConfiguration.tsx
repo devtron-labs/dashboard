@@ -75,7 +75,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 }
 
 
-const GitInfoTab: React.FC<{ tab: string }> = ({ tab }) => {
+const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({ tab, gitLink, title }) => {
     return <div className="git_impt p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex left ">
             <img src={Info} className="git-img" style={{ marginTop: 1 }} />
@@ -83,7 +83,7 @@ const GitInfoTab: React.FC<{ tab: string }> = ({ tab }) => {
                 <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> Group for gitops. Do not use GitLab Group containing your source code.
        </div>
         </div>
-        <a target="_blank" href={tab === GitProvider.GITLAB ? GitLink.GITLAB : tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB} className="ml-28 cursor fs-13">How to create {tab === GitProvider.GITLAB ? "group in GitLab" : tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"} ?</a>
+        <a target="_blank" href={gitLink} className="ml-28 cursor fs-13">How to create {title} ?</a>
     </div>
 }
 
@@ -398,7 +398,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" />
                     <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" />
                 </div>
-                <GitInfoTab tab={this.state.tab} />
+                <GitInfoTab 
+                 tab={this.state.tab}
+                 gitLink={this.state.tab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB}
+                 title={this.state.tab === GitProvider.GITLAB ? "group in GitLab" : this.state.tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"}
+                 />
                 {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
                     <ValidateExisting tab={this.state.tab} validateGitOps={() => this.validateGitOps()} />}
                 {this.state.validateLoading &&
