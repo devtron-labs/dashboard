@@ -87,7 +87,7 @@ const GitInfoTab: React.FC<{ tab: string }> = ({ tab }) => {
     </div>
 }
 
-const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; onSaveOrValidate: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, onSaveOrValidate, formData }) => {
+const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; validateGitOps: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, validateGitOps, formData }) => {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure p-10 br-4 bw-1 flex-justify">
             <div className="flex">
@@ -97,7 +97,7 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
                 </div>
             </div>
             {formData.id &&
-                <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>}
+                <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>}
         </div>
         <div className="flex left config_failure-actions p-10 br-4 bw-1">
             <div className="fs-13">
@@ -111,7 +111,7 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
     </div>
 }
 
-const ValidationSuccess: React.FC<{ validatedTime: string; onSaveOrValidate: () => void; }> = ({ validatedTime, onSaveOrValidate }) => {
+const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () => void; }> = ({ validatedTime, validateGitOps }) => {
     return <div className="git_success p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
@@ -120,12 +120,12 @@ const ValidationSuccess: React.FC<{ validatedTime: string; onSaveOrValidate: () 
                     <span className="ml-8 fw-6">Configurations validated</span>
                 </div>
             </div>
-            <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>
         </div>
     </div>
 }
 
-const ValidateExisting: React.FC<{ tab: string; onSaveOrValidate: () => void; }> = ({ tab, onSaveOrValidate }) => {
+const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
     return <div className="git_existing p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
@@ -134,7 +134,7 @@ const ValidateExisting: React.FC<{ tab: string; onSaveOrValidate: () => void; }>
                     <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
                 </div>
             </div>
-            <a onClick={() => onSaveOrValidate()} className="fw-6 validate pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 validate pointer">VALIDATE</a>
         </div>
     </div>
 }
@@ -272,7 +272,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return isError;
     }
 
-    onSaveOrValidate(type) {
+    isInvalid() {
         let isError = this.state.isError;
         if (!this.state.isFormEdited) {
             isError = this.getFormErrors(true, this.state.form);
@@ -293,19 +293,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isInvalid = isInvalid || isError.azureProjectName?.length > 0
         }
 
+        return isInvalid;
+    }
+
+    saveGitOps() {
+        let isInvalid =  this.isInvalid();   
         if (isInvalid) {
             toast.error("Some Required Fields are missing");
             return;
         }
-
-        if (type == "save") {
-            this.saveGitOps();
-        } else {
-            this.validateGitOps();
-        }
-    }
-
-    saveGitOps() {
         this.setState({ saveLoading: true, validateLoading: true });
         let payload = {
             id: this.state.form.id,
@@ -322,9 +318,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         promise.then((response) => {
             let resp = response.result
             if (resp.active) {
-                toast.success("Configuration validated");
+                toast.success("Configuration validated and saved successfully");
                 this.setState({ validateSuccess: true, validateFailure: false, validateLoading: false, saveLoading: false, isFormEdited: false });
-                toast.success("Saved Successful");
                 this.fetchGitOpsConfigurationList();
             } else {
                 this.setState({ validateLoading: false, isFormEdited: false, validateFailure: true, validateSuccess: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
@@ -337,6 +332,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     validateGitOps() {
+        let isInvalid =  this.isInvalid();   
+        if (isInvalid) {
+            toast.error("Some Required Fields are missing");
+            return;
+        }
         this.setState({ validateLoading: true });
         let payload = {
             id: this.state.form.id,
@@ -400,13 +400,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </div>
                 <GitInfoTab tab={this.state.tab} />
                 {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
-                    <ValidateExisting tab={this.state.tab} onSaveOrValidate={() => this.onSaveOrValidate('validate')} />}
+                    <ValidateExisting tab={this.state.tab} validateGitOps={() => this.validateGitOps()} />}
                 {this.state.validateLoading &&
                     <ValidateLoading tab={this.state.tab} />}
                 {this.state.validateFailure && this.state.validateLoading != true &&
-                    <ValidationFailureTab validatedTime={this.state.validatedTime} validationError={this.state.validationError} onSaveOrValidate={() => this.onSaveOrValidate('validate')} formData={this.state.form} />}
+                    <ValidationFailureTab validatedTime={this.state.validatedTime} validationError={this.state.validationError} validateGitOps={() => this.validateGitOps()} formData={this.state.form} />}
                 {this.state.validateSuccess && this.state.validateLoading != true &&
-                    <ValidationSuccess validatedTime={this.state.validatedTime} onSaveOrValidate={() => this.onSaveOrValidate('validate')} />}
+                    <ValidationSuccess validatedTime={this.state.validatedTime} validateGitOps={() => this.validateGitOps()} />}
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
@@ -454,7 +454,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </div>
 
                 <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.onSaveOrValidate("save") }} tabIndex={5} className="cta">
+                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className="cta">
                         {this.state.saveLoading ? <Progressing /> : "Save"}
                     </button>
                 </div>
