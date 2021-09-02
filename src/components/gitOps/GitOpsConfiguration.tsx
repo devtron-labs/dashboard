@@ -8,7 +8,7 @@ import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import Info from '../../assets/icons/ic-info-filled.svg';
-import Close from '../../assets/icons/ic-close.svg';
+import {ReactComponent as Close} from '../../assets/icons/ic-close.svg';
 import {ReactComponent as CheckGreen} from '../../assets/icons/ic-check.svg';
 import Help from '../../assets/icons/ic-help-green.svg';
 import { toast } from 'react-toastify';
@@ -76,7 +76,7 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 
 
 const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({ tab, gitLink, title }) => {
-    return <div className="git_impt p-10 br-4 bw-1 bcv-1 flexbox-col mb-16">
+    return <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
         <div className="flex left ">
             <img src={Info} className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
@@ -89,9 +89,9 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({
 
 const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; validateGitOps: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, validateGitOps, formData }) => {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex config_failure er-2 bcr-1 p-10 br-4 bw-1 flex-justify">
+        <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
-                <img src={Close} className="icon-dim-20" />
+                <Close className="icon-dim-20 scr-5 ml--3" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
@@ -99,11 +99,11 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
             {formData.id &&
                 <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>}
         </div>
-        <div className="flex left config_failure-actions en-2 p-10 br-4 bw-1">
+        <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
             <div className="fs-13">
-                <p>Devtron was unable to perform the following actions.</p>
+                <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
                 {Object.entries(validationError).map(([value, name]) =>
-                   <p key={value}><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
+                   <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
 
                 )}
             </div>
@@ -112,7 +112,7 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
 }
 
 const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () => void; }> = ({ validatedTime, validateGitOps }) => {
-    return <div className="git_success p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
                 <CheckGreen className="icon-dim-20 scg-5" />
@@ -126,7 +126,7 @@ const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () =>
 }
 
 const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
-    return <div className="eb-5 p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-5 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
                 <img src={Help} className="icon-dim-20" />
