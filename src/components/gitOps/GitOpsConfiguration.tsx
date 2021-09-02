@@ -140,7 +140,7 @@ const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> =
 }
 
 const ValidateLoading: React.FC<{ tab: string; }> = ({ tab }) => {
-    return <div className="eb-5 p-10 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-5 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex left">
             <div><Progressing /></div>
             <div className="fs-13">
