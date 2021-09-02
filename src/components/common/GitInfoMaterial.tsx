@@ -6,32 +6,66 @@ import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMa
 import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg';
 import Tippy from '@tippyjs/react';
+import { getWebhookEventsForEventId } from '../../services/service';
+import { showError } from './helpers/Helpers';
 
 export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
-    let _isWebhook = material.type === SourceTypeMap.WEBHOOK;
 
-    const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? "" : material.type);
+    const [sourceValueAdv, setSourceValueAdv] = useState(material.type);
 
-    function _buildHoverHtmlForWebhook(eventName, condition, selectors) {
+    function init() {
+        material.map((ciMaterial) => {
+            let sourceValueObj = JSON.parse(ciMaterial.value)
+            console.log(sourceValueObj)
+            let eventId = sourceValueObj.eventId;
+            let webhookCondition = sourceValueObj.condition;
+
+            getWebhookEventsForEventId(eventId).then((res) => {
+                let webhookEvent = res.result;
+                setSourceValueAdv(buildHoverHtmlForWebhook(webhookEvent.name, webhookCondition, webhookEvent.selectors));
+            });
+        }
+        )
+    }
+
+    useEffect(() => {
+        try {
+            init()
+        }
+        catch (err) {
+            showError(err)
+        }
+    }, [])
+
+    function buildHoverHtmlForWebhook(eventName, condition, selectors) {
         let _conditions = [];
         Object.keys(condition).forEach((_selectorId) => {
             let _selector = selectors.find(i => i.id == _selectorId);
             _conditions.push({ "name": _selector ? _selector.name : "", "value": condition[_selectorId] });
         })
+        return <>
+            <span> {eventName} Filters </span>
+            <br />
+            <ul className="m-0">
+                {_conditions.map((_condition, index) => (
+                    <li key={index}>{_condition.name} : {_condition.value}</li>
+                ))}
+            </ul>
+        </>
     }
 
-    // useEffect(()=> {
-    //     setSourceValueAdv(_buildHoverHtmlForWebhook(_webhookEvent.name, _condition, _webhookEvent.selectors));
-    // },[])
 
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
-            <h1 className="modal__title flex left">
+            <h1 className="modal__title flex left fs-16">
                 {showWebhookModal ? <button type="button" className="transparent flex" onClick={() => hideWebhookModal()}>
                     <Back className="mr-16" />
                 </button> : null}
-                {title} {showWebhookModal ? '/ All incoming webhook payloads' : null}
+                {title}
+                <Right className="rotate icon-dim-24 ml-16 mr-16" style={{ ['--rotateBy' as any]: '-180deg' }} />
+                {showWebhookModal ? <span className="fs-16"> All incoming webhook payloads </span> : null}
             </h1>
             <button type="button" className="transparent" onClick={() => { context.closeCIModal(); hideWebhookModal() }}>
                 <Close className="" />
@@ -85,10 +119,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             {material.type === SourceTypeMap.WEBHOOK ?
                 <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching &nbsp;
                    <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>
-                        {/* { sourceValueAdv} */}
-                        <div> Pull Request Filters</div>
-                        <div>target branch name: ˆmaster$</div>
-                        <div>source branch name: ^pr1000$</div>
+                        {sourceValueAdv}
                     </div>}>
                         <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>configured filters.</span>
                     </Tippy> &nbsp;
@@ -112,7 +143,6 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 hideWebhookModal={hideWebhookModal}
                 gitMaterialId={material.gitMaterialId}
                 workflowId={workflowId}
-
             />
         </div>
     }
