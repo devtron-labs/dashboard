@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { CIMaterialProps } from './types';
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg';
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Question } from '../../../../assets/icons/appstatus/unknown.svg';
 import { VisibleModal, ButtonWithLoader, Checkbox } from '../../../common';
-import { SourceTypeMap } from '../../../../config'
 import { EmptyStateCIMaterial } from './EmptyStateCIMaterial';
 import { TriggerViewContext } from './TriggerView';
 import Tippy from '@tippyjs/react';
@@ -107,6 +105,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
             toggleWebhookModal={this.props.toggleWebhookModal}
             webhookPayloads={this.props.webhookPayloads}
             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
+            workflowId={this.props.workflowId}
           />
         </div>
         {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}

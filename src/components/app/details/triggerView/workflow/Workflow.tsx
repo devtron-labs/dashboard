@@ -95,6 +95,7 @@ export class Workflow extends Component<WorkflowProps> {
         }
         else {
             return <TriggerCINode
+                workflowId={this.props.id}
                 key={`${node.type}-${node.id}`}
                 x={node.x}
                 y={node.y}

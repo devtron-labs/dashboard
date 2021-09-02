@@ -52,6 +52,7 @@ export interface CIMaterialRouterProps {
 }
 
 export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
+  workflowId: number;
   material: CIMaterialType[];
   pipelineId: number;
   title: string;
@@ -216,6 +217,7 @@ export interface TriggerViewState {
   showWebhookModal: boolean;
   webhookPayloads: WebhookPayloads;
   isWebhookPayloadLoading: boolean;
+  workflowId: number;
 }
 
 //-- begining of response type objects for trigger view

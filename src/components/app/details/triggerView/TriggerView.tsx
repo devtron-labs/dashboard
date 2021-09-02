@@ -44,6 +44,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             workflows: [],
             cdNodeId: 0,
             ciNodeId: 0,
+            workflowId: 0,
             nodeType: null,
             ciPipelineName: "",
             materialType: "",
@@ -224,7 +225,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 ciNodeId: +ciNodeId,
                 ciPipelineName: ciPipelineName,
                 materialType: 'inputMaterialList',
-                showCIModal: true
+                showCIModal: true,
+                workflowId: +ciNodeId,
             }, () => {
                 this.getWorkflowStatus();
                 this.preventBodyScroll(true);
@@ -599,6 +601,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
             let material = nd[this.state.materialType] || [];
             return <CIMaterial
+                workflowId= {this.state.workflowId}
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}

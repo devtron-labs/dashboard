@@ -1,13 +1,13 @@
 import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback} from '../common';
+import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '../common';
 import moment from 'moment-timezone';
 import { ServerErrors } from '../../modals/commonTypes';
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types';
 import { CDMdalTabType } from './details/triggerView/types'
-import {AppMetaInfo} from './types';
+import { AppMetaInfo } from './types';
 
 let stageMap = {
     'PRECD': 'PRE',
@@ -58,7 +58,7 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
                 lastFetchTime: mat.lastFetchTime || "",
             }
         })
-        if(!materials.find(mat => mat.isSelected)){
+        if (!materials.find(mat => mat.isSelected)) {
             materials[0].isSelected = true;
         }
         return {
@@ -122,7 +122,7 @@ export function getCITriggerDetails(params: { appId: number | string, pipelineId
                 }
             }
         } else {
-            throw new ServerErrors({code: response.code, errors: response.errors})
+            throw new ServerErrors({ code: response.code, errors: response.errors })
         }
     })
 }

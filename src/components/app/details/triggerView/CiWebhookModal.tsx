@@ -1,50 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { getCIWebhookPayload } from './ciWebhook.service';
 import { Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen, Info } from '../../../common';
-import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info-outlined.svg';
 import './ciWebhookModal.css';
+import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, id, isWebhookPayloadLoading, hideWebhookModal }) {
+export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId, isWebhookPayloadLoading, hideWebhookModal, gitMaterialId, workflowId }) {
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
     const [expandIncomingPayload, setIncomingPayload] = useState(false)
-    const [pagination, setPagination] = useState({
+    const [parsedDataId, setParsedDataId] = useState(0)
+    const [pagination, setPagination] = useState<{ offset: number, pageSize: number, size: number }>({
         size: 20, pageSize: 20, offset: 0
     })
 
+    const history = useHistory()
+
+    const onEditShowEditableCiModal = (ciMaterialId, workflowId) => {
+        let link = `edit/workflow/${workflowId}/ci-pipeline/${ciMaterialId}`;
+        history.push(link);
+    }
     const renderConfiguredFilters = () => {
         return <div>
-                    <div className="cn-9 fs-14 pt-20 pb-8 fw-6"> Configured filters </div>
-                    <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                        <div>Selector/Key</div>
-                        <div>Configured filter</div>
-                    </div>
-                    {Object.keys(webhookPayloads.filters).map((selectorName, index) => {
-                        let classes = "cn-7 pt-8 pl-4 pb-8"
-                        if (index % 2 == 0) {
-                            classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
-                        }
-                        return <div key={index} className={classes} style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
-                            <div>{selectorName}</div>
-                            <div>{webhookPayloads.filters[selectorName]}</div>
-                        </div>
-                    })}
+            <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
+                Configured filters
+                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciMaterialId, workflowId)}>
+                    <Edit className=" icon-dim-24" />
+                </button> </div>
+            <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
+                <div>Selector/Key</div>
+                <div>Configured filter</div>
+            </div>
+            {Object.keys(webhookPayloads.filters).map((selectorName, index) => {
+                let classes = "cn-7 pt-8 pl-4 pb-8"
+                if (index % 2 == 0) {
+                    classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
+                }
+                return <div key={index} className={classes} style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
+                    <div>{selectorName}</div>
+                    <div>{webhookPayloads.filters[selectorName]}</div>
+                </div>
+            })}
         </div>
     }
 
     const getCIWebhookPayloadRes = (pipelineMaterialId, parsedDataId) => {
+        setParsedDataId(parsedDataId)
         setShowDeatailedPayload(true);
         setIsPayloadLoading(true)
         getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
             setWebhookIncomingPayloadRes(result)
             setIsPayloadLoading(false)
         })
-
     }
 
     const renderWebhookPayloads = () => {
@@ -67,7 +80,7 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
 
                         {webhookPayloads?.payloads?.map((payload, index) =>
                             <div key={index} className="cn-5 pt-8 pb-8" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                                <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(id, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
+                                <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
                                 <div className={payload.matchedFilters == false ? `deprecated-warn__text` : `cg-5 ml-4`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
@@ -97,8 +110,8 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
     }
 
     const onClose = () => {
-       return context.closeCIModal(),
-       hideWebhookModal()
+        return context.closeCIModal(),
+            hideWebhookModal()
     }
 
     const renderWebhookDetailedHeader = (context) => {
@@ -107,9 +120,9 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
                 <button type="button" className="transparent" onClick={() => { setShowDeatailedPayload(!showDeatailedPayload); }}>
                     <Back />
                 </button>
-                <h1 className="modal__title fs-16 pl-16">All incoming webhook payloads, {webhookPayloads.payloads.map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
+                <h1 className="modal__title fs-16 pl-16">All incoming webhook payloads, {webhookPayloads.payloads.filter((payload, index, array) => payload.parsedDataId == parsedDataId).map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
             </div>
-            <button type="button" className="transparent" onClick={() =>  onClose() }>
+            <button type="button" className="transparent" onClick={() => onClose()}>
                 <Close />
             </button>
         </div>
@@ -164,9 +177,9 @@ export default function CiWebhookModal({ context, webhookPayloads, id, isWebhook
     const renderWebHookModal = () => {
         return <>
             <div className={`${webhookPayloads.payloads == null ? 'empty-payload-wrapper' : 'payload-wrapper'} pl-20`}>
-            {isWebhookPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
-                <Progressing pageLoader />
-            </div> : renderConfiguredFilters()}
+                {isWebhookPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
+                    <Progressing pageLoader />
+                </div> : renderConfiguredFilters()}
                 {isWebhookPayloadLoading ?
                     <div className="flex column" style={{
                         height: "calc(100vh - 400px)",

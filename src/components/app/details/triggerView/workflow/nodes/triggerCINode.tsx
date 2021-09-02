@@ -25,6 +25,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     downstreams?: string[];
     colorCode: string;
     inputMaterialsNew: CIMaterialType[];
+    workflowId: string;
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps>{
@@ -57,7 +58,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
         </div>
     }
 
-    renderCardContent(context) {
+    renderCardContent(context, workflowId) {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
 
@@ -80,7 +81,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
             </div>
             {this.renderStatus()}
             <div className="workflow-node__btn-grp">
-                <button className="workflow-node__deploy-btn workflow-node__deploy-btn--ci" onClick={(event) => { event.stopPropagation(); context.onClickCIMaterial(this.props.id, this.props.title) }}>Select Material</button>
+                <button className="workflow-node__deploy-btn workflow-node__deploy-btn--ci" onClick={(event) =>  {  event.stopPropagation(); context.onClickCIMaterial(this.props.id, this.props.title)  }}>Select Material</button>
             </div>
           
         </div>
@@ -90,7 +91,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
         return <foreignObject className="data-hj-whitelist" x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
             <TriggerViewContext.Consumer>
                 {(context) => {
-                    return this.renderCardContent(context)
+                    return this.renderCardContent(context, this.props.workflowId)
                 }}
             </TriggerViewContext.Consumer>
         </foreignObject>

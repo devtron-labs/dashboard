@@ -6,18 +6,20 @@ import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMa
 import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import Tippy from '@tippyjs/react';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
+
 
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
             <h1 className="modal__title flex left">
-                {showWebhookModal ? <button type="button" className="transparent flex" onClick={() => toggleWebhookModal(material.id)}>
+                {showWebhookModal ? <button type="button" className="transparent flex" onClick={() => hideWebhookModal()}>
                     <Back className="mr-16" />
                 </button> : null}
                 {title} {showWebhookModal ? '/ All incoming webhook payloads' : null}
             </h1>
-            <button type="button" className="transparent" onClick={() => { context.closeCIModal(); hideWebhookModal()  }}>
+            <button type="button" className="transparent" onClick={() => { context.closeCIModal(); hideWebhookModal() }}>
                 <Close className="" />
             </button>
         </div>
@@ -43,7 +45,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
         let anyCommit = (material.history && material.history.length > 0);
         if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) { //Error or Empty State
             return <div className="select-material select-material--trigger-view">
-                <div className="select-material__empty-state-container">
+                <div className="select-material__empty-state-container" style={{ height: "auto", marginTop: "calc(100vh - 700px)" }}>
                     <EmptyStateCIMaterial
                         isRepoError={material.isRepoError}
                         isBranchError={material.isBranchError}
@@ -55,6 +57,10 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                         isMaterialLoading={material.isMaterialLoading}
                         onRetry={(e) => { e.stopPropagation(); context.onClickCIMaterial(pipelineId, pipelineName) }}
                         anyCommit={anyCommit} />
+                    {material.type === SourceTypeMap.WEBHOOK ?
+                        <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
+                        : null}
+
                 </div>
             </div>
         }
@@ -63,7 +69,12 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 Select Material
             </div>
             {material.type === SourceTypeMap.WEBHOOK ?
-                <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching configured filters. &nbsp;
+                <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching
+                   {/* <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
+                          <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info  className="icon-dim-12 fcn-5 ml-4"/></div> 
+                        </Tippy>  */}
+                configured filters.
+                 &nbsp;
             <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
                 </div> : null}
             <MaterialHistory
@@ -79,9 +90,12 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             <CiWebhookModal
                 context={context}
                 webhookPayloads={webhookPayloads}
-                id={material[0].id}
+                ciMaterialId={material[0].id}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 hideWebhookModal={hideWebhookModal}
+                gitMaterialId={material.gitMaterialId}
+                workflowId={workflowId}
+
             />
         </div>
     }
@@ -89,8 +103,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
         <>
             {renderMaterialHeader(selectedMaterial)}
             <div className={`m-lr-0 ${showWebhookModal ? null : 'flexbox'}`}>
-                {showWebhookModal == true ? 
-                renderWebhookModal(context) :
+                {showWebhookModal == true ?
+                    renderWebhookModal(context) :
                     <>
                         {renderMaterialSource(context)}
                         {renderMaterialHistory(context, selectedMaterial)}
