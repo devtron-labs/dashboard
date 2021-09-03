@@ -34,3 +34,11 @@
     position: absolute;
     margin-left: 180px; 
 }
+
+.onlink{
+    color: var(--B500);
+}
+
+.onlink:hover{
+    color: var(--B500);
+}

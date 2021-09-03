@@ -7,7 +7,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
-import Info from '../../assets/icons/ic-info-filled.svg';
+import {ReactComponent as Info} from '../../assets/icons/ic-info-filled-purple.svg';
 import {ReactComponent as Close} from '../../assets/icons/ic-close.svg';
 import {ReactComponent as CheckGreen} from '../../assets/icons/ic-check.svg';
 import Help from '../../assets/icons/ic-help-green.svg';
@@ -78,12 +78,12 @@ const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; last
 const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({ tab, gitLink, title }) => {
     return <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
         <div className="flex left ">
-            <img src={Info} className="icon-dim-20" style={{ marginTop: 1 }} />
+            <Info className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
                 <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> Group for gitops. Do not use GitLab Group containing your source code.
        </div>
         </div>
-        <a target="_blank" href={gitLink} className="ml-28 cursor fs-13">How to create {title} ?</a>
+        <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">How to create {title} ?</a>
     </div>
 }
 
@@ -97,7 +97,7 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
                 </div>
             </div>
             {formData.id &&
-                <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>}
+                <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>}
         </div>
         <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
             <div className="fs-13">
@@ -120,13 +120,13 @@ const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () =>
                     <span className="ml-8 fw-6">Configurations validated</span>
                 </div>
             </div>
-            <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>
         </div>
     </div>
 }
 
 const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
-    return <div className="eb-5 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
                 <img src={Help} className="icon-dim-20" />
@@ -134,13 +134,13 @@ const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> =
                     <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
                 </div>
             </div>
-            <a onClick={() => validateGitOps()} className="fw-6 cb-5 pointer">VALIDATE</a>
+            <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>
         </div>
     </div>
 }
 
 const ValidateLoading: React.FC<{ tab: string; }> = ({ tab }) => {
-    return <div className="eb-5 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+    return <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex left">
             <div><Progressing /></div>
             <div className="fs-13">
@@ -427,7 +427,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         error={this.state.isError[key]}
                         showLink={true}
                         link={this.state.tab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB}
-                        linkText={this.state.tab === GitProvider.GITLAB ? " (How to create group in GitLab?)" : this.state.tab === GitProvider.AZURE_DEVOPS ? " (How to create project in Azure?)" : " (How to create organization in GithHub?)"}
+                        linkText={this.state.tab === GitProvider.GITLAB ? "(How to create group in GitLab?)" : this.state.tab === GitProvider.AZURE_DEVOPS ? "(How to create project in Azure?)" : "(How to create organization in GithHub?)"}
                         label={this.state.tab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.tab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : "GitHub Organisation Name*"}
                         onChange={(event) => { this.handleChange(event, key); }}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
@@ -447,7 +447,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     </div>
                     <div>
                         <span className={this.state.tab === GitProvider.AZURE_DEVOPS ?"azure_access_token":"access_token"}>
-                        <a target="_blank" href={this.state.tab === GitProvider.GITLAB ? AccessTokenLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? AccessTokenLink.AZURE_DEVOPS : AccessTokenLink.GITHUB} className="cursor fs-13">(Check permissions required for PAT)</a>
+                        <a target="_blank" href={this.state.tab === GitProvider.GITLAB ? AccessTokenLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? AccessTokenLink.AZURE_DEVOPS : AccessTokenLink.GITHUB} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
                         </span>
                     <ProtectedInput value={this.state.form.token}
                         onChange={(event) => this.handleChange(event, 'token')}

@@ -26,7 +26,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
 
     gitCreate = () =>{
         return <span>
-        <a target="_blank" href={this.props.link} className="cursor fs-13">{this.props.linkText}</a>
+        <a target="_blank" href={this.props.link} className="cursor fs-13 onlink">{this.props.linkText}</a>
         </span>
     }
 
@@ -36,7 +36,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
         let labelClasses = `form__label`;
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <div>
-            <label className={labelClasses}>{this.props.label}{this.props.showLink && this.gitCreate()}</label>
+            <label className={labelClasses}>{this.props.label} {this.props.showLink && this.gitCreate()}</label>
             <input type={type}
                 autoFocus={this.props.autoFocus}
                 autoComplete={this.props.autoComplete}
