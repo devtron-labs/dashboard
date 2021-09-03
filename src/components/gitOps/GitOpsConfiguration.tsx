@@ -37,9 +37,7 @@ const GitLink = {
 }
 
 const AccessTokenLink = {
-    GITHUB: "https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token",
-    GITLAB: "https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html",
-    AZURE_DEVOPS: 'https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page'
+    AccessLink: "https://docs.devtron.ai/user-guide/global-configurations/gitops#3-git-access-credential",
 }
 const DefaultGitOpsConfig = {
     id: undefined,
@@ -447,7 +445,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     </div>
                     <div>
                         <span className={this.state.tab === GitProvider.AZURE_DEVOPS ?"azure_access_token":"access_token"}>
-                        <a target="_blank" href={this.state.tab === GitProvider.GITLAB ? AccessTokenLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? AccessTokenLink.AZURE_DEVOPS : AccessTokenLink.GITHUB} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
+                        <a target="_blank" href={AccessTokenLink.AccessLink} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
                         </span>
                     <ProtectedInput value={this.state.form.token}
                         onChange={(event) => this.handleChange(event, 'token')}
