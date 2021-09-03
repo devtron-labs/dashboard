@@ -136,10 +136,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         let _optionTypes = [];
         if (this.state.labels.tags && this.state.labels.tags.length > 0) {
             this.state.labels.tags.forEach((_label) => {
-                let _splittedTag = _label.value.split(':');
+                let colonIndex = _label.value.indexOf(':');
+                let splittedTagBeforeColon = _label.value.substring(0, colonIndex)
+                let splittedTagAfterColon = _label.value.substring(colonIndex + 1)
                 _optionTypes.push({
-                    key: _splittedTag[0],
-                    value: _splittedTag[1]
+                    key: splittedTagBeforeColon,
+                    value: splittedTagAfterColon
                 })
             })
         }
@@ -192,7 +194,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     setAppTagLabel = () => {
-     let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
+        let newTag = this.state.labels.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
 
         this.setState({
             labels: {
@@ -284,7 +286,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     labelTags={this.state.labels}
                     onInputChange={this.handleInputChange}
                     onTagsChange={this.handleTagsChange}
-                    onKeyDown={(event)=>handleKeyDown(this.state.labels,this.setAppTagLabel, event)}
+                    onKeyDown={(event) => handleKeyDown(this.state.labels, this.setAppTagLabel, event)}
                     onCreatableBlur={this.handleCreatableBlur}
                 />
 

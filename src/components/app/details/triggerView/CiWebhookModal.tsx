@@ -186,7 +186,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                                     <div>Configured filter</div>
                                     <div>Result</div>
                                 </div>
-                                {webhookIncomingPayloadRes?.result?.selectorsData?.map((selectedData, index) => {
+                                {webhookIncomingPayloadRes?.result?.selectorsData?.sort((a, b) => a.name?.localeCompare(b.name))?.map((selectedData, index) => {
                                     let classes = "cn-7 pt-8 pl-4 pb-8"
                                     if (index % 2 == 0) {
                                         classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
