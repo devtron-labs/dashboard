@@ -12,6 +12,7 @@ export interface ExternalCIPipelineState {
         materials: MaterialType[],
         triggerType: string;
         externalCiConfig: string;
+        ciPipelineSourceTypeOptions: []
     },
     ciPipeline: {
         id: number,
@@ -41,13 +42,18 @@ export interface CIPipelineState {
     showError: boolean;
     loadingData: boolean;
     form: {
-        name: string;
-        args: { key: string, value: string }[];
+        name: string,
+        args: { key: string, value: string }[],
         materials: MaterialType[],
-        triggerType: string;
-        scanEnabled?: boolean;
-        beforeDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[];
-        afterDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[];
+        gitHost: Githost,
+        webhookEvents: WebhookEvent[],
+        ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[],
+        webhookConditionList: { selectorId: number; value: string }[],
+        triggerType: string,
+        scanEnabled?: boolean,
+        beforeDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
+        afterDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
+        ciPipelineEditable : true
     },
     ciPipeline: {
         id: number,
@@ -64,7 +70,6 @@ export interface CIPipelineState {
         scanEnabled?: boolean;
     },
     sourcePipelineURL?: string; //required Linked CI
-    gitMaterials: { gitMaterialId: number, materialName: string }[];
     showDeleteModal: boolean;
     showDockerArgs: boolean;
     showPreBuild: boolean;
@@ -107,7 +112,39 @@ export interface MaterialType {
     gitMaterialId: number;
     id: number;
     isSelected: boolean;
+    gitHostId: number;
+    gitProviderId: number;
 }
+
+export interface Githost {
+    id: number;
+    name: string;
+    active: boolean;
+    webhookSecret: string;
+    webhookUrl: string;
+}
+
+export interface WebhookEvent {
+    id: number;
+    gitHostId: number;
+    name: string;
+    isActive: boolean;
+    selectors: WebhookEventSelectors[]
+}
+
+
+interface WebhookEventSelectors {
+    id: number;
+    eventId: number;
+    name: string;
+    selector: string;
+    toShowInCiFilter: boolean;
+    fixValue: string;
+    toShow: boolean;
+    possibleValues: string;
+    isActive: boolean;
+}
+
 
 export interface CIPipelineProps extends RouteComponentProps<{ appId: string, ciPipelineId: string, workflowId: string }> {
     appName: string;
@@ -120,4 +157,12 @@ export const PatchAction = {
     CREATE: 0,
     UPDATE_SOURCE: 1,
     DELETE: 2,
+}
+
+export interface CiPipelineSourceTypeOption {
+    label: string;
+    value: string;
+    isDisabled: boolean;
+    isSelected: boolean;
+    isWebhook: boolean;
 }

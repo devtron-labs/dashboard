@@ -1,4 +1,4 @@
-import { Routes, Moment12HourFormat } from '../../config';
+import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config';
 import { get, post, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback} from '../common';
@@ -51,12 +51,16 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
                         message: hist.Message || "",
                         changes: hist.Changes || [],
                         showChanges: index === 0,
+                        webhookData: hist.WebhookData
                     }
                 }),
-                isSelected: mat.history.find(h => h.Commit === commit) || false,
+                isSelected: mat.history.find(h => (mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit)) || false,
                 lastFetchTime: mat.lastFetchTime || "",
             }
         })
+        if(!materials.find(mat => mat.isSelected)){
+            materials[0].isSelected = true;
+        }
         return {
             code: response.code,
             result: {
@@ -166,9 +170,15 @@ export const getCIMaterialList = (params) => {
                         author: history.Author,
                         message: history.Message,
                         date: history.Date ? moment(history.Date).format(Moment12HourFormat) : "",
-                        commit: history.Commit,
+                        commit: history?.Commit,
                         isSelected: indx == 0,
                         showChanges: false,
+                        webhookData: history.WebhookData ? {
+                            id: history.WebhookData.id,
+                            eventActionType: history.WebhookData.eventActionType,
+                            data: history.WebhookData.data
+                        } : null
+
                     }
                 }) : []
             }
@@ -228,6 +238,8 @@ function cdMaterialListModal(artifacts) {
                     message: mat.message || "",
                     revision: mat.revision || "",
                     tag: mat.tag || "",
+                    webhookData: mat.webhookData || "",
+                    url: mat.url || ""
                 }
             }) : [],
         }
@@ -354,6 +366,11 @@ export function getNodeStatus({ appName, envName, version, namespace, group, kin
     return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
 }
 
-export function fetchAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
+export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`);
+}
+
+export const createAppLabels = (request) => {
+    let URL = `${Routes.APP_LABELS}`;
+    return post(URL, request);
 }

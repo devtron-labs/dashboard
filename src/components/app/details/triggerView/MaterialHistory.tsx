@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg';
-import { ReactComponent as Arrow } from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
-import { ReactComponent as Commit } from '../../../../assets/icons/ic-commit.svg';
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import { SourceTypeMap } from '../../../../config';
+
+export interface WebhookData {
+    id: number;
+    eventActionType: string;
+    data: any
+}
 
 export interface CommitHistory {
     author: string;
@@ -12,6 +17,7 @@ export interface CommitHistory {
     message: string;
     isSelected: boolean;
     showChanges: boolean;
+    webhookData: WebhookData
 }
 
 export interface CIMaterialType {
@@ -41,47 +47,29 @@ export interface MaterialHistoryProps {
 
 export class MaterialHistory extends Component<MaterialHistoryProps> {
 
-    renderShowChangeButton(history) {
-        if (history.changes.length) {
-            return <button type="button" className="material-history__changes-btn" onClick={(event) => {
-                event.stopPropagation();
-                this.props.toggleChanges(this.props.material.id.toString(), history.commit)
-            }}>
-                {history.showChanges ? "Hide Changes" : "Show Changes"}
-                <Arrow style={{ 'transform': `${history.showChanges ? 'rotate(-180deg)' : ''}` }} />
-            </button>
-        }
-    }
-
     render() {
         return <>
             {this.props.material.history.map((history) => {
                 let classes = `material-history ${history.isSelected ? 'material-history-selected' : ''}`;
                 if (this.props.selectCommit) {
-                    classes = `${classes} cursor`;
+                    classes = `${classes}`;
                 }
-                return <div key={history.commit} className={classes} onClick={(e) => {
+                let _commitId = (this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData ? history.webhookData.id.toString() : history.commit);
+                return <div key={_commitId} className={classes} onClick={(e) => {
                     e.stopPropagation();
-                    if (this.props.selectCommit)
-                        this.props.selectCommit(this.props.material.id.toString(), history.commit);
+                    if (this.props.selectCommit){
+                        this.props.selectCommit(this.props.material.id.toString(), _commitId);
+                    }
                 }}>
-                    <div className="material-history__header">
-                        <a href={history.commitURL} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
-                            <Commit className="commit-hash__icon" />{history.commit}
-                        </a>
-                        {this.props.selectCommit ? <div className="material-history__select-text" >
-                            {history.isSelected ? <Check className="align-right" /> : "Select"}
-                        </div> : null}
-                    </div>
-                    <div className="material-history__text">Author: {history.author}</div>
-                    <div className="material-history__text">Date: {history.date}</div>
-                    <div className="material-history__text material-history-text--padded">{history.message}</div>
-                    {history.showChanges ? <div className="material-history__all-changes">
-                        {history.changes.map((change, index) => {
-                            return <div key={index}>{change}</div>
-                        })}
-                    </div> : null}
-                    {this.renderShowChangeButton(history)}
+                    <GitCommitInfoGeneric
+                        materialUrl={this.props.material.gitURL}
+                        showMaterialInfo={false}
+                        commitInfo={history}
+                        materialSourceType={this.props.material.type}
+                        selectedCommitInfo={this.props.selectCommit}
+                        materialSourceValue={this.props.material.value}
+                        canTriggerBuild={true}
+                    />
                 </div>
             })}
         </>

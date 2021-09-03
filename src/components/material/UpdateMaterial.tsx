@@ -14,6 +14,7 @@ interface UpdateMaterialProps {
     isGitUrlValid;
     isCheckoutPathValid;
     refreshMaterials: () => void;
+    isWorkflowEditorUnlocked: boolean;
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
 
@@ -180,6 +181,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             toggleCollapse={this.toggleCollapse}
             save={this.save}
             cancel={this.cancel}
+            isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
         />
     }
 }
