@@ -59,10 +59,12 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
   isLoading: boolean;
   pipelineName: string;
   showWebhookModal: boolean;
-  toggleWebhookModal: (id) => void;
+  toggleWebhookModal: (id, webhookTimeStampOrder) => void;
   webhookPayloads: WebhookPayloads;
   isWebhookPayloadLoading: boolean;
   hideWebhookModal : () => void;
+  onClickWebhookTimeStamp: () => void;
+  webhhookTimeStampOrder: string;
 }
 
 export interface NodeAttr {
@@ -218,6 +220,7 @@ export interface TriggerViewState {
   webhookPayloads: WebhookPayloads;
   isWebhookPayloadLoading: boolean;
   workflowId: number;
+  webhhookTimeStampOrder: string;
 }
 
 //-- begining of response type objects for trigger view

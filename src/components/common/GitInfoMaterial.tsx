@@ -11,14 +11,13 @@ import Tippy from '@tippyjs/react';
 import { getWebhookEventsForEventId } from '../../services/service';
 import { showError } from './helpers/Helpers';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder}) {
 
     const [sourceValueAdv, setSourceValueAdv] = useState(material.type);
 
     function init() {
         material.map((ciMaterial) => {
             let sourceValueObj = JSON.parse(ciMaterial.value)
-            console.log(sourceValueObj)
             let eventId = sourceValueObj.eventId;
             let webhookCondition = sourceValueObj.condition;
 
@@ -141,8 +140,9 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 ciMaterialId={material[0].id}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 hideWebhookModal={hideWebhookModal}
-                gitMaterialId={material.gitMaterialId}
                 workflowId={workflowId}
+                onClickWebhookTimeStamp={ onClickWebhookTimeStamp}
+                webhhookTimeStampOrder={webhhookTimeStampOrder}
             />
         </div>
     }

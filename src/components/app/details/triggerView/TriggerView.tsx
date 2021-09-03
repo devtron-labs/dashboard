@@ -32,6 +32,10 @@ export const TriggerViewContext = createContext({
     toggleInvalidateCache: () => { },
 });
 
+const TIME_STAMP_ORDER = {
+    DESCENDING: "DESC",
+    ASCENDING: "ASC"
+}
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef;
@@ -55,7 +59,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             hostURLConfig: undefined,
             showWebhookModal: false,
             webhookPayloads: undefined,
-            isWebhookPayloadLoading: false
+            isWebhookPayloadLoading: false,
+            webhhookTimeStampOrder: "DESC"
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -580,17 +585,26 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showWebhookModal: false
         })
     }
-    toggleWebhookModal = (id) => {
-        this.setState({isWebhookPayloadLoading : true})
-        getCIWebhookRes(id).then((result) => {
+
+    onClickWebhookTimeStamp = () => {
+        if (this.state.webhhookTimeStampOrder === "DESC") {
+            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
+        }
+        if(this.state.webhhookTimeStampOrder === "ASC"){
+            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
+        }
+    }
+    
+    toggleWebhookModal = (id, webhhookTimeStampOrder) => {
+        this.setState({ isWebhookPayloadLoading: true })
+        getCIWebhookRes(id, this.state.webhhookTimeStampOrder).then((result) => {
             this.setState({
-                showWebhookModal: !this.state.showWebhookModal,
+                showWebhookModal: true,
                 webhookPayloads: result?.result,
                 isWebhookPayloadLoading: false,
             })
         })
     }
-
 
     renderCIMaterial = () => {
         if (this.state.ciNodeId && this.state.showCIModal) {
@@ -601,7 +615,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
             let material = nd[this.state.materialType] || [];
             return <CIMaterial
-                workflowId= {this.state.workflowId}
+                workflowId={this.state.workflowId}
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
@@ -615,6 +629,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 toggleWebhookModal={this.toggleWebhookModal}
                 webhookPayloads={this.state.webhookPayloads}
                 isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
+                webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
             />
         }
     }

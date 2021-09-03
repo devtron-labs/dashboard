@@ -106,6 +106,8 @@ export class CIMaterial extends Component<CIMaterialProps> {
             webhookPayloads={this.props.webhookPayloads}
             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
             workflowId={this.props.workflowId}
+            onClickWebhookTimeStamp={this.props.onClickWebhookTimeStamp}
+            webhhookTimeStampOrder={this.props.webhhookTimeStampOrder}
           />
         </div>
         {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}

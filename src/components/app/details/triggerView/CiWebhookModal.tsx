@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { getCIWebhookPayload } from './ciWebhook.service';
+import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
 import { Pagination, Progressing, showError } from '../../../common';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
@@ -11,16 +11,17 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId, isWebhookPayloadLoading, hideWebhookModal, gitMaterialId, workflowId }) {
+export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder }) {
+
     const [showDeatailedPayload, setShowDeatailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
     const [expandIncomingPayload, setIncomingPayload] = useState(false)
     const [parsedDataId, setParsedDataId] = useState(0)
+    const [isIncomingBottomLoader, setIsIncomingBottomLoader] = useState(false)
     const [pagination, setPagination] = useState<{ offset: number, pageSize: number, size: number }>({
         size: 20, pageSize: 20, offset: 0
     })
-    const [ sortTimeStamp, setSortTimeStamp] = useState({order: {}})
 
     const history = useHistory()
 
@@ -28,6 +29,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
         let link = `edit/workflow/${workflowId}/ci-pipeline/${ciMaterialId}`;
         history.push(link);
     }
+
+
     const renderConfiguredFilters = () => {
         return <div>
             <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
@@ -66,9 +69,28 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
         }
     }
 
+    const getWebhookResponse = (ciMaterialId, webhhookTimeStampOrder) => {
+        setIsIncomingBottomLoader(true)
+        try {
+            getCIWebhookRes(ciMaterialId, webhhookTimeStampOrder).then((result) => {
+                setIsIncomingBottomLoader(false)
+            })
+        }
+        catch (err) {
+            showError(err)
+        }
+    }
+
+    const handleTimeStampOrder = async (ciMaterialId, webhhookTimeStampOrder) => {
+        await onClickWebhookTimeStamp()
+        await getWebhookResponse(ciMaterialId, webhhookTimeStampOrder)
+        console.log(webhhookTimeStampOrder)
+    }
+
     const renderWebhookPayloads = () => {
+
         return <div className="pt-20 pb-8">
-            <div className="fs-14 cn-9 fw-6">
+            <div className="fs-14 cn-9 fw-6 mb-8">
                 All incoming webhook payloads for
             <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /repo_name</a>
             </div>
@@ -78,7 +100,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                     <div>Payload data not available</div>
                 </div> : <>
                         <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div>Received at <span className="filter-icon cursor" ><i className="fa fa-caret-down"></i></span></div>
+                            <div>Received at <button className="transparent filter-icon cursor" onClick={() => handleTimeStampOrder(ciMaterialId, webhhookTimeStampOrder)} ><i className="fa fa-caret-down"></i></button></div>
                             <div>Filters matched</div>
                             <div>Filters failed</div>
                             <div>Result</div>
@@ -126,9 +148,9 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                 <button type="button" className="transparent flex" onClick={() => { setShowDeatailedPayload(!showDeatailedPayload); }}>
                     <Back />
                 </button>
-                <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads 
+                <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads
                 <Right className="rotate icon-dim-24 ml-16 mr-16" style={{ ['--rotateBy' as any]: '-180deg' }} />
-                 {webhookPayloads.payloads.filter((payload, index, array) => payload.parsedDataId == parsedDataId).map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
+                    {webhookPayloads.payloads.filter((payload, index, array) => payload.parsedDataId == parsedDataId).map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
             </div>
             <button type="button" className="transparent" onClick={() => onClose()}>
                 <Close />
@@ -191,7 +213,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                 {isWebhookPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
                     <Progressing pageLoader />
                 </div> : renderConfiguredFilters()}
-                {isWebhookPayloadLoading ?
+                {isIncomingBottomLoader ?
                     <div className="flex column" style={{
                         height: "calc(100vh - 400px)",
                         width: '100vw'
@@ -199,13 +221,10 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                         <div className="flex pb-12"><Progressing pageLoader /></div>
                         <div>
                             Fetching webhook payloads.<br />
-                        This might take some time.
+                           This might take some time.
+                        </div>
                     </div>
-                    </div>
-                    : <div>
-                        {renderWebhookPayloads()}
-
-                    </div>
+                    : <div>{renderWebhookPayloads()} </div>
                 }
             </div>
         </>
