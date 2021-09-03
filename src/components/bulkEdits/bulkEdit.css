@@ -71,9 +71,9 @@
 
 .bulk-container{
     display:grid;
-    grid-template-columns: 1fr 1fr;
-     height: 100%;
-     background-color: white;
+    grid-template-columns: 50% 50%;
+    height: 100%;
+    background-color: white;
 }
 
 .code-editor-body{
@@ -84,7 +84,7 @@
 
 .bulk-output-body{
     letter-spacing: 0.2px;
-    height: 250px;
+    height: calc(100vh - 600px);
     overflow: scroll;
     font-family: monospace;
 }

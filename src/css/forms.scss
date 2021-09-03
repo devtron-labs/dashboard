@@ -96,7 +96,6 @@
     display: block;
     width: 100%;
     font-weight: 500;
-    margin-bottom: 4px ;
 }
 
 .form__input--error {
@@ -560,6 +559,10 @@ p.sentence-case:first-letter {
 
 .form__label.form__label--sentence::first-letter {
     text-transform: capitalize;
+}
+
+.form__label-color{
+    color: #404040
 }
 
 .modal__form-title{

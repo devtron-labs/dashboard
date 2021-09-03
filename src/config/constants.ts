@@ -38,6 +38,7 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    APP_LABELS: 'app/labels',
     
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -61,6 +62,7 @@ export const Routes = {
     GITOPS_VALIDATE: 'gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
+    GIT_HOST: 'git/host',
     CHART_LIST: 'app-store/repo/list',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
@@ -136,7 +138,8 @@ export const PATTERNS = {
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
-    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/
+    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
+    APP_LABEL_CHIP: /^.+:.+$/
 };
 
 export const TriggerType = {
@@ -151,25 +154,8 @@ export const TriggerTypeMap = {
 
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
-    BranchReges: 'SOURCE_TYPE_BRANCH_REGEX',
-    TagAny: 'SOURCE_TYPE_TAG_ANY',
-    TagRegex: 'SOURCE_TYPE_TAG_REGEX',
+    WEBHOOK: 'WEBHOOK',
 };
-
-export const SourceTypeReverseMap = {
-    SOURCE_TYPE_BRANCH_FIXED: 'Branch Fixed',
-    SOURCE_TYPE_BRANCH_REGEX: 'Branch Regex',
-    SOURCE_TYPE_TAG_ANY: 'Tag Any',
-    SOURCE_TYPE_TAG_REGEX: 'Tag Regex',
-};
-
-export const TagOptions = [
-    { label: 'Branch Fixed', value: 'SOURCE_TYPE_BRANCH_FIXED' },
-    // { label: "Branch Regex", value: "SOURCE_TYPE_BRANCH_REGEX" },
-    // { label: "Tag Any", value: "SOURCE_TYPE_TAG_ANY" },
-    { label: 'Tag Regex', value: 'SOURCE_TYPE_TAG_REGEX' },
-];
-
 
 export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
 
@@ -192,5 +178,6 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_CHART: 'https://docs.devtron.ai/user-guide/global-configurations/chart-repo',
     GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/global-configurations/manage-notification',
     GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
+    GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }

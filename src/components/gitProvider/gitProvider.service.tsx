@@ -1,11 +1,6 @@
 import { Routes } from '../../config';
 import { post, put, get } from '../../services/api';
 
-export const getGitProviderList = () => {
-    const URL = `${Routes.GIT_PROVIDER}`;
-    return get(URL);
-}
-
 export const getGitProviderConfig = (id: number): Promise<any> => {
     const URL = `${Routes.GIT_PROVIDER}/${id}`;
     return get(URL);
@@ -19,4 +14,16 @@ export const updateGitProviderConfig = (request: any, id: number) => {
 export const saveGitProviderConfig = (request: any, id: any) => {
     const URL = `${Routes.GIT_PROVIDER}`;
     return post(URL, request);
+}
+
+
+export function getGitHost(id: number | string): Promise<any> {
+    const URL = `${Routes.GIT_HOST}/${id}`;
+    return get(URL);
+    
+}
+
+export function saveGitHost(payload): Promise<any> {
+    const URL = `${Routes.GIT_HOST}`;
+    return post(URL, payload);
 }

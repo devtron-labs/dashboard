@@ -2,6 +2,8 @@ import React from 'react';
 import Select, {components} from 'react-select'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-appstatus-cancelled.svg'
 import {ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg';
+import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
+
 export const Option = props => {
     const { selectOption, data } = props
     return (
@@ -67,12 +69,32 @@ export const MultiValueRemove = props => {
     );
 };
 
+export const MultiValueChipContainer = ({ validator, ...props }) => {
+    const { children, data, innerProps, selectProps } = props
+    const { label, value } = data
+    const isValidEmail = validator ? validator(value) : true
+    return (
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+            <div className={`flex fs-12`}>
+                {!isValidEmail && <RedWarning className="mr-4 icon-dim-16" />}
+                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    );
+};
+
 export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         boxShadow: 'none',
+        height: '100%'
+    }),
+    menu: (base, state) => ({
+        ...base,
+        top: `40px`,
     }),
     option: (base, state) => {
         return ({

@@ -52,6 +52,7 @@ export interface Environment {
         revision: string;
         url: string;
         gitMaterialName: string;
+        webhookData: string;
     }[];
     ciArtifactId: number;
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getCIPipelineParsed, deleteCIPipeline } from './ciPipeline.service';
+import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
@@ -29,6 +29,11 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 triggerType: TriggerType.Auto,
                 beforeDockerBuildScripts: [],
                 afterDockerBuildScripts: [],
+                gitHost: undefined,
+                webhookEvents: [],
+                ciPipelineSourceTypeOptions: [],
+                webhookConditionList: [],
+                ciPipelineEditable: true
             },
             ciPipeline: {
                 parentCiPipeline: 0,
@@ -43,7 +48,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 name: "",
                 linkedCount: 0,
             },
-            gitMaterials: [],
             showDeleteModal: false,
             showDockerArgs: false,
             loadingData: true,
@@ -57,7 +61,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     componentDidMount() {
-        getCIPipelineParsed(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
+        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true).then((response) => {
             this.setState({ ...response, loadingData: false }, () => {
                 this.generateSourceUrl();
             });
@@ -100,7 +104,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.gitMaterials, +this.props.match.params.appId, +this.props.match.params.workflowId, false).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, false, this.state.form.webhookConditionList).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -153,7 +157,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderMaterials() {
         return <SourceMaterials materials={this.state.form.materials}
-            showError={this.state.showError} />
+            showError={this.state.showError}
+            includeWebhookEvents={false}
+            ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
+            canEditPipeline={true} />
     }
 
     renderHeader() {

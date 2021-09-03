@@ -18,5 +18,4 @@ export class ValidationRules {
         if (found) return { isValid: true, message: '' };
         else return { isValid: false, message: 'This is a required field' };
     }
-
 } 
