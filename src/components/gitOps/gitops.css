@@ -42,3 +42,7 @@
 .onlink:hover{
     color: var(--B500);
 }
+
+.stroke_width{
+    stroke-width: 2px;
+}

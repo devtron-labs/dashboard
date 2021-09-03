@@ -89,7 +89,7 @@ const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: G
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
-                <Close className="icon-dim-20 scr-5 ml--3" />
+                <Close className="icon-dim-20 scr-5 ml--3 stroke_width" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
