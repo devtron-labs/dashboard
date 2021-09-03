@@ -19,17 +19,16 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     const [expandIncomingPayload, setIncomingPayload] = useState(false)
     const [parsedDataId, setParsedDataId] = useState(0)
     const [isIncomingBottomLoader, setIsIncomingBottomLoader] = useState(false)
+
     const [pagination, setPagination] = useState<{ offset: number, pageSize: number, size: number }>({
         size: 20, pageSize: 20, offset: 0
     })
 
     const history = useHistory()
-
     const onEditShowEditableCiModal = (ciMaterialId, workflowId) => {
         let link = `edit/workflow/${workflowId}/ci-pipeline/${ciMaterialId}`;
         history.push(link);
     }
-
 
     const renderConfiguredFilters = () => {
         return <div>
@@ -84,7 +83,6 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     const handleTimeStampOrder = async (ciMaterialId, webhhookTimeStampOrder) => {
         await onClickWebhookTimeStamp()
         await getWebhookResponse(ciMaterialId, webhhookTimeStampOrder)
-        console.log(webhhookTimeStampOrder)
     }
 
     const renderWebhookPayloads = () => {
@@ -241,7 +239,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
 
     return (
         <div>
-            { showDeatailedPayload ? renderDeatailedPayload() : renderWebHookModal()}
+            {showDeatailedPayload ? renderDeatailedPayload() : renderWebHookModal()}
             {webhookPayloads.payloads !== null ? renderWebhookPagination() : null}
         </div>
     )
