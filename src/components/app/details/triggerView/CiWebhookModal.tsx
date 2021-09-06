@@ -20,10 +20,6 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     const [parsedDataId, setParsedDataId] = useState(0)
     const [isIncomingBottomLoader, setIsIncomingBottomLoader] = useState(false)
 
-    const [pagination, setPagination] = useState<{ offset: number, pageSize: number, size: number }>({
-        size: 20, pageSize: 20, offset: 0
-    })
-
     const history = useHistory()
     const onEditShowEditableCiModal = (ciMaterialId, workflowId) => {
         let link = `edit/workflow/${workflowId}/ci-pipeline/${ciMaterialId}`;
@@ -120,26 +116,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
             </div>
         </div>
     }
-
-    const changePage = (pageNo): void => {
-        pagination.offset = (pageNo - 1) * pagination.pageSize;
-        setPagination({ size: 20, pageSize: 20, offset: 0 });
-    }
-
-    const changePageSize = (pageSize): void => {
-        pagination.pageSize = pageSize;
-        setPagination({ size: 20, pageSize: 20, offset: 0 });
-    }
-
-    const renderWebhookPagination = () => {
-        return pagination.size > 0 ? <Pagination
-            offset={pagination.offset}
-            pageSize={pagination.pageSize}
-            size={pagination.size}
-            changePage={changePage}
-            changePageSize={changePageSize} /> : null
-    }
-
+    
     const onClose = () => {
         return context.closeCIModal(),
             hideWebhookModal()
@@ -216,7 +193,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
 
     const renderWebHookModal = () => {
         return <>
-            <div className={`${webhookPayloads.payloads == null ? 'empty-payload-wrapper' : 'payload-wrapper'} pl-20`}>
+            <div className={`empty-payload-wrapper pl-20`}>
                 {isWebhookPayloadLoading ? <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
                     <Progressing pageLoader />
                 </div> : renderConfiguredFilters()}
@@ -231,7 +208,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                            This might take some time.
                         </div>
                     </div>
-                    : <div>{renderWebhookPayloads()} </div>
+                    : <div className="incoming-payload-bottom">{renderWebhookPayloads()} </div>
                 }
             </div>
         </>
@@ -249,7 +226,6 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     return (
         <div>
             {showDeatailedPayload ? renderDeatailedPayload() : renderWebHookModal()}
-            {webhookPayloads.payloads !== null ? renderWebhookPagination() : null}
         </div>
     )
 }

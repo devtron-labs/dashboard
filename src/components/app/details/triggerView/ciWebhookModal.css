@@ -11,9 +11,14 @@
 }
 
 .empty-payload-wrapper{
-    height: calc(100vh - 70px);
+    height: calc(100vh - 74px);
 }
 
 .payload-wrapper{
     height: calc(100vh - 130px);   
+}
+
+.incoming-payload-bottom{
+    height: calc(100vh - 300px); 
+    overflow: scroll;
 }
