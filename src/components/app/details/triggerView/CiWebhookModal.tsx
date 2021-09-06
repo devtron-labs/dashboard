@@ -184,8 +184,6 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                                 })}
                             </div>
                         </div>
-                        {console.log(webhookIncomingPayloadRes?.result)}
-                        {console.log(webhookIncomingPayloadRes?.result?.selectorsData)}
                     </>}
             </div>
         )
