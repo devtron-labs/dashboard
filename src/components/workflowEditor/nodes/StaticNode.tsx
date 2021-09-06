@@ -24,7 +24,7 @@ export class StaticNode extends Component<StaticNodeProps>{
             <div className={`workflow-node__git-icon`} />
             <div className="workflow-node__title workflow-node__title--static">
                 <span>/{this.props.title}</span>
-                <CiPipelineSourceConfig sourceType={this.props.sourceType} sourceValue={this.props.branch} showTooltip={true}></CiPipelineSourceConfig>
+                <CiPipelineSourceConfig sourceType={this.props.sourceType} sourceValue={this.props.branch} showTooltip={true} baseText={undefined} showWebhookIcons={true} />
             </div>
         </div>
     }

@@ -6,7 +6,7 @@ import { SourceTypeMap } from '../../config';
 import { getWebhookEventsForEventId } from '../../services/service';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 
-export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip }) {
+export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip, baseText, showWebhookIcons }) {
 
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK;
 
@@ -56,27 +56,35 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip })
     }, []);
 
 
-    return (
-        <div className={showTooltip ? "branch-name" : ""}>
-            {loading &&
-                <span className="loading-dots">loading</span>
-            }
-            {!loading &&
-                <>
-                    <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
-                    { showTooltip &&
-                         <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
-                          <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info  className="icon-dim-12 fcn-5 ml-4"/></div> 
-                        </Tippy>   
-                    }
-                    { !showTooltip &&
-                        <>
-                            <span className="ellipsis-right">{sourceValueAdv}</span>
-                        </>
-                    }
+    return (<>
+        {!showWebhookIcons ?
+            <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
+                <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>{baseText}</span>
+            </Tippy>
+            :
+            <div className={showTooltip ? "branch-name" : ""}>
+                {loading &&
+                    <span className="loading-dots">loading</span>
+                }
+                {!loading &&
+                    <>
+                        <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
+                        {showTooltip &&
+                            <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
+                                <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info className="icon-dim-12 fcn-5 ml-4" /></div>
+                            </Tippy>
+                        }
+                        {!showTooltip &&
+                            <>
+                                <span className="ellipsis-right">{sourceValueAdv}</span>
+                            </>
+                        }
+                    </>
 
-                </>
-            }
-        </div>
+                }
+            </div>
+        }
+    </>
     )
+
 }

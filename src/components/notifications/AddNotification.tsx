@@ -397,7 +397,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             <td className="pipeline-list__environment">
                                 {_isCi &&
                                     <span className="flex left">
-                                        <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true}></CiPipelineSourceConfig>
+                                        <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true} baseText={undefined} showWebhookIcons={true} />
                                     </span>
                                 }
                                 {row.type === "CD" ? row?.environmentName : ''}

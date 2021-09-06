@@ -11,23 +11,27 @@ import Tippy from '@tippyjs/react';
 import { getWebhookEventsForEventId } from '../../services/service';
 import { showError, } from './helpers/Helpers';
 import { sortCallback } from '../common';
+import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';
 
 export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder }) {
+
+    let isWebhook = true
 
     const [sourceValueAdv, setSourceValueAdv] = useState(material.type);
 
     function init() {
+        {return material.type===SourceTypeMap.WEBHOOK ? 
         material.map((ciMaterial) => {
             let sourceValueObj = JSON.parse(ciMaterial.value)
             let eventId = sourceValueObj.eventId;
             let webhookCondition = sourceValueObj.condition;
 
-            getWebhookEventsForEventId(eventId).then((res) => {
+           return getWebhookEventsForEventId(eventId).then((res) => {
                 let webhookEvent = res.result;
                 setSourceValueAdv(buildHoverHtmlForWebhook(webhookEvent.name, webhookCondition, webhookEvent.selectors));
             });
         }
-        )
+        ) : "" }
     }
 
     useEffect(() => {
@@ -120,12 +124,9 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             </div>
             {material.type === SourceTypeMap.WEBHOOK ?
                 <div className="cn-7 fs-12 fw-0 pl-20">Showing results matching &nbsp;
-                   <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>
-                        {sourceValueAdv}
-                    </div>}>
-                        <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>configured filters.</span>
-                    </Tippy> &nbsp;
-            <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
+                    <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true} baseText="configured filters" showWebhookIcons={false}/>.
+                    &nbsp;
+                    <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
                 </div> : null}
             <MaterialHistory
                 material={material}

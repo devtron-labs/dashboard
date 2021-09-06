@@ -57,7 +57,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                         <div className="icon-dim-22 git"></div>
                     </div>
                     <div className="branch-name ">
-                        <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true}></CiPipelineSourceConfig>
+                        <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true} baseText={""} showWebhookIcons={true} />
                     </div>
                     {this.props.refreshMaterial ? <div className="material-info">
                         {this.renderMaterialUpdateInfo(material)}
