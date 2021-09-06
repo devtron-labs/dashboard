@@ -144,7 +144,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
     return (
-        <form onSubmit={handleOnSubmit} className="git-form">
+        <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             <div className="form__row form__row--two-third">
                 <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />

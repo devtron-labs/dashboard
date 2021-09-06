@@ -303,7 +303,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
     return (
         <>
-            <form onSubmit={handleOnSubmit} className="git-form">
+            <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
                 <div className="mb-16">
                     <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 </div>
