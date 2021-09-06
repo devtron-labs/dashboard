@@ -11,18 +11,14 @@ import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 
 export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder }) {
 
-    let isWebhook = true
-
-    console.log(material)
-
     function renderMaterialHeader(material: CIMaterialType) {
         return <div className="trigger-modal__header">
             <h1 className="modal__title flex left fs-16">
-                {showWebhookModal && isWebhook ? <button type="button" className="transparent flex" onClick={() => hideWebhookModal()}>
+                {showWebhookModal ? <button type="button" className="transparent flex" onClick={() => hideWebhookModal()}>
                     <Back className="mr-16" />
                 </button> : null}
                 {title}
-                {showWebhookModal && isWebhook ? <>
+                {showWebhookModal ? <>
                     <Right className="rotate icon-dim-24 ml-16 mr-16" style={{ ['--rotateBy' as any]: '-180deg' }} />
                     <span className="fs-16"> All incoming webhook payloads </span> </> : null}
             </h1>
@@ -71,15 +67,17 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 </div>
             </div>
         }
-        else return <div className="select-material select-material--trigger-view">
+        else return
+        <div className="select-material select-material--trigger-view">
             <div className="material-list__title pb-0">
                 Select Material
             </div>
-            {material.type === SourceTypeMap.WEBHOOK ?
+            { material.type === SourceTypeMap.WEBHOOK &&
                 <div className="cn-7 fs-12 fw-0 pl-20 flex left">Showing results matching &nbsp;
                     <CiPipelineSourceConfig sourceType={material.type} sourceValue={material.value} showTooltip={true} baseText="configured filters" showIcons={false} />.
                     <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>View all incoming webhook payloads</span>
-                </div> : null}
+                </div>
+            }
             <MaterialHistory
                 material={material}
                 pipelineName={pipelineName}
