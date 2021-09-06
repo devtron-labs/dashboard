@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
-import { Pagination, Progressing, showError } from '../../../common';
+import { Pagination, Progressing, showError, sortCallback } from '../../../common';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
@@ -128,7 +128,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     }
 
     const renderWebhookPagination = () => {
-        return pagination.size > 0 ? <Pagination offset={pagination.offset}
+        return pagination.size > 0 ? <Pagination 
+        offset={pagination.offset}
             pageSize={pagination.pageSize}
             size={pagination.size}
             changePage={changePage}
@@ -156,6 +157,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
         </div>
     }
 
+    let webhookIncomingpayload =  webhookIncomingPayloadRes?.result?.selectorsData.sort((a, b) => sortCallback("selectorName", a, b))
     const renderWebhookDetailedDescription = () => {
         return (
             <div style={{ height: "calc(100vh - 94px" }} className="bcn-0 pl-16 mt-20 ">
@@ -186,7 +188,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                                     <div>Configured filter</div>
                                     <div>Result</div>
                                 </div>
-                                {webhookIncomingPayloadRes?.result?.selectorsData?.sort((a, b) => a.name?.localeCompare(b.name))?.map((selectedData, index) => {
+                                
+                                {webhookIncomingpayload?.map((selectedData, index) => {
                                     let classes = "cn-7 pt-8 pl-4 pb-8"
                                     if (index % 2 == 0) {
                                         classes = "cn-7 pt-8 pl-4 pb-8 bcn-1"
@@ -200,6 +203,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                                 })}
                             </div>
                         </div>
+                        {console.log(webhookIncomingPayloadRes?.result)}
+                                {console.log(webhookIncomingPayloadRes?.result?.selectorsData)}
                     </>}
             </div>
         )

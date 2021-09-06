@@ -225,6 +225,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
                 return workflow;
             })
+
             this.setState({
                 workflows: workflows,
                 ciNodeId: +ciNodeId,

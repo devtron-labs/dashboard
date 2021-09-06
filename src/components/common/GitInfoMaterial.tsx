@@ -9,9 +9,10 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg';
 import Tippy from '@tippyjs/react';
 import { getWebhookEventsForEventId } from '../../services/service';
-import { showError } from './helpers/Helpers';
+import { showError, } from './helpers/Helpers';
+import { sortCallback } from '../common';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder}) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder }) {
 
     const [sourceValueAdv, setSourceValueAdv] = useState(material.type);
 
@@ -39,6 +40,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
     }, [])
 
     function buildHoverHtmlForWebhook(eventName, condition, selectors) {
+        // let webhookCondition = condition.sort((a, b) => sortCallback("selectorName", a, b))
+
         let _conditions = [];
         Object.keys(condition).forEach((_selectorId) => {
             let _selector = selectors.find(i => i.id == _selectorId);
@@ -141,7 +144,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 hideWebhookModal={hideWebhookModal}
                 workflowId={workflowId}
-                onClickWebhookTimeStamp={ onClickWebhookTimeStamp}
+                onClickWebhookTimeStamp={onClickWebhookTimeStamp}
                 webhhookTimeStampOrder={webhhookTimeStampOrder}
             />
         </div>
