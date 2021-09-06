@@ -87,10 +87,14 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
 
     const renderWebhookPayloads = () => {
 
+        let repoUrl = webhookPayloads?.repositoryUrl.replace(".git", "")
+        const tokens = repoUrl.split("/")
+        const { length, [length - 1]: repo } = tokens
+
         return <div className="pt-20 pb-8">
             <div className="fs-14 cn-9 fw-6 mb-8">
                 All incoming webhook payloads for
-            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /repo_name</a>
+            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /{repo}</a>
             </div>
             <div>
                 {webhookPayloads?.payloads == null ? <div className="bcn-1 empty-payload flex column mt-20 mr-20">
@@ -128,8 +132,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
     }
 
     const renderWebhookPagination = () => {
-        return pagination.size > 0 ? <Pagination 
-        offset={pagination.offset}
+        return pagination.size > 0 ? <Pagination
+            offset={pagination.offset}
             pageSize={pagination.pageSize}
             size={pagination.size}
             changePage={changePage}
@@ -157,7 +161,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
         </div>
     }
 
-    let webhookIncomingpayload =  webhookIncomingPayloadRes?.result?.selectorsData.sort((a, b) => sortCallback("selectorName", a, b))
+    let webhookIncomingpayload = webhookIncomingPayloadRes?.result?.selectorsData.sort((a, b) => sortCallback("selectorName", a, b))
     const renderWebhookDetailedDescription = () => {
         return (
             <div style={{ height: "calc(100vh - 94px" }} className="bcn-0 pl-16 mt-20 ">
@@ -188,7 +192,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                                     <div>Configured filter</div>
                                     <div>Result</div>
                                 </div>
-                                
+
                                 {webhookIncomingpayload?.map((selectedData, index) => {
                                     let classes = "cn-7 pt-8 pl-4 pb-8"
                                     if (index % 2 == 0) {
@@ -204,7 +208,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciMaterialId,
                             </div>
                         </div>
                         {console.log(webhookIncomingPayloadRes?.result)}
-                                {console.log(webhookIncomingPayloadRes?.result?.selectorsData)}
+                        {console.log(webhookIncomingPayloadRes?.result?.selectorsData)}
                     </>}
             </div>
         )
