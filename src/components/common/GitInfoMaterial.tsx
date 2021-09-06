@@ -67,8 +67,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 </div>
             </div>
         }
-        else return
-        <div className="select-material select-material--trigger-view">
+        else return <div className="select-material select-material--trigger-view">
             <div className="material-list__title pb-0">
                 Select Material
             </div>
