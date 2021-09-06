@@ -44,7 +44,12 @@ export interface GitOpsState {
         gitHubOrgId: string;
         gitLabGroupId: string;
         azureProjectName: string;
-    }
+    },
+    validateSuccess: boolean;
+    validateFailure: boolean,
+    validateLoading: boolean;
+    validatedTime: string;
+    validationError: GitOpsConfig[];
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
