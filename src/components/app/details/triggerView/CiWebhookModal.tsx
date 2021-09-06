@@ -158,7 +158,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                             </button>
                             <div className="cn-9 fw-6 fs-14 flex left">
                                 Filter matching results
-                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
+                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
                                     <Edit className=" icon-dim-24" />
                                 </button>
                             </div>
