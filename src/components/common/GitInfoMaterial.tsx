@@ -90,7 +90,8 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
             <CiWebhookModal
                 context={context}
                 webhookPayloads={webhookPayloads}
-                ciMaterialId={material[0].id}
+                ciPipelineMaterialId={material[0].id}
+                ciPipelineId={pipelineId}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 hideWebhookModal={hideWebhookModal}
                 workflowId={workflowId}

@@ -206,9 +206,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let state = { ...this.state };
             state.code = response.code;
             state.ciNodeId = + ciNodeId;
+            let workflowId;
             let workflows = this.state.workflows.map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == state.ciNodeId) {
+                        workflowId = workflow.id;
                         if (preserveMaterialSelection) {
                             let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected);
                             node.inputMaterialList = response.result.map((material) => {
@@ -232,7 +234,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 ciPipelineName: ciPipelineName,
                 materialType: 'inputMaterialList',
                 showCIModal: true,
-                workflowId: +ciNodeId,
+                workflowId: workflowId,
             }, () => {
                 this.getWorkflowStatus();
                 this.preventBodyScroll(true);
