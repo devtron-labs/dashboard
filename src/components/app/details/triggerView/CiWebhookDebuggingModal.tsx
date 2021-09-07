@@ -11,7 +11,7 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookDebuggingModal({ context, webhookPayloads, ciMaterialId, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
+export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
 
     const [showDeatailedPayload, setShowDetailedPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -20,8 +20,8 @@ export default function CiWebhookDebuggingModal({ context, webhookPayloads, ciMa
     const [parsedDataId, setParsedDataId] = useState(0)
 
     const history = useHistory()
-    const onEditShowEditableCiModal = (ciMaterialId, workflowId) => {
-        let link = `edit/workflow/${workflowId}/ci-pipeline/${ciMaterialId}`;
+    const onEditShowEditableCiModal = (ciPipelineId, workflowId) => {
+        let link = `edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`;
         history.push(link);
     }
 
@@ -58,7 +58,7 @@ export default function CiWebhookDebuggingModal({ context, webhookPayloads, ciMa
         return <div>
             <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
                 Configured filters
-                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciMaterialId, workflowId)}>
+                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
                     <Edit className=" icon-dim-24" />
                 </button> </div>
             <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
@@ -103,7 +103,7 @@ export default function CiWebhookDebuggingModal({ context, webhookPayloads, ciMa
 
                         {webhookPayloads?.payloads?.map((payload, index) =>
                             <div key={index} className="cn-5 pt-8 pb-8 fs-13" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                                <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
+                                <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
                                 <div className={payload.matchedFilters == false ? `deprecated-warn__text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
@@ -147,7 +147,7 @@ export default function CiWebhookDebuggingModal({ context, webhookPayloads, ciMa
                     </button>
                     <div className="cn-9 fw-6 fs-14 flex left">
                         Filter matching results
-                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciMaterialId, workflowId)}>
+                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>

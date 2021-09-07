@@ -58,7 +58,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
         </div>
     }
 
-    renderCardContent(context, workflowId) {
+    renderCardContent(context) {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
 
@@ -91,7 +91,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
         return <foreignObject className="data-hj-whitelist" x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
             <TriggerViewContext.Consumer>
                 {(context) => {
-                    return this.renderCardContent(context, this.props.workflowId)
+                    return this.renderCardContent(context)
                 }}
             </TriggerViewContext.Consumer>
         </foreignObject>
