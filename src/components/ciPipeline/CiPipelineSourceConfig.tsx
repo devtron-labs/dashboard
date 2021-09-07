@@ -6,7 +6,7 @@ import { SourceTypeMap } from '../../config';
 import { getWebhookEventsForEventId } from '../../services/service';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 
-export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip }) {
+export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip, showIcons = true, baseText = undefined }) {
 
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK;
 
@@ -55,26 +55,33 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip })
         _init();
     }, []);
 
-
     return (
         <div className={showTooltip ? "branch-name" : ""}>
-            {loading &&
+            {loading && showIcons &&
                 <span className="loading-dots">loading</span>
             }
             {!loading &&
                 <>
-                    <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
+                    { showIcons &&
+                        <img src={_isWebhook ? webhookIcon : branchIcon} alt="branch" className="icon-dim-12 mr-5" />
+                    }
                     { showTooltip &&
-                         <Tippy className="default-tt" arrow={false} placement="bottom" content={<div>{sourceValueAdv}</div>}>
-                          <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info  className="icon-dim-12 fcn-5 ml-4"/></div> 
-                        </Tippy>   
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
+                            <div>
+                                {!baseText &&
+                                    <div className="flex left"> <div className="ellipsis-right" >{sourceValueBase}</div> <Info className="icon-dim-12 fcn-5 ml-4" /></div>
+                                }
+                                {baseText &&
+                                    <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>{baseText}</span>
+                                }
+                            </div>
+                        </Tippy>
                     }
                     { !showTooltip &&
                         <>
                             <span className="ellipsis-right">{sourceValueAdv}</span>
                         </>
                     }
-
                 </>
             }
         </div>

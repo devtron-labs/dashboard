@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 import { CIMaterialType } from './MaterialHistory';
-import { HostURLConfig} from '../../../../services/service.types';
+import { HostURLConfig } from '../../../../services/service.types';
 export type CDMdalTabType = "SECURITY" | "CHANGES";
 
 export interface CDMaterialProps {
@@ -52,11 +52,19 @@ export interface CIMaterialRouterProps {
 }
 
 export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
+  workflowId: number;
   material: CIMaterialType[];
   pipelineId: number;
   title: string;
   isLoading: boolean;
   pipelineName: string;
+  showWebhookModal: boolean;
+  toggleWebhookModal: (id, webhookTimeStampOrder) => void;
+  webhookPayloads: WebhookPayloads;
+  isWebhookPayloadLoading: boolean;
+  hideWebhookModal : () => void;
+  onClickWebhookTimeStamp: () => void;
+  webhhookTimeStampOrder: string;
 }
 
 export interface NodeAttr {
@@ -180,6 +188,20 @@ export interface WorkflowType {
   dag: any;
 }
 
+export interface WebhookPayloadDataResponse {
+  ParsedDataId: number;  
+  EventTime: string;           
+  MatchedFiltersCount: number;
+  FailedFiltersCount: number;
+  MatchedFilters: boolean;
+}
+
+export interface WebhookPayloads {
+  filters: Map<string, string>
+  repositoryUrl: string
+  payloads: WebhookPayloadDataResponse[] | null
+}
+
 export interface TriggerViewState {
   code: number;
   view: string;
@@ -194,6 +216,11 @@ export interface TriggerViewState {
   isLoading: boolean;
   invalidateCache: boolean;
   hostURLConfig: HostURLConfig;
+  showWebhookModal: boolean;
+  webhookPayloads: WebhookPayloads;
+  isWebhookPayloadLoading: boolean;
+  workflowId: number;
+  webhhookTimeStampOrder: string;
 }
 
 //-- begining of response type objects for trigger view
