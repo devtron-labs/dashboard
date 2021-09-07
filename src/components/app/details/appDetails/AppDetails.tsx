@@ -792,7 +792,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         )}
         <div className="events-logs__dropdown-selector pods">
             <span className="events-logs__label">{kind}</span>
-            <div style={{ width: '175px' }}>
+            <div style={{ width: '175px', zIndex: 1000 }}>
                 <Select
                     placeholder={`Select ${kind}`}
                     options={Array.from(nodesMap).map(([name, data]) => ({
@@ -827,6 +827,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
                             direction: 'rtl',
+                            
                         }),
                     }}
                     components={{
