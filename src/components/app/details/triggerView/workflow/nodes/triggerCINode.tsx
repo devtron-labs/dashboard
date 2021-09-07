@@ -25,6 +25,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     downstreams?: string[];
     colorCode: string;
     inputMaterialsNew: CIMaterialType[];
+    workflowId: string;
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps>{
@@ -80,7 +81,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps>{
             </div>
             {this.renderStatus()}
             <div className="workflow-node__btn-grp">
-                <button className="workflow-node__deploy-btn workflow-node__deploy-btn--ci" onClick={(event) => { event.stopPropagation(); context.onClickCIMaterial(this.props.id, this.props.title) }}>Select Material</button>
+                <button className="workflow-node__deploy-btn workflow-node__deploy-btn--ci" onClick={(event) =>  {  event.stopPropagation(); context.onClickCIMaterial(this.props.id, this.props.title)  }}>Select Material</button>
             </div>
           
         </div>

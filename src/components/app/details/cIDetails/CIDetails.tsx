@@ -262,7 +262,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                         {
                             ciMaterial.type == SourceTypeMap.WEBHOOK &&
                             <div className="flex left column">
-                                <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value} showTooltip={false}></CiPipelineSourceConfig>
+                                <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value} showTooltip={false} />
                             </div>
                         }
 

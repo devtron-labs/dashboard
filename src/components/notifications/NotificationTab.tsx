@@ -480,7 +480,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <td className="pipeline-list__environment">
                             {_isCi &&
                                 <span className="flex left">
-                                    <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true}></CiPipelineSourceConfig>
+                                    <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true} />
                                 </span>
                             }
                             {row.pipelineType === "CD" ? row?.environmentName : ''}

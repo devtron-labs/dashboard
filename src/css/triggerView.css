@@ -450,7 +450,7 @@
 }
 
 .material-history:nth-child(2) {
-    margin-top: 0px;
+    /* margin-top: 0px; */
 }
 
 .material-history:last-child {

@@ -15,7 +15,7 @@ import { withRouter, NavLink } from 'react-router-dom';
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../../../services/service';
-
+import { getCIWebhookRes } from './ciWebhook.service'
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -32,6 +32,10 @@ export const TriggerViewContext = createContext({
     toggleInvalidateCache: () => { },
 });
 
+const TIME_STAMP_ORDER = {
+    DESCENDING: "DESC",
+    ASCENDING: "ASC"
+}
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef;
@@ -44,6 +48,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             workflows: [],
             cdNodeId: 0,
             ciNodeId: 0,
+            workflowId: 0,
             nodeType: null,
             ciPipelineName: "",
             materialType: "",
@@ -52,6 +57,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isLoading: false,
             invalidateCache: false,
             hostURLConfig: undefined,
+            showWebhookModal: false,
+            webhookPayloads: undefined,
+            isWebhookPayloadLoading: false,
+            webhhookTimeStampOrder: "DESC"
         }
         this.refreshMaterial = this.refreshMaterial.bind(this);
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this);
@@ -197,9 +206,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let state = { ...this.state };
             state.code = response.code;
             state.ciNodeId = + ciNodeId;
+            let workflowId;
             let workflows = this.state.workflows.map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == state.ciNodeId) {
+                        workflowId = workflow.id;
                         if (preserveMaterialSelection) {
                             let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected);
                             node.inputMaterialList = response.result.map((material) => {
@@ -216,12 +227,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
                 return workflow;
             })
+
             this.setState({
                 workflows: workflows,
                 ciNodeId: +ciNodeId,
                 ciPipelineName: ciPipelineName,
                 materialType: 'inputMaterialList',
-                showCIModal: true
+                showCIModal: true,
+                workflowId: workflowId,
             }, () => {
                 this.getWorkflowStatus();
                 this.preventBodyScroll(true);
@@ -570,6 +583,32 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCDModal: false })
     }
 
+    hideWebhookModal = () => {
+        this.setState({
+            showWebhookModal: false
+        })
+    }
+
+    onClickWebhookTimeStamp = () => {
+        if (this.state.webhhookTimeStampOrder === "DESC") {
+            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
+        }
+        if(this.state.webhhookTimeStampOrder === "ASC"){
+            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
+        }
+    }
+    
+    toggleWebhookModal = (id, webhhookTimeStampOrder) => {
+        this.setState({ isWebhookPayloadLoading: true })
+        getCIWebhookRes(id, this.state.webhhookTimeStampOrder).then((result) => {
+            this.setState({
+                showWebhookModal: true,
+                webhookPayloads: result?.result,
+                isWebhookPayloadLoading: false,
+            })
+        })
+    }
+
     renderCIMaterial = () => {
         if (this.state.ciNodeId && this.state.showCIModal) {
             let nd: NodeAttr;
@@ -579,6 +618,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
             let material = nd[this.state.materialType] || [];
             return <CIMaterial
+                workflowId={this.state.workflowId}
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
@@ -587,6 +627,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 isLoading={this.state.isLoading}
                 title={this.state.ciPipelineName}
                 pipelineId={this.state.ciNodeId}
+                showWebhookModal={this.state.showWebhookModal}
+                hideWebhookModal={this.hideWebhookModal}
+                toggleWebhookModal={this.toggleWebhookModal}
+                webhookPayloads={this.state.webhookPayloads}
+                isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
+                webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
             />
         }
     }
