@@ -152,7 +152,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
 
     let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     return (
-        <form onSubmit={handleOnSubmit} className="docker-form">
+        <form onSubmit={handleOnSubmit} className="docker-form" autoComplete="off">
             <div className="form__row">
                 <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>

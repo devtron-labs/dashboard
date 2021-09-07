@@ -303,7 +303,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
     return (
         <>
-            <form onSubmit={handleOnSubmit} className="git-form">
+            <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
                 <div className="mb-16">
                     <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 </div>
@@ -348,7 +348,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className="form__row form__row--auth-type pointer">
-                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' }]
+                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' },{ label: 'Anonymous', value: 'ANONYMOUS' },]
                         .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
                             <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
                         </label>)}
@@ -357,11 +357,11 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
                     <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                    <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
+                    <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
                 </div>}
-                {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
+                {/* {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                     <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-                </div>}
+                </div>} */}
                 <div className="form__row form__buttons">
                     <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                     <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
