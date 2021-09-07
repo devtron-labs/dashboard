@@ -114,11 +114,11 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         {
             (!_isWebhook) &&
             <>
-                <div className="ml-16 mr-16 flex left" style={{ justifyContent: "space-between" }}>
-                    {_commitUrl ? <a href={_commitUrl} target="_blank" rel="noopener" className="commit-hash mono" onClick={e => e.stopPropagation()}>
-                        <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit}
+                <div className="ml-16 mr-16 flex left">
+                    {_commitUrl ? <a href={_commitUrl} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
+                        <div className="material-history__header"> <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit} </div>
                     </a> : null}
-                    {selectedCommitInfo ? <div className="material-history__select-text" >
+                    {selectedCommitInfo ? <div className="material-history__select-text " >
                         {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>
