@@ -73,7 +73,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
     }
 
     function renderSeeMoreButtonForWebhook() {
-        return <button type="button" className="fs-12 fw-6 pt-8 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
+        return <button type="button" className="fs-12 fw-6 pt-12 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
             event.stopPropagation();
             setShowSeeMore(!showSeeMore)
         }}>
@@ -185,7 +185,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         }
         {
             _isWebhook && _webhookData.eventactiontype == "non-merged" && <>
-                <div className="flex left pr-16 pb-12 " style={{ justifyContent: "space-between" }}>
+                <div className="flex left pr-16 pb-8" style={{ justifyContent: "space-between" }}>
                     <div className="flex left cn-9 fs-13 ml-16"> {_webhookData.data["target checkout"]}</div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
                         {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
