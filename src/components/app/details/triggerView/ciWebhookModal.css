@@ -10,7 +10,7 @@
    min-height: 186px;
 }
 
-.empty-payload-wrapper{
+.payload-wrapper-no-header{
     height: calc(100vh - 74px);
 }
 

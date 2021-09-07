@@ -3,13 +3,13 @@ import { SourceTypeMap } from '../../config';
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory';
 import { MaterialSource } from '../app/details/triggerView/MaterialSource';
 import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMaterial';
-import CiWebhookModal from '../app/details/triggerView/CiWebhookModal';
+import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 
-export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId, onClickWebhookTimeStamp, webhhookTimeStampOrder }) {
+export default function GitInfoMaterial({ context, material, title, pipelineId, pipelineName, selectedMaterial, commitInfo, showWebhookModal, toggleWebhookModal, webhookPayloads, isWebhookPayloadLoading, hideWebhookModal, workflowId}) {
 
     let isWebhook = true
 
@@ -97,8 +97,6 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 hideWebhookModal={hideWebhookModal}
                 workflowId={workflowId}
-                onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                webhhookTimeStampOrder={webhhookTimeStampOrder}
             />
         </div>
     }

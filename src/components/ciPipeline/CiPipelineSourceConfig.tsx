@@ -55,7 +55,6 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip, s
         _init();
     }, []);
 
-
     return (
         <div className={showTooltip ? "branch-name" : ""}>
             {loading && showIcons &&
@@ -83,7 +82,6 @@ export function CiPipelineSourceConfig({ sourceType, sourceValue, showTooltip, s
                             <span className="ellipsis-right">{sourceValueAdv}</span>
                         </>
                     }
-
                 </>
             }
         </div>
