@@ -13,7 +13,7 @@ import moment from 'moment';
 
 export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
 
-    const [showDeatailedPayload, setShowDetailedPayload] = useState(false)
+    const [showDetailedIncomingPayload, setShowDetailedIncomingPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [expandIncomingPayload, setExpandedIncomingPayload] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
@@ -27,7 +27,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const getCIWebhookPayloadRes = (pipelineMaterialId, parsedDataId) => {
         setParsedDataId(parsedDataId)
-        setShowDetailedPayload(true);
+        setShowDetailedIncomingPayload(true);
         setIsPayloadLoading(true)
         try {
             getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
@@ -117,7 +117,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
     const renderTimeStampDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
-                <button type="button" className="transparent flex" onClick={() => { setShowDetailedPayload(!showDeatailedPayload); setExpandedIncomingPayload(false) }}>
+                <button type="button" className="transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
                     <Back />
                 </button>
                 <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads
@@ -193,7 +193,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         </>
     }
 
-    const renderTimeStampDetailedPayload = () => {
+    const renderTimeStampDetailedIncomingModal = () => {
         return (
             <div className="bcn-0" style={{ position: "fixed", top: "0", right: "0", width: '800px', background: 'var(--N000)', zIndex: 100 }}>
                 <div>{renderTimeStampDetailedHeader(context)}</div>
@@ -211,7 +211,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     return (
         <div>
-            {showDeatailedPayload ? renderTimeStampDetailedPayload() : renderWebHookModal()}
+            {showDetailedIncomingPayload ? renderTimeStampDetailedIncomingModal() : renderWebHookModal()}
         </div>
     )
 }
