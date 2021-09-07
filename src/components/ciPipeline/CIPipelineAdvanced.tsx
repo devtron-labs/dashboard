@@ -12,6 +12,7 @@ import trash from '../../assets/icons/misc/delete.svg';
 import { ReactComponent as InfoIcon } from '../../assets/icons/appstatus/ic-appstatus-failed.svg';
 import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import { CIPipelineState } from './types';
+import { ReactComponent as Info } from '../../assets/icons/appstatus/info-filled.svg';
 
 interface CIPipelineAdvancedProps extends CIPipelineState {
     copyToClipboard: (text: string) => void;
@@ -50,6 +51,13 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             onClick={() => { this.props.addEmptyStage(key) }}>
             <Add className="icon-dim-24 fcb-5 vertical-align-middle mr-16" />
             <span className="artifact__add">Add Stage</span>
+        </div>
+    }
+
+    renderBuildReportInfo = () => {
+       return <div className="flex left mt-4 fw-4">
+            <Info className="icon-dim-20" />
+            <div className="cn-5 ml-4">Output files for the above script will be archived here</div>
         </div>
     }
 
@@ -114,6 +122,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                             <label className="form__row">
                                 <span className="form__label">Report Directory</span>
                                 <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
+                                {this.renderBuildReportInfo()}
                             </label>
                             <div className="form__buttons">
                                 <button type="button" className="cta tertiary mr-16" onClick={(event) => this.props.discardChanges(stage.id, key, index)}>Cancel</button>
@@ -148,6 +157,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                             <label className="form__row">
                                 <span className="form__label">Report Directory</span>
                                 <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
+                                {this.renderBuildReportInfo()}
                             </label>
                             <div className="form__buttons">
                                 <button type="button" className="cta tertiary mr-16" onClick={(event) => this.props.discardChanges(stage.id, key, index)}>Cancel</button>
