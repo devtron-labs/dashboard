@@ -240,6 +240,7 @@
     margin: 0px auto;
     margin-left: 16px;
     font-family: monospace;
+    margin-right: 16px;
 }
 
 .material-history__commit-msg {
