@@ -151,7 +151,7 @@ export class AppListView extends Component<AppListViewProps>{
     renderAppListRows() {
         if (!this.props.apps.length && this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
-                <div className="loading-wrapper">
+                <div data-testid="applist-loading" className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             </React.Fragment>

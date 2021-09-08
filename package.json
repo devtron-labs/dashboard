@@ -47,7 +47,7 @@
         "lint-fix": "eslint --fix src/**/*.tsx",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
-        "test": "react-app-rewired test --env=jest-environment-jsdom-sixteen",
+        "test": "react-app-rewired test --env=jest-environment-jsdom-sixteen --updateSnapshot",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
         "test:ci": "./node_modules/.bin/react-app-rewired test --env=jest-environment-jsdom-sixteen --watchAll=false --ci --coverage --reporters=default --reporters=jest-junit",
@@ -92,7 +92,7 @@
         "node-sass": "4",
         "prettier": "^2.0.5",
         "react-scripts": "3.2.0",
-        "react-test-render": "^1.1.2",
+        "react-test-renderer": "^17.0.2",
         "ts-jest": "^24.1.0",
         "ts-node": "^8.5.2",
         "typescript": "^3.8.2"

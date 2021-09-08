@@ -8,6 +8,7 @@ import { URLS, ViewType } from '../../../config';
 import { ExternalListView } from './ExternalListView';
 import { ExternalFilters } from './external.util'
 import * as queryString from 'query-string';
+import { withRouter } from 'react-router-dom';
 
 const QueryParams = {
     Cluster: "cluster",
@@ -15,7 +16,7 @@ const QueryParams = {
     Appstore: "appstore"
 }
 
-export default class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
+class ExternalListContainer extends Component<ExternalListContainerProps, ExternalListContainerState> {
     abortController: AbortController;
 
     constructor(props) {
@@ -276,3 +277,4 @@ export default class ExternalListContainer extends Component<ExternalListContain
         )
     }
 }
+export default withRouter(ExternalListContainer)
