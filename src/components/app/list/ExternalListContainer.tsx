@@ -107,7 +107,7 @@ class ExternalListContainer extends Component<ExternalListContainerProps, Extern
         this.setState({ view: ViewType.LOADING });
         getExternalList(this.props.location.search).then((response) => {
             this.setState({
-                externalList: response.result,
+                externalList: response,
                 view: ViewType.FORM
             })
         }).catch((error) => {

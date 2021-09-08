@@ -59,8 +59,8 @@ export default class ListContainer extends Component<ListContainerProps, {}> {
                 <NavLink activeClassName="active" to={`${URLS.EXTERNAL_APP}`} className="tab-list__tab-link">External Apps [E]</NavLink>
             </li>
             <li className="tab-list__tab--right mt-9 mb-9 mr-20">
-                <button type="button" className="cta h-30" onClick={this.openCreateModal}>
-                    <Add className="" />New app
+                <button type="button" className="cta h-30 flex" onClick={this.openCreateModal}>
+                    <Add className="icon-dim-20" />New app
                 </button>
             </li>
         </ul>
@@ -70,10 +70,10 @@ export default class ListContainer extends Component<ListContainerProps, {}> {
         return <Switch>
             <Route path={`${URLS.APP}`} component={AppListContainer} />
             <Route path={`${URLS.EXTERNAL_APP}`} component={ExternalListContainer} />
-            <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
+            {/* <Route path={`${URLS.APP}/${APP_LIST_PARAM.createApp}`}
                 render={(props) => <AddNewApp close={this.props.closeModal}
                     match={props.match} location={props.location} history={props.history} />}
-            />
+            /> */}
             <Redirect to={`${URLS.APP}`} />
         </Switch>
     }
