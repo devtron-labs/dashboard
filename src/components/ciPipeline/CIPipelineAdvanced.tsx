@@ -57,7 +57,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     renderBuildReportInfo = () => {
        return <div className="flex left mt-4 fw-4">
             <Info className="icon-dim-20" />
-            <div className="cn-5 ml-4">Output files for the above script will be archived here</div>
+            <div className="cn-5 ml-4">Directory in which above script is writing/producing output files(eg. test report, zip files etc)</div>
         </div>
     }
 
@@ -120,8 +120,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                 </div>
                             </label>
                             <label className="form__row">
-                                <span className="form__label">Report Directory</span>
-                                <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
+                                <span className="form__label">Report directory path</span>
+                                <input className="form__input" autoComplete="off" placeholder="Enter report directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
                                 {this.renderBuildReportInfo()}
                             </label>
                             <div className="form__buttons">
@@ -155,7 +155,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                 </div>
                             </label>
                             <label className="form__row">
-                                <span className="form__label">Report Directory</span>
+                                <span className="form__label">Report directory path</span>
                                 <input className="form__input" autoComplete="off" placeholder="Enter directory path" type="text" value={stage.outputLocation} onChange={(event) => this.props.handleChange(event, stage.id, key, index, 'outputLocation')} />
                                 {this.renderBuildReportInfo()}
                             </label>
