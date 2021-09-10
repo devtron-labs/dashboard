@@ -12,7 +12,7 @@ export interface SummaryProps {
 
 export const SummaryView: React.FC<SummaryProps> = ({ appName, environmentName, nodeName, nodes }) => {
     const { queryParams, searchParams } = useSearchString()
-    const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
+    const node = searchParams?.kind && nodes?.nodes[searchParams.kind]?.has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [manifest, setManifest] = useState(null);
     const [isManifestLoading, setManifestLoading] = useState(true);
 

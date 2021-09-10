@@ -30,7 +30,7 @@ export interface ManifestProps {
 
 export const ManifestView: React.FC<ManifestProps> = ({ nodeName, nodes, appName, environmentName }) => {
     const { queryParams, searchParams } = useSearchString()
-    const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
+    const node = searchParams?.kind && nodes?.nodes[searchParams.kind]?.has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: `${appName}-${environmentName}` }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
     const [manifest, setManifest] = useState(null)
     const [manifestTab, setManifestTab] = useState<ManifesTabType>(ManifestTab.Live);
