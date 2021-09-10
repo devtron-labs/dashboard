@@ -8,15 +8,13 @@ import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import {ReactComponent as Info} from '../../assets/icons/ic-info-filled-purple.svg';
-import {ReactComponent as Close} from '../../assets/icons/ic-close.svg';
-import {ReactComponent as CheckGreen} from '../../assets/icons/ic-check.svg';
-import Help from '../../assets/icons/ic-help-green.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'
+import { ValidateForm, ValidateLoading, ValidationSuccess, ValidateFailure} from '../common/ValidateForm/ValidateForm';
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -85,67 +83,20 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({
     </div>
 }
 
-const ValidationFailureTab: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; validateGitOps: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, validateGitOps, formData }) => {
-    return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
-            <div className="flex">
-                <Close className="icon-dim-20 scr-5 ml--3 stroke_width" />
-                <div className="fs-13">
-                    <span className="ml-8 fw-6">Configurations validation failed</span>
-                </div>
-            </div>
-            {formData.id &&
-                <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>}
-        </div>
-        <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
-            <div className="fs-13">
-                <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
-                {Object.entries(validationError).map(([value, name]) =>
-                   <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
-
-                )}
-            </div>
-        </div>
-    </div>
+const FailureTabValidation: React.FC<{ validatedTime: string; validationError: GitOpsConfig[]; validateGitOps: () => void; formData: GitOpsConfig }> = ({ validatedTime, validationError, validateGitOps, formData }) => {
+   return <ValidateFailure validationError={validationError}onClickValidate={validateGitOps} formId={formData.id} />
 }
 
-const ValidationSuccess: React.FC<{ validatedTime: string; validateGitOps: () => void; }> = ({ validatedTime, validateGitOps }) => {
-    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex flex-justify">
-            <div className="flex">
-                <CheckGreen className="icon-dim-20 scg-5" />
-                <div className="fs-13">
-                    <span className="ml-8 fw-6">Configurations validated</span>
-                </div>
-            </div>
-            <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>
-        </div>
-    </div>
+const SuccessValidation: React.FC<{ validatedTime: string; validateGitOps: () => void; }> = ({ validatedTime, validateGitOps }) => {
+    return  <ValidationSuccess onClickValidate={validateGitOps}/>
 }
 
-const ValidateExisting: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
-    return <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex flex-justify">
-            <div className="flex">
-                <img src={Help} className="icon-dim-20" />
-                <div className="fs-13">
-                    <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
-                </div>
-            </div>
-            <a onClick={() => validateGitOps()} className="fw-6 onlink pointer">VALIDATE</a>
-        </div>
-    </div>
+const ExistingValidation: React.FC<{ tab: string; validateGitOps: () => void; }> = ({ tab, validateGitOps }) => {
+    return <ValidateForm  onClickValidate={validateGitOps}/>
 }
 
-const ValidateLoading: React.FC<{ tab: string; }> = ({ tab }) => {
-    return <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
-        <div className="flex left">
-            <div><Progressing /></div>
-            <div className="fs-13">
-                <span className="ml-8 fw-6">Validating GitOps configuration. Please wait…</span>
-            </div>
-        </div>
-    </div>
+const LoadingValidation: React.FC<{ tab: string; }> = ({ tab }) => {
+    return <ValidateLoading message={"Validating GitOps configuration. Please wait…"}/>
 }
 
 class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
@@ -404,13 +355,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                  title={this.state.tab === GitProvider.GITLAB ? "group in GitLab" : this.state.tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"}
                  />
                 {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
-                    <ValidateExisting tab={this.state.tab} validateGitOps={() => this.validateGitOps()} />}
+                    <ExistingValidation tab={this.state.tab} validateGitOps={() => this.validateGitOps()} />}
                 {this.state.validateLoading &&
-                    <ValidateLoading tab={this.state.tab} />}
+                    <LoadingValidation tab={this.state.tab} />}
                 {this.state.validateFailure && this.state.validateLoading != true &&
-                    <ValidationFailureTab validatedTime={this.state.validatedTime} validationError={this.state.validationError} validateGitOps={() => this.validateGitOps()} formData={this.state.form} />}
+                    <FailureTabValidation validatedTime={this.state.validatedTime} validationError={this.state.validationError} validateGitOps={() => this.validateGitOps()} formData={this.state.form} />}
                 {this.state.validateSuccess && this.state.validateLoading != true &&
-                    <ValidationSuccess validatedTime={this.state.validatedTime} validateGitOps={() => this.validateGitOps()} />}
+                    <SuccessValidation validatedTime={this.state.validatedTime} validateGitOps={() => this.validateGitOps()} />}
+
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
