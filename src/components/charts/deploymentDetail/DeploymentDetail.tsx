@@ -68,7 +68,7 @@ export default function AppDetail() {
             setInstalledConfig(result);
             setPollingRequired(false);
             history.push(`${url}/update-chart`);
-        } catch (err) {
+        } catch (err: any) {
             if (Array.isArray(err.errors)) {
                 err.errors.map(({ userMessage }, idx) => toast.error(userMessage));
             }

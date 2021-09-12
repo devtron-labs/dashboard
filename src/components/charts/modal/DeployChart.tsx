@@ -187,7 +187,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
             }
         }
-        catch (err) {
+        catch (err: any) {
             if (Array.isArray(err.errors)) {
                 err.errors.map(({ userMessage }, idx) => toast.error(userMessage, { autoClose: false }))
             }
@@ -336,7 +336,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         return [];
     }
 
-    async function repoChartLoadOptions(inputValue: string, callback) {
+    async function repoChartLoadOptions(inputValue: string, callback: (options: any) => void) {
         const matchedCharts = (await getChartsByKeyword(inputValue)).result;
         callback(filterMatchedCharts(matchedCharts));
     }
@@ -547,7 +547,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 }
 
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
-    
+
     return (
         <div className="deploy-chart__readme-column">
             <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />

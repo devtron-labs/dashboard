@@ -7,6 +7,7 @@ import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
 import { editor } from 'monaco-editor';
+// import LanguageServiceDefaults from 'monaco-yaml';
 
 interface WarningProps { text: string }
 
@@ -111,7 +112,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-   
+
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco
@@ -122,6 +123,50 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                 requestAnimationFrame(updateEditorHeight); // folding
             });
         }
+    }
+
+    function editorWillMount(monaco) {
+        // let modelUri = monaco.Uri.parse("a://b/foo.json");
+        console.log(monaco.languages.getLanguages())
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: [{
+                uri: "http://myserver/foo-schema.json", // id of the first schema
+                fileMatch: ['*'], // associate with our model
+                schema: {
+                    type: "object",
+                    properties: {
+                        p1: {
+                            enum: ["v1", "v2"]
+                        },
+                        p2: {
+                            $ref: "http://myserver/bar-schema.json" // reference the second schema
+                        },
+                        replicaCount: {
+                            $id: "#/properties/replicaCount",
+                            type: "integer",
+                            title: "The replicaCount schema",
+                            description: "Number of pods to be created",
+                            default: 0,
+                            examples:
+                            [
+                                1
+                            ]
+                        }
+                    }
+                }
+            }, {
+                uri: "http://myserver/bar-schema.json", // id of the second schema
+                schema: {
+                    type: "object",
+                    properties: {
+                        q1: {
+                            enum: ["x1", "x2"]
+                        }
+                    }
+                }
+            }]
+        });
     }
 
     const updateEditorHeight = () => {
@@ -250,6 +295,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             onChange={handleOnChange}
                             editorDidMount={editorDidMount}
+                            editorWillMount={editorWillMount}
                             height={state.height || "100%"}
                             width="100%"
                         />

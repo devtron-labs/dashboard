@@ -110,7 +110,7 @@ export default function App() {
 					push(newLocation);
 				}
 			}
-			catch (err) {
+			catch (err: any) {
 				try {
 					posthog.reset();
 				} catch (e) { }

@@ -15,7 +15,7 @@ import Tippy from '@tippyjs/react';
 import AppSelector from '../AppSelector'
 
 export default function ChartGroupAdvanceDeploy() {
-    const { groupId } = useParams();
+    const { groupId } = useParams<any>();
     const { push } = useHistory();
     const location = useLocation()
     const [project, setProject] = useState({id: null, error: ""})
@@ -46,7 +46,7 @@ export default function ChartGroupAdvanceDeploy() {
 
     const {url, path} = useRouteMatch();
     const [deployed, setDeployed] = useState(false)
-    
+
     useEffectAfterMount(()=>{
         if(state.loading) return
         if (state.charts.length === 0) {
@@ -62,7 +62,7 @@ export default function ChartGroupAdvanceDeploy() {
             setProject({ id: (location?.state as any).projectId, error: "" })
         }
     },[state.chartGroupDetailsLoading])
-    
+
     const reloadCallback = useCallback((event) => {
         event.preventDefault();
         if (!isLeavingPageAllowed) {
@@ -99,7 +99,7 @@ export default function ChartGroupAdvanceDeploy() {
             await deployChartGroup(project.id, deployableCharts, Number(groupId));
             setDeployed(true)
             toast.success('Deployment initiated')
-            
+
         }
         catch (err) {
             showError(err)

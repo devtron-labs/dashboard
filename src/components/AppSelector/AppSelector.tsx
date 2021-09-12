@@ -70,7 +70,7 @@ const AppSelector: React.FC<{
                     color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
                 }),
                 singleValue: (base, state) => ({
-                    ...state,
+                    ...base,
                     flexBasis: 0,
                     height: '32px',
                 }),

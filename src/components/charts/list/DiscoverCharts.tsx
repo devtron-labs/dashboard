@@ -414,7 +414,7 @@ export default function DiscoverCharts() {
         <Route path={`${path}/group`}>
             <ChartGroupList />
         </Route>
-        <Route path={`${path}/chart/:chartId/chart-value/:chartValueId?`} render={(props) => {
+        <Route path={`${path}/chart/:chartId/chart-value/:chartValueId?`} render={(props: any) => {
             return <ChartValues location={props.location} match={props.match} history={props.history} />
         }} />
         <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
