@@ -86,7 +86,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const [validateSuccess, setValidateSuccess] = useState(false);
     const [validateFailure, setValidateFailure] = useState(false);
     const [validateLoading, setValidateLoading] = useState(false)
-    const [validationError, setValidationError] = useState([]);
+    const [validationError, setValidationError] = useState("");
     const [loading, setLoading] = useState(false)
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -195,7 +195,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {id && validateFailure != true && validateSuccess != true && validateLoading != true &&
                 <ValidateForm onClickValidate={onClickValidate} />}
             {validateLoading &&
-                <ValidateLoading message="Validating GitOps configuration. Please wait… " />}
+                <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validateFailure && validateLoading != true &&
                 <ValidateFailure validatedTime={""} validationError={validationError} onClickValidate={() => onClickValidate} formId={id} />}
             {validateSuccess && validateLoading != true &&
