@@ -10,6 +10,7 @@ import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
 import { ValidateForm, ValidateLoading, ValidationSuccess, ValidateFailure } from '../common/ValidateForm/ValidateForm';
 
+
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
     if (loading && !result) return <Progressing pageLoader />
@@ -81,6 +82,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
 }
 
 function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+
     const [validateSuccess, setValidateSuccess] = useState(false);
     const [validateFailure, setValidateFailure] = useState(false);
     const [validateLoading, setValidateLoading] = useState(false)
@@ -126,17 +128,18 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         return isInvalid;
     }
 
+    const chartRepoPayload = {
+        id: id || 0,
+        name: state.name.value,
+        url: state.url.value,
+        authMode: state.auth.value,
+        active: true,
+        ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
+        ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+    }
+
     async function onSaveRepo() {
         setValidateLoading(true);
-        let payload = {
-            id: id || 0,
-            name: state.name.value,
-            url: state.url.value,
-            authMode: state.auth.value,
-            active: true,
-            ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-            ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
-        }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
 
         try {
@@ -144,7 +147,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             setValidateSuccess(true);
             setValidateFailure(false);
             setValidateLoading(false);
-            await api(payload, id);
+            await api(chartRepoPayload, id);
             await reload();
             toast.success('Successfully saved.')
         }
@@ -163,16 +166,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
 
         setValidateLoading(true);
-        let payload = {
-            id: id || 0,
-            name: state.name.value,
-            url: state.url.value,
-            authMode: state.auth.value,
-            active: true,
-            ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-            ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
-        }
-        let promise = validateChartRepoConfiguration(payload)
+
+        let promise = validateChartRepoConfiguration(chartRepoPayload)
         promise.then((response) => {
             let validateResp = response?.result
             let isValidate = validateResp?.customErrMsg ? validateResp?.customErrMsg : "";
