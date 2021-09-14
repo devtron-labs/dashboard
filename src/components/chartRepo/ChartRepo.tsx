@@ -86,7 +86,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const [validateSuccess, setValidateSuccess] = useState(false);
     const [validateFailure, setValidateFailure] = useState(false);
     const [validateLoading, setValidateLoading] = useState(false)
-    const [validationError, setValidationError] = useState("");
+    const [validationError, setValidationError] = useState([]);
     const [loading, setLoading] = useState(false)
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -108,25 +108,9 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ }
             }
-        }, onSaveRepo);
+        }, onClickValidate || onSaveRepo);
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
-
-    const isInvalid = () => {
-        if (state.auth.value === 'USERNAME_PASSWORD') {
-            if (!customState.password.value || !customState.username.value) {
-                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
-                return
-            }
-        }
-        else if (state.auth.value === "ACCESS_TOKEN") {
-            if (!customState.accessToken.value) {
-                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
-                return
-            }
-        }
-        return isInvalid;
-    }
 
     const chartRepoPayload = {
         id: id || 0,
@@ -138,18 +122,86 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
     }
 
+    const isFormInvalid = () => {
+        let isValid = true
+
+        if (state.name.error.length > 0 || state.url.error.length > 0) {
+            isValid = false
+        }
+
+        if (state.auth.value === 'USERNAME_PASSWORD') {
+            if (!customState.password.value || !customState.username.value) {
+                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
+                isValid = false
+            }
+        }
+        else if (state.auth.value === "ACCESS_TOKEN") {
+            if (!customState.accessToken.value) {
+                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
+                isValid = false
+            }
+        }
+        return isValid
+    }
+
+    async function onClickValidate() {
+        setValidateLoading(true);
+        let isInvalid = isFormInvalid();
+        if (!isInvalid) {
+            toast.error("Some Required Fields are missing");
+            setValidateLoading(false);
+            return
+        }
+
+        let promise = validateChartRepoConfiguration(chartRepoPayload)
+        await promise.then((response) => {
+            let validateResp = response?.result
+            if (!validateResp.actualErrMsg.length) {
+                setValidateSuccess(true);
+                setValidateFailure(false);
+                setValidateLoading(false);
+                setValidationError(validateResp || [])
+                toast.success("Configuration validated");
+            } else if (validateResp.actualErrMsg.length > 0) {
+                setValidateSuccess(false);
+                setValidateFailure(true);
+                setValidateLoading(false);
+                setValidationError(validateResp || [])
+                toast.error("Configuration validation failed");
+            }
+        }).catch((error) => {
+            showError(error);
+            setLoading(false);
+            setValidateLoading(false);
+        })
+    }
+
     async function onSaveRepo() {
         setValidateLoading(true);
+        let isInvalid = isFormInvalid();
+        if (!isInvalid) {
+            toast.error("Some Required Fields are missing");
+            setValidateLoading(false);
+            return
+        }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
 
         try {
             setLoading(true);
-            setValidateSuccess(true);
-            setValidateFailure(false);
-            setValidateLoading(false);
-            await api(chartRepoPayload, id);
+            const { result } = await api(chartRepoPayload, id);
             await reload();
-            toast.success('Successfully saved.')
+            if (result) {
+                toast.success('Successfully saved.')
+                setValidateSuccess(true);
+                setValidateFailure(false);
+            }
+            else {
+                setValidateLoading(true);
+                setValidateFailure(true);
+                setValidateSuccess(false);
+                setLoading(false);
+                toast.error("Configuration validation failed");
+            }
         }
         catch (err) {
             showError(err)
@@ -160,36 +212,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
-    async function onClickValidate() {
-        if (isInvalid) {
-            toast.error("Some Required Fields are missing");
-        }
-
-        setValidateLoading(true);
-
-        let promise = validateChartRepoConfiguration(chartRepoPayload)
-        promise.then((response) => {
-            let validateResp = response?.result
-            let isValidate = validateResp?.customErrMsg ? validateResp?.customErrMsg : "";
-            if (isValidate != null && isValidate.length > 0) {
-                setValidateSuccess(true);
-                setValidateFailure(false);
-                setValidateLoading(false);
-                toast.success("Configuration validated");
-            } else {
-                setValidateSuccess(false);
-                setValidateFailure(true);
-                setValidateLoading(false);
-                setValidationError(validateResp?.customErrMsg || "")
-                toast.error("Configuration validation failed");
-            }
-        }).catch((error) => {
-            showError(error);
-            setLoading(false);
-            setValidateLoading(false);
-        })
-    }
-
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             {id && validateFailure != true && validateSuccess != true && validateLoading != true &&
@@ -197,7 +219,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {validateLoading &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validateFailure && validateLoading != true &&
-                <ValidateFailure validatedTime={""} validationError={validationError} onClickValidate={() => onClickValidate} formId={id} />}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} />}
             {validateSuccess && validateLoading != true &&
                 <ValidationSuccess onClickValidate={onClickValidate} />}
 

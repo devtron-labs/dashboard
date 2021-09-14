@@ -46,7 +46,7 @@ export function ValidationSuccess({ onClickValidate }) {
     </div>
 }
 
-export function ValidateFailure({ formId, validationError, onClickValidate, validatedTime }) {
+export function ValidateFailure({ formId, validationError, onClickValidate, validatedTime="" }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
