@@ -83,11 +83,8 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
 
 function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
 
-    const [validateSuccess, setValidateSuccess] = useState(false);
-    const [validateFailure, setValidateFailure] = useState(false);
-    const [validateLoading, setValidateLoading] = useState(false)
     const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
-    const [errorTitle, setErrorTitle] = useState("")
+    const [validationStatus, setValidationStatus] = useState("DRY_RUN" || "FAILURE" || "LOADING" || "SUCCESS")
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -146,11 +143,11 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     }
 
     async function onClickValidate() {
-        setValidateLoading(true);
+        setValidationStatus("LOADING")
         let isInvalid = isFormInvalid();
         if (!isInvalid) {
             toast.error("Some Required Fields are missing");
-            setValidateLoading(false);
+            setValidationStatus("")
             return
         }
 
@@ -158,30 +155,25 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         await promise.then((response) => {
             let validateResp = response?.result
             if (!validateResp.actualErrMsg.length) {
-                setValidateSuccess(true);
-                setValidateFailure(false);
-                setValidateLoading(false);
+                setValidationStatus("SUCCESS")
                 toast.success("Configuration validated");
             } else if (validateResp.actualErrMsg.length > 0) {
-                setValidateSuccess(false);
-                setValidateFailure(true);
-                setValidateLoading(false);
+                setValidationStatus("FAILURE")
                 setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
             showError(error);
             setLoading(false);
-            setValidateLoading(false);
         })
     }
 
     async function onClickSave() {
-        setValidateLoading(true);
+        setValidationStatus("LOADING")
         let isInvalid = isFormInvalid();
         if (!isInvalid) {
             toast.error("Some Required Fields are missing");
-            setValidateLoading(false);
+            setValidationStatus("")
             return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
@@ -191,14 +183,11 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             const { result } = await api(chartRepoPayload, id);
             await reload();
             if (result && !result?.actualErrMsg) {
+                setValidationStatus("SUCCESS")
                 toast.success('Successfully saved.')
-                setValidateSuccess(true);
-                setValidateFailure(false);
             }
             else {
-                setValidateLoading(true);
-                setValidateFailure(true);
-                setValidateSuccess(false);
+                setValidationStatus("FAILURE")
                 setLoading(false);
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
                 toast.error("Configuration validation failed");
@@ -209,7 +198,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
         finally {
             setLoading(false);
-            setValidateLoading(false);
         }
     }
 
@@ -217,12 +205,11 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             < ValidatingForm
                 id={id}
-                validateFailure={validateFailure}
-                validateSuccess={validateSuccess}
-                validateLoading={validateLoading}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
-                isChartRepo={true} />
+                isChartRepo={true}
+                validationStatus={validationStatus}
+            />
 
             <div className="form__row form__row--two-third">
                 <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />

@@ -78,16 +78,16 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
 
 }
 
-export function ValidatingForm({ id, validateFailure, validateSuccess, validateLoading, onClickValidate, validationError, isChartRepo = false }) {
+export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "" }) {
     return (
         <div className="mt-16">
-            {id && validateFailure != true && validateSuccess != true && validateLoading != true &&
+            {id && validationStatus == "DRY_RUN" &&
                 <ValidateForm onClickValidate={onClickValidate} />}
-            {validateLoading &&
+            { validationStatus == "LOADING" &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
-            {validateFailure && validateLoading != true &&
+            {validationStatus == "FAILURE" &&
                 <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} />}
-            {validateSuccess && validateLoading != true &&
+            {validationStatus == "SUCCESS" &&
                 <ValidationSuccess onClickValidate={onClickValidate} />}
         </div>
     )
