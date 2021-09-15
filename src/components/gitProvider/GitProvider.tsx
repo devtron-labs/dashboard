@@ -161,7 +161,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
     }, [enabled])
 
     return (
-        <article className={`collapsed-list collapsed-list--git collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className="">
                     <span className="mr-8">

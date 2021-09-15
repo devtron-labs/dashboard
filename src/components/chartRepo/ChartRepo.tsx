@@ -3,12 +3,19 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig } from './service'
+import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration } from './chartRepo.service'
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
+import { ValidatingForm } from '../common/ValidateForm/ValidateForm';
 
+export enum VALIDATION_STATUS {
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+    LOADER = 'LOADER',
+    DRY_RUN= 'DRY_RUN'
+};
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -56,7 +63,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }, [enabled])
 
     return (
-        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
                 <div className="flex left ml-8">
@@ -75,11 +82,17 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
         </article>
     )
 }
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
+
+    const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
+    const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
+    const [loading, setLoading] = useState(false);
+    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -99,42 +112,91 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ }
             }
-        }, onValidation);
-    const [loading, setLoading] = useState(false)
-    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
+        }, onClickSave);
+
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
-    async function onValidation() {
+    const chartRepoPayload = {
+        id: id || 0,
+        name: state.name.value,
+        url: state.url.value,
+        authMode: state.auth.value,
+        active: true,
+        ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
+        ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+    }
+
+    const isFormInvalid = () => {
+        let isValid = true
+
+        if (state.name.error.length > 0 || state.url.error.length > 0) {
+            isValid = false
+        }
+
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
-                return
+                isValid = false
             }
         }
         else if (state.auth.value === "ACCESS_TOKEN") {
             if (!customState.accessToken.value) {
                 setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
-                return
+                isValid = false
             }
         }
+        return isValid
+    }
 
-        let payload = {
-            id: id || 0,
-            name: state.name.value,
-            url: state.url.value,
-            authMode: state.auth.value,
-            active: true,
-            ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-            ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+    async function onClickValidate() {
+        setValidationStatus(VALIDATION_STATUS.LOADER)
+        let isInvalid = isFormInvalid();
+        if (!isInvalid) {
+            toast.error("Some Required Fields are missing");
+            return
+        }
+
+        let promise = validateChartRepoConfiguration(chartRepoPayload)
+        await promise.then((response) => {
+            let validateResp = response?.result
+            if (!validateResp.actualErrMsg.length) {
+                setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                toast.success("Configuration validated");
+            } else if (validateResp.actualErrMsg.length > 0) {
+                setValidationStatus(VALIDATION_STATUS.FAILURE)
+                setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
+                toast.error("Configuration validation failed");
+            }
+        }).catch((error) => {
+            showError(error);
+            setLoading(false);
+        })
+    }
+
+    async function onClickSave(e) {
+        setValidationStatus(VALIDATION_STATUS.LOADER)
+        let isInvalid = isFormInvalid();
+        if (!isInvalid) {
+            toast.error("Some Required Fields are missing");
+            return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
 
         try {
-            setLoading(true)
-            const { result } = await api(payload, id);
-
-            await reload();
-            toast.success('Successfully saved.')
+            setLoading(true);
+            const { result } = await api(chartRepoPayload, id);
+          
+            if (result && !result?.actualErrMsg) {
+                setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                toast.success('Successfully saved.')
+                await reload();
+            }
+            else {
+                setValidationStatus(VALIDATION_STATUS.FAILURE)
+                setLoading(false);
+                setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
+                toast.error("Configuration validation failed");
+            }
         }
         catch (err) {
             showError(err)
@@ -143,8 +205,18 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             setLoading(false);
         }
     }
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
+            < ValidatingForm
+                id={id}
+                onClickValidate={onClickValidate}
+                validationError={validationError}
+                isChartRepo={true}
+                validationStatus={validationStatus}
+                configName="chart repo"
+            />
+
             <div className="form__row form__row--two-third">
                 <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
@@ -153,10 +225,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             <div className="form__row form__row--auth-type pointer">
                 {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-
                         <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
                     </label>)}
-
             </div>
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
             {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
