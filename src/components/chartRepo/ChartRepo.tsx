@@ -8,7 +8,7 @@ import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
-import { ValidateForm, ValidateLoading, ValidationSuccess, ValidateFailure } from '../common/ValidateForm/ValidateForm';
+import { ValidatingForm } from '../common/ValidateForm/ValidateForm';
 
 
 export default function ChartRepo() {
@@ -57,8 +57,8 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }, [enabled])
 
     return (
-        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'}  collapsed-list--${id ? 'update' : 'create'}`}>
-            <List onClick={e => toggleCollapse(t => !t)}>
+        <article className={`collapsed-list cluster-list--create ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
+            <List className=" " onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
                 <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
@@ -76,18 +76,19 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse }} />}
+            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
         </article>
     )
 }
 
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, ...props }) {
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
 
     const [validateSuccess, setValidateSuccess] = useState(false);
     const [validateFailure, setValidateFailure] = useState(false);
     const [validateLoading, setValidateLoading] = useState(false)
-    const [validationError, setValidationError] = useState([]);
-    const [loading, setLoading] = useState(false)
+    const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
+    const [errorTitle, setErrorTitle] = useState("")
+    const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -108,7 +109,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ }
             }
-        }, onClickValidate || onSaveRepo);
+        }, onClickSave);
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
@@ -160,13 +161,12 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 setValidateSuccess(true);
                 setValidateFailure(false);
                 setValidateLoading(false);
-                setValidationError(validateResp || [])
                 toast.success("Configuration validated");
             } else if (validateResp.actualErrMsg.length > 0) {
                 setValidateSuccess(false);
                 setValidateFailure(true);
                 setValidateLoading(false);
-                setValidationError(validateResp || [])
+                setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
@@ -176,7 +176,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         })
     }
 
-    async function onSaveRepo() {
+    async function onClickSave() {
         setValidateLoading(true);
         let isInvalid = isFormInvalid();
         if (!isInvalid) {
@@ -190,7 +190,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             setLoading(true);
             const { result } = await api(chartRepoPayload, id);
             await reload();
-            if (result) {
+            if (result && !result?.actualErrMsg) {
                 toast.success('Successfully saved.')
                 setValidateSuccess(true);
                 setValidateFailure(false);
@@ -200,6 +200,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 setValidateFailure(true);
                 setValidateSuccess(false);
                 setLoading(false);
+                setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
                 toast.error("Configuration validation failed");
             }
         }
@@ -214,14 +215,14 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            {id && validateFailure != true && validateSuccess != true && validateLoading != true &&
-                <ValidateForm onClickValidate={onClickValidate} />}
-            {validateLoading &&
-                <ValidateLoading message="Validating repo configuration. Please wait… " />}
-            {validateFailure && validateLoading != true &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} />}
-            {validateSuccess && validateLoading != true &&
-                <ValidationSuccess onClickValidate={onClickValidate} />}
+            < ValidatingForm
+                id={id}
+                validateFailure={validateFailure}
+                validateSuccess={validateSuccess}
+                validateLoading={validateLoading}
+                onClickValidate={onClickValidate}
+                validationError={validationError}
+                isChartRepo={true} />
 
             <div className="form__row form__row--two-third">
                 <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />

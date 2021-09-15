@@ -339,9 +339,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     title={this.state.tab === GitProvider.GITLAB ? "group in GitLab" : this.state.tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"}
                 />
                 {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
-                    <ValidateForm tab={this.state.tab} onClickValidate={() => this.validateGitOps(this.state.tab)} />}
+                    <ValidateForm onClickValidate={() => this.validateGitOps(this.state.tab)} />}
                 {this.state.validateLoading &&
-                    <ValidateLoading tab={this.state.tab} message="Validating GitOps configuration. Please wait… " />}
+                    <ValidateLoading message="Validating GitOps configuration. Please wait… " />}
                 {this.state.validateFailure && this.state.validateLoading != true &&
                     <ValidateFailure validatedTime={this.state.validatedTime} validationError={this.state.validationError} onClickValidate={() => this.validateGitOps(this.state.tab)} formId={this.state.form.id} />}
                 {this.state.validateSuccess && this.state.validateLoading != true &&
