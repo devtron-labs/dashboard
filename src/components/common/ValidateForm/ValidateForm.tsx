@@ -5,14 +5,14 @@ import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
 
-export function ValidateForm({ onClickValidate }) {
+export function ValidateForm({ onClickValidate, configName }) {
     return (
         <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex flex-justify">
                 <div className="flex">
                     <img src={Help} className="icon-dim-20" />
                     <div className="fs-13">
-                        <span className="ml-8 fw-6">Perform a dry run to validate the below gitops configurations.</span>
+                        <span className="ml-8 fw-6">Perform a dry run to validate the below {configName} configurations.</span>
                     </div>
                 </div>
                 <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
@@ -78,11 +78,11 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
 
 }
 
-export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "" }) {
+export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
     return (
         <div className="mt-16">
             {id && validationStatus == "DRY_RUN" &&
-                <ValidateForm onClickValidate={onClickValidate} />}
+                <ValidateForm onClickValidate={onClickValidate} configName={configName} />}
             { validationStatus == "LOADING" &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == "FAILURE" &&
