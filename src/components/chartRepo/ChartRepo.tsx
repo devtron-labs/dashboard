@@ -10,6 +10,12 @@ import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
 import { ValidatingForm } from '../common/ValidateForm/ValidateForm';
 
+export enum VALIDATION_STATUS {
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+    LOADER = 'LOADER',
+    DRY_RUN= 'DRY_RUN'
+};
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -84,7 +90,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
 function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
 
     const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
-    const [validationStatus, setValidationStatus] = useState("DRY_RUN" || "FAILURE" || "LOADING" || "SUCCESS")
+    const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -143,11 +149,10 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     }
 
     async function onClickValidate() {
-        setValidationStatus("LOADING")
+        setValidationStatus(VALIDATION_STATUS.LOADER)
         let isInvalid = isFormInvalid();
         if (!isInvalid) {
             toast.error("Some Required Fields are missing");
-            setValidationStatus("")
             return
         }
 
@@ -155,10 +160,10 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         await promise.then((response) => {
             let validateResp = response?.result
             if (!validateResp.actualErrMsg.length) {
-                setValidationStatus("SUCCESS")
+                setValidationStatus(VALIDATION_STATUS.SUCCESS)
                 toast.success("Configuration validated");
             } else if (validateResp.actualErrMsg.length > 0) {
-                setValidationStatus("FAILURE")
+                setValidationStatus(VALIDATION_STATUS.FAILURE)
                 setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
                 toast.error("Configuration validation failed");
             }
@@ -168,12 +173,11 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         })
     }
 
-    async function onClickSave() {
-        setValidationStatus("LOADING")
+    async function onClickSave(e) {
+        setValidationStatus(VALIDATION_STATUS.LOADER)
         let isInvalid = isFormInvalid();
         if (!isInvalid) {
             toast.error("Some Required Fields are missing");
-            setValidationStatus("")
             return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
@@ -181,13 +185,14 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         try {
             setLoading(true);
             const { result } = await api(chartRepoPayload, id);
-            await reload();
+          
             if (result && !result?.actualErrMsg) {
-                setValidationStatus("SUCCESS")
+                setValidationStatus(VALIDATION_STATUS.SUCCESS)
                 toast.success('Successfully saved.')
+                await reload();
             }
             else {
-                setValidationStatus("FAILURE")
+                setValidationStatus(VALIDATION_STATUS.FAILURE)
                 setLoading(false);
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
                 toast.error("Configuration validation failed");

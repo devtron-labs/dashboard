@@ -4,6 +4,7 @@ import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
+import {VALIDATION_STATUS} from '../../chartRepo/ChartRepo'
 
 export function ValidateForm({ onClickValidate, configName }) {
     return (
@@ -81,13 +82,13 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
 export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
     return (
         <div className="mt-16">
-            {id && validationStatus == "DRY_RUN" &&
+            {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
                 <ValidateForm onClickValidate={onClickValidate} configName={configName} />}
-            { validationStatus == "LOADING" &&
+            { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
-            {validationStatus == "FAILURE" &&
+            {validationStatus == VALIDATION_STATUS.FAILURE &&
                 <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} />}
-            {validationStatus == "SUCCESS" &&
+            {validationStatus == VALIDATION_STATUS.SUCCESS &&
                 <ValidationSuccess onClickValidate={onClickValidate} />}
         </div>
     )
