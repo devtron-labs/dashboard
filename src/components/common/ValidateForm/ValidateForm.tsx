@@ -4,7 +4,7 @@ import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
-import {VALIDATION_STATUS} from '../../chartRepo/ChartRepo'
+import { VALIDATION_STATUS } from '../../chartRepo/ChartRepo'
 
 export function ValidateForm({ onClickValidate, configName }) {
     return (
@@ -57,8 +57,11 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
             </div>
-            {formId &&
-                <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>}
+            {isChartRepo && <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>}
+            {
+                !isChartRepo && formId &&
+                <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+            }
         </div>
         <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
             <div className="fs-13">
