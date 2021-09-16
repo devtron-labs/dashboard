@@ -32,6 +32,7 @@ describe('generic info testsuite', ()=>{
                     Data={Data}
                     type={Nodes.ReplicaSet}
                     describeNode={(...args) => {}}
+                    appId={1}
                 />
             </BrowserRouter>,
             div,
@@ -52,6 +53,7 @@ describe('generic info testsuite', ()=>{
                     type={Nodes.ReplicaSet}
                     level={1}
                     describeNode={(...args) => {}}
+                    appId={1}
                 />
             </BrowserRouter>,
             div,
@@ -72,6 +74,7 @@ describe('generic info testsuite', ()=>{
                     type={Nodes.ReplicaSet}
                     level={1}
                     describeNode={(...args) => {}}
+                    appId={1}
                 />
             </BrowserRouter>
         );
@@ -202,6 +205,7 @@ describe('resource tree nodes', ()=>{
                     nodes={aggregatedNodes}
                     describeNode={(name: string, containerName?: string) => {}}
                     isAppDeployment={true}
+                    appId={1}
                 />
             </Route>,
             { route: '/', history: createMemoryHistory({ initialEntries: ["app/3/details/3"] }) },
@@ -229,6 +233,7 @@ describe('all pods renders', () => {
                     isAppDeployment={true}
                     pods={aggregatedNodes.nodes[Nodes.Pod]}
                     describeNode={() => {}}
+                    appId={1}
                 />
             </BrowserRouter>,
         );
@@ -245,6 +250,7 @@ describe('all pods renders', () => {
                     isAppDeployment={true}
                     pods={aggregatedNodes.nodes[Nodes.Pod]}
                     describeNode={() => {}}
+                    appId={1}
                 />
             </BrowserRouter>,
         );

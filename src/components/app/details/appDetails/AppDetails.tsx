@@ -474,6 +474,7 @@ const NodeDetails: React.FC<{
                 isAppDeployment={isAppDeployment}
                 appName={appDetails?.appName}
                 environmentName={appDetails?.environmentName}
+                appId={appDetails?.appId}
             />
             <ResponsiveDrawer
                 className="events-logs"
