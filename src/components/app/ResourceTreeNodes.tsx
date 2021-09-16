@@ -711,7 +711,7 @@ const PodPopup: React.FC<{appName: string, environmentName: string, name: string
     async function asyncDeletePod(e) {
         let apiParams = {
             appId: appId,
-            appName,s
+            appName,
             kind: kind,
             group: group,
             env: environmentName,
