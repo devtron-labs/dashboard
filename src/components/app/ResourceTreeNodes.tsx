@@ -20,6 +20,7 @@ interface ResourceTree {
     nodes: AggregatedNodes;
     describeNode: (name: string, containerName?: string) => void;
     isAppDeployment: boolean;
+    appId:number;
 }
 
 function ignoreCaseCompare(a: string, b: string): boolean {
@@ -76,7 +77,7 @@ export const StatusFilterButton: React.FC<{ status: string; count?: number }> = 
         </Tippy>
     );
 }
-const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName }) => {
+const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName,appId }) => {
     const { url, path } = useRouteMatch()
     const params = useParams<{ appId: string, envId: string, kind?: NodeType }>()
     const history = useHistory()
@@ -182,6 +183,7 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                                 isAppDeployment={isAppDeployment}
                                 pods={nodes.nodes[kind]}
                                 describeNode={describeNode}
+                                appId={appId}
                             />
                         ) : null;
                     } else {
@@ -193,6 +195,7 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                                 Data={nodes.nodes[kind]}
                                 appName={appName}
                                 environmentName={environmentName}
+                                appId={appId}
                             />
                         ) : null;
                     }
@@ -281,8 +284,9 @@ interface AllPods {
     pods: Map<string, any>;
     nodes: AggregatedNodes;
     describeNode: (nodeName: string, containerName?: string) => void;
+    appId: number;
 }
-export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode, appName, environmentName, nodes }) => {
+export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode, appName, environmentName, nodes, appId }) => {
     const params = useParams<{ appId: string, envId: string }>()
     const podsArray = Array.from(pods).map(([podName, pod], idx) => pod)
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
@@ -365,6 +369,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                         level={1}
                         appName={appName}
                         environmentName={environmentName}
+                        appId={appId}
                     />
                 </>
             ) : (
@@ -376,13 +381,14 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                     describeNode={describeNode}
                     appName={appName}
                     environmentName={environmentName}
+                    appId={appId}
                 />
             )}
         </div>
     );
 }
 
-export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 }) => {
+export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void, appId: number }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 , appId}) => {
     return (
         <div className={`generic-info-container flex left column top w-100`}>
             {level === 1 && (
@@ -413,12 +419,13 @@ export const GenericInfo: React.FC<{ appName: string; environmentName: string; n
                 level={level}
                 appName={appName}
                 environmentName={environmentName}
+                appId={appId}
             />
         </div>
     );
 }
 
-export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void }> = ({ appName, environmentName, level, type, Data, nodes, describeNode }) => {
+export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void , appId: number}> = ({ appName, environmentName, level, type, Data, nodes, describeNode , appId}) => {
     const tableColumns = getGenricRowFields(type)
     return (
         <table className={`resource-tree ${level === 1 ? 'ml-10' : ''}`} style={{ width: level === 1 ? 'calc( 100% - 10px )' : '100%' }}>
@@ -442,6 +449,7 @@ export const NestedTable: React.FC<{ appName: string; environmentName: string; l
                         level={level}
                         appName={appName}
                         environmentName={environmentName}
+                        appId={appId}
                     />
                 ))}
                 {Data.size === 0 && (
@@ -564,9 +572,10 @@ interface MenuProps {
     environmentName: string;
     nodeDetails;
     describeNode;
+    appId: number;
 }
 
-export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetails, describeNode }) => {
+export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetails, describeNode, appId }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
@@ -595,6 +604,7 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
                         describeNode={describeNodeWrapper}
                         appName={appName}
                         environmentName={environmentName}
+                        appId={appId}
                     />
                 </PopupMenu.Body>
             </PopupMenu>
@@ -602,7 +612,7 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
     );
 }
 
-export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level }) => {
+export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number, appId:number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level, appId }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const tableColumns = getGenricRowFields(nodeDetails.kind)
     return (
@@ -634,6 +644,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 appName={appName}
                                 environmentName={environmentName}
                                 key={column}
+                                appId={appId}
                             />
                         );
                     } else return <td key={column}>{nodeDetails[column] || ''}</td>;
@@ -657,6 +668,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                         agg.set(childName, nodes.nodes[childrenType].get(childName))
                                         return agg
                                     }, new Map)}
+                                    appId={appId}
                                 />
                             ))}
                         {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length ?
@@ -671,6 +683,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 nodes={nodes}
                                 appName={appName}
                                 environmentName={environmentName}
+                                appId={appId}
                             /> : ''}
                         {nodeDetails.kind === Nodes.Pod && nodeDetails?.initContainers?.length ?
                             <NestedTable
@@ -684,6 +697,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 nodes={nodes}
                                 appName={appName}
                                 environmentName={environmentName}
+                                appId={appId}
                             /> : ''}
                     </td>
                 </tr>
@@ -692,12 +706,12 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
     );
 }
 
-const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode }) => {
+const PodPopup: React.FC<{appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number}> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode , appId}) => {
     const params = useParams<{ appId: string; envId: string }>();
     async function asyncDeletePod(e) {
         let apiParams = {
-            appId: +params.appId,
-            appName,
+            appId: appId,
+            appName,s
             kind: kind,
             group: group,
             env: environmentName,
