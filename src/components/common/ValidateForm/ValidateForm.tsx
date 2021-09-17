@@ -4,7 +4,14 @@ import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
-import { VALIDATION_STATUS } from '../../chartRepo/ChartRepo'
+
+export enum VALIDATION_STATUS {
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+    LOADER = 'LOADER',
+    DRY_RUN= 'DRY_RUN'
+};
+
 
 export function ValidateForm({ onClickValidate, configName }) {
     return (

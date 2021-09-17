@@ -8,14 +8,8 @@ import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
-import { ValidatingForm } from '../common/ValidateForm/ValidateForm';
+import { ValidatingForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 
-export enum VALIDATION_STATUS {
-    SUCCESS = 'SUCCESS',
-    FAILURE = 'FAILURE',
-    LOADER = 'LOADER',
-    DRY_RUN= 'DRY_RUN'
-};
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
