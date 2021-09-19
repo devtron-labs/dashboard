@@ -41,7 +41,8 @@
         "xterm-addon-search": "0.6.0",
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
-        "yamljs": "^0.3.0"
+        "yamljs": "^0.3.0",
+        "devtron_external_app": "file:../devtron_external_app"
     },
     "scripts": {
         "precommit": "yarn eslint",
