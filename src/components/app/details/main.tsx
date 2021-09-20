@@ -21,7 +21,9 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.s
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'));
-const AppDetails = lazy(() => import('./appDetails/AppDetails'));
+// const AppDetails = lazy(() => import('./appDetails/AppDetails'));
+const AppDetails = lazy(() => import('../../externalApp/src/components/apps/details/appDetails/AppDetails'));
+
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'));
 const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 
