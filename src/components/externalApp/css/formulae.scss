@@ -1,0 +1,338 @@
+@import url('./colorPalette.css');
+
+:root {
+    --modal-index: 20;
+    --full-screen-modal-index: 10;
+    --page-header-index: 4;
+    --filter-menu-index: 7;
+    --transparent-div-index: 6;
+    --app-list-header-index: 3;
+    --navigation-index: 5;
+    --tooltip-index: 7;
+    --events-logs: 4;
+    --index-next-section: 3;
+}
+
+@mixin flex($horizontal, $vertical) {
+    display: flex;
+    #{$horizontal}: center;
+    #{$vertical}: center;
+
+    &.left {
+        #{$horizontal}: flex-start;
+    }
+
+    &.right {
+        #{$horizontal}: flex-end;
+    }
+
+    &.top {
+        #{$vertical}: flex-start;
+    }
+
+    &.bottom {
+        #{$vertical}: flex-end;
+    }
+}
+
+.flex {
+    @include flex(justify-content, align-items);
+
+    &.column {
+        @include flex(align-items, justify-content);
+        flex-direction: column;
+    }
+}
+
+.flexbox {
+    display: flex;
+}
+
+.flexbox-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-justify {
+    justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+
+.flex-align-center {
+    align-items: center;
+}
+
+// margins and paddings from 0-40
+$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+
+@each $margin,
+$style in $margins {
+    @for $i from 0 through 42 {
+        $tempStyle: $style;
+
+        .#{$margin}-#{$i} {
+            #{$tempStyle}: 0px + $i;
+        }
+    }
+}
+
+// font-weight from 100-700
+@for $i from 1 through 7 {
+    .fw-#{$i} {
+        font-weight: 100 * $i;
+    }
+}
+
+// font-size from 10-24
+@for $i from 10 through 40 {
+    .fs-#{$i} {
+        font-size: 0px + $i;
+    }
+}
+
+//color from B,N,G,Y,R and 100 to 900
+$colors: B,
+N,
+G,
+Y,
+R;
+$color-suffix: 00;
+
+@each $color in $colors {
+    @for $i from 0 through 9 {
+        .c#{to-lower-case($color)}-#{$i} {
+            color: var(--#{$color}($i * 100));
+        }
+
+        .bc#{to-lower-case($color)}-#{$i} {
+            background-color: var(--#{$color}($i * 100));
+        }
+
+        .e#{to-lower-case($color)}-#{$i} {
+            border-color: var(--#{$color}($i * 100));
+            border-style: solid;
+        }
+
+        .sc#{to-lower-case($color)}-#{$i} {
+            stroke: var(--#{$color}($i * 100));
+
+            path {
+                stroke: var(--#{$color}($i * 100));
+            }
+        }
+
+        .fc#{to-lower-case($color)}-#{$i} {
+            fill: var(--#{$color}($i * 100));
+
+            path {
+                fill: var(--#{$color}($i * 100));
+            }
+        }
+    }
+}
+
+// border-radius
+@for $i from 0 through 16 {
+    .br-#{$i} {
+        border-radius: 0px + $i;
+    }
+
+    .bw-#{$i} {
+        border-width: 0px + $i;
+    }
+}
+
+.mono {
+    font-family: Inconsolata, monospace;
+}
+
+@mixin cta($bg, $color, $border, $cursor:pointer) {
+    background: $bg;
+    color: $color;
+    border: 1px solid $border;
+    cursor: $cursor;
+
+    svg {
+        path {
+            fill: $color;
+        }
+    }
+}
+
+.cta,
+.cta-with-img {
+    height: 40px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    outline: none;
+    min-width: 100px;
+    text-transform: capitalize;
+    line-height: 40px;
+    text-align: center;
+    @include cta(var(--B500), var(--white), transparent);
+
+    &.small {
+        height: 32px;
+        min-width: 64px;
+        padding: 0 12px;
+        line-height: 32px;
+    }
+
+    &.ghosted {
+        @include cta(var(--white), var(--B500), var(--B500));
+
+        &:hover {
+            @include cta(var(--B500), var(--white), var(--B500));
+        }
+    }
+
+    &.secondary {
+        @include cta(var(--white), var(--B500), var(--N200));
+
+        &:hover {
+            @include cta(var(--B100), var(--B500), var(--N200));
+        }
+    }
+
+    &.tertiary {
+        @include cta(var(--white), var(--N400), var(--white));
+
+        &:hover {
+            @include cta(var(--white), var(--N400), var(--white));
+        }
+    }
+
+    &.text {
+        @include cta(white, var(--B500), white);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(white, var(--B500), white);
+        }
+    }
+
+    &.delete {
+        @include cta(white, var(--R500), var(--R500));
+
+        &:hover {
+            @include cta(var(--R500), white, white);
+        }
+
+        &:active,
+        &:focus {
+            @include cta(var(--R600), white, white);
+        }
+    }
+
+    &.cancel {
+        @include cta(white, var(--N700), var(--N200));
+
+        &:hover {
+            @include cta(white, var(--N700), var(--N700));
+        }
+
+        &:active,
+        &:focus {
+            @include cta(var(--N700), white, transparent);
+        }
+    }
+
+    &:hover {
+        @include cta(#004f9e, var(--white), transparent);
+    }
+
+    &:focus {
+        @include cta(#004f9e, var(--white), transparent);
+    }
+
+    &.delete,
+    &.small,
+    &.ghosted,
+    &.secondary,
+    &.cancel,
+    &.neutral,
+    &.tertiary,
+    & {
+
+        &:disabled,
+        :disabled:hover,
+        &.disabled,
+        &.disabled:hover {
+            @include cta(var(--N100), var(--N400), var(--N200), not-allowed);
+        }
+    }
+}
+
+.cta-with-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lh-1-43 {
+    line-height: 1.43;
+}
+
+.divider {
+    border-top: 1px solid #d0d4d9;
+}
+
+.sqr-44 {
+    width: 44px;
+    height: 44px;
+    background-color: var(--N100);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+    border-radius: 4px;
+}
+
+.lh-1-54 {
+    line-height: 1.54
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.dashed {
+    border-style: dashed;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    margin-top: 45px;
+    width: 800px
+}
+
+.modal__top-fixed {
+    height: 50px;
+}
+
+.h-30{
+    height: 30px;
+    line-height: 0%;
+}
+
+.m-auto_mr-0{
+    margin: auto;
+    margin-right: 0;
+}
