@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
-import ResourceTreeNodes from '../../../../../../app/ResourceTreeNodes';
+import ResourceTreeNodes from '../../resourceTreeNode/ResourceTreeNode';
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
@@ -59,24 +59,6 @@ export default function AppDetails() {
                 <div className="cg-5 fw-6 fs-14 cursor">Healthy</div>
                 <div>The active service is serving traffic to the current pod spec</div>
             </div>
-        </div>
-    }
-
-    const ResourceTreeNodes = () => {
-        return <div className="bcn-0 mt-16 pl-24 pt-16 "
-            style={{
-                width: '100%',
-                display: 'grid',
-                gridTemplateColumns: '270px 1fr',
-                height: '700px',
-                maxHeight: '700px',
-                overflow: 'hidden',
-                gridTemplateRows: '72px 1fr',
-            }}>
-            <div>
-                <input className="en-2 bw-1 w-100 pt-4 pb-4 pl-8 pr-8 br-4" type="search" placeholder="Search Objects"/>
-            </div>
-
         </div>
     }
 
