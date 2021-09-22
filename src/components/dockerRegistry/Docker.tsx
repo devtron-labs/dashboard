@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, useForm, Select, Progressing, useAsync, sortCallback, CustomInput } from '../common';
+import { showError, useForm, Select, Progressing, useAsync, sortCallback, CustomInput, not } from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig } from './service';
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
@@ -7,7 +7,9 @@ import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json'
 import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 
 const DockerRegistryType = [
     { label: 'docker hub', value: 'docker-hub' },
@@ -57,6 +59,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         {
             id: { value: id, error: "" },
             registryType: { value: registryType || 'ecr', error: "" },
+            advanceSelect: { value: "ALLOW_SECURE", error: "" }
         },
         {
             id: {
@@ -66,10 +69,15 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryType: {
                 required: true,
                 validator: { error: 'Type is required', regex: /^.*$/ }
-            }
+            },
+            advanceSelect: {
+                required: true,
+                validator: { error: 'Mode is required', regex: /^.*$/ },
+            },
         }, onValidation);
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
+    const [optionCollapsed, setoptionCollapsed] = useState(false)
 
     let awsRegionMap = awsRegionList.reduce((agg, curr) => {
         agg.set(curr.value, curr.name)
@@ -203,6 +211,37 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
+            <div className="form__buttons flex left">
+                    <Dropdown
+                        onClick={(e) => setoptionCollapsed(not)}
+                        className="rotate icon-dim-18 pointer fcn-5"
+                        style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
+                    />
+                    <label className="fs-13 mb-0">Advanced Registry URL connection options</label>
+                    <Tippy className="default-tt" arrow={false} placement="top" content={
+                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                        <Question className="icon-dim-20" />
+                    </Tippy>
+            </div>
+            {optionCollapsed &&
+            <div className="form__row" style={{ width: '100%' }}>
+                    {[{ label: 'Allow only secure connection', value: 'ALLOW_SECURE' }, { label: 'Allow secure connection with CA certificate', value: 'ALLOW_SECURE_CA' }, { label: 'Allow insecure connection', value: 'ALLOW_INSECURE' }]
+                        .map(({ label: Lable, value }) => <div> <label key={value} className="flex left pointer secureFont workflow-node__text-light mt-20">
+                            <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
+                                {Lable}</span>
+                            {value != "ALLOW_SECURE" &&
+                                <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
+                                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                                    <Question className="icon-dim-16" />
+                                </Tippy>}
+                        </label>
+                            {value == "ALLOW_SECURE_CA" && state.advanceSelect.value == "ALLOW_SECURE_CA" &&
+                                <div className="ml-20">
+                                    <textarea placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input bcn-1" />
+                                </div>
+                            }
+                        </div>)}
+                </div>}
             <div className="form__row form__buttons  ">
                 <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
                     <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
