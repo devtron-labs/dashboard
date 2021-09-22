@@ -59,7 +59,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         {
             id: { value: id, error: "" },
             registryType: { value: registryType || 'ecr', error: "" },
-            advanceSelect: { value: "ALLOW_SECURE", error: "" }
+            advanceSelect: { value: "SECURE", error: "" }
         },
         {
             id: {
@@ -212,32 +212,32 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 </div>
             </>}
             <div className="form__buttons flex left">
-                    <Dropdown
-                        onClick={(e) => setoptionCollapsed(not)}
-                        className="rotate icon-dim-18 pointer fcn-5"
-                        style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
-                    />
-                    <label className="fs-13 mb-0">Advanced Registry URL connection options</label>
-                    <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
-                        <Question className="icon-dim-20" />
-                    </Tippy>
+                <Dropdown
+                    onClick={(e) => setoptionCollapsed(not)}
+                    className="rotate icon-dim-18 pointer fcn-5"
+                    style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
+                />
+                <label className="fs-13 mb-0 ml-8">Advanced Registry URL connection options</label>
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                    <Question className="icon-dim-20 ml-4" />
+                </Tippy>
             </div>
             {optionCollapsed &&
-            <div className="form__row" style={{ width: '100%' }}>
-                    {[{ label: 'Allow only secure connection', value: 'ALLOW_SECURE' }, { label: 'Allow secure connection with CA certificate', value: 'ALLOW_SECURE_CA' }, { label: 'Allow insecure connection', value: 'ALLOW_INSECURE' }]
-                        .map(({ label: Lable, value }) => <div> <label key={value} className="flex left pointer secureFont workflow-node__text-light mt-20">
+                <div className="form__row ml-3" style={{ width: '100%' }}>
+                    {[{ label: 'Allow only secure connection', value: 'SECURE', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'SECURE_WITH_CERT', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'INSECURE', tippy: 'This will enable insecure registry communication' }]
+                        .map(({ label: Lable, value, tippy }) => <div> <label key={value} className="flex left pointer secureFont workflow-node__text-light mt-20">
                             <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
                                 {Lable}</span>
-                            {value != "ALLOW_SECURE" &&
+                            {value != "SECURE" &&
                                 <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
-                                    <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                                <span style={{ display: "block", width: "160px" }}>{tippy}</span>}>
                                     <Question className="icon-dim-16" />
                                 </Tippy>}
                         </label>
-                            {value == "ALLOW_SECURE_CA" && state.advanceSelect.value == "ALLOW_SECURE_CA" &&
+                            {value == "SECURE_WITH_CERT" && state.advanceSelect.value == "SECURE_WITH_CERT" &&
                                 <div className="ml-20">
-                                    <textarea placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input bcn-1" />
+                                    <textarea placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input bcn-1" style={{height:"100px"}}/>
                                 </div>
                             }
                         </div>)}
