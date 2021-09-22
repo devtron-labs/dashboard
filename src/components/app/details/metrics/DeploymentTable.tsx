@@ -61,7 +61,8 @@ export class DeploymentTable extends Component<DeploymentTableProps, any>{
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.rows.length !== this.props.rows.length) {
             this.setState({
-                rows: this.props.rows, pagination: {
+                rows: this.props.rows,
+                pagination: {
                     size: this.props.rows.length,
                     offset: 0,
                     pageSize: 20

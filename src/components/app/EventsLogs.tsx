@@ -216,7 +216,7 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
     if (!pod) return null
     return <div data-testid="events-container" style={{ height: 'calc( 100% + 1px )', overflowY: 'auto', gridColumn: '1 / span 2' }}>
         {events.filter(event => event).length > 0 && <div className="events-logs__events-table">
-            <div className="events-logs__events-table-row header">
+            <div className="events-logs__events-table-row header m-0">
                 {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
                     <span className="events-logs__event" key={idx}>{head}</span>)}
             </div>

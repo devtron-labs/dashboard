@@ -206,7 +206,12 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
-    let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
+
+    const isDefaultCluster = () : boolean => {
+        return id == 1;
+    }
+
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: "" },
@@ -222,7 +227,12 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         {
             cluster_name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ }
+                validators: [
+                                { error: 'Name is required',  regex: /^.*$/ },
+                                { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
+                                { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
+                                { error: "Minimum 3 and Maximum 63 characters required", regex: /^.{3,63}$/ }
+                            ]
             },
             url: {
                 required: true,
@@ -248,7 +258,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ }
             },
-            token: {
+            token: isDefaultCluster() ? {} : {
                 required: true,
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
@@ -326,7 +336,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
         <h2 className="form__title">{clusterTitle()}</h2>
         <div className="form__row">
-            <CustomInput autoComplete="off" name="cluster_name" value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
+            <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
         <hr></hr>
         <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
@@ -334,7 +344,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
         <div className="form__row form__row--bearer-token flex column left top">
-            <label htmlFor="" className="form__label">Bearer token*</label>
+            <label htmlFor="" className="form__label">Bearer token{isDefaultCluster() ? '' : '*'}</label>
             <div className="bearer-token">
                 <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
             </div>
@@ -390,11 +400,21 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         {
             environment_name: {
                 required: true,
-                validator: { error: 'This is required field(max 16 chars).', regex: /^.{1,16}$/ }
+                validators: [
+                    { error: 'Environment name is required',  regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
+                    { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
+                    { error: "Minimum 3 and Maximum 16 characters required", regex: /^.{3,16}$/ }
+                ]
             },
             namespace: {
                 required: isNamespaceMandatory,
-                validator: { error: '^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$ pattern should satisfy.', regex: /^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$/ }
+                validators: [
+                    { error: 'Namespace is required',  regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
+                    { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
+                    { error: "Maximum 63 characters required", regex: /^.{1,63}$/ }
+                ]
             },
             isProduction: {
                 required: true,

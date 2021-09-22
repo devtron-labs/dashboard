@@ -18,12 +18,13 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
-import { ViewType, URLS } from '../../config';
+import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
 import { Link, NavLink } from 'react-router-dom';
 import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
+import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 
 export interface NotificationConfiguration {
     id: number;
@@ -436,6 +437,16 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     <th className="pipeline-list__recipients fw-6">Recipients</th>
                 </tr>
                 {this.state.notificationList.map((row) => {
+                    let _isCi = row.branch && row.pipelineType === "CI";
+                    let _isWebhookCi;
+                    if (_isCi){
+                        try {
+                            JSON.parse(row.branch);
+                            _isWebhookCi = true;
+                        } catch (e) {
+                            _isWebhookCi = false;
+                        }
+                    }
                     return <tr key={row.id} className={row.isSelected ? "pipeline-list__row pipeline-list__row--selected" : "pipeline-list__row"}>
                         <td className="pipeline-list__checkbox">
                             <Checkbox rootClassName=""
@@ -467,7 +478,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
                         </td>
                         <td className="pipeline-list__environment">
-                            {row.branch && row.pipelineType === "CI" ? <span className="flex left"> <Branch className="icon-dim-16 mr-4" /> {row.branch} </span> : ''}
+                            {_isCi &&
+                                <span className="flex left">
+                                    <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true} />
+                                </span>
+                            }
                             {row.pipelineType === "CD" ? row?.environmentName : ''}
                         </td>
                         <td className="pipeline-list__stages flexbox flex-justify">

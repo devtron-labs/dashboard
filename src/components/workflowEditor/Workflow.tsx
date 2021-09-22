@@ -101,6 +101,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             title={node.title}
             downstreams={node.downstreams}
             icon={node.icon}
+            sourceType={node.sourceType}
         />
     }
 

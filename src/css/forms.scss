@@ -59,7 +59,7 @@
     font-weight: 500;
     line-height: 1.45;
     letter-spacing: -0.1px;
-    display: flex;
+    display: block;
     margin-bottom: 4px;
     margin-top: 4px
 }
@@ -96,7 +96,6 @@
     display: block;
     width: 100%;
     font-weight: 500;
-    margin-bottom: 4px ;
 }
 
 .form__input--error {
@@ -135,7 +134,6 @@ p.sentence-case:first-letter {
     margin-right: 5px;
     vertical-align: middle;
     position: relative;
-    top: 2px;
 }
 
 .form__icon--error path[fill="#FFCB5D"] {
@@ -561,6 +559,10 @@ p.sentence-case:first-letter {
 
 .form__label.form__label--sentence::first-letter {
     text-transform: capitalize;
+}
+
+.form__label-color{
+    color: #404040
 }
 
 .modal__form-title{

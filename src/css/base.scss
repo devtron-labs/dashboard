@@ -181,7 +181,11 @@ a:focus {
 }
 
 .react-select__bottom {
-    border-top: solid 1px var(--N100);
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    border-radius: 4px;
+    z-index: 1;
 }
 
 @mixin tab-container($bgColor,
@@ -1562,4 +1566,28 @@ button.anchor {
 
 .content-space{
     justify-content: space-between;
+}
+
+.w-200{
+    width: 200px;
+}
+
+.w-400{
+    width: 400px;
+}
+
+.border-top{
+    border-top: solid 1px var(--N100);
+}
+
+.border-bottom{
+    border-bottom: solid 1px var(--N200);
+}
+
+.box-shadow{
+    box-shadow: inset 0 -1px 0 0 #d6dbdf;
+}
+
+.box-shadow-top{
+    box-shadow: inset 0 1px 0 0 #d6dbdf;
 }

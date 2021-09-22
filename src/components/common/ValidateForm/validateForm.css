@@ -1,0 +1,14 @@
+.config_failure{
+    border-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.config_failure-actions{
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.git_success{
+    border: 1px solid #84d6b3;
+}

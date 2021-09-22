@@ -1,36 +1,37 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service';
-import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, RepoBranch, GitCommitDetailCard, ConditionalWrap } from '../../../common';
-import { Host, Routes, URLS } from '../../../../config';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
+import { Progressing, useScrollable, showError, Select, useAsync, useInterval, createGitCommitUrl, mapByKey, useIntersection, copyToClipboard, asyncWrap, ConfirmationDialog, useKeyDown, not, ConditionalWrap } from '../../../common';
+import { Host, Routes, URLS, SourceTypeMap } from '../../../../config';
 import { toast } from 'react-toastify';
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
 import { default as AnsiUp } from 'ansi_up';
-import EmptyState from '../../../EmptyState/EmptyState';
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import Reload from '../../../Reload/Reload';
-import moment from 'moment'
-import './ciDetails.scss';
 import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-commit.svg';
+import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg';
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg';
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
+import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg';
+import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg';
+import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
+import { statusColor as colorMap } from '../../config'
+import { getLastExecutionByArtifactId } from "../../../../services/service"
+import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
+import { Moment12HourFormat } from '../../../../config';
+import EmptyState from '../../../EmptyState/EmptyState';
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import Reload from '../../../Reload/Reload';
+import moment from 'moment';
 import docker from '../../../../assets/icons/misc/docker.svg';
 import folder from '../../../../assets/icons/ic-folder.svg';
 import warn from '../../../../assets/icons/ic-warning.svg';
 import TippyHeadless from '@tippyjs/react/headless'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg';
-import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg';
-import { statusColor as colorMap } from '../../config'
+import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
-import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg';
-import { getLastExecutionByArtifactId } from "../../../../services/service"
-import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util';
-import {Moment12HourFormat} from '../../../../config';
+import './ciDetails.scss';
+import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig';
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt']);
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -93,9 +94,7 @@ export default function CIDetails() {
     const [pagination, setPagination] = useState<{ offset: number, size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
-
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
-
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(() => getTriggerHistory(+pipelineId, pagination), [pipelineId, pagination], !!pipelineId)
     const { path } = useRouteMatch()
@@ -151,7 +150,7 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if (loading || pipelinesLoading ) return <Progressing pageLoader />
+    if (loading || pipelinesLoading) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter(pipeline => (pipeline.pipelineType !== 'EXTERNAL')) // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -227,7 +226,7 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
                     </div>
                     <div className="flex column left ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}
-                       </div>
+                        </div>
                         <div className="cn-7 fs-12">{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                     </div>
                 </div>
@@ -235,6 +234,7 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
         </ConditionalWrap>
     )
 })
+
 
 export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
     return (
@@ -249,13 +249,22 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                 {triggerDetails?.ciMaterials?.map(ciMaterial => {
                     const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
                     return <div className="mt-22" key={ciMaterial.id} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}>
-                        <div className="git-logo">
-
-                        </div>
-                        <div className="flex left column">
-                            <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
-                            <p className="fs-12 cn-7">{gitDetail?.Message}</p>
-                        </div>
+                        {
+                            ciMaterial.type != SourceTypeMap.WEBHOOK &&
+                            <>
+                                <div className="git-logo"> </div>
+                                <div className="flex left column">
+                                    <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
+                                    <p className="fs-12 cn-7">{gitDetail?.Message}</p>
+                                </div>
+                            </>
+                        }
+                        {
+                            ciMaterial.type == SourceTypeMap.WEBHOOK &&
+                            <div className="flex left column">
+                                <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value} showTooltip={false} />
+                            </div>
+                        }
 
                     </div>
                 })}
@@ -391,7 +400,8 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                             Array.isArray(triggerDetails.ciMaterials) &&
                             triggerDetails.ciMaterials.map((ciMaterial) => {
                                 const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id];
-                                return (
+                                return<>
+                                { ciMaterial.type != 'WEBHOOK' &&
                                     <a
                                         target="_blank"
                                         rel="noopener noreferer"
@@ -399,10 +409,13 @@ export const TriggerDetails: React.FC<{ triggerDetails: History, abort?: () => P
                                         href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
                                         className="app-commit__hash mr-12 bcn-1 cn-7"
                                     >
-                                        <CommitIcon className="icon-dim-16" />
                                         {gitDetail?.Commit?.substr(0, 8)}
                                     </a>
-                                );
+                                }
+                                { ciMaterial.type == 'WEBHOOK' && gitDetail.WebhookData && gitDetail.WebhookData.Data &&
+                                    <span className="app-commit__hash">{gitDetail.WebhookData.EventActionType == 'merged' ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8) : gitDetail.WebhookData.Data['target checkout']}</span>
+                                }
+                                </>
                             })}
                         {type === 'CD' && (
                             <div className="app-commit__hash ">
@@ -764,18 +777,15 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 }
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    return (
-        <div
-            key={gitTrigger?.Commit}
-            className="pt-0 bcn-0 br-4 mb-16"
-            style={{ width: 'min( 100%, 800px )', border: '1px solid var(--N200)' }}
-        >
-            <div className="flex left ml-16 mr-16 " style={{ height: '62px' }}>
-                <RepoBranch repoUrl={ciMaterial.url} branch={ciMaterial.value} />
-            </div>
-            <GitCommitDetailCard ciMaterial={ciMaterial} gitTrigger={gitTrigger} />
-        </div>
-    );
+    return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12" style={{ width: 'min( 100%, 800px )' }}>
+        <GitCommitInfoGeneric
+            materialUrl={ciMaterial.url}
+            showMaterialInfo={true}
+            commitInfo={gitTrigger}
+            materialSourceType={ciMaterial.type}
+            selectedCommitInfo={""}
+            materialSourceValue={ciMaterial.value} />
+    </div>
 }
 
 const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {

@@ -1,5 +1,5 @@
 .branch-name {
-    width: 128px;
+    max-width: 128px;
     height: 18px;
     margin-right: 4px;
     font-size: 12px;

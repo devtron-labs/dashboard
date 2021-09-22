@@ -123,6 +123,7 @@
     background-color: var(--white);
     margin: 16px 20px;
     padding-top: 14px;
+    padding-bottom: 14px;
     border-radius: 4px;
 }
 
@@ -139,7 +140,6 @@
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
-    margin: 0px 16px;
 }
 
 .material-history__top {
@@ -159,6 +159,7 @@
 }
 
 .material-history__select-text {
+    cursor: pointer;
     border: none;
     background-color: transparent;
     padding: 2px;
@@ -167,6 +168,7 @@
     color: var(--B500);
     width: 150px;
     text-align: right;
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 .material-history__scan-error {
@@ -179,11 +181,9 @@
 }
 
 .material-history__all-changes {
-    padding: 12px 16px;
     max-height: 200px;
     overflow: auto;
     font-family: monospace;
-    background-color: var(--N100);
 }
 
 .material-history__source-info {
@@ -192,6 +192,9 @@
     margin: 16px;
     border-radius: 4px;
     font-family: monospace;
+    /* padding: 4px 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; */
 }
 
 .material-history__changes-btn {
@@ -218,6 +221,12 @@
     border-bottom-right-radius: 4px;
 }
 
+.material-history__grid{
+    padding: 4px 8px;
+    display: grid;
+    grid-template-columns: 150px auto;
+}
+
 .material-history__text {
     font-size: 12px;
     font-weight: normal;
@@ -226,9 +235,12 @@
     line-height: 1.5;
     letter-spacing: normal;
     color: var(--N700);
-    margin: 6px auto;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin: 0px auto;
     margin-left: 16px;
     font-family: monospace;
+    margin-right: 16px;
 }
 
 .material-history__commit-msg {
@@ -254,7 +266,7 @@
     background-color: var(--B100);
     color: var(--B500);
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 0px 6px;
     display: flex;
     align-items: center;
     text-transform: lowercase;
@@ -439,7 +451,7 @@
 }
 
 .material-history:nth-child(2) {
-    margin-top: 0px;
+    /* margin-top: 0px; */
 }
 
 .material-history:last-child {

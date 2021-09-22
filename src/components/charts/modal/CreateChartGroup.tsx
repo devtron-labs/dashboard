@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 
 interface ChartGroupCreateState {
-    name: { value: string; error: string;};
+    name: { value: string; error: any[]; };
     description: string;
     loading: boolean;
 }
@@ -17,7 +17,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     constructor(props) {
         super(props);
         this.state = {
-            name: {value: "", error: ""},
+            name: { value: "", error: [] },
             description: "",
             loading: false
         }
@@ -27,7 +27,44 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        this.setState({ name: {value: event.target.value, error: ""} });
+
+        const lowercaseRegex = new RegExp('^[a-z0-9-. ]*$')
+        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-zA-Z0-9 ]$`)
+        let errors = []
+
+        if (!event.target.value) {
+            errors.push("This is a required field")
+        }
+        else {
+            if (event.target.value.trim().length < 5 ) {
+                errors.push('Minimum 5 characters required')
+            }
+
+            if (!lowercaseRegex.test(event.target.value)) {
+                errors.push('Use only lowercase alphanumeric characters "-" or "."')
+            }
+ 
+            if (!startAndEndAlphanumericRegex.test(event.target.value) && !(event.target.value.length ==1)) {
+                errors.push('Start and end with an alphanumeric character only')
+            }
+
+            if (event.target.value.trim().indexOf(" ") >= 0) {
+                errors.push('Do not use \'spaces\'')
+            }
+
+            if (event.target.value.length > 30) {
+                errors.push('Must not exceed 30 characters')
+            }
+        }
+        
+        this.setState({
+            name: {
+                ...this.state.name,
+                error: errors
+            }
+        })
+        this.setState({ name: { value: event.target.value.trim(), error: errors } });
+
     }
 
     handleDescriptionChange(event) {
@@ -35,13 +72,17 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     async saveChartGroup(e) {
-        const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
-        if (!nameRegexp.test(this.state.name.value)) {
-            this.setState({ name: { ...this.state.name, error: 'name must follow `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$` pattern.'}})
-            return
+        if (!this.state.name.value) {
+            this.setState({
+                name: {
+                    ...this.state.name,
+                    error: ['This is a required field']
+                }
+            })
         }
+
         let requestBody = {
-            name: this.state.name.value,
+            name: this.state.name.value.trim(),
             description: this.state.description
         }
         let api = saveChartGroup
@@ -53,7 +94,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         api(requestBody).then((response) => {
             if (this.props.chartGroupId) {
                 toast.success('Successfully updated.')
-                this.props.closeChartGroupModal({name: this.state.name.value, description: this.state.description});
+                this.props.closeChartGroupModal({ name: this.state.name.value, description: this.state.description });
             }
             else {
                 toast.success('Successfully created.')
@@ -66,10 +107,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             this.setState({ loading: false })
         })
     }
+
     //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
     componentDidMount() {
         if (this.props.chartGroupId && this.props.name) {
-            this.setState({ name: {value: this.props.name, error: ""}, description: this.props.description || "" })
+            this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || "" })
         }
     }
 
@@ -84,7 +126,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 <input className="form__input" autoComplete="off" type="text" name="name" value={this.state.name.value}
                     placeholder="e.g. elastic-stack" autoFocus={true} tabIndex={1} onChange={this.handleNameChange} required />
                 <span className="form__error">
-                    {this.state.name.error && <><Error className="form__icon form__icon--error" />{this.state.name.error}</>}
+                    {this.state.name.error.map((itm) => {
+                        return <div> <Error className="form__icon form__icon--error" /> {itm} </div>
+                    })}
                 </span>
             </label>
 

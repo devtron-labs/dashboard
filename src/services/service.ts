@@ -4,6 +4,7 @@ import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
 import { Chart } from '../components/charts/charts.types';
+import { fetchWithFullRoute } from './fetchWithFullRoute';
 
 export function getAppConfigStatus(appId: number): Promise<any> {
     const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
@@ -163,6 +164,11 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getPosthogData(): Promise<ResponseType> {
+    const URL = `telemetry/meta`;
+    return get(URL);
+}
+
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     let vulnerabilities = response.result.vulnerabilities || [];
     let critical = vulnerabilities.filter((v) => v.severity === "critical").sort((a, b) => sortCallback('cveName', a, b));
@@ -291,14 +297,39 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
-    // return new Promise((resolve, reject) => {
-    //     resolve({
-    //         "code": 200, "status": "OK",
-    //         "result": {
-    //             "appChecklist": { "gitOps": 0, "project": 1, "git": 1, "environment": 1, "docker": 1, "hostUrl": 1 },
-    //             "chartChecklist": { "gitOps": 0, "project": 1, "environment": 1 },
-    //             "isAppCreated": false,
-    //         }
-    //     })
-    // })
+}
+
+export const getGitProviderList = () => {
+    const URL = `${Routes.GIT_PROVIDER}`;
+    return get(URL);
+}
+
+export function getGitHostList(): Promise<any> {
+    const URL = `${Routes.GIT_HOST}`;
+    return get(URL);
+}
+
+export const getGitProviderConfig = (id: number): Promise<any> => {
+    const URL = `${Routes.GIT_PROVIDER}/${id}`;
+    return get(URL);
+}
+
+export const getGitHostConfig = (id: number): Promise<any> => {
+    const URL = `${Routes.GIT_HOST}/${id}`;
+    return get(URL);
+}
+
+export function getWebhookEvents(gitHostId: string | number) {
+    const URL = `git/host/${gitHostId}/event`;
+    return get(URL);
+}
+
+export function getWebhookEventsForEventId(eventId: string | number) {
+    const URL = `git/host/event/${eventId}`;
+    return get(URL);
+}
+
+export function getWebhookDataMetaConfig(gitProviderId: string | number) {
+    const URL = `git/host/webhook-meta-config/${gitProviderId}`;
+    return get(URL);
 }

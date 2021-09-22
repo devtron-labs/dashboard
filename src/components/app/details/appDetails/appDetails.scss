@@ -938,6 +938,10 @@ table.pod__table td:last-child {
         }
     }
 
+    .events-logs__events-table-row{
+        width:100%
+    }
+
     .events-logs__event,
     .events-logs__log {
         color: white;
@@ -1734,4 +1738,14 @@ table.resource-tree {
     color: var(--N700);
     height: 28px;
     align-items: center;
+}
+
+.modal__body--ci-mat-trigger-info {
+    width: 800px;
+    padding: 0px;
+    border: none;
+}
+
+.select-material--h450 {
+    height: 450px;
 }

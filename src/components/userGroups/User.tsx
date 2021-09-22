@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog } from '../common'
+import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog, MultiValueChipContainer } from '../common'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable'
 import Select, { components } from 'react-select';
@@ -8,34 +8,18 @@ import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, 
 import { toast } from 'react-toastify'
 import { useUserGroupContext, DirectPermission, ChartPermission, GroupRow } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 import './UserGroup.scss';
 
-const MultiValueContainer = ({ validator, ...props }) => {
-    const { children, data, innerProps, selectProps } = props
-    const { label, value } = data
-    const isValidEmail = validator ? validator(value) : true
-    return (
-        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-            <div className={`flex fs-12 ml-4`}>
-                {!isValidEmail && <RedWarning className="mr-4" />}
-                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
-            </div>
-            {children[1]}
-        </components.MultiValueContainer>
-    );
-};
-
-const CreatableStyle = {
+const CreatableChipStyle = {
     multiValue: (base, state) => {
         return ({
             ...base,
             border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
             borderRadius: `4px`,
             background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
-            height: '30px',
-            margin: '0 8px 4px 0',
-            padding: '1px',
+            height: '28px',
+            margin: '8px 8px 4px 0px',
+            paddingLeft: '4px',
             fontSize: '12px',
         })
     },
@@ -44,6 +28,9 @@ const CreatableStyle = {
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf', // default border color
         boxShadow: 'none', // no box-shadow
     }),
+    indicatorsContainer: () => ({
+        height: '38px'
+    })
 }
 
 export default function UserForm({ id = null, userData = null, index, updateCallback, deleteCallback, createCallback, cancelCallback }) {
@@ -370,7 +357,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         DropdownIndicator: () => null,
         ClearIndicator,
         MultiValueRemove,
-        MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={validateEmail} />,
+        MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
         IndicatorSeparator: () => null,
         Menu: () => null
     }), [])
@@ -385,12 +372,11 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                     <label htmlFor="" className="mb-8">
                         Email addresses*
                     </label>
-                    {console.log(emailState.emails)}
                     <Creatable
                         ref={creatableRef}
                         options={creatableOptions}
                         components={CreatableComponents}
-                        styles={CreatableStyle}
+                        styles={CreatableChipStyle}
                         autoFocus
                         isMulti
                         isClearable
@@ -415,7 +401,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                         value={userGroups}
                         ref={groupPermissionsRef}
                         components={{
-                            MultiValueContainer: ({ ...props }) => <MultiValueContainer {...props} validator={null} />,
+                            MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
                             DropdownIndicator: null,
                             ClearIndicator,
                             MultiValueRemove,

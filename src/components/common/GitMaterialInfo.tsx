@@ -1,39 +1,39 @@
 
-import React,{useState} from 'react'
-import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
-import {createGitCommitUrl, not} from './index'
-import moment from 'moment'
+import React, { useState } from 'react'
+import { createGitCommitUrl, not } from './index'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
-import {GitTriggers, CiMaterial} from '../app/details/cIDetails/types'
+import { GitTriggers, CiMaterial } from '../app/details/cIDetails/types'
 import { Moment12HourFormat } from '../../config';
+import moment from 'moment'
+import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';
 
-function getGitIcon(repoUrl){
-    for(let gitProvider of ['github', 'gitlab', 'bitbucket']){
-        if(repoUrl.includes(gitProvider)){
+function getGitIcon(repoUrl) {
+    for (let gitProvider of ['github', 'gitlab', 'bitbucket']) {
+        if (repoUrl.includes(gitProvider)) {
             return `${gitProvider}`
         }
     }
     return 'git'
 }
 
-export function RepoBranch({repoUrl = "", branch = "", style = {}, ...props}){
+export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
     repoUrl = repoUrl.replace(".git", "")
     const tokens = repoUrl.split("/")
-    const {length, [length - 1]: repo} = tokens
+    const { length, [length - 1]: repo } = tokens
     return (
-        <div {...props} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '18px', ...style, }}>
+        <div {...props} className="pl-16 box-shadow mb-12 pb-12 fs-12 fw-6 " style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style, }}>
             <div className={getGitIcon(repoUrl)}>
             </div>
             <div className="flex column left">
                 <div className="repo fs-12 cn-9 fw-6">
                     /{repo}
                 </div>
-                <div className="branch flex left fs-14 cn-7 mono">
-                    <Branch className="icon-dim-12"/>{branch}
+                <div className="branch flex left fs-14 cn-7">
+                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue} showTooltip={true} />
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                     href={createGitCommitUrl(ciMaterial?.url, gitTrigger?.Commit)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="commit-hash mono fs-14"
+                    className="commit-hash mono fs-14 ml-16"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <CommitIcon className="icon-dim-16 mr-4" />
@@ -74,7 +74,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
             {changes && (
                 <div className="material-history__all-changes w-100 mono fs-14">
                     {gitTrigger?.Changes.map((change, index) => {
-                        return <div key={index}>{change}</div>;
+                        return <div className="pl-16 " key={index}>{change}</div>;
                     })}
                 </div>
             )}

@@ -7,11 +7,16 @@ export const getChartProviderConfig = (id: number): Promise<any> => {
 }
 
 export const updateChartProviderConfig = (request: any, id: number) => {
-    const URL = `app-store/repo/update`;
+    const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/update`;
     return post(URL, request);
 }
 
 export const saveChartProviderConfig = (request: any, id: any) => {
-    const URL = `app-store/repo/create`;
+    const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/create`;
     return post(URL, request);
 }
+
+export const validateChartRepoConfiguration = (request: any):Promise<any> => {
+    const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/validate`;
+    return post(URL, request);
+  }

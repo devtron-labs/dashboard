@@ -11,13 +11,14 @@ import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg';
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service';
-import { ViewType, URLS } from '../../config';
+import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { components } from 'react-select';
 import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer } from './notifications.util';
 import Tippy from '@tippyjs/react';
 import CreatableSelect from 'react-select/creatable';
+import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import './notifications.css';
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {
@@ -92,6 +93,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     componentDidMount() {
         this.getInitialData();
+       
     }
 
     getInitialData() {
@@ -358,6 +360,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <th className="pipeline-list__stages block fw-6">Events</th>
                     </tr>
                     {this.state.pipelineList.map((row, rowIndex) => {
+                        let _isCi = row.branch && row.type === "CI";
+                        let _isWebhookCi;
+                        if (_isCi){
+                            try {
+                                JSON.parse(row.branch);
+                                _isWebhookCi = true;
+                            } catch (e) {
+                                _isWebhookCi = false;
+                            }
+                        }
+
                         return <tr key={row.pipelineId + row.type} className="pipeline-list__row">
                             <td className="pipeline-list__checkbox">
                                 <Checkbox rootClassName=""
@@ -382,7 +395,11 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 {row.type === "CD" ? <CD className="icon-dim-20" /> : ''}
                             </td>
                             <td className="pipeline-list__environment">
-                                {row.branch && row.type === "CI" ? <span className="flex left"> <Branch className="icon-dim-16 mr-4" /> {row.branch} </span> : ''}
+                                {_isCi &&
+                                    <span className="flex left">
+                                        <CiPipelineSourceConfig sourceType={_isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed} sourceValue={row.branch} showTooltip={true} />
+                                    </span>
+                                }
                                 {row.type === "CD" ? row?.environmentName : ''}
                             </td>
                             <td className="pipeline-list__stages flexbox flex-justify">
@@ -522,6 +539,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     render() {
         return <ErrorBoundary>
+           
             <div className="add-notification-page">
                 <div className="form__title mb-16">Add Notifications</div>
                 {this.renderAddCard()}
