@@ -130,6 +130,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             }
         }
         else if (state.registryType.value === 'other') {
+            let error = false;
             if (!customState.username.value || !customState.password.value || !customState.registryUrl.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
                     ...st,
@@ -137,15 +138,21 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
-                return
+                error = true
             }
-        }
-        if (state.advanceSelect.value === "secure-with-cert") {
-            if (state.certInput.value === "") {
-                setCertInputError('Mandatory')
+            if (state.advanceSelect.value === "secure-with-cert") {
+                if (state.certInput.value === "") {
+                    if(!optionCollapsed){
+                        setoptionCollapsed(not)
+                    }
+                    setCertInputError('Mandatory')
+                    error = true
+                } else {
+                    setCertInputError('')
+                }
+            }
+            if(error){
                 return
-            } else {
-                setCertInputError('')
             }
         }
 
@@ -230,7 +237,8 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
-            <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />
+            {state.registryType.value === 'other' &&
+            <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />}
             {state.registryType.value === 'other' &&
             <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
                 <Dropdown
