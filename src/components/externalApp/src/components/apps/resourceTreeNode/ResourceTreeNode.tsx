@@ -1,4 +1,5 @@
 import React from 'react'
+import GenericRowsInfo from './GenericRowsInfo';
 import NodeGroup from './NodeGroup';
 
 export default function ResourceTreeNode() {
@@ -39,6 +40,9 @@ export default function ResourceTreeNode() {
                     </div>
 
                 </div>
+                <div style={{ gridColumn: '2', gridRow: '2', overflowY: 'auto' }} className="bcn-0">
+                <GenericRowsInfo />
+            </div>
 
             </div>
         </div>
