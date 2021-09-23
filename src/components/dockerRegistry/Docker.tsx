@@ -9,7 +9,9 @@ import { DOCUMENTATION } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 
 const DockerRegistryType = [
     { label: 'docker hub', value: 'docker-hub' },
@@ -41,9 +43,11 @@ export default function Docker({ ...props }) {
 function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, connection = "", cert = "", ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return (
-        <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create collapsed-list--dash-border'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
-                <List.Logo> <div className={id ? "docker list__logo git-logo" : "add-icon"}></div></List.Logo>
+                {id ? <List.Logo> <div className="docker list__logo git-logo"></div></List.Logo>
+                    : <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
+
                 <div className="flex left">
                     <List.Title title={id || 'Add docker registry'} subtitle={registryUrl} tag={isDefault ? 'DEFAULT' : ''} />
                 </div>
@@ -83,6 +87,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
     const [optionCollapsed, setoptionCollapsed] = useState(false)
+    const [certError, setCertInputError] = useState('')
 
     let awsRegionMap = awsRegionList.reduce((agg, curr) => {
         agg.set(curr.value, curr.name)
@@ -137,8 +142,10 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         }
         if (state.advanceSelect.value === "secure-with-cert") {
             if (state.certInput.value === "") {
-                toast.error("Please enter certificate");
+                setCertInputError('Mandatory')
                 return
+            } else {
+                setCertInputError('')
             }
         }
 
@@ -224,22 +231,20 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <ProtectedInput name="password" tabIndex={6} value={customState.password.value} error={customState.password.error} onChange={customHandleChange} label="Password*" type="password" />
                 </div>
             </>}
-            <div className="form__buttons flex left">
+            <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />
+            <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
                 <Dropdown
                     onClick={(e) => setoptionCollapsed(not)}
-                    className="rotate icon-dim-18 pointer fcn-5"
+                    className="rotate icon-dim-18 pointer fcn-6"
                     style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
                 />
-                <label className="fs-13 mb-0 ml-8">Advanced Registry URL connection options</label>
-                <Tippy className="default-tt" arrow={false} placement="top" content={
-                    <span style={{ display: "block", width: "160px" }}> Use to verify self-signed TLS Certificate </span>}>
-                    <Question className="icon-dim-16 ml-4" />
-                </Tippy>
+                <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setoptionCollapsed(not)}>Advanced Registry URL connection options</label>
+                <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
             </div>
             {optionCollapsed &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {[{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }]
-                        .map(({ label: Lable, value, tippy }) => <div> <label key={value} className="flex left pointer secureFont workflow-node__text-light mt-20">
+                        .map(({ label: Lable, value, tippy }) => <div> <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != 'secure' ? 'mt-20' : 'mt-18'}`}>
                             <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
                                 {Lable}</span>
                             {value != "secure" &&
@@ -250,7 +255,11 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                         </label>
                             {value == "secure-with-cert" && state.advanceSelect.value == "secure-with-cert" &&
                                 <div className="ml-20">
-                                    <textarea name="certInput" placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input bcn-1" style={{ height: "100px" }} onChange={handleOnChange} value={state.certInput.value} />
+                                    <textarea name="certInput" placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.certInput.value} />
+                                    {certError && <div className="form__error">
+                                        <Error className="form__icon form__icon--error" />
+                                        {certError}
+                                    </div>}
                                 </div>
                             }
                         </div>)}
