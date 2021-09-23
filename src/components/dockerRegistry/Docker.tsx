@@ -135,8 +135,8 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
-        if (state.advanceSelect.value == "secure-with-cert") {
-            if (state.certInput.value == "") {
+        if (state.advanceSelect.value === "secure-with-cert") {
+            if (state.certInput.value === "") {
                 toast.error("Please enter certificate");
                 return
             }
