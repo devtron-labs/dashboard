@@ -155,11 +155,10 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryType: state.registryType.value,
             isDefault: Isdefault,
             registryUrl: customState.registryUrl.value,
-            connection: state.advanceSelect.value,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
             ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
             ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value } : {}),
-            ...(state.advanceSelect.value === 'secure-with-cert' ? { cert: state.certInput.value } : { cert: "" }),
+            ...(state.registryType.value === 'other' ? { connection: state.advanceSelect.value, cert: state.certInput.value } : {}),
         }
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
@@ -232,6 +231,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 </div>
             </>}
             <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />
+            {state.registryType.value === 'other' &&
             <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
                 <Dropdown
                     onClick={(e) => setoptionCollapsed(not)}
@@ -240,7 +240,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 />
                 <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setoptionCollapsed(not)}>Advanced Registry URL connection options</label>
                 <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
-            </div>
+            </div>}
             {optionCollapsed &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {[{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }]
