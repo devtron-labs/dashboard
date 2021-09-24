@@ -1,6 +1,8 @@
 import React from 'react'
 import GenericRowsInfo from './GenericRowsInfo';
 import NodeGroup from './NodeGroup';
+import AllPods from './AllPods';
+import { NavLink, Route, BrowserRouter as Router} from 'react-router-dom'
 
 export default function ResourceTreeNode() {
     return (
@@ -38,11 +40,15 @@ export default function ResourceTreeNode() {
                     >
                         <NodeGroup />
                     </div>
-
                 </div>
+                <Route>
+                {/* <Route path="/Workload"> */}
                 <div style={{ gridColumn: '2', gridRow: '2', overflowY: 'auto' }} className="bcn-0">
-                <GenericRowsInfo />
+               {/* <GenericRowsInfo /> */}
+               <AllPods/>
             </div>
+            {/* </Route> */}
+            </Route>
 
             </div>
         </div>

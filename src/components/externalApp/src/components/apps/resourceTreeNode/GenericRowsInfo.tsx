@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg';
+import { NavLink } from 'react-router-dom'
 
 export default function GenericRowsInfo() {
     return (
         <div>
+             
             <div className={`generic-info-container flex left column top w-100`}>
                 <div className="flex left column w-100 generic-info-header" >
                     <div style={{ height: '64px' }} className="pl-16 pr-16 flex column left">

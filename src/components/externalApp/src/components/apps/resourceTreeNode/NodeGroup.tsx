@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as ErrorImage } from '../../../assets/icons/errorInfo.svg';
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router';
+import { NavLink } from 'react-router-dom';
 
 export default function NodeGroup() {
     const history = useHistory()
@@ -36,7 +37,6 @@ export default function NodeGroup() {
                     style={{ ['--rotateBy' as any]: collapsedWorkload ? '-90deg' : '0deg' }}
                 />
                 <div
-                    //  onClick={(e) => setCollapsed(not)} 
                     className="fs-14 pointer w-100 fw-6 flex left pl-8">
                     <div onClick={onClickWorkloadKind}> Workload</div>
                     {/* <ErrorImage
