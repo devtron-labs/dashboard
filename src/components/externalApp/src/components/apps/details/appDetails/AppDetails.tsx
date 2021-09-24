@@ -4,11 +4,16 @@ import ResourceTreeNodes from '../../resourceTreeNode/ResourceTreeNode';
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
+import ExternalAppScaleModal from '../../externalAppScaleModal/ExternalScalePodModal';
 
 export default function AppDetails() {
 
+    const [hiberbateConfirmationModal, setHibernateConfirmationModal] = useState('');
+    const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
+    
+
     const EnvSelector = () => {
-        return <div className="flex left mt-16 ml-24 mr-24 mb-16 top">
+        return <div className=""><div className="flex left mt-16 ml-24 mr-24 mb-16 top">
             <div style={{ width: 'clamp( 100px, 30%, 200px )', position: 'relative' }}>
                 <svg
                     viewBox="0 0 200 40"
@@ -38,8 +43,15 @@ export default function AppDetails() {
                     isSearchable={false}
                 />
             </div>
+          
 
         </div>
+          <button className="cta pb-16" onClick={()=>setshowHibernateConfirmationModal(true)}>
+          Scale Pd To 0
+      </button>
+      { showhiberbateConfirmationModal && <ExternalAppScaleModal onClose={() => setshowHibernateConfirmationModal(false)}/> }
+
+      </div>
     }
 
     const deploymentStatus = () => {

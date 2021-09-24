@@ -42,12 +42,10 @@ export default function ResourceTreeNode() {
                     </div>
                 </div>
                 <Route>
-                {/* <Route path="/Workload"> */}
                 <div style={{ gridColumn: '2', gridRow: '2', overflowY: 'auto' }} className="bcn-0">
                {/* <GenericRowsInfo /> */}
                <AllPods/>
             </div>
-            {/* </Route> */}
             </Route>
 
             </div>
