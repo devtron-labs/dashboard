@@ -184,6 +184,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     }
 
     let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
+    let advanceRegistryOptions = [{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }];
     return (
         <form onSubmit={handleOnSubmit} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -250,8 +251,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             </div>}
             {optionCollapsed &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
-                    {[{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }]
-                        .map(({ label: Lable, value, tippy }) => <div> <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != 'secure' ? 'mt-20' : 'mt-18'}`}>
+                    {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => <div> <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != 'secure' ? 'mt-20' : 'mt-18'}`}>
                             <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
                                 {Lable}</span>
                             {value != "secure" &&
