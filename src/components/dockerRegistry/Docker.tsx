@@ -43,7 +43,7 @@ export default function Docker({ ...props }) {
 function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, connection = "", cert = "", ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return (
-        <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create collapsed-list--dash-border'}`}>
+        <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 {id ? <List.Logo> <div className="docker list__logo git-logo"></div></List.Logo>
                     : <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
