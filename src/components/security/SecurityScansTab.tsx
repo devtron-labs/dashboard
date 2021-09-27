@@ -33,7 +33,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         clusters: [],
         severity: [],
       },
-      size: 20,
+      size: 0,
       offset: 0,
       pageSize: 20,
       securityScans: [],
