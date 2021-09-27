@@ -12,8 +12,13 @@ export enum VALIDATION_STATUS {
     DRY_RUN = 'DRY_RUN'
 };
 
+function renderOnClickValidate(onClickValidate) {
+    return (
+        <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+    )
+}
 
-export function ValidateForm({ onClickValidate, configName }) {
+function ValidateForm({ onClickValidate, configName }) {
     return (
         <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex flex-justify">
@@ -23,13 +28,13 @@ export function ValidateForm({ onClickValidate, configName }) {
                         <span className="ml-8 fw-6">Perform a dry run to validate the below {configName} configurations.</span>
                     </div>
                 </div>
-                <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+                {renderOnClickValidate(onClickValidate)}
             </div>
         </div>
     )
 }
 
-export function ValidateLoading({ message }) {
+function ValidateLoading({ message }) {
     return <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex left">
             <div><Progressing /></div>
@@ -41,7 +46,7 @@ export function ValidateLoading({ message }) {
 
 }
 
-export function ValidationSuccess({ onClickValidate }) {
+function ValidationSuccess({ onClickValidate }) {
     return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
@@ -50,12 +55,12 @@ export function ValidationSuccess({ onClickValidate }) {
                     <span className="ml-8 fw-6">Configurations validated</span>
                 </div>
             </div>
-            <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+            {renderOnClickValidate(onClickValidate)}
         </div>
     </div>
 }
 
-export function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false }) {
+function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
@@ -66,8 +71,7 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
             </div>
             {isChartRepo && <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>}
             {
-                !isChartRepo && formId &&
-                <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+                !isChartRepo && formId && renderOnClickValidate(onClickValidate)
             }
         </div>
         <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
@@ -86,7 +90,6 @@ export function ValidateFailure({ formId, validationError, onClickValidate, vali
             </div>
         </div>
     </div>
-
 }
 
 export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
