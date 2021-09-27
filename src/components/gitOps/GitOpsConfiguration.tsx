@@ -14,7 +14,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'
-import { VALIDATION_STATUS, ValidatingForm } from '../common/ValidateForm/ValidateForm';
+import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -342,7 +342,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     title={this.state.providerTab === GitProvider.GITLAB ? "group in GitLab" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"}
                 />
 
-                < ValidatingForm
+                < ValidateForm
                     id={this.state.form.id}
                     onClickValidate={() => this.validateGitOps(this.state.providerTab)}
                     validationError={this.state.validationError}

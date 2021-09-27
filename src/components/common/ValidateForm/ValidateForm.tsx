@@ -18,7 +18,7 @@ function renderOnClickValidate(onClickValidate) {
     )
 }
 
-function ValidateForm({ onClickValidate, configName }) {
+function ValidateDryRun({ onClickValidate, configName }) {
     return (
         <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex flex-justify">
@@ -46,7 +46,7 @@ function ValidateLoading({ message }) {
 
 }
 
-function ValidationSuccess({ onClickValidate }) {
+function ValidateSuccess({ onClickValidate }) {
     return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex flex-justify">
             <div className="flex">
@@ -92,17 +92,17 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
     </div>
 }
 
-export function ValidatingForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
+export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
     return (
         <div className="mt-16">
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
-                <ValidateForm onClickValidate={onClickValidate} configName={configName} />}
+                <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />}
             { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == VALIDATION_STATUS.FAILURE &&
                 <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} />}
             {validationStatus == VALIDATION_STATUS.SUCCESS &&
-                <ValidationSuccess onClickValidate={onClickValidate} />}
+                <ValidateSuccess onClickValidate={onClickValidate} />}
         </div>
     )
 }

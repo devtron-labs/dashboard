@@ -8,7 +8,7 @@ import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
-import { ValidatingForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
+import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 
 
 export default function ChartRepo() {
@@ -202,7 +202,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            < ValidatingForm
+            < ValidateForm
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
