@@ -94,7 +94,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let offset = searchStr.get('offset');
     let payload = {
       offset: Number(offset) || 0,
-      size: Number(pageSize) || 10,
+      size: Number(pageSize) || 20,
       cveName: "",
       appName: "",
       objectName: "",
