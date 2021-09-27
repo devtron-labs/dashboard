@@ -31,7 +31,7 @@ export interface GitOpsConfig {
 export interface GitOpsState {
     view: string;
     statusCode: number;
-    tab: GitProviderType;
+    providerTab: GitProviderType;
     gitList: GitOpsConfig[];
     form: GitOpsConfig;
     isFormEdited: boolean;
