@@ -48,7 +48,6 @@ export interface GitOpsState {
     validatedTime: string;
     validationError: GitOpsConfig[];
     validationStatus:string;
-    validateLoading: boolean;
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }

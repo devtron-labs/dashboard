@@ -9,7 +9,7 @@ export enum VALIDATION_STATUS {
     SUCCESS = 'SUCCESS',
     FAILURE = 'FAILURE',
     LOADER = 'LOADER',
-    DRY_RUN= 'DRY_RUN'
+    DRY_RUN = 'DRY_RUN'
 };
 
 

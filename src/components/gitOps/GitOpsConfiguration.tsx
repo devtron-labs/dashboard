@@ -14,7 +14,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'
-import { ValidateForm, ValidateLoading, ValidationSuccess, ValidateFailure, VALIDATION_STATUS, ValidatingForm } from '../common/ValidateForm/ValidateForm';
+import { VALIDATION_STATUS, ValidatingForm } from '../common/ValidateForm/ValidateForm';
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -57,9 +57,9 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     }
 }
 
-const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string, validationLoading: boolean }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, gitops, validationLoading }) => {
+const GitProviderTab: React.FC<{ tab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string, saveLoading: boolean }> = ({ tab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading }) => {
     return <label className="tertiary-tab__radio">
-        <input type="radio" name="status" value={provider} checked={tab === provider} onChange={!validationLoading && handleGitopsTab} />
+        <input type="radio" name="status" value={provider} checked={tab === provider} onChange={!saveLoading && handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
             <aside className="login__text-alignment"> {gitops}</aside>
@@ -110,7 +110,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             validatedTime: "",
             validationError: [],
-            validateLoading: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
@@ -151,6 +150,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     handleGitopsTab(event): void {
+        if (this.state.saveLoading) {
+            return
+        }
+
         let newGitOps = event.target.value;
         let form = this.state.gitList.find(item => item.provider === newGitOps);
         if (!form) {
@@ -166,7 +169,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             form: form,
             isError: isError,
             isFormEdited: false,
-            validationStatus:VALIDATION_STATUS.SUCCESS,
+            validationStatus: VALIDATION_STATUS.DRY_RUN,
         })
     }
 
@@ -235,7 +238,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             toast.error("Some Required Fields are missing");
             return;
         }
-        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading:true,  validateLoading: true });
+        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true });
         let payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
@@ -252,10 +255,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let resp = response.result
             if (resp.active) {
                 toast.success("Configuration validated and saved successfully");
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS ,saveLoading: false, isFormEdited: false });
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
                 this.fetchGitOpsConfigurationList();
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] , validateLoading: false,})
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
@@ -265,12 +268,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     validateGitOps(tab) {
+
         let isInvalid = this.isInvalid();
         if (isInvalid) {
             toast.error("Some Required Fields are missing");
             return;
         }
-        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading:true,  validateLoading: true, });
+        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true });
         let payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
@@ -287,16 +291,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let resp = response.result
             let validate = resp.successfulStages ? resp.successfulStages : []
             if (validate != null && validate.length > 0) {
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false });
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
 
                 toast.success("Configuration validated");
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [] , validateLoading: false,})
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
             showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code});
+            this.setState({ view: ViewType.ERROR, statusCode: error.code });
         })
     }
 
@@ -328,28 +332,21 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
                 <div className="login__sso-flex">
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" validationLoading={this.state.validateLoading} />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" validationLoading={this.state.validateLoading} />
-                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" validationLoading={this.state.validateLoading} />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" saveLoading={this.state.saveLoading} />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" saveLoading={this.state.saveLoading} />
+                    <GitProviderTab tab={this.state.tab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" saveLoading={this.state.saveLoading} />
                 </div>
                 <GitInfoTab
                     tab={this.state.tab}
                     gitLink={this.state.tab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.tab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : GitLink.GITHUB}
                     title={this.state.tab === GitProvider.GITLAB ? "group in GitLab" : this.state.tab === GitProvider.AZURE_DEVOPS ? "project in Azure" : "organization in GithHub"}
                 />
-                {/* {this.state.form.id && this.state.validateFailure != true && this.state.validateSuccess != true && this.state.validateLoading != true &&
-                    <ValidateForm onClickValidate={() => this.validateGitOps(this.state.tab)} configName="gitops"/>}
-                {this.state.validateLoading &&
-                    <ValidateLoading message="Validating GitOps configuration. Please wait… " />}
-                {this.state.validateFailure && this.state.validateLoading != true &&
-                    <ValidateFailure validatedTime={this.state.validatedTime} validationError={this.state.validationError} onClickValidate={() => this.validateGitOps(this.state.tab)} formId={this.state.form.id} />}
-                {this.state.validateSuccess && this.state.validateLoading != true &&
-                    <ValidationSuccess onClickValidate={() => this.validateGitOps(this.state.tab)} />} */}
+
                 < ValidatingForm
                     id={this.state.form.id}
                     onClickValidate={() => this.validateGitOps(this.state.tab)}
                     validationError={this.state.validationError}
-                    isChartRepo={true}
+                    isChartRepo={false}
                     validationStatus={this.state.validationStatus}
                     configName="gitops "
                 />
