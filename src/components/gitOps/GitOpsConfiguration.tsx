@@ -346,7 +346,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     id={this.state.form.id}
                     onClickValidate={() => this.validateGitOps(this.state.providerTab)}
                     validationError={this.state.validationError}
-                    isChartRepo={false}
                     validationStatus={this.state.validationStatus}
                     configName="gitops "
                 />
