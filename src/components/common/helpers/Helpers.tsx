@@ -141,7 +141,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             setState({ ...newState });
         }
     };
-    return { state, disable, handleOnChange, handleOnSubmit };
+    return { state, disable, handleOnChange, handleOnSubmit, setState };
 }
 
 export function getRandomColor(email: string): string {

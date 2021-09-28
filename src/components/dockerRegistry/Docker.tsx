@@ -60,12 +60,12 @@ function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryTyp
 }
 
 function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert, ...rest }) {
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state, disable, handleOnChange, handleOnSubmit, setState } = useForm(
         {
             id: { value: id, error: "" },
             registryType: { value: registryType || 'ecr', error: "" },
             advanceSelect: { value: connection || 'secure', error: "" },
-            certInput: { value: cert, error: "" }
+            certInput: { value: cert || "", error: "" }
         },
         {
             id: {
@@ -102,11 +102,59 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         username: { value: username, error: "" },
         password: { value: password, error: "" }
     })
+
     function customHandleChange(e) {
         setCustomState(st => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
-    async function onValidation() {
+    function setSecureCert() {
+        if (state.advanceSelect.value !== "secure-with-cert" ) {
+            console.log(state.advanceSelect.value !== "secure-with-cert"  )
+            setState(st =>
+            ({
+                ...st,
+                certInput: { value: "", error: "" }
+            })
+          )
+        }
+        return true
+    }
+
+    function handleConnectionChange(e) {
+        let res = setSecureCert()
+        if (res) { handleOnSubmit(e) }
+    }
+
+    async function response() {
+
+        let payload = {
+            id: state.id.value,
+            pluginId: 'cd.go.artifact.docker.registry',
+            registryType: state.registryType.value,
+            isDefault: Isdefault,
+            registryUrl: customState.registryUrl.value,
+            ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
+            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
+            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.certInput.value } : {}),
+        }
+
+        const api = id ? updateRegistryConfig : saveRegistryConfig
+        try {
+            toggleLoading(true)
+            const { result } = await api(payload, id)
+            if (!id) {
+                toggleCollapse(true);
+            }
+            await reload()
+            toast.success('Successfully saved.')
+        } catch (err) {
+            showError(err)
+        } finally {
+            toggleLoading(false)
+        }
+    }
+
+    function onValidation() {
         if (state.registryType.value === 'ecr') {
             if (!customState.awsRegion.value || !customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
@@ -151,42 +199,18 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     setCertInputError('')
                 }
             }
+
             if (error) {
                 return
             }
         }
-
-        let payload = {
-            id: state.id.value,
-            pluginId: 'cd.go.artifact.docker.registry',
-            registryType: state.registryType.value,
-            isDefault: Isdefault,
-            registryUrl: customState.registryUrl.value,
-            ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
-            ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
-            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.certInput.value  } : {}),
-        }
-
-        const api = id ? updateRegistryConfig : saveRegistryConfig
-        try {
-            toggleLoading(true)
-            const { result } = await api(payload, id)
-            if (!id) {
-                toggleCollapse(true);
-            }
-            await reload()
-            toast.success('Successfully saved.')
-        } catch (err) {
-            showError(err)
-        } finally {
-            toggleLoading(false)
-        }
+        response()
     }
 
     let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     let advanceRegistryOptions = [{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }];
     return (
-        <form onSubmit={handleOnSubmit} className="docker-form" autoComplete="off">
+        <form onSubmit={(e) => handleConnectionChange(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
                 <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>
