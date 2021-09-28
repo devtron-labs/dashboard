@@ -12,6 +12,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
+import { types } from 'util';
 
 const DockerRegistryType = [
     { label: 'docker hub', value: 'docker-hub' },
@@ -79,10 +80,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
-            certInput: {
-                required: false,
-                validator: { error: 'cert is required', regex: /^.*$/ },
-            },
         }, onValidation);
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
@@ -107,6 +104,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     }
 
     async function onValidation() {
+        console.log('test')
+        let name = 'shivani'
+        console.log(name)
         if (state.registryType.value === 'ecr') {
             if (!customState.awsRegion.value || !customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
@@ -142,7 +142,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             }
             if (state.advanceSelect.value === "secure-with-cert") {
                 if (state.certInput.value === "") {
-                    if(!optionCollapsed){
+                    if (!optionCollapsed) {
                         setoptionCollapsed(not)
                     }
                     setCertInputError('Mandatory')
@@ -151,7 +151,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     setCertInputError('')
                 }
             }
-            if(error){
+            if (error) {
                 return
             }
         }
@@ -238,38 +238,38 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 </div>
             </>}
             {state.registryType.value === 'other' &&
-            <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />}
+                <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />}
             {state.registryType.value === 'other' &&
-            <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
-                <Dropdown
-                    onClick={(e) => setoptionCollapsed(not)}
-                    className="rotate icon-dim-18 pointer fcn-6"
-                    style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
-                />
-                <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setoptionCollapsed(not)}>Advanced Registry URL connection options</label>
-                <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
-            </div>}
+                <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
+                    <Dropdown
+                        onClick={(e) => setoptionCollapsed(not)}
+                        className="rotate icon-dim-18 pointer fcn-6"
+                        style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
+                    />
+                    <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setoptionCollapsed(not)}>Advanced Registry URL connection options</label>
+                    <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
+                </div>}
             {optionCollapsed &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => <div> <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != 'secure' ? 'mt-20' : 'mt-18'}`}>
-                            <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
-                                {Lable}</span>
-                            {value != "secure" &&
-                                <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
-                                    <span style={{ display: "block", width: "160px" }}>{tippy}</span>}>
-                                    <Question className="icon-dim-16 ml-4" />
-                                </Tippy>}
-                        </label>
-                            {value == "secure-with-cert" && state.advanceSelect.value == "secure-with-cert" &&
-                                <div className="ml-20">
-                                    <textarea name="certInput" placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.certInput.value} />
-                                    {certError && <div className="form__error">
-                                        <Error className="form__icon form__icon--error" />
-                                        {certError}
-                                    </div>}
-                                </div>
-                            }
-                        </div>)}
+                        <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
+                            {Lable}</span>
+                        {value != "secure" &&
+                            <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
+                                <span style={{ display: "block", width: "160px" }}>{tippy}</span>}>
+                                <Question className="icon-dim-16 ml-4" />
+                            </Tippy>}
+                    </label>
+                        {value == "secure-with-cert" && state.advanceSelect.value == "secure-with-cert" &&
+                            <div className="ml-20">
+                                <textarea name="certInput" placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.certInput.value} />
+                                {certError && <div className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    {certError}
+                                </div>}
+                            </div>
+                        }
+                    </div>)}
                 </div>}
             <div className="form__row form__buttons  ">
                 <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
