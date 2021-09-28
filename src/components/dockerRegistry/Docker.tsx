@@ -81,7 +81,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
             certInput: {
-                required: true,
+                required: false,
             },
         }, onValidation);
     const [loading, toggleLoading] = useState(false)
@@ -164,7 +164,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryUrl: customState.registryUrl.value,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
             ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
-            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.certInput.value } : {}),
+            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.certInput.value  } : {}),
         }
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
