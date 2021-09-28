@@ -80,6 +80,9 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
+            certInput: {
+                required: true,
+            },
         }, onValidation);
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
@@ -104,9 +107,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     }
 
     async function onValidation() {
-        console.log('test')
-        let name = 'shivani'
-        console.log(name)
         if (state.registryType.value === 'ecr') {
             if (!customState.awsRegion.value || !customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value || !customState.registryUrl.value) {
                 setCustomState(st => ({
