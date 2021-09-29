@@ -66,7 +66,7 @@ function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryTyp
 }
 
 function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert, ...rest }) {
-    const { state, disable, handleOnChange, handleOnSubmit, setState } = useForm(
+    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             id: { value: id, error: "" },
             registryType: { value: registryType || 'ecr', error: "" },
@@ -92,7 +92,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         }, onValidation);
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
-    const [optionCollapsed, setoptionCollapsed] = useState(false)
+    const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
     const [certError, setCertInputError] = useState('')
 
     let awsRegionMap = awsRegionList.reduce((agg, curr) => {
@@ -177,8 +177,8 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             }
             if (state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT) {
                 if (state.certInput.value === "") {
-                    if (!optionCollapsed) {
-                        setoptionCollapsed(not)
+                    if (!toggleCollapsedAdvancedRegistry) {
+                        setToggleCollapsedAdvancedRegistry(not)
                     }
                     setCertInputError('Mandatory')
                     error = true
@@ -255,16 +255,16 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             {state.registryType.value === 'other' &&
                 <hr className="cn-1 bcn-1 en-1" style={{ height: .5 }} />}
             {state.registryType.value === 'other' &&
-                <div className={`form__buttons flex left ${optionCollapsed ? '' : 'mb-22'}`}>
+                <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-22'}`}>
                     <Dropdown
-                        onClick={(e) => setoptionCollapsed(not)}
+                        onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
                         className="rotate icon-dim-18 pointer fcn-6"
-                        style={{ ['--rotateBy' as any]: !optionCollapsed ? '-90deg' : '0deg' }}
+                        style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
                     />
-                    <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setoptionCollapsed(not)}>Advanced Registry URL connection options</label>
+                    <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}>Advanced Registry URL connection options</label>
                     <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
                 </div>}
-            {optionCollapsed &&
+            {toggleCollapsedAdvancedRegistry &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => <div>
                         <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != CERTTYPE.SECURE ? 'mt-20' : 'mt-18'}`}>
