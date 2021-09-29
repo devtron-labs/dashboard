@@ -107,26 +107,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         setCustomState(st => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
-    function setSecureCert() {
-        if (state.advanceSelect.value !== "secure-with-cert" ) {
-            console.log(state.advanceSelect.value !== "secure-with-cert"  )
-            setState(st =>
-            ({
-                ...st,
-                certInput: { value: "", error: "" }
-            })
-          )
-        }
-        return true
-    }
-
-    function handleConnectionChange(e) {
-        let res = setSecureCert()
-        if (res) { handleOnSubmit(e) }
-    }
-
-    async function response() {
-
+    async function onSave() {
         let payload = {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -135,7 +116,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
             registryUrl: customState.registryUrl.value,
             ...(state.registryType.value === 'ecr' ? { awsAccessKeyId: customState.awsAccessKeyId.value, awsSecretAccessKey: customState.awsSecretAccessKey.value, awsRegion: customState.awsRegion.value } : {}),
             ...(state.registryType.value === 'docker-hub' ? { username: customState.username.value, password: customState.password.value, } : {}),
-            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.certInput.value } : {}),
+            ...(state.registryType.value === 'other' ? { username: customState.username.value, password: customState.password.value, connection: state.advanceSelect.value, cert: state.advanceSelect.value !== "secure-with-cert" ? '' : state.certInput.value } : {}),
         }
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
@@ -204,13 +185,13 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 return
             }
         }
-        response()
+        onSave()
     }
 
     let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     let advanceRegistryOptions = [{ label: 'Allow only secure connection', value: 'secure', tippy: '' }, { label: 'Allow secure connection with CA certificate', value: 'secure-with-cert', tippy: 'Use to verify self-signed TLS Certificate' }, { label: 'Allow insecure connection', value: 'insecure', tippy: 'This will enable insecure registry communication' }];
     return (
-        <form onSubmit={(e) => handleConnectionChange(e)} className="docker-form" autoComplete="off">
+        <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
                 <CustomInput name="id" autoFocus={true} value={state.id.value} autoComplete={"off"} error={state.id.error} tabIndex={1} onChange={handleOnChange} label="Name*" disabled={!!id} />
             </div>
