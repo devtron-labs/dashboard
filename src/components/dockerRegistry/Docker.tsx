@@ -20,12 +20,12 @@ const DockerRegistryType = [
     { label: 'other', value: 'other' }
 ];
 
- enum CERTTYPE {
-     SECURE= "secure",
-     INSECURE= "insecure",
-     SECURE_WITH_CERT="secure-with-cert"
- }
- 
+enum CERTTYPE {
+    SECURE = "secure",
+    INSECURE = "insecure",
+    SECURE_WITH_CERT = "secure-with-cert"
+}
+
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     if (loading && !result) return <Progressing pageLoader />
@@ -186,7 +186,6 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     setCertInputError('')
                 }
             }
-
             if (error) {
                 return
             }
@@ -197,8 +196,10 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     let selectedDckerRegistryType = DockerRegistryType.find(type => type.value === state.registryType.value);
     let advanceRegistryOptions = [
         { label: 'Allow only secure connection', value: CERTTYPE.SECURE, tippy: '' },
-         { label: 'Allow secure connection with CA certificate', value: CERTTYPE.SECURE_WITH_CERT, tippy: 'Use to verify self-signed TLS Certificate' }, 
-         { label: 'Allow insecure connection', value: CERTTYPE.INSECURE, tippy: 'This will enable insecure registry communication' }];
+        { label: 'Allow secure connection with CA certificate', value: CERTTYPE.SECURE_WITH_CERT, tippy: 'Use to verify self-signed TLS Certificate' },
+        { label: 'Allow insecure connection', value: CERTTYPE.INSECURE, tippy: 'This will enable insecure registry communication' }
+    ];
+
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -265,15 +266,16 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 </div>}
             {optionCollapsed &&
                 <div className="form__row ml-3" style={{ width: '100%' }}>
-                    {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => <div> <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != CERTTYPE.SECURE ? 'mt-20' : 'mt-18'}`}>
-                        <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
-                            {Lable}</span>
-                        {value != CERTTYPE.SECURE &&
-                            <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
-                                <span style={{ display: "block", width: "160px" }}>{tippy}</span>}>
-                                <Question className="icon-dim-16 ml-4" />
-                            </Tippy>}
-                    </label>
+                    {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => <div>
+                        <label key={value} className={`flex left pointer secureFont workflow-node__text-light ${value != CERTTYPE.SECURE ? 'mt-20' : 'mt-18'}`}>
+                            <input type="radio" name="advanceSelect" value={value} onChange={handleOnChange} checked={value === state.advanceSelect.value} /><span className="ml-10 fs-13">
+                                {Lable}</span>
+                            {value != CERTTYPE.SECURE &&
+                                <Tippy className="default-tt ml-10" arrow={false} placement="top" content={
+                                    <span style={{ display: "block", width: "160px" }}>{tippy}</span>}>
+                                    <Question className="icon-dim-16 ml-4" />
+                                </Tippy>}
+                        </label>
                         {value == CERTTYPE.SECURE_WITH_CERT && state.advanceSelect.value == CERTTYPE.SECURE_WITH_CERT &&
                             <div className="ml-20">
                                 <textarea name="certInput" placeholder="Begins with -----BEGIN CERTIFICATE-----" className="form__input" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.certInput.value} />
