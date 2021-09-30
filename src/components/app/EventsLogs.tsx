@@ -24,6 +24,7 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
+import { getSelectedLog } from './details/appDetails/utils';
 
 const commandLineParser = require('command-line-parser')
 
@@ -32,6 +33,8 @@ const subject: Subject<string> = new Subject()
 
 interface EventsLogsProps {
     nodeName: string;
+    selectedLogsNode: any;
+    nodeItems: any;
     containerName: any;
     nodes: AggregatedNodes;
     logsPaused?: boolean;
@@ -69,7 +72,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -84,6 +87,8 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                     appDetails={appDetails}
                     subject={subject}
                     nodeName={nodeName}
+                    selectedLogsNode={selectedLogsNode}
+                    nodeItems={nodeItems}
                     containerName={containerName}
                     handleLogPause={handleLogPause}
                     logsPaused={logsPaused}
@@ -251,13 +256,15 @@ function NoEvents({ title = "Events not available" }) {
 interface LogsView {
     subject: Subject<string>;
     nodeName?: string;
+    selectedLogsNode?: any;
+    nodeItems?: any;
     containerName: string;
     handleLogPause: (paused: boolean) => void;
     logsPaused: boolean;
     appDetails: AppDetails;
 }
 
-export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName, handleLogPause, logsPaused, appDetails }) => {
+export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails }) => {
     const key = useKeyDown()
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [readyState, setReadyState] = React.useState(null);
@@ -300,8 +307,13 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         } else {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
-        // return `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${nodeName}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`
-        let pods = ["logs-demo-597b67768f-khc2s", "logs-demo-597b67768f-86tjl"]
+        let pods = [];
+        let selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
+
+        selectedLog.map((item) => {
+            pods.push(item.value)
+        })
+        
         return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
 

@@ -259,6 +259,25 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
     return url;
 }
 
+export function getSelectedLog(selectedNodes: any, nodeItems: any): any {
+    let selectedLog= [];
+    selectedNodes.map((item) => {
+        if(item.value == "All pods"){
+            selectedLog = nodeItems
+        } else if (item.value == "All new pods"){
+            const result = nodeItems.filter(item => item.label.includes("new"));
+            selectedLog = result
+        } else if (item.value == "All old pods"){
+            const result = nodeItems.filter(item => item.label.includes("old"));
+            selectedLog = result
+        } else {
+            selectedLog = selectedNodes
+        }
+
+    })
+    return selectedLog;
+}
+
 export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
     switch (chartName) {
         case 'latency':
