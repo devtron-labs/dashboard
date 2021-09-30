@@ -220,7 +220,13 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         }, onValidation);
 
     const [loading, setLoading] = useState(false)
-    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' }, hostName: { value: gitHost.value, error: '' } })
+    const [customState, setCustomState] = useState({
+        password: { value: password, error: '' },
+        username: { value: userName, error: '' },
+        accessToken: { value: accessToken, error: '' },
+        hostName: { value: gitHost.value, error: '' },
+        sshkey: {value: sshKey.value, error: ''}
+    })
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
     function handleGithostChange(host) {
@@ -245,148 +251,154 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 return
             }
         }
-
-        if (!gitHost.value) {
-            setGithost({
-                ...gitHost,
-                error: "This is a required field"
-            })
-            return
-        }
-
-        if (gitHost.value && gitHost.value.__isNew__) {
-            let gitHostPayload = {
-                name: gitHost.value.value,
-                active: true
-            }
-            try {
-                let gitHostId = gitHost.value.value;
-                const { result } = await saveGitHost(gitHostPayload);
-                await getHostList();
-
-                gitHostId = result;
-            } catch (error) {
-                showError(error)
+        else if (state.auth.value === "SSH_KEYS") {
+            if (!customState.sshkey.value) {
+                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
+                return
             }
         }
-        let payload = {
-            id: id || 0,
-            name: state.name.value,
-            gitHostId: gitHost.value.value,
-            url: state.url.value,
-            authMode: state.auth.value,
-            active,
-            ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-            ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
-        }
 
-        const api = id ? updateGitProviderConfig : saveGitProviderConfig
-        try {
-            setLoading(true)
-            await api(payload, id);
-            reload();
-            toast.success('Successfully saved.')
-        }
-        catch (err) {
-            showError(err)
-        }
-        finally {
-            setLoading(false);
-        }
-    }
+            if (!gitHost.value) {
+                setGithost({
+                    ...gitHost,
+                    error: "This is a required field"
+                })
+                return
+            }
 
-    const MenuList = (props) => {
-        const isNew = props.options.map((p) => p.label)
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => { setGitProviderConfigModal(true); toggleCollapse(false) }}>
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Host
-               </div>
-            </components.MenuList>
-        );
-    };
-
-    const AuthType = [
-        { label: 'User auth', value: 'USERNAME_PASSWORD' },
-        { label: 'Anonymous', value: 'ANONYMOUS' },
-        { label: 'SSH Key', value: 'SSH_KEYS' }
-    ]
-
-    return (
-        <>
-            <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-                <div className="mb-16">
-                    <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                </div>
-                <div className="form__row form__row--two-third">
-                    <div>
-                        <div>
-                            <label className="form__label">Git host*</label>
-                            <ReactSelect
-                                name="host"
-                                value={gitHost.value}
-                                className="react-select--height-44 fs-13 bcn-0"
-                                placeholder="Select git host"
-                                isMulti={false}
-                                isSearchable
-                                isClearable={false}
-                                options={hostListOption}
-                                styles={{
-                                    ...multiSelectStyles,
-                                    menuList: (base) => {
-                                        return {
-                                            ...base,
-                                            position: 'relative',
-                                            paddingBottom: '0px',
-                                            maxHeight: '176px',
-                                        }
-                                    }
-                                }}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    MenuList,
-                                    Option
-                                }}
-                                onChange={(e) => handleGithostChange(e)}
-                                isDisabled={gitHostId}
-                            />
-                        </div>
-
-                        <div className="cr-5 fs-11">{gitHost.error}</div>
-                    </div>
-                    <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
-                </div>
-                <div className="form__label">Authentication type*</div>
-                <div className="form__row form__row--auth-type pointer">
-                    {
-                        AuthType.map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-                            <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                        </label>)
-                    }
-                </div>
-                {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-                {
-                    state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                        <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                        <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
-                    </div>
+            if (gitHost.value && gitHost.value.__isNew__) {
+                let gitHostPayload = {
+                    name: gitHost.value.value,
+                    active: true
                 }
-                {/* {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
+                try {
+                    let gitHostId = gitHost.value.value;
+                    const { result } = await saveGitHost(gitHostPayload);
+                    await getHostList();
+
+                    gitHostId = result;
+                } catch (error) {
+                    showError(error)
+                }
+            }
+            let payload = {
+                id: id || 0,
+                name: state.name.value,
+                gitHostId: gitHost.value.value,
+                url: state.url.value,
+                authMode: state.auth.value,
+                active,
+                ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
+                ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+            }
+
+            const api = id ? updateGitProviderConfig : saveGitProviderConfig
+            try {
+                setLoading(true)
+                await api(payload, id);
+                reload();
+                toast.success('Successfully saved.')
+            }
+            catch (err) {
+                showError(err)
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+
+        const MenuList = (props) => {
+            const isNew = props.options.map((p) => p.label)
+            return (
+                <components.MenuList {...props}>
+                    {props.children}
+                    <div className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top " onClick={(selected) => { setGitProviderConfigModal(true); toggleCollapse(false) }}>
+                        <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />  Add Git Host
+               </div>
+                </components.MenuList>
+            );
+        };
+
+        const AuthType = [
+            { label: 'User auth', value: 'USERNAME_PASSWORD' },
+            { label: 'Anonymous', value: 'ANONYMOUS' },
+            { label: 'SSH Key', value: 'SSH_KEYS' }
+        ]
+
+        return (
+            <>
+                <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
+                    <div className="mb-16">
+                        <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                    </div>
+                    <div className="form__row form__row--two-third">
+                        <div>
+                            <div>
+                                <label className="form__label">Git host*</label>
+                                <ReactSelect
+                                    name="host"
+                                    value={gitHost.value}
+                                    className="react-select--height-44 fs-13 bcn-0"
+                                    placeholder="Select git host"
+                                    isMulti={false}
+                                    isSearchable
+                                    isClearable={false}
+                                    options={hostListOption}
+                                    styles={{
+                                        ...multiSelectStyles,
+                                        menuList: (base) => {
+                                            return {
+                                                ...base,
+                                                position: 'relative',
+                                                paddingBottom: '0px',
+                                                maxHeight: '176px',
+                                            }
+                                        }
+                                    }}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        MenuList,
+                                        Option
+                                    }}
+                                    onChange={(e) => handleGithostChange(e)}
+                                    isDisabled={gitHostId}
+                                />
+                            </div>
+
+                            <div className="cr-5 fs-11">{gitHost.error}</div>
+                        </div>
+                        <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                    </div>
+                    <div className="form__label">Authentication type*</div>
+                    <div className="form__row form__row--auth-type pointer">
+                        {
+                            AuthType.map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+                                <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                            </label>)
+                        }
+                    </div>
+                    {state.auth.error && <div className="form__error">{state.auth.error}</div>}
+                    {
+                        state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
+                            <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+                            <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
+                        </div>
+                    }
+                    {/* {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                     <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
                 </div>} */}
-                {
-                    state.auth.value === 'SSH_KEYS' && <div className="form__row ">
-                        <textarea name="sshkey" placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.sshInput.value} />
+                    {
+                        state.auth.value === 'SSH_KEYS' && <div className="form__row ">
+                            <textarea name="sshkey" placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.sshInput.value} />
+                        </div>
+                    }
+                    <div className="form__row form__buttons">
+                        <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
+                        <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
                     </div>
-                }
-                <div className="form__row form__buttons">
-                    <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                    <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
-                </div>
-            </form>
-        </>
-    )
-}
+                </form>
+            </>
+        )
+    }
 
