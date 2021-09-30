@@ -45,11 +45,19 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
-        this.handleCheckbox = this.handleCheckbox.bind(this);
+        this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
+        this.handleSubmoduleCheckbox = this.handleSubmoduleCheckbox.bind(this);
+
 
     }
 
-    handleCheckbox(event): void {
+    handleCheckoutPathCheckbox(event): void {
+        this.setState({
+            isChecked: !this.state.isChecked
+        });
+    }
+
+    handleSubmoduleCheckbox(event): void {
         this.setState({
             isChecked: !this.state.isChecked
         });
@@ -194,7 +202,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 isChecked={this.state.isChecked}
                 material={this.state.material}
                 isCollapsed={this.state.isCollapsed}
-                handleCheckbox={this.handleCheckbox}
+                handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
+                handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
                 isLoading={this.state.isLoading}
                 isError={this.state.isError}
                 providers={this.props.providers}

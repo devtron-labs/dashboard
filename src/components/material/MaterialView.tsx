@@ -12,7 +12,8 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import Tippy from '@tippyjs/react';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
@@ -33,7 +34,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(0deg)' }} />
             </div>
         }
-        return <div className="white-card white-card--add-new-item mb-16" onClick={this.props.toggleCollapse}>
+        return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
             <span className="artifact__add">Add Git Material</span>
         </div>
@@ -129,7 +130,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     </span>}
                 </div>
                 <div>
-                    <label className="form__label">Git Repo URL*</label>
+                    <label className="form__label">Git Repo URL*(use https)</label>
                     <input className="form__input"
                         autoComplete={"off"}
                         autoFocus
@@ -152,8 +153,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     isChecked={this.props.isChecked}
                     value={"CHECKED"}
                     tabIndex={3}
-                    onChange={this.props.handleCheckbox}
-                    rootClassName="fs-12 cn-7 mb-8 flex left">
+                    onChange={this.props.handleCheckoutPathCheckbox}
+                    rootClassName="fs-14 cn-9 mb-8 flex left">
                     <span className="">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
                 {this.props.isChecked ?
@@ -167,6 +168,19 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
+                <Checkbox
+                    isChecked={this.props.isChecked}
+                    value={"CHECKED"}
+                    tabIndex={3}
+                    onChange={this.props.handleSubmoduleCheckbox}
+                    rootClassName="fs-14 cn-9 pt-16 flex left">
+                    <span className="mb-0 flex left">Pull submodules recursively
+                        <Tippy className="default-tt w-200" arrow={false} placement="bottom" content={'This will use credentials from default remote of parent repository.'}>
+                            <Question className="icon-dim-16 ml-4" />
+                        </Tippy>
+                    </span>
+                </Checkbox>
+                <div className="fw-4 pl-24">Use this to pull submodules recursively while building the code</div>
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?

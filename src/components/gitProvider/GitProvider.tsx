@@ -101,7 +101,8 @@ export default function GitProvider({ ...props }) {
                 </a>
             </div>
             {allProviders.map((provider) => {
-                return <> <CollapsedList key={provider.name || Math.random().toString(36).substr(2, 5)}
+                return <> <CollapsedList
+                    key={provider.name || Math.random().toString(36).substr(2, 5)}
                     id={provider.id}
                     name={provider.name}
                     showGitProviderConfigModal={showGitProviderConfigModal}
@@ -330,8 +331,12 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         );
     };
 
+    const TippyMessage = {
+        authMessage:  'Authentication type cannot be switched from HTTPS to SSH or vice versa.'
+    }
+
     const AuthType = [
-        { label: 'User auth', value: 'USERNAME_PASSWORD' },
+        { label: 'User auth', value: 'USERNAME_PASSWORD', },
         { label: 'Anonymous', value: 'ANONYMOUS' },
         { label: 'SSH Key', value: 'SSH' }
     ]

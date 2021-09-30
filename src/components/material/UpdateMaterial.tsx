@@ -44,9 +44,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
-        this.handleCheckbox = this.handleCheckbox.bind(this);
+        this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
 
     }
+    
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.material.gitProvider.id != this.props.material.gitProvider.id || prevProps.material.url != this.props.material.url || prevProps.material.checkoutPath != this.props.material.checkoutPath) {
@@ -65,12 +66,17 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         }
     }
 
-    handleCheckbox(event): void {
+    handleCheckoutPathCheckbox(event): void {
         this.setState({
             isChecked: !this.state.isChecked
         });
     }
 
+     handleSubmoduleCheckbox = (event): void => {
+        this.setState({
+            isChecked: !this.state.isChecked
+        });
+    }
     handleProviderChange(selected) {
         this.setState({
             material: {
@@ -174,7 +180,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
-            handleCheckbox= {this.handleCheckbox}
+            handleCheckoutPathCheckbox= {this.handleCheckoutPathCheckbox}
             handleProviderChange={this.handleProviderChange}
             handleUrlChange={this.handleUrlChange}
             handlePathChange={this.handlePathChange}
@@ -182,6 +188,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             save={this.save}
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+            handleSubmoduleCheckbox= {this.handleSubmoduleCheckbox}
+
         />
     }
 }
