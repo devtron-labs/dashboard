@@ -89,7 +89,7 @@ export default function GitProvider({ ...props }) {
         return <ErrorScreenManager code={error?.code} />
     }
 
-    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "" }].concat(providerList);
+    let allProviders = [{ id: null, name: "", active: true, url: "", gitHostId: "", authMode: "ANONYMOUS", userName: "", password: "", sshKey: "" }].concat(providerList);
 
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
@@ -116,6 +116,7 @@ export default function GitProvider({ ...props }) {
                     getHostList={getHostList}
                     getProviderList={getProviderList}
                     reload={getInitData}
+                    sshKey={provider.sshKey}
                 />
 
                     {showGitProviderConfigModal &&
@@ -132,7 +133,7 @@ export default function GitProvider({ ...props }) {
     )
 }
 
-function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken = "", userName = "", password = "", reload, hostListOption, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, sshKey, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -184,19 +185,20 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <GitForm {...{ id, name, active, url, authMode, gitHostId, accessToken, userName, password, hostListOption, getHostList, getProviderList, reload, providerList, toggleCollapse, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost }} />}
+            {!collapsed && <GitForm {...{ id, name, active, url, authMode, gitHostId, accessToken, userName, password, hostListOption, getHostList, getProviderList, reload, providerList, toggleCollapse, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshKey }} />}
 
         </article>
     )
 }
 
 
-function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshKey, ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
             auth: { value: authMode, error: "" },
+            sshInput: { value: sshKey || "", error: "" }
         },
         {
             name: {
@@ -211,6 +213,10 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 required: true,
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
+            sshInput: {
+                required: false
+            },
+
         }, onValidation);
 
     const [loading, setLoading] = useState(false)
@@ -361,13 +367,20 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     }
                 </div>
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-                {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                    <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                    <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
-                </div>}
+                {
+                    state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
+                        <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+                        <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
+                    </div>
+                }
                 {/* {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                     <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
                 </div>} */}
+                {
+                    state.auth.value === 'SSH_KEYS' && <div className="form__row ">
+                        <textarea name="sshkey" placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={handleOnChange} value={state.sshInput.value} />
+                    </div>
+                }
                 <div className="form__row form__buttons">
                     <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                     <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
