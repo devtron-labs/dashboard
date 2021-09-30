@@ -195,7 +195,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
 }
 
 
-function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshPrivateKey, ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshPrivateKey="", ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -223,16 +223,16 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey , error: "" }
+        sshInput: { value: sshPrivateKey, error: "" }
     })
 
     function customHandleChange(e) {
-        console.log(e.target.name)
-        console.log(e.target.value)
-
-        setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } 
-    })
-    )}
+        setCustomState(state => ({
+            ...state,
+            [e.target.name]: { value: e.target.value, error: "" }
+        })
+        )
+    }
 
     function handleGithostChange(host) {
         setGithost({
@@ -404,7 +404,8 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 </div>} */}
                 {
                     state.auth.value === 'SSH' && <div className="form__row ">
-                        <textarea  placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={customHandleChange} name="sshInput" value={customState.sshInput.value}  />
+                        <div className="form__label">Private SSH key*</div>
+                        <textarea placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={customHandleChange} name="sshInput" value={customState.sshInput.value} />
                     </div>
                 }
                 <div className="form__row form__buttons">
