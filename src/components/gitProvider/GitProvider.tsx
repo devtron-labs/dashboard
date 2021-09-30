@@ -301,6 +301,12 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         );
     };
 
+    const AuthType = [
+        { label: 'User auth', value: 'USERNAME_PASSWORD' },
+        { label: 'Anonymous', value: 'ANONYMOUS' },
+        { label: 'SSH Key', value: 'SSH_KEYS' }
+    ]
+
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
@@ -348,11 +354,11 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className="form__row form__row--auth-type pointer">
-                    {[{ label: 'User auth', value: 'USERNAME_PASSWORD' },{ label: 'Anonymous', value: 'ANONYMOUS' },]
-                        .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+                    {
+                        AuthType.map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
                             <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                        </label>)}
-
+                        </label>)
+                    }
                 </div>
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
