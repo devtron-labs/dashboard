@@ -5,17 +5,17 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorSc
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config';
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { DropdownIndicator, Option } from './gitProvider.util';
 import Tippy from '@tippyjs/react';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, VisibleModal } from '../common';
 import './gitProvider.css'
 import { GitHostConfigModal } from './AddGitHostConfigModal';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
 export default function GitProvider({ ...props }) {
@@ -165,7 +165,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
     }, [enabled])
 
     return (
-        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git dashed'} collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={e => toggleCollapse(t => !t)}>
                 <List.Logo>{id ? <div className="">
                     <span className="mr-8">
@@ -174,7 +174,8 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
                         {url.includes("bitbucket") ? <BitBucket /> : null}
                         {url.includes("gitlab") || url.includes("github") || url.includes("bitbucket") ? null : <Git />}
                     </span></div> :
-                    <div className="add-icon" />}</List.Logo>
+                    <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                }</List.Logo>
                 <div className="flex left">
                     <List.Title title={id && !collapsed ? 'Edit git account' : name || "Add git account"} subtitle={collapsed ? url : null} />
                     {id &&
@@ -195,7 +196,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
 }
 
 
-function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshPrivateKey="", ...props }) {
+function GitForm({ id = null, name = "", active = false, url = "", gitHostId, authMode = null, accessToken = "", userName = "", password = "", hostListOption, hostName = undefined, reload, toggleCollapse, getHostList, getProviderList, providerList, showGitProviderConfigModal, setGitProviderConfigModal, gitHost, setGithost, sshPrivateKey = "", ...props }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
