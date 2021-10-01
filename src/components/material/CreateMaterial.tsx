@@ -27,6 +27,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: "",
                 active: true,
+                isSubmodulesfetched: false,
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isChecked: false,
@@ -59,7 +60,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     handleSubmoduleCheckbox(event): void {
         this.setState({
-            isChecked: !this.state.isChecked
+            material:{
+                ...this.state.material,
+                isSubmodulesfetched: !this.state.material.isSubmodulesfetched
+            }
         });
     }
 
@@ -130,6 +134,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
+                    fetchSubmodule: this.state.material.isSubmodulesfetched
                 }]
             }
             createMaterial(payload).then((response) => {
@@ -149,7 +154,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: '',
                 checkoutPath: '',
-                active: true
+                active: true,
+                isSubmodulesfetched: false
             },
             isCollapsed: true,
             isLoading: false,
@@ -214,6 +220,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 save={this.handleSaveButton}
                 cancel={this.cancel}
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                isSubmodulesfetched= {this.state.material.isSubmodulesfetched}
             />
             {this.state.showSaveModal && this.renderSavePopupModal()}
         </>

@@ -28,6 +28,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
                 active: this.props.material.active,
+                isSubmodulesfetched: false,
             },
             isCollapsed: true,
             isChecked: true,
@@ -59,6 +60,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.props.material.url,
                     active: this.props.material.active,
                     checkoutPath: this.props.material.checkoutPath,
+                    isSubmodulesfetched: this.props.material.isSubmodulesfetched
                 },
                 isCollapsed: true,
                 isLoading: false,
@@ -189,6 +191,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
             handleSubmoduleCheckbox= {this.handleSubmoduleCheckbox}
+            isSubmodulesfetched= {this.state.material.isSubmodulesfetched}
 
         />
     }

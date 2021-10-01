@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import ReactSelect, { components } from 'react-select';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
-import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
 import { Progressing, Checkbox, VisibleModal } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
+import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -51,6 +51,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             <div className="form__row form-row__material">
                 <div className="">
                     <label className="form__label">Git Account*</label>
+                  {  console.log(this.props.providers)}
                     <ReactSelect className=""
                         tabIndex='1'
                         isMulti={false}
@@ -169,7 +170,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
                 <Checkbox
-                    isChecked={this.props.isChecked}
+                    isChecked={this.props.isSubmodulesfetched}
                     value={"CHECKED"}
                     tabIndex={3}
                     onChange={this.props.handleSubmoduleCheckbox}
