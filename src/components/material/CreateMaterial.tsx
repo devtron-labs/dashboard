@@ -134,10 +134,11 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
-                    fetchSubmodule: this.state.material.isSubmodulesfetched
+                    fetchSubmodules: this.state.material.isSubmodulesfetched ? "true" : "false"
                 }]
             }
             createMaterial(payload).then((response) => {
+                console.log(response)
                 this.props.refreshMaterials();
                 toast.success("Material Saved Successfully");
             }).catch((error) => {
@@ -147,6 +148,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             })
         })
     }
+   
 
     cancel(event): void {
         this.setState({
@@ -155,7 +157,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: '',
                 active: true,
-                isSubmodulesfetched: false
+                isSubmodulesfetched: undefined
             },
             isCollapsed: true,
             isLoading: false,

@@ -149,7 +149,7 @@ function CollapsedList({ id, name, active, url, authMode, gitHostId, accessToken
                 id: id || 0, name, url, authMode, active: enabled, gitHostId,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
-                ...(authMode === 'SSH' ? { sshInput: sshPrivateKey } : {})
+                ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {})
             }
             try {
                 setLoading(true);
@@ -229,9 +229,12 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     })
 
     function customHandleChange(e) {
+       let _name = e.target.name;
+       let _value = e.target.value;
+
         setCustomState(state => ({
             ...state,
-            [e.target.name]: { value: e.target.value, error: "" }
+            [_name]: { value: _value , error: "" }
         })
         )
     }

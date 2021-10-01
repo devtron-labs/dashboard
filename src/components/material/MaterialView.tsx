@@ -40,6 +40,11 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         </div>
     }
 
+    gitAuthType = () => {
+           const res = this.props.providers?.filter((provider)=>provider?.id === this.props.material?.gitProvider?.id )
+         return res[0]?.authMode == "SSH_KEYS" ? "ssh" : "https"
+    }
+
     renderForm() {
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
@@ -51,7 +56,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             <div className="form__row form-row__material">
                 <div className="">
                     <label className="form__label">Git Account*</label>
-                  {  console.log(this.props.providers)}
                     <ReactSelect className=""
                         tabIndex='1'
                         isMulti={false}
@@ -115,7 +119,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                     {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
                                     {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8" /> : null}
                                     {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8" /> : null}
-
                                     {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
                                     {props.children}
                                 </components.Control>
@@ -131,7 +134,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     </span>}
                 </div>
                 <div>
-                    <label className="form__label">Git Repo URL*(use https)</label>
+                    <label className="form__label">Git Repo URL* (use {this.gitAuthType()})
+                    </label> 
                     <input className="form__input"
                         autoComplete={"off"}
                         autoFocus

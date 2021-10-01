@@ -76,9 +76,13 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
 
      handleSubmoduleCheckbox = (event): void => {
         this.setState({
-            isChecked: !this.state.isChecked
+            material:{
+                ...this.state.material,
+                isSubmodulesfetched: !this.state.material.isSubmodulesfetched
+            }
         });
     }
+
     handleProviderChange(selected) {
         this.setState({
             material: {
@@ -142,6 +146,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
+                    fetchSubmodules: this.state.material.isSubmodulesfetched ? true : false
                 }
             }
             updateMaterial(payload).then((response) => {
@@ -153,6 +158,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 this.setState({ isLoading: false })
             })
         })
+        console.log(this.state.material.isSubmodulesfetched)
     }
 
     cancel(event) {
