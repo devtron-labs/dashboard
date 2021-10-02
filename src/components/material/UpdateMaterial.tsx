@@ -28,7 +28,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
                 active: this.props.material.active,
-                isSubmodulesfetched: false,
+                fetchSubmodules: this.props.material.fetchSubmodules,
             },
             isCollapsed: true,
             isChecked: true,
@@ -60,7 +60,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.props.material.url,
                     active: this.props.material.active,
                     checkoutPath: this.props.material.checkoutPath,
-                    isSubmodulesfetched: this.props.material.isSubmodulesfetched
+                    fetchSubmodules: this.props.material.fetchSubmodules
                 },
                 isCollapsed: true,
                 isLoading: false,
@@ -78,7 +78,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.setState({
             material:{
                 ...this.state.material,
-                isSubmodulesfetched: !this.state.material.isSubmodulesfetched
+                fetchSubmodules: !this.state.material.fetchSubmodules
             }
         });
     }
@@ -146,7 +146,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
-                    fetchSubmodules: this.state.material.isSubmodulesfetched ? true : false
+                    fetchSubmodules: this.state.material.fetchSubmodules ? true : false
                 }
             }
             updateMaterial(payload).then((response) => {
@@ -158,7 +158,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 this.setState({ isLoading: false })
             })
         })
-        console.log(this.state.material.isSubmodulesfetched)
     }
 
     cancel(event) {
@@ -180,6 +179,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     }
 
     render() {
+        {console.log(this.props.providers)}
         return <MaterialView
             material={this.state.material}
             isError={this.state.isError}
@@ -197,7 +197,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
             handleSubmoduleCheckbox= {this.handleSubmoduleCheckbox}
-            isSubmodulesfetched= {this.state.material.isSubmodulesfetched}
 
         />
     }

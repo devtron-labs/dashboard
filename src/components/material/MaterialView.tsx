@@ -174,7 +174,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
                 <Checkbox
-                    isChecked={this.props.isSubmodulesfetched}
+                    isChecked={this.props.material.fetchSubmodules}
                     value={"CHECKED"}
                     tabIndex={3}
                     onChange={this.props.handleSubmoduleCheckbox}

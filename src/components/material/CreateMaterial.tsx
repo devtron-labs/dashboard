@@ -27,7 +27,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: "",
                 active: true,
-                isSubmodulesfetched: false,
+                fetchSubmodules: false,
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isChecked: false,
@@ -62,7 +62,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.setState({
             material:{
                 ...this.state.material,
-                isSubmodulesfetched: !this.state.material.isSubmodulesfetched
+                fetchSubmodules: !this.state.material.fetchSubmodules
             }
         });
     }
@@ -134,7 +134,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
-                    fetchSubmodules: this.state.material.isSubmodulesfetched ? "true" : "false"
+                    fetchSubmodules: this.state.material.fetchSubmodules
                 }]
             }
             createMaterial(payload).then((response) => {
@@ -157,7 +157,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: '',
                 active: true,
-                isSubmodulesfetched: undefined
+                fetchSubmodules: undefined
             },
             isCollapsed: true,
             isLoading: false,
@@ -222,7 +222,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 save={this.handleSaveButton}
                 cancel={this.cancel}
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                isSubmodulesfetched= {this.state.material.isSubmodulesfetched}
             />
             {this.state.showSaveModal && this.renderSavePopupModal()}
         </>
