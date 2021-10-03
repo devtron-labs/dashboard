@@ -42,8 +42,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
 
     gitAuthType = () => {
            const res = this.props.providers?.filter((provider)=>provider?.id === this.props.material?.gitProvider?.id )
-         console.log(this.props.providers?.filter((provider)=>provider?.id), this.props.material?.gitProvider?.id)
-
          return res[0]?.authMode == "SSH" ? "ssh" : "https"
     }
 
