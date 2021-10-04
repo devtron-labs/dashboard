@@ -167,7 +167,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: '',
                 active: true,
-                fetchSubmodules: undefined
+                fetchSubmodules: false
             },
             isCollapsed: true,
             isLoading: false,
