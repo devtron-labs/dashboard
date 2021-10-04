@@ -2,7 +2,7 @@
     font-size: 16px;
 }
 
-.pointer-disable{
+.pointer-disabled{
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.5;

@@ -402,11 +402,14 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>
                 <div className="form__label">Authentication type*</div>
-                <div className=" form__row--auth-type pointer">
+                <div className=" form__row--auth-type">
                     {
-                        AuthType.map(({ label: Lable, value }) => <label key={value} className={`${canSelectAuth(value) ? '' : 'pointer-disable'} flex left pointer`}>
-                            <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                        </label>)
+                        AuthType.map(({ label: Lable, value }) =>
+                            <Tippy className="default-tt" arrow={false} placement="bottom" content={`${canSelectAuth(value) ? '' : TippyMessage.authMessage}`}>
+                                <div className="flex left"><label key={value} className={`${canSelectAuth(value) ? 'pointer' : 'pointer-disabled'} flex left `}>
+                                    <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                                </label></div>
+                            </Tippy>)
                     }
 
                 </div>
