@@ -40,9 +40,12 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         </div>
     }
 
-    gitAuthType = () => {
-           const res = this.props.providers?.filter((provider)=>provider?.id === this.props.material?.gitProvider?.id )
-         return res[0]?.authMode == "SSH" ? "ssh" : "https"
+    gitAuthType = (key) => {
+        const res = this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id)
+        if (key === "host") { return res[0]?.authMode == "SSH" ? "ssh" : "https" }
+        if (key === "placeholder") {
+            return res[0]?.authMode == "SSH" ? "e.g. git@github.com:abc/xyz.git" : "e.g. https://gitlab.com/abc/xyz.git"
+        }
     }
 
     renderForm() {
@@ -134,14 +137,14 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     </span>}
                 </div>
                 <div>
-                    <label className="form__label">Git Repo URL* (use {this.gitAuthType()})
-                    </label> 
+                    <label className="form__label">Git Repo URL* (use {this.gitAuthType("host")})
+                    </label>
                     <input className="form__input"
                         autoComplete={"off"}
                         autoFocus
                         name="Git Repo URL*"
                         type="text"
-                        placeholder="e.g. https://gitlab.com/abc/xyz"
+                        placeholder={this.gitAuthType("placeholder")}
                         value={`${this.props.material.url}`}
                         onChange={this.props.handleUrlChange} />
                     <span className="form__error">
@@ -173,19 +176,24 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
-                <Checkbox
-                    isChecked={this.props.material.fetchSubmodules}
-                    value={"CHECKED"}
-                    tabIndex={3}
-                    onChange={this.props.handleSubmoduleCheckbox}
-                    rootClassName="fs-14 cn-9 pt-16 flex left">
-                    <span className="mb-0 flex left">Pull submodules recursively
-                        <Tippy className="default-tt w-200" arrow={false} placement="bottom" content={'This will use credentials from default remote of parent repository.'}>
-                            <Question className="icon-dim-16 ml-4" />
-                        </Tippy>
-                    </span>
-                </Checkbox>
-                <div className="fw-4 pl-24">Use this to pull submodules recursively while building the code</div>
+                <>
+                    <Checkbox
+                        isChecked={this.props.material.fetchSubmodules}
+                        value={"CHECKED"}
+                        tabIndex={4}
+                        onChange={this.props.handleSubmoduleCheckbox}
+                        rootClassName="fs-14 cn-9 pt-16 flex top">
+                        <div>
+                            <span className="mb-4 mt-4 flex left">
+                                Pull submodules recursively
+                                <Tippy className="default-tt w-200" arrow={false} placement="bottom" content={'This will use credentials from default remote of parent repository.'}>
+                                    <Question className="icon-dim-16 ml-4" />
+                                </Tippy>
+                            </span>
+                            <div className=" fs-12" style={{ color: "#404040" }}>Use this to pull submodules recursively while building the code</div>
+                        </div>
+                    </Checkbox>
+                </>
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?

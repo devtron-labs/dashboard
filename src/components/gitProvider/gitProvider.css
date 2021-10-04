@@ -2,8 +2,11 @@
     font-size: 16px;
 }
 
-.pointer-disabled{
+.wrapper-pointer-disabled{
     cursor: not-allowed;
-    pointer-events: none;
+}
+
+.pointer-disabled{
     opacity: 0.5;
+    pointer-events: none;
 }

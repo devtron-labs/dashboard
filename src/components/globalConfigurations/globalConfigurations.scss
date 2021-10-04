@@ -113,7 +113,7 @@
     grid-template-columns: 24px 1fr 24px;
     align-items: center;
     background: white;
-    grid-column-gap: 8px;
+    grid-column-gap: 16px;
     cursor: pointer;
 
     .toggle__switch,
@@ -285,7 +285,6 @@
     align-items: center;
 
     .flex {
-        padding-left: 20px;
         height: 100%;
 
         &:not(:first-child) {
