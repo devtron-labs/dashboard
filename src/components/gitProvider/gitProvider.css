@@ -1,3 +1,9 @@
 .modal__title__fs-16 { 
     font-size: 16px;
 }
+
+.pointer-disable{
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+}

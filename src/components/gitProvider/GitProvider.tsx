@@ -229,12 +229,12 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     })
 
     function customHandleChange(e) {
-       let _name = e.target.name;
-       let _value = e.target.value;
+        let _name = e.target.name;
+        let _value = e.target.value;
 
         setCustomState(state => ({
             ...state,
-            [_name]: { value: _value , error: "" }
+            [_name]: { value: _value, error: "" }
         })
         )
     }
@@ -335,7 +335,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     };
 
     const TippyMessage = {
-        authMessage:  'Authentication type cannot be switched from HTTPS to SSH or vice versa.'
+        authMessage: 'Authentication type cannot be switched from HTTPS to SSH or vice versa.'
     }
 
     const AuthType = [
@@ -343,6 +343,18 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         { label: 'Anonymous', value: 'ANONYMOUS' },
         { label: 'SSH Key', value: 'SSH' }
     ]
+
+    function canSelectAuth(selectedAuth: string) {
+        if (!id) {
+            return true
+        }
+
+        let savedAuth = state.auth.value
+        if ((savedAuth == 'SSH' && selectedAuth != 'SSH') || (savedAuth != 'SSH' && selectedAuth == 'SSH')) {
+            return false;
+        }
+        return true
+    }
 
     return (
         <>
@@ -392,10 +404,11 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 <div className="form__label">Authentication type*</div>
                 <div className=" form__row--auth-type pointer">
                     {
-                        AuthType.map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
+                        AuthType.map(({ label: Lable, value }) => <label key={value} className={`${canSelectAuth(value) ? '' : 'pointer-disable'} flex left pointer`}>
                             <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
                         </label>)
                     }
+
                 </div>
                 <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>
                     <Warn className="icon-dim-16 mr-4 " />
