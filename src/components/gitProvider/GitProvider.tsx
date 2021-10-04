@@ -225,7 +225,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey, error: "" }
+        sshInput: { value: sshPrivateKey, error: '' }
     })
 
     function customHandleChange(e) {
@@ -279,19 +279,19 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
         if (state.auth.value === 'USERNAME_PASSWORD') {
             if (!customState.password.value || !customState.username.value) {
-                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
+                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'This is a required field' }, username: { value: state.username.value, error: 'Required' } }))
                 return
             }
         }
         else if (state.auth.value === "ACCESS_TOKEN") {
             if (!customState.accessToken.value) {
-                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
+                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'This is a required field' } }))
                 return
             }
         }
         else if (state.auth.value === "SSH") {
             if (!customState.sshInput.value) {
-                setCustomState(state => ({ ...state, sshInput: { value: '', error: 'Required' } }))
+                setCustomState(state => ({ ...state, sshInput: { value: '', error: 'This is a required field' } }))
                 return
             }
         }
@@ -406,11 +406,11 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     {
                         AuthType.map(({ label: Lable, value }) =>
                             <Tippy className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`} arrow={false} placement="bottom" content={`${canSelectAuth(value) ? '' : TippyMessage.authMessage}`}>
-                                    <div className={`flex left pl-12 ${canSelectAuth(value) ? '' : 'wrapper-pointer-disabled'}`}>
-                                        <label key={value} className={`${canSelectAuth(value) ? '' : 'pointer-disabled'} flex left `}>
-                                            <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                                        </label>
-                                    </div>
+                                <div className={`flex left pl-12 ${canSelectAuth(value) ? '' : 'wrapper-pointer-disabled'}`}>
+                                    <label key={value} className={`${canSelectAuth(value) ? '' : 'pointer-disabled'} flex left `}>
+                                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                                    </label>
+                                </div>
                             </Tippy>)
                     }
 
@@ -418,7 +418,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>
                     <Warn className="icon-dim-16 mr-4 " />
                             Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or vice versa.
-                        </div>
+                </div>
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {
                     state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
@@ -433,6 +433,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     state.auth.value === 'SSH' && <div className="form__row ">
                         <div className="form__label">Private SSH key*</div>
                         <textarea placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={customHandleChange} name="sshInput" value={customState.sshInput.value} />
+                        {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                     </div>
                 }
                 <div className="form__row form__buttons">
