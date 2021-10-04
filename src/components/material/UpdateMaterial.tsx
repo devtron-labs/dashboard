@@ -45,9 +45,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
-
     }
-    
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.material.gitProvider.id != this.props.material.gitProvider.id || prevProps.material.url != this.props.material.url || prevProps.material.checkoutPath != this.props.material.checkoutPath) {
@@ -66,17 +64,16 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             })
         }
     }
-   
 
     isGitUrlValid(url: string): string | undefined {
         if (!url.length) return "This is a required field"
-        
-        const res = this.props.providers?.filter((provider)=>provider?.id === this.state.material?.gitProvider?.id )
-        if(res[0]?.authMode != "SSH" ){
-            if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+
+        const res = this.props.providers?.filter((provider) => provider?.id === this.state.material?.gitProvider?.id)
+        if (res[0]?.authMode != "SSH") {
+            if (!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
         }
-        if(res[0]?.authMode === "SSH" ){
-            if(!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
+        if (res[0]?.authMode === "SSH") {
+            if (!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
         }
         return undefined;
     }
@@ -87,9 +84,9 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         });
     }
 
-     handleSubmoduleCheckbox = (event): void => {
+    handleSubmoduleCheckbox = (event): void => {
         this.setState({
-            material:{
+            material: {
                 ...this.state.material,
                 fetchSubmodules: !this.state.material.fetchSubmodules
             }
@@ -151,7 +148,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         }, () => {
             if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
-            this.setState({ isLoading: true,  isChecked: true });
+            this.setState({ isLoading: true, isChecked: true });
             let payload = {
                 appId: this.props.appId,
                 material: {
@@ -196,11 +193,11 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material={this.state.material}
             isError={this.state.isError}
             isCollapsed={this.state.isCollapsed}
-            isChecked={ this.state.isChecked}
+            isChecked={this.state.isChecked}
             isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
-            handleCheckoutPathCheckbox= {this.handleCheckoutPathCheckbox}
+            handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
             handleProviderChange={this.handleProviderChange}
             handleUrlChange={this.handleUrlChange}
             handlePathChange={this.handlePathChange}
@@ -208,7 +205,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             save={this.save}
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-            handleSubmoduleCheckbox= {this.handleSubmoduleCheckbox}
+            handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
 
         />
     }

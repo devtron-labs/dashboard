@@ -47,8 +47,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.cancel = this.cancel.bind(this);
         this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
         this.handleSubmoduleCheckbox = this.handleSubmoduleCheckbox.bind(this);
-
-
     }
 
     handleCheckoutPathCheckbox(event): void {
@@ -151,7 +149,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 }]
             }
             createMaterial(payload).then((response) => {
-                console.log(response)
                 this.props.refreshMaterials();
                 toast.success("Material Saved Successfully");
             }).catch((error) => {
