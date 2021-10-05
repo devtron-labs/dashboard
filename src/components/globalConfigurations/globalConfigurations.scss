@@ -285,6 +285,7 @@
     align-items: center;
 
     .flex {
+        padding-left: 12px;
         height: 100%;
 
         &:not(:first-child) {

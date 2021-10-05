@@ -402,17 +402,19 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                     <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
                 </div>
                 <div className="form__label">Authentication type*</div>
-                <div className={` form__row--auth-type ${!id ? 'pointer' : ''}`}>
+                <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`} >
                     {
                         AuthType.map(({ label: Lable, value }) =>
+                        <div className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}` } onChange={handleOnChange} style={{borderRight: "1px solid #d6d4d9", height: "48px"}}>
                             <Tippy className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`} arrow={false} placement="bottom" content={`${canSelectAuth(value) ? '' : TippyMessage.authMessage}`}>
-                                <div className={`flex left pl-12 ${canSelectAuth(value) ? '' : 'wrapper-pointer-disabled'}`}>
-                                    <label key={value} className={`${canSelectAuth(value) ? '' : 'pointer-disabled'} flex left `}>
-                                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
+                                    <label key={value} className={`${canSelectAuth(value) ? 'pointer' : 'pointer-disabled'} flex left ` } >
+                                        <input type="radio" name="auth" value={value} checked={value === state.auth.value} /> {Lable}
                                     </label>
-                                </div>
-                            </Tippy>)
-                    }
+                           </Tippy>
+                           </div>
+
+                           )
+                        }
 
                 </div>
                 <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>

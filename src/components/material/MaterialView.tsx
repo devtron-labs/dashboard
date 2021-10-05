@@ -104,8 +104,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             MenuList: (props) => {
                                 return <components.MenuList {...props}>
                                     {props.children}
-                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top p-10 cb-5 block fw-5 anchor cursor no-decor">
-                                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top react-select__bottom bcn-0 p-10 cb-5 block fw-5 anchor cursor no-decor">
+                                        <Add className="icon-dim-20 fcb-5 mr-12 vertical-align-bottom" />
                                         Add Git Account
                                     </NavLink>
                                 </components.MenuList>
@@ -162,8 +162,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     value={"CHECKED"}
                     tabIndex={3}
                     onChange={this.props.handleCheckoutPathCheckbox}
-                    rootClassName="fs-14 cn-9 mb-8 flex left">
-                    <span className="">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
+                    rootClassName="fs-14 cn-9 mb-8 flex left ">
+                    <span className="ml-12">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
                 {this.props.isChecked ?
                     <input className="form__input"
@@ -176,14 +176,14 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
-                <>
+                <div className="pt-16 ">
                     <Checkbox
                         isChecked={this.props.material.fetchSubmodules}
                         value={"CHECKED"}
                         tabIndex={4}
                         onChange={this.props.handleSubmoduleCheckbox}
-                        rootClassName="fs-14 cn-9 pt-16 flex top">
-                        <div>
+                        rootClassName="fs-14 cn-9 flex top">
+                        <div className="ml-12">
                             <span className="mb-4 mt-4 flex left">
                                 Pull submodules recursively
                                 <Tippy className="default-tt w-200" arrow={false} placement="bottom" content={'This will use credentials from default remote of parent repository.'}>
@@ -193,7 +193,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             <div className=" fs-12" style={{ color: "#404040" }}>Use this to pull submodules recursively while building the code</div>
                         </div>
                     </Checkbox>
-                </>
+                </div>
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?
