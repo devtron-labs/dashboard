@@ -49,6 +49,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.material.gitProvider.id != this.props.material.gitProvider.id || prevProps.material.url != this.props.material.url || prevProps.material.checkoutPath != this.props.material.checkoutPath) {
+            this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id)
             this.setState({
                 material: {
                     id: this.props.material.id,
@@ -65,17 +66,18 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         }
     }
 
-    isGitUrlValid(url: string): string | undefined {
+    isGitUrlValid(url: string, selectedId): string | undefined {
         if (!url.length) return "This is a required field"
-
-        const res = this.props.providers?.filter((provider) => provider?.id === this.state.material?.gitProvider?.id)
-        if (res[0]?.authMode != "SSH") {
-            if (!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+        else {
+            const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
+            if (res[0]?.authMode != "SSH") {
+                if (!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+            }
+            if (res[0]?.authMode === "SSH") {
+                if (!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
+            }
+            return undefined;
         }
-        if (res[0]?.authMode === "SSH") {
-            if (!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
-        }
-        return undefined;
     }
 
     handleCheckoutPathCheckbox(event): void {
@@ -93,7 +95,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         });
     }
 
-    handleProviderChange(selected) {
+    handleProviderChange(selected, url) {
         this.setState({
             material: {
                 ...this.state.material,
@@ -101,7 +103,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             isError: {
                 ...this.state.isError,
-                gitProvider: this.props.isGitProviderValid(selected)
+                gitProvider: this.props.isGitProviderValid(selected),
+                url: this.isGitUrlValid(url, selected.id)
             }
         });
     }
@@ -127,7 +130,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             isError: {
                 ...this.state.isError,
-                url: this.isGitUrlValid(event.target.value)
+                url: this.isGitUrlValid(event.target.value, this.state.material?.gitProvider?.id)
             }
         });
     }
@@ -142,7 +145,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.setState({
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
-                url: this.isGitUrlValid(this.state.material.url),
+                url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
         }, () => {
@@ -182,7 +185,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             isLoading: false,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.props.material.gitProvider),
-                url: this.isGitUrlValid(this.props.material.url),
+                url: this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.props.material.checkoutPath)
             }
         });

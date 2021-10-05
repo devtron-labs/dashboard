@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactSelect, { components } from 'react-select';
-import { Progressing, Checkbox, VisibleModal } from '../common';
+import { Progressing, Checkbox, multiSelectStyles } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
@@ -59,7 +59,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             <div className="form__row form-row__material">
                 <div className="">
                     <label className="form__label">Git Account*</label>
-                    <ReactSelect className=""
+                    <ReactSelect className="m-0"
                         tabIndex='1'
                         isMulti={false}
                         isClearable={false}
@@ -68,24 +68,15 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}
                         styles={{
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                                boxShadow: 'none',
-                                fontWeight: 'normal',
-                                height: "40px"
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                fontWeight: "normal",
-                                color: 'var(--N900)',
-                                padding: '8px 12px',
-                            }),
+                            ...multiSelectStyles,
+                            menuList: (base) => {
+                                return {
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: '0px',
+                                    maxHeight: '250px',
+                                }
+                            }
                         }}
                         components={{
                             IndicatorSeparator: null,
@@ -129,7 +120,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             },
                         }}
 
-                        onChange={(selected) => { this.props.handleProviderChange(selected) }}
+                        onChange={(selected) => { this.props.handleProviderChange(selected, this.props.material.url) }}
                     />
                     {this.props.isError.gitProvider && <span className="form__error">
                         <img src={error} className="form__icon" />

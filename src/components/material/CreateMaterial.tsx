@@ -64,15 +64,29 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
-    handleProviderChange(selected) {
+    isGitUrlValid(url: string, selectedId): string | undefined {
+        if (!url.length) return "This is a required field"
+
+        const res = this.props.providers?.filter((provider)=>provider?.id == selectedId )
+        if(res[0]?.authMode != "SSH" ){
+            if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+        }
+        if(res[0]?.authMode === "SSH" ){
+            if(!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
+        }
+        return undefined;
+    }
+
+    handleProviderChange(selected, url) {
         this.setState({
             material: {
                 ...this.state.material,
-                gitProvider: selected
+                gitProvider: selected,
             },
             isError: {
                 ...this.state.isError,
-                gitProvider: this.props.isGitProviderValid(selected)
+                gitProvider: this.props.isGitProviderValid(selected),
+                url: this.isGitUrlValid(url, selected.id)
             }
         });
     }
@@ -90,20 +104,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
-    isGitUrlValid(url: string): string | undefined {
-        if (!url.length) return "This is a required field"
-        
-        const res = this.props.providers?.filter((provider)=>provider?.id === this.state.material?.gitProvider?.id )
-        if(res[0]?.authMode != "SSH" ){
-            if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
-        }
-        if(res[0]?.authMode === "SSH" ){
-            if(!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
-        }
-        return undefined;
-    }
-
+  
     handleUrlChange(event) {
+
         this.setState({
             material: {
                 ...this.state.material,
@@ -111,7 +114,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             },
             isError: {
                 ...this.state.isError,
-                url: this.isGitUrlValid(event.target.value)
+                url: this.isGitUrlValid(event.target.value, this.state.material?.gitProvider?.id )
             }
         });
     }
@@ -129,7 +132,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             showSaveModal: false,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
-                url: this.isGitUrlValid(this.state.material.url),
+                url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id ),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
 

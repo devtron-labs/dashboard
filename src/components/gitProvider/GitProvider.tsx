@@ -323,7 +323,6 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
     }
 
     const MenuList = (props) => {
-        const isNew = props.options.map((p) => p.label)
         return (
             <components.MenuList {...props}>
                 {props.children}

@@ -61,7 +61,7 @@ export interface MaterialViewProps {
     isLoading: boolean;
     isError: MaterialError;
     providers: any[];
-    handleProviderChange: (selected) => void;
+    handleProviderChange: (selected, url) => void;
     handleCheckoutPathCheckbox: (event) => void;
     handleUrlChange: (event) => void;
     handlePathChange: (event) => void;
