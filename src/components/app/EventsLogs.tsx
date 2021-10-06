@@ -312,7 +312,6 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
         let pods = getPods();
-        console.log(pods)
         
         return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
@@ -345,7 +344,6 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     function getPods(){
         let pods = [];
         let selectedLog= [];
-        console.log(selectedLogsNode)
         if (selectedLogsNode){
             selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
         }

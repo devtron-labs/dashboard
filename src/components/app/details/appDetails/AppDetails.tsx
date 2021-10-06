@@ -721,7 +721,7 @@ interface NodeSelectors {
     logsCleared: boolean;
     socketConnection: SocketConnectionType;
     nodeName?: string;
-    selectedNodes: any;
+    selectedNodes?: any;
     containerName?: string;
     selectedContainer?: string;
     nodes: AggregatedNodes;
@@ -853,6 +853,10 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     function onLogsCleared() {
         setLogsCleared(true);
         setTimeout(() => setLogsCleared(false), 1000);
+    }
+
+    if(selectedNodes.length < 2){
+        selectedNodes = selectedNodes[0]
     }
 
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
