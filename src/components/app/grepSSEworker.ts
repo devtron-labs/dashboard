@@ -72,7 +72,7 @@ export default () => {
         if (!e.data.type && !e.data.paylod) return
         switch (e.data.type) {
             case 'start':
-                const { url, grepTokens } = e.data.payload
+                const { url, grepTokens, pods } = e.data.payload
                 wrappers.forEach(wrapper => {
                     try {
                         wrapper.eventSrc.close()
@@ -82,9 +82,10 @@ export default () => {
                 // console.log(url)
                 for (let index = 0; index < url.length; index++) {
                     const element = url[index];
+                    console.log(element)
                     wrappers[index] = Object.assign({}, bp)
-                    wrappers[index].prefix = index + ": "
-                    wrappers[index].eventSrc = new EventSource(url, { withCredentials: true })
+                    wrappers[index].prefix = pods[index] + ": "
+                    wrappers[index].eventSrc = new EventSource(element, { withCredentials: true })
                     wrappers[index].grepTokens = grepTokens
                     const eventListener = wrappers[index].eventListener.bind(wrappers[index])
                     wrappers[index].eventSrc.addEventListener('message', eventListener)

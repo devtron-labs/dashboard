@@ -33,15 +33,16 @@ const subject: Subject<string> = new Subject()
 
 interface EventsLogsProps {
     nodeName: string;
-    selectedLogsNode: any;
+    selectedLogsNode?: any;
     nodeItems: any;
-    containerName: any;
+    containerName?: any;
     nodes: AggregatedNodes;
     logsPaused?: boolean;
     appDetails: AppDetails;
     subject?: Subject<string>;
     socketConnection: SocketConnectionType;
     terminalCleared: boolean;
+    logsCleared: boolean;
     shell: { label; value; }
     isReconnection: boolean;
     setIsReconnection: (flag) => void;
@@ -72,7 +73,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -92,6 +93,7 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                     containerName={containerName}
                     handleLogPause={handleLogPause}
                     logsPaused={logsPaused}
+                    logsCleared={logsCleared}
                 />
             )}
             {params.tab.toLowerCase() === NodeDetailTabs.MANIFEST.toLowerCase() && (
@@ -262,9 +264,10 @@ interface LogsView {
     handleLogPause: (paused: boolean) => void;
     logsPaused: boolean;
     appDetails: AppDetails;
+    logsCleared: boolean;
 }
 
-export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails }) => {
+export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails, logsCleared }) => {
     const key = useKeyDown()
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [readyState, setReadyState] = React.useState(null);
@@ -307,12 +310,8 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         } else {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
-        let pods = [];
-        let selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
-
-        selectedLog.map((item) => {
-            pods.push(item.value)
-        })
+        let pods = getPods();
+        console.log(pods)
         
         return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
@@ -342,17 +341,31 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         }
     }
 
+    function getPods(){
+        let pods = [];
+        let selectedLog= [];
+        console.log(selectedLogsNode)
+        if (selectedLogsNode){
+            selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
+        }
+
+        selectedLog.map((item) => {
+            pods.push(item.value)
+        })
+        return pods
+    }
+
     function fetchLogs() {
         const url = getLogsURL();
         if (!url) {
             return
         }
-        console.log(url)
+        let pods = getPods();
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { url: url, grepTokens: grepTokens, timeout: 300 },
+            payload: { url: url, grepTokens: grepTokens, timeout: 300, pods: pods },
         });
     }
 
@@ -430,6 +443,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                             </Tippy>
                         </form>
                     </div>
+                    {!logsCleared &&
                     <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
                         <div
                             className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
@@ -480,7 +494,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                             )}
                             {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
                         </div>
-                    </div>
+                    </div>}
                 </>
             )}
         </>
