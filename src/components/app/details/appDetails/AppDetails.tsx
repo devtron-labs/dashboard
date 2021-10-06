@@ -439,7 +439,9 @@ const NodeDetails: React.FC<{
             selectedNodes.pop()
             selectedNodes.push(intialNode)
             let container = nodesMap.get(nodeName)?.containers
-            selectContainer(container[0])
+            if(container.length <2){
+                selectContainer(container[0])
+            }
         }
         else {
             selectContainer(null);
@@ -473,7 +475,7 @@ const NodeDetails: React.FC<{
 
     useEffect(() => {
         if (!selectedNode) return
-        if ((params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if (( params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
@@ -825,19 +827,19 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
             t[0] === thing[0]
         ))
     )
-
-    if(allContainers.length < 2){
-        let contAvailable = allContainers[0]
-        if(contAvailable){
-            selectContainer(contAvailable[0])
-        }
-    } else {
-        allContainers.map((item) =>{
-            if(!selectedContainer.includes(item[0])){
+    
+    allContainers.map((item) =>{
+        if(item.length < 2){
+            let contAvailable = allContainers[0]
+            if(contAvailable && !selectedContainer){
+                selectContainer(contAvailable[0])
+            }
+        } else {
+           if(!selectedContainer){
                 selectContainer(null)
             }
-        })
-    }
+        }
+    })
 
     function selectPod(selected) {
         let selectedPods = [];
