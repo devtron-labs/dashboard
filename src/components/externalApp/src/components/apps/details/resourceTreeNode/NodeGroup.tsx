@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg';
+import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as ErrorImage } from '../../../assets/icons/errorInfo.svg';
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router';
 import { NavLink } from 'react-router-dom';

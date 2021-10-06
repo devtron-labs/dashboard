@@ -1,10 +1,10 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
-import ResourceTreeNodes from '../../resourceTreeNode/ResourceTreeNode';
+import ResourceTreeNodes from '../resourceTreeNode/ResourceTreeNode';
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
-import ExternalAppScaleModal from '../../externalAppScaleModal/ExternalScalePodModal';
+import ExternalAppScaleModal from '../externalAppScaleModal/ExternalScalePodModal';
 import { DeploymentStatusModal } from '../DeploymentStatusModal';
 
 export default function AppDetails() {
