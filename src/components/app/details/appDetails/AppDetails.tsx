@@ -719,7 +719,7 @@ interface NodeSelectors {
     logsCleared: boolean;
     socketConnection: SocketConnectionType;
     nodeName?: string;
-    selectedNodes?: any;
+    selectedNodes: any;
     containerName?: string;
     selectedContainer?: string;
     nodes: AggregatedNodes;

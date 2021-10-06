@@ -25,6 +25,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedLog } from './details/appDetails/utils';
+import { defaultProps } from 'recompose';
 
 const commandLineParser = require('command-line-parser')
 
@@ -35,7 +36,7 @@ interface EventsLogsProps {
     nodeName: string;
     selectedLogsNode?: any;
     nodeItems: any;
-    containerName?: any;
+    containerName: any;
     nodes: AggregatedNodes;
     logsPaused?: boolean;
     appDetails: AppDetails;
@@ -73,7 +74,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared,  setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -258,7 +259,7 @@ function NoEvents({ title = "Events not available" }) {
 interface LogsView {
     subject: Subject<string>;
     nodeName?: string;
-    selectedLogsNode?: any;
+    selectedLogsNode: any;
     nodeItems?: any;
     containerName: string;
     handleLogPause: (paused: boolean) => void;
@@ -301,7 +302,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             } catch (err) { }
             handleLogPause(false);
         };
-    }, [nodeName, containerName, grepTokens]);
+    }, [nodeName, containerName, grepTokens, selectedLogsNode]);
 
     function getLogsURL() {
         let prefix = '';
