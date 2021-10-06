@@ -276,6 +276,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const logsPausedRef = useRef(false);
     const [logSearchString, setLogSearchString] = useState<string>('')
     const [tempSearch, setTempSearch] = useState<string>('')
+    const [selectedLog, setSelectedLog] = useState([]);
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -346,6 +347,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         let selectedLog= [];
         if (selectedLogsNode){
             selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
+            setSelectedLog(selectedLog)
         }
 
         selectedLog.map((item) => {
@@ -383,6 +385,12 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
 
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
+    
+    let podMessage = "";
+    selectedLogsNode.map((item) => {
+        let logNode = item
+        podMessage = "No pods available for " + `"${logNode.value}"`;
+    })
 
     return (
         <>
@@ -392,7 +400,13 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage="Select a pod to view logs" />
                 </>
             )}
-            {nodeName && !containerName && (
+             {selectedLog.length < 1 && (
+                <>
+                    <span style={{ background: '#2c3354' }} />
+                    <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
+                </>
+            )}
+            {nodeName && !containerName && selectedLog.length > 0 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoContainer style={{ gridColumn: '1 / span 2' }} selectMessage="Select a container to view logs" />
