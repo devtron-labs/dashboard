@@ -475,7 +475,7 @@ const NodeDetails: React.FC<{
 
     useEffect(() => {
         if (!selectedNode) return
-        if (( params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if (( params.tab === NodeDetailTabs.LOGS) || ( params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {

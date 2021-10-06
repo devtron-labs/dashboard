@@ -400,16 +400,16 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage="Select a pod to view logs" />
                 </>
             )}
-             {selectedLog.length < 1 && (
-                <>
-                    <span style={{ background: '#2c3354' }} />
-                    <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
-                </>
-            )}
             {nodeName && !containerName && selectedLog.length > 0 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoContainer style={{ gridColumn: '1 / span 2' }} selectMessage="Select a container to view logs" />
+                </>
+            )}
+             {selectedLog.length < 1 && (
+                <>
+                    <span style={{ background: '#2c3354' }} />
+                    <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
                 </>
             )}
             {nodeName && containerName && (
