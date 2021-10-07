@@ -313,6 +313,16 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         };
     }, [nodeName, containerName, grepTokens, selectedLogsNode]);
 
+    useEffect(() => {
+        if(logsCleared){
+            try {
+                workerRef.current.postMessage({ type: 'stop' });
+                workerRef.current.terminate();
+            } catch (err) { }
+            handleLogPause(false);
+        }
+    })
+
     function getLogsURL() {
         let prefix = '';
         if (process.env.NODE_ENV === 'production') {
@@ -392,7 +402,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
     
-    const podMessage = "No pods available for selected pod "+ `"${selectedLogsNode}"`;
+    const podMessage = "No pods available for selected pod" + " "+ `"${selectedLogsNode}"`;
 
     return (
         <>
@@ -458,7 +468,6 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                             </Tippy>
                         </form>
                     </div>
-                    {!logsCleared &&
                     <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
                         <div
                             className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
@@ -509,7 +518,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                             )}
                             {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
                         </div>
-                    </div>}
+                    </div>
                 </>
             )}
         </>
