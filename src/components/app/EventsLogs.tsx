@@ -14,7 +14,7 @@ import WebWorker from './WebWorker';
 import { useParams } from 'react-router'
 import moment from 'moment'
 import { Subject } from '../../util/Subject';
-import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from './types';
+import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes } from './types';
 import { AppDetails } from '../app/types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg';
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
@@ -24,7 +24,7 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
-import { getSelectedLog } from './details/appDetails/utils';
+import { getSelectedNodeItems } from './details/appDetails/utils';
 import { defaultProps } from 'recompose';
 
 const commandLineParser = require('command-line-parser')
@@ -46,6 +46,7 @@ interface EventsLogsProps {
     logsCleared: boolean;
     shell: { label; value; }
     isReconnection: boolean;
+    isAppDeployment: boolean;
     setIsReconnection: (flag) => void;
     selectShell: (shell: { label; value; }) => void;
     setTerminalCleared: (flag: boolean) => void;
@@ -74,7 +75,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared,  setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, isAppDeployment, setIsReconnection, selectShell, setTerminalCleared,  setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -95,6 +96,8 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                     handleLogPause={handleLogPause}
                     logsPaused={logsPaused}
                     logsCleared={logsCleared}
+                    nodes={nodes}
+                    isAppDeployment={isAppDeployment}
                 />
             )}
             {params.tab.toLowerCase() === NodeDetailTabs.MANIFEST.toLowerCase() && (
@@ -266,9 +269,11 @@ interface LogsView {
     logsPaused: boolean;
     appDetails: AppDetails;
     logsCleared: boolean;
+    nodes: AggregatedNodes;
+    isAppDeployment: boolean;
 }
 
-export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails, logsCleared }) => {
+export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails, logsCleared, nodes, isAppDeployment }) => {
     const key = useKeyDown()
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [readyState, setReadyState] = React.useState(null);
@@ -277,6 +282,9 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const [logSearchString, setLogSearchString] = useState<string>('')
     const [tempSearch, setTempSearch] = useState<string>('')
     const [selectedNodesItem, setSelectedLog] = useState([]);
+    const { searchParams } = useSearchString();
+    const kind: Nodes = searchParams.kind as Nodes
+    const nodesMap = nodes.nodes[kind] || new Map();
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -344,7 +352,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         let pods = [];
         let selectedNodeItems= [];
         if (selectedLogsNode){
-            selectedNodeItems= getSelectedLog(selectedLogsNode,nodeItems);
+            selectedNodeItems= getSelectedNodeItems(selectedLogsNode, nodeItems, isAppDeployment, nodesMap, kind);
             setSelectedLog(selectedNodeItems)
         }
 
@@ -384,11 +392,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
     
-    let podMessage = "";
-    selectedLogsNode.map((item) => {
-        let logNode = item
-        podMessage = "No pods available for " + `"${logNode.value}"`;
-    })
+    const podMessage = "No pods available for selected pod "+ `"${selectedLogsNode}"`;
 
     return (
         <>

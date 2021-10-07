@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
     Host,
@@ -63,10 +63,11 @@ import {
     NodeDetailTabsType,
     AppDetails,
 } from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites, getSelectedLog } from './utils';
+import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
+import { Interface } from 'readline';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -397,7 +398,7 @@ const NodeDetails: React.FC<{
     describeNode: (name: string, containerName?: string) => void;
 }> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
     const [selectedNode, selectNode] = useState<string>(null);
-    const [selectedNodes, setSelectNode] = useState([]);
+    const [selectedNodes, setSelectNode] = useState<string>(null);
     const [nodeItems, setNodeItems] = useState([]);
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
@@ -417,27 +418,18 @@ const NodeDetails: React.FC<{
 
     let allNodes = [];
     if (nodeItems.length < 1 && Array.from(nodesMap).length > 0) {
-        Array.from(nodesMap).map(([name, data]) => (
+        Array.from(nodesMap).forEach(([name]) => (
             allNodes.push({
-                label: name + getPodNameSuffix(name),
+                label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
                 value: name,
             })))
         setNodeItems(allNodes)
     }
 
-    function getPodNameSuffix(nodeName: string) {
-        if (Nodes.Pod !== kind || !isAppDeployment) return ''
-        if (!nodesMap.has(nodeName)) return ''
-        const pod = nodesMap.get(nodeName)
-        return pod.isNew ? '(new)' : '(old)'
-    }
-
     useEffect(() => {
         if (nodeName) {
             selectNode(nodeName);
-            let initialNode = { label: nodeName + getPodNameSuffix(nodeName), value: nodeName }
-            selectedNodes.pop()
-            selectedNodes.push(initialNode)
+            setSelectNode(nodeName);
             let container = nodesMap.get(nodeName)?.containers
             if(container.length <2){
                 selectContainer(container[0])
@@ -466,10 +458,9 @@ const NodeDetails: React.FC<{
         //select pod
         const kind: Nodes = searchParams.kind as Nodes || params.kind as Nodes
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
-        if (node && node.length && node[1].name) {
+        if (node && node.length >= 2 && node[1].name) {
             selectNode(node[1].name);
-            let initialNode = { label: node[1].name + getPodNameSuffix(node[1].name), value: node[1].name }
-            selectedNodes.push(initialNode)
+            setSelectNode(node[1].name);
         }
     }, [params.tab])
 
@@ -511,7 +502,8 @@ const NodeDetails: React.FC<{
                 anchor={params.kind ? <EventsLogsTabSelector /> : null}
             >
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
-                    <NodeSelectors getPodNameSuffix={getPodNameSuffix}
+                    <NodeSelectors
+                        isAppDeployment={isAppDeployment}
                         selectedContainer={selectedContainer}
                         logsPaused={logsPaused}
                         logsCleared={logsCleared}
@@ -534,6 +526,7 @@ const NodeDetails: React.FC<{
                         selectContainer={selectContainer}
                     />
                     <EventsLogs nodeName={selectedNode}
+                        isAppDeployment={isAppDeployment}
                         selectedLogsNode={selectedNodes}
                         nodeItems={nodeItems}
                         logsCleared={logsCleared}
@@ -721,7 +714,8 @@ interface NodeSelectors {
     logsCleared: boolean;
     socketConnection: SocketConnectionType;
     nodeName?: string;
-    selectedNodes?: any;
+    selectedNodes?: string;
+    isAppDeployment?:boolean;
     containerName?: string;
     selectedContainer?: string;
     nodes: AggregatedNodes;
@@ -736,7 +730,6 @@ interface NodeSelectors {
     selectNode: (nodeName: string) => void;
     selectContainer: (containerName: string) => void;
     setSocketConnection: (value: SocketConnectionType) => void;
-    getPodNameSuffix: (nodeName: string) => void;
     setLogsCleared: (e: any) => void;
     children?: any;
 }
@@ -752,6 +745,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     isReconnection,
     nodeItems,
     logsCleared,
+    isAppDeployment,
     setIsReconnection,
     selectShell,
     setTerminalCleared,
@@ -760,7 +754,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     selectNode,
     setSelectNode,
     selectContainer,
-    getPodNameSuffix,
     setLogsCleared,
     children = null,
 }) => {
@@ -768,6 +761,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     const { queryParams, searchParams } = useSearchString();
     const { url, path } = useRouteMatch()
     const history = useHistory()
+    const workerRef = useRef(null);
 
     if (!searchParams?.kind) {
         queryParams.set('kind', params.kind)
@@ -780,16 +774,13 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     let containers = [];
     let initContainers = [];
-    let selectedLog = [];
+    let selectedNodesItem = [];
     if (selectedNodes) {
-        selectedLog = getSelectedLog(selectedNodes, nodeItems);
-        // if(selectedLog.length < 1){
-        //     selectContainer(null);
-        // }
+        selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind);
     }
 
-    if (selectedLog) {
-        selectedLog.map((item) => {
+    if (selectedNodesItem) {
+        selectedNodesItem.forEach((item) => {
             if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
                 containers.push(nodesMap.get(item.value)?.containers)
                 initContainers.push(nodesMap.get(item.value)?.initContainers)
@@ -807,11 +798,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     } else {
         options = nodeItems;
     }
-    // let containers = contain
-    // (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.containers : null;
-
-    // let initContainers =
-    // (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.initContainers : null;
 
     if (!containers) {
         containers = []
@@ -825,13 +811,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let total = containers.concat(initContainers);
     let allContainers = total.filter(item => !!item);
 
-    // allContainers = allContainers.filter((thing, index, self) =>
-    //     index === self.findIndex((t) => (
-    //         t[0] === thing[0]
-    //     ))
-    // )
-    
-    allContainers.map((item) =>{
+    allContainers.forEach((item) =>{
         if(item.length < 2){
             let contAvailable = allContainers[0]
             if(contAvailable && !selectedContainer){
@@ -845,24 +825,22 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     })
 
     function selectPod(selected) {
-        let selectedPods = [];
-        if (selected) {
-            selectedPods.push(selected)
-        }
-        setSelectNode(selectedPods)
+        setSelectNode((selected as any).value);
         onLogsCleared();
     }
 
     function onLogsCleared() {
-        setLogsCleared(true);
-        setTimeout(() => setLogsCleared(false), 1000);
-    }
-
-    if(selectedNodes.length < 2){
-        selectedNodes = selectedNodes[0];
+        // setLogsCleared(true);
+        // setTimeout(() => setLogsCleared(false), 1000);
+        try {
+            workerRef.current.postMessage({ type: 'stop' });
+            workerRef.current.terminate();
+        } catch (err) { }
+        // handleLogPause(false);
     }
 
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
+    let podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName;
     return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
         {params.tab === NodeDetailTabs.TERMINAL && <>
             <div className={`flex mr-12`}>
@@ -913,9 +891,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 <Select
                     placeholder={`Select ${kind}`}
                     name="pods"
-                    value={params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
+                    value={podItems ? { label: podItems + getPodNameSuffix(podItems, isAppDeployment, nodesMap, kind), value: podItems } : null}
                     options={params.tab?.toLowerCase() == 'logs' ? options : Array.from(nodesMap).map(([name, data]) => ({
-                        label: name + getPodNameSuffix(name),
+                        label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
                         value: name,
                     }))} closeOnSelect={false}
                     onChange={(selected) => {

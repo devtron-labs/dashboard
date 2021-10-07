@@ -13,6 +13,7 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
+import { node } from 'prop-types';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -259,22 +260,28 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
     return url;
 }
 
-export function getSelectedLog(selectedNodes: any, nodeItems: any): any {
+export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean,nodesMap: any, kind: string ) {
+    if (Nodes.Pod !== kind || !isAppDeployment) return ''
+    if (!nodesMap.has(nodeName)) return ''
+    const pod = nodesMap.get(nodeName)
+    return pod.isNew ? '(new)' : '(old)'
+}
+
+export function getSelectedNodeItems(selectedNodes: string, nodeItems: any, isAppDeployment: boolean,nodesMap: any, kind: string): any {
     let selectedNodeItems= [];
-    selectedNodes.map((item) => {
-        if(item.value == "All pods"){
+        if(selectedNodes == "All pods"){
             selectedNodeItems = nodeItems
-        } else if (item.value == "All new pods"){
-            const result = nodeItems.filter(item => item.label.includes("new"));
+        } else if (selectedNodes == "All new pods"){
+            const result = nodeItems.filter(item => item.label.includes("(new)"));
             selectedNodeItems = result
-        } else if (item.value == "All old pods"){
-            const result = nodeItems.filter(item => item.label.includes("old"));
+        } else if (selectedNodes == "All old pods"){
+            const result = nodeItems.filter(item => item.label.includes("(old)"));
             selectedNodeItems = result
         } else {
-            selectedNodeItems = selectedNodes
+            let initialNode = { label: selectedNodes + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind), value: selectedNodes }
+            selectedNodeItems.push(initialNode)
         }
 
-    })
     return selectedNodeItems;
 }
 
