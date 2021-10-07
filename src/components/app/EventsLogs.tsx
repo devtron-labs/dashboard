@@ -281,7 +281,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const logsPausedRef = useRef(false);
     const [logSearchString, setLogSearchString] = useState<string>('')
     const [tempSearch, setTempSearch] = useState<string>('')
-    const [selectedNodesItem, setSelectedLog] = useState([]);
+    const [selectedNodesItem, setSelectedNodesItem] = useState([]);
     const { searchParams } = useSearchString();
     const kind: Nodes = searchParams.kind as Nodes
     const nodesMap = nodes.nodes[kind] || new Map();
@@ -353,7 +353,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         let selectedNodeItems= [];
         if (selectedLogsNode){
             selectedNodeItems= getSelectedNodeItems(selectedLogsNode, nodeItems, isAppDeployment, nodesMap, kind);
-            setSelectedLog(selectedNodeItems)
+            setSelectedNodesItem(selectedNodeItems)
         }
 
         selectedNodeItems.map((item) => {

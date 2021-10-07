@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
     Host,
@@ -761,7 +761,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     const { queryParams, searchParams } = useSearchString();
     const { url, path } = useRouteMatch()
     const history = useHistory()
-    const workerRef = useRef(null);
 
     if (!searchParams?.kind) {
         queryParams.set('kind', params.kind)
@@ -830,13 +829,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     }
 
     function onLogsCleared() {
-        // setLogsCleared(true);
-        // setTimeout(() => setLogsCleared(false), 1000);
-        try {
-            workerRef.current.postMessage({ type: 'stop' });
-            workerRef.current.terminate();
-        } catch (err) { }
-        // handleLogPause(false);
+        setLogsCleared(true);
+        setTimeout(() => setLogsCleared(false), 1000);
     }
 
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
