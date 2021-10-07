@@ -314,14 +314,17 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     }, [nodeName, containerName, grepTokens, selectedLogsNode]);
 
     useEffect(() => {
+        if (!logsCleared) return             
+        fetchLogs()
+
         if(logsCleared){
-            try {
-                workerRef.current.postMessage({ type: 'stop' });
-                workerRef.current.terminate();
-            } catch (err) { }
-            handleLogPause(false);
-        } else {
-            fetchLogs()
+            return () => {
+                try {
+                    workerRef.current.postMessage({ type: 'stop' });
+                    workerRef.current.terminate();
+                } catch (err) { }
+                handleLogPause(false);
+            };
         }
     })
 
