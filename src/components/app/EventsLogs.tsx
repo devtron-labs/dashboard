@@ -311,7 +311,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             } catch (err) { }
             handleLogPause(false);
         };
-    }, [nodeName, containerName, grepTokens, selectedLogsNode]);
+    }, [nodeName, containerName, grepTokens, selectedLogsNode, logsCleared]);
 
     function getLogsURL() {
         let prefix = '';
