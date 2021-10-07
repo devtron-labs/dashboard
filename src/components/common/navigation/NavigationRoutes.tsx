@@ -10,7 +10,8 @@ import { Security } from '../../security/Security';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
-const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+// const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const ExternalListContainer = lazy(() => import('../../externalApp/src/components/apps/appList/ListContainer/ExternalListContainer/ExternalListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 const BulkEdit = lazy(()=> import('../../bulkEdits/BulkEdits'))
@@ -88,10 +89,10 @@ export function AppRouter() {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
-                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
+                    <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <ExternalListContainer />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <AppListContainer />
+                        <ExternalListContainer />
                     </Route>
                     <Route>
                         <RedirectWithSentry />
