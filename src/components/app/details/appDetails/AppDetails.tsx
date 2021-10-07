@@ -783,9 +783,9 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let selectedLog = [];
     if (selectedNodes) {
         selectedLog = getSelectedLog(selectedNodes, nodeItems);
-        if(selectedLog.length < 1){
-            selectContainer(null);
-        }
+        // if(selectedLog.length < 1){
+        //     selectContainer(null);
+        // }
     }
 
     if (selectedLog) {

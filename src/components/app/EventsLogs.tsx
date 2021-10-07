@@ -412,7 +412,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
                 </>
             )}
-            {nodeName && containerName && (
+            {nodeName && containerName && selectedLog.length > 0 && (
                 <>
                     <div data-testid="log-viewer-container" className="flex right" style={{ background: '#2c3354' }}>
                         <form
