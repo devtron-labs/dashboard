@@ -260,22 +260,22 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
 }
 
 export function getSelectedLog(selectedNodes: any, nodeItems: any): any {
-    let selectedLog= [];
+    let selectedNodeItems= [];
     selectedNodes.map((item) => {
         if(item.value == "All pods"){
-            selectedLog = nodeItems
+            selectedNodeItems = nodeItems
         } else if (item.value == "All new pods"){
             const result = nodeItems.filter(item => item.label.includes("new"));
-            selectedLog = result
+            selectedNodeItems = result
         } else if (item.value == "All old pods"){
             const result = nodeItems.filter(item => item.label.includes("old"));
-            selectedLog = result
+            selectedNodeItems = result
         } else {
-            selectedLog = selectedNodes
+            selectedNodeItems = selectedNodes
         }
 
     })
-    return selectedLog;
+    return selectedNodeItems;
 }
 
 export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {

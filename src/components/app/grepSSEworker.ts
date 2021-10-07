@@ -72,16 +72,16 @@ export default () => {
         if (!e.data.type && !e.data.paylod) return
         switch (e.data.type) {
             case 'start':
-                const { url, grepTokens, pods } = e.data.payload
+                const { urls, grepTokens, pods } = e.data.payload
                 wrappers.forEach(wrapper => {
                     try {
                         wrapper.eventSrc.close()
                     }
                     catch (err) { }
                 })
-                // console.log(url)
-                for (let index = 0; index < url.length; index++) {
-                    const element = url[index];
+                // console.log(urls)
+                for (let index = 0; index < urls.length; index++) {
+                    const element = urls[index];
                     console.log(element)
                     wrappers[index] = Object.assign({}, bp)
                     wrappers[index].prefix = pods[index] + ": "

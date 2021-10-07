@@ -435,9 +435,9 @@ const NodeDetails: React.FC<{
     useEffect(() => {
         if (nodeName) {
             selectNode(nodeName);
-            let intialNode = { label: nodeName + getPodNameSuffix(nodeName), value: nodeName }
+            let initialNode = { label: nodeName + getPodNameSuffix(nodeName), value: nodeName }
             selectedNodes.pop()
-            selectedNodes.push(intialNode)
+            selectedNodes.push(initialNode)
             let container = nodesMap.get(nodeName)?.containers
             if(container.length <2){
                 selectContainer(container[0])
@@ -468,8 +468,8 @@ const NodeDetails: React.FC<{
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
         if (node && node.length && node[1].name) {
             selectNode(node[1].name);
-            let intialNode = { label: node[1].name + getPodNameSuffix(node[1].name), value: node[1].name }
-            selectedNodes.push(intialNode)
+            let initialNode = { label: node[1].name + getPodNameSuffix(node[1].name), value: node[1].name }
+            selectedNodes.push(initialNode)
         }
     }, [params.tab])
 
@@ -825,11 +825,11 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let total = containers.concat(initContainers);
     let allContainers = total.filter(item => !!item);
 
-    allContainers = allContainers.filter((thing, index, self) =>
-        index === self.findIndex((t) => (
-            t[0] === thing[0]
-        ))
-    )
+    // allContainers = allContainers.filter((thing, index, self) =>
+    //     index === self.findIndex((t) => (
+    //         t[0] === thing[0]
+    //     ))
+    // )
     
     allContainers.map((item) =>{
         if(item.length < 2){

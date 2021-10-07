@@ -276,7 +276,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const logsPausedRef = useRef(false);
     const [logSearchString, setLogSearchString] = useState<string>('')
     const [tempSearch, setTempSearch] = useState<string>('')
-    const [selectedLog, setSelectedLog] = useState([]);
+    const [selectedNodesItem, setSelectedLog] = useState([]);
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -308,8 +308,6 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     function getLogsURL() {
         let prefix = '';
         if (process.env.NODE_ENV === 'production') {
-            prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
-        } else {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
         let pods = getPods();
@@ -344,21 +342,21 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
 
     function getPods(){
         let pods = [];
-        let selectedLog= [];
+        let selectedNodeItems= [];
         if (selectedLogsNode){
-            selectedLog= getSelectedLog(selectedLogsNode,nodeItems);
-            setSelectedLog(selectedLog)
+            selectedNodeItems= getSelectedLog(selectedLogsNode,nodeItems);
+            setSelectedLog(selectedNodeItems)
         }
 
-        selectedLog.map((item) => {
+        selectedNodeItems.map((item) => {
             pods.push(item.value)
         })
         return pods
     }
 
     function fetchLogs() {
-        const url = getLogsURL();
-        if (!url) {
+        const urls = getLogsURL();
+        if (!urls) {
             return
         }
         let pods = getPods();
@@ -366,7 +364,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { url: url, grepTokens: grepTokens, timeout: 300, pods: pods },
+            payload: { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods },
         });
     }
 
@@ -400,19 +398,19 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage="Select a pod to view logs" />
                 </>
             )}
-            {nodeName && !containerName && selectedLog.length > 0 && (
+            {nodeName && !containerName && selectedNodesItem.length > 0 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoContainer style={{ gridColumn: '1 / span 2' }} selectMessage="Select a container to view logs" />
                 </>
             )}
-             {selectedLog.length < 1 && (
+             {selectedNodesItem.length < 1 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
                 </>
             )}
-            {nodeName && containerName && selectedLog.length > 0 && (
+            {nodeName && containerName && selectedNodesItem.length > 0 && (
                 <>
                     <div data-testid="log-viewer-container" className="flex right" style={{ background: '#2c3354' }}>
                         <form
