@@ -320,6 +320,8 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                 workerRef.current.terminate();
             } catch (err) { }
             handleLogPause(false);
+        } else {
+            fetchLogs()
         }
     })
 
