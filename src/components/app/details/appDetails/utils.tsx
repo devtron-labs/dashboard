@@ -260,14 +260,24 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
     return url;
 }
 
-export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean,nodesMap: any, kind: string ) {
+export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean,nodesMap: any, kind: string ): string {
     if (Nodes.Pod !== kind || !isAppDeployment) return ''
     if (!nodesMap.has(nodeName)) return ''
     const pod = nodesMap.get(nodeName)
     return pod.isNew ? '(new)' : '(old)'
 }
 
-export function getSelectedNodeItems(selectedNodes: string, nodeItems: any, isAppDeployment: boolean,nodesMap: any, kind: string): any {
+interface NodeItems {
+    label : string;
+    value : string;
+}
+
+interface SelectedNodeItems {
+    label : string;
+    value : string;
+}
+
+export function getSelectedNodeItems(selectedNodes: string, nodeItems: NodeItems[], isAppDeployment: boolean,nodesMap: any, kind: string): SelectedNodeItems[] {
     let selectedNodeItems= [];
         if(selectedNodes == "All pods"){
             selectedNodeItems = nodeItems

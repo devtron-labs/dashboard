@@ -709,6 +709,11 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
     );
 }
 
+interface NodeItems {
+    label : string;
+    value : string;
+}
+
 interface NodeSelectors {
     logsPaused: boolean;
     logsCleared: boolean;
@@ -721,7 +726,7 @@ interface NodeSelectors {
     nodes: AggregatedNodes;
     shell: { label: string; value: string };
     isReconnection: boolean;
-    nodeItems: any;
+    nodeItems: NodeItems[];
     setSelectNode: (flag) => void;
     setIsReconnection: (flag) => void;
     selectShell: (shell: { label: string; value: string }) => void;

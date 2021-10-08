@@ -392,7 +392,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
     
-    const podMessage = "No pods available for selected pod" + " "+ `"${selectedLogsNode}"`;
+    const podMessage = "No pods available for selected " + `"${selectedLogsNode}"`;
 
     return (
         <>
