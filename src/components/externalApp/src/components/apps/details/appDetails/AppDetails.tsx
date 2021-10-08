@@ -1,6 +1,8 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
 import ResourceTreeNodes from '../resourceTreeNode/ResourceTreeNode';
+import EventsLogsTabsModal from '../eventsLogsTabs/EventsLogsTabs';
+
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
@@ -56,7 +58,8 @@ export default function AppDetails() {
     return (<div style={{ overflowY: "auto", height: "100%" }}>
         <EnvironmentSelector />
         <DeploymentStatusModal />
-        <ResourceTreeNodes/>
+        {/* <ResourceTreeNodes/> */}
+        <EventsLogsTabsModal />
     </div>
     )
 }

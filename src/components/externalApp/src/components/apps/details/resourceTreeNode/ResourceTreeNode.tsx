@@ -2,7 +2,8 @@ import React from 'react'
 import GenericRowsInfo from './GenericRowsInfo';
 import NodeGroup from './NodeGroup';
 import AllPods from './AllPods';
-import { NavLink, Route, BrowserRouter as Router} from 'react-router-dom'
+import { NavLink, Route, BrowserRouter as Router } from 'react-router-dom'
+import EventsLogsTabs from '../eventsLogsTabs/EventsLogsTabs';
 
 export default function ResourceTreeNode() {
     return (
@@ -42,11 +43,11 @@ export default function ResourceTreeNode() {
                     </div>
                 </div>
                 <Route>
-                <div style={{ gridColumn: '2', gridRow: '2', overflowY: 'auto' }} className="bcn-0">
-               {/* <GenericRowsInfo /> */}
-               <AllPods/>
-            </div>
-            </Route>
+                    <div style={{ gridColumn: '2', gridRow: '2', overflowY: 'auto' }} className="bcn-0">
+                        {/* <GenericRowsInfo /> */}
+                        <AllPods/>
+                    </div>
+                </Route>
 
             </div>
         </div>
