@@ -1,9 +1,9 @@
 import React from 'react';
-import { Progressing } from '../../../../common';
+import { Progressing } from '../../common';
 import { NavLink, Link, Route, Switch } from 'react-router-dom';
-import { ViewType } from '../../../../../config'
+import { ViewType } from '../../../config'
 import Tippy from '@tippyjs/react';
-import { ReactComponent as Question } from '../../../../../assets/icons/ic-question.svg'
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
 import './appList.css'
 export default function ExternalListView({ externalList, view }) {
 

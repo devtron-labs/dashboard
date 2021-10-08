@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ExternalListView from './ExternalListView'
-import { ViewType } from '../../../../../config'
-import { showError } from '../../../../common'
+import { ViewType } from '../../../config'
+import { showError } from '../../common'
 import { getExternalList } from './externalList.data'
 
 export default function ExternalListContainer() {
@@ -29,7 +29,6 @@ export default function ExternalListContainer() {
 
     return (
         <div>
-
             <ExternalListView
                 view={viewType}
                 externalList={externalList}
