@@ -31,7 +31,7 @@ export interface GitOpsConfig {
 export interface GitOpsState {
     view: string;
     statusCode: number;
-    tab: GitProviderType;
+    providerTab: GitProviderType;
     gitList: GitOpsConfig[];
     form: GitOpsConfig;
     isFormEdited: boolean;
@@ -45,11 +45,9 @@ export interface GitOpsState {
         gitLabGroupId: string;
         azureProjectName: string;
     },
-    validateSuccess: boolean;
-    validateFailure: boolean,
-    validateLoading: boolean;
     validatedTime: string;
     validationError: GitOpsConfig[];
+    validationStatus:string;
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }

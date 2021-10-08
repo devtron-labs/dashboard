@@ -12,6 +12,7 @@ export interface GitMaterialType {
     url: string;
     checkoutPath: string;
     active: boolean;
+    fetchSubmodules: boolean;
 }
 
 
@@ -29,6 +30,7 @@ export interface CreateMaterialState {
         url: string;
         checkoutPath: string;
         active: boolean;
+        fetchSubmodules: boolean;
     };
     isCollapsed: boolean;
     isChecked: boolean;
@@ -59,12 +61,13 @@ export interface MaterialViewProps {
     isLoading: boolean;
     isError: MaterialError;
     providers: any[];
-    handleProviderChange: (selected) => void;
-    handleCheckbox: (event) => void;
+    handleProviderChange: (selected, url) => void;
+    handleCheckoutPathCheckbox: (event) => void;
     handleUrlChange: (event) => void;
     handlePathChange: (event) => void;
     toggleCollapse: (event) => void;
     save: (event) => void;
     cancel: (event) => void;
     isWorkflowEditorUnlocked : boolean;
+    handleSubmoduleCheckbox:(event) => void;
 }

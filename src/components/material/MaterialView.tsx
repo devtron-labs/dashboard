@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import ReactSelect, { components } from 'react-select';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
-import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
-import { Progressing, Checkbox, VisibleModal } from '../common';
+import { Progressing, Checkbox, multiSelectStyles } from '../common';
 import { MaterialViewProps } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
+import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import Tippy from '@tippyjs/react';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
@@ -33,10 +34,18 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(0deg)' }} />
             </div>
         }
-        return <div className="white-card white-card--add-new-item mb-16" onClick={this.props.toggleCollapse}>
+        return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
             <span className="artifact__add">Add Git Material</span>
         </div>
+    }
+
+    gitAuthType = (key) => {
+        const res = this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id)
+        if (key === "host") { return res[0]?.authMode == "SSH" ? "ssh" : "https" }
+        if (key === "placeholder") {
+            return res[0]?.authMode == "SSH" ? "e.g. git@github.com:abc/xyz.git" : "e.g. https://gitlab.com/abc/xyz.git"
+        }
     }
 
     renderForm() {
@@ -50,7 +59,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
             <div className="form__row form-row__material">
                 <div className="">
                     <label className="form__label">Git Account*</label>
-                    <ReactSelect className=""
+                    <ReactSelect className="m-0"
                         tabIndex='1'
                         isMulti={false}
                         isClearable={false}
@@ -59,24 +68,15 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}
                         styles={{
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                border: state.isFocused ? '1px solid #0066CC' : '1px solid #d6dbdf',
-                                boxShadow: 'none',
-                                fontWeight: 'normal',
-                                height: "40px"
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                fontWeight: "normal",
-                                color: 'var(--N900)',
-                                padding: '8px 12px',
-                            }),
+                            ...multiSelectStyles,
+                            menuList: (base) => {
+                                return {
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: '0px',
+                                    maxHeight: '250px',
+                                }
+                            }
                         }}
                         components={{
                             IndicatorSeparator: null,
@@ -95,8 +95,8 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             MenuList: (props) => {
                                 return <components.MenuList {...props}>
                                     {props.children}
-                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top p-10 cb-5 block fw-5 anchor cursor no-decor">
-                                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top react-select__bottom bcn-0 p-10 cb-5 block fw-5 anchor cursor no-decor">
+                                        <Add className="icon-dim-20 fcb-5 mr-12 vertical-align-bottom" />
                                         Add Git Account
                                     </NavLink>
                                 </components.MenuList>
@@ -113,7 +113,6 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                                     {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
                                     {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8" /> : null}
                                     {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8" /> : null}
-
                                     {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
                                     {props.children}
                                 </components.Control>
@@ -121,7 +120,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                             },
                         }}
 
-                        onChange={(selected) => { this.props.handleProviderChange(selected) }}
+                        onChange={(selected) => { this.props.handleProviderChange(selected, this.props.material.url) }}
                     />
                     {this.props.isError.gitProvider && <span className="form__error">
                         <img src={error} className="form__icon" />
@@ -129,13 +128,14 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     </span>}
                 </div>
                 <div>
-                    <label className="form__label">Git Repo URL*</label>
+                    <label className="form__label">Git Repo URL* (use {this.gitAuthType("host")})
+                    </label>
                     <input className="form__input"
                         autoComplete={"off"}
                         autoFocus
                         name="Git Repo URL*"
                         type="text"
-                        placeholder="e.g. https://gitlab.com/abc/xyz"
+                        placeholder={this.gitAuthType("placeholder")}
                         value={`${this.props.material.url}`}
                         onChange={this.props.handleUrlChange} />
                     <span className="form__error">
@@ -152,9 +152,9 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     isChecked={this.props.isChecked}
                     value={"CHECKED"}
                     tabIndex={3}
-                    onChange={this.props.handleCheckbox}
-                    rootClassName="fs-12 cn-7 mb-8 flex left">
-                    <span className="">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
+                    onChange={this.props.handleCheckoutPathCheckbox}
+                    rootClassName="fs-14 cn-9 mb-8 flex left ">
+                    <span className="ml-12">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
                 </Checkbox>
                 {this.props.isChecked ?
                     <input className="form__input"
@@ -167,6 +167,24 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                 <span className="form__error">
                     {this.props.isError.checkoutPath && <> <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}</>}
                 </span>
+                <div className="pt-16 ">
+                    <Checkbox
+                        isChecked={this.props.material.fetchSubmodules}
+                        value={"CHECKED"}
+                        tabIndex={4}
+                        onChange={this.props.handleSubmoduleCheckbox}
+                        rootClassName="fs-14 cn-9 flex top">
+                        <div className="ml-12">
+                            <span className="mb-4 mt-4 flex left">
+                                Pull submodules recursively
+                                <Tippy className="default-tt w-200" arrow={false} placement="bottom" content={'This will use credentials from default remote of parent repository.'}>
+                                    <Question className="icon-dim-16 ml-4" />
+                                </Tippy>
+                            </span>
+                            <div className=" fs-12" style={{ color: "#404040" }}>Use this to pull submodules recursively while building the code</div>
+                        </div>
+                    </Checkbox>
+                </div>
             </label>
             <div className="form__buttons">
                 {this.props.isMultiGit ?
