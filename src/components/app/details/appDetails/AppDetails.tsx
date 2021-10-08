@@ -418,11 +418,12 @@ const NodeDetails: React.FC<{
 
     let allNodes = [];
     if (nodeItems.length < 1 && Array.from(nodesMap).length > 0) {
-        Array.from(nodesMap).forEach(([name]) => (
-            allNodes.push({
+        allNodes = Array.from(nodesMap).map(([name]) => (
+            {
                 label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
                 value: name,
-            })))
+            }
+        ))
         setNodeItems(allNodes)
     }
 
@@ -431,7 +432,7 @@ const NodeDetails: React.FC<{
             selectNode(nodeName);
             setSelectNode(nodeName);
             let container = nodesMap.get(nodeName)?.containers
-            if(container.length <2){
+            if (container.length < 2) {
                 selectContainer(container[0])
             }
         }
@@ -466,7 +467,7 @@ const NodeDetails: React.FC<{
 
     useEffect(() => {
         if (!selectedNode) return
-        if (( params.tab === NodeDetailTabs.LOGS) || ( params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if ((params.tab === NodeDetailTabs.LOGS) || (params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
@@ -710,8 +711,8 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
 }
 
 interface NodeItems {
-    label : string;
-    value : string;
+    label: string;
+    value: string;
 }
 
 interface NodeSelectors {
@@ -720,7 +721,7 @@ interface NodeSelectors {
     socketConnection: SocketConnectionType;
     nodeName?: string;
     selectedNodes?: string;
-    isAppDeployment?:boolean;
+    isAppDeployment?: boolean;
     containerName?: string;
     selectedContainer?: string;
     nodes: AggregatedNodes;
@@ -815,14 +816,14 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let total = containers.concat(initContainers);
     let allContainers = total.filter(item => !!item);
 
-    allContainers.forEach((item) =>{
-        if(item.length < 2){
+    allContainers.forEach((item) => {
+        if (item.length < 2) {
             let contAvailable = allContainers[0]
-            if(contAvailable && !selectedContainer){
+            if (contAvailable && !selectedContainer) {
                 selectContainer(contAvailable[0])
             }
         } else {
-           if(!selectedContainer){
+            if (!selectedContainer) {
                 selectContainer(null)
             }
         }
@@ -897,7 +898,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     }))} closeOnSelect={false}
                     onChange={(selected) => {
                         params.tab?.toLowerCase() == 'logs' ?
-                        selectPod(selected) : selectNode((selected as any).value);
+                            selectPod(selected) : selectNode((selected as any).value);
                     }}
                     components={{
                         IndicatorSeparator: null,

@@ -32,11 +32,16 @@ const commandLineParser = require('command-line-parser')
 
 const subject: Subject<string> = new Subject()
 
+interface NodeItems {
+    label: string;
+    value: string;
+}
+
 interface EventsLogsProps {
     nodeName: string;
-    selectedLogsNode?: any;
-    nodeItems: any;
-    containerName: any;
+    selectedLogsNode?: string;
+    nodeItems: NodeItems[];
+    containerName: string;
     nodes: AggregatedNodes;
     logsPaused?: boolean;
     appDetails: AppDetails;
@@ -262,15 +267,15 @@ function NoEvents({ title = "Events not available" }) {
 interface LogsView {
     subject: Subject<string>;
     nodeName?: string;
-    selectedLogsNode: any;
-    nodeItems?: any;
+    selectedLogsNode: string;
+    nodeItems?: NodeItems[];
     containerName: string;
-    handleLogPause: (paused: boolean) => void;
     logsPaused: boolean;
     appDetails: AppDetails;
     logsCleared: boolean;
     nodes: AggregatedNodes;
     isAppDeployment: boolean;
+    handleLogPause: (paused: boolean) => void;
 }
 
 export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails, logsCleared, nodes, isAppDeployment }) => {
