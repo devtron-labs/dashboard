@@ -12,7 +12,6 @@ interface CreateMaterialProps {
     providers: any[];
     refreshMaterials: () => void;
     isGitProviderValid;
-    isGitUrlValid;
     isCheckoutPathValid;
     isWorkflowEditorUnlocked: boolean;
 }
@@ -27,6 +26,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: '',
                 checkoutPath: "",
                 active: true,
+                fetchSubmodules: false,
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isChecked: false,
@@ -45,25 +45,48 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
-        this.handleCheckbox = this.handleCheckbox.bind(this);
-
+        this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
+        this.handleSubmoduleCheckbox = this.handleSubmoduleCheckbox.bind(this);
     }
 
-    handleCheckbox(event): void {
+    handleCheckoutPathCheckbox(event): void {
         this.setState({
             isChecked: !this.state.isChecked
         });
     }
 
-    handleProviderChange(selected) {
+    handleSubmoduleCheckbox(event): void {
+        this.setState({
+            material:{
+                ...this.state.material,
+                fetchSubmodules: !this.state.material.fetchSubmodules
+            }
+        });
+    }
+
+    isGitUrlValid(url: string, selectedId): string | undefined {
+        if (!url.length) return "This is a required field"
+
+        const res = this.props.providers?.filter((provider)=>provider?.id == selectedId )
+        if(res[0]?.authMode != "SSH" ){
+            if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+        }
+        if(res[0]?.authMode === "SSH" ){
+            if(!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
+        }
+        return undefined;
+    }
+
+    handleProviderChange(selected, url) {
         this.setState({
             material: {
                 ...this.state.material,
-                gitProvider: selected
+                gitProvider: selected,
             },
             isError: {
                 ...this.state.isError,
-                gitProvider: this.props.isGitProviderValid(selected)
+                gitProvider: this.props.isGitProviderValid(selected),
+                url: this.isGitUrlValid(url, selected.id)
             }
         });
     }
@@ -81,7 +104,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
+  
     handleUrlChange(event) {
+
         this.setState({
             material: {
                 ...this.state.material,
@@ -89,10 +114,11 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             },
             isError: {
                 ...this.state.isError,
-                url: this.props.isGitUrlValid(event.target.value)
+                url: this.isGitUrlValid(event.target.value, this.state.material?.gitProvider?.id )
             }
         });
     }
+
 
     toggleCollapse(event) {
         this.setState({
@@ -106,7 +132,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             showSaveModal: false,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
-                url: this.props.isGitUrlValid(this.state.material.url),
+                url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id ),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
 
@@ -122,6 +148,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
+                    fetchSubmodules: this.state.material.fetchSubmodules
                 }]
             }
             createMaterial(payload).then((response) => {
@@ -134,6 +161,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             })
         })
     }
+   
 
     cancel(event): void {
         this.setState({
@@ -141,7 +169,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: '',
                 checkoutPath: '',
-                active: true
+                active: true,
+                fetchSubmodules: false
             },
             isCollapsed: true,
             isLoading: false,
@@ -194,7 +223,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 isChecked={this.state.isChecked}
                 material={this.state.material}
                 isCollapsed={this.state.isCollapsed}
-                handleCheckbox={this.handleCheckbox}
+                handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
+                handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
                 isLoading={this.state.isLoading}
                 isError={this.state.isError}
                 providers={this.props.providers}

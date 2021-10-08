@@ -11,7 +11,6 @@ interface UpdateMaterialProps {
     material: GitMaterialType;
     providers: any[];
     isGitProviderValid;
-    isGitUrlValid;
     isCheckoutPathValid;
     refreshMaterials: () => void;
     isWorkflowEditorUnlocked: boolean;
@@ -28,6 +27,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
                 active: this.props.material.active,
+                fetchSubmodules: this.props.material.fetchSubmodules,
             },
             isCollapsed: true,
             isChecked: true,
@@ -44,12 +44,12 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
-        this.handleCheckbox = this.handleCheckbox.bind(this);
-
+        this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.material.gitProvider.id != this.props.material.gitProvider.id || prevProps.material.url != this.props.material.url || prevProps.material.checkoutPath != this.props.material.checkoutPath) {
+            this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id)
             this.setState({
                 material: {
                     id: this.props.material.id,
@@ -58,6 +58,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.props.material.url,
                     active: this.props.material.active,
                     checkoutPath: this.props.material.checkoutPath,
+                    fetchSubmodules: this.props.material.fetchSubmodules
                 },
                 isCollapsed: true,
                 isLoading: false,
@@ -65,13 +66,36 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         }
     }
 
-    handleCheckbox(event): void {
+    isGitUrlValid(url: string, selectedId): string | undefined {
+        if (!url.length) return "This is a required field"
+        else {
+            const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
+            if (res[0]?.authMode != "SSH") {
+                if (!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
+            }
+            if (res[0]?.authMode === "SSH") {
+                if (!url.startsWith("git@")) return "Git Repo URL must start with 'git@'";
+            }
+            return undefined;
+        }
+    }
+
+    handleCheckoutPathCheckbox(event): void {
         this.setState({
             isChecked: !this.state.isChecked
         });
     }
 
-    handleProviderChange(selected) {
+    handleSubmoduleCheckbox = (event): void => {
+        this.setState({
+            material: {
+                ...this.state.material,
+                fetchSubmodules: !this.state.material.fetchSubmodules
+            }
+        });
+    }
+
+    handleProviderChange(selected, url) {
         this.setState({
             material: {
                 ...this.state.material,
@@ -79,7 +103,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             isError: {
                 ...this.state.isError,
-                gitProvider: this.props.isGitProviderValid(selected)
+                gitProvider: this.props.isGitProviderValid(selected),
+                url: this.isGitUrlValid(url, selected.id)
             }
         });
     }
@@ -105,7 +130,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             isError: {
                 ...this.state.isError,
-                url: this.props.isGitUrlValid(event.target.value)
+                url: this.isGitUrlValid(event.target.value, this.state.material?.gitProvider?.id)
             }
         });
     }
@@ -120,13 +145,13 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.setState({
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
-                url: this.props.isGitUrlValid(this.state.material.url),
+                url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
             }
         }, () => {
             if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
-            this.setState({ isLoading: true,  isChecked: true });
+            this.setState({ isLoading: true, isChecked: true });
             let payload = {
                 appId: this.props.appId,
                 material: {
@@ -134,6 +159,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
+                    fetchSubmodules: this.state.material.fetchSubmodules ? true : false
                 }
             }
             updateMaterial(payload).then((response) => {
@@ -159,7 +185,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             isLoading: false,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.props.material.gitProvider),
-                url: this.props.isGitUrlValid(this.props.material.url),
+                url: this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.props.material.checkoutPath)
             }
         });
@@ -170,11 +196,11 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             material={this.state.material}
             isError={this.state.isError}
             isCollapsed={this.state.isCollapsed}
-            isChecked={ this.state.isChecked}
+            isChecked={this.state.isChecked}
             isLoading={this.state.isLoading}
             isMultiGit={this.props.isMultiGit}
             providers={this.props.providers}
-            handleCheckbox= {this.handleCheckbox}
+            handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
             handleProviderChange={this.handleProviderChange}
             handleUrlChange={this.handleUrlChange}
             handlePathChange={this.handlePathChange}
@@ -182,6 +208,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             save={this.save}
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+            handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
+
         />
     }
 }
