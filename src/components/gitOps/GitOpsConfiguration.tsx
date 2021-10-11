@@ -51,7 +51,8 @@ const DefaultGitOpsConfig = {
     gitHubOrgId: "",
     azureProjectName: "",
     active: true,
-    bitBucketOrgId: ""
+    bitBucketOrgId: "",
+    bitBucketProjectName: ""
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -113,7 +114,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitHubOrgId: "",
                 gitLabGroupId: "",
                 azureProjectName: "",
-                bitBucketOrgId: ""
+                bitBucketOrgId: "",
+                bitBucketProjectName: ""
             },
             validatedTime: "",
             validationError: [],
@@ -202,7 +204,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitHubOrgId: "",
             gitLabGroupId: "",
             azureProjectName: "",
-            bitBucketOrgId: ""
+            bitBucketOrgId: "",
+            bitBucketProjectName: ""
         }
 
         let isError = {
@@ -212,7 +215,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitHubOrgId: form.gitHubOrgId.length ? "" : "This is a required field",
             gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
             azureProjectName: form.azureProjectName.length ? "" : "This is a required field",
-            bitBucketOrgId: form.bitBucketOrgId.length ? "" : "This is a required field"
+            bitBucketOrgId: form.bitBucketOrgId.length ? "" : "This is a required field",
+            bitBucketProjectName:  form.bitBucketProjectName.length ? "" : "This is a required field",
         };
         return isError;
     }
@@ -231,8 +235,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         if (this.state.providerTab === GitProvider.GITHUB) {
             isInvalid = isInvalid || isError.gitHubOrgId?.length > 0
         }
-        else if ((this.state.providerTab === GitProvider.GITLAB)) {
+        else if (this.state.providerTab === GitProvider.GITLAB) {
             isInvalid = isInvalid || isError.gitLabGroupId?.length > 0
+        }
+        else if (this.state.providerTab === GitProvider.BITBUCKET){
+       
+                isInvalid = isInvalid || isError.bitBucketOrgId?.length > 0
+                isInvalid = isInvalid || isError.azureProjectName?.length > 0
+
         }
         else {
             isInvalid = isInvalid || isError.azureProjectName?.length > 0
@@ -321,7 +331,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return 'azureProjectName'
         }
         else if (this.state.providerTab === GitProvider.BITBUCKET) {
-            return 'bitBucketOrgId'
+            return 'bitBucketProjectName'
         }
         else {
             return 'gitHubOrgId'
@@ -380,7 +390,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             showLink={true}
                             link={"(How to create workspace in bitbucket?)"}
                             name="Enter workspace ID"
-                            error={this.state.isError.host}
+                            error={this.state.isError.bitBucketOrgId}
                             label={"Bitbucket Workspace ID*"}
                             tabIndex={1}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
