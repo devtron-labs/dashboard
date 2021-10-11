@@ -3,6 +3,7 @@ import {useParams} from 'react-router';
 import { FragmentHOC } from '../../../../../../common';
 import { ReactComponent as Object } from '../../../../assets/icons/ic-object.svg';
 import {NodeDetailTabs} from './eventsLogsTabs.types';
+import Select, { components } from 'react-select';
 
 export default function EventsLogsTabsModal() {
     return (
@@ -35,10 +36,9 @@ export function EventsLogsTabSelector() {
     const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>();
 console.log(params)
     return (<FragmentHOC style={{ background: '#2c3354', boxShadow: 'inset 0 -1px 0 0 #0b0f22' }}>
+      
         <div>
-
-        </div>
-        <div>
+            
 
         </div>
     </FragmentHOC>)

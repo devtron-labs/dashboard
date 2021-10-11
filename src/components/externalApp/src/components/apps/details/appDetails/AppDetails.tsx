@@ -2,12 +2,12 @@ import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 
 import Select, { components } from 'react-select';
 import ResourceTreeNodes from '../resourceTreeNode/ResourceTreeNode';
 import EventsLogsTabsModal from '../eventsLogsTabs/EventsLogsTabs';
-
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
 import ExternalAppScaleModal from '../externalAppScaleModal/ExternalScalePodModal';
 import { DeploymentStatusModal } from '../DeploymentStatusModal';
+import './appDetail.css'
 
 export default function AppDetails() {
 
@@ -60,6 +60,49 @@ export default function AppDetails() {
         <DeploymentStatusModal />
         {/* <ResourceTreeNodes/> */}
         <EventsLogsTabsModal />
+        <div className="flex w-100 bcn-0 left pl-24">
+            <span className="events-logs__label"> Pods</span>
+            <div style={{ width: '200px' }}>
+                <Select
+                    placeholder='All pods'
+                    closeMenuOnSelect
+                    components={{ IndicatorSeparator: null }}
+                    styles={{
+                        // ...multiSelectStyles,
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                    }}
+                    isSearchable={false}
+                />
+            </div>
+            <span></span>
+            <div style={{ width: '200px' }}>
+                <Select
+                    placeholder='Select Environment'
+                    closeMenuOnSelect
+                    components={{ IndicatorSeparator: null }}
+                    styles={{
+                        // ...multiSelectStyles,
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                    }}
+                    isSearchable={false}
+                />
+            </div>
+            <div style={{ width: '200px' }}>
+                <Select
+                    placeholder='Select Environment'
+                    closeMenuOnSelect
+                    components={{ IndicatorSeparator: null }}
+                    styles={{
+                        // ...multiSelectStyles,
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                    }}
+                    isSearchable={false}
+                />
+            </div>
+        </div>
     </div>
     )
 }
