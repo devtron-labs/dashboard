@@ -363,7 +363,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     configName="gitops "
                 />
 
-
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
@@ -373,12 +372,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
 
-
                 <div className="mt-16 ">
                     {
                         this.state.providerTab === GitProvider.BITBUCKET && <CustomInput autoComplete="off"
                             value={this.state.form.bitBucketOrgId}
-                            onChange={(event) => this.handleChange(event, 'host')}
+                            onChange={(event) => this.handleChange(event, 'bitBucketOrgId')}
                             showLink={true}
                             link={"(How to create workspace in bitbucket?)"}
                             name="Enter workspace ID"
@@ -407,7 +405,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <CustomInput autoComplete="off"
                             value={this.state.form.username}
                             onChange={(event) => this.handleChange(event, 'username')}
-                            name="Enter username" error={this.state.isError.username}
+                            name="Enter username"
+                            error={this.state.isError.username}
                             tabIndex={3}
                             label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Username*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket Username*" : "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
