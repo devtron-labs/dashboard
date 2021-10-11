@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router'
-export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId";
-export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName";
-export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS";
+export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId"  | 'bitBucketOrgId';
+export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName" | 'bitBucketOrgId';
+export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS" | "BITBUCKET";
 
 export interface CustomGitOpsState {
     username: {
@@ -47,7 +47,7 @@ export interface GitOpsState {
     },
     validatedTime: string;
     validationError: GitOpsConfig[];
-    validationStatus:string;
+    validationStatus: string;
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
