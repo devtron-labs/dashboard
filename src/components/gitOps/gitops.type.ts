@@ -25,6 +25,7 @@ export interface GitOpsConfig {
     gitLabGroupId: string,
     gitHubOrgId: string,
     azureProjectName: string;
+    bitBucketOrgId: string;
 }
 
 
@@ -44,6 +45,7 @@ export interface GitOpsState {
         gitHubOrgId: string;
         gitLabGroupId: string;
         azureProjectName: string;
+        bitBucketOrgId: string;
     },
     validatedTime: string;
     validationError: GitOpsConfig[];

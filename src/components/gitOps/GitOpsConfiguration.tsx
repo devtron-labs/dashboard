@@ -15,7 +15,7 @@ import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
-import { ReactComponent as Bitbucket} from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -51,6 +51,7 @@ const DefaultGitOpsConfig = {
     gitHubOrgId: "",
     azureProjectName: "",
     active: true,
+    bitBucketOrgId: ""
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -58,7 +59,7 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
         case "GitHub": return <GitHub />
         case "GitLab": return <GitLab />
         case "Azure": return <Azure />
-        case "Bitbucket" : return <Bitbucket/>
+        case "Bitbucket": return <Bitbucket />
     }
 }
 
@@ -111,7 +112,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 token: "",
                 gitHubOrgId: "",
                 gitLabGroupId: "",
-                azureProjectName: ""
+                azureProjectName: "",
+                bitBucketOrgId: ""
             },
             validatedTime: "",
             validationError: [],
@@ -199,7 +201,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             token: "",
             gitHubOrgId: "",
             gitLabGroupId: "",
-            azureProjectName: ""
+            azureProjectName: "",
+            bitBucketOrgId: ""
         }
 
         let isError = {
@@ -208,7 +211,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             token: form.token.length ? "" : "This is a required field",
             gitHubOrgId: form.gitHubOrgId.length ? "" : "This is a required field",
             gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
-            azureProjectName: form.azureProjectName.length ? "" : "This is a required field"
+            azureProjectName: form.azureProjectName.length ? "" : "This is a required field",
+            bitBucketOrgId: form.bitBucketOrgId.length ? "" : "This is a required field"
         };
         return isError;
     }
@@ -316,7 +320,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         else if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
             return 'azureProjectName'
         }
-        else if(this.state.providerTab === GitProvider.BITBUCKET){
+        else if (this.state.providerTab === GitProvider.BITBUCKET) {
             return 'bitBucketOrgId'
         }
         else {
@@ -359,14 +363,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     configName="gitops "
                 />
 
+
                 <CustomInput autoComplete="off"
                     value={this.state.form.host}
                     onChange={(event) => this.handleChange(event, 'host')}
                     name="Enter host"
                     error={this.state.isError.host}
-                    label={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Organisation Url*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket API host*"  : "Git Host*"}
+                    label={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Organisation Url*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket API host*" : "Git Host*"}
                     tabIndex={1}
                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
+
+
+                <div className="mt-16 ">
+                    {
+                        this.state.providerTab === GitProvider.BITBUCKET && <CustomInput autoComplete="off"
+                            value={this.state.form.bitBucketOrgId}
+                            onChange={(event) => this.handleChange(event, 'host')}
+                            showLink={true}
+                            link={"(How to create workspace in bitbucket?)"}
+                            name="Enter workspace ID"
+                            error={this.state.isError.host}
+                            label={"Bitbucket Workspace ID*"}
+                            tabIndex={1}
+                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
+                    }
+                </div>
                 <div className="mt-16">
                     <CustomInput autoComplete="off" value={this.state.form[key]}
                         tabIndex={2}
@@ -374,7 +395,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         showLink={true}
                         link={this.state.providerTab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.providerTab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : this.state.providerTab === GitProvider.BITBUCKET ? GitLink.BITBUCKET : GitLink.GITHUB}
                         linkText={this.state.providerTab === GitProvider.GITLAB ? "(How to create group in GitLab?)" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "(How to create project in Azure?)" : this.state.providerTab === GitProvider.BITBUCKET ? "(How to create project in bitbucket?)" : "(How to create organization in GithHub?)"}
-                        label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket Project Name*"  : "GitHub Organisation Name*"}
+                        label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket Project Name*" : "GitHub Organisation Name*"}
                         onChange={(event) => { this.handleChange(event, key); }}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 </div>
@@ -388,7 +409,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             onChange={(event) => this.handleChange(event, 'username')}
                             name="Enter username" error={this.state.isError.username}
                             tabIndex={3}
-                            label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Username*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : "GithHub Username*"}
+                            label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Username*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : this.state.providerTab === GitProvider.BITBUCKET ? "Bitbucket Username*" : "GithHub Username*"}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <div>
