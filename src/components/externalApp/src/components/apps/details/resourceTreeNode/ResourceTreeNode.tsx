@@ -3,9 +3,8 @@ import GenericRowsInfo from './GenericRowsInfo';
 import NodeGroup from './NodeGroup';
 import AllPods from './AllPods';
 import { NavLink, Route, BrowserRouter as Router } from 'react-router-dom'
-import EventsLogsTabs from '../eventsLogsTabs/EventsLogsTabs';
 
-export default function ResourceTreeNode({showResourceTreeNode, setShowResourceTreeNode}) {
+export default function ResourceTreeNode() {
     return (
         <div>
             <div className="bcn-0 mt-16 pl-24 pt-16 "

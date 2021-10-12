@@ -7,14 +7,6 @@ import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../../common/MultiSelect/MutiSelectCustomisation'
 import CodeEditor from '../../../../../../CodeEditor/CodeEditor';
 
-export default function EventsLogsTabsModal() {
-    return (
-        <div className=" mt-16 ">
-            {/* <ResourceTreeTabs /> */}
-        </div>
-    )
-}
-
 export function EventsLogsTabSelector() {
     const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>();
     return (<FragmentHOC style={{ boxShadow: 'inset 0 -1px 0 0 #d0d4d9' }}>

@@ -1,7 +1,6 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
 import ResourceTreeNodes from '../resourceTreeNode/ResourceTreeNode';
-import EventsLogsTabsModal from '../eventsLogsTabs/EventsLogsTabs';
 // import { multiSelectStyles } from '../../../common/MultiSelect/MutiSelectCustomisation';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
@@ -9,14 +8,13 @@ import ExternalAppScaleModal from '../externalAppScaleModal/ExternalScalePodModa
 import { DeploymentStatusModal } from '../DeploymentStatusModal';
 import './appDetail.css'
 import CodeEditor from '../../../../../../CodeEditor/CodeEditor';
-import { EventsLogsTabSelector} from '../eventsLogsTabs/EventsLogsTabs'
+import { EventsLogsTabSelector } from '../eventsLogsTabs/EventsLogsTabs'
 import { ReactComponent as Object } from '../../../../assets/icons/ic-object.svg';
 
 
 export default function AppDetails() {
 
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
-    const [ showResourceTreeNode, setShowResourceTreeNode] = useState(false)
 
     const EnvironmentSelector = () => {
         return <div className="flex flex-justify mt-16 ml-24 mr-24 mb-16">
@@ -58,38 +56,24 @@ export default function AppDetails() {
         </div>
     }
 
-    function ResourceTreeTabs() {
+    function EventsTabsSelector() {
         const [showTabDetails, setShowTabDetails] = useState(false)
-    
-        function toggleShowDetail() {
-            setShowTabDetails(!showTabDetails)
-        }
-    
-        return <div className="mt-16">
-            <div className=" flex left ">
-                <div className="fs-13 w-200 cn-9 fw-6 br-8 pt-8 pb-8 pl-24 pr-16 cursor flex left mr-8"><Object /> K8s Resources</div>
-                <div onClick={toggleShowDetail} className="fs-13 bcn-0 w-200 en-2 bw-1 cn-9 flex left  fw-6 br-8 pt-8 pb-8 pl-16 pr-16 cursor"><Object />Logs Analzer</div>
-            </div>
-            {showTabDetails && <div className="bcn-0">
-                <EventsLogsTabSelector />
-            </div>
-            }
-        </div>
-    }
+        const [showResourceTreeNode, setShowResourceTreeNode] = useState(false)
 
+        return <> <div className=" flex left mt-16">
+            <div onClick={(e) => { setShowResourceTreeNode(true); setShowTabDetails(false) }} className="fs-13 w-200 cn-9 fw-6 br-8 pt-8 pb-8 pl-24 pr-16 cursor flex left mr-8"><Object /> K8s Resources</div>
+            <div onClick={(e) => { setShowTabDetails(true); setShowResourceTreeNode(false) }} className="fs-13 bcn-0 w-200 en-2 bw-1 cn-9 flex left  fw-6 br-8 pt-8 pb-8 pl-16 pr-16 cursor"><Object />Logs Analzer</div>
+        </div>
+            {showTabDetails ? <EventsLogsTabSelector /> : null}
+            {showResourceTreeNode ? <ResourceTreeNodes /> : null}
+        </>
+
+    }
 
     return (<div style={{ overflowY: "auto", height: "100%" }}>
         <EnvironmentSelector />
         <DeploymentStatusModal />
-        <ResourceTreeTabs />
-
-      { showResourceTreeNode &&  <ResourceTreeNodes
-      showResourceTreeNode={showResourceTreeNode}
-      setShowResourceTreeNode={setShowResourceTreeNode}
-      />}
-        <EventsLogsTabsModal />
-       
-
+        <EventsTabsSelector />
     </div>
     )
 }
