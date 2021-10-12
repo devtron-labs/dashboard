@@ -8,14 +8,8 @@ import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
-import { ValidatingForm } from '../common/ValidateForm/ValidateForm';
+import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 
-export enum VALIDATION_STATUS {
-    SUCCESS = 'SUCCESS',
-    FAILURE = 'FAILURE',
-    LOADER = 'LOADER',
-    DRY_RUN= 'DRY_RUN'
-};
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -208,7 +202,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            < ValidatingForm
+            < ValidateForm
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
@@ -222,7 +216,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
             </div>
             <div className="form__label">Authentication type*</div>
-            <div className="form__row form__row--auth-type pointer">
+            <div className="form__row form__row--auth-type pl-12 pointer">
                 {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
                         <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}

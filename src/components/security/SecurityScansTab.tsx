@@ -112,7 +112,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     this.setState({ searchObjectValue: event.target.value });
   }
 
-  handleFilterChange(filterType, selections:any): void {
+  handleFilterChange(filterType, selections: any): void {
     let filtersApplied = {
       ...this.state.filtersApplied,
       [filterType]: selections || [],
@@ -191,9 +191,9 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   }
 
   changePage(newPageNo: number): void {
+    let newOffset = (this.state.pageSize * (newPageNo - 1));
     let searchStr = new URLSearchParams(this.props.location.search);
     let pageSize = searchStr.get('size');
-    let newOffset = Number(pageSize) * newPageNo;
     let newSearchStr = '';
     if (newOffset) newSearchStr = `offset=${newOffset}`;
     if (pageSize) newSearchStr = `${newSearchStr}&&size=${pageSize}`;
@@ -202,7 +202,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
 
   changePageSize(newPageSize: number): void {
     let searchStr = new URLSearchParams(this.props.location.search);
-    let offset = searchStr.get('offset');
+     let offset = searchStr.get('offset');
     let newSearchStr = `size=${newPageSize}`;
     if (offset) newSearchStr = `offset=${offset}&&${newSearchStr}`;
     this.props.history.push(`${this.props.match.url}?${newSearchStr}`);
@@ -329,7 +329,8 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
 
   renderPagination() {
     if (this.state.size > 20) {
-      return <Pagination size={this.state.size}
+      return <Pagination
+        size={this.state.size}
         pageSize={this.state.pageSize}
         offset={this.state.offset}
         changePage={this.changePage}
