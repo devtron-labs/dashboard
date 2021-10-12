@@ -29,8 +29,6 @@ export function EventsLogsTabSelector() {
                     }
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: 'none', backgroundColor: 'transparent' }),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
                     }}
                     isSearchable={false}
                 />
@@ -40,7 +38,10 @@ export function EventsLogsTabSelector() {
                 <Select
                     placeholder='Select Container'
                     closeMenuOnSelect
-                    components={{ IndicatorSeparator: null }}
+                    components={{ 
+                        IndicatorSeparator: null 
+                        // ClearIndicator: null,
+                    }}
                     options={
                         [
                             { label: "demo-1", value: "demo-1" },
@@ -49,9 +50,7 @@ export function EventsLogsTabSelector() {
                         ]
                     }
                     styles={{
-                        // ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: 'none', backgroundColor: 'transparent' }),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                        ...multiSelectStyles,
                     }}
                     isSearchable={false}
                 />
@@ -61,7 +60,7 @@ export function EventsLogsTabSelector() {
         <div>
             <CodeEditor
                 theme='vs-gray--dt'
-                height={400}
+                height={490}
                 // value={this.state.codeEditorPayload}
                 mode="yaml"
             // onChange={(event) => { this.handleConfigChange(event) }}

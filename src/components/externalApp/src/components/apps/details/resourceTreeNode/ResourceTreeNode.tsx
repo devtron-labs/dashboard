@@ -7,7 +7,7 @@ import { NavLink, Route, BrowserRouter as Router } from 'react-router-dom'
 export default function ResourceTreeNode() {
     return (
         <div>
-            <div className="bcn-0 mt-16 pl-24 pt-16 "
+            <div className="bcn-0 pl-24 pt-16 "
                 style={{
                     width: '100%',
                     display: 'grid',
