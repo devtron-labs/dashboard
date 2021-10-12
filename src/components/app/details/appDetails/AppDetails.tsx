@@ -63,10 +63,11 @@ import {
     NodeDetailTabsType,
     AppDetails,
 } from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites } from './utils';
+import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
+import { Interface } from 'readline';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -397,9 +398,12 @@ const NodeDetails: React.FC<{
     describeNode: (name: string, containerName?: string) => void;
 }> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
     const [selectedNode, selectNode] = useState<string>(null);
+    const [selectedNodes, setSelectNode] = useState<string>(null);
+    const [nodeItems, setNodeItems] = useState([]);
     const [selectedContainer, selectContainer] = useState(null);
     const { searchParams } = useSearchString()
     const [logsPaused, toggleLogStream] = useState(false);
+    const [logsCleared, setLogsCleared] = useState(false);
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
@@ -408,14 +412,28 @@ const NodeDetails: React.FC<{
 
     const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
 
-    useEffect(() => {
-        if (nodeName && nodeName !== selectedNode) {
-            selectNode(nodeName);
-            if (containerName && containerName !== selectedContainer) {
-                selectContainer(containerName);
+    const kind: Nodes = searchParams.kind as Nodes
+
+    const nodesMap = nodes.nodes[kind] || new Map();
+
+    let allNodes = [];
+    if (nodeItems.length < 1 && Array.from(nodesMap).length > 0) {
+        allNodes = Array.from(nodesMap).map(([name]) => (
+            {
+                label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
+                value: name,
             }
-            else {
-                selectContainer(null);
+        ))
+        setNodeItems(allNodes)
+    }
+
+    useEffect(() => {
+        if (nodeName) {
+            selectNode(nodeName);
+            setSelectNode(nodeName);
+            let container = nodesMap.get(nodeName)?.containers
+            if (container.length < 2) {
+                selectContainer(container[0])
             }
         }
         else {
@@ -441,14 +459,15 @@ const NodeDetails: React.FC<{
         //select pod
         const kind: Nodes = searchParams.kind as Nodes || params.kind as Nodes
         const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
-        if (node && node.length && node[1].name) {
+        if (node && node.length >= 2 && node[1].name) {
             selectNode(node[1].name);
+            setSelectNode(node[1].name);
         }
     }, [params.tab])
 
     useEffect(() => {
         if (!selectedNode) return
-        if ((params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
+        if ((params.tab === NodeDetailTabs.LOGS) || (params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
@@ -466,6 +485,7 @@ const NodeDetails: React.FC<{
     function handleLogsPause(paused: boolean) {
         toggleLogStream(paused);
     }
+
     return (
         <>
             <ResourceTreeNodes
@@ -483,23 +503,34 @@ const NodeDetails: React.FC<{
                 anchor={params.kind ? <EventsLogsTabSelector /> : null}
             >
                 <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
-                    <NodeSelectors showOldOrNewSuffix={isAppDeployment}
+                    <NodeSelectors
+                        isAppDeployment={isAppDeployment}
+                        selectedContainer={selectedContainer}
                         logsPaused={logsPaused}
+                        logsCleared={logsCleared}
                         socketConnection={socketConnection}
                         containerName={selectedContainer}
                         nodeName={selectedNode}
+                        selectedNodes={selectedNodes}
+                        nodeItems={nodeItems}
                         nodes={nodes}
                         shell={shell}
                         isReconnection={isReconnection}
                         setIsReconnection={setIsReconnection}
+                        setLogsCleared={setLogsCleared}
                         selectShell={selectShell}
                         setSocketConnection={setSocketConnection}
                         setTerminalCleared={setTerminalCleared}
                         handleLogsPause={handleLogsPause}
                         selectNode={selectNode}
+                        setSelectNode={setSelectNode}
                         selectContainer={selectContainer}
                     />
                     <EventsLogs nodeName={selectedNode}
+                        isAppDeployment={isAppDeployment}
+                        selectedLogsNode={selectedNodes}
+                        nodeItems={nodeItems}
+                        logsCleared={logsCleared}
                         nodes={nodes}
                         appDetails={appDetails}
                         containerName={selectedContainer}
@@ -679,15 +710,25 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
     );
 }
 
+interface NodeItems {
+    label: string;
+    value: string;
+}
+
 interface NodeSelectors {
     logsPaused: boolean;
+    logsCleared: boolean;
     socketConnection: SocketConnectionType;
     nodeName?: string;
+    selectedNodes?: string;
+    isAppDeployment?: boolean;
     containerName?: string;
-    showOldOrNewSuffix?: boolean;
+    selectedContainer?: string;
     nodes: AggregatedNodes;
     shell: { label: string; value: string };
     isReconnection: boolean;
+    nodeItems: NodeItems[];
+    setSelectNode: (flag) => void;
     setIsReconnection: (flag) => void;
     selectShell: (shell: { label: string; value: string }) => void;
     setTerminalCleared: (flag: boolean) => void;
@@ -695,24 +736,31 @@ interface NodeSelectors {
     selectNode: (nodeName: string) => void;
     selectContainer: (containerName: string) => void;
     setSocketConnection: (value: SocketConnectionType) => void;
+    setLogsCleared: (e: any) => void;
     children?: any;
 }
 export const NodeSelectors: React.FC<NodeSelectors> = ({
     logsPaused = false,
     socketConnection = true,
     nodeName,
+    selectedNodes,
     nodes,
     containerName,
-    showOldOrNewSuffix = false,
+    selectedContainer,
     shell,
     isReconnection,
+    nodeItems,
+    logsCleared,
+    isAppDeployment,
     setIsReconnection,
     selectShell,
     setTerminalCleared,
     handleLogsPause = null,
     setSocketConnection,
     selectNode,
+    setSelectNode,
     selectContainer,
+    setLogsCleared,
     children = null,
 }) => {
     const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs, showOldOrNewSuffix }>();
@@ -729,11 +777,32 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     const nodesMap = nodes.nodes[kind] || new Map();
 
-    let containers =
-        (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.containers : null;
+    let containers = [];
+    let initContainers = [];
+    let selectedNodesItem = [];
+    if (selectedNodes) {
+        selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind);
+    }
 
-    let initContainers =
-        (kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(nodeName) ? nodesMap.get(nodeName)?.initContainers : null;
+    if (selectedNodesItem) {
+        selectedNodesItem.forEach((item) => {
+            if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
+                containers.push(nodesMap.get(item.value)?.containers)
+                initContainers.push(nodesMap.get(item.value)?.initContainers)
+            } else {
+                containers.push(null)
+                initContainers.push(null)
+            }
+        })
+    }
+
+    const additionalOptions = [{ label: "All pods", value: "All pods" }, { label: "All new pods", value: "All new pods" }, { label: "All old pods", value: "All old pods" }]
+    let options = [];
+    if (nodeItems.length > 1) {
+        options = additionalOptions.concat(nodeItems);
+    } else {
+        options = nodeItems;
+    }
 
     if (!containers) {
         containers = []
@@ -744,16 +813,34 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     if (params.tab === NodeDetailTabs.TERMINAL) initContainers = [];
 
-    let allContainers = containers.concat(initContainers);
+    let total = containers.concat(initContainers);
+    let allContainers = total.filter(item => !!item);
 
-    function getPodNameSuffix(nodeName: string) {
-        if (Nodes.Pod !== kind || !showOldOrNewSuffix) return ''
-        if (!nodesMap.has(nodeName)) return ''
-        const pod = nodesMap.get(nodeName)
-        return pod.isNew ? '(new)' : '(old)'
+    allContainers.forEach((item) => {
+        if (item.length < 2) {
+            let contAvailable = allContainers[0]
+            if (contAvailable && !selectedContainer) {
+                selectContainer(contAvailable[0])
+            }
+        } else {
+            if (!selectedContainer) {
+                selectContainer(null)
+            }
+        }
+    })
+
+    function selectPod(selected) {
+        setSelectNode((selected as any).value);
+        onLogsCleared();
+    }
+
+    function onLogsCleared() {
+        setLogsCleared(true);
+        setTimeout(() => setLogsCleared(false), 1000);
     }
 
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
+    let podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName;
     return <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
         {params.tab === NodeDetailTabs.TERMINAL && <>
             <div className={`flex mr-12`}>
@@ -782,11 +869,18 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
                 >
                     <div
-                        className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
+                        className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`}
                         onClick={(e) => handleLogsPause(!logsPaused)}
                     >
                         {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
                     </div>
+                </Tippy>
+
+                <Tippy className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={'Clear'} >
+                    <Abort className="icon-dim-20 mr-16 ml-8" onClick={() => onLogsCleared()} />
                 </Tippy>
                 <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
             </>
@@ -796,17 +890,23 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
             <div style={{ width: '175px', zIndex: 1000 }}>
                 <Select
                     placeholder={`Select ${kind}`}
-                    options={Array.from(nodesMap).map(([name, data]) => ({
-                        label: name + getPodNameSuffix(name),
+                    name="pods"
+                    value={podItems ? { label: podItems + getPodNameSuffix(podItems, isAppDeployment, nodesMap, kind), value: podItems } : null}
+                    options={params.tab?.toLowerCase() == 'logs' ? options : Array.from(nodesMap).map(([name, data]) => ({
+                        label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
                         value: name,
-                    }))}
-                    value={nodeName ? { label: nodeName + getPodNameSuffix(nodeName), value: nodeName } : null}
+                    }))} closeOnSelect={false}
                     onChange={(selected) => {
-                        selectNode((selected as any).value);
+                        params.tab?.toLowerCase() == 'logs' ?
+                            selectPod(selected) : selectNode((selected as any).value);
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option,
                     }}
                     styles={{
                         ...multiSelectStyles,
-                        menu: (base) => ({ ...base, zIndex: 12 }),
+                        menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
                         control: (base, state) => ({
                             ...base,
                             backgroundColor: 'transparent',
@@ -828,12 +928,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
                             direction: 'rtl',
-                            
+
                         }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
                     }}
                 />
             </div>
@@ -845,14 +941,15 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     <span className="events-logs__label">Containers</span>
                     <div style={{ width: '175px' }}>
                         <Select placeholder="Select Container"
-                            options={allContainers.map((container) => ({ label: container, value: container }))}
+                            options={allContainers[0] && allContainers[0].map((container) => ({ label: container, value: container }))}
                             value={containerName ? { label: containerName, value: containerName } : null}
                             onChange={(selected) => {
                                 selectContainer((selected as any).value);
+                                onLogsCleared();
                             }}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 12 }),
+                                menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
                                 control: (base, state) => ({
                                     ...base,
                                     backgroundColor: 'transparent',
