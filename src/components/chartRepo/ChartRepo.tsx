@@ -216,7 +216,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
             </div>
             <div className="form__label">Authentication type*</div>
-            <div className="form__row form__row--auth-type pointer">
+            <div className="form__row form__row--auth-type pl-12 pointer">
                 {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
                         <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}

@@ -21,7 +21,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             providers: [],
         }
         this.isGitProviderValid = this.isGitProviderValid.bind(this);
-        this.isGitUrlValid = this.isGitUrlValid.bind(this);
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this);
         this.refreshMaterials = this.refreshMaterials.bind(this);
     }
@@ -91,14 +90,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         }
     }
 
-    isGitUrlValid(url: string): string | undefined {
-        if (!url.length) return "This is a required field"
-
-        if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
-
-        return undefined;
-    }
-
     isGitProviderValid(provider) {
         if (provider && provider.id) return undefined;
 
@@ -126,7 +117,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     isMultiGit={this.state.materials.length > 0}
                     providers={this.state.providers}
                     refreshMaterials={this.refreshMaterials}
-                    isGitUrlValid={this.isGitUrlValid}
                     isGitProviderValid={this.isGitProviderValid}
                     isCheckoutPathValid={this.isCheckoutPathValid}
                     isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
@@ -137,7 +127,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         providers={this.state.providers}
                         material={mat}
                         refreshMaterials={this.refreshMaterials}
-                        isGitUrlValid={this.isGitUrlValid}
                         isGitProviderValid={this.isGitProviderValid}
                         isCheckoutPathValid={this.isCheckoutPathValid}
                         isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
