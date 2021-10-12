@@ -1,7 +1,7 @@
 import React from 'react';
 import Select, {components} from 'react-select'
 // import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-appstatus-cancelled.svg'
-// import {ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg';
+import {ReactComponent as Check } from '../../../assets/icons/ic-check.svg';
 // import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
 export const Option = props => {
@@ -14,21 +14,21 @@ export const Option = props => {
     );
 };
 
-// export const SingleSelectOption = (props) => {
-//     const { selectOption, data } = props;
-//     const style={height: '16px', width: '16px', flex: '0 0 16px'}
-//     const onClick = (e) => selectOption(data);
-//     return (
-//         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-//             {props.isSelected ? (
-//                 <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
-//             ) : (
-//                 <span onClick={onClick}  className="mr-8" style={style} />
-//             )}
-//             <components.Option {...props} />
-//         </div>
-//     );
-// };
+export const SingleSelectOption = (props) => {
+    const { selectOption, data } = props;
+    const style={height: '16px', width: '16px', flex: '0 0 16px'}
+    const onClick = (e) => selectOption(data);
+    return (
+        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+            {props.isSelected ? (
+                <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
+            ) : (
+                <span onClick={onClick}  className="mr-8" style={style} />
+            )}
+            <components.Option {...props} />
+        </div>
+    );
+};
 
 // export const MultiValueContainer = props => {
 //     const { children, data, innerProps, selectProps } = props
@@ -84,30 +84,30 @@ export const Option = props => {
 //     );
 // };
 
-// export const multiSelectStyles = {
-//     control: (base, state) => ({
-//         ...base,
-//         cursor: state.isDisabled ? 'not-allowed' : 'normal',
-//         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-//         boxShadow: 'none',
-//         height: '100%'
-//     }),
-//     menu: (base, state) => ({
-//         ...base,
-//         top: `40px`,
-//     }),
-//     option: (base, state) => {
-//         return ({
-//             ...base,
-//             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-//             color: 'var(--N900)',
-//         })
-//     },
-//     container: (base, state)=>({
-//         ...base,
-//         cursor: state.isDisabled ? 'not-allowed' : 'normal'
-//     })
-// }
+export const multiSelectStyles = {
+    control: (base, state) => ({
+        ...base,
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+        boxShadow: 'none',
+        height: '100%'
+    }),
+    menu: (base, state) => ({
+        ...base,
+        top: `40px`,
+    }),
+    option: (base, state) => {
+        return ({
+            ...base,
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            color: 'var(--N900)',
+        })
+    },
+    container: (base, state)=>({
+        ...base,
+        cursor: state.isDisabled ? 'not-allowed' : 'normal'
+    })
+}
 
 // interface CustomSelect{
 //     sortSelected?: boolean;

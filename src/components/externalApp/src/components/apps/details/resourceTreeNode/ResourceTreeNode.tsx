@@ -5,7 +5,7 @@ import AllPods from './AllPods';
 import { NavLink, Route, BrowserRouter as Router } from 'react-router-dom'
 import EventsLogsTabs from '../eventsLogsTabs/EventsLogsTabs';
 
-export default function ResourceTreeNode() {
+export default function ResourceTreeNode({showResourceTreeNode, setShowResourceTreeNode}) {
     return (
         <div>
             <div className="bcn-0 mt-16 pl-24 pt-16 "
