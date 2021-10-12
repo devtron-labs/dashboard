@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router'
-export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId"  | "bitBucketOrgId" | "bitBucketProjectName";
-export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName" | "bitBucketOrgId" | "bitBucketProjectName";
+export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId"  | "bitBucketWorkspaceId" | "bitBucketProjectName";
+export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName" | "bitBucketWorkspaceId" | "bitBucketProjectName";
 export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS" | "BITBUCKET";
 
 export interface CustomGitOpsState {
@@ -25,7 +25,7 @@ export interface GitOpsConfig {
     gitLabGroupId: string,
     gitHubOrgId: string,
     azureProjectName: string;
-    bitBucketOrgId: string;
+    bitBucketWorkspaceId: string;
     bitBucketProjectName: string;
 }
 
@@ -46,7 +46,7 @@ export interface GitOpsState {
         gitHubOrgId: string;
         gitLabGroupId: string;
         azureProjectName: string;
-        bitBucketOrgId: string;
+        bitBucketWorkspaceId: string;
         bitBucketProjectName: string;
     },
     validatedTime: string;
