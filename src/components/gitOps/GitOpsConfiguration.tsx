@@ -361,7 +361,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" saveLoading={this.state.saveLoading} />
                     <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" saveLoading={this.state.saveLoading} />
                     <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" saveLoading={this.state.saveLoading} />
-                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.BITBUCKET} gitops="BitBucket" saveLoading={this.state.saveLoading} />
+                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.BITBUCKET} gitops="Bitbucket" saveLoading={this.state.saveLoading} />
                 </div>
                 <GitInfoTab
                     tab={this.state.providerTab}
