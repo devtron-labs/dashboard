@@ -53,7 +53,7 @@ const DefaultGitOpsConfig = {
     azureProjectName: "",
     active: true,
     bitBucketWorkspaceId: "",
-    bitBucketProjectName: ""
+    bitBucketProjectKey: ""
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -116,7 +116,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitLabGroupId: "",
                 azureProjectName: "",
                 bitBucketWorkspaceId: "",
-                bitBucketProjectName: ""
+                bitBucketProjectKey: ""
             },
             validatedTime: "",
             validationError: [],
@@ -206,7 +206,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: "",
             azureProjectName: "",
             bitBucketWorkspaceId: "",
-            bitBucketProjectName: ""
+            bitBucketProjectKey: ""
         }
 
         let isError = {
@@ -266,7 +266,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitHubOrgId: this.state.form.gitHubOrgId,
             azureProjectName: this.state.form.azureProjectName,
             bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectName : this.state.form.bitBucketProjectName,
+            bitBucketProjectKey : this.state.form.bitBucketProjectKey,
             active: true,
         }
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
@@ -304,23 +304,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitHubOrgId: this.state.form.gitHubOrgId,
             azureProjectName: this.state.form.azureProjectName,
             bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectName : this.state.form.bitBucketProjectName,
+            bitBucketProjectKey : this.state.form.bitBucketProjectKey,
             active: true,
         }
         let promise = validateGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
             let validate = resp.stageErrorMap
-            console.log(Object.keys(validate).length)
-            console.log(validate.length)
-            console.log(validate!=null)
-            if (validate != null && validate.length > 0) {
+            if (validate != null && Object.keys(validate).length > 0) {
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
+                toast.error("Configuration validation failed");
+            } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
 
                 toast.success("Configuration validated");
-            } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
-                toast.error("Configuration validation failed");
             }
         }).catch((error) => {
             showError(error);
@@ -336,7 +333,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return 'azureProjectName'
         }
         else if (this.state.providerTab === GitProvider.BITBUCKET) {
-            return 'bitBucketProjectName'
+            return 'bitBucketProjectKey'
         }
         else {
             return 'gitHubOrgId'
