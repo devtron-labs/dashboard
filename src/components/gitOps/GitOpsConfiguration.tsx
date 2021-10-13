@@ -8,6 +8,7 @@ import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
 import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
 import Check from '../../assets/icons/ic-outline-check.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg';
+import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
@@ -80,11 +81,12 @@ const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => vo
 
 
 const GitInfoTab: React.FC<{ tab: string, gitLink: string, title: string }> = ({ tab, gitLink, title }) => {
+    const value = title.split(" ");
     return <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
         <div className="flex left ">
             <Info className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
-                <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> Group for gitops. Do not use GitLab Group containing your source code.
+                <span className="fw-6 text-capitalize">Important: </span>Please create a new <span className="text-lowercase">{tab.split("_", 1)}</span> {value[0]} for gitops. Do not use {value[2]} {value[0]} containing your source code.
        </div>
         </div>
         <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">How to create {title} ?</a>
@@ -410,6 +412,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         onChange={(event) => { this.handleChange(event, key); }}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                 </div>
+                {this.state.providerTab === GitProvider.BITBUCKET &&
+                <div className="mt-4 flex left">
+                   <InfoFill className="icon-dim-16" />
+                   <span className="ml-4 fs-11">If the project is not provided, the repository is automatically assigned to the oldest project in the workspace.</span>
+                </div>
+                }
                 <hr />
                 <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
 
