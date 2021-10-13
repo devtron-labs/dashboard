@@ -241,8 +241,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         else if (this.state.providerTab === GitProvider.BITBUCKET){
        
                 isInvalid = isInvalid || isError.bitBucketWorkspaceId?.length > 0
-                isInvalid = isInvalid || isError.bitBucketProjectName?.length > 0
-
         }
         else {
             isInvalid = isInvalid || isError.azureProjectName?.length > 0
@@ -312,7 +310,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = validateGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            let validate = resp.successfulStages ? resp.successfulStages : []
+            let validate = resp.stageErrorMap
+            console.log(Object.keys(validate).length)
+            console.log(validate.length)
+            console.log(validate!=null)
             if (validate != null && validate.length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
 
