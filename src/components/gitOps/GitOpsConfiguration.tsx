@@ -117,8 +117,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitHubOrgId: "",
                 gitLabGroupId: "",
                 azureProjectName: "",
-                bitBucketWorkspaceId: "",
-                bitBucketProjectKey: ""
+                bitBucketWorkspaceId: ""
             },
             validatedTime: "",
             validationError: [],
@@ -208,7 +207,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: "",
             azureProjectName: "",
             bitBucketWorkspaceId: "",
-            bitBucketProjectKey: ""
         }
 
         let isError = {

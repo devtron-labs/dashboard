@@ -47,7 +47,6 @@ export interface GitOpsState {
         gitLabGroupId: string;
         azureProjectName: string;
         bitBucketWorkspaceId: string;
-        bitBucketProjectKey: string;
     },
     validatedTime: string;
     validationError: GitOpsConfig[];
