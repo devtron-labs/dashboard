@@ -9,6 +9,8 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg';
+import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ClusterComponentModal } from './ClusterComponentModal';
 import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
@@ -24,6 +26,17 @@ const ErrorInfo: React.FC<{ title: string }> = ({ title }) => {
             <Warning className="icon-dim-20 fcr-7" />
             <div className="ml-8 fs-13">
                 <span className="fw-6 text-capitalize">{title}: </span>Prometheus configuration will be removed and you won’t be able to see metrics for applications deployed in this cluster.
+       </div>
+        </div>
+    </div>
+}
+
+const RequiredInfo = () => {
+    return <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
+        <div className="flex left align-start">
+            <Error className="icon-dim-20" />
+            <div className="ml-8 fs-13">
+                Fill all the required fields OR turn off the above switch to skip configuring prometheus.
        </div>
         </div>
     </div>
@@ -218,7 +231,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
-    const [toggleEnabled, setToggleEnabled] = useState(prometheus_url? true : false);
+    const [toggleEnabled, setToggleEnabled] = useState(prometheus_url ? true : false);
     const [showWarn, setShowWarn] = useState(false);
     const [authenucation, setAuthenucation] = useState({ type: 'ANONYMOUS' });
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
@@ -363,7 +376,10 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     }
 
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-        <h2 className="form__title">{clusterTitle()}</h2>
+        <div className="flex left align-start mb-20"> 
+        <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+        <span className="fw-6 fs-14 cb-5 ml-10">{clusterTitle()}</span>
+        </div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
@@ -377,7 +393,9 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <div className="bearer-token">
                 <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
             </div>
-            {state.token.error && <label htmlFor="" className="form__error">{state.token.error}</label>}
+            {state.token.error && <label htmlFor="" className="form__error">
+                <FormError className="form__icon form__icon--error" />
+                {state.token.error}</label>}
         </div>
         <hr></hr>
         <div className={`${toggleEnabled ? 'mb-20' : showWarn ? 'mb-20' : 'mb-40'} mt-20`}>
@@ -389,12 +407,17 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
         </div>
-        {showWarn && !toggleEnabled &&
+        {showWarn && !toggleEnabled && prometheus_url && state.endpoint.value != prometheus_url &&
             <ErrorInfo title="Warning" />
         }
         {toggleEnabled &&
             <div className=''>
-                <div className="form__input-header mb-8">Prometheus Info</div>
+                {!toggleEnabled &&
+                    <div className="form__input-header mb-8">Prometheus Info</div>
+                }
+                {(state.userName.error || state.password.error || state.endpoint.error) &&
+                    <RequiredInfo />
+                }
                 <div className="form__row">
                     <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
                 </div>
