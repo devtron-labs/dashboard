@@ -13,6 +13,7 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
+import { node } from 'prop-types';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -257,6 +258,41 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
         url = `${url}/devtron-app-metrics-`;
     }
     return url;
+}
+
+export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean,nodesMap: any, kind: string ): string {
+    if (Nodes.Pod !== kind || !isAppDeployment) return ''
+    if (!nodesMap.has(nodeName)) return ''
+    const pod = nodesMap.get(nodeName)
+    return pod.isNew ? '(new)' : '(old)'
+}
+
+interface NodeItems {
+    label : string;
+    value : string;
+}
+
+interface SelectedNodeItems {
+    label : string;
+    value : string;
+}
+
+export function getSelectedNodeItems(selectedNodes: string, nodeItems: NodeItems[], isAppDeployment: boolean,nodesMap: any, kind: string): SelectedNodeItems[] {
+    let selectedNodeItems= [];
+        if(selectedNodes == "All pods"){
+            selectedNodeItems = nodeItems
+        } else if (selectedNodes == "All new pods"){
+            const result = nodeItems.filter(item => item.label.includes("(new)"));
+            selectedNodeItems = result
+        } else if (selectedNodes == "All old pods"){
+            const result = nodeItems.filter(item => item.label.includes("(old)"));
+            selectedNodeItems = result
+        } else {
+            let initialNode = { label: selectedNodes + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind), value: selectedNodes }
+            selectedNodeItems.push(initialNode)
+        }
+
+    return selectedNodeItems;
 }
 
 export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, chartName: ChartTypes, statusCode?: string): string {
