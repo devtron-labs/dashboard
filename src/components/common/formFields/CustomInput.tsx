@@ -47,7 +47,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 onChange={e => { e.persist(); this.props.onChange(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
-            {this.props.error && this.props.label != "Bitbucket Project Key" && <div className="form__error">
+            {this.props.error && <div className="form__error">
                 <Error className="form__icon form__icon--error" />
                 {this.props.error}
             </div>}

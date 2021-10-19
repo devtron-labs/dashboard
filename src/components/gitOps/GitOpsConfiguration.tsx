@@ -116,7 +116,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitHubOrgId: "",
                 gitLabGroupId: "",
                 azureProjectName: "",
-                bitBucketWorkspaceId: ""
+                bitBucketWorkspaceId: "",
+                bitBucketProjectKey: ""
             },
             validatedTime: "",
             validationError: [],
@@ -206,6 +207,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: "",
             azureProjectName: "",
             bitBucketWorkspaceId: "",
+            bitBucketProjectKey: ""
         }
 
         let isError = {
@@ -216,6 +218,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
             azureProjectName: form.azureProjectName.length ? "" : "This is a required field",
             bitBucketWorkspaceId: form.bitBucketWorkspaceId.length ? "" : "This is a required field",
+            bitBucketProjectKey: ""
         };
         return isError;
     }
