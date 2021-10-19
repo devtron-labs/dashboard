@@ -232,7 +232,6 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
     const [toggleEnabled, setToggleEnabled] = useState(prometheus_url ? true : false);
-    const [showWarn, setShowWarn] = useState(false);
     const [authenucation, setAuthenucation] = useState({ type: 'ANONYMOUS' });
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
 
@@ -363,7 +362,6 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
 
     const setToggle = () => {
         setToggleEnabled(!toggleEnabled)
-        setShowWarn(true);
     }
 
     const onTabChange = (e) => {
@@ -376,9 +374,9 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     }
 
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-        <div className="flex left align-start mb-20"> 
-        <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
-        <span className="fw-6 fs-14 cb-5 ml-10">{clusterTitle()}</span>
+        <div className="flex left align-start mb-20">
+            <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+            <span className="fw-6 fs-14 cb-5 ml-10">{clusterTitle()}</span>
         </div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
@@ -398,7 +396,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 {state.token.error}</label>}
         </div>
         <hr></hr>
-        <div className={`${toggleEnabled ? 'mb-20' : showWarn ? 'mb-20' : 'mb-40'} mt-20`}>
+        <div className={`${toggleEnabled ? 'mb-20' : (prometheus_url && state.endpoint.value != prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
                 <div className="" style={{ width: "24px", height: "15px" }}>
@@ -407,7 +405,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
         </div>
-        {showWarn && !toggleEnabled && prometheus_url && state.endpoint.value != prometheus_url &&
+        {!toggleEnabled && prometheus_url && state.endpoint.value != prometheus_url &&
             <ErrorInfo title="Warning" />
         }
         {toggleEnabled &&
