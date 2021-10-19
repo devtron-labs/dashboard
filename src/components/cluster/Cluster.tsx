@@ -376,7 +376,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
         <div className="flex left mb-20">
             {id ?
-                <Pencil color="#b1b7bc" className="icon-dim-24 vertical-align-middle" /> :
+                <Pencil color="#363636" className="icon-dim-24 vertical-align-middle" /> :
                 <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
             }
             <span className={`${!id ? 'cb-5': ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
