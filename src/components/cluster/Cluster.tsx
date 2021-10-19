@@ -218,7 +218,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
-    const [toggleEnabled, setToggleEnabled] = useState(false);
+    const [toggleEnabled, setToggleEnabled] = useState(prometheus_url? true : false);
     const [showWarn, setShowWarn] = useState(false);
     const [authenucation, setAuthenucation] = useState({ type: 'ANONYMOUS' });
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
