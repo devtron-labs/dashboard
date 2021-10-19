@@ -374,15 +374,16 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     }
 
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-        <div className="flex left align-start mb-20">
-            <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
-            <span className="fw-6 fs-14 cb-5 ml-10">{clusterTitle()}</span>
+        <div className="flex left mb-20">
+            {id ?
+                <Pencil color="#b1b7bc" className="icon-dim-24 vertical-align-middle" /> :
+                <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+            }
+            <span className={`${!id ? 'cb-5': ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
         </div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
-        <hr></hr>
-        <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
@@ -396,16 +397,16 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 {state.token.error}</label>}
         </div>
         <hr></hr>
-        <div className={`${toggleEnabled ? 'mb-20' : (prometheus_url && state.endpoint.value != prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
+        <div className={`${toggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
-                <div className="" style={{ width: "24px", height: "15px" }}>
+                <div className="" style={{ width: "32px", height: "20px" }}>
                     <Toggle selected={toggleEnabled} onSelect={setToggle} />
                 </div>
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
         </div>
-        {!toggleEnabled && prometheus_url && state.endpoint.value != prometheus_url &&
+        {!toggleEnabled && prometheus_url &&
             <ErrorInfo title="Warning" />
         }
         {toggleEnabled &&
