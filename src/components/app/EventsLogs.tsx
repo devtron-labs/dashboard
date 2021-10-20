@@ -407,19 +407,19 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage="Select a pod to view logs" />
                 </>
             )}
-            {nodeName && !containerName && selectedNodesItem.length > 0 && (
+            {nodeName && !containerName && selectedNodesItem?.length > 0 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoContainer style={{ gridColumn: '1 / span 2' }} selectMessage="Select a container to view logs" />
                 </>
             )}
-             {selectedNodesItem.length < 1 && (
+             {selectedNodesItem?.length < 1 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
                 </>
             )}
-            {nodeName && containerName && selectedNodesItem.length > 0 && (
+            {nodeName && containerName && selectedNodesItem?.length > 0 && (
                 <>
                     <div data-testid="log-viewer-container" className="flex right" style={{ background: '#2c3354' }}>
                         <form
