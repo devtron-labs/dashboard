@@ -248,7 +248,10 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
             disabled={disabled}
         />
         {handleError(error).map((err) => (
-            <div className="form__error">{err}</div>
+            <div className="form__error">
+             <FormError className="form__icon form__icon--error" />
+                {err}
+            </div>
         ))}
     </div>
 }
