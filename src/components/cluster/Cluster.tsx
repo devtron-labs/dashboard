@@ -360,11 +360,11 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         }
     }
 
-    const setToggle = () => {
+    const setPrometheusToggle = () => {
         setPrometheusToggleEnabled(!prometheusToggleEnabled)
     }
 
-    const onTabChange = (e) => {
+    const OnPrometheusAuthTypeChange = (e) => {
         handleOnChange(e);
         if (state.authType.value == AuthenticationType.BASIC) {
             setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS });
@@ -401,7 +401,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
                 <div className="" style={{ width: "32px", height: "20px" }}>
-                    <Toggle selected={prometheusToggleEnabled} onSelect={setToggle} />
+                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
                 </div>
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
@@ -419,7 +419,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 </div>
                 <div className="form__row">
                     <span className="form__label">Authentication Type*</span>
-                    <RadioGroup value={state.authType.value} name={`authType`} onChange={(e) => onTabChange(e)}>
+                    <RadioGroup value={state.authType.value} name={`authType`} onChange={(e) => OnPrometheusAuthTypeChange(e)}>
                         <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
                         <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
                     </RadioGroup>
