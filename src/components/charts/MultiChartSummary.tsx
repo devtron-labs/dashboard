@@ -136,12 +136,12 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({ chart, remove, sel
     }
 
     return (
-        <div className={`selected-chart-widget pointer ${selected ? 'active' : ''} ${chart?.name?.error || chart?.environment?.error ? 'selected-chart-widget--error' : ''}`} onClick={configureChart}>
+        <div className={`selected-chart-widget pointer ${selected ? 'active' : ''} ${chart?.name?.error || chart?.environment?.error ? 'selected-chart-widget--error' : ''}`}>
             <div className="chart-bg">
                 <img className="chart-icon" src={icon || ""} alt="" onError={handleImageError} />
                 <Warning className="chart-warn" />
             </div>
-            <div className="flex left column">
+            <div className="flex left column" onClick={configureChart}>
                 <b className="chart-name">{chartRepoName}/{chartName}</b>
                 {chart.isEnabled && <>
                     {selectChartValues && selectChartVersion
