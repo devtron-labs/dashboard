@@ -541,6 +541,15 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 </DeleteDialog.Description>
             </DeleteDialog>
             }
+            {confirmation && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+                delete={handleDelete}
+                closeDelete={() => toggleConfirmation(false)}>
+                <DeleteDialog.Description >
+                    <p className="en-2 bw-1 bcn-1 p-8">This will delete all resources associated with this application.</p>
+                    <p>Do you want to force delete?.</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+            }
         </div>
     </>
     )
