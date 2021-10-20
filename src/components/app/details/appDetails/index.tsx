@@ -9,7 +9,7 @@ export default function Index() {
     return (
         <div>
             <AppDetails 
-            environments={otherEnvsResult?.result}
+            // environments={otherEnvsResult?.result}
             />
         </div>
     )
@@ -71,16 +71,16 @@ export function EnvSelector({ environments, disabled }) {
             </div>
         </>
     );
-}
-const params = useParams<{ appId: string; envId: string }>();
-const [
-    otherEnvsLoading,
-    otherEnvsResult,
-    otherEnvsError,
-    reloadAppOtherEnv,
-    setState,
-    syncOtherEnvState,
-] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId]);
+ }
+// // const params = useParams<{ appId: string; envId: string }>();
+// const [
+//     otherEnvsLoading,
+//     otherEnvsResult,
+//     otherEnvsError,
+//     reloadAppOtherEnv,
+//     setState,
+//     syncOtherEnvState,
+// ] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId]);
 
 
 

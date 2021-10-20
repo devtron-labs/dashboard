@@ -12,7 +12,7 @@ import { EnvSelector } from '../../../../../../app/details/appDetails/AppDetails
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
 
 
-export default function AppDetails( environments ) {
+export default function AppDetails(  ) {
 
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
     const params = useParams<{ appId: string; envId?: string }>()

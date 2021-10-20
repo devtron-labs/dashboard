@@ -18,6 +18,7 @@ import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } fro
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import  Index  from './appDetails/index'
+import AppDetailsComponent from '../../v2/details/appDetails/AppDetails.components'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
@@ -37,7 +38,7 @@ export default function AppDetailsPage() {
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <Index />} />
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailsComponent />} />
                     <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                     <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
                         <CIDetails key={appId} />
