@@ -14,6 +14,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers';
 
 export class MaterialView extends Component<MaterialViewProps, {}> {
 
@@ -49,6 +50,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
     }
 
     renderForm() {
+        const providers = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : this.props.providers;
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Git Material" : "Add Git Material"}
@@ -63,7 +65,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                         tabIndex='1'
                         isMulti={false}
                         isClearable={false}
-                        options={this.props.providers}
+                        options={providers}
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}

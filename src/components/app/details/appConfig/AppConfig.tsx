@@ -378,8 +378,9 @@ const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, env
     if (environmentsLoading) return null;
 
     if (Array.isArray(environmentResult?.result)) {
+        const environment = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName));
         return <div>
-            {(environmentResult.result).map(env => {
+            {(environment).map(env => {
                 let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
                 return <NavLink key={env.environmentId}
                     className="app-compose__nav-item"
