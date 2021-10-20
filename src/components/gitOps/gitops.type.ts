@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router'
-export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId";
-export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName";
-export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS";
+export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId"  | "bitBucketWorkspaceId" | "bitBucketProjectKey";
+export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName" | "bitBucketWorkspaceId" | "bitBucketProjectKey";
+export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS" | "BITBUCKET_CLOUD";
 
 export interface CustomGitOpsState {
     username: {
@@ -25,13 +25,15 @@ export interface GitOpsConfig {
     gitLabGroupId: string,
     gitHubOrgId: string,
     azureProjectName: string;
+    bitBucketWorkspaceId: string;
+    bitBucketProjectKey: string;
 }
 
 
 export interface GitOpsState {
     view: string;
     statusCode: number;
-    tab: GitProviderType;
+    providerTab: GitProviderType;
     gitList: GitOpsConfig[];
     form: GitOpsConfig;
     isFormEdited: boolean;
@@ -44,12 +46,12 @@ export interface GitOpsState {
         gitHubOrgId: string;
         gitLabGroupId: string;
         azureProjectName: string;
+        bitBucketWorkspaceId: string;
+        bitBucketProjectKey: string;
     },
-    validateSuccess: boolean;
-    validateFailure: boolean,
-    validateLoading: boolean;
     validatedTime: string;
     validationError: GitOpsConfig[];
+    validationStatus: string;
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }

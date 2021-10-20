@@ -138,12 +138,12 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 disabled={!props.handleSourceChange}
                                 value={mat.value}
                                 onChange={(event) => { props?.handleSourceChange(event, mat.gitMaterialId) }} />
-                            {props.showError && !errorObj.isValid ? <span className="form__error">
+                        </div> : ''}
+                    </div>
+                    {props.showError && !errorObj.isValid ? <span className="form__error ci-error">
                                 <img src={error} className="form__icon" />
                                 {props.validationRules?.sourceValue(_materials[index].value).message}
                             </span> : null}
-                        </div> : ''}
-                    </div>
                 </div>
                 { props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK &&
                     <ConfigureWebhook webhookConditionList={props.webhookData.webhookConditionList}

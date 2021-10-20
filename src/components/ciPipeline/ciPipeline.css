@@ -199,3 +199,8 @@
 .webhook-warning-padding{
     padding-top: 100px;
 }
+
+.ci-error {
+    text-align: center;
+    margin-left: 19%;
+}

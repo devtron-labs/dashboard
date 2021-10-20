@@ -1,14 +1,14 @@
 import React from 'react';
-import Select, {components} from 'react-select'
+import Select, { components } from 'react-select'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-appstatus-cancelled.svg'
-import {ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg';
+import { ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg';
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg';
 
 export const Option = props => {
     const { selectOption, data } = props
     return (
-        <div className="flex left pl-12" style={{background: props.isFocused ? 'var(--N100)' : 'transparent'}}>
-            <input checked={props.isSelected} onChange={e => selectOption(data)} type="checkbox" style={{ height: '16px', width: '16px', flex:'0 0 16px' }} className="mr-8" />
+        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+            <input checked={props.isSelected} onChange={e => selectOption(data)} type="checkbox" style={{ height: '16px', width: '16px', flex: '0 0 16px' }} className="mr-8" />
             <components.Option {...props} />
         </div>
     );
@@ -16,15 +16,15 @@ export const Option = props => {
 
 export const SingleSelectOption = (props) => {
     const { selectOption, data } = props;
-    const style={height: '16px', width: '16px', flex: '0 0 16px'}
+    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data);
     return (
         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             {props.isSelected ? (
                 <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
             ) : (
-                <span onClick={onClick}  className="mr-8" style={style} />
-            )}
+                    <span onClick={onClick} className="mr-8" style={style} />
+                )}
             <components.Option {...props} />
         </div>
     );
@@ -45,7 +45,7 @@ export const MultiValueContainer = props => {
 
 export const ClearIndicator = props => {
     const {
-        children = <ClearIcon className="icon-dim-24"/>,
+        children = <ClearIcon className="icon-dim-24" />,
         getStyles,
         innerProps: { ref, ...restInnerProps },
     } = props;
@@ -101,37 +101,42 @@ export const multiSelectStyles = {
             ...base,
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
             color: 'var(--N900)',
+            padding: '8px 12px',
         })
     },
-    container: (base, state)=>({
+    container: (base, state) => ({
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal'
-    })
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+    }),
 }
 
-interface CustomSelect{
+interface CustomSelect {
     sortSelected?: boolean;
 
 
     options: any[];
-    onChange: (...args)=>void;
+    onChange: (...args) => void;
     value?: any;
-    name?:string;
+    name?: string;
     placeholder?: string;
     className?: string;
-    classNamePrefix?:string;
+    classNamePrefix?: string;
     menuPortalTarget?: any;
-    components?:object;
+    components?: object;
     styles?: object;
     isMulti?: boolean;
     isDisabled?: boolean;
     closeMenuOnSelect?: boolean;
     hideSelectedOptions?: boolean;
-    formatOptionLabel ?: (...args)=>any;
+    formatOptionLabel?: (...args) => any;
 }
 
-export const CustomSelect: React.FC<CustomSelect> =(props)=>{
-    return(
+export const CustomSelect: React.FC<CustomSelect> = (props) => {
+    return (
         <Select
             {...props}
         />
