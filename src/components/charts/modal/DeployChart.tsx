@@ -66,6 +66,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [forceDelete, setForceDelete] = useState(false)
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
@@ -171,6 +172,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 setLoading(false)
                 onHide(true)
             }
+
             else {
                 let request = {
                     teamId: selectedProject.value,
@@ -180,7 +182,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     appStoreVersion: selectedVersion,
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
-                    appName
+                    appName,
+                    force: true
                 };
                 const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(request);
                 toast.success('Deployment initiated');
@@ -275,11 +278,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
     async function handleDelete() {
         setDeleting(true)
         try {
-            await deleteInstalledChart(installedAppId)
+            let res = await deleteInstalledChart(installedAppId)
+            if (!res) {
+                setForceDelete(true)
+            }
+            console.log(res)
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
         catch (err) {
+            console.log(err)
+            setForceDelete(true)
             showError(err)
         }
         finally {
@@ -534,18 +543,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </div>
             {confirmation && <DeleteDialog title={`Delete '${originalName}' ?`}
                 delete={handleDelete}
-                closeDelete={() => toggleConfirmation(false)}>
+                closeDelete={() => toggleConfirmation(false)}
+                >
                 <DeleteDialog.Description >
                     <p>This will delete all resources associated with this application.</p>
                     <p>Deleted applications cannot be restored.</p>
                 </DeleteDialog.Description>
             </DeleteDialog>
             }
-            {confirmation && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+            {forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
                 delete={handleDelete}
-                closeDelete={() => toggleConfirmation(false)}>
+                closeDelete={() =>{toggleConfirmation(false); setForceDelete(false)}}
+                force="Force">
                 <DeleteDialog.Description >
-                    <p className="en-2 bw-1 bcn-1 p-8">This will delete all resources associated with this application.</p>
+                    <p className="en-2 bw-1 bcn-1 p-8">Err.</p>
                     <p>Do you want to force delete?.</p>
                 </DeleteDialog.Description>
             </DeleteDialog>
@@ -556,7 +567,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 }
 
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
-    
+
     return (
         <div className="deploy-chart__readme-column">
             <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
