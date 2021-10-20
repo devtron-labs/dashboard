@@ -20,18 +20,18 @@ import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 
-const ErrorInfo: React.FC<{ title: string }> = ({ title }) => {
+const PrometheusWarningInfo = () => {
     return <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 cluster-error mb-40">
         <div className="flex left align-start">
             <Warning className="icon-dim-20 fcr-7" />
             <div className="ml-8 fs-13">
-                <span className="fw-6 text-capitalize">{title}: </span>Prometheus configuration will be removed and you won’t be able to see metrics for applications deployed in this cluster.
+                <span className="fw-6 text-capitalize">Warning: </span>Prometheus configuration will be removed and you won’t be able to see metrics for applications deployed in this cluster.
        </div>
         </div>
     </div>
 }
 
-const RequiredInfo = () => {
+const PrometheusRequiredFieldInfo = () => {
     return <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
         <div className="flex left align-start">
             <Error className="icon-dim-20" />
@@ -231,8 +231,8 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
-    const [toggleEnabled, setToggleEnabled] = useState(prometheus_url ? true : false);
-    const [authenucation, setAuthenucation] = useState({ type: 'ANONYMOUS' });
+    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false);
+    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({ type: 'ANONYMOUS' });
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
 
     const isDefaultCluster = (): boolean => {
@@ -270,11 +270,11 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ }
             },
             userName: {
-                required: (toggleEnabled && (authenucation.type === AuthenticationType.BASIC)) ? true : false,
+                required: (prometheusToggleEnabled && (prometheusAuthenticationType.type === AuthenticationType.BASIC)) ? true : false,
                 validator: { error: 'username is required', regex: /^(?!\s*$).+/ }
             },
             password: {
-                required: (toggleEnabled && (authenucation.type === AuthenticationType.BASIC)) ? true : false,
+                required: (prometheusToggleEnabled && (prometheusAuthenticationType.type === AuthenticationType.BASIC)) ? true : false,
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ }
             },
             tlsClientKey: {
@@ -290,7 +290,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
             endpoint: {
-                required: toggleEnabled ? true : false,
+                required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ }
             }
         }, onValidation);
@@ -302,10 +302,10 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             cluster_name: state.cluster_name.value,
             config: { bearer_token: state.token.value },
             active,
-            prometheus_url: toggleEnabled ? state.endpoint.value : "",
+            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : "",
             prometheusAuth: {
-                userName: toggleEnabled ? state.userName.value : "",
-                password: toggleEnabled ? state.password.value : ""
+                userName: prometheusToggleEnabled ? state.userName.value : "",
+                password: prometheusToggleEnabled ? state.password.value : ""
             }
         }
 
@@ -315,7 +315,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             payload['server_url'] = state.url.value;
         }
 
-        if ((state.authType.value === AuthenticationType.BASIC) && toggleEnabled) {
+        if ((state.authType.value === AuthenticationType.BASIC) && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value;
             if (!isValid) {
                 toast.error("Please add both username and password");
@@ -326,7 +326,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 payload.prometheusAuth['password'] = state.password.value || "";
             }
         }
-        if ((state.tlsClientKey.value || state.tlsClientCert.value) && toggleEnabled) {
+        if ((state.tlsClientKey.value || state.tlsClientCert.value) && prometheusToggleEnabled) {
             let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length;
             if (!isValid) {
                 toast.error("Please add both TLS Key and Certificate");
@@ -361,15 +361,15 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     }
 
     const setToggle = () => {
-        setToggleEnabled(!toggleEnabled)
+        setPrometheusToggleEnabled(!prometheusToggleEnabled)
     }
 
     const onTabChange = (e) => {
         handleOnChange(e);
         if (state.authType.value == AuthenticationType.BASIC) {
-            setAuthenucation({ type: AuthenticationType.ANONYMOUS });
+            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS });
         } else {
-            setAuthenucation({ type: AuthenticationType.BASIC });
+            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC });
         }
     }
 
@@ -379,7 +379,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 <Pencil color="#363636" className="icon-dim-24 vertical-align-middle" /> :
                 <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
             }
-            <span className={`${!id ? 'cb-5': ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
+            <span className={`${!id ? 'cb-5' : ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
         </div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
@@ -397,25 +397,22 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 {state.token.error}</label>}
         </div>
         <hr></hr>
-        <div className={`${toggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
+        <div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
                 <div className="" style={{ width: "32px", height: "20px" }}>
-                    <Toggle selected={toggleEnabled} onSelect={setToggle} />
+                    <Toggle selected={prometheusToggleEnabled} onSelect={setToggle} />
                 </div>
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
         </div>
-        {!toggleEnabled && prometheus_url &&
-            <ErrorInfo title="Warning" />
+        {!prometheusToggleEnabled && prometheus_url &&
+            <PrometheusWarningInfo />
         }
-        {toggleEnabled &&
+        {prometheusToggleEnabled &&
             <div className=''>
-                {!toggleEnabled &&
-                    <div className="form__input-header mb-8">Prometheus Info</div>
-                }
                 {(state.userName.error || state.password.error || state.endpoint.error) &&
-                    <RequiredInfo />
+                    <PrometheusRequiredFieldInfo />
                 }
                 <div className="form__row">
                     <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
