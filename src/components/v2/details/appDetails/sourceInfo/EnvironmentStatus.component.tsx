@@ -3,7 +3,7 @@ import React from 'react'
 function EnvironmentStatusComponent() {
     return (
         <div>
-            <div className="ml-24 mr-24" style={{
+            <div className="pl-20 pr-20" style={{
                 display: 'grid',
                 gridTemplateColumns: '50% 50%',
                 minHeight: '92px',

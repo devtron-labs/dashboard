@@ -8,7 +8,7 @@ function EnvironmentSelectorComponent() {
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
 
     return (
-        <div className="flexbox flex-justify p-24">
+        <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
                 <div className="flexbox">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>

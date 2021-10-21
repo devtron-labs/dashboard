@@ -25,8 +25,8 @@ const reducer = (state: any, action: any) => {
             return { ...state, resourceTreeTabs: state.resourceTreeTabs };
 
         case ResourceTreeActions.RemoveTab:
-        // let rc = state.resourceTreeTabs.(action.tab)
-        // return { ...state, resourceTreeTabs: rc };
+        let rc = state.resourceTreeTabs.filter(action.tab)
+        return { ...state, resourceTreeTabs: rc };
     }
 };
 
@@ -40,8 +40,9 @@ export const useResourceTree = () => {
         const k8Resource = {
             name: "K8 Resources",
             icon: "",
-            className: "selected"
+            className: "selected "
         }
+
         const logAnalyzer = {
             name: "Log Analyzer",
             icon: "",

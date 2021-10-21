@@ -5,8 +5,10 @@ import SourceInfoComponent from './sourceInfo/SourceInfo.component'
 function AppDetailsComponent() {
     return (
         <React.Fragment>
-            <SourceInfoComponent />
-            <ResourceTreeComponent />
+            <div>
+                <SourceInfoComponent />
+                <ResourceTreeComponent />
+            </div>
         </React.Fragment>
     )
 }
