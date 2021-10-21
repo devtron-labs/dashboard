@@ -1,13 +1,16 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback } from '../common';
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
+import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg';
+import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { ClusterComponentModal } from './ClusterComponentModal';
 import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
@@ -16,6 +19,28 @@ import { toast } from 'react-toastify';
 import { DOCUMENTATION, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
+
+const PrometheusWarningInfo = () => {
+    return <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 cluster-error mb-40">
+        <div className="flex left align-start">
+            <Warning className="icon-dim-20 fcr-7" />
+            <div className="ml-8 fs-13">
+                <span className="fw-6 text-capitalize">Warning: </span>Prometheus configuration will be removed and you won’t be able to see metrics for applications deployed in this cluster.
+       </div>
+        </div>
+    </div>
+}
+
+const PrometheusRequiredFieldInfo = () => {
+    return <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
+        <div className="flex left align-start">
+            <Error className="icon-dim-20" />
+            <div className="ml-8 fs-13">
+                Fill all the required fields OR turn off the above switch to skip configuring prometheus.
+       </div>
+        </div>
+    </div>
+}
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
@@ -206,9 +231,11 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
 
 function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
     const [loading, setLoading] = useState(false);
+    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false);
+    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({ type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS });
     let authenTicationType = prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
 
-    const isDefaultCluster = () : boolean => {
+    const isDefaultCluster = (): boolean => {
         return id == 1;
     }
 
@@ -228,11 +255,11 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             cluster_name: {
                 required: true,
                 validators: [
-                                { error: 'Name is required',  regex: /^.*$/ },
-                                { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
-                                { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
-                                { error: "Minimum 3 and Maximum 63 characters required", regex: /^.{3,63}$/ }
-                            ]
+                    { error: 'Name is required', regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
+                    { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
+                    { error: "Minimum 3 and Maximum 63 characters required", regex: /^.{3,63}$/ }
+                ]
             },
             url: {
                 required: true,
@@ -243,11 +270,11 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ }
             },
             userName: {
-                required: false,
+                required: (prometheusToggleEnabled && (prometheusAuthenticationType.type === AuthenticationType.BASIC)) ? true : false,
                 validator: { error: 'username is required', regex: /^(?!\s*$).+/ }
             },
             password: {
-                required: false,
+                required: (prometheusToggleEnabled && (prometheusAuthenticationType.type === AuthenticationType.BASIC)) ? true : false,
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ }
             },
             tlsClientKey: {
@@ -263,7 +290,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
             endpoint: {
-                required: true,
+                required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ }
             }
         }, onValidation);
@@ -275,10 +302,10 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             cluster_name: state.cluster_name.value,
             config: { bearer_token: state.token.value },
             active,
-            prometheus_url: state.endpoint.value,
+            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : "",
             prometheusAuth: {
-                userName: "",
-                password: ""
+                userName: prometheusToggleEnabled ? state.userName.value : "",
+                password: prometheusToggleEnabled ? state.password.value : ""
             }
         }
 
@@ -288,7 +315,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             payload['server_url'] = state.url.value;
         }
 
-        if (state.authType.value === AuthenticationType.BASIC) {
+        if ((state.authType.value === AuthenticationType.BASIC) && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value;
             if (!isValid) {
                 toast.error("Please add both username and password");
@@ -299,7 +326,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 payload.prometheusAuth['password'] = state.password.value || "";
             }
         }
-        if (state.tlsClientKey.value || state.tlsClientCert.value) {
+        if ((state.tlsClientKey.value || state.tlsClientCert.value) && prometheusToggleEnabled) {
             let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length;
             if (!isValid) {
                 toast.error("Please add both TLS Key and Certificate");
@@ -333,13 +360,30 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
         }
     }
 
+    const setPrometheusToggle = () => {
+        setPrometheusToggleEnabled(!prometheusToggleEnabled)
+    }
+
+    const OnPrometheusAuthTypeChange = (e) => {
+        handleOnChange(e);
+        if (state.authType.value == AuthenticationType.BASIC) {
+            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS });
+        } else {
+            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC });
+        }
+    }
+
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-        <h2 className="form__title">{clusterTitle()}</h2>
+        <div className="flex left mb-20">
+            {id ?
+                <Pencil color="#363636" className="icon-dim-24 vertical-align-middle" /> :
+                <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+            }
+            <span className={`${!id ? 'cb-5' : ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
+        </div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="cluster_name" disabled={isDefaultCluster()} value={state.cluster_name.value} error={state.cluster_name.error} onChange={handleOnChange} label="Name*" />
         </div>
-        <hr></hr>
-        <div className="form__input-header mb-8">Kubernetes Cluster Info</div>
         <div className="form__row">
             <CustomInput autoComplete="off" name="url" value={state.url.value} error={state.url.error} onChange={handleOnChange} label="Server URL*" />
         </div>
@@ -348,38 +392,56 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             <div className="bearer-token">
                 <ResizableTextarea className="resizable-textarea__with-max-height" name="token" value={config && config.bearer_token ? config.bearer_token : ""} onChange={handleOnChange} />
             </div>
-            {state.token.error && <label htmlFor="" className="form__error">{state.token.error}</label>}
+            {state.token.error && <label htmlFor="" className="form__error">
+                <FormError className="form__icon form__icon--error" />
+                {state.token.error}</label>}
         </div>
         <hr></hr>
-        <div className="form__input-header mb-8">Prometheus Info</div>
-        <div className="form__row">
-            <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
-        </div>
-        <div className="form__row">
-            <span className="form__label">Authentication Type*</span>
-            <RadioGroup value={state.authType.value} name={`authType`} onChange={handleOnChange}>
-                <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
-                <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
-            </RadioGroup>
-        </div>
-        {state.authType.value === AuthenticationType.BASIC ?
-            <div className="form__row form__row--flex">
-                <div className="w-50 mr-8">
-                    <CustomInput name="userName" value={state.userName.value} error={state.userName.error} onChange={handleOnChange} label="Username*" />
-                </div>
-                <div className="w-50 ml-8">
-                    <CustomPassword name="password" value={state.password.value} error={state.userName.error} onChange={handleOnChange} label="Password*" />
+        <div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
+            <div className="content-space flex">
+                <span className="form__input-header">See metrics for applications in this cluster</span>
+                <div className="" style={{ width: "32px", height: "20px" }}>
+                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
                 </div>
             </div>
-            : null}
-        <div className="form__row">
-            <span className="form__label">TLS Key</span>
-            <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientKey" value={state.tlsClientKey.value} onChange={handleOnChange} />
+            <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
         </div>
-        <div className="form__row">
-            <span className="form__label">TLS Certificate</span>
-            <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientCert" value={state.tlsClientCert.value} onChange={handleOnChange} />
-        </div>
+        {!prometheusToggleEnabled && prometheus_url &&
+            <PrometheusWarningInfo />
+        }
+        {prometheusToggleEnabled &&
+            <div className=''>
+                {(state.userName.error || state.password.error || state.endpoint.error) &&
+                    <PrometheusRequiredFieldInfo />
+                }
+                <div className="form__row">
+                    <CustomInput autoComplete="off" name="endpoint" value={state.endpoint.value} error={state.endpoint.error} onChange={handleOnChange} label="Prometheus endpoint*" />
+                </div>
+                <div className="form__row">
+                    <span className="form__label">Authentication Type*</span>
+                    <RadioGroup value={state.authType.value} name={`authType`} onChange={(e) => OnPrometheusAuthTypeChange(e)}>
+                        <RadioGroupItem value={AuthenticationType.BASIC}> Basic  </RadioGroupItem>
+                        <RadioGroupItem value={AuthenticationType.ANONYMOUS}>  Anonymous  </RadioGroupItem>
+                    </RadioGroup>
+                </div>
+                {state.authType.value === AuthenticationType.BASIC ?
+                    <div className="form__row form__row--flex">
+                        <div className="w-50 mr-8">
+                            <CustomInput name="userName" value={state.userName.value} error={state.userName.error} onChange={handleOnChange} label="Username*" />
+                        </div>
+                        <div className="w-50 ml-8">
+                            <CustomPassword name="password" value={state.password.value} error={state.userName.error} onChange={handleOnChange} label="Password*" />
+                        </div>
+                    </div>
+                    : null}
+                <div className="form__row">
+                    <span className="form__label">TLS Key</span>
+                    <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientKey" value={state.tlsClientKey.value} onChange={handleOnChange} />
+                </div>
+                <div className="form__row">
+                    <span className="form__label">TLS Certificate</span>
+                    <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientCert" value={state.tlsClientCert.value} onChange={handleOnChange} />
+                </div> </div>}
         <div className="form__buttons">
             <button className="cta cancel" type="button" onClick={e => toggleEditMode(t => !t)}>Cancel</button>
             <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
@@ -401,7 +463,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
             environment_name: {
                 required: true,
                 validators: [
-                    { error: 'Environment name is required',  regex: /^.*$/ },
+                    { error: 'Environment name is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
                     { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
                     { error: "Minimum 3 and Maximum 16 characters required", regex: /^.{3,16}$/ }
@@ -410,7 +472,7 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
             namespace: {
                 required: isNamespaceMandatory,
                 validators: [
-                    { error: 'Namespace is required',  regex: /^.*$/ },
+                    { error: 'Namespace is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
                     { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
                     { error: "Maximum 63 characters required", regex: /^.{1,63}$/ }

@@ -418,7 +418,7 @@ const NodeDetails: React.FC<{
     const nodesMap = nodes.nodes[kind] || new Map();
 
     let allNodes = [];
-    if (nodeItems.length < 1 && Array.from(nodesMap).length > 0) {
+    if (nodeItems?.length < 1 && Array.from(nodesMap).length > 0) {
         allNodes = Array.from(nodesMap).map(([name]) => (
             {
                 label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
@@ -433,7 +433,7 @@ const NodeDetails: React.FC<{
             selectNode(nodeName);
             setSelectNode(nodeName);
             let container = nodesMap.get(nodeName)?.containers
-            if (container.length < 2) {
+            if (container?.length < 2) {
                 selectContainer(container[0])
             }
         }
@@ -800,7 +800,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     const additionalOptions = [{ label: "All pods", value: "All pods" }, { label: "All new pods", value: "All new pods" }, { label: "All old pods", value: "All old pods" }]
     let options = [];
-    if (nodeItems.length > 1) {
+    if (nodeItems?.length > 1) {
         options = additionalOptions.concat(nodeItems);
     } else {
         options = nodeItems;
@@ -819,7 +819,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let allContainers = total.filter(item => !!item);
 
     allContainers.forEach((item) => {
-        if (item.length < 2) {
+        if (item?.length < 2) {
             let contAvailable = allContainers[0]
             if (contAvailable && !selectedContainer) {
                 selectContainer(contAvailable[0])
