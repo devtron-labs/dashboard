@@ -71,7 +71,7 @@ const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => vo
         <input type="radio" name="status" value={provider} checked={providerTab === provider} onChange={!saveLoading && handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
-            <aside className="login__text-alignment" style={{lineHeight: 1.2}}> {gitops}</aside>
+            <aside className="login__text-alignment fs-13"  style={{lineHeight: 1.2}}> {gitops}</aside>
             <div>
                 {(lastActiveGitOp?.provider === provider) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
             </div>
@@ -121,7 +121,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             validatedTime: "",
             validationError: [],
-            validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS
+            validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
+            deleteRepoError: false
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -276,9 +277,23 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             if (resp.active) {
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
+                if (response.deleteRepoSuccessful){
+                    this.setState({deleteRepoError : false})
+                } else{
+                    this.setState({deleteRepoError : true})
+                }
                 this.fetchGitOpsConfigurationList();
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
+                if (response.successfulStages && response.successfulStages?.includes("Create Repo")){
+                        if (response.successfulStages?.includes("Delete Repo")){
+                            this.setState({deleteRepoError : false})
+                        } else{
+                            this.setState({deleteRepoError : true})
+                        }
+                } else{
+                    this.setState({deleteRepoError : false})
+                }
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
@@ -314,10 +329,23 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let errorMap = resp.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
+                if (response.successfulStages && response.successfulStages?.includes("Create Repo")){
+                    if (response.successfulStages?.includes("Delete Repo")){
+                        this.setState({deleteRepoError : false})
+                    } else{
+                        this.setState({deleteRepoError : true})
+                    }
+                } else{
+                this.setState({deleteRepoError : false})
+                }
                 toast.error("Configuration validation failed");
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
-
+                if (response.deleteRepoSuccessful){
+                    this.setState({deleteRepoError : false})
+                } else{
+                    this.setState({deleteRepoError : true})
+                }
                 toast.success("Configuration validated");
             }
         }).catch((error) => {
@@ -375,6 +403,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     validationError={this.state.validationError}
                     validationStatus={this.state.validationStatus}
                     configName="gitops "
+                    deleteRepoError={this.state.deleteRepoError}
                 />
 
                 <CustomInput autoComplete="off"

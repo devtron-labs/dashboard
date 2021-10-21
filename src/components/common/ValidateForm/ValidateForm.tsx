@@ -4,6 +4,7 @@ import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
+import { showError } from '../helpers/Helpers';
 
 export enum VALIDATION_STATUS {
     SUCCESS = 'SUCCESS',
@@ -46,8 +47,8 @@ function ValidateLoading({ message }) {
 
 }
 
-function ValidateSuccess({ onClickValidate }) {
-    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+function ValidateSuccess({ onClickValidate, deleteRepoError }) {
+    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16 bcg-1">
         <div className="flex flex-justify">
             <div className="flex">
                 <GreenCheck className="icon-dim-20 scg-5" />
@@ -60,7 +61,7 @@ function ValidateSuccess({ onClickValidate }) {
     </div>
 }
 
-function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false }) {
+function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, deleteRepoError }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
@@ -92,7 +93,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
     </div>
 }
 
-export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
+export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, deleteRepoError }) {
     return (
         <div className="mt-16">
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
@@ -100,9 +101,9 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == VALIDATION_STATUS.FAILURE &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} />}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} deleteRepoError = {deleteRepoError}/>}
             {validationStatus == VALIDATION_STATUS.SUCCESS &&
-                <ValidateSuccess onClickValidate={onClickValidate} />}
+                <ValidateSuccess onClickValidate={onClickValidate} deleteRepoError = {deleteRepoError} />}
         </div>
     )
 }
