@@ -6,8 +6,7 @@ function AppDetailsComponent() {
     return (
         <React.Fragment>
             <SourceInfoComponent />
-            {/* <ResourceTreeComponent /> */}
-            
+            <ResourceTreeComponent />
         </React.Fragment>
     )
 }
