@@ -4,9 +4,11 @@ import EnvironmentStatusComponent from './EnvironmentStatus.component'
 
 function SourceInfoComponent() {
     return (
-        <React.Fragment>
-            <EnvironmentSelectorComponent/>
-            <EnvironmentStatusComponent />
+        <React.Fragment >
+            <div style={{ height: "60px" }}>
+                <EnvironmentSelectorComponent />
+                <EnvironmentStatusComponent />
+            </div>
         </React.Fragment>
     )
 }
