@@ -17,6 +17,7 @@ import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 import ReactSelect from 'react-select';
 import './DeployChart.scss';
+import { ServerErrors } from '../../../modals/commonTypes';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -67,6 +68,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
+    const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
@@ -183,7 +185,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     appName,
-                    force: true
                 };
                 const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(request);
                 toast.success('Deployment initiated');
@@ -275,20 +276,44 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, [chartValuesFromParent])
 
+    function onForceDelete(serverError, bool) {
+        setForceDelete(bool)
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                setForceDeleteErrorMessage(userMessage || internalMessage);
+            });
+        }
+    }
+
+    async function handleForceDelete() {
+        try {
+            let res = await deleteInstalledChart(installedAppId, true)
+            toast.success('Successfully deleted.')
+            push(URLS.CHARTS)
+        }
+        catch (err) {
+            setForceDelete(true)
+            onForceDelete(err, true)
+            showError(err)
+        }
+        finally {
+            setDeleting(false)
+        }
+    }
     async function handleDelete() {
         setDeleting(true)
+
         try {
             let res = await deleteInstalledChart(installedAppId)
             if (!res) {
                 setForceDelete(true)
             }
-            console.log(res)
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
         catch (err) {
-            console.log(err)
             setForceDelete(true)
+            onForceDelete(err, true)
             showError(err)
         }
         finally {
@@ -544,7 +569,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             {confirmation && <DeleteDialog title={`Delete '${originalName}' ?`}
                 delete={handleDelete}
                 closeDelete={() => toggleConfirmation(false)}
-                >
+            >
                 <DeleteDialog.Description >
                     <p>This will delete all resources associated with this application.</p>
                     <p>Deleted applications cannot be restored.</p>
@@ -552,11 +577,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </DeleteDialog>
             }
             {forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
-                delete={handleDelete}
-                closeDelete={() =>{toggleConfirmation(false); setForceDelete(false)}}
+                delete={handleForceDelete}
+                closeDelete={() => { toggleConfirmation(false); setForceDelete(false) }}
                 force="Force">
                 <DeleteDialog.Description >
-                    <p className="en-2 bw-1 bcn-1 p-8">Err.</p>
+                    <p className="en-2 bw-1 bcn-1 p-8">Error: {forceDeleteErrorMessage}</p>
                     <p>Do you want to force delete?.</p>
                 </DeleteDialog.Description>
             </DeleteDialog>
