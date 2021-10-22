@@ -276,8 +276,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, [chartValuesFromParent])
 
-    function onForceDelete(serverError, bool) {
-        setForceDelete(bool)
+    function onClickForceDelete(serverError, showForceDelete) {
+        setForceDelete(showForceDelete)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErrorMessage(userMessage || internalMessage);
@@ -292,14 +292,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
             push(URLS.CHARTS)
         }
         catch (err) {
-            setForceDelete(true)
-            onForceDelete(err, true)
             showError(err)
         }
-        finally {
-            setDeleting(false)
-        }
     }
+    
     async function handleDelete() {
         setDeleting(true)
 
@@ -312,8 +308,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             push(URLS.CHARTS)
         }
         catch (err) {
-            setForceDelete(true)
-            onForceDelete(err, true)
+            onClickForceDelete(err, true)
             showError(err)
         }
         finally {
