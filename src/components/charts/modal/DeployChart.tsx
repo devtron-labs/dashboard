@@ -571,7 +571,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 </DeleteDialog.Description>
             </DeleteDialog>
             }
-            {forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+            {
+            forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
                 delete={handleForceDelete}
                 closeDelete={() => { toggleConfirmation(false); setForceDelete(false) }}
                 force="Force">

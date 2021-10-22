@@ -55,6 +55,8 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             showDocker: false,
             showPostBuild: false,
             isAdvanced: false,
+            forceDelete: false,
+            forceDeleteErrorMessage: ''
 
         }
         this.validationRules = new ValidationRules();
@@ -189,15 +191,15 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             let _condition = {};
 
             // create initial data with fix values
-            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors){
+            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors) {
                 _selectedWebhookEvent.selectors.forEach((_selector) => {
-                    if(_selector.fixValue){
+                    if (_selector.fixValue) {
                         _condition[_selector.id] = _selector.fixValue;
                     }
                 })
             }
 
-            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition : _condition });
+            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition: _condition });
 
             // update condition list
             form.webhookConditionList = createWebhookConditionList(_material.value);
@@ -320,7 +322,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     noop = () => { }
-    
+
     copyToClipboard(text: string, callback = this.noop): void {
         let textarea = document.createElement("textarea");
         let main = document.getElementsByClassName("main")[0];
@@ -366,6 +368,30 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             })
     }
 
+    onClickForceDelete = (serverError, showForceDelete) => {
+        this.setState({ forceDelete: showForceDelete })
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                this.setState({ forceDeleteErrorMessage: userMessage || internalMessage });
+            });
+        }
+    }
+
+    handleForceDelete = () => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
+            if (response) {
+                toast.success("Pipeline Deleted");
+                this.props.close();
+                this.props.getWorkflows();
+            }
+        }).catch((error: ServerErrors) => {
+            showError(error)
+            this.onClickForceDelete(error, true)
+            this.setState({ loadingData: false });
+        })
+
+    }
+
     deletePipeline() {
         deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
             if (response) {
@@ -376,6 +402,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             }
         }).catch((error: ServerErrors) => {
             showError(error)
+            this.onClickForceDelete(error, true)
             this.setState({ loadingData: false });
         })
     }
@@ -431,6 +458,18 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 description={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                 closeDelete={this.closeCIDeleteModal}
                 delete={this.deletePipeline} />
+        }
+
+        else if (this.state.forceDelete) {
+            return <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+                delete={this.handleForceDelete}
+                closeDelete={() => { this.setState({ forceDelete: false }) }}
+                force="Force">
+                <DeleteDialog.Description >
+                    <p className="en-2 bw-1 bcn-1 p-8">Error: {this.state.forceDeleteErrorMessage}</p>
+                    <p>Do you want to force delete?.</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
         }
         return null;
     }
