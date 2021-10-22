@@ -558,7 +558,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ showDeleteModal: false });
     }
 
-    renderHeader(title) {
+    renderHeader() {
+        let title = this.props.match.params.cdPipelineId ? "Edit deployment pipeline" : "Create deployment pipeline";
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
@@ -889,11 +890,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     render() {
-        let title = this.props.match.params.ciPipelineId ? "Update deployment pipeline":"Create deployment pipeline";
-
         return <VisibleModal className="">
             <form className="modal__body modal__body--ci br-0 modal__body--p-0" onSubmit={this.savePipeline}>
-                {this.renderHeader(title)}
+                {this.renderHeader()}
                 <div className="p-20" style={{ maxHeight: "calc(100vh - 164px)", overflowY: "scroll" }}>
                     {this.renderCDPipelineBody()}
                 </div>

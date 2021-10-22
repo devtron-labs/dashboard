@@ -544,7 +544,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     render() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
-        let title = this.props.match.params.ciPipelineId ? "Update build pipeline" : "Create build pipeline";
+        const title = this.props.match.params.ciPipelineId ? "Edit build pipeline" : "Create build pipeline";
 
         return <VisibleModal className="" >
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
