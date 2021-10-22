@@ -69,6 +69,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [confirmation, toggleConfirmation] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
     const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
+    const [forceDeleteErrorTitle, setForceDeleteErroTitle] = useState("")
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
@@ -280,7 +281,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
         setForceDelete(showForceDelete)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                setForceDeleteErrorMessage(userMessage || internalMessage);
+                setForceDeleteErroTitle(userMessage)
+                setForceDeleteErrorMessage(internalMessage);
             });
         }
     }
@@ -572,7 +574,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </DeleteDialog>
             }
             {
-            forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+            forceDelete && <DeleteDialog title={`${forceDeleteErrorTitle} ?`}
                 delete={handleForceDelete}
                 closeDelete={() => { toggleConfirmation(false); setForceDelete(false) }}
                 force="Force">
