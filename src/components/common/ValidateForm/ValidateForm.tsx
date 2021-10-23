@@ -48,6 +48,7 @@ function ValidateLoading({ message }) {
 }
 
 function ValidateSuccess({ onClickValidate, deleteRepoError }) {
+    console.log(deleteRepoError);
     return <div className="mb-16"><div className={`${deleteRepoError ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
         <div className="flex flex-justify">
             <div className="flex">
@@ -93,7 +94,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                         <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
                     )} 
                     {deleteRepoError &&
-                     <p className="mt-4 mb-0 fw-6 text-lowercase">Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</p>}
+                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</p>}
                     </>
                 }
             </div>
