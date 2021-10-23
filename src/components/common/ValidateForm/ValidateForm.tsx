@@ -48,7 +48,7 @@ function ValidateLoading({ message }) {
 }
 
 function ValidateSuccess({ onClickValidate, deleteRepoError }) {
-    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16 bcg-1">
+    return <div className="mb-16"><div className={`${deleteRepoError ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
         <div className="flex flex-justify">
             <div className="flex">
                 <GreenCheck className="icon-dim-20 scg-5" />
@@ -58,6 +58,11 @@ function ValidateSuccess({ onClickValidate, deleteRepoError }) {
             </div>
             {renderOnClickValidate(onClickValidate)}
         </div>
+    </div>
+     {deleteRepoError &&
+        <div className="p-16 bw-1 en-2 br-4 delete-repo">
+            <span className="fs-13 cn-9">Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</span>
+        </div>}
     </div>
 }
 
@@ -86,7 +91,10 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                     <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
                     {Object.entries(validationError).map(([value, name]) =>
                         <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
-                    )} </>
+                    )} 
+                    {deleteRepoError &&
+                     <p className="mt-4 mb-0 fw-6 text-lowercase">Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</p>}
+                    </>
                 }
             </div>
         </div>
@@ -101,9 +109,9 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == VALIDATION_STATUS.FAILURE &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} deleteRepoError = {deleteRepoError}/>}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} deleteRepoError={deleteRepoError} />}
             {validationStatus == VALIDATION_STATUS.SUCCESS &&
-                <ValidateSuccess onClickValidate={onClickValidate} deleteRepoError = {deleteRepoError} />}
+                <ValidateSuccess onClickValidate={onClickValidate} deleteRepoError={deleteRepoError} />}
         </div>
     )
 }
