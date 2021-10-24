@@ -1,8 +1,35 @@
 
 import { useReducer, useEffect } from "react";
-import { ResourceTreeActions, ResourceTreeTabs } from "./resourceTreeTab.type";
-// import { ResourceTreeTab } from "./ResourceTreeTab";
+import {iTab } from "./tab.type";
 
+export const ResourceTreeActions = {
+    Init: "INIT",
+    Error: "ERROR",
+    AddTab: "ADD_TAB",
+    RemoveTab: "REMOVE_TAB",
+    MarkActive: "MARK_ACTIVE"
+};
+
+export const TabsJSON = {
+    "K8 Resources": {
+        name: "K8 Resources",
+        icon: "",
+        className: "",
+        isSelected: true
+    },
+    "Log Analyzer": {
+        name: "Log Analyzer",
+        icon: "",
+        className: "",
+        isSelected: false
+    },
+    "tab 1": {
+        name: "tab 1",
+        icon: "",
+        className: "",
+        isSelected: false
+    }
+}
 
 const initialState = {
     loading: true,
@@ -20,13 +47,36 @@ const reducer = (state: any, action: any) => {
         case ResourceTreeActions.Error:
             return { ...state, loading: false, error: action.error };
 
-        case ResourceTreeActions.AddTab:
-            state.resourceTreeTabs.push(action.tab)
+        case ResourceTreeActions.AddTab: {
+            let isFound = false
+            state.resourceTreeTabs.forEach((tab: iTab) => {
+                tab.isSelected = false
+                if (tab.name === action.tab.name) {
+                    isFound = true
+                    tab.isSelected = true
+                }
+            })
+
+            if (!isFound) {
+                state.resourceTreeTabs.push(action.tab)
+            }
             return { ...state, resourceTreeTabs: state.resourceTreeTabs };
+        }
 
         case ResourceTreeActions.RemoveTab:
-        let rc = state.resourceTreeTabs.filter(action.tab)
-        return { ...state, resourceTreeTabs: rc };
+            let rc = state.resourceTreeTabs.filter(action.tab)
+            return { ...state, resourceTreeTabs: rc };
+
+        case ResourceTreeActions.MarkActive: {
+            state.resourceTreeTabs.forEach((tab: iTab) => {
+                tab.isSelected = false
+                if (tab.name === action.tabName) {
+                    tab.isSelected = true
+                }
+            })
+            return { ...state, resourceTreeTabs: state.resourceTreeTabs };
+        }
+
     }
 };
 
@@ -36,20 +86,7 @@ export const useResourceTree = () => {
 
     useEffect(() => {
         let initialTabs = state.resourceTreeTabs;
-
-        const k8Resource = {
-            name: "K8 Resources",
-            icon: "",
-            className: "selected "
-        }
-
-        const logAnalyzer = {
-            name: "Log Analyzer",
-            icon: "",
-            className: ""
-        }
-
-        initialTabs.push(k8Resource, logAnalyzer)
+        initialTabs.push(TabsJSON["K8 Resources"], TabsJSON["Log Analyzer"])
         dispatch({ type: ResourceTreeActions.Init, tabs: initialTabs });
     }, []);
 

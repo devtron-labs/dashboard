@@ -1,53 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import K8ResourceComponent from '../k8Resource/K8Resource.component';
 import ResourceTreeNodeObjects from './ResourceTreeNode';
-import { ResourceTreeActions, ResourceTreeTab } from './resourceTreeTab.type';
-import { useResourceTree } from './useResourceTree';
+import { iTab } from './tab.type';
+import { ResourceTreeActions, useResourceTree } from './useResourceTree';
 
 function ResourceTreeComponent() {
 
     const [{ resourceTreeTabs }, dispatch] = useResourceTree();
+    const [selectedTab, setSelectedTab] = useState("")
 
-    const addResourceTab = (tabName: string) => {
-        switch (tabName) {
-            case "node1": {
-                dispatch({
-                    type: ResourceTreeActions.AddTab, tab: {
-                        name: "Node 1",
-                        icon: "",
-                        className: "flexbox fs-13 cn-9 fw-6 br-8 pt-8 pb-8 pr-16 cursor mr-8"
-                    }
-                })
-                break;
-            }
+    const addResourceTabClick = (tab: iTab) => {
+        dispatch({
+            type: ResourceTreeActions.AddTab,
+            tab: tab
+        })
+    }
+
+    const handleResourceTabClick = (_tabName: string) => {
+        dispatch({
+            type: ResourceTreeActions.MarkActive,
+            tabName: _tabName
+        })
+        setSelectedTab(_tabName)
+    }
+
+    const resourceTabData = () => {
+        switch (selectedTab) {
+            case "K8 Resources":
+                return <K8ResourceComponent />
+                //  <ResourceTreeNodeObjects addResourceTabCallBack={addResourceTabClick} />
+            
+            default:
+                return <div>{selectedTab}</div>
         }
     }
 
-    function resourceTreeMainTabs() {
-        return <div className="flexbox pl-20 pr-20 pt-16">
-            {
-                resourceTreeTabs.map((resourceTreeTab: ResourceTreeTab) => {
-                    return (
-                        <div className={`${resourceTreeTab.className} flexbox fs-13 cn-9 fw-6 br-8 pt-8 pb-8 pr-16 cursor mr-8`}>
-                            {resourceTreeTab.icon} { resourceTreeTab.name}
-                        </div>
-                    )
-                })
-            }
-        </div>
-    }
+    useEffect(() => {
+        handleResourceTabClick("K8 Resources")
+    }, [])
 
     return (
         <div>
-           {resourceTreeMainTabs()}
-           <ResourceTreeNodeObjects
-           addResourceTab={addResourceTab}
-           />
-           
-            {/* <div>
-                <button onClick={() => addTab("node1")}>
-                    Add Tab
-                </button>
-            </div> */}
+            <div className="flexbox pl-20 pr-20">
+                {
+                    resourceTreeTabs.map((resourceTreeTab: iTab, index) => {
+                        return (
+                            <div key={index + "resourceTreeTab"} className={`${resourceTreeTab.className} ${resourceTreeTab.isSelected ? 'bcn-0 cr-5' : ''}  pt-8 pb-8 pr-16`} >
+                                <a className="fs-13 bcn-0 cn-9 fw-6" onClick={() => handleResourceTabClick(resourceTreeTab.name)}> {resourceTreeTab.icon} {resourceTreeTab.name} </a>
+                            </div>
+                        )
+                    })
+                }
+            </div>
+            {selectedTab && resourceTabData()}
         </div>
     )
 }

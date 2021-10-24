@@ -3,8 +3,9 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/errorInfo.svg';
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import { TabsJSON } from './useResourceTree';
 
-export default function NodeGroup({ addResourceTab }) {
+export default function NodeGroup({ addResourceTabCallBack }) {
     const history = useHistory()
     const [collapsedWorkload, setCollapsedWorkload] = useState(true)
     const [collapsedReplicaset, setCollapsedReplicaset] = useState(true)
@@ -41,10 +42,10 @@ export default function NodeGroup({ addResourceTab }) {
                     <div onClick={onClickWorkloadKind}> Workload</div>
                     {!collapsedWorkload &&
                         <div>
-                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTab("node1")}>Cron Jobs</div>
-                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTab("node1")}>Daemon Set</div>
-                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8"  onClick={() => addResourceTab("node1")}>Deployment</div>
-                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTab("node1")}>Jobs</div>
+                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTabCallBack(TabsJSON['tab 1'])}>Cron Jobs</div>
+                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTabCallBack(TabsJSON['tab 1'])}>Daemon Set</div>
+                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTabCallBack(TabsJSON['tab 1'])}>Deployment</div>
+                            <div className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8" onClick={() => addResourceTabCallBack(TabsJSON['tab 1'])}>Jobs</div>
                         </div>
                     }
 

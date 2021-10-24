@@ -5,7 +5,7 @@ import AllPods from './AllPods';
 
 import { NavLink, Route, BrowserRouter as Router } from 'react-router-dom'
 
-export default function ResourceTreeNodeObjects({addResourceTab}) {
+export default function ResourceTreeNodeObjects({addResourceTabCallBack}) {
     return (
         <div>
             <div className="bcn-0 pl-24 pt-16 "
@@ -40,7 +40,7 @@ export default function ResourceTreeNodeObjects({addResourceTab}) {
                         className="p-8"
                     >
                         <NodeGroup 
-                        addResourceTab={addResourceTab}/>
+                        addResourceTabCallBack={addResourceTabCallBack}/>
                     </div>
                 </div>
                 <Route>
