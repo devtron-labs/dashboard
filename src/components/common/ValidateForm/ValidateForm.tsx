@@ -2,7 +2,6 @@ import React from 'react'
 import Help from '../../../assets/icons/ic-help-green.svg';
 import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import './validateForm.css'
 import { showError } from '../helpers/Helpers';
 
@@ -71,7 +70,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
-                <Close className="icon-dim-20 scr-5 ml--3 stroke_width" />
+                <img src={require("../../../assets/icons/ic-close.svg")} className="icon-dim-20 scr-5 ml--3 stroke_width" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
