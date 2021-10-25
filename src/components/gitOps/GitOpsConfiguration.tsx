@@ -72,7 +72,7 @@ const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => vo
         <input type="radio" name="status" value={provider} checked={providerTab === provider} onChange={!saveLoading && handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
-            <aside className="login__text-alignment fs-13"  style={{lineHeight: 1.2}}> {gitops}</aside>
+            <aside className="login__text-alignment"  style={{lineHeight: 1.2}}> {gitops}</aside>
             <div>
                 {(lastActiveGitOp?.provider === provider) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
             </div>
