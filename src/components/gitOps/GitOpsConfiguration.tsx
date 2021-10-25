@@ -54,7 +54,8 @@ const DefaultGitOpsConfig = {
     azureProjectName: "",
     active: true,
     bitBucketWorkspaceId: "",
-    bitBucketProjectKey: ""
+    bitBucketProjectKey: "",
+    deleteRepoSuccessful: false,
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -277,7 +278,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             if (resp.active) {
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
-                if (resp.successfulStages && resp.successfulStages.includes("Delete Repo")){
+                if (resp.deleteRepoSuccessful){
                     this.setState({deleteRepoError : false})
                 } else{
                     this.setState({deleteRepoError : true})

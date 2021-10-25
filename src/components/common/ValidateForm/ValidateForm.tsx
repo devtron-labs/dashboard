@@ -62,7 +62,7 @@ function ValidateSuccess({ onClickValidate, deleteRepoError }) {
     </div>
      {deleteRepoError &&
         <div className="p-16 bw-1 en-2 br-4 delete-repo">
-            <span className="fs-13 cn-9">Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</span>
+            <span className="fs-13 cn-9">Devtron was unable to delete the test repository "devtron-sample-repo-dryrun-…”. Please delete it manually.</span>
         </div>}
     </div>
 }
@@ -94,7 +94,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                         <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
                     )} 
                     {deleteRepoError &&
-                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>Devtron was unable to delete the test repository “dryrun-sample-repo-…”. Please delete it manually.</p>}
+                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.</p>}
                     </>
                 }
             </div>
