@@ -277,7 +277,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             if (resp.active) {
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
-                if (response.deleteRepoSuccessful){
+                if (resp.successfulStages && resp.successfulStages.includes("Delete Repo")){
                     this.setState({deleteRepoError : false})
                 } else{
                     this.setState({deleteRepoError : true})
@@ -285,8 +285,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 this.fetchGitOpsConfigurationList();
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
-                if (response.successfulStages && response.successfulStages?.includes("Create Repo")){
-                        if (response.successfulStages?.includes("Delete Repo")){
+                if (resp.successfulStages && resp.successfulStages?.includes("Create Repo")){
+                        if (resp.successfulStages?.includes("Delete Repo")){
                             this.setState({deleteRepoError : false})
                         } else{
                             this.setState({deleteRepoError : true})
@@ -329,8 +329,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let errorMap = resp.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
-                if (response.successfulStages && response.successfulStages?.includes("Create Repo")){
-                    if (response.successfulStages?.includes("Delete Repo")){
+                if (resp.successfulStages && resp.successfulStages?.includes("Create Repo")){
+                    if (resp.successfulStages?.includes("Delete Repo")){
                         this.setState({deleteRepoError : false})
                     } else{
                         this.setState({deleteRepoError : true})
@@ -341,7 +341,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 toast.error("Configuration validation failed");
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
-                if (response.deleteRepoSuccessful){
+                if (resp.successfulStages && resp.successfulStages?.includes("Delete Repo")){
                     this.setState({deleteRepoError : false})
                 } else{
                     this.setState({deleteRepoError : true})
