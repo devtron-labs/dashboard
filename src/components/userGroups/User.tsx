@@ -108,9 +108,9 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         // if (!validForm) {
         //     return
         // }
-        // if (!isFormComplete()) {
-        //     return
-        // }
+        if (!isFormComplete()) {
+            return
+        }
         setSubmitting(true)
         const payload: CreateUser = {
             id: id || 0,
