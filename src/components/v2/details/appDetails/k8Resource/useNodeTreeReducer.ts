@@ -70,8 +70,8 @@ const reducer = (state: any, action: any) => {
         case NodeTreeActions.MarkActive: {
             state.treeNodes.forEach((node: iNode) => {
                 node.isSelected = false
-                if (node.name === action.nodeName) {
-                    node.isSelected = true
+                if (node.name === action.node.name) {
+                    node.isSelected = !action.node.isSelected
                 }
             })
             return { ...state, treeNodes: state.treeNodes };

@@ -1,21 +1,32 @@
 import React from 'react'
 import { DropdownIcon } from '../../../../common';
-import { iNode } from './node.type';
-import { useNodeTree } from './useNodeTreeReducer';
+import { iNode, iNodes } from './node.type';
+import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 
 function NodeTreeComponent() {
 
     const [{ treeNodes }, dispatch] = useNodeTree();
 
-    const makeNodeTree = (treeNodes) => {
-        return treeNodes.map((treeNode: iNode) => {
+    const handleNodeClick = (treeNode: iNode,) => {
+        if (treeNode.childNodes?.length > 0) {
+            dispatch({
+                type: NodeTreeActions.MarkActive,
+                node: treeNode
+            })
+        } else {
+
+        }
+    }
+
+    const makeNodeTree = (treeNodes: iNodes) => {
+        return treeNodes.map((treeNode: iNode, index: number) => {
             return (
-                <div>
-                    <div className="flex left">
+                <div key={index + treeNode.name}>
+                    <div className="flex left" onClick={(e) => handleNodeClick(treeNode, e)} >
                         {(treeNode.childNodes?.length > 0) && <DropdownIcon className={treeNode.isSelected ? 'rotate icon-dim-20' : ''} />}
                         <span> {treeNode.name}</span>
                     </div>
-                    { (treeNode.childNodes?.length > 0) && <div className="pl-16">{makeNodeTree(treeNode.childNodes)} </div>}
+                    { (treeNode.childNodes?.length > 0 && treeNode.isSelected) && <div className="pl-16">{makeNodeTree(treeNode.childNodes)} </div>}
                 </div>
             )
         })
