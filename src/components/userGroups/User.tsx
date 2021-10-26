@@ -74,10 +74,10 @@ export default function UserForm({ id = null, userData = null, index, updateCall
             return false
         }
 
-        // if (emailState.emails.length !== emailState.emails.map(email => email.value).filter(email => validateEmail(email)).length) {
-        //     setEmailState(emailState => ({ ...emailState, emailError: 'One or more emails could not be verified to be correct.' }))
-        //     return false
-        // }
+        if (emailState.emails.length !== emailState.emails.map(email => email.value).filter(email => validateEmail(email)).length) {
+            setEmailState(emailState => ({ ...emailState, emailError: 'One or more emails could not be verified to be correct.' }))
+            return false
+        }
         return true
     }
 
@@ -104,13 +104,13 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     }
 
     async function handleSubmit(e) {
-        const validForm = validateForm()
-        if (!validForm) {
-            return
-        }
-        if (!isFormComplete()) {
-            return
-        }
+        // const validForm = validateForm()
+        // if (!validForm) {
+        //     return
+        // }
+        // if (!isFormComplete()) {
+        //     return
+        // }
         setSubmitting(true)
         const payload: CreateUser = {
             id: id || 0,
