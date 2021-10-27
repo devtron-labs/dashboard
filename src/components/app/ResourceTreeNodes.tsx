@@ -709,8 +709,6 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
 
 const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode, appId }) => {
     const params = useParams<{ appId: string; envId: string }>();
-    const [forceDelete, setForceDelete] = useState(false)
-    const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
 
     let apiParams = {
         appId: appId,
@@ -725,35 +723,15 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
     };
 
     async function asyncDeletePod(e) {
-
-        function onClickForceDelete(serverError, showForceDelete) {
-            setForceDelete(showForceDelete)
-            if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
-                serverError.errors.map(({ userMessage, internalMessage }) => {
-                    setForceDeleteErrorMessage(userMessage || internalMessage);
-                });
-            }
-        }
-
         try {
             let res = await deleteResource(apiParams);
             toast.success('Deletion initiated successfully.');
         } catch (err) {
             showError(err);
-            onClickForceDelete(err, true)
         }
     }
 
-    async function handleForceDelete() {
-        try {
-            let res = await deleteResource(apiParams, true)
-            toast.success('Successfully deleted.')
-        }
-        catch (err) {
-            showError(err)
-        }
-    }
-
+  
     return <div className="pod-info__popup-container">
         {kind === Nodes.Pod ? <span className="flex pod-info__popup-row"
             onClickCapture={e => describeNode(NodeDetailTabs.EVENTS)}>
@@ -768,18 +746,6 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             <span>Delete</span>
             <Trash className="icon-dim-20" />
         </span>
-
-        {
-            forceDelete && <DeleteDialog title={`Could not delete as application not found in argocd ?`}
-                delete={handleForceDelete}
-                closeDelete={() => { setForceDelete(false) }}
-                force="Force">
-                <DeleteDialog.Description >
-                    <p className="en-2 bw-1 bcn-1 p-8">Error: {forceDeleteErrorMessage}</p>
-                    <p>Do you want to force delete?.</p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
-        }
     </div>
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { showError, Progressing, PopupMenu, ConfirmationDialog, Td } from '../../common';
+import { showError, Progressing, PopupMenu, ConfirmationDialog, Td, DeleteDialog } from '../../common';
 import moment from 'moment';
 import { get } from '../../../services/api';
 import { Routes, URLS, ViewType } from '../../../config';
@@ -9,6 +9,7 @@ import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
+import { ServerErrors } from '../../../modals/commonTypes';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -65,16 +66,33 @@ export function ChartDeploymentList({ chartId }) {
 export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt }) {
     const link = `${URLS.CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
     const [confirmation, toggleConfirmation] = useState(false)
-    const [deleting, setDeleting] = useState(false)
+    const [deleting, setDeleting] = useState(false);
+    const [forceDelete, setForceDelete] = useState(false)
+    const [forceDeleteErrorTitle, setForceDeleteErrorTitle] = useState("")
+    const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
+
+    function onClickForceDelete(serverError, showForceDelete) {
+        setForceDelete(showForceDelete)
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                setForceDeleteErrorTitle(userMessage);
+                setForceDeleteErrorMessage(internalMessage)
+            });
+        }
+    }
+
     async function handleDelete(e) {
         setDeleting(true)
         try {
-            await deleteInstalledChart(Number(installedAppId))
+            await deleteInstalledChart(Number(installedAppId), true)
             toast.success('Installation deleted');
             toggleConfirmation(false);
         }
         catch (err) {
-            showError(err)
+            showError(err);
+            setForceDelete(true);
+            onClickForceDelete(err, true);
+            toggleConfirmation(false)
         }
         finally {
             setDeleting(false)
@@ -101,16 +119,29 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                     </PopupMenu>
                 </Td>
             </tr>
-            {confirmation && <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={deleteIcon} />
-                <ConfirmationDialog.Body title={`Delete app ‘${appName}’`} subtitle={`This will delete all resources associated with this application.`}>
-                    <p className="mt-20">Deleted applications cannot be restored.</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                    <button className="cta delete" type="button" onClick={handleDelete} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>}
+            {
+                confirmation && <ConfirmationDialog>
+                    <ConfirmationDialog.Icon src={deleteIcon} />
+                    <ConfirmationDialog.Body title={`Delete app ‘${appName}’`} subtitle={`This will delete all resources associated with this application.`}>
+                        <p className="mt-20">Deleted applications cannot be restored.</p>
+                    </ConfirmationDialog.Body>
+                    <ConfirmationDialog.ButtonGroup>
+                        <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
+                        <button className="cta delete" type="button" onClick={handleDelete} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>
+            }
+            {
+                !confirmation && forceDelete && <DeleteDialog title={forceDeleteErrorTitle}
+                    delete={() => handleDelete}
+                    closeDelete={() => { setForceDelete(false) }}
+                    force="Force">
+                    <DeleteDialog.Description >
+                        <p className=" p-8" style={{backgroundColor: "#f2f4f7"}}>Error: {forceDeleteErrorMessage}</p>
+                        <p>Do you want to force delete?.</p>
+                    </DeleteDialog.Description>
+                </DeleteDialog>
+            }
         </>
     )
 }

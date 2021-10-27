@@ -310,6 +310,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             push(URLS.CHARTS)
         }
         catch (err) {
+            setForceDelete(true)
             onClickForceDelete(err, true)
             showError(err)
         }
