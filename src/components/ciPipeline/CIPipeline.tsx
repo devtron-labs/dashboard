@@ -447,7 +447,6 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 closeDelete={this.closeCIDeleteModal}
                 delete={this.deletePipeline} />
         }
-
         return null;
     }
 

@@ -24,6 +24,7 @@ import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
 import dropdown from '../../assets/icons/ic-chevron-down.svg';
+import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -429,6 +430,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         state.pipelineConfig.strategies = strategies;
         this.setState(state);
     }
+
     //@value: MANUAL | AUTOMATIC | yaml string
     handleStageConfigChange = (value: string, stageType: 'preStage' | 'postStage', key: 'triggerType' | 'config' | 'switch') => {
         let { pipelineConfig } = { ...this.state };
@@ -438,6 +440,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         this.setState({ pipelineConfig });
     }
+
 
     savePipeline() {
         this.setState({ showError: true, loadingData: true });
@@ -519,20 +522,44 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ showForceDeleteModal: showForceDelete })
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                this.setState({ forceDeleteErrorMessage: userMessage || internalMessage });
+                this.setState({ forceDeleteErrorMessage: internalMessage, forceDeleteErrorTitle: userMessage });
             });
         }
     }
 
-    deleteCD = () => {
-        let request = {
+    handleForceDelete = (e) => {
+        let payload = {
             action: CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id
             }
         }
-        deleteCDPipeline(request).then((response) => {
+        try {
+            deleteCDPipeline(payload, true).then((response) => {
+                if (response.result) {
+                    this.setState({ loadingData: false });
+                    this.props.getWorkflows();
+                    this.props.close();
+                    toast.success('Successfully deleted.')
+                }
+            })
+        }
+        catch (err) {
+            showError(err)
+        }
+    }
+
+    deleteCD = () => {
+        let payload = {
+            action: CD_PATCH_ACTION.DELETE,
+            appId: parseInt(this.props.match.params.appId),
+            pipeline: {
+                id: this.state.pipelineConfig.id
+            }
+        }
+
+        deleteCDPipeline(payload).then((response) => {
             if (response.result) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -540,11 +567,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.props.close();
             }
         }).catch((error: ServerErrors) => {
-            showError(error);
             this.onClickForceDelete(error, true)
-            this.setState({ code: error.code, loadingData: false, showForceDeleteModal: true, showDeleteModal: false });
-
+            this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteModal: true });
         })
+
     }
 
     deleteStage(key: 'preStage' | 'postStage') {
@@ -718,25 +744,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderDeleteCDModal() {
-        if (this.props.match.params.cdPipelineId ) {
-            if(this.state.showDeleteModal){
+        if (this.props.match.params.cdPipelineId) {
+            if (this.state.showDeleteModal) {
                 return <DeleteDialog title={`Delete '${this.state.pipelineConfig.name}' ?`}
-                description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}
-                delete={this.deleteCD}
-                closeDelete={this.closeCDDeleteModal} />
+                    description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}
+                    delete={this.deleteCD}
+                    closeDelete={this.closeCDDeleteModal} />
             }
-            if(!this.state.showDeleteModal && this.state.showForceDeleteModal ){
-                return <DeleteDialog title={`Could not delete as application not found in argocd ?`}
-                delete={this.deleteCD}
-                closeDelete= {this.closeCDDeleteModal}
-                force="Force">
-                <DeleteDialog.Description >
-                    <p className="en-2 bw-1 bcn-1 p-8">Error: {this.state.forceDeleteErrorMessage}</p>
-                    <p>Do you want to force delete?.</p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
+            if (!this.state.showDeleteModal && this.state.showForceDeleteModal) {
+                return <ForceDeleteDialog
+                    forceDeleteErrorTitle={this.state.forceDeleteErrorTitle}
+                    onClickDelete={(e) => this.handleForceDelete(e)}
+                    closeDeleteModal={() => this.setState({ showForceDeleteModal: false })}
+                    forceDeleteErrorMessage={this.state.forceDeleteErrorMessage}
+                />
             }
-        } 
+        }
         return null;
     }
 
@@ -864,8 +887,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <p className="form__label form__label--sentence m-0">Configure actions like Jira ticket close, that you want to run after the deployment.</p>
                 </div>
                 <div className="icon-dim-44 flex">
-                   <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostStage ? "rotate(180deg)" : "rotate(0)" }} />
-
+                    <img className="icon-dim-32 ml-auto" src={dropdown} alt="dropDown" style={{ "transform": this.state.showPostStage ? "rotate(180deg)" : "rotate(0)" }} />
                 </div>
             </div>
             {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : null}

@@ -10,6 +10,7 @@ import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { ServerErrors } from '../../../modals/commonTypes';
+import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -76,15 +77,29 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErrorTitle(userMessage);
-                setForceDeleteErrorMessage(internalMessage)
+                setForceDeleteErrorMessage(internalMessage);
             });
+        }
+    }
+
+    async function handleForceDelete(e) {
+        setDeleting(true)
+        try {
+            await deleteInstalledChart(Number(installedAppId), true)
+            toast.success('Successfully deleted.')
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setDeleting(false)
         }
     }
 
     async function handleDelete(e) {
         setDeleting(true)
         try {
-            await deleteInstalledChart(Number(installedAppId), true)
+            await deleteInstalledChart(Number(installedAppId))
             toast.success('Installation deleted');
             toggleConfirmation(false);
         }
@@ -98,6 +113,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             setDeleting(false)
         }
     }
+
     return (
         <>
             <tr className="deployment-table-row" >
@@ -132,15 +148,13 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 </ConfirmationDialog>
             }
             {
-                !confirmation && forceDelete && <DeleteDialog title={forceDeleteErrorTitle}
-                    delete={() => handleDelete}
-                    closeDelete={() => { setForceDelete(false) }}
-                    force="Force">
-                    <DeleteDialog.Description >
-                        <p className=" p-8" style={{ backgroundColor: "#f2f4f7" }}>Error: {forceDeleteErrorMessage}</p>
-                        <p>Do you want to force delete?.</p>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
+                !confirmation && forceDelete &&
+                <ForceDeleteDialog
+                    onClickDelete={()=>handleForceDelete}
+                    closeDeleteModal={setForceDelete(false)}
+                    forceDeleteErrorTitle={forceDeleteErrorTitle}
+                    forceDeleteErrorMessage={forceDeleteErrorMessage}
+                />
             }
         </>
     )

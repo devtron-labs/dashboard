@@ -18,6 +18,7 @@ import ReactGA from 'react-ga';
 import ReactSelect from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
+import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -312,7 +313,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
         catch (err) {
             setForceDelete(true)
             onClickForceDelete(err, true)
-            showError(err)
         }
         finally {
             setDeleting(false)
@@ -575,15 +575,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </DeleteDialog>
             }
             {
-            forceDelete && <DeleteDialog title={`${forceDeleteErrorTitle} ?`}
-                delete={handleForceDelete}
-                closeDelete={() => { toggleConfirmation(false); setForceDelete(false) }}
-                force="Force">
-                <DeleteDialog.Description >
-                    <p className=" p-8" style={{backgroundColor: "#f2f4f7"}}>Error: {forceDeleteErrorMessage}</p>
-                    <p>Do you want to force delete?.</p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
+            forceDelete && <ForceDeleteDialog 
+            forceDeleteErrorTitle ={forceDeleteErrorTitle}
+            onClickDelete={handleForceDelete}
+            closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
+            forceDeleteErrorMessage={forceDeleteErrorMessage}
+            />
             }
         </div>
     </>
