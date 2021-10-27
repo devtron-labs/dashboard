@@ -68,6 +68,7 @@ import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { Interface } from 'readline';
+import { sortObjectArrayAlphabetically } from '../../../common/helpers/Helpers';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -417,7 +418,7 @@ const NodeDetails: React.FC<{
     const nodesMap = nodes.nodes[kind] || new Map();
 
     let allNodes = [];
-    if (nodeItems.length < 1 && Array.from(nodesMap).length > 0) {
+    if (nodeItems?.length < 1 && Array.from(nodesMap).length > 0) {
         allNodes = Array.from(nodesMap).map(([name]) => (
             {
                 label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
@@ -432,7 +433,7 @@ const NodeDetails: React.FC<{
             selectNode(nodeName);
             setSelectNode(nodeName);
             let container = nodesMap.get(nodeName)?.containers
-            if (container.length < 2) {
+            if (container?.length < 2) {
                 selectContainer(container[0])
             }
         }
@@ -571,6 +572,7 @@ export function EnvSelector({ environments, disabled }) {
         : {};
     const environmentName = environmentsMap[+envId];
 
+    const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
@@ -590,8 +592,8 @@ export function EnvSelector({ environments, disabled }) {
                 </div>
             </div>
             <div style={{ width: '200px' }}>
-                <Select options={Array.isArray(environments) ?
-                    environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
+                <Select options={Array.isArray(sortedEnvironments) ?
+                    sortedEnvironments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
                     placeholder='Select Environment'
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
@@ -798,7 +800,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
 
     const additionalOptions = [{ label: "All pods", value: "All pods" }, { label: "All new pods", value: "All new pods" }, { label: "All old pods", value: "All old pods" }]
     let options = [];
-    if (nodeItems.length > 1) {
+    if (nodeItems?.length > 1) {
         options = additionalOptions.concat(nodeItems);
     } else {
         options = nodeItems;
@@ -817,7 +819,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     let allContainers = total.filter(item => !!item);
 
     allContainers.forEach((item) => {
-        if (item.length < 2) {
+        if (item?.length < 2) {
             let contAvailable = allContainers[0]
             if (contAvailable && !selectedContainer) {
                 selectContainer(contAvailable[0])

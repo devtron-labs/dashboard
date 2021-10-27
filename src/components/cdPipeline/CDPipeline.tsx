@@ -600,9 +600,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
+        let title = this.props.match.params.cdPipelineId ? "Edit deployment pipeline" : "Create deployment pipeline";
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Create deployment pipeline</h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
                 <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
                     <Close className="icon-dim-24" />
                 </button>
