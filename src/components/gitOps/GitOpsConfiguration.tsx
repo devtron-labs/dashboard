@@ -286,14 +286,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 this.fetchGitOpsConfigurationList();
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
-                if (resp.successfulStages && resp.successfulStages?.includes("Create Repo")){
-                        if (resp.successfulStages?.includes("Delete Repo")){
-                            this.setState({deleteRepoError : false})
-                        } else{
-                            this.setState({deleteRepoError : true})
-                        }
-                } else{
+                if (resp.deleteRepoSuccessful){
                     this.setState({deleteRepoError : false})
+                } else{
+                    this.setState({deleteRepoError : true})
                 }
                 toast.error("Configuration validation failed");
             }
@@ -330,19 +326,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let errorMap = resp.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
-                if (resp.successfulStages && resp.successfulStages?.includes("Create Repo")){
-                    if (resp.successfulStages?.includes("Delete Repo")){
-                        this.setState({deleteRepoError : false})
-                    } else{
-                        this.setState({deleteRepoError : true})
-                    }
+                if (resp.deleteRepoSuccessful){
+                    this.setState({deleteRepoError : false})
                 } else{
-                this.setState({deleteRepoError : false})
+                    this.setState({deleteRepoError : true})
                 }
                 toast.error("Configuration validation failed");
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
-                if (resp.successfulStages && resp.successfulStages?.includes("Delete Repo")){
+                if (resp.deleteRepoSuccessful){
                     this.setState({deleteRepoError : false})
                 } else{
                     this.setState({deleteRepoError : true})
