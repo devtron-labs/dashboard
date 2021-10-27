@@ -48,7 +48,6 @@ function ValidateLoading({ message }) {
 }
 
 function ValidateSuccess({ onClickValidate, deleteRepoError }) {
-    console.log(deleteRepoError);
     return <div className="mb-16"><div className={`${deleteRepoError ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
         <div className="flex flex-justify">
             <div className="flex">
