@@ -20,9 +20,11 @@
 }
 
 .white-card__deployment-config {
-    padding: 16px;
-    margin-bottom: 16px;
-    .select-button {
+    border-right: 1px solid var(--N200);
+    border-bottom: 1px solid var(--N200);
+    padding: 0px;
+    height: 100%;
+        .select-button {
         padding-left: 8px;
         height: 40px;
     }
@@ -35,10 +37,9 @@
 }
 
 .form__row--code-editor-container{
-    height: 500px;
-    border: 1px solid var(--N200);
+    height: 100%;
+    border-top: 1px solid var(--N200);
     display: grid;
     grid-template-rows: 40px 1fr;
-    border-radius: 4px;
     overflow: hidden;
 }

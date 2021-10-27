@@ -7,6 +7,8 @@ import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
@@ -14,14 +16,14 @@ import './deploymentConfig.scss';
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
 
-    return <div id="opt-metrics" className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}>
-        <div className="p-lr-20 m-tb-20 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>
+    return <div id="opt-metrics" className={`flex column left br-0 white-card ${focus ? 'animate-background' : ''} ${className}`}>
+        <div className="p-lr-20 p-13 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>
             <div className="flex column left">
-                <b style={{ marginBottom: '8px' }}>Show application metrics</b>
+                <b>Show application metrics</b>
                 <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
             </div>
-            <div style={{ height: '20px', width: '32px' }}>
-                {loading ? <Progressing /> : <Toggle disabled={disabled || isChartVersionSupported} onSelect={onChange} selected={opted} />}
+            <div>
+                <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
             </div>
         </div>
         {isChartVersionSupported && <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%' }}>
@@ -32,44 +34,14 @@ export function OptApplicationMetrics({ currentVersion, onChange, opted, focus =
 }
 
 export default function DeploymentConfig({ respondOnSuccess }) {
-    return <div className="form__app-compose">
-        <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
-        <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
-            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
-        </p>
-        <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
-    </div>
-}
-
-function DeploymentConfigForm({ respondOnSuccess }) {
-    const [chartVersions, setChartVersions] = useState<{ id: number, version: string; }[]>(null)
+    const [loading, setLoading] = useState(false);
+    const [chartVersions, setChartVersions] = useState<{ id: number, version: string; }[]>(null);
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     const [selectedChart, selectChart] = useState<{ id: number, version: string; }>(null)
-    const [template, setTemplate] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [appMetricsLoading, setAppMetricsLoading] = useState(false)
-    const [chartConfig, setChartConfig] = useState(null)
-    const [isAppMetricsEnabled, toggleAppMetrics] = useState(null)
-    const [tempFormData, setTempFormData] = useState("")
-    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
-    const [chartConfigLoading, setChartConfigLoading] = useState(null)
-    const [showConfirmation, toggleConfirmation] = useState(false)
-
-    useEffect(() => {
-        initialise()
-    }, [])
-
-    // useEffectAfterMount(() => {
-    //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
-    //         fetchDeploymentTemplate()
-    //     }
-    // }, [chartConfigLoading])
-
-    useEffectAfterMount(() => {
-        fetchDeploymentTemplate();
-        // initialise()
-    }, [selectedChart])
-
-    const { appId } = useParams<{ appId }>()
+    const [isAppMetricsEnabled, toggleAppMetrics] = useState(null);
+    const [appMetricsLoading, setAppMetricsLoading] = useState(false);
+    const [chartConfigLoading, setChartConfigLoading] = useState(null);
+    const { appId } = useParams<{ appId }>();
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
@@ -102,6 +74,74 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             setChartConfigLoading(false)
         }
     }
+
+    return <div style={{height:'81.5vh'}}><div style={{display:'grid', gridTemplateColumns:'1fr 1fr', height:'100%'}}>
+        {/* <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
+        <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
+        </p> */}
+        <DeploymentConfigForm 
+        respondOnSuccess={respondOnSuccess} 
+        loading={loading} setLoading={setLoading} 
+        chartVersions={chartVersions} 
+        setChartVersions={setChartVersions}
+        selectedChart={selectedChart}
+        selectChart={selectChart}
+        toggleAppMetrics={toggleAppMetrics}
+        isAppMetricsEnabled={isAppMetricsEnabled}
+        appMetricsLoading={appMetricsLoading}
+        setAppMetricsLoading={setAppMetricsLoading}
+        chartConfigLoading={chartConfigLoading}
+        setChartConfigLoading={setChartConfigLoading}
+        initialise={initialise}
+        appId={appId}/>
+        <ApplicationmatrixInfo/>
+    </div>
+                {/* {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled && */}
+                <OptApplicationMetrics
+                    currentVersion={selectedChart?.version}
+                    onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
+                    opted={isAppMetricsEnabled}
+                    loading={appMetricsLoading}
+                />
+    </div>
+}
+
+function ApplicationmatrixInfo() {
+    return(
+        <>
+          <form action="" className="white-card white-card__deployment-config br-0 bw-0">
+              <div className="p-16 flex left content-space">
+                  <span className="fw-6 fs-14">Using application metrics</span>
+                  <Close className="icon-dim-20"/>
+              </div>
+          </form>
+        </>
+    )
+}
+
+function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVersions, setChartVersions, selectedChart, selectChart, toggleAppMetrics, isAppMetricsEnabled, appMetricsLoading, setAppMetricsLoading,
+    chartConfigLoading, setChartConfigLoading, initialise, appId }) {
+    const [template, setTemplate] = useState("")
+    const [chartConfig, setChartConfig] = useState(null)
+    const [tempFormData, setTempFormData] = useState("")
+    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
+    const [showConfirmation, toggleConfirmation] = useState(false)
+
+    useEffect(() => {
+        initialise()
+    }, [])
+
+    // useEffectAfterMount(() => {
+    //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
+    //         fetchDeploymentTemplate()
+    //     }
+    // }, [chartConfigLoading])
+
+    useEffectAfterMount(() => {
+        fetchDeploymentTemplate();
+        // initialise()
+    }, [selectedChart])
 
     async function fetchDeploymentTemplate() {
         setChartConfigLoading(true)
@@ -166,15 +206,13 @@ function DeploymentConfigForm({ respondOnSuccess }) {
             toggleConfirmation(false)
         }
     }
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return (
         <>
-            <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
-                <div className="form__row">
-                    <div className="form__label">Chart version</div>
+            <form action="" className="p-0 white-card white-card__deployment-config br-0 bw-0" onSubmit={handleSubmit}>
+                <div className="p-12 flex left content-space">
                     <ReactSelect options={chartVersions}
                         isMulti={false}
-                        getOptionLabel={option => `${option.version}`}
+                        getOptionLabel={option => `Chart version ${option.version}`}
                         getOptionValue={option => `${option.id}`}
                         value={selectedChart}
                         components={{
@@ -184,33 +222,40 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                             control: (base, state) => ({
                                 ...base,
                                 boxShadow: 'none',
-                                border: `solid 1px var(--B500)`
+                                border: `solid 1px var(--N200)`,
+                                width:'168px',
+                                backgroundColor: '#f7fafc'
                             }),
                             option: (base, state) => {
                                 return ({
                                     ...base,
                                     color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    backgroundColor: state.isFocused ? '#f7fafc' : 'white',
+                                    fontSize: '12px',
                                 })
                             },
+                            menu: (base, state) =>{
+                                return({
+                                    ...base,
+                                    width:'168px'
+                                })
+                            }
                         }}
                         onChange={(selected) => selectChart(selected as { id: number, version: string })}
                     />
+                    <div className="pointer flex">
+                        <File className="icon-dim-20"/>
+                        <a rel="noreferrer noopener" className="ml-4 fs-13 cn-7" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Readme</a>
+                    </div>
                 </div>
-                <div className="form__row form__row--code-editor-container">
+                <div className="form__row--code-editor-container">
                     <CodeEditor
                         value={tempFormData}
+                        isDepConfig={true}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
                         loading={chartConfigLoading}>
-                        <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
                     </CodeEditor>
-                </div>
-                <div className="form__buttons">
-                    <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
             {showConfirmation && <ConfirmationDialog>
@@ -223,13 +268,13 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
+            {/* {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
                     onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
                     opted={isAppMetricsEnabled}
                     loading={appMetricsLoading}
-                />}
+                />} */}
         </>
     )
 }
