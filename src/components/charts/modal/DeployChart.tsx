@@ -580,7 +580,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 closeDelete={() => { toggleConfirmation(false); setForceDelete(false) }}
                 force="Force">
                 <DeleteDialog.Description >
-                    <p className="en-2 bw-1 bcn-1 p-8">Error: {forceDeleteErrorMessage}</p>
+                    <p className=" p-8" style={{backgroundColor: "#f2f4f7"}}>Error: {forceDeleteErrorMessage}</p>
                     <p>Do you want to force delete?.</p>
                 </DeleteDialog.Description>
             </DeleteDialog>

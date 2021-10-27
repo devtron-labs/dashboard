@@ -137,7 +137,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                     closeDelete={() => { setForceDelete(false) }}
                     force="Force">
                     <DeleteDialog.Description >
-                        <p className=" p-8" style={{backgroundColor: "#f2f4f7"}}>Error: {forceDeleteErrorMessage}</p>
+                        <p className=" p-8" style={{ backgroundColor: "#f2f4f7" }}>Error: {forceDeleteErrorMessage}</p>
                         <p>Do you want to force delete?.</p>
                     </DeleteDialog.Description>
                 </DeleteDialog>
