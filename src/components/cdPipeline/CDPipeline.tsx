@@ -441,7 +441,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig });
     }
 
-
     savePipeline() {
         this.setState({ showError: true, loadingData: true });
         let pipeline = {
@@ -516,7 +515,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     setDeleteApp = () => {
         this.setState({ shouldDeleteApp: !this.state.shouldDeleteApp });
     }
-
 
     onClickForceDelete = (serverError, showForceDelete) => {
         this.setState({ showForceDeleteModal: showForceDelete })

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
-import { PopupMenu, Pod as PodIcon, Trash, showError, copyToClipboard, not, useSearchString, DeleteDialog, } from '../common';
+import { PopupMenu, Pod as PodIcon, Trash, showError, copyToClipboard, not, useSearchString } from '../common';
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 import { toast } from 'react-toastify'
@@ -13,7 +13,6 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
 import { getAggregator } from './details/appDetails/utils';
 import Tippy from '@tippyjs/react';
-import { ServerErrors } from '../../modals/commonTypes';
 
 interface ResourceTree {
     appName: string;
@@ -731,7 +730,7 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
         }
     }
 
-  
+
     return <div className="pod-info__popup-container">
         {kind === Nodes.Pod ? <span className="flex pod-info__popup-row"
             onClickCapture={e => describeNode(NodeDetailTabs.EVENTS)}>
