@@ -593,7 +593,7 @@ export function EnvSelector({ environments, disabled }) {
             </div>
             <div style={{ width: '200px' }}>
                 <Select options={Array.isArray(sortedEnvironments) ?
-                    environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
+                    sortedEnvironments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
                     placeholder='Select Environment'
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
