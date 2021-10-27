@@ -27,7 +27,6 @@ export interface GitOpsConfig {
     azureProjectName: string;
     bitBucketWorkspaceId: string;
     bitBucketProjectKey: string;
-    deleteRepoSuccessful: boolean;
 }
 
 

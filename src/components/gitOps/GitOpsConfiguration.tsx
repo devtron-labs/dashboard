@@ -55,7 +55,6 @@ const DefaultGitOpsConfig = {
     active: true,
     bitBucketWorkspaceId: "",
     bitBucketProjectKey: "",
-    deleteRepoSuccessful: false,
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -278,20 +277,30 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let errorMap = resp.gitOpsValidationResponse.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length == 0) {
                 toast.success("Configuration validated and saved successfully");
+                let state = {...this.state}
+                state.validationStatus = VALIDATION_STATUS.SUCCESS;
+                state.saveLoading = false;
+                state.isFormEdited = false;
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
                 if (resp.gitOpsValidationResponse.deleteRepoFailed){
-                    this.setState({deleteRepoError : true})
+                    state.deleteRepoError = true;
                 } else{
-                    this.setState({deleteRepoError : false})
+                    state.deleteRepoError = false;
                 }
+                this.setState(state);
                 this.fetchGitOpsConfigurationList();
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.gitOpsValidationResponse.stageErrorMap || [] })
+                let state = {...this.state}
+                state.validationStatus = VALIDATION_STATUS.FAILURE;
+                state.saveLoading = false;
+                state.isFormEdited = false;
+                state.validationError = resp.gitOpsValidationResponse.stageErrorMap || [];
                 if (resp.gitOpsValidationResponse.deleteRepoFailed){
-                    this.setState({deleteRepoError : true})
+                    state.deleteRepoError = true;
                 } else{
-                    this.setState({deleteRepoError : false})
+                    state.deleteRepoError = false;
                 }
+                this.setState(state);
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {
@@ -326,20 +335,29 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let resp = response.result
             let errorMap = resp.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
+                let state = {...this.state}
+                state.validationStatus = VALIDATION_STATUS.FAILURE;
+                state.saveLoading = false;
+                state.isFormEdited = false;
+                state.validationError = resp.stageErrorMap || [];
                 if (resp.deleteRepoFailed){
-                    this.setState({deleteRepoError : true})
+                    state.deleteRepoError = true;
                 } else{
-                    this.setState({deleteRepoError : false})
+                    state.deleteRepoError = false;
                 }
+                this.setState(state)
                 toast.error("Configuration validation failed");
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
+                let state = {...this.state}
+                state.validationStatus = VALIDATION_STATUS.SUCCESS;
+                state.saveLoading = false;
+                state.isFormEdited = false;
                 if (resp.deleteRepoFailed){
-                    this.setState({deleteRepoError : true})
+                    state.deleteRepoError = true;
                 } else{
-                    this.setState({deleteRepoError : false})
+                    state.deleteRepoError = false;
                 }
+                this.setState(state)
                 toast.success("Configuration validated");
             }
         }).catch((error) => {
