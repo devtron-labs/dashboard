@@ -54,7 +54,7 @@ const DefaultGitOpsConfig = {
     azureProjectName: "",
     active: true,
     bitBucketWorkspaceId: "",
-    bitBucketProjectKey: "",
+    bitBucketProjectKey: ""
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
