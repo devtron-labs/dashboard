@@ -286,7 +286,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 }
                 this.fetchGitOpsConfigurationList();
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.gitOpsValidationResponse.stageErrorMap || [] })
                 if (resp.gitOpsValidationResponse.deleteRepoFailed){
                     this.setState({deleteRepoError : true})
                 } else{
@@ -324,7 +324,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = validateGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            let errorMap = resp.gitOpsValidationResponse.stageErrorMap
+            let errorMap = resp.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
                 if (resp.deleteRepoFailed){
