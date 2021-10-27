@@ -572,7 +572,7 @@ export function EnvSelector({ environments, disabled }) {
         : {};
     const environmentName = environmentsMap[+envId];
 
-    const sortedEnv = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
+    const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
@@ -592,7 +592,7 @@ export function EnvSelector({ environments, disabled }) {
                 </div>
             </div>
             <div style={{ width: '200px' }}>
-                <Select options={Array.isArray(sortedEnv) ?
+                <Select options={Array.isArray(sortedEnvironments) ?
                     environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
                     placeholder='Select Environment'
                     value={envId ? { value: +envId, label: environmentName } : null}
