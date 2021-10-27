@@ -544,11 +544,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
 
     render() {
         let text = this.props.match.params.ciPipelineId ? "Update Pipeline" : "Create Pipeline";
+        const title = this.props.match.params.ciPipelineId ? "Edit build pipeline" : "Create build pipeline";
 
         return <VisibleModal className="" >
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
                 <div className="p-20 flex flex-align-center flex-justify bcn-0 ">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Create build pipeline</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
                     <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
