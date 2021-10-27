@@ -32,7 +32,6 @@ interface CodeEditorInterface {
     diffView?: boolean;
     loading?: boolean;
     theme?: string;
-    isDepConfig?: boolean;
 }
 
 interface CodeEditorHeaderInterface {
@@ -80,7 +79,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading, theme="", isDepConfig = false}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading, theme=""}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -251,7 +250,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             onChange={handleOnChange}
                             editorDidMount={editorDidMount}
-                            height={isDepConfig ? state.height : "100%"}
+                            height={state.height || "100%"}
                             width="100%"
                         />
                     }

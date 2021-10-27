@@ -23,7 +23,7 @@
     border-right: 1px solid var(--N200);
     border-bottom: 1px solid var(--N200);
     padding: 0px;
-    height: 100%;
+    height: "100%";
         .select-button {
         padding-left: 8px;
         height: 40px;
@@ -42,4 +42,16 @@
     display: grid;
     grid-template-rows: 40px 1fr;
     overflow: hidden;
+}
+
+.app-matrix-header{
+    padding: 19.5px;
+}
+.app-matrix-inner{
+    border-top: 1px solid var(--N200);
+    overflow: scroll;
+    height: 570px;
+}
+.app-matrix-outer{
+    border: solid 1px #c5bbfa
 }
