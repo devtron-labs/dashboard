@@ -275,10 +275,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            if (resp.active) {
+            let errorMap = resp.gitOpsValidationResponse.stageErrorMap
+            if (errorMap != null && Object.keys(errorMap).length == 0) {
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
-                if (resp.deleteRepoFailed){
+                if (resp.gitOpsValidationResponse.deleteRepoFailed){
                     this.setState({deleteRepoError : true})
                 } else{
                     this.setState({deleteRepoError : false})
@@ -286,7 +287,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 this.fetchGitOpsConfigurationList();
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
-                if (resp.deleteRepoFailed){
+                if (resp.gitOpsValidationResponse.deleteRepoFailed){
                     this.setState({deleteRepoError : true})
                 } else{
                     this.setState({deleteRepoError : false})
@@ -323,7 +324,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = validateGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            let errorMap = resp.stageErrorMap
+            let errorMap = resp.gitOpsValidationResponse.stageErrorMap
             if (errorMap != null && Object.keys(errorMap).length > 0) {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
                 if (resp.deleteRepoFailed){
