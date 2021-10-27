@@ -3,7 +3,7 @@ import { DropdownIcon } from '../../../../common';
 import { iNode, iNodes } from './node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 
-function NodeTreeComponent() {
+function NodeTreeComponent(props) {
 
     const [{ treeNodes }, dispatch] = useNodeTree();
 
@@ -14,7 +14,7 @@ function NodeTreeComponent() {
                 node: treeNode
             })
         } else {
-
+            props.updateNodeInfo(treeNode)
         }
     }
 
@@ -22,11 +22,13 @@ function NodeTreeComponent() {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
-                    <div className="flex left" onClick={(e) => handleNodeClick(treeNode, e)} >
+                    <div className="flex left" onClick={(e) => handleNodeClick(treeNode)} >
                         {(treeNode.childNodes?.length > 0) && <DropdownIcon className={treeNode.isSelected ? 'rotate icon-dim-20' : ''} />}
                         <span> {treeNode.name}</span>
                     </div>
-                    { (treeNode.childNodes?.length > 0 && treeNode.isSelected) && <div className="pl-16">{makeNodeTree(treeNode.childNodes)} </div>}
+                    { (treeNode.childNodes?.length > 0 && treeNode.isSelected) &&
+                        <div className="pl-16">{makeNodeTree(treeNode.childNodes)} </div>
+                    }
                 </div>
             )
         })

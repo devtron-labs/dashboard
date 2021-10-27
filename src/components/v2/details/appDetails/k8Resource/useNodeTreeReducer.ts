@@ -12,6 +12,7 @@ export const NodesJSON = [
     {
         name: "WorkLoad",
         icon: "",
+      
         childNodes: [
             {
                 name: "Cron Jobs",
@@ -20,34 +21,42 @@ export const NodesJSON = [
                     {
                         name: "Pods",
                         icon: "",
+                        type: 'Pod'
                     },
                     {
                         name: "Jobs",
                         icon: "",
+                        type: 'Pod'
                     }
                 ]
             },
             {
-                name: "Daemon Sets",
+                name: "Service",
                 icon: "",
+                type: 'Service'
             }
         ]
+
     },
     {
         name: "Replica Set",
         icon: "",
+        type: 'Generic'
     },
     {
         name: "Pods",
         icon: "",
+        type: 'Pod'
     },
     {
         name: "Networking",
         icon: "",
+        type: 'Generic'
     },
     {
         name: "Config & Storage",
         icon: "",
+        type: 'Generic'
     }
 ]
 
