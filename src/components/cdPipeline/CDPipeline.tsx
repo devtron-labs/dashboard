@@ -81,7 +81,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage: false,
             showDeleteModal: false,
             shouldDeleteApp: true,
+            showForceDeleteModal: false,
             isAdvanced: false,
+            forceDeleteErrorMessage: '',
+            forceDeleteErrorTitle: ''
         }
         this.validationRules = new ValidationRules();
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this);
@@ -511,6 +514,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ shouldDeleteApp: !this.state.shouldDeleteApp });
     }
 
+
+    onClickForceDelete = (serverError, showForceDelete) => {
+        this.setState({ showForceDeleteModal: showForceDelete })
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                this.setState({ forceDeleteErrorMessage: userMessage || internalMessage });
+            });
+        }
+    }
+
     deleteCD = () => {
         let request = {
             action: CD_PATCH_ACTION.DELETE,
@@ -528,7 +541,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
         }).catch((error: ServerErrors) => {
             showError(error);
-            this.setState({ code: error.code, loadingData: false });
+            this.onClickForceDelete(error, true)
+            this.setState({ code: error.code, loadingData: false, showForceDeleteModal: true, showDeleteModal: false });
+
         })
     }
 
@@ -703,12 +718,25 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderDeleteCDModal() {
-        if (this.props.match.params.cdPipelineId && this.state.showDeleteModal) {
-            return <DeleteDialog title={`Delete '${this.state.pipelineConfig.name}' ?`}
+        if (this.props.match.params.cdPipelineId ) {
+            if(this.state.showDeleteModal){
+                return <DeleteDialog title={`Delete '${this.state.pipelineConfig.name}' ?`}
                 description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}
                 delete={this.deleteCD}
                 closeDelete={this.closeCDDeleteModal} />
-        }
+            }
+            if(!this.state.showDeleteModal && this.state.showForceDeleteModal ){
+                return <DeleteDialog title={`Could not delete as application not found in argocd ?`}
+                delete={this.deleteCD}
+                closeDelete= {this.closeCDDeleteModal}
+                force="Force">
+                <DeleteDialog.Description >
+                    <p className="en-2 bw-1 bcn-1 p-8">Error: {this.state.forceDeleteErrorMessage}</p>
+                    <p>Do you want to force delete?.</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+            }
+        } 
         return null;
     }
 

@@ -76,8 +76,6 @@ export interface CIPipelineState {
     showDocker: boolean;
     showPostBuild: boolean;
     isAdvanced?: boolean; //required for CIPipeline
-    forceDelete: boolean;
-    forceDeleteErrorMessage: string;
 }
 
 

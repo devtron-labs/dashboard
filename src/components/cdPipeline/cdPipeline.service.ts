@@ -23,8 +23,14 @@ export function updateCDPipeline(request) {
     return post(URL, request);
 }
 
-export function deleteCDPipeline(request) {
-    const URL = `${Routes.CD_CONFIG_PATCH}`;
+export function deleteCDPipeline(request, data?: boolean) {
+    let URL;
+    if(data){
+     URL = `${Routes.CD_CONFIG_PATCH}?force=${data}`;
+    }
+    else{
+        URL = `${Routes.CD_CONFIG_PATCH}`;
+    }
     return post(URL, request);
 }
 

@@ -55,8 +55,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             showPreBuild: false,
             showPostBuild: false,
             showDocker: false,
-            forceDelete: false,
-            forceDeleteErrorMessage: ''
         }
         this.deletePipeline = this.deletePipeline.bind(this);
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
