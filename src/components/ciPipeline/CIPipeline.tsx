@@ -365,22 +365,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 this.setState({ loadingData: false });
             })
     }
-
    
-    handleForceDelete = () => {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
-            if (response) {
-                toast.success("Pipeline Deleted");
-                this.props.close();
-                this.props.getWorkflows();
-            }
-        }).catch((error: ServerErrors) => {
-            showError(error)
-            this.setState({ loadingData: false });
-        })
-
-    }
-
     deletePipeline() {
         deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
             if (response) {

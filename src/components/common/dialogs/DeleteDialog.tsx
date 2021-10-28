@@ -7,7 +7,7 @@ export interface DeleteDialogProps {
     description?: string;
     closeDelete: () => void;
     delete: () => any;
-    force?: string
+    deletePrefix?: string
 }
 
 export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.FC<any> } = function (props) {
@@ -23,7 +23,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
         <ConfirmationDialog.ButtonGroup>
             <div className="flex right">
                 <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={props.closeDelete}>Cancel</button>
-                <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={props.delete}>{props.force} Delete</button>
+                <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={props.delete}>{props.deletePrefix} Delete</button>
             </div>
         </ConfirmationDialog.ButtonGroup>
     </ConfirmationDialog >

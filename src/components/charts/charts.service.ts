@@ -32,10 +32,10 @@ export function updateChart(request) {
     return put(`app-store/application/update`, request)
 }
 
-export function deleteInstalledChart(installedAppId, data?: boolean) {
+export function deleteInstalledChart(installedAppId, force?: boolean) {
     let URL
-    if (data) {
-        URL = `app-store/application/delete/${installedAppId}?force=${data}`
+    if (force) {
+        URL = `app-store/application/delete/${installedAppId}?force=${force}`
     }
     else {
         URL = `app-store/application/delete/${installedAppId}`
@@ -112,9 +112,9 @@ export function updateChartValues(request) {
     return put(URL, request);
 }
 
-export function deleteChartValues(chartId: number, data?: object): Promise<any> {
+export function deleteChartValues(chartId: number): Promise<any> {
     const URL = `${Routes.CHART_VALUES}/${chartId}`;
-    return trash(URL, data);
+    return trash(URL);
 }
 
 export function getInstalledCharts(queryString: string) {

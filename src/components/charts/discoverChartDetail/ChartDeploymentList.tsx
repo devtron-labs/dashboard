@@ -68,41 +68,33 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     const link = `${URLS.CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
-    const [forceDelete, setForceDelete] = useState(false)
-    const [forceDeleteErrorTitle, setForceDeleteErrorTitle] = useState("")
-    const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
+    const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
+    const [ forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState("")
+    const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState("")
 
-    function onClickForceDelete(serverError) {
+    function setForceDeleteDialogData(serverError) {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                setForceDeleteErrorTitle(userMessage);
-                setForceDeleteErrorMessage(internalMessage);
+                setForceDeleteDialogTitle(userMessage);
+                setForceDeleteDialogMessage(internalMessage);
             });
         }
     }
 
-    async function handleForceDelete(e) {
-        try {
-            await deleteInstalledChart(Number(installedAppId), true)
-            toast.success('Successfully deleted.')
-
-        }
-        catch (err) {
-            showError(err)
-        }
-
-    }
-
-    async function handleDelete() {
+    async function handleDelete(force) {
         setDeleting(true)
         try {
-            await deleteInstalledChart(Number(installedAppId))
-            toast.success('Installation deleted');
+            if (force === true) {
+                await deleteInstalledChart(Number(installedAppId), force)
+            } else {
+                await deleteInstalledChart(Number(installedAppId))
+            }
+            toast.success('Successfully deleted');
         }
         catch (err) {
             toggleConfirmation(false);
-            setForceDelete(true);
-            onClickForceDelete(err);
+            setForceDeleteDialog(true);
+            setForceDeleteDialogData(err);
         }
         finally {
             setDeleting(false);
@@ -138,16 +130,16 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                     </ConfirmationDialog.Body>
                     <ConfirmationDialog.ButtonGroup>
                         <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                        <button className="cta delete" type="button" onClick={handleDelete} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
+                        <button className="cta delete" type="button" onClick={()=>handleDelete(false)} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             }
             {
-                forceDelete && <ForceDeleteDialog
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
-                    forceDeleteErrorTitle={forceDeleteErrorTitle}
-                    forceDeleteErrorMessage={forceDeleteErrorMessage}
+                showForceDeleteDialog&& <ForceDeleteDialog
+                    onClickDelete={()=>handleDelete(true)}
+                    closeDeleteModal={() => { toggleConfirmation(false); setForceDeleteDialog(false) }}
+                     forceDeleteDialogTitle={ forceDeleteDialogTitle}
+                    forceDeleteDialogMessage={forceDeleteDialogMessage}
                 />
             }
         </>

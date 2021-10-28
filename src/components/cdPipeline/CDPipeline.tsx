@@ -82,10 +82,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage: false,
             showDeleteModal: false,
             shouldDeleteApp: true,
-            showForceDeleteModal: false,
+            showForceDeleteDialog: false,
             isAdvanced: false,
-            forceDeleteErrorMessage: '',
-            forceDeleteErrorTitle: ''
+            forceDeleteDialogMessage: '',
+            forceDeleteDialogTitle: ''
         }
         this.validationRules = new ValidationRules();
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this);
@@ -516,16 +516,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ shouldDeleteApp: !this.state.shouldDeleteApp });
     }
 
-    onClickForceDelete = (serverError) => {
-        this.setState({ showForceDeleteModal: true })
+    setForceDeleteDialogData = (serverError) => {
+        this.setState({ showForceDeleteDialog: true })
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                this.setState({ forceDeleteErrorMessage: internalMessage, forceDeleteErrorTitle: userMessage });
+                this.setState({ forceDeleteDialogMessage: internalMessage, forceDeleteDialogTitle: userMessage });
             });
         }
     }
 
-    handleForceDelete = (e) => {
+    handleForceDelete = (force) => {
         let payload = {
             action: CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
@@ -534,6 +534,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
         }
         try {
+            if (force === true) {
+                deleteCDPipeline(payload, force)
+            } else {
+                deleteCDPipeline(payload)
+            }
             deleteCDPipeline(payload, true).then((response) => {
                 if (response.result) {
                     this.setState({ loadingData: false });
@@ -548,7 +553,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    deleteCD = () => {
+    deleteCD = (force) => {
         let payload = {
             action: CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
@@ -557,6 +562,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
         }
 
+        if (force === true) {
+            deleteCDPipeline(payload, force)
+        } else {
+            deleteCDPipeline(payload)
+        }
         deleteCDPipeline(payload).then((response) => {
             if (response.result) {
                 toast.success("Pipeline Deleted");
@@ -565,8 +575,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.props.close();
             }
         }).catch((error: ServerErrors) => {
-            this.onClickForceDelete(error)
-            this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteModal: true });
+            this.setForceDeleteDialogData(error)
+            this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
         })
 
     }
@@ -747,15 +757,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             if (this.state.showDeleteModal) {
                 return <DeleteDialog title={`Delete '${this.state.pipelineConfig.name}' ?`}
                     description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}
-                    delete={this.deleteCD}
+                    delete={() => this.deleteCD(false)}
                     closeDelete={this.closeCDDeleteModal} />
             }
-            if (!this.state.showDeleteModal && this.state.showForceDeleteModal) {
+            if (!this.state.showDeleteModal && this.state.showForceDeleteDialog) {
                 return <ForceDeleteDialog
-                    forceDeleteErrorTitle={this.state.forceDeleteErrorTitle}
-                    onClickDelete={(e) => this.handleForceDelete(e)}
-                    closeDeleteModal={() => this.setState({ showForceDeleteModal: false })}
-                    forceDeleteErrorMessage={this.state.forceDeleteErrorMessage}
+                    forceDeleteDialogTitle={this.state.forceDeleteDialogTitle}
+                    onClickDelete={() => this.deleteCD(true)}
+                    closeDeleteModal={() => this.setState({ showForceDeleteDialog: false })}
+                    forceDeleteDialogMessage={this.state.forceDeleteDialogMessage}
                 />
             }
         }

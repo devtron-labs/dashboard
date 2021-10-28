@@ -723,7 +723,7 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
 
     async function asyncDeletePod(e) {
         try {
-            let res = await deleteResource(apiParams);
+            await deleteResource(apiParams);
             toast.success('Deletion initiated successfully.');
         } catch (err) {
             showError(err);

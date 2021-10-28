@@ -68,9 +68,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [forceDelete, setForceDelete] = useState(false)
-    const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
-    const [forceDeleteErrorTitle, setForceDeleteErroTitle] = useState("")
+    const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
+    const [forceDeleteDialogMessage, setForceDeleteErrorMessage] = useState("")
+    const [forceDeleteDialogTitle, setForceDeleteErroTitle] = useState("")
     const [textRef, setTextRef] = useState(rawValues)
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
     const [repoChartOptions, setRepoChartOptions] = useState<chartRepoOtions[] | null>([
@@ -278,7 +278,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, [chartValuesFromParent])
 
-    function onClickForceDelete(serverError) {
+    function setForceDeleteDialogData(serverError) {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErroTitle(userMessage)
@@ -287,27 +287,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    async function handleForceDelete() {
-        try {
-            await deleteInstalledChart(installedAppId, true)
-            toast.success('Successfully deleted.')
-            push(URLS.CHARTS)
-        }
-        catch (err) {
-            showError(err)
-        }
-    }
-
-    async function handleDelete() {
+    async function handleDelete(force) {
         setDeleting(true)
         try {
-            await deleteInstalledChart(installedAppId)
+            if (force === true) {
+                await deleteInstalledChart(installedAppId, force)
+            } else {
+                await deleteInstalledChart(installedAppId)
+            }
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
         catch (err) {
-            setForceDelete(true)
-            onClickForceDelete(err)
+            setForceDeleteDialog(true)
+            setForceDeleteDialogData(err)
         }
         finally {
             setDeleting(false)
@@ -560,7 +553,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 </button>
             </div>
             {confirmation && <DeleteDialog title={`Delete '${originalName}' ?`}
-                delete={handleDelete}
+                delete={() => handleDelete(false)}
                 closeDelete={() => toggleConfirmation(false)}
             >
                 <DeleteDialog.Description >
@@ -570,11 +563,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </DeleteDialog>
             }
             {
-                forceDelete && <ForceDeleteDialog
-                    forceDeleteErrorTitle={forceDeleteErrorTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
-                    forceDeleteErrorMessage={forceDeleteErrorMessage}
+                showForceDeleteDialog && <ForceDeleteDialog
+                    forceDeleteDialogTitle={forceDeleteDialogTitle}
+                    onClickDelete={() => handleDelete(true)}
+                    closeDeleteModal={() => { toggleConfirmation(false); setForceDeleteDialog(false) }}
+                    forceDeleteDialogMessage={forceDeleteDialogMessage}
                 />
             }
         </div>
