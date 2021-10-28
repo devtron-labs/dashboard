@@ -525,34 +525,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    handleForceDelete = (force) => {
-        let payload = {
-            action: CD_PATCH_ACTION.DELETE,
-            appId: parseInt(this.props.match.params.appId),
-            pipeline: {
-                id: this.state.pipelineConfig.id
-            }
-        }
-        try {
-            if (force === true) {
-                deleteCDPipeline(payload, force)
-            } else {
-                deleteCDPipeline(payload)
-            }
-            deleteCDPipeline(payload, true).then((response) => {
-                if (response.result) {
-                    this.setState({ loadingData: false });
-                    this.props.getWorkflows();
-                    this.props.close();
-                    toast.success('Successfully deleted.')
-                }
-            })
-        }
-        catch (err) {
-            showError(err)
-        }
-    }
-
     deleteCD = (force) => {
         let payload = {
             action: CD_PATCH_ACTION.DELETE,
@@ -563,22 +535,30 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
 
         if (force === true) {
-            deleteCDPipeline(payload, force)
+            deleteCDPipeline(payload, force).then((response) => {
+                if (response.result) {
+                    toast.success("Pipeline Deleted");
+                    this.setState({ loadingData: false });
+                    this.props.getWorkflows();
+                    this.props.close();
+                }
+            }).catch((error: ServerErrors) => {
+                this.setForceDeleteDialogData(error)
+                this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
+            })
         } else {
-            deleteCDPipeline(payload)
+            deleteCDPipeline(payload).then((response) => {
+                if (response.result) {
+                    toast.success("Pipeline Deleted");
+                    this.setState({ loadingData: false });
+                    this.props.getWorkflows();
+                    this.props.close();
+                }
+            }).catch((error: ServerErrors) => {
+                this.setForceDeleteDialogData(error)
+                this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
+            })
         }
-        deleteCDPipeline(payload).then((response) => {
-            if (response.result) {
-                toast.success("Pipeline Deleted");
-                this.setState({ loadingData: false });
-                this.props.getWorkflows();
-                this.props.close();
-            }
-        }).catch((error: ServerErrors) => {
-            this.setForceDeleteDialogData(error)
-            this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
-        })
-
     }
 
     deleteStage(key: 'preStage' | 'postStage') {
