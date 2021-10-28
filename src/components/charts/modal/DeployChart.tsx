@@ -161,7 +161,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         try {
             setLoading(true)
             if (installedAppVersion) {
-                let request = {
+                let payload = {
                     // if chart has changed send 0
                     id: hasChartChanged() ? 0 : installedAppVersion,
                     referenceValueId: chartValues.id,
@@ -171,14 +171,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     installedAppId: installedAppId,
                     appStoreVersion: selectedVersionUpdatePage.id,
                 }
-                await updateChart(request)
+                await updateChart(payload)
                 toast.success('Deployment initiated')
                 setLoading(false)
                 onHide(true)
             }
 
             else {
-                let request = {
+                let payload = {
                     teamId: selectedProject.value,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
@@ -188,7 +188,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverrideYaml: textRef,
                     appName,
                 };
-                const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(request);
+                const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
                 toast.success('Deployment initiated');
                 push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
             }
@@ -278,8 +278,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, [chartValuesFromParent])
 
-    function onClickForceDelete(serverError, showForceDelete) {
-        setForceDelete(showForceDelete)
+    function onClickForceDelete(serverError) {
+        setForceDelete(true)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErroTitle(userMessage)
@@ -312,7 +312,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
         catch (err) {
             setForceDelete(true)
-            onClickForceDelete(err, true)
+            onClickForceDelete(err)
         }
         finally {
             setDeleting(false)

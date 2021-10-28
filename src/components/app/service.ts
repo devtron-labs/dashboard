@@ -75,15 +75,9 @@ export function getCITriggerInfoModal(params: { appId: number | string, ciArtifa
     })
 }
 
-export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }, forceDelete?: boolean) {
+export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
     if (!group) group = '';
-    let URL;
-    if (forceDelete) {
-        URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}?force=${forceDelete}`;
-    }
-    else {
-        URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`
-    }
+    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`;
     return trash(URL);
 }
 

@@ -516,8 +516,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ shouldDeleteApp: !this.state.shouldDeleteApp });
     }
 
-    onClickForceDelete = (serverError, showForceDelete) => {
-        this.setState({ showForceDeleteModal: showForceDelete })
+    onClickForceDelete = (serverError) => {
+        this.setState({ showForceDeleteModal: true })
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 this.setState({ forceDeleteErrorMessage: internalMessage, forceDeleteErrorTitle: userMessage });
@@ -565,7 +565,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.props.close();
             }
         }).catch((error: ServerErrors) => {
-            this.onClickForceDelete(error, true)
+            this.onClickForceDelete(error)
             this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteModal: true });
         })
 

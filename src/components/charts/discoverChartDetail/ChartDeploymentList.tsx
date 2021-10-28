@@ -72,8 +72,8 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     const [forceDeleteErrorTitle, setForceDeleteErrorTitle] = useState("")
     const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
 
-    function onClickForceDelete(serverError, showForceDelete) {
-        setForceDelete(showForceDelete)
+    function onClickForceDelete(serverError) {
+        setForceDelete(true)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErrorTitle(userMessage);
@@ -106,7 +106,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         catch (err) {
             showError(err);
             setForceDelete(true);
-            onClickForceDelete(err, true);
+            onClickForceDelete(err);
             toggleConfirmation(false)
         }
         finally {
