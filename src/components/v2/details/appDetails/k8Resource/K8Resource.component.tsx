@@ -5,6 +5,7 @@ import ServiceComponent from './nodeType/Service.component'
 import GenericNodeComponent from './nodeType/GenericRow.component'
 import PodsComponent from './nodeType/AllPods.component'
 import AllPodsComponent from './nodeType/AllPods.component'
+import FilterResource from './FilterResource'
 
 export default function K8ResourceComponent() {
 
@@ -36,7 +37,7 @@ export default function K8ResourceComponent() {
 
     return (
         <div className="bcn-0">
-            <div className="pt-16 pb-16">Filters</div>
+            <div className="pt-16 pl-20 pb-16"><FilterResource /></div>
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-2"> <NodeTreeComponent updateNodeInfo={updateNodeInfoCB} /></div>

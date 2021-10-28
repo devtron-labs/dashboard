@@ -3,7 +3,7 @@ import K8ResourceComponent from '../k8Resource/K8Resource.component';
 import ResourceTreeNodeObjects from './ResourceTreeNode';
 import { iTab } from './tab.type';
 import { ResourceTreeActions, useResourceTree } from './useResourceTree';
-
+import './resourceTree.css'
 function ResourceTreeComponent() {
 
     const [{ resourceTreeTabs }, dispatch] = useResourceTree();
@@ -28,8 +28,6 @@ function ResourceTreeComponent() {
         switch (selectedTab) {
             case "K8 Resources":
                 return <K8ResourceComponent />
-                //  <ResourceTreeNodeObjects addResourceTabCallBack={addResourceTabClick} />
-            
             default:
                 return <div>{selectedTab}</div>
         }
@@ -41,12 +39,12 @@ function ResourceTreeComponent() {
 
     return (
         <div>
-            <div className="flexbox pl-20 pr-20">
+            <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                 {
                     resourceTreeTabs.map((resourceTreeTab: iTab, index) => {
                         return (
-                            <div key={index + "resourceTreeTab"} className={`${resourceTreeTab.className} ${resourceTreeTab.isSelected ? 'bcn-0 cr-5' : ''}  pt-8 pb-8 pr-16`} >
-                                <a className="fs-13 bcn-0 cn-9 fw-6" onClick={() => handleResourceTabClick(resourceTreeTab.name)}> {resourceTreeTab.icon} {resourceTreeTab.name} </a>
+                            <div key={index + "resourceTreeTab"} className={`${resourceTreeTab.className} ${resourceTreeTab.isSelected ? 'resource-tree-tab bcn-0' : ''} cursor pl-12 pt-8 pb-8 pr-12`}>
+                                <a className="cn-9 fw-6 no-decor" onClick={() => handleResourceTabClick(resourceTreeTab.name)}> {resourceTreeTab.icon} {resourceTreeTab.name} </a>
                             </div>
                         )
                     })
