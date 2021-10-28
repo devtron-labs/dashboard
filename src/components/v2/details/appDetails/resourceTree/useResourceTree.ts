@@ -85,7 +85,7 @@ export const useResourceTree = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        let initialTabs = state.resourceTreeTabs;
+        let initialTabs = [];
         initialTabs.push(TabsJSON["K8 Resources"], TabsJSON["Log Analyzer"])
         dispatch({ type: ResourceTreeActions.Init, tabs: initialTabs });
     }, []);

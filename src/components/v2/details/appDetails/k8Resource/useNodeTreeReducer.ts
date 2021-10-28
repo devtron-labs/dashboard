@@ -41,7 +41,7 @@ export const NodesJSON = [
     {
         name: "Replica Set",
         icon: "",
-        type: 'Generic'
+        type: 'GenericInfo'
     },
     {
         name: "Pods",
@@ -51,12 +51,12 @@ export const NodesJSON = [
     {
         name: "Networking",
         icon: "",
-        type: 'Generic'
+        type: 'GenericInfo'
     },
     {
         name: "Config & Storage",
         icon: "",
-        type: 'Generic'
+        type: 'GenericInfo'
     }
 ]
 

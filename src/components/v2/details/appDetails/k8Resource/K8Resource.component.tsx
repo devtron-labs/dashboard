@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { iNode, iNodeType } from './node.type'
 import NodeTreeComponent from './NodeTree.component'
 import ServiceComponent from './nodeType/Service.component'
-import GenericNodeComponent from './nodeType/GenericNode.component'
-import PodsComponent from './nodeType/Pod.component'
+import GenericNodeComponent from './nodeType/GenericRow.component'
+import PodsComponent from './nodeType/AllPods.component'
+import AllPodsComponent from './nodeType/AllPods.component'
 
 export default function K8ResourceComponent() {
 
@@ -17,27 +18,29 @@ export default function K8ResourceComponent() {
     }
 
     const selectedNodeData = () => {
-        switch (selectedNode["nodeType"]) {
+        console.log(selectedNode["type"])
+        switch (selectedNode["type"]) {
             case "Pod":
-                return <PodsComponent/>
+                return <AllPodsComponent />
             case "Service":
                 return <ServiceComponent />
-            case "Generic":
+            case "GenericInfo":
                 return <GenericNodeComponent />
             default:
-                return <div>{selectedNode["name"]}</div>
+                return <div>
+                    {selectedNode["name"]}
+                </div>
         }
+
     }
 
     return (
-        <div className="pl-20 pr-20 bcn-0">
+        <div className="bcn-0">
             <div className="pt-16 pb-16">Filters</div>
-            <div className="flex left" >
-                <div style={{ width: "240px", height: "700px", borderRight: "1px solid #ddd" }} className="">
-                    <NodeTreeComponent updateNodeInfo={updateNodeInfoCB} />
-                </div>
-                <div>
-                    {selectedNode && selectedNodeData()}
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-2"> <NodeTreeComponent updateNodeInfo={updateNodeInfoCB} /></div>
+                    <div className="col"> {selectedNode && selectedNodeData()}</div>
                 </div>
             </div>
         </div>

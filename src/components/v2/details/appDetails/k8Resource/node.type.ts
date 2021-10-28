@@ -4,13 +4,11 @@ export interface iNodes extends Array<iNode> { }
 
 export interface iNode extends iTab {
   childNodes: iNodes;
-  nodeType: iNodeType;
+  type: iNodeType;
 }
 
 export enum iNodeType{
   Service= 'Service',
   Pod= 'Pod',
-  Endpoint='Endpoint',
-  CronJob = 'CronJob',
-  Job = 'Job',
+  GenericInfo='GenericInfo',
 }
