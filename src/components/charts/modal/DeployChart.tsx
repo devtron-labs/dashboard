@@ -279,7 +279,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }, [chartValuesFromParent])
 
     function onClickForceDelete(serverError) {
-        setForceDelete(true)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErroTitle(userMessage)
@@ -290,7 +289,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     async function handleForceDelete() {
         try {
-            let res = await deleteInstalledChart(installedAppId, true)
+            await deleteInstalledChart(installedAppId, true)
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
@@ -298,15 +297,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
             showError(err)
         }
     }
-    
+
     async function handleDelete() {
         setDeleting(true)
-
         try {
-            let res = await deleteInstalledChart(installedAppId)
-            if (!res) {
-                setForceDelete(true)
-            }
+            await deleteInstalledChart(installedAppId)
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
@@ -575,12 +570,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
             </DeleteDialog>
             }
             {
-            forceDelete && <ForceDeleteDialog 
-            forceDeleteErrorTitle ={forceDeleteErrorTitle}
-            onClickDelete={handleForceDelete}
-            closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
-            forceDeleteErrorMessage={forceDeleteErrorMessage}
-            />
+                forceDelete && <ForceDeleteDialog
+                    forceDeleteErrorTitle={forceDeleteErrorTitle}
+                    onClickDelete={handleForceDelete}
+                    closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
+                    forceDeleteErrorMessage={forceDeleteErrorMessage}
+                />
             }
         </div>
     </>

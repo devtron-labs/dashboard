@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { showError, Progressing, PopupMenu, ConfirmationDialog, Td, DeleteDialog } from '../../common';
+import { showError, Progressing, PopupMenu, ConfirmationDialog, Td } from '../../common';
 import moment from 'moment';
 import { get } from '../../../services/api';
 import { Routes, URLS, ViewType } from '../../../config';
@@ -73,7 +73,6 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     const [forceDeleteErrorMessage, setForceDeleteErrorMessage] = useState("")
 
     function onClickForceDelete(serverError) {
-        setForceDelete(true)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteErrorTitle(userMessage);
@@ -83,34 +82,30 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     }
 
     async function handleForceDelete(e) {
-        setDeleting(true)
         try {
             await deleteInstalledChart(Number(installedAppId), true)
             toast.success('Successfully deleted.')
+
         }
         catch (err) {
             showError(err)
         }
-        finally {
-            setDeleting(false)
-        }
+
     }
 
-    async function handleDelete(e) {
+    async function handleDelete() {
         setDeleting(true)
         try {
             await deleteInstalledChart(Number(installedAppId))
             toast.success('Installation deleted');
-            toggleConfirmation(false);
         }
         catch (err) {
-            showError(err);
+            toggleConfirmation(false);
             setForceDelete(true);
             onClickForceDelete(err);
-            toggleConfirmation(false)
         }
         finally {
-            setDeleting(false)
+            setDeleting(false);
         }
     }
 
@@ -148,10 +143,9 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 </ConfirmationDialog>
             }
             {
-                !confirmation && forceDelete &&
-                <ForceDeleteDialog
-                    onClickDelete={()=>handleForceDelete}
-                    closeDeleteModal={setForceDelete(false)}
+                forceDelete && <ForceDeleteDialog
+                    onClickDelete={handleForceDelete}
+                    closeDeleteModal={() => { toggleConfirmation(false); setForceDelete(false) }}
                     forceDeleteErrorTitle={forceDeleteErrorTitle}
                     forceDeleteErrorMessage={forceDeleteErrorMessage}
                 />
