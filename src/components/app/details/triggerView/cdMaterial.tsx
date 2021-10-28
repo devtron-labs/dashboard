@@ -24,7 +24,11 @@ export class CDMaterial extends Component<CDMaterialProps> {
           Date: mat.modifiedTime,
           Message: mat.message,
           WebhookData: JSON.parse(mat.webhookData),
-          Changes: []
+          Changes: [],
+          GitMaterialUrl : "",
+          GitRepoName: "",
+          GitSourceType: "",
+          GitSourceValue: ""
         }
 
         return <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
