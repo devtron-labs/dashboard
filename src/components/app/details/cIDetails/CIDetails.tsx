@@ -248,21 +248,24 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                 </div>
                 {triggerDetails?.ciMaterials?.map(ciMaterial => {
                     const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
+                    const sourceType = gitDetail.GitSourceType ? gitDetail.GitSourceType : ciMaterial.type
+                    const sourceValue = gitDetail.GitSourceValue ? gitDetail.GitSourceValue : ciMaterial.value
+                    const gitMaterialUrl = gitDetail.GitMaterialUrl ? gitDetail.GitMaterialUrl : ciMaterial?.url
                     return <div className="mt-22" key={ciMaterial.id} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}>
                         {
-                            ciMaterial.type != SourceTypeMap.WEBHOOK &&
+                            sourceType != SourceTypeMap.WEBHOOK &&
                             <>
                                 <div className="git-logo"> </div>
                                 <div className="flex left column">
-                                    <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
+                                    <a href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{sourceValue}</a>
                                     <p className="fs-12 cn-7">{gitDetail?.Message}</p>
                                 </div>
                             </>
                         }
                         {
-                            ciMaterial.type == SourceTypeMap.WEBHOOK &&
+                            sourceType == SourceTypeMap.WEBHOOK &&
                             <div className="flex left column">
-                                <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value} showTooltip={false} />
+                                <CiPipelineSourceConfig sourceType={sourceType} sourceValue={sourceValue} showTooltip={false} />
                             </div>
                         }
 
