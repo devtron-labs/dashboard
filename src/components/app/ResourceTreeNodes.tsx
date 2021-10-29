@@ -20,7 +20,7 @@ interface ResourceTree {
     nodes: AggregatedNodes;
     describeNode: (name: string, containerName?: string) => void;
     isAppDeployment: boolean;
-    appId: number;
+    appId:number;
 }
 
 function ignoreCaseCompare(a: string, b: string): boolean {
@@ -77,7 +77,7 @@ export const StatusFilterButton: React.FC<{ status: string; count?: number }> = 
         </Tippy>
     );
 }
-const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName, appId }) => {
+const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName,appId }) => {
     const { url, path } = useRouteMatch()
     const params = useParams<{ appId: string, envId: string, kind?: NodeType }>()
     const history = useHistory()
@@ -373,22 +373,22 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                     />
                 </>
             ) : (
-                    <GenericInfo
-                        nodes={nodes}
-                        level={1}
-                        Data={nodes.nodes[Nodes.Pod]}
-                        type={Nodes.Pod}
-                        describeNode={describeNode}
-                        appName={appName}
-                        environmentName={environmentName}
-                        appId={appId}
-                    />
-                )}
+                <GenericInfo
+                    nodes={nodes}
+                    level={1}
+                    Data={nodes.nodes[Nodes.Pod]}
+                    type={Nodes.Pod}
+                    describeNode={describeNode}
+                    appName={appName}
+                    environmentName={environmentName}
+                    appId={appId}
+                />
+            )}
         </div>
     );
 }
 
-export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void, appId: number }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1, appId }) => {
+export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void, appId: number }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 , appId}) => {
     return (
         <div className={`generic-info-container flex left column top w-100`}>
             {level === 1 && (
@@ -425,7 +425,7 @@ export const GenericInfo: React.FC<{ appName: string; environmentName: string; n
     );
 }
 
-export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void, appId: number }> = ({ appName, environmentName, level, type, Data, nodes, describeNode, appId }) => {
+export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void , appId: number}> = ({ appName, environmentName, level, type, Data, nodes, describeNode , appId}) => {
     const tableColumns = getGenricRowFields(type)
     return (
         <table className={`resource-tree ${level === 1 ? 'ml-10' : ''}`} style={{ width: level === 1 ? 'calc( 100% - 10px )' : '100%' }}>
@@ -612,7 +612,7 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
     );
 }
 
-export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number, appId: number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level, appId }) => {
+export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number, appId:number }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level, appId }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const tableColumns = getGenricRowFields(nodeDetails.kind)
     return (
@@ -706,22 +706,20 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
     );
 }
 
-const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode, appId }) => {
+const PodPopup: React.FC<{appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number}> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode , appId}) => {
     const params = useParams<{ appId: string; envId: string }>();
-
-    let apiParams = {
-        appId: appId,
-        appName,
-        kind: kind,
-        group: group,
-        env: environmentName,
-        envId: +params.envId,
-        namespace,
-        version: version,
-        name,
-    };
-
     async function asyncDeletePod(e) {
+        let apiParams = {
+            appId: appId,
+            appName,
+            kind: kind,
+            group: group,
+            env: environmentName,
+            envId: +params.envId,
+            namespace,
+            version: version,
+            name,
+        };
         try {
             await deleteResource(apiParams);
             toast.success('Deletion initiated successfully.');
@@ -729,7 +727,6 @@ const PodPopup: React.FC<{ appName: string, environmentName: string, name: strin
             showError(err);
         }
     }
-
 
     return <div className="pod-info__popup-container">
         {kind === Nodes.Pod ? <span className="flex pod-info__popup-row"
