@@ -15,7 +15,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
     return <ConfirmationDialog className="confirmation-dialog__body--w-360">
         <ConfirmationDialog.Icon src={warn} />
         <ConfirmationDialog.Body title={props.title}>
-            <div className="fs-13 cn-7 lh-1-54">
+            <div className="fs-13 cn-7 lh-1-54 w-100">
                 {props.description ? props.description : null}
                 {props.children}
             </div>
