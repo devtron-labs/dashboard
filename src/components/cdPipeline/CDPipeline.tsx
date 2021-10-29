@@ -531,34 +531,25 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id
-            }
+            },
         }
 
-        if (force === true) {
-            deleteCDPipeline(payload, force).then((response) => {
-                if (response.result) {
-                    toast.success("Pipeline Deleted");
-                    this.setState({ loadingData: false });
-                    this.props.getWorkflows();
-                    this.props.close();
-                }
-            }).catch((error: ServerErrors) => {
+        deleteCDPipeline(payload, force).then((response) => {
+            if (response.result) {
+                toast.success("Pipeline Deleted");
+                this.setState({ loadingData: false });
+                this.props.getWorkflows();
+                this.props.close();
+            }
+        }).catch((error: ServerErrors) => {
+            if (!force) {
                 this.setForceDeleteDialogData(error)
                 this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
-            })
-        } else {
-            deleteCDPipeline(payload).then((response) => {
-                if (response.result) {
-                    toast.success("Pipeline Deleted");
-                    this.setState({ loadingData: false });
-                    this.props.getWorkflows();
-                    this.props.close();
-                }
-            }).catch((error: ServerErrors) => {
-                this.setForceDeleteDialogData(error)
-                this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
-            })
-        }
+            } else {
+                showError(error)
+            }
+
+        })
     }
 
     deleteStage(key: 'preStage' | 'postStage') {
