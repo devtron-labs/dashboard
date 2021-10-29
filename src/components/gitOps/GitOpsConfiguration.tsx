@@ -274,13 +274,18 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            let errorMap = resp.gitOpsValidationResponse.stageErrorMap
-            if (errorMap != null && Object.keys(errorMap).length == 0) {
+            let errorMap;
+            let gitOpsValidationResponse;
+            if(resp && resp.gitOpsValidationResponse){
+                gitOpsValidationResponse = resp.gitOpsValidationResponse;
+                errorMap = gitOpsValidationResponse.stageErrorMap;
+            }
+            if (errorMap && Object.keys(errorMap).length == 0) {
                 toast.success("Configuration validated and saved successfully");
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.gitOpsValidationResponse.deleteRepoFailed});
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : gitOpsValidationResponse?.deleteRepoFailed});
                 this.fetchGitOpsConfigurationList();
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false,validationError : resp.gitOpsValidationResponse.stageErrorMap || [], deleteRepoError : resp.gitOpsValidationResponse.deleteRepoFailed});
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : gitOpsValidationResponse?.deleteRepoFailed});
                 toast.error("Configuration validation failed");
             }
         }).catch((error) => {

@@ -60,7 +60,7 @@ function ValidateSuccess({ onClickValidate, warning }) {
         </div>
     </div>
      {warning &&
-        <div className="p-16 bw-1 en-2 br-4 delete-repo">
+        <div className="p-16 bw-1 en-2 br-4 success-warning">
             <span className="fs-13 cn-9">{warning}</span>
         </div>}
     </div>
