@@ -542,8 +542,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.props.close();
             }
         }).catch((error: ServerErrors) => {
-            if (!force) {
-                showError(error)
+            if (!force && error.code != 403) {
                 this.setForceDeleteDialogData(error)
                 this.setState({ code: error.code, loadingData: false, showDeleteModal: false, showForceDeleteDialog: true });
             } else {

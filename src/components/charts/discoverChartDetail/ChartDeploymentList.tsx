@@ -69,7 +69,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
     const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
-    const [ forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState("")
+    const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState("")
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState("")
 
     function setForceDeleteDialogData(serverError) {
@@ -92,10 +92,13 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             toast.success('Successfully deleted');
         }
         catch (err) {
-            showError(err)
-            toggleConfirmation(false);
-            setForceDeleteDialog(true);
-            setForceDeleteDialogData(err);
+            if (!force && err.code != 403) {
+                toggleConfirmation(false);
+                setForceDeleteDialog(true);
+                setForceDeleteDialogData(err);
+            } else {
+                showError(err)
+            }
         }
         finally {
             setDeleting(false);
@@ -131,15 +134,15 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                     </ConfirmationDialog.Body>
                     <ConfirmationDialog.ButtonGroup>
                         <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                        <button className="cta delete" type="button" onClick={()=>handleDelete(false)} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
+                        <button className="cta delete" type="button" onClick={() => handleDelete(false)} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             }
             {
-                showForceDeleteDialog&& <ForceDeleteDialog
-                    onClickDelete={()=>handleDelete(true)}
+                showForceDeleteDialog && <ForceDeleteDialog
+                    onClickDelete={() => handleDelete(true)}
                     closeDeleteModal={() => { toggleConfirmation(false); setForceDeleteDialog(false) }}
-                     forceDeleteDialogTitle={ forceDeleteDialogTitle}
+                    forceDeleteDialogTitle={forceDeleteDialogTitle}
                     forceDeleteDialogMessage={forceDeleteDialogMessage}
                 />
             }
