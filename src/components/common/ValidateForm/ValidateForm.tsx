@@ -47,8 +47,8 @@ function ValidateLoading({ message }) {
 
 }
 
-function ValidateSuccess({ onClickValidate, deleteRepoError }) {
-    return <div className="mb-16"><div className={`${deleteRepoError ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
+function ValidateSuccess({ onClickValidate, warning }) {
+    return <div className="mb-16"><div className={`${warning ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
         <div className="flex flex-justify">
             <div className="flex">
                 <GreenCheck className="icon-dim-20 scg-5" />
@@ -59,14 +59,14 @@ function ValidateSuccess({ onClickValidate, deleteRepoError }) {
             {renderOnClickValidate(onClickValidate)}
         </div>
     </div>
-     {deleteRepoError &&
+     {warning &&
         <div className="p-16 bw-1 en-2 br-4 delete-repo">
-            <span className="fs-13 cn-9">Devtron was unable to delete the test repository "devtron-sample-repo-dryrun-…”. Please delete it manually.</span>
+            <span className="fs-13 cn-9">{warning}</span>
         </div>}
     </div>
 }
 
-function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, deleteRepoError }) {
+function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, warning }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
@@ -92,8 +92,8 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                     {Object.entries(validationError).map(([value, name]) =>
                         <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
                     )} 
-                    {deleteRepoError &&
-                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.</p>}
+                    {warning &&
+                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>{warning}</p>}
                     </>
                 }
             </div>
@@ -101,7 +101,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
     </div>
 }
 
-export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, deleteRepoError }) {
+export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" }) {
     return (
         <div className="mt-16">
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
@@ -109,9 +109,9 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == VALIDATION_STATUS.FAILURE &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} deleteRepoError={deleteRepoError} />}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} warning={warning} />}
             {validationStatus == VALIDATION_STATUS.SUCCESS &&
-                <ValidateSuccess onClickValidate={onClickValidate} deleteRepoError={deleteRepoError} />}
+                <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />}
         </div>
     )
 }

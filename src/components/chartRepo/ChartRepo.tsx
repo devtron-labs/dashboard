@@ -209,7 +209,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 isChartRepo={true}
                 validationStatus={validationStatus}
                 configName="chart repo"
-                deleteRepoError={false}
             />
 
             <div className="form__row form__row--two-third">

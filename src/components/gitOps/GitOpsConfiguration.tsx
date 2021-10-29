@@ -344,6 +344,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     render() {
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId();
+        let warning = "Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.";
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -376,7 +377,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     validationError={this.state.validationError}
                     validationStatus={this.state.validationStatus}
                     configName="gitops "
-                    deleteRepoError={this.state.deleteRepoError}
+                    warning={this.state.deleteRepoError? warning : ""}
                 />
 
                 <CustomInput autoComplete="off"
