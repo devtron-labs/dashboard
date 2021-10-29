@@ -1,7 +1,8 @@
 import React from 'react'
+import { iNode } from '../node.type'
 import NestedTableComponent from './NestedTable.component'
 
-function AllPodsComponent(node) {
+function AllPodsComponent(props) {
     return (<div>
         <div className="flex left old-new-switch-container">
             <div
@@ -13,9 +14,7 @@ function AllPodsComponent(node) {
                 <div className="flex left fs-12 cn-9">
                     <React.Fragment>
                         {<span className="bullet mr-4 ml-4"></span>}
-                        <span data-testid={`new-pod-status`}>
-                            newPodStats[status]
-                                                    </span>
+                        <span data-testid={`new-pod-status`}> newPodStats[status] </span>
                     </React.Fragment>
                 </div>
             </div>
@@ -28,14 +27,12 @@ function AllPodsComponent(node) {
                 <div className="flex left fs-12 cn-9">
                     <React.Fragment >
                         {<span className="bullet mr-4 ml-4"></span>}
-                        <span >
-                            oldPodStats[status]
-                                                    </span>
+                        <span > oldPodStats[status]</span>
                     </React.Fragment>
                 </div>
             </div>
         </div>
-        <NestedTableComponent />
+        <NestedTableComponent selectedNode={props.selectedNode}/>
     </div>
     )
 }

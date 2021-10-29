@@ -13,13 +13,13 @@ export const ResourceTreeActions = {
 export const TabsJSON = {
     "K8 Resources": {
         name: "K8 Resources",
-        icon: "",
+        icon: "K8Resource",
         className: "",
         isSelected: true
     },
     "Log Analyzer": {
         name: "Log Analyzer",
-        icon: "",
+        icon: "LogAnalyser",
         className: "",
         isSelected: false
     },

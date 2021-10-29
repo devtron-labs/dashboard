@@ -1,11 +1,11 @@
 import React from 'react'
 import GenericRowComponent from './GenericRow.component'
 
-function NestedTableComponent() {
+function NestedTableComponent(props) {
     return (
         <div>
             <div className="nested-table-grid"></div>
-            <GenericRowComponent />
+            <GenericRowComponent selectedNode={props.selectedNode}/>
         </div>
     )
 }

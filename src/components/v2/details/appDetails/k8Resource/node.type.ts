@@ -9,6 +9,6 @@ export interface iNode extends iTab {
 
 export enum iNodeType{
   Service= 'Service',
-  Pod= 'Pod',
+  AllPod= 'AllPods',
   GenericInfo='GenericInfo',
 }

@@ -1,0 +1,18 @@
+.generic-info-header {
+    height: 60px;
+    box-shadow: inset 0 -1px 0 0 var(--N100);
+    position: sticky;
+    top: 0;
+    background: var(--N000)
+}
+
+.generic-body > .row:hover{
+    background: var(--N100);
+}
+
+.generic-body > .row .action-buttons{
+   display: none
+}
+.generic-body > .row:hover .action-buttons {
+    display: inline-block
+ }

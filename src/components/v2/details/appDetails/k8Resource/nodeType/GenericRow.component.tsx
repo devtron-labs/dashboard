@@ -1,7 +1,8 @@
 import React from 'react';
 import '../../../appDetails/bootstrap-grid.min.css';
+import { iNodeType } from '../node.type';
 
-const GenericTablejSON = {
+const GenericPodsTablejSON = {
     tHead: [
         { value: "Pod (All)" },
         { value: "Ready" },
@@ -34,23 +35,44 @@ const GenericTablejSON = {
     ]
 }
 
-function GenericRowComponent() {
+function GenericRowComponent(props) {
     return (
-        <div className="bootstrap-wrapper">
-            <div className="container">
-                <div className="row border-bottom ">
-                    {
-                        GenericTablejSON.tHead.map((cell, index) => {
-                            return <div className={(index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
-                        })
-                    }
-                </div>
+        <div className="container generic-table">
+            <div className="row border-bottom ">
                 {
-                    GenericTablejSON.tBody.map((tRow) => {
+                    GenericPodsTablejSON.tHead.map((cell, index) => {
+                        return <div className={(index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
+                    })
+                }
+            </div>
+            <div className="generic-body">
+                {
+                    GenericPodsTablejSON.tBody.map((tRow) => {
                         return (
                             <div className="row">
                                 {tRow.map((cell, index) => {
-                                    return <div className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"}>{cell.value}</div>
+                                    return (
+                                        <div className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"}>
+                                            <span>{cell.value}</span>
+                                            <span className="action-buttons ">
+                                                {index === 0 ?
+                                                    <React.Fragment>
+                                                        <a className="learn-more-href ml-12 cursor" >Manifest</a>
+                                                        <a className="learn-more-href ml-12 cursor">Logs</a>
+                                                        {
+                                                            props.selectedNode.type === iNodeType.AllPod ?
+                                                                <React.Fragment>
+                                                                    <a className="learn-more-href ml-12 cursor">Events</a>
+                                                                    <a className="learn-more-href ml-12 cursor">Terminal</a>
+                                                                </React.Fragment>
+                                                                : ""
+                                                        }
+                                                    </React.Fragment>
+                                                    : ""
+                                                }
+                                            </span>
+                                        </div>
+                                    )
                                 })
                                 }
                             </div>

@@ -1,6 +1,7 @@
 import React from 'react'
+import { iNode } from '../node.type'
 
-function GenericInfoComponent() {
+function GenericInfoComponent(props) {
     return (
         <div>
             

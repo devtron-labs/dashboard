@@ -5,14 +5,12 @@ export default function FilterResource() {
         <div >
             <div className="bootstrap-wrapper">
                 <div className="row">
-                    <div className="col-md-9 "><input className="w-100" type="text" /></div>
+                    <div className="col-md-9"><input className="w-100" placeholder="Search objects" type="text" /></div>
                     <div className="col-md-1">All</div>
                     <div className="col-md-1">Failed</div>
                     <div className="col-md-1">Running</div>
                 </div>
             </div>
-            
-
         </div>
     )
 }
