@@ -92,6 +92,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             toast.success('Successfully deleted');
         }
         catch (err) {
+            showError(err)
             toggleConfirmation(false);
             setForceDeleteDialog(true);
             setForceDeleteDialogData(err);

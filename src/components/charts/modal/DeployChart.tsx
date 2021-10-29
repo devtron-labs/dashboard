@@ -299,6 +299,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             push(URLS.CHARTS)
         }
         catch (err) {
+            showError(err)
             setForceDeleteDialog(true)
             setForceDeleteDialogData(err)
         }
