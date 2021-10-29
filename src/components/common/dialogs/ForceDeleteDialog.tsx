@@ -7,7 +7,7 @@ export default function ForceDeleteDialog({ onClickDelete, closeDeleteModal, for
             <DeleteDialog title={forceDeleteDialogTitle}
                 delete={onClickDelete}
                 closeDelete={closeDeleteModal}
-                force="Force">
+                deletePrefix="Force ">
                 <DeleteDialog.Description >
                     <p className="mt-12 mb-12 p-8" style={{backgroundColor: '#f2f4f7'}}>Error: {forceDeleteDialogMessage}</p>
                     <p>Do you want to force delete?</p>
