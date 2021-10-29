@@ -52,6 +52,7 @@ export interface GitOpsState {
     validatedTime: string;
     validationError: GitOpsConfig[];
     validationStatus: string;
+    deleteRepoError: boolean;
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { }
