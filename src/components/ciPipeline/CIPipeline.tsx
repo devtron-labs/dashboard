@@ -189,15 +189,15 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             let _condition = {};
 
             // create initial data with fix values
-            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors){
+            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors) {
                 _selectedWebhookEvent.selectors.forEach((_selector) => {
-                    if(_selector.fixValue){
+                    if (_selector.fixValue) {
                         _condition[_selector.id] = _selector.fixValue;
                     }
                 })
             }
 
-            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition : _condition });
+            _material.value = JSON.stringify({ eventId: _selectedWebhookEvent.id, condition: _condition });
 
             // update condition list
             form.webhookConditionList = createWebhookConditionList(_material.value);
@@ -320,7 +320,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     }
 
     noop = () => { }
-    
+
     copyToClipboard(text: string, callback = this.noop): void {
         let textarea = document.createElement("textarea");
         let main = document.getElementsByClassName("main")[0];
@@ -365,7 +365,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 this.setState({ loadingData: false });
             })
     }
-
+   
     deletePipeline() {
         deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
             if (response) {
