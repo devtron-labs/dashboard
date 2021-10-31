@@ -185,7 +185,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         let final = value
         if (obj) {
-            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 4 })
+            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: tabSize })
         }
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])
