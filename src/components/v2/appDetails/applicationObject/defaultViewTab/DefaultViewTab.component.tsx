@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
-import { DefaultViewTabsJSON } from '../utils/tabUtils/tab.json';
-import { iTab } from '../utils/tabUtils/tab.type';
-import { TabActions, useTab } from '../utils/tabUtils/useTab';
-import EventsComponent from './Events.component';
-import LogsComponent from './Logs.component';
-import ManifestComponent from './Manifest.component';
-import TerminalComponent from './Terminal.component';
+import { DefaultViewTabsJSON } from '../../../utils/tabUtils/tab.json';
+import { iTab } from '../../../utils/tabUtils/tab.type';
+import { TabActions, useTab } from '../../../utils/tabUtils/useTab';
+import EventsComponent from './defaultViewActionTabs/Events.component';
+import LogsComponent from './defaultViewActionTabs/Logs.component';
+import ManifestComponent from './defaultViewActionTabs/Manifest.component';
+import TerminalComponent from './defaultViewActionTabs/Terminal.component';
 import './defaultViewTab.css';
 import { NodeDetailTabs } from '../k8Resource/node.type';
-import SummaryComponent from './Summary.component';
+import SummaryComponent from './defaultViewActionTabs/Summary.component';
 
 function DefaultViewTabComponent(props) {
 
@@ -35,7 +35,12 @@ function DefaultViewTabComponent(props) {
             case NodeDetailTabs.EVENTS:
                 return <EventsComponent />
             case NodeDetailTabs.SUMMARY:
-                return <SummaryComponent />
+                return <SummaryComponent 
+                appName={"something"}
+                environmentName={ "environment Name"}
+                nodeName="Container"
+                // nodes={}
+                />
         }
     }
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Select, { components } from 'react-select';
-import { multiSelectStyles, SingleSelectOption as Option, } from '../../../../common'
+import { multiSelectStyles, SingleSelectOption as Option, } from '../../../common'
 import ScalePodModalComponent from './ScalePodModal.component';
 import './sourceInfo.css';
 

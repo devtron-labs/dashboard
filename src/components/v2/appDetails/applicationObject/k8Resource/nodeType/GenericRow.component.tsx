@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../appDetails/bootstrap-grid.min.css';
+import '../../../../lib/bootstrap-grid.min.css';
 import { iNodeType, NodeDetailTabs } from '../node.type';
 
 const GenericPodsTablejSON = {

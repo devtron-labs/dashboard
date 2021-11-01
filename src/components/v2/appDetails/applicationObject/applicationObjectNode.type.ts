@@ -1,4 +1,4 @@
-import { iTab } from "../utils/tabUtils/tab.type";
+import { iTab } from "../../utils/tabUtils/tab.type";
 
 export interface iNodes extends Array<iNode> { }
 

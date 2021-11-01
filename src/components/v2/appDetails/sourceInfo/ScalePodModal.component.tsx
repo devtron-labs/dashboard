@@ -2,13 +2,13 @@
 
 import React, { Component } from 'react'
 import { ExternalAppScaleModalState, ExternalAppScaleModalProps, ScaleToZero } from './externalAppScaleModal.type';
-import { ViewType } from '../../../../../config';
-import { VisibleModal, Checkbox, Progressing } from '../../../../common';
-import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg';
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg';
+import { ViewType } from '../../../../config';
+import { VisibleModal, Checkbox, Progressing } from '../../../common';
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { getScalePodList } from './externalAppModal.service';
-import Restore from '../../../../../assets/icons/ic-restore.svg';
+import Restore from '../../../../assets/icons/ic-restore.svg';
 
 export default class ScalePodModalComponent extends Component<ExternalAppScaleModalProps, ExternalAppScaleModalState> {
     constructor(props) {

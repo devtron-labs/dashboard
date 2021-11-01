@@ -1,5 +1,5 @@
 import React from 'react'
-import TableUtil from '../utils/tableUtils/Table.util'
+import TableUtil from '../../../../utils/tableUtils/Table.util'
 
 
 const EventTableJSON = {

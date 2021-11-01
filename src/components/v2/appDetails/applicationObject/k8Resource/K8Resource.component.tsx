@@ -46,7 +46,7 @@ export default function K8ResourceComponent(props) {
     return (
         <div className="bcn-0">
             <div className="pt-16 pl-20 pb-16"><FilterResource /></div>
-            <div className="container-fluid" style={{}}>
+            <div className="container-fluid">
                 <div className="row" >
                     <div className="col-2" style={{
                         maxHeight: '500px',

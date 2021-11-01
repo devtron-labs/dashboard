@@ -18,7 +18,7 @@ import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } fro
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
 import  Index  from './appDetails/index'
-import AppDetailComponent from '../../v2/details/appDetails/AppDetails.components'
+import AppDetailComponent from '../../v2/appDetails/AppDetails.components'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));

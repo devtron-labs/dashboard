@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import CodeEditor from '../../../../CodeEditor/CodeEditor';
-import { ManifestTabJSON } from '../utils/tabUtils/tab.json';
-import { iTab } from '../utils/tabUtils/tab.type';
-import { TabActions, useTab } from '../utils/tabUtils/useTab';
-import { ReactComponent as Edit } from '../../../../../assets/icons/ic-edit.svg';
+import CodeEditor from '../../../../../CodeEditor/CodeEditor';
+import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
+import { iTab } from '../../../../utils/tabUtils/tab.type';
+import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
+import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-edit.svg';
 
 function ManifestComponent() {
 
