@@ -14,7 +14,7 @@ import WebWorker from './WebWorker';
 import { useParams } from 'react-router'
 import moment from 'moment'
 import { Subject } from '../../util/Subject';
-import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType } from './types';
+import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes } from './types';
 import { AppDetails } from '../app/types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg';
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
@@ -24,23 +24,34 @@ import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
+import { getSelectedNodeItems } from './details/appDetails/utils';
+import { defaultProps } from 'recompose';
 
 const commandLineParser = require('command-line-parser')
 
 
 const subject: Subject<string> = new Subject()
 
+interface NodeItems {
+    label: string;
+    value: string;
+}
+
 interface EventsLogsProps {
     nodeName: string;
-    containerName: any;
+    selectedLogsNode?: string;
+    nodeItems: NodeItems[];
+    containerName: string;
     nodes: AggregatedNodes;
     logsPaused?: boolean;
     appDetails: AppDetails;
     subject?: Subject<string>;
     socketConnection: SocketConnectionType;
     terminalCleared: boolean;
+    logsCleared: boolean;
     shell: { label; value; }
     isReconnection: boolean;
+    isAppDeployment: boolean;
     setIsReconnection: (flag) => void;
     selectShell: (shell: { label; value; }) => void;
     setTerminalCleared: (flag: boolean) => void;
@@ -69,7 +80,7 @@ export function getGrepTokens(expression) {
     else return null
 }
 
-const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, containerName, nodes, appDetails, logsPaused, socketConnection, terminalCleared, shell, isReconnection, setIsReconnection, selectShell, setTerminalCleared, setSocketConnection, handleLogPause }) {
+const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ nodeName, selectedLogsNode, nodeItems, containerName, nodes, appDetails, logsPaused, logsCleared, socketConnection, terminalCleared, shell, isReconnection, isAppDeployment, setIsReconnection, selectShell, setTerminalCleared,  setSocketConnection, handleLogPause }) {
     const params = useParams<{ tab: NodeDetailTabsType; kind: string; appId: string; envId: string }>();
     return (
         <>
@@ -84,9 +95,14 @@ const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({ n
                     appDetails={appDetails}
                     subject={subject}
                     nodeName={nodeName}
+                    selectedLogsNode={selectedLogsNode}
+                    nodeItems={nodeItems}
                     containerName={containerName}
                     handleLogPause={handleLogPause}
                     logsPaused={logsPaused}
+                    logsCleared={logsCleared}
+                    nodes={nodes}
+                    isAppDeployment={isAppDeployment}
                 />
             )}
             {params.tab.toLowerCase() === NodeDetailTabs.MANIFEST.toLowerCase() && (
@@ -251,13 +267,18 @@ function NoEvents({ title = "Events not available" }) {
 interface LogsView {
     subject: Subject<string>;
     nodeName?: string;
+    selectedLogsNode: string;
+    nodeItems?: NodeItems[];
     containerName: string;
-    handleLogPause: (paused: boolean) => void;
     logsPaused: boolean;
     appDetails: AppDetails;
+    logsCleared: boolean;
+    nodes: AggregatedNodes;
+    isAppDeployment: boolean;
+    handleLogPause: (paused: boolean) => void;
 }
 
-export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName, handleLogPause, logsPaused, appDetails }) => {
+export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNode, nodeItems, containerName, handleLogPause, logsPaused, appDetails, logsCleared, nodes, isAppDeployment }) => {
     const key = useKeyDown()
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [readyState, setReadyState] = React.useState(null);
@@ -265,6 +286,10 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
     const logsPausedRef = useRef(false);
     const [logSearchString, setLogSearchString] = useState<string>('')
     const [tempSearch, setTempSearch] = useState<string>('')
+    const [selectedNodesItem, setSelectedNodesItem] = useState([]);
+    const { searchParams } = useSearchString();
+    const kind: Nodes = searchParams.kind as Nodes
+    const nodesMap = nodes.nodes[kind] || new Map();
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -291,14 +316,16 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
             } catch (err) { }
             handleLogPause(false);
         };
-    }, [nodeName, containerName, grepTokens]);
+    }, [nodeName, containerName, grepTokens, selectedLogsNode, logsCleared]);
 
     function getLogsURL() {
         let prefix = '';
         if (process.env.NODE_ENV === 'production') {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
-        return `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${nodeName}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`;
+        let pods = getPods();
+        
+        return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
 
     useEffect(() => {
@@ -326,16 +353,31 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
         }
     }
 
+    function getPods(){
+        let pods = [];
+        let selectedNodeItems= [];
+        if (selectedLogsNode){
+            selectedNodeItems= getSelectedNodeItems(selectedLogsNode, nodeItems, isAppDeployment, nodesMap, kind);
+            setSelectedNodesItem(selectedNodeItems)
+        }
+
+        selectedNodeItems.map((item) => {
+            pods.push(item.value)
+        })
+        return pods
+    }
+
     function fetchLogs() {
-        const url = getLogsURL();
-        if (!url) {
+        const urls = getLogsURL();
+        if (!urls) {
             return
         }
+        let pods = getPods();
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { grepTokens: grepTokens, url, timeout: 300 },
+            payload: { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods },
         });
     }
 
@@ -354,6 +396,8 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
 
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
+    
+    const podMessage = "No pods available for selected " + `"${selectedLogsNode}"`;
 
     return (
         <>
@@ -363,13 +407,19 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
                     <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage="Select a pod to view logs" />
                 </>
             )}
-            {nodeName && !containerName && (
+            {nodeName && !containerName && selectedNodesItem?.length > 0 && (
                 <>
                     <span style={{ background: '#2c3354' }} />
                     <NoContainer style={{ gridColumn: '1 / span 2' }} selectMessage="Select a container to view logs" />
                 </>
             )}
-            {nodeName && containerName && (
+             {selectedNodesItem?.length < 1 && (
+                <>
+                    <span style={{ background: '#2c3354' }} />
+                    <NoPod style={{ gridColumn: '1 / span 2' }} selectMessage={podMessage}/>
+                </>
+            )}
+            {nodeName && containerName && selectedNodesItem?.length > 0 && (
                 <>
                     <div data-testid="log-viewer-container" className="flex right" style={{ background: '#2c3354' }}>
                         <form
@@ -413,6 +463,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
                             </Tippy>
                         </form>
                     </div>
+                    {!logsCleared &&
                     <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
                         <div
                             className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
@@ -463,7 +514,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, containerName,
                             )}
                             {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
                         </div>
-                    </div>
+                    </div>}
                 </>
             )}
         </>
