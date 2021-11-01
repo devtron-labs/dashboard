@@ -4,7 +4,7 @@ import NestedTableComponent from './NestedTable.component'
 
 function AllPodsComponent(props) {
     return (<div>
-        <div className="flex left old-new-switch-container">
+        <div className="resource-tree-tab flex left old-new-switch-container">
             <div
                 className={`no-decor old-new-link flex left column pl-16 pr-16 pointer `}
                 // onClick={(e) => selectPodTab('new')}
@@ -32,7 +32,10 @@ function AllPodsComponent(props) {
                 </div>
             </div>
         </div>
-        <NestedTableComponent selectedNode={props.selectedNode}/>
+        <NestedTableComponent
+            selectedNode={props.selectedNode}
+            addResourceTabClick={props.addResourceTabClick}
+        />
     </div>
     )
 }

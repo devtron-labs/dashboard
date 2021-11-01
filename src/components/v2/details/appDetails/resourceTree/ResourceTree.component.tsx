@@ -1,38 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from '../k8Resource/K8Resource.component';
-import { iTab } from './tab.type';
-import { ResourceTreeActions, useResourceTree } from './useResourceTree';
+import { iTab } from '../utils/tabUtils/tab.type';
+import { TabActions, useTab } from '../utils/tabUtils/useTab';
 import './resourceTree.css'
 import { ReactComponent as K8Resource } from '../../../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyser } from '../../../../../assets/icons/ic-logs.svg';
+import LogAnalyzerComponent from '../logAnalyzer/LogAnalyzer.component';
+import { tCell } from '../utils/tableUtils/table.type';
+import { NodeDetailTabsType } from '../../../../app/types';
+import DefaultViewTabComponent from '../defaultViewTab/DefaultViewTab.component';
+import { ResourceTabsJSON } from '../utils/tabUtils/tab.json';
 
 
 function ResourceTreeComponent() {
 
-    const [{ resourceTreeTabs }, dispatch] = useResourceTree();
+    const [{ tabs }, dispatch] = useTab(ResourceTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
+    const [defaultViewData, setDefaultViewData] = useState({})
 
-    const addResourceTabClick = (tab: iTab) => {
+    const addResourceTabClick = (ndtt: NodeDetailTabsType, cell: tCell) => {
+        
         dispatch({
-            type: ResourceTreeActions.AddTab,
-            tab: tab
+            type: TabActions.AddTab,
+            tabName: ndtt.valueOf().toString()
         })
+
+        setDefaultViewData({
+            cell: cell,
+            ndtt: ndtt,
+        })
+
+        setSelectedTab(ndtt.valueOf().toString())
     }
 
-    const handleResourceTabClick = (_tabName: string) => {
+    const handleTabClick = (_tabName: string) => {
         dispatch({
-            type: ResourceTreeActions.MarkActive,
+            type: TabActions.MarkActive,
             tabName: _tabName
         })
         setSelectedTab(_tabName)
     }
 
-    const resourceTabData = () => {
+    const tabData = () => {
         switch (selectedTab) {
             case "K8 Resources":
-                return <K8ResourceComponent />
+                return <K8ResourceComponent
+                    addResourceTabClick={addResourceTabClick}
+                />
+            case "Log Analyzer":
+                return <LogAnalyzerComponent />
             default:
-                return <div>{selectedTab}</div>
+                return <DefaultViewTabComponent data={defaultViewData} />
         }
     }
 
@@ -40,29 +58,30 @@ function ResourceTreeComponent() {
         switch (icon) {
             case "K8Resource": return <K8Resource />
             case "LogAnalyser": return <LogAnalyser />
+            default: return ""
         }
     }
 
     useEffect(() => {
-        handleResourceTabClick("K8 Resources")
+        handleTabClick("K8 Resources")
     }, [])
 
     return (
         <div>
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                 {
-                    resourceTreeTabs.map((resourceTreeTab: iTab, index) => {
+                    tabs.map((tab: iTab, index) => {
                         return (
-                            <div key={index + "resourceTreeTab"} className={`${resourceTreeTab.className} ${resourceTreeTab.isSelected ? 'resource-tree-tab bcn-0' : ''} cursor pl-12 pt-8 pb-8 pr-12`}>
-                                <a className="cn-9 fw-6 no-decor flex left" onClick={() => handleResourceTabClick(resourceTreeTab.name)}>
-                                    <span className="icon-dim-16 mr-4">{getTabIcon(resourceTreeTab.icon)}  </span>{resourceTreeTab.name}
+                            <div key={index + "tab"} className={`${tab.isSelected ? 'resource-tree-tab bcn-0' : ''} cursor pl-12 pt-8 pb-8 pr-12`}>
+                                <a className="cn-9 fw-6 no-decor flex left" onClick={() => handleTabClick(tab.name)}>
+                                    {tab.icon && <span className="icon-dim-16 mr-4">{getTabIcon(tab?.icon)} </span>} {tab.name}
                                 </a>
                             </div>
                         )
                     })
                 }
             </div>
-            {selectedTab && resourceTabData()}
+            {selectedTab && tabData()}
         </div>
     )
 }

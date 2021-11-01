@@ -1,4 +1,4 @@
-export interface Cell {
+export interface tCell {
     value: string
     icon: string
     position: string
@@ -8,6 +8,6 @@ export interface Cell {
 }
 
 export interface Table {
-   tHead: Cell[]
-   tBody: Cell[][]
+   tHead: tCell[]
+   tBody: tCell[][]
 }

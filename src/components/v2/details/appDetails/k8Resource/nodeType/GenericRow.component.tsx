@@ -1,6 +1,6 @@
 import React from 'react';
 import '../../../appDetails/bootstrap-grid.min.css';
-import { iNodeType } from '../node.type';
+import { iNodeType, NodeDetailTabs } from '../node.type';
 
 const GenericPodsTablejSON = {
     tHead: [
@@ -52,18 +52,20 @@ function GenericRowComponent(props) {
                             <div className="row">
                                 {tRow.map((cell, index) => {
                                     return (
-                                        <div className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"}>
+                                        <div key={"grc" + index} className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"}>
                                             <span>{cell.value}</span>
                                             <span className="action-buttons ">
                                                 {index === 0 ?
                                                     <React.Fragment>
-                                                        <a className="learn-more-href ml-12 cursor" >Manifest</a>
-                                                        <a className="learn-more-href ml-12 cursor">Logs</a>
+                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.MANIFEST, cell) }} >Manifest</a>
+                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.LOGS, cell) }} >Logs</a>
+                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.SUMMARY, cell) }}>Summary</a>
+
                                                         {
                                                             props.selectedNode.type === iNodeType.AllPod ?
                                                                 <React.Fragment>
-                                                                    <a className="learn-more-href ml-12 cursor">Events</a>
-                                                                    <a className="learn-more-href ml-12 cursor">Terminal</a>
+                                                                    <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.EVENTS, cell) }}>Events</a>
+                                                                    <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.TERMINAL, cell) }}>Terminal</a>
                                                                 </React.Fragment>
                                                                 : ""
                                                         }

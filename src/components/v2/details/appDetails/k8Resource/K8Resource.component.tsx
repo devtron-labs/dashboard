@@ -6,12 +6,8 @@ import AllPodsComponent from './nodeType/AllPods.component'
 import FilterResource from './FilterResource'
 import GenericInfoComponent from './nodeType/GenericInfo.component'
 
-export default function K8ResourceComponent() {
-
-
+export default function K8ResourceComponent(props) {
     const [selectedNode, setSelectedNode] = useState<iNode | undefined>(undefined)
-
-
     const updateNodeInfoCB = (node: iNode) => {
         console.log("selected node is", node)
         setSelectedNode(node)
@@ -21,11 +17,22 @@ export default function K8ResourceComponent() {
         console.log(selectedNode.type)
         switch (selectedNode.type) {
             case iNodeType.AllPod:
-                return <AllPodsComponent selectedNode={selectedNode} />
+                return <AllPodsComponent
+                    selectedNode={selectedNode}
+                    addResourceTabClick={props.addResourceTabClick}
+                />
             case iNodeType.Service:
-                return <ServiceComponent selectedNode={selectedNode} />
+                return <ServiceComponent
+                    selectedNode={selectedNode}
+                    addResourceTabClick={props.addResourceTabClick}
+
+                />
             case iNodeType.GenericInfo:
-                return <GenericInfoComponent selectedNode={selectedNode} />
+                return <GenericInfoComponent
+                    selectedNode={selectedNode}
+                    addResourceTabClick={props.addResourceTabClick}
+
+                />
             default:
                 return (
                     <div>
