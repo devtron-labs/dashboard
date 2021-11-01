@@ -73,11 +73,14 @@ export interface CDPipelineState {
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
+    showForceDeleteDialog: boolean;
     showError: boolean;
     showPreStage: boolean;
     showDeploymentStage: boolean;
     showPostStage: boolean;
     isAdvanced: boolean;
+    forceDeleteDialogMessage: string;
+    forceDeleteDialogTitle: string;
 }
 
 
