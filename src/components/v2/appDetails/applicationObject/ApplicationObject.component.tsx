@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
 import { iTab } from '../../utils/tabUtils/tab.type';
 import { TabActions, useTab } from '../../utils/tabUtils/useTab';
 import './applicationObject.css'
 import { ReactComponent as K8Resource } from '../../../../assets/icons/ic-object.svg';
-import { ReactComponent as LogAnalyser } from '../../../../assets/icons/ic-logs.svg';
+import { ReactComponent as LogAnalyzer } from '../../../../assets/icons/ic-logs.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { tCell } from '../../utils/tableUtils/table.type';
 import { NodeDetailTabsType } from '../../../app/types';
 import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
 import { ResourceTabsJSON } from '../../utils/tabUtils/tab.json';
-import { generatePath, NavLink } from 'react-router-dom';
+import { generatePath, NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, useParams, useLocation } from 'react-router';
+import { URLS } from '../../../../config';
+import { Progressing } from '../../../common';
 
 
 function ApplicationObjectComponent() {
@@ -19,9 +21,8 @@ function ApplicationObjectComponent() {
     const [{ tabs }, dispatch] = useTab(ResourceTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
     const [defaultViewData, setDefaultViewData] = useState({})
-    const { path } = useRouteMatch()
     const location = useLocation();
-
+    const { path } = useRouteMatch();
     const params = useParams<{ appId: string, envId: string, name }>()
 
     const addResourceTabClick = (ndtt: NodeDetailTabsType, cell: tCell) => {
@@ -63,7 +64,7 @@ function ApplicationObjectComponent() {
     const getTabIcon = (icon: string) => {
         switch (icon) {
             case "K8Resource": return <K8Resource />
-            case "LogAnalyser": return <LogAnalyser />
+            case "LogAnalyser": return <LogAnalyzer />
             default: return ""
         }
     }
@@ -75,21 +76,42 @@ function ApplicationObjectComponent() {
     return (
         <div>
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
-                {
+                {/* {
                     tabs.map((tab: iTab, index) => {
                         let itab = tab.name;
-                        console.log(tab.name)
+                        let gen = `${itab}`
                         return (
                             <div key={index + "tab"} className={`${tab.isSelected ? 'resource-tree-tab bcn-0' : ''} cursor pl-12 pt-8 pb-8 pr-12`}>
-                                <NavLink to={generatePath(path, { ...params, itab }) + location.search} className="cn-9 fw-6 no-decor flex left">
+                                <NavLink to={gen} className="cn-9 fw-6 no-decor flex left">
                                     {tab.icon && <span className="icon-dim-16 mr-4">{getTabIcon(tab?.icon)} </span>} {tab.name}
                                 </NavLink>
                             </div>
                         )
                     })
                 }
+           */}
+                <ul className="tab-list">
+                    <li className="tab-list__tab ellipsis-right">
+                        <NavLink activeClassName="resource-tree-tab bcn-0 cn-9" to={`k8-resources`} className="cursor cn-9 fw-6 no-decor flex left">
+                            <div className="pl-12 pt-8 pb-8 pr-12 flex left"> <span className="icon-dim-16 mr-4"> <K8Resource /></span> K8 Resources</div>
+                        </NavLink>
+                    </li>
+                    <li className="tab-list__tab ellipsis-right">
+                        <NavLink activeClassName="resource-tree-tab bcn-0 c" to={`log-analyzer`} className="cn-9 fw-6 no-decor flex left">
+                            <div className={`flex left cursor pl-12 pt-8 pb-8 pr-12`}><span className="icon-dim-16 mr-4"> <LogAnalyzer /></span> Log Analyzer</div>
+                        </NavLink>
+                    </li>
+                </ul>
             </div>
-            {selectedTab && tabData()}
+            <div>
+                <Switch>
+                    <Route exact path={`${path}/${URLS.APP_DETAILS_K8}`} component={K8ResourceComponent} />
+                    <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} component={LogAnalyzerComponent} />
+                    <Route exact path={`${path}/${URLS.APP_DETAILS_DEFAULT}`} component={DefaultViewTabComponent} />
+                    <Redirect exact to={`${path}/${URLS.APP_DETAILS_K8}`} />
+                </Switch>
+            </div>
+            {/* {selectedTab && tabData()} */}
         </div>
     )
 }

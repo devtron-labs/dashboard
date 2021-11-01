@@ -7,23 +7,19 @@ import { URLS } from '../../../config';
 import CIDetails from '../../app/details/cIDetails/CIDetails';
 import TriggerView from '../../app/details/triggerView/TriggerView';
 import { Progressing } from '../../common';
+import K8ResourceComponent from './applicationObject/k8Resource/K8Resource.component';
+import LogAnalyzerComponent from './applicationObject/logAnalyzer/LogAnalyzer.component';
+import DefaultViewTabComponent from './applicationObject/defaultViewTab/DefaultViewTab.component';
 
 function AppDetailsComponent() {
     const { path } = useRouteMatch();
+    const match = useRouteMatch();
+    const location = useLocation();
 
     return (
         <React.Fragment>
             <SourceInfoComponent />
-            <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${URLS.APP_DETAILS_K8}?`} render={(props) => <ApplicationObjectComponent />} />
-                    <Route path={`${URLS.APP_DETAILS_LOG}?`} render={(props) => <ApplicationObjectComponent />} />
-                    <Route path={`${URLS.APP_DETAILS_DEFAULT}?`} render={(props) => <ApplicationObjectComponent />} />
-                    <Redirect to={`${URLS.APP_DETAILS_K8}?`} />
-                </Switch>
-            </Suspense>
             <ApplicationObjectComponent />
-
         </React.Fragment>
     )
 }

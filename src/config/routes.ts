@@ -9,9 +9,9 @@ export const URLS = {
     CHARTS: '/chart-store',
     APP: '/app',
     APP_DETAILS: 'details', //
-    APP_DETAILS_K8: 'k8',
-    APP_DETAILS_LOG: 'log',
-    APP_DETAILS_DEFAULT: 'default',
+    APP_DETAILS_K8: 'k8-resources',
+    APP_DETAILS_LOG: 'log-analyzer',
+    APP_DETAILS_DEFAULT: 'default-view',
     APP_TRIGGER: 'trigger',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
