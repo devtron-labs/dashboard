@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
 import { getChartReferences } from '../../services/service';
 import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget, Checkbox } from '../common';
-import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
+import { useEffectAfterMount, showError, usePrevious } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -14,7 +14,7 @@ import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 
-export function OptApplicationMetrics({ currentVersion, enableAppMatrix, appMatrixEnabled, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false }) {
+export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
@@ -27,7 +27,7 @@ export function OptApplicationMetrics({ currentVersion, enableAppMatrix, appMatr
                         rootClassName="form__checkbox-label--ignore-cache"
                         value={"CHECKED"}
                         disabled={disabled || isChartVersionSupported}
-                        onChange={enableAppMatrix}
+                        onChange={onChange}
                     >
                         <div className="ml-14">
                             <b>Show application metrics</b>
@@ -82,7 +82,6 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     const [appMetricsLoading, setAppMetricsLoading] = useState(false);
     const [chartConfigLoading, setChartConfigLoading] = useState(null);
     const { appId } = useParams<{ appId }>();
-    const [appMatrixEnabled, setAppMatrixEnabled] = useState(false);
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
@@ -116,12 +115,8 @@ export default function DeploymentConfig({ respondOnSuccess }) {
         }
     }
 
-    function enableAppMatrix() {
-        setAppMatrixEnabled(!appMatrixEnabled)
-    }
-
     return <div style={{ height: "calc(100% - 68px )" }}>
-        <div style={{ display: 'grid', gridTemplateColumns: appMatrixEnabled ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsEnabled ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
             <DeploymentConfigForm
                 respondOnSuccess={respondOnSuccess}
                 loading={loading} setLoading={setLoading}
@@ -137,14 +132,13 @@ export default function DeploymentConfig({ respondOnSuccess }) {
                 setChartConfigLoading={setChartConfigLoading}
                 initialise={initialise}
                 appId={appId} />
-            {appMatrixEnabled &&
-                <ApplicationmatrixInfo enableAppMatrix={enableAppMatrix} />}
+            {isAppMetricsEnabled &&
+                <ApplicationmatrixInfo enableAppMatrix={isAppMetricsEnabled} />}
         </div>
         <div>
             <OptApplicationMetrics
                 currentVersion={selectedChart?.version}
-                enableAppMatrix={enableAppMatrix}
-                appMatrixEnabled={appMatrixEnabled}
+                appMatrixEnabled={isAppMetricsEnabled}
                 chartVersions={chartVersions}
                 selectedChart={selectedChart}
                 onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
@@ -349,13 +343,6 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {/* {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
-                <OptApplicationMetrics
-                    currentVersion={selectedChart?.version}
-                    onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
-                    opted={isAppMetricsEnabled}
-                    loading={appMetricsLoading}
-                />} */}
         </>
     )
 }

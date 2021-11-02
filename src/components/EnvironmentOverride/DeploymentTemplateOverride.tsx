@@ -167,7 +167,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId, envId }>()
-    const [appMatrixEnabled, setAppMatrixEnabled] = useState(false);
     async function handleSubmit(e) {
         e.preventDefault();
         if (!obj) {
@@ -205,10 +204,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
         finally {
             setLoading(not)
         }
-    }
-
-    function enableAppMatrix() {
-        setAppMatrixEnabled(!appMatrixEnabled)
     }
 
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
@@ -259,8 +254,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
             {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
                 currentVersion={state.charts.get(state.selectedChartRefId).version}
                 onChange={handleAppMetrics}
-                appMatrixEnabled={appMatrixEnabled}
-                enableAppMatrix={enableAppMatrix}
                 className=""
                 opted={!!state.data.appMetrics}
                 loading={state.appMetricsLoading}
