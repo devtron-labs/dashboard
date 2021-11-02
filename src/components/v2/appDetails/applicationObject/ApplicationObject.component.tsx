@@ -11,10 +11,10 @@ import { NodeDetailTabsType } from '../../../app/types';
 import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
 import { ResourceTabsJSON } from '../../utils/tabUtils/tab.json';
 import { generatePath, NavLink, Redirect, Route, Switch } from 'react-router-dom';
-import { useRouteMatch, useParams, useLocation } from 'react-router';
+import { useRouteMatch, useParams, useLocation, useHistory } from 'react-router';
 import { URLS } from '../../../../config';
-import { Progressing } from '../../../common';
-
+import { Progressing, useSearchString } from '../../../common';
+import './applicationObject.css';
 
 function ApplicationObjectComponent() {
 
@@ -91,13 +91,13 @@ function ApplicationObjectComponent() {
                 }
            */}
                 <ul className="tab-list">
-                    <li className="tab-list__tab ellipsis-right">
-                        <NavLink activeClassName="resource-tree-tab bcn-0 cn-9" to={`k8-resources`} className="cursor cn-9 fw-6 no-decor flex left">
+                    <li className=" ellipsis-right">
+                        <NavLink activeClassName="resource-tree-tab bcn-0 cn-9" to={`k8-resources`} className="tab-list__tab cursor cn-9 fw-6 no-decor flex left">
                             <div className="pl-12 pt-8 pb-8 pr-12 flex left"> <span className="icon-dim-16 mr-4"> <K8Resource /></span> K8 Resources</div>
                         </NavLink>
                     </li>
                     <li className="tab-list__tab ellipsis-right">
-                        <NavLink activeClassName="resource-tree-tab bcn-0 c" to={`log-analyzer`} className="cn-9 fw-6 no-decor flex left">
+                        <NavLink activeClassName="resource-tree-tab bcn-0 cn-9" to={`log-analyzer`} className="cn-9 fw-6 no-decor flex left">
                             <div className={`flex left cursor pl-12 pt-8 pb-8 pr-12`}><span className="icon-dim-16 mr-4"> <LogAnalyzer /></span> Log Analyzer</div>
                         </NavLink>
                     </li>

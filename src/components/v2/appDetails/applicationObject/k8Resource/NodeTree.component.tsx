@@ -1,5 +1,5 @@
 import React from 'react'
-import { DropdownIcon } from '../../../../common';
+import  { ReactComponent as DropDown }  from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { iNode, iNodes } from './node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 
@@ -29,7 +29,7 @@ function NodeTreeComponent(props) {
                     <div className="container cursor fw-6 cn-9  fs-14" onClick={(e) => handleNodeClick(treeNode, e)} >
                         <div className="row flex left pt-6 pb-6">
                             <div className="col-md-2">
-                                {(treeNode.childNodes?.length > 0) && <DropdownIcon className={treeNode.isSelected ? 'rotate icon-dim-20' : ''} />}
+                                {(treeNode.childNodes?.length > 0) && <DropDown className="icon-dim-20"/>}
                             </div>
                             <div className="col-md-10">
                                 <span> {treeNode.name}</span>
