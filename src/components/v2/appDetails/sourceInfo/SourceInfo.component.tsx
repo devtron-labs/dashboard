@@ -1,15 +1,13 @@
 import React from 'react'
 import EnvironmentSelectorComponent from './EnvironmentSelector.component'
-import EnvironmentStatusComponent from './EnvironmentStatus.component'
+import EnvironmentStatusComponent from './environmentStatus/EnvironmentStatus.component'
 
 function SourceInfoComponent() {
     return (
-        <React.Fragment >
-            <div >
-                <EnvironmentSelectorComponent />
-                <EnvironmentStatusComponent />
-            </div>
-        </React.Fragment>
+        <div>
+            <EnvironmentSelectorComponent />
+            <EnvironmentStatusComponent />
+        </div>
     )
 }
 

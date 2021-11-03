@@ -1,17 +1,4 @@
-export const ResourceTabsJSON = [
-    {
-        name: "K8 Resources",
-        icon: "K8Resource",
-        className: "",
-        isSelected: true
-    },
-    {
-        name: "Log Analyzer",
-        icon: "LogAnalyser",
-        className: "",
-        isSelected: false
-    }
-]
+
 
 export const DefaultViewTabsJSON = [
     {

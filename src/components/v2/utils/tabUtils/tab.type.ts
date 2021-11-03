@@ -1,4 +1,4 @@
-export interface iTab {
+export interface iLink {
     id?: number
     name?: string;
     icon?: string;
@@ -9,7 +9,7 @@ export interface iTab {
     count?: number;
 }
 
-export interface iTabs extends Array<iTab> { }
+export interface iLinks extends Array<iLink> { }
 
 
 

@@ -1,8 +1,8 @@
-import { iTab } from "../../utils/tabUtils/tab.type";
+import { iLink } from "../../utils/tabUtils/tab.type";
 
 export interface iNodes extends Array<iNode> { }
 
-export interface iNode extends iTab {
+export interface iNode extends iLink {
   childNodes: iNodes;
   type: iNodeType;
 }

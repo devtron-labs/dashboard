@@ -37,11 +37,10 @@ function ServiceComponent(props) {
                    </div>
                 </div>
                 {
-                    GenericServiceTablejSON.tBody.map((table) => {
-
-                        return <div className="row pt-10 pb-10">
-                            {table.map((cell) => {
-                                return <div>{cell.value}
+                    GenericServiceTablejSON.tBody.map((table, index) => {
+                        return <div className="row pt-10 pb-10" key={'gst_' + index}>
+                            {table.map((cell, index) => {
+                                return <div key={"gstc_" + index}>{cell.value}
                                     <div className="cg-5">HEALTHY</div>
                                 </div>
                             })} </div>

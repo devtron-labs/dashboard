@@ -1,6 +1,6 @@
 
 import { useReducer, useEffect } from "react";
-import { iTab, iTabs } from "./tab.type";
+import { iLink, iLinks } from "./tab.type";
 
 export const TabActions = {
     Init: "INIT",
@@ -27,11 +27,11 @@ const reducer = (state: any, action: any) => {
             return { ...state, loading: false, error: action.error };
 
         case TabActions.AddTab: {
-            let tab = {} as iTab;
+            let tab = {} as iLink;
             tab.name = action.tabName
             tab.isSelected = true
 
-            state.tabs = state.tabs.map((tab: iTab) => {
+            state.tabs = state.tabs.map((tab: iLink) => {
                 tab.isSelected = false
                 return tab
             })
@@ -46,7 +46,7 @@ const reducer = (state: any, action: any) => {
             return { ...state, tabs: rc };
 
         case TabActions.MarkActive: {
-            state.tabs.forEach((tab: iTab) => {
+            state.tabs.forEach((tab: iLink) => {
                 tab.isSelected = false
                 if (tab.name === action.tabName) {
                     tab.isSelected = true
@@ -60,7 +60,7 @@ const reducer = (state: any, action: any) => {
 
 
 
-export const useTab = (tabs: iTabs) => {
+export const useTab = (tabs: iLinks) => {
 
     const [state, dispatch] = useReducer(reducer, initialState);
 

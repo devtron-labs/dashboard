@@ -23,7 +23,7 @@ export const NodesJSON = [
                         id: 50,
                         name: "Pods",
                         icon: "",
-                        type: iNodeType.AllPod
+                        type: iNodeType.Pods
                     },
                     {
                         id: 51,
@@ -51,7 +51,7 @@ export const NodesJSON = [
                 id: 53,
                 name: "Pods",
                 icon: "",
-                type: iNodeType.AllPod
+                type: iNodeType.Pods
             },
             {
                 id: 54,
@@ -66,7 +66,7 @@ export const NodesJSON = [
         id: 5,
         name: "Pods",
         icon: "",
-        type: iNodeType.AllPod
+        type: iNodeType.Pods
     },
     {
         id: 6,
@@ -78,7 +78,34 @@ export const NodesJSON = [
         id: 7,
         name: "Config & Storage",
         icon: "",
-        type: 'GenericInfo'
+        type: 'GenericInfo',
+        childNodes: [
+            {
+                id: 2,
+                name: "Cron Jobs",
+                icon: "",
+                childNodes: [
+                    {
+                        id: 50,
+                        name: "Pods",
+                        icon: "",
+                        type: iNodeType.Pods
+                    },
+                    {
+                        id: 51,
+                        name: "Jobs",
+                        icon: "",
+                        type: 'Service'
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "Service",
+                icon: "",
+                type: 'Service'
+            }
+        ]
     }
 ]
 

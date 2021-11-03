@@ -10,7 +10,7 @@ export interface SummaryProps {
     // nodes: AggregatedNodes;
 }
 
-const SummaryComponent: React.FC<SummaryProps> = ({ appName, environmentName, nodeName }) => {
+const SummaryComponent: React.FC= () => {
     const { queryParams, searchParams } = useSearchString()
     // const node = searchParams?.kind && nodes?.nodes[searchParams.kind]?.has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [manifest, setManifest] = useState(null);
@@ -41,7 +41,7 @@ const SummaryComponent: React.FC<SummaryProps> = ({ appName, environmentName, no
     //     </div>
     // }
 
-    return <div className="p-20 bcn-0" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "100%" }}>
+    return <div className="p-20 bcn-0" style={{ gridColumn: '1 / span 2', overflowY: "scroll", height: "500px" }}>
         <div className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
             <div className="summary-view__card pt-16 pb-16 pl-16 pr-16 br-4">
                 <div className=" fw-6 fs-14">Configuration</div>

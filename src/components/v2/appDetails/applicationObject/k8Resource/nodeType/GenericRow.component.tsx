@@ -1,6 +1,9 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import '../../../../lib/bootstrap-grid.min.css';
 import { iNodeType, NodeDetailTabs } from '../node.type';
+import { useRouteMatch } from 'react-router';
+import { URLS } from '../../../../../../config';
 
 const GenericPodsTablejSON = {
     tHead: [
@@ -35,21 +38,23 @@ const GenericPodsTablejSON = {
     ]
 }
 
-function GenericRowComponent(props) {
+function GenericRowComponent(props: any) {
+    const { path, url } = useRouteMatch();
+
     return (
         <div className="container generic-table">
             <div className="row border-bottom ">
                 {
                     GenericPodsTablejSON.tHead.map((cell, index) => {
-                        return <div className={(index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
+                        return <div key={'gpt_' + index} className={(index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
                     })
                 }
             </div>
             <div className="generic-body">
                 {
-                    GenericPodsTablejSON.tBody.map((tRow) => {
+                    GenericPodsTablejSON.tBody.map((tRow, index) => {
                         return (
-                            <div className="row">
+                            <div className="row" key={'grt' + index}>
                                 {tRow.map((cell, index) => {
                                     return (
                                         <div key={"grc" + index} className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"}>
@@ -57,15 +62,14 @@ function GenericRowComponent(props) {
                                             <span className="action-buttons ">
                                                 {index === 0 ?
                                                     <React.Fragment>
-                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.MANIFEST, cell) }} >Manifest</a>
-                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.LOGS, cell) }} >Logs</a>
-                                                        <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.SUMMARY, cell) }}>Summary</a>
-
+                                                        <NavLink to={`${path}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                        <NavLink to={`${path}/${NodeDetailTabs.LOGS.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Logs</NavLink>
+                                                        <NavLink to={`${path}/${NodeDetailTabs.SUMMARY.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Summary</NavLink>
                                                         {
-                                                            props.selectedNode.type === iNodeType.AllPod ?
+                                                            props.selectedNode?.type === iNodeType.Pods ?
                                                                 <React.Fragment>
-                                                                    <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.EVENTS, cell) }}>Events</a>
-                                                                    <a className="learn-more-href ml-6 cursor" onClick={() => { props.addResourceTabClick(NodeDetailTabs.TERMINAL, cell) }}>Terminal</a>
+                                                                    <NavLink to={`${path}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                                                    <NavLink to={`${path}/${NodeDetailTabs.TERMINAL.toLowerCase()}`} className="learn-more-href ml-6 cursor">Terminal</NavLink>
                                                                 </React.Fragment>
                                                                 : ""
                                                         }

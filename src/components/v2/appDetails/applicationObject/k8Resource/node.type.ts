@@ -1,16 +1,16 @@
-import { iTab } from "../../../utils/tabUtils/tab.type";
+import { iLink } from "../../../utils/tabUtils/tab.type";
 
 export interface iNodes extends Array<iNode> { }
 
-export interface iNode extends iTab {
-  childNodes: iNodes;
+export interface iNode extends iLink {
+  childNodes?: iNodes;
   type: iNodeType;
 }
 
 export enum iNodeType {
-  Service = 'Service',
-  AllPod = 'AllPods',
-  GenericInfo = 'GenericInfo',
+  Service = 'service',
+  Pods = 'pods',
+  GenericInfo = 'genericInfo',
 }
 
 export enum NodeDetailTabs {

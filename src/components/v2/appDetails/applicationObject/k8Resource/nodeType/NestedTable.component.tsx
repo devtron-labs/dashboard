@@ -5,10 +5,7 @@ function NestedTableComponent(props) {
     return (
         <div>
             <div className="nested-table-grid"></div>
-            <GenericRowComponent
-                selectedNode={props.selectedNode}
-                addResourceTabClick={props.addResourceTabClick}
-            />
+            <GenericRowComponent  />
         </div>
     )
 }
