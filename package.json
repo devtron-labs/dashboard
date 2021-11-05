@@ -36,13 +36,13 @@
         "react-toastify": "^6.1.0",
         "react-virtualized": "^9.21.1",
         "recharts": "^1.8.5",
+        "rxjs": "^7.4.0",
         "xterm": "4.5.0",
         "xterm-addon-fit": "0.3.0",
         "xterm-addon-search": "0.6.0",
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
-        "yamljs": "^0.3.0",
-        "devtron_external_app": "file:../devtron_external_app"
+        "yamljs": "^0.3.0"
     },
     "scripts": {
         "precommit": "yarn eslint",

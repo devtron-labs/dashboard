@@ -7,6 +7,7 @@ export interface iLink {
     isHidden?: boolean;
     status?: string;
     count?: number;
+    url?: string;
 }
 
 export interface iLinks extends Array<iLink> { }

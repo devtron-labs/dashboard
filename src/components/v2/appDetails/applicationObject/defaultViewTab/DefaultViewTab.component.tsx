@@ -11,12 +11,16 @@ import { NodeDetailTabs } from '../k8Resource/node.type';
 import SummaryComponent from './defaultViewActionTabs/Summary.component';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import ApplicationObjectStore from '../applicationObject.store';
+import { URLS } from '../../../../../config';
+import { useRouteMatch } from 'react-router';
 
 function DefaultViewTabComponent() {
 
     const [{ tabs }, dispatch] = useTab(DefaultViewTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
     const params = useParams<{ action: string }>()
+    const { url } = useRouteMatch()
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -24,6 +28,8 @@ function DefaultViewTabComponent() {
             tabName: _tabName
         })
         setSelectedTab(_tabName)
+        console.log('hi')
+        ApplicationObjectStore.addApplicationObjectTab(_tabName, url)
     }
 
     const tabData = () => {
