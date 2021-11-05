@@ -19,53 +19,12 @@ export default function K8ResourceComponent(props) {
         setSelectedNode(node)
     }
 
-    // const selectedNodeData = () => {
-    // switch (selectedNode.type) {
-    //     case iNodeType.Pods:
-    //         return <AllPodsComponent
-    //             selectedNode={selectedNode}
-    //             addResourceTabClick={props.addResourceTabClick}
-    //         />
-    //     case iNodeType.Service:
-    //         return <ServiceComponent
-    //             selectedNode={selectedNode}
-    //             addResourceTabClick={props.addResourceTabClick}
-
-    //         />
-    //     case iNodeType.GenericInfo:
-    //         return <GenericInfoComponent
-    //             selectedNode={selectedNode}
-    //             addResourceTabClick={props.addResourceTabClick}
-
-    //         />
-    //     default:
-    //         return (
-    //             <GenericInfoComponent
-    //             selectedNode={selectedNode}
-    //             addResourceTabClick={props.addResourceTabClick}
-    //         />
-    //         )
-    // }
-
-    // }
-    const selectedNodeData = () => {
-        switch (selectedNode?.name) {
-            case iNodeType.Pods:
-                return <AllPodsComponent selectedNode={selectedNode} />
-            case iNodeType.Service:
-                return <ServiceComponent selectedNode={selectedNode} />
-            case iNodeType.GenericInfo:
-                return <GenericInfoComponent selectedNode={selectedNode} />
-        }
-    }
-
     return (
         <div className="bcn-0">
             <div className="pt-16 pl-20 pb-16"><FilterResource /></div>
             <div className="container-fluid">
                 <div className="row" >
                     <div className="col-2 k8-resources-node-tree"> <NodeTreeComponent updateNodeInfo={updateNodeInfoCB} /></div>
-                    {/* <div className="col"> {selectedNode && selectedNodeData()}</div> */}
                     <div className="col">
                         <Switch>
                             <Route exact path={`${url}/${iNodeType.Pods}`} component={AllPodsComponent} />
