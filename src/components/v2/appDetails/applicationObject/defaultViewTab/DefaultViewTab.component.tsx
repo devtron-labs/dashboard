@@ -11,10 +11,9 @@ import { NodeDetailTabs } from '../k8Resource/node.type';
 import SummaryComponent from './defaultViewActionTabs/Summary.component';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import ApplicationObjectStore from '../applicationObject.store';
 import { URLS } from '../../../../../config';
 import { useRouteMatch, useHistory } from 'react-router';
-import { Progressing } from '../../../../common';
+import ApplicationObjectStore from '../applicationObject.store';
 
 function DefaultViewTabComponent({ handleNodeChange }) {
 
@@ -29,8 +28,12 @@ function DefaultViewTabComponent({ handleNodeChange }) {
             type: TabActions.MarkActive,
             tabName: _tabName
         })
+
+        ApplicationObjectStore.setCurrentTab(_tabName)
+        
         setSelectedTab(_tabName)
-        handleNodeChange()
+        
+        handleNodeChange(_tabName)
     }
 
     const tabData = () => {

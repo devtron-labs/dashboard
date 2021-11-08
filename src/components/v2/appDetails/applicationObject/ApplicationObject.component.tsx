@@ -18,6 +18,7 @@ import { DeploymentStatusModal } from '../../../externalApp/src/components/apps/
 import { useSharedState } from '../../utils/useSharedState';
 import ApplicationObjectStore from './applicationObject.store';
 import { NodeDetailTabs } from './k8Resource/node.type';
+import { ApplicationObject } from './applicationObject.type';
 
 const ApplicationObjectComponent = () => {
     const [showDefault, setShowDefault] = useState(false)
@@ -28,12 +29,13 @@ const ApplicationObjectComponent = () => {
     const history = useHistory()
     const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
     const [baseURL, setBaseURL] = useState('')
-    // const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
-    const [applicationObjectTabs, setApplicationObjectTabs] = useState([])
+    const [applicationObjectTabs, setApplicationObjectTabs] = useState<Array<ApplicationObject>>([])
+    
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
         setBaseURL(link)
+
         if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1 && (!params.action || NodeDetailTabs[params.action.toUpperCase()] !== undefined)) {
             ApplicationObjectStore.cleanApplicationObject()
             history.push(link + URLS.APP_DETAILS_K8)
@@ -42,7 +44,7 @@ const ApplicationObjectComponent = () => {
         }
     }, [])
 
-    const fetchApplicationObjectTabs = () => {
+    const fetchApplicationObjectTabs = (_tabName ? : string) => {
         setApplicationObjectTabs(ApplicationObjectStore.getApplicationObjectTabs())
     }
 

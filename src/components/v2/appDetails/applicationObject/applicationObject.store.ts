@@ -1,8 +1,11 @@
-import { iLink, iLinks } from "../../utils/tabUtils/tab.type";
+import { iLink } from "../../utils/tabUtils/tab.type";
 import { BehaviorSubject } from 'rxjs';
+import { ApplicationObject } from "./applicationObject.type";
 
-let applicationObjectTabs: iLinks = [];
-let applicationObjectTabsSubject: BehaviorSubject<iLinks> = new BehaviorSubject();
+let applicationObjectTabs: Array<ApplicationObject> = [];
+let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
+
+let currentTab: string = "";
 
 const ApplicationObjectStore = {
 
@@ -32,7 +35,7 @@ const ApplicationObjectStore = {
             }
         }
         if (!found) {
-            let tab = {} as iLink
+            let tab = {} as ApplicationObject
             tab.name = tabName.toLowerCase()
             tab.url = tabURL
             tab.isSelected = true
@@ -43,6 +46,12 @@ const ApplicationObjectStore = {
     cleanApplicationObject: () => {
         applicationObjectTabs = []
         applicationObjectTabsSubject.next(applicationObjectTabs)
+    }, 
+    setCurrentTab: (_str: string) => {
+        currentTab = _str
+    },
+    getCurrentTab: () => {
+        return currentTab
     }
 }
 

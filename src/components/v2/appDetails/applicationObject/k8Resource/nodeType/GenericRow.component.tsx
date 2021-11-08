@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import '../../../../lib/bootstrap-grid.min.css';
 import { iNodeType, NodeDetailTabs } from '../node.type';
 import { useRouteMatch } from 'react-router';
-import { URLS } from '../../../../../../config';
 import ApplicationObjectStore from '../../applicationObject.store';
 
 const GenericPodsTablejSON = {
@@ -39,12 +38,17 @@ const GenericPodsTablejSON = {
     ]
 }
 
-const handlePodSelection = (cell) => {
-        ApplicationObjectStore.addApplicationObjectTab(cell.value, cell.url)
-}
 
 function GenericRowComponent(props: any) {
     const { path, url } = useRouteMatch();
+
+
+    const handlePodSelection = (cell, event) => {
+        event.stopPropagation()
+
+        
+        ApplicationObjectStore.addApplicationObjectTab(cell.value, url + "/" + ApplicationObjectStore.getCurrentTab())
+    }
 
     return (
         <div className="container generic-table">
@@ -62,7 +66,7 @@ function GenericRowComponent(props: any) {
                             <div className="row" key={'grt' + index}>
                                 {tRow.map((cell, index) => {
                                     return (
-                                        <div key={"grc" + index} onClick={()=>handlePodSelection(cell)} className={index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9"} >
+                                        <div key={"grc" + index} onClick={(event)=>handlePodSelection(cell, event)} className={index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9"} >
                                             <span>{cell.value}</span>
                                             <span className="action-buttons ">
                                                 {index === 0 ?
