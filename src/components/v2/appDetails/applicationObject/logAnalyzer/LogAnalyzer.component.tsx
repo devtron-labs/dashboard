@@ -3,7 +3,7 @@ import CodeEditor from '../../../../CodeEditor/CodeEditor';
 import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../../../common'
 
-function LogAnalyzerComponent() {
+function LogAnalyzerComponent(props) {
 
     const renderFilters = () => {
         return <div className=" row bcn-0 pl-20 pr-20 pt-6 pb-6 border-bottom flex flex-justify">

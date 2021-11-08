@@ -34,7 +34,7 @@ function AllPodsComponent(props: any) {
                     </div>
                 </div>
             </div>
-            <NestedTableComponent selectedNode={props.selectedNode} />
+            <NestedTableComponent selectedNodeType={props.selectedNodeType} />
         </div>
     )
 }

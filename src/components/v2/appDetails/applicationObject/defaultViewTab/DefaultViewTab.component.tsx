@@ -13,14 +13,16 @@ import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import ApplicationObjectStore from '../applicationObject.store';
 import { URLS } from '../../../../../config';
-import { useRouteMatch } from 'react-router';
+import { useRouteMatch, useHistory } from 'react-router';
+import { Progressing } from '../../../../common';
 
-function DefaultViewTabComponent() {
+function DefaultViewTabComponent({ handleNodeChange }) {
 
     const [{ tabs }, dispatch] = useTab(DefaultViewTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
     const params = useParams<{ action: string }>()
-    const { url } = useRouteMatch()
+    const { url, path } = useRouteMatch()
+    const history = useHistory()
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -28,8 +30,7 @@ function DefaultViewTabComponent() {
             tabName: _tabName
         })
         setSelectedTab(_tabName)
-        console.log('hi')
-        ApplicationObjectStore.addApplicationObjectTab(_tabName, url)
+        handleNodeChange()
     }
 
     const tabData = () => {
@@ -50,6 +51,13 @@ function DefaultViewTabComponent() {
     useEffect(() => {
         if (params.action) {
             handleTabClick(params.action)
+        } 
+    }, [params.action])
+
+    useEffect(() => {
+        const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
+        if (!params.action || NodeDetailTabs[params.action.toUpperCase()] === undefined) {
+            history.push(link + URLS.APP_DETAILS_K8)
         }
     }, [params.action])
 
@@ -60,7 +68,7 @@ function DefaultViewTabComponent() {
                     tabs.map((tab: iLink, index) => {
                         return (
                             <div key={index + "resourceTreeTab"} className={`${tab.name.toLowerCase() === selectedTab.toLowerCase() ? 'default-tab-row' : ''} pt-6 pb-6 cursor pl-8 pr-8`}>
-                                <NavLink to={`${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" onClick={() => handleTabClick(tab.name)}>
+                                <NavLink to={`${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" onClick={() => handleTabClick(tab.name.toLowerCase())}>
                                     <span className="default-tab-cell"> {tab.name.toLowerCase()}</span>
                                 </NavLink>
                             </div>

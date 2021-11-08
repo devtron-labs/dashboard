@@ -13,7 +13,7 @@ import { useRouteMatch } from 'react-router';
 
 export default function K8ResourceComponent(props) {
     const [selectedNode, setSelectedNode] = useState<iNode | undefined>(undefined)
-    const { path, url } = useRouteMatch();
+    const { url } = useRouteMatch();
 
     const updateNodeInfoCB = (node: iNode) => {
         setSelectedNode(node)
@@ -27,9 +27,9 @@ export default function K8ResourceComponent(props) {
                     <div className="col-2 k8-resources-node-tree"> <NodeTreeComponent updateNodeInfo={updateNodeInfoCB} /></div>
                     <div className="col">
                         <Switch>
-                            <Route exact path={`${url}/${iNodeType.Pods}`} component={AllPodsComponent} />
-                            <Route exact path={`${url}/${iNodeType.Service}`} component={ServiceComponent} />
-                            <Route exact path={`${url}/${iNodeType.GenericInfo}`} component={GenericInfoComponent} />
+                            <Route exact path={`${url}/${iNodeType.Pods}`} render={() => { return <AllPodsComponent selectedNodeType={iNodeType.Pods} /> }} />
+                            <Route exact path={`${url}/${iNodeType.Service}`} render={() => { return <ServiceComponent selectedNodeType={iNodeType.Service} /> }} />
+                            <Route exact path={`${url}/${iNodeType.GenericInfo}`} render={() => { return <GenericInfoComponent selectedNodeType={iNodeType.GenericInfo} /> }} />
                         </Switch>
                     </div>
                 </div>

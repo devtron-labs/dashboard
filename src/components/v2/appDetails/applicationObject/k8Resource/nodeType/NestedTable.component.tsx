@@ -5,7 +5,7 @@ function NestedTableComponent(props) {
     return (
         <div>
             <div className="nested-table-grid"></div>
-            <GenericRowComponent  />
+            <GenericRowComponent  selectedNodeType={props.selectedNodeType}/>
         </div>
     )
 }

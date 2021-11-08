@@ -15,13 +15,22 @@ const ApplicationObjectStore = {
     addApplicationObjectTab: (tabName: string, tabURL: string) => {
 
         let found = false
-        applicationObjectTabs.map((tab) => {
-            if (tab.name.toLowerCase() === tabName.toLowerCase()) {
+        // applicationObjectTabs.map((tab) => {
+        //     // tab.isSelected = false
+        //     if (tab.name.toLowerCase() === tabName) {
+        //         tab.isSelected = true
+        //         found = true
+        //     }
+        // })
+
+        for (let index = 2; index < applicationObjectTabs.length; index++) {
+            const tab = applicationObjectTabs[index];
+            tab.isSelected = false
+            if (tab.name.toLowerCase() === tabName) {
                 tab.isSelected = true
                 found = true
             }
-        })
-
+        }
         if (!found) {
             let tab = {} as iLink
             tab.name = tabName.toLowerCase()

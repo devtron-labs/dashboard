@@ -17,34 +17,38 @@ import './applicationObject.css';
 import { DeploymentStatusModal } from '../../../externalApp/src/components/apps/details/DeploymentStatusModal';
 import { useSharedState } from '../../utils/useSharedState';
 import ApplicationObjectStore from './applicationObject.store';
+import { NodeDetailTabs } from './k8Resource/node.type';
 
 const ApplicationObjectComponent = () => {
     const [showDefault, setShowDefault] = useState(false)
     const [{ tabs }, dispatch] = useTab([]);
     const [selectedTab, setSelectedTab] = useState("")
     const [defaultViewData, setDefaultViewData] = useState({})
-    const location = useLocation();
     const { path, url } = useRouteMatch();
     const history = useHistory()
-    const params = useParams<{ appId: string, envId: string, name }>()
+    const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
     const [baseURL, setBaseURL] = useState('')
-    const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
+    // const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
+    const [applicationObjectTabs, setApplicationObjectTabs] = useState([])
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
         setBaseURL(link)
-
-        if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1) {
-            history.push(link + URLS.APP_DETAILS_K8)
+        if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1 && (!params.action || NodeDetailTabs[params.action.toUpperCase()] !== undefined)) {
             ApplicationObjectStore.cleanApplicationObject()
-            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_K8, baseURL+URLS.APP_DETAILS_K8)
-            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_LOG, baseURL+URLS.APP_DETAILS_LOG)
+            history.push(link + URLS.APP_DETAILS_K8)
+            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_K8, baseURL + URLS.APP_DETAILS_K8)
+            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_LOG, baseURL + URLS.APP_DETAILS_LOG)
         }
     }, [])
 
-    useEffect(()=>{
-      console.log(applicationObjectTabs)
-    },[applicationObjectTabs])
+    const fetchApplicationObjectTabs = () => {
+        setApplicationObjectTabs(ApplicationObjectStore.getApplicationObjectTabs())
+    }
+
+    useEffect(() => {
+        fetchApplicationObjectTabs()
+    }, [applicationObjectTabs])
 
     return (
         <div>
@@ -64,7 +68,7 @@ const ApplicationObjectComponent = () => {
                         applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
                             return (
                                 <li key={index + "tab"} className=" ellipsis-right">
-                                    <NavLink activeClassName="resource-tree-tab bcn-0 cn-9" to={`${tab.url}`} className="tab-list__tab cursor cn-9 fw-6 no-decor flex left">
+                                    <NavLink activeClassName={`resource-tree-tab bcn-0 cn-9`} to={`${tab.url}`} className="tab-list__tab cursor cn-9 fw-6 no-decor flex left">
                                         <div className="pl-12 pt-8 pb-8 pr-12 flex left">
                                             {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                             {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
@@ -78,16 +82,39 @@ const ApplicationObjectComponent = () => {
                 </ul>
             </div>
             {/* {selectedTab && tabData()} */}
+
+
             <Switch>
-                <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:node/:action`} component={DefaultViewTabComponent} />
-                <Route path={`${path}/${URLS.APP_DETAILS_K8}`} component={K8ResourceComponent} />
-                <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} component={LogAnalyzerComponent} />
+                <Route path={`${path}/${URLS.APP_DETAILS_K8}/:node/:action`} render={() => { return <DefaultViewTabComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+                <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+                <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
             </Switch>
         </div>
     )
 }
 
-export default ApplicationObjectComponent
+export default ApplicationObjectComponent;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // const addResourceTabClick = (ndtt: NodeDetailTabsType, cell: tCell) => {
