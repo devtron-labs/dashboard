@@ -12,7 +12,7 @@ import DefaultViewTabComponent from '../defaultViewTab/DefaultViewTab.component'
 import { URLS } from '../../../../../config';
 import ApplicationObjectStore from '../applicationObject.store';
 
-export default function K8ResourceComponent(props) {
+export default function K8ResourceComponent() {
     const [selectedNode, setSelectedNode] = useState<iNode | undefined>(undefined)
     const { path, url } = useRouteMatch();
     const params = useParams<{ node: string; kind: string; appId: string; envId: string }>();
@@ -23,7 +23,6 @@ export default function K8ResourceComponent(props) {
 
     useEffect(() => {
         ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
-        props.handleNodeChange()
     }, [])
 
     return (

@@ -1,45 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/tab.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
+import { useParams } from 'react-router';
+
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-edit.svg';
-import { URLS } from '../../../../../../config';
-import ApplicationObjectStore from '../../applicationObject.store';
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 
-function ManifestComponent({ handleNodeChange }) {
-
+function ManifestComponent() {
+    
     const [{ tabs }, dispatch] = useTab(ManifestTabJSON);
-    const [selectedTab, setSelectedTab] = useState("")
-    const { url, path } = useRouteMatch()
-    const [podName, setPodName] = useState('')
-
-    const handlePodSelection = () => {
-        ApplicationObjectStore.addApplicationObjectTab(podName, url)
-        handleNodeChange()
-    }
+    const params = useParams<{ action: string, podName: string }>()
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName
         })
-        setSelectedTab(_tabName)
     }
 
-    const tabData = () => {
-        switch (selectedTab) {
-            // case "K8 Resources":
-            //     return <K8ResourceComponent
-            //         addResourceTabClick={addResourceTabClick}
-            //     />
-            // case "Log Analyzer":
-            //     return <LogAnalyzerComponent />
-            // default:
-            //     return <DefaultViewTabComponent data={defaultViewData} />
-        }
-    }
+    useEffect(() => {
+        handleTabClick(params.action)
+    }, [])
 
     const renderCodeEditor = () => {
         return <div>
@@ -53,14 +35,7 @@ function ManifestComponent({ handleNodeChange }) {
             </CodeEditor>
         </div>
     }
-
-    useEffect(() => {
-        const urlObj = url.split('/')
-        handleTabClick(ManifestTabJSON[0].name)
-        setPodName(urlObj[urlObj.length - 2])
-        handlePodSelection()
-        console.log('hi')
-    }, [podName])
+    
 
     return (
         <div className="bcn-0">
@@ -87,3 +62,5 @@ function ManifestComponent({ handleNodeChange }) {
 }
 
 export default ManifestComponent
+
+

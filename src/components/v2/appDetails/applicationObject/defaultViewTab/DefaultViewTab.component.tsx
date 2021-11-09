@@ -9,22 +9,17 @@ import TerminalComponent from './defaultViewActionTabs/Terminal.component';
 import './defaultViewTab.css';
 import { NodeDetailTabs } from '../k8Resource/node.type';
 import SummaryComponent from './defaultViewActionTabs/Summary.component';
-import { useParams } from 'react-router';
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
-import { URLS } from '../../../../../config';
-import { useRouteMatch, useHistory } from 'react-router';
+import { NavLink, Route, Switch } from 'react-router-dom';
+import { useParams, useRouteMatch } from 'react-router';
 import ApplicationObjectStore from '../applicationObject.store';
-import K8ResourceComponent from '../k8Resource/K8Resource.component';
-import LogAnalyzerComponent from '../logAnalyzer/LogAnalyzer.component';
 
-function DefaultViewTabComponent({handleNodeChange} ) {
+function DefaultViewTabComponent() {
 
     const [{ tabs }, dispatch] = useTab(DefaultViewTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
-    const params = useParams<{ action: string }>()
-    const { url, path } = useRouteMatch()
-    const history = useHistory()
-    const [ urlWithoutAction, setUrlWithoutAction] = useState('')
+    const params = useParams<{ action: string, podName: string }>()
+    const { url } = useRouteMatch()
+    const [urlWithoutAction, setUrlWithoutAction] = useState('')
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -33,54 +28,33 @@ function DefaultViewTabComponent({handleNodeChange} ) {
         })
 
         ApplicationObjectStore.setCurrentTab(_tabName)
-        
+
         setSelectedTab(_tabName)
-        
-       handleNodeChange()
     }
 
-    const tabData = () => {
-        switch (selectedTab) {
-            case NodeDetailTabs.MANIFEST:
-                return <ManifestComponent handleNodeChange={handleNodeChange}/>
-            case NodeDetailTabs.LOGS:
-                return <LogsComponent />
-            case NodeDetailTabs.TERMINAL:
-                return <TerminalComponent />
-            case NodeDetailTabs.EVENTS:
-                return <EventsComponent />
-            case NodeDetailTabs.SUMMARY:
-                return <SummaryComponent />
+    useEffect( () =>{
+        if(params.podName){
+            ApplicationObjectStore.addApplicationObjectTab(params.podName, url)
         }
-    }
+        
+    }, [params.podName])
+
 
     useEffect(() => {
         if (params.action) {
             handleTabClick(params.action)
             setUrlWithoutAction(url.split(params.action)[0])
-        } 
+        }
     }, [params.action])
-
-    // useEffect(() => {
-    //     // const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
-
-    //     if (!params.action || NodeDetailTabs[params.action.toUpperCase()] === undefined) {
-    //         history.push(ApplicationObjectStore.getBaseURL() + URLS.APP_DETAILS_K8 + ApplicationObjectStore.getCurrentTab())
-    //     }
-    // }, [params.action])
-
-    useEffect(() => {
-        ApplicationObjectStore.markApplicationObjectTabActive(ApplicationObjectStore.getCurrentTab())
-    }, [])
 
     return (
         <div>
             <div className="bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
                 {
-                    tabs.map((tab: iLink, index) => {
+                    tabs.map((tab: iLink, index: number) => {
                         return (
                             <div key={index + "resourceTreeTab"} className={`${tab.name.toLowerCase() === selectedTab.toLowerCase() ? 'default-tab-row' : ''} pt-6 pb-6 cursor pl-8 pr-8`}>
-                                <NavLink to={`${url}/${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" >
+                                <NavLink to={`${urlWithoutAction}${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" >
                                     <span className="default-tab-cell"> {tab.name.toLowerCase()}</span>
                                 </NavLink>
                             </div>
@@ -90,15 +64,13 @@ function DefaultViewTabComponent({handleNodeChange} ) {
 
             </div>
             <div>
-                {/* {selectedTab && tabData()} */}
                 <Switch>
-                    {console.log(urlWithoutAction)}
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.MANIFEST}`} render={() => { return <ManifestComponent  handleNodeChange={handleNodeChange}/> }} />
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.EVENTS}`} render={() => { return <EventsComponent  /> }} />
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.LOGS}`} render={() => { return <LogsComponent  /> }} />
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.SUMMARY}`} render={() => { return <SummaryComponent  /> }} />
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.TERMINAL}`} render={() => { return <TerminalComponent  /> }} />
-            </Switch>
+                    <Route path={`${urlWithoutAction}${NodeDetailTabs.MANIFEST}`} render={() => { return <ManifestComponent  /> }} />
+                    <Route path={`${urlWithoutAction}${NodeDetailTabs.EVENTS}`} render={() => { return <EventsComponent /> }} />
+                    <Route path={`${urlWithoutAction}${NodeDetailTabs.LOGS}`} render={() => { return <LogsComponent /> }} />
+                    <Route path={`${urlWithoutAction}${NodeDetailTabs.SUMMARY}`} render={() => { return <SummaryComponent /> }} />
+                    <Route path={`${urlWithoutAction}${NodeDetailTabs.TERMINAL}`} render={() => { return <TerminalComponent /> }} />
+                </Switch>
             </div>
         </div>
     )

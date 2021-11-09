@@ -6,11 +6,10 @@ import { useEffect } from 'react';
 import ApplicationObjectStore from '../applicationObject.store';
 import { URLS } from '../../../../../config';
 
-function LogAnalyzerComponent(props) {
+function LogAnalyzerComponent() {
 
     useEffect(() => {
         ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_LOG)
-        props.handleNodeChange()
     }, [])
 
     const renderFilters = () => {

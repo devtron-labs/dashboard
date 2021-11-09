@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play.svg';
 import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as Abort } from '../../../../../../assets/icons/ic-abort.svg';
+
 function LogsComponent() {
     const [logsPaused, toggleLogStream] = useState(false);
     const [terminalCleared, setTerminalCleared] = useState(false);
@@ -59,3 +60,7 @@ function LogsComponent() {
 }
 
 export default LogsComponent
+function useParams<T>() {
+    throw new Error('Function not implemented.');
+}
+

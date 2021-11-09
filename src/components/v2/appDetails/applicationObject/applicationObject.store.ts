@@ -1,4 +1,3 @@
-import { iLink } from "../../utils/tabUtils/tab.type";
 import { BehaviorSubject } from 'rxjs';
 import { ApplicationObject } from "./applicationObject.type";
 import { URLS } from "../../../../config";
@@ -8,7 +7,7 @@ let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = ne
 let baseURL: string = '';
 let currentTab: string = "";
 
-const addAOT = (tabName: string, tabUrl: string, isSelected?: boolean) => {
+const addAOT = (tabName: string, tabUrl: string, isSelected: boolean) => {
     let tab = {} as ApplicationObject
     tab.name = tabName.toLowerCase()
     tab.url = tabUrl
@@ -25,13 +24,17 @@ const ApplicationObjectStore = {
         return applicationObjectTabsSubject.asObservable()
     },
     initApplicationObjectTab: () => {
-        ApplicationObjectStore.cleanApplicationObject()
+        applicationObjectTabs = []
+
         addAOT(URLS.APP_DETAILS_K8, baseURL + URLS.APP_DETAILS_K8, true)
         addAOT(URLS.APP_DETAILS_LOG, baseURL + URLS.APP_DETAILS_LOG, false)
 
-        applicationObjectTabsSubject.next(applicationObjectTabs)
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    addApplicationObjectTab: (tabName: string, tabURL: string, isSelected?: boolean) => {
+    addApplicationObjectTab: (tabName: string, tabURL: string) => {
+
+        if(!tabName || !tabURL) return
+
         let alredyAdded = false
      
         for (let index = 0; index < applicationObjectTabs.length; index++) {
@@ -47,7 +50,7 @@ const ApplicationObjectStore = {
             addAOT(tabName, tabURL, true)
         }
 
-        applicationObjectTabsSubject.next(applicationObjectTabs)
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     markApplicationObjectTabActive: (tabName: string) => {
         for (let index = 0; index < applicationObjectTabs.length; index++) {
@@ -55,15 +58,10 @@ const ApplicationObjectStore = {
             tab.isSelected = false
             if (tab.name.toLowerCase() === tabName.toLowerCase()) {
                 tab.isSelected = true
-                break
             }
         }
 
-        applicationObjectTabsSubject.next(applicationObjectTabs)
-    },
-    cleanApplicationObject: () => {
-        applicationObjectTabs = []
-        applicationObjectTabsSubject.next(applicationObjectTabs)
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     setCurrentTab: (_str: string) => {
         currentTab = _str
