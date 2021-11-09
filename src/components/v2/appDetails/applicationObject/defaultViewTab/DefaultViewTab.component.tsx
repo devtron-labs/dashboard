@@ -33,7 +33,7 @@ function DefaultViewTabComponent({ handleNodeChange }) {
         
         setSelectedTab(_tabName)
         
-        handleNodeChange(_tabName)
+       handleNodeChange()
     }
 
     const tabData = () => {
@@ -58,11 +58,16 @@ function DefaultViewTabComponent({ handleNodeChange }) {
     }, [params.action])
 
     useEffect(() => {
-        const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
+        // const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
+
         if (!params.action || NodeDetailTabs[params.action.toUpperCase()] === undefined) {
-            history.push(link + URLS.APP_DETAILS_K8)
+            history.push(ApplicationObjectStore.getBaseURL() + URLS.APP_DETAILS_K8 + ApplicationObjectStore.getCurrentTab())
         }
     }, [params.action])
+
+    useEffect(() => {
+        ApplicationObjectStore.markApplicationObjectTabActive(ApplicationObjectStore.getCurrentTab())
+    }, [])
 
     return (
         <div>
@@ -71,7 +76,7 @@ function DefaultViewTabComponent({ handleNodeChange }) {
                     tabs.map((tab: iLink, index) => {
                         return (
                             <div key={index + "resourceTreeTab"} className={`${tab.name.toLowerCase() === selectedTab.toLowerCase() ? 'default-tab-row' : ''} pt-6 pb-6 cursor pl-8 pr-8`}>
-                                <NavLink to={`${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" onClick={() => handleTabClick(tab.name.toLowerCase())}>
+                                <NavLink to={`${path}/${tab.name.toLowerCase()}`} className=" no-decor flex left cn-7" onClick={() => handleTabClick(tab.name.toLowerCase())}>
                                     <span className="default-tab-cell"> {tab.name.toLowerCase()}</span>
                                 </NavLink>
                             </div>

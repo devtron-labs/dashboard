@@ -1,9 +1,14 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { NavLink, Route, Switch } from 'react-router-dom';
 import '../../../../lib/bootstrap-grid.min.css';
 import { iNodeType, NodeDetailTabs } from '../node.type';
 import { useRouteMatch } from 'react-router';
 import ApplicationObjectStore from '../../applicationObject.store';
+import { URLS } from '../../../../../../config';
+import LogAnalyzerComponent from '../../logAnalyzer/LogAnalyzer.component';
+import K8ResourceComponent from '../K8Resource.component';
+import { DefaultViewTabsJSON } from '../../../../utils/tabUtils/tab.json';
+import DefaultViewTabComponent from '../../defaultViewTab/DefaultViewTab.component';
 
 const GenericPodsTablejSON = {
     tHead: [
@@ -41,16 +46,28 @@ const GenericPodsTablejSON = {
 
 function GenericRowComponent(props: any) {
     const { path, url } = useRouteMatch();
+    const [ displayGenericRow, setDisplayGenericRow] = useState(false)
 
-
-    const handlePodSelection = (cell, event) => {
+    const handlePodSelection = (_uri: string, event: any) => {
         event.stopPropagation()
-
-        
-        ApplicationObjectStore.addApplicationObjectTab(cell.value, url + "/" + ApplicationObjectStore.getCurrentTab())
+        setDisplayGenericRow(false)
+        const url = ApplicationObjectStore.getBaseURL() + URLS.APP_DETAILS_K8 + "/" + _uri
+        ApplicationObjectStore.addApplicationObjectTab(_uri, url.toLowerCase())
     }
 
-    return (
+    const handleNodeChange = () => {
+        props.handleNodeChange()
+        // setDisplayGenericRow(false)
+    }
+
+    useEffect(() => {
+       if(!ApplicationObjectStore.getCurrentTab){
+           setDisplayGenericRow(true)
+       }
+    }, [])
+
+    return (<React.Fragment>
+        {displayGenericRow ? 
         <div className="container generic-table">
             <div className="row border-bottom ">
                 {
@@ -66,7 +83,7 @@ function GenericRowComponent(props: any) {
                             <div className="row" key={'grt' + index}>
                                 {tRow.map((cell, index) => {
                                     return (
-                                        <div key={"grc" + index} onClick={(event)=>handlePodSelection(cell, event)} className={index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9"} >
+                                        <div key={"grc" + index} onClick={(event) => handlePodSelection(cell.value, event)} className={index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9"} >
                                             <span>{cell.value}</span>
                                             <span className="action-buttons ">
                                                 {index === 0 ?
@@ -95,7 +112,20 @@ function GenericRowComponent(props: any) {
                     })
                 }
             </div>
-        </div>
+        </div> :
+        <DefaultViewTabComponent handleNodeChange={handleNodeChange} />
+    //      <Switch>
+    //          {
+    //              DefaultViewTabsJSON.map((tab)=>{
+    //                  return <Route path={`${path}/${tab.name.toLowerCase()}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+
+    //              })
+    //          }
+    //      {/* <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+    //      <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} /> */}
+    //  </Switch>
+}
+        </React.Fragment>
     )
 }
 

@@ -2,8 +2,16 @@ import React from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor';
 import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../../../common'
+import { useEffect } from 'react';
+import ApplicationObjectStore from '../applicationObject.store';
+import { URLS } from '../../../../../config';
 
 function LogAnalyzerComponent(props) {
+
+    useEffect(() => {
+        ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_LOG)
+        props.handleNodeChange()
+    }, [])
 
     const renderFilters = () => {
         return <div className=" row bcn-0 pl-20 pr-20 pt-6 pb-6 border-bottom flex flex-justify">

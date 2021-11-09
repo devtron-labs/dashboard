@@ -9,48 +9,35 @@ import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { tCell } from '../../utils/tableUtils/table.type';
 import { NodeDetailTabsType } from '../../../app/types';
 import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
-import { generatePath, NavLink, Redirect, Route, Switch } from 'react-router-dom';
-import { useRouteMatch, useParams, useLocation, useHistory } from 'react-router';
+import { NavLink, Route, Switch } from 'react-router-dom';
+import { useRouteMatch, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../../config';
-import { Progressing, useSearchString } from '../../../common';
 import './applicationObject.css';
-import { DeploymentStatusModal } from '../../../externalApp/src/components/apps/details/DeploymentStatusModal';
-import { useSharedState } from '../../utils/useSharedState';
 import ApplicationObjectStore from './applicationObject.store';
-import { NodeDetailTabs } from './k8Resource/node.type';
-import { ApplicationObject } from './applicationObject.type';
+
 
 const ApplicationObjectComponent = () => {
-    const [showDefault, setShowDefault] = useState(false)
-    const [{ tabs }, dispatch] = useTab([]);
-    const [selectedTab, setSelectedTab] = useState("")
-    const [defaultViewData, setDefaultViewData] = useState({})
     const { path, url } = useRouteMatch();
     const history = useHistory()
     const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
-    const [baseURL, setBaseURL] = useState('')
-    const [applicationObjectTabs, setApplicationObjectTabs] = useState<Array<ApplicationObject>>([])
-    
+    const [applicationObjectTabs, setApplicationObjectTabs] = useState(ApplicationObjectStore.getApplicationObjectTabs())
 
-    useEffect(() => {
-        const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
-        setBaseURL(link)
-
-        if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1 && (!params.action || NodeDetailTabs[params.action.toUpperCase()] !== undefined)) {
-            ApplicationObjectStore.cleanApplicationObject()
-            history.push(link + URLS.APP_DETAILS_K8)
-            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_K8, baseURL + URLS.APP_DETAILS_K8)
-            ApplicationObjectStore.addApplicationObjectTab(URLS.APP_DETAILS_LOG, baseURL + URLS.APP_DETAILS_LOG)
-        }
-    }, [])
-
-    const fetchApplicationObjectTabs = (_tabName ? : string) => {
-        setApplicationObjectTabs(ApplicationObjectStore.getApplicationObjectTabs())
+    const fetchApplicationObjectTabs = () => {
+        const tabs = ApplicationObjectStore.getApplicationObjectTabs()
+        setApplicationObjectTabs(tabs)
     }
 
     useEffect(() => {
+        const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
+        ApplicationObjectStore.setBaseURL(link)
+        ApplicationObjectStore.initApplicationObjectTab()
+
+        // if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1 && (!params.action || NodeDetailTabs[params.action.toUpperCase()] !== undefined)) {
+        //     history.push(link + URLS.APP_DETAILS_K8)
+        // }
+
         fetchApplicationObjectTabs()
-    }, [applicationObjectTabs])
+    }, [])
 
     return (
         <div>
@@ -67,11 +54,11 @@ const ApplicationObjectComponent = () => {
                         </NavLink>
                     </li> */}
                     {
-                        applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
+                        applicationObjectTabs.map((tab: iLink, index: number) => {
                             return (
                                 <li key={index + "tab"} className=" ellipsis-right">
-                                    <NavLink activeClassName={`resource-tree-tab bcn-0 cn-9`} to={`${tab.url}`} className="tab-list__tab cursor cn-9 fw-6 no-decor flex left">
-                                        <div className="pl-12 pt-8 pb-8 pr-12 flex left">
+                                    <NavLink activeClassName={'resource-tree-tab bcn-0 cn-9'} to={`${tab.url}`} className={'tab-list__tab cursor cn-9 fw-6 no-decor flex left'}>
+                                        <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
                                             {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                             {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
                                             {tab.name}
@@ -87,7 +74,7 @@ const ApplicationObjectComponent = () => {
 
 
             <Switch>
-                <Route path={`${path}/${URLS.APP_DETAILS_K8}/:node/:action`} render={() => { return <DefaultViewTabComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+                {/* <Route path={`${path}/${URLS.APP_DETAILS_K8}/:node/:action`} render={() => { return <DefaultViewTabComponent handleNodeChange={fetchApplicationObjectTabs} /> }} /> */}
                 <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
                 <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
             </Switch>
