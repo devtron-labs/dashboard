@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import '../../../../lib/bootstrap-grid.min.css';
 import { iNodeType, NodeDetailTabs } from '../node.type';
-import { useRouteMatch } from 'react-router';
+import { useRouteMatch, useParams } from 'react-router';
 import ApplicationObjectStore from '../../applicationObject.store';
 import { URLS } from '../../../../../../config';
 import LogAnalyzerComponent from '../../logAnalyzer/LogAnalyzer.component';
@@ -44,30 +44,24 @@ const GenericPodsTablejSON = {
 }
 
 
-function GenericRowComponent(props: any) {
+function GenericRowComponent({selectedNodeType}) {
     const { path, url } = useRouteMatch();
-    const [ displayGenericRow, setDisplayGenericRow] = useState(false)
-
-    const handlePodSelection = (_uri: string, event: any) => {
-        event.stopPropagation()
-        setDisplayGenericRow(false)
-        const url = ApplicationObjectStore.getBaseURL() + URLS.APP_DETAILS_K8 + "/" + _uri
-        ApplicationObjectStore.addApplicationObjectTab(_uri, url.toLowerCase())
-    }
+    const [displayGenericRow, setDisplayGenericRow] = useState(true)
+    const params = useParams<{ iNodeType: string, podName: string, name: string, action: string, node: string }>()
 
     const handleNodeChange = () => {
-        props.handleNodeChange()
+        // props.handleNodeChange()
         // setDisplayGenericRow(false)
     }
 
-    useEffect(() => {
-       if(!ApplicationObjectStore.getCurrentTab){
-           setDisplayGenericRow(true)
-       }
-    }, [])
+    // useEffect(() => {
+    //    if(!ApplicationObjectStore.getCurrentTab){
+    //        setDisplayGenericRow(true)
+    //    }
+    // }, [])
+   
 
-    return (<React.Fragment>
-        {displayGenericRow ? 
+    return (
         <div className="container generic-table">
             <div className="row border-bottom ">
                 {
@@ -76,6 +70,7 @@ function GenericRowComponent(props: any) {
                     })
                 }
             </div>
+          
             <div className="generic-body">
                 {
                     GenericPodsTablejSON.tBody.map((tRow, index) => {
@@ -83,19 +78,19 @@ function GenericRowComponent(props: any) {
                             <div className="row" key={'grt' + index}>
                                 {tRow.map((cell, index) => {
                                     return (
-                                        <div key={"grc" + index} onClick={(event) => handlePodSelection(cell.value, event)} className={index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9"} >
+                                        <div key={"grc" + index} className={index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9"} >
                                             <span>{cell.value}</span>
                                             <span className="action-buttons ">
                                                 {index === 0 ?
                                                     <React.Fragment>
-                                                        <NavLink to={`${path}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
-                                                        <NavLink to={`${path}/${NodeDetailTabs.LOGS.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Logs</NavLink>
-                                                        <NavLink to={`${path}/${NodeDetailTabs.SUMMARY.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Summary</NavLink>
+                                                        <NavLink to={`${path}/${cell.value}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                        <NavLink to={`${path}/${cell.value}/${NodeDetailTabs.LOGS.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Logs</NavLink>
+                                                        <NavLink to={`${path}/${cell.value}/${NodeDetailTabs.SUMMARY.toLowerCase()}`} className="learn-more-href ml-6 cursor" >Summary</NavLink>
                                                         {
-                                                            props.selectedNodeType === iNodeType.Pods ?
+                                                            selectedNodeType === iNodeType.Pods ?
                                                                 <React.Fragment>
-                                                                    <NavLink to={`${path}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
-                                                                    <NavLink to={`${path}/${NodeDetailTabs.TERMINAL.toLowerCase()}`} className="learn-more-href ml-6 cursor">Terminal</NavLink>
+                                                                    <NavLink to={`${path}/${cell.value}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                                                    <NavLink to={`${path}/${cell.value}/${NodeDetailTabs.TERMINAL.toLowerCase()}`} className="learn-more-href ml-6 cursor">Terminal</NavLink>
                                                                 </React.Fragment>
                                                                 : ""
                                                         }
@@ -112,20 +107,17 @@ function GenericRowComponent(props: any) {
                     })
                 }
             </div>
-        </div> :
-        <DefaultViewTabComponent handleNodeChange={handleNodeChange} />
-    //      <Switch>
-    //          {
-    //              DefaultViewTabsJSON.map((tab)=>{
-    //                  return <Route path={`${path}/${tab.name.toLowerCase()}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+        </div>
+        //      <Switch>
+        //          {
+        //              DefaultViewTabsJSON.map((tab)=>{
+        //                  return <Route path={`${path}/${tab.name.toLowerCase()}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
 
-    //              })
-    //          }
-    //      {/* <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
-    //      <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} /> */}
-    //  </Switch>
-}
-        </React.Fragment>
+        //              })
+        //          }
+        //      {/* <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+        //      <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} /> */}
+        //  </Switch>
     )
 }
 

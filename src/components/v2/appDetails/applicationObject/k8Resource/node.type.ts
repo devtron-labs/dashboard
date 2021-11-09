@@ -14,10 +14,10 @@ export enum iNodeType {
 }
 
 export enum NodeDetailTabs {
-  EVENTS = 'EVENTS',
-  LOGS = 'LOGS',
-  MANIFEST = 'MANIFEST',
-  DESCRIBE = 'DESCRIBE',
-  TERMINAL = "TERMINAL",
-  SUMMARY = "SUMMARY"
+  EVENTS = 'events',
+  LOGS = 'logs',
+  MANIFEST = 'manifest',
+  DESCRIBE = 'descibe',
+  TERMINAL = "terminal",
+  SUMMARY = "summary"
 };

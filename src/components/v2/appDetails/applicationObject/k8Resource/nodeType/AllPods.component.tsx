@@ -2,7 +2,7 @@ import React from 'react'
 import { iNode } from '../node.type'
 import NestedTableComponent from './NestedTable.component'
 
-function AllPodsComponent(props: any) {
+function AllPodsComponent({selectedNodeType}) {
 
     return (
         <div>
@@ -34,7 +34,7 @@ function AllPodsComponent(props: any) {
                     </div>
                 </div>
             </div>
-            <NestedTableComponent selectedNodeType={props.selectedNodeType} />
+            <NestedTableComponent selectedNodeType={selectedNodeType} />
         </div>
     )
 }

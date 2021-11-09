@@ -4,12 +4,19 @@ import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/tab.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-edit.svg';
+import { URLS } from '../../../../../../config';
+import ApplicationObjectStore from '../../applicationObject.store';
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 
 function ManifestComponent() {
 
     const [{ tabs }, dispatch] = useTab(ManifestTabJSON);
     const [selectedTab, setSelectedTab] = useState("")
+    const {url, path} = useRouteMatch()
 
+    const handlePodSelection = (cellValue: string, event: any) => {
+        ApplicationObjectStore.addApplicationObjectTab(cellValue, url)
+    }
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -47,6 +54,9 @@ function ManifestComponent() {
 
     useEffect(() => {
         handleTabClick(ManifestTabJSON[0].name)
+        console.log(url, 'new url')
+        console.log(path, 'new path')
+        handlePodSelection()
     }, [])
 
 

@@ -10,16 +10,17 @@ import { tCell } from '../../utils/tableUtils/table.type';
 import { NodeDetailTabsType } from '../../../app/types';
 import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import { useRouteMatch, useParams, useHistory } from 'react-router';
+import { useRouteMatch, useParams, useHistory, Redirect } from 'react-router';
 import { URLS } from '../../../../config';
 import './applicationObject.css';
 import ApplicationObjectStore from './applicationObject.store';
+import { iNodeType } from './k8Resource/node.type';
 
 
 const ApplicationObjectComponent = () => {
     const { path, url } = useRouteMatch();
     const history = useHistory()
-    const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
+    const params = useParams<{ iNodeType: string, podName: string, name: string, action: string, node: string }>()
     const [applicationObjectTabs, setApplicationObjectTabs] = useState(ApplicationObjectStore.getApplicationObjectTabs())
 
     const fetchApplicationObjectTabs = () => {
@@ -31,7 +32,6 @@ const ApplicationObjectComponent = () => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
         ApplicationObjectStore.setBaseURL(link)
         ApplicationObjectStore.initApplicationObjectTab()
-
         // if (url.indexOf(URLS.APP_DETAILS_K8) === -1 && url.indexOf(URLS.APP_DETAILS_LOG) === -1 && (!params.action || NodeDetailTabs[params.action.toUpperCase()] !== undefined)) {
         //     history.push(link + URLS.APP_DETAILS_K8)
         // }
@@ -53,11 +53,12 @@ const ApplicationObjectComponent = () => {
                             <div className={`flex left cursor pl-12 pt-8 pb-8 pr-12`}><span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> Log Analyzer</div>
                         </NavLink>
                     </li> */}
+                
                     {
                         applicationObjectTabs.map((tab: iLink, index: number) => {
                             return (
                                 <li key={index + "tab"} className=" ellipsis-right">
-                                    <NavLink activeClassName={'resource-tree-tab bcn-0 cn-9'} to={`${tab.url}`} className={'tab-list__tab cursor cn-9 fw-6 no-decor flex left'}>
+                                    <NavLink activeClassName={'resource-tree-tab bcn-0 cn-9'} to={`${url}/${tab.url}`} className={'tab-list__tab cursor cn-9 fw-6 no-decor flex left'}>
                                         <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
                                             {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                             {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
@@ -73,10 +74,12 @@ const ApplicationObjectComponent = () => {
             {/* {selectedTab && tabData()} */}
 
 
+
             <Switch>
-                {/* <Route path={`${path}/${URLS.APP_DETAILS_K8}/:node/:action`} render={() => { return <DefaultViewTabComponent handleNodeChange={fetchApplicationObjectTabs} /> }} /> */}
+                <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent /> }} />
                 <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
                 <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
+                <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
             </Switch>
         </div>
     )
@@ -139,6 +142,7 @@ export default ApplicationObjectComponent;
     //             return <DefaultViewTabComponent data={defaultViewData} />
     //     }
     // }
+
 
     // const tabData = () => {
     //     return showDefault ? <DefaultViewTabComponent /> : 

@@ -26,8 +26,8 @@ const ApplicationObjectStore = {
     },
     initApplicationObjectTab: () => {
         ApplicationObjectStore.cleanApplicationObject()
-        addAOT(URLS.APP_DETAILS_K8, baseURL + URLS.APP_DETAILS_K8, true)
-        addAOT(URLS.APP_DETAILS_LOG, baseURL + URLS.APP_DETAILS_LOG, false)
+        addAOT(URLS.APP_DETAILS_K8, URLS.APP_DETAILS_K8, true)
+        addAOT(URLS.APP_DETAILS_LOG, URLS.APP_DETAILS_LOG, false)
 
         applicationObjectTabsSubject.next(applicationObjectTabs)
     },
