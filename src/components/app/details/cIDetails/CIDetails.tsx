@@ -248,9 +248,9 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                 </div>
                 {triggerDetails?.ciMaterials?.map(ciMaterial => {
                     const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
-                    const sourceType = gitDetail?.GitSourceType ? gitDetail?.GitSourceType : ciMaterial?.type
-                    const sourceValue = gitDetail?.GitSourceValue ? gitDetail?.GitSourceValue : ciMaterial?.value
-                    const gitMaterialUrl = gitDetail?.GitMaterialUrl ? gitDetail?.GitMaterialUrl : ciMaterial?.url
+                    const sourceType = gitDetail?.CiConfigureSourceType ? gitDetail?.CiConfigureSourceType : ciMaterial?.type
+                    const sourceValue = gitDetail?.CiConfigureSourceValue ? gitDetail?.CiConfigureSourceValue : ciMaterial?.value
+                    const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail?.GitRepoUrl : ciMaterial?.url
                     return <div className="mt-22" key={ciMaterial.id} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}>
                         {
                             sourceType != SourceTypeMap.WEBHOOK &&
@@ -782,12 +782,12 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12" style={{ width: 'min( 100%, 800px )' }}>
         <GitCommitInfoGeneric
-            materialUrl={gitTrigger?.GitMaterialUrl ? gitTrigger?.GitMaterialUrl :ciMaterial?.url}
+            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl :ciMaterial?.url}
             showMaterialInfo={true}
             commitInfo={gitTrigger}
-            materialSourceType={gitTrigger?.GitSourceType ? gitTrigger?.GitSourceType : ciMaterial?.type}
+            materialSourceType={gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type}
             selectedCommitInfo={""}
-            materialSourceValue={gitTrigger?.GitSourceValue ? gitTrigger?.GitSourceValue :ciMaterial?.value} />
+            materialSourceValue={gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue :ciMaterial?.value} />
     </div>
 }
 
