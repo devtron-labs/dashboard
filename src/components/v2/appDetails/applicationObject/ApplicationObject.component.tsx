@@ -56,9 +56,10 @@ const ApplicationObjectComponent = () => {
                 
                     {
                         applicationObjectTabs.map((tab: iLink, index: number) => {
+                            
                             return (
                                 <li key={index + "tab"} className=" ellipsis-right">
-                                    <NavLink activeClassName={'resource-tree-tab bcn-0 cn-9'} to={`${url}/${tab.url}`} className={'tab-list__tab cursor cn-9 fw-6 no-decor flex left'}>
+                                    <NavLink activeClassName={'resource-tree-tab bcn-0 cn-9'} to={`${tab.url}`} className={'tab-list__tab cursor cn-9 fw-6 no-decor flex left'}>
                                         <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
                                             {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                             {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
@@ -76,7 +77,7 @@ const ApplicationObjectComponent = () => {
 
 
             <Switch>
-                <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent /> }} />
+                <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
                 <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
                 <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent handleNodeChange={fetchApplicationObjectTabs} /> }} />
                 <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />

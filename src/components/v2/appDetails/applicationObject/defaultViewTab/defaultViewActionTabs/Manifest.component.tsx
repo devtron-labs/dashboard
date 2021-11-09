@@ -8,14 +8,16 @@ import { URLS } from '../../../../../../config';
 import ApplicationObjectStore from '../../applicationObject.store';
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 
-function ManifestComponent() {
+function ManifestComponent({ handleNodeChange }) {
 
     const [{ tabs }, dispatch] = useTab(ManifestTabJSON);
     const [selectedTab, setSelectedTab] = useState("")
-    const {url, path} = useRouteMatch()
+    const { url, path } = useRouteMatch()
+    const [podName, setPodName] = useState('')
 
-    const handlePodSelection = (cellValue: string, event: any) => {
-        ApplicationObjectStore.addApplicationObjectTab(cellValue, url)
+    const handlePodSelection = () => {
+        ApplicationObjectStore.addApplicationObjectTab(podName, url)
+        handleNodeChange()
     }
 
     const handleTabClick = (_tabName: string) => {
@@ -53,12 +55,12 @@ function ManifestComponent() {
     }
 
     useEffect(() => {
+        const urlObj = url.split('/')
         handleTabClick(ManifestTabJSON[0].name)
-        console.log(url, 'new url')
-        console.log(path, 'new path')
+        setPodName(urlObj[urlObj.length - 2])
         handlePodSelection()
-    }, [])
-
+        console.log('hi')
+    }, [podName])
 
     return (
         <div className="bcn-0">

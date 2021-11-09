@@ -17,7 +17,7 @@ import ApplicationObjectStore from '../applicationObject.store';
 import K8ResourceComponent from '../k8Resource/K8Resource.component';
 import LogAnalyzerComponent from '../logAnalyzer/LogAnalyzer.component';
 
-function DefaultViewTabComponent( ) {
+function DefaultViewTabComponent({handleNodeChange} ) {
 
     const [{ tabs }, dispatch] = useTab(DefaultViewTabsJSON);
     const [selectedTab, setSelectedTab] = useState("")
@@ -36,13 +36,13 @@ function DefaultViewTabComponent( ) {
         
         setSelectedTab(_tabName)
         
-    //    handleNodeChange()
+       handleNodeChange()
     }
 
     const tabData = () => {
         switch (selectedTab) {
             case NodeDetailTabs.MANIFEST:
-                return <ManifestComponent />
+                return <ManifestComponent handleNodeChange={handleNodeChange}/>
             case NodeDetailTabs.LOGS:
                 return <LogsComponent />
             case NodeDetailTabs.TERMINAL:
@@ -69,14 +69,12 @@ function DefaultViewTabComponent( ) {
     //     }
     // }, [params.action])
 
-    // useEffect(() => {
-    //     ApplicationObjectStore.markApplicationObjectTabActive(ApplicationObjectStore.getCurrentTab())
-    // }, [])
+    useEffect(() => {
+        ApplicationObjectStore.markApplicationObjectTabActive(ApplicationObjectStore.getCurrentTab())
+    }, [])
 
     return (
         <div>
-       
-            { console.log(url, 'default path')}
             <div className="bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
                 {
                     tabs.map((tab: iLink, index) => {
@@ -94,7 +92,8 @@ function DefaultViewTabComponent( ) {
             <div>
                 {/* {selectedTab && tabData()} */}
                 <Switch>
-                <Route path={`${urlWithoutAction}${NodeDetailTabs.MANIFEST}`} render={() => { return <ManifestComponent  /> }} />
+                    {console.log(urlWithoutAction)}
+                <Route path={`${urlWithoutAction}${NodeDetailTabs.MANIFEST}`} render={() => { return <ManifestComponent  handleNodeChange={handleNodeChange}/> }} />
                 <Route path={`${urlWithoutAction}${NodeDetailTabs.EVENTS}`} render={() => { return <EventsComponent  /> }} />
                 <Route path={`${urlWithoutAction}${NodeDetailTabs.LOGS}`} render={() => { return <LogsComponent  /> }} />
                 <Route path={`${urlWithoutAction}${NodeDetailTabs.SUMMARY}`} render={() => { return <SummaryComponent  /> }} />

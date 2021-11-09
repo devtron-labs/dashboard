@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { iNode, iNodeType } from './node.type';
 import NodeTreeComponent from './NodeTree.component';
 import ServiceComponent from './nodeType/Service.component';
@@ -9,6 +9,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { useRouteMatch, useParams } from 'react-router';
 import AllPodsComponent from './nodeType/AllPods.component';
 import DefaultViewTabComponent from '../defaultViewTab/DefaultViewTab.component';
+import { URLS } from '../../../../../config';
+import ApplicationObjectStore from '../applicationObject.store';
 
 export default function K8ResourceComponent(props) {
     const [selectedNode, setSelectedNode] = useState<iNode | undefined>(undefined)
@@ -19,10 +21,10 @@ export default function K8ResourceComponent(props) {
         setSelectedNode(node)
     }
 
-    // useEffect(() => {
-    //     ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
-    //     props.handleNodeChange()
-    // }, [])
+    useEffect(() => {
+        ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
+        props.handleNodeChange()
+    }, [])
 
     return (
         <div className="bcn-0">
