@@ -8,17 +8,19 @@ import { NavLink } from 'react-router-dom'
 import './list/list.scss';
 import '../app/details/appDetails/appDetails.scss';
 import './charts.css';
+import AppDetailsComponent from '../v2/appDetails/AppDetails.components';
 
 export default function Charts() {
     return <Switch>
         <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
+        <Route path={`${URLS.CHARTS}/deployed/:appId(\\d+)/env/:envId(\\d+)`}  render={() => { return <AppDetailsComponent envType= "chart" /> }} />
         <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
         <Route path={`${URLS.CHARTS}/deployed`} component={Deployed} />
         <Redirect to={`${URLS.CHARTS}/deployed`} />
     </Switch>
 }
 
-export function GenericChartsHeader({ children=null }) {
+export function GenericChartsHeader({ children = null }) {
     return (
         <div className="page-header page-header--tabs">
             {children}
@@ -38,15 +40,15 @@ export function ChartDetailNavigator() {
     )
 }
 
-export function HeaderTitle({ children=null }) {
+export function HeaderTitle({ children = null }) {
     return <h1 className="page-header__title flex left">{children}</h1>
 }
 
-export function HeaderSubtitle({ children=null }) {
+export function HeaderSubtitle({ children = null }) {
     return <div className="subtitle">{children}</div>
 }
 
-export function HeaderButtonGroup({ children=null }) {
+export function HeaderButtonGroup({ children = null }) {
     return <div className="page-header__cta-container flex right">
         {children}
     </div>

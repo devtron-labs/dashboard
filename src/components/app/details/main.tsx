@@ -38,7 +38,7 @@ export default function AppDetailsPage() {
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailComponent />} />
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailComponent envType="application"/>} />
                     <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                     <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
                         <CIDetails key={appId} />
