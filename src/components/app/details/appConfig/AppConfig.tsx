@@ -316,7 +316,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
                     <>
-                        <MaterialList respondOnSuccess={respondOnSuccess} isWorkflowEditorUnlocked={isUnlocked.workflowEditor}/>
+                        <MaterialList respondOnSuccess={respondOnSuccess} isWorkflowEditorUnlocked={isUnlocked.workflowEditor} />
                         <NextButton currentStageName={STAGE_NAME.GIT_MATERIAL}
                             navItems={navItems}
                             isDisabled={!isUnlocked.dockerBuildConfig}
@@ -364,7 +364,13 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
                         <Route path={`${path}/${URLS.APP_CS_CONFIG}`}
                             render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
                         />
-                        <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                        <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/${URLS.APP_DEPLOYMENT_CONFIG}`}
+                            render={(props) => <EnvironmentOverride />}
+                        />
+                        <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/${URLS.APP_CM_CONFIG}`}
+                            render={(props) => <EnvironmentOverride />}
+                        />
+                        <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/${URLS.APP_CS_CONFIG}`}
                             render={(props) => <EnvironmentOverride />}
                         />
                     </>
@@ -380,11 +386,9 @@ const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, env
     if (Array.isArray(environmentResult?.result)) {
         return <div>
             {(environmentResult.result).map(env => {
-                let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
-                return <NavLink key={env.environmentId}
-                    className="app-compose__nav-item"
-                    to={LINK}>{env.environmentName}
-                </NavLink>
+                return <div>
+                    <EnvironmentSelect url={url} env={env} />
+                </div>
             })}
         </div>
     }
@@ -394,6 +398,37 @@ const EnvironmentOverrideDropdown = (environmentResult: AppOtherEnvironment, env
             <a className="learn-more__href" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} rel="noreferrer noopener" target="_blank">Learn more</a>
         </div>
     }
+}
+
+function EnvironmentSelect({ url, env }) {
+    const [isToggled, setToggle] = useState(false);
+    const Environment = {
+        DEPLOYMENT_TEMPLATE: `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${URLS.APP_DEPLOYMENT_CONFIG}`,
+        CONFIG_MAPS: `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${URLS.APP_CM_CONFIG}`,
+        SECRETS: `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${URLS.APP_CS_CONFIG}`,
+    }
+
+    return <>
+        <div key={env.environmentId}
+            className="app-compose__nav-item pointer flex"
+            onClick={() => setToggle(!isToggled)}
+        >{env.environmentName}
+            <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(isToggled) * 180}deg` }} />
+        </div>
+        {isToggled &&
+            <div className="flex column">
+                <NavLink className="app-compose__nav-item" to={Environment.DEPLOYMENT_TEMPLATE}>
+                    Deployment Template
+                  </NavLink>
+                <NavLink className="app-compose__nav-item" to={Environment.CONFIG_MAPS}>
+                    ConfigMaps
+                  </NavLink>
+                <NavLink className="app-compose__nav-item" to={Environment.SECRETS}>
+                    Secrets
+                  </NavLink>
+            </div>
+        }
+    </>
 }
 
 function EnvironmentOverrideRouter() {
@@ -412,12 +447,11 @@ function EnvironmentOverrideRouter() {
     return (
         <div className="flex column left environment-routes-container top">
             <div className="app-compose__nav-item flex" onClick={e => toggleCollapsed(!collapsed)}>
-                Environment Overrides
-            <Dropdown className="icon-dim-24 rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />
+                ENVIRONMENT OVERRIDES
             </div>
-            {!collapsed && <div className="environment-routes">
+            <div className="environment-routes mt-8">
                 {EnvironmentOverrideDropdown(environmentResult, environmentsLoading, url)}
-            </div>}
+            </div>
         </div >
     )
 }

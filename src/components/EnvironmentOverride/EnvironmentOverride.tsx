@@ -7,7 +7,7 @@ import { useParams, useRouteMatch, generatePath, useHistory } from 'react-router
 import './environmentOverride.scss'
 import Reload from '../Reload/Reload'
 import { getAppOtherEnvironment } from '../../services/service'
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION } from '../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, URLS } from '../../config';
 
 type ComponentStates = 'loading' | 'success' | 'failed'
 export default function EnvironmentOverride() {
@@ -28,9 +28,13 @@ export default function EnvironmentOverride() {
 
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
-        setDeploymentState('loading');
-        setConfigMapState('loading');
-        setSecretState('loading');
+        if (window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG)) {
+            setDeploymentState('loading');
+        } else if (window.location.href.includes(URLS.APP_CM_CONFIG)) {
+            setConfigMapState('loading');
+        } else {
+            setSecretState('loading');
+        }
     }, [params.envId])
 
     const envMissingRedirect = () => {
@@ -53,17 +57,13 @@ export default function EnvironmentOverride() {
     const loading = (deploymentState === 'loading' || configMapState === 'loading' || secretState === 'loading')
     return <ErrorBoundary>
         {loading && <Progressing pageLoader />}
-        <div className="environment-override mb-24">
-            {environments.size && !loading && <>
-                <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
-                <div className="form__title">{environments.has(+params.envId) ? environments.get(+params.envId).environment_name : ''}</div>
-                <div className="form__subtitle">Manage environment configurations for this application.&nbsp;
-                        <a className="learn-more__href" rel="noreferre noopener" href={DOCUMENTATION.APP_CREATE_ENV} target="blank">Learn about Environment Overrides</a>
-                </div>
-            </>}
-            <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />
-            <ConfigMapOverrides parentState={loading ? 'loading' : configMapState} setParentState={setConfigMapState} />
-            <SecretOverrides parentState={loading ? 'loading' : secretState} setParentState={setSecretState} />
+        <div className={`environment-override ${window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG) ? '' : 'env-config-container'}`}>
+            {window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG) &&
+                <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />}
+            {window.location.href.includes(URLS.APP_CM_CONFIG) &&
+                <ConfigMapOverrides parentState={loading ? 'loading' : configMapState} setParentState={setConfigMapState} />}
+            {window.location.href.includes(URLS.APP_CS_CONFIG) &&
+                <SecretOverrides parentState={loading ? 'loading' : secretState} setParentState={setSecretState} />}
         </div>
     </ErrorBoundary>
 }

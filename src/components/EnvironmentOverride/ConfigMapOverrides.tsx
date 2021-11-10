@@ -13,9 +13,10 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
+import { getEnvironment } from '../../components/cluster/cluster.service'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -35,6 +36,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
     const [configmapList, setConfigmapList] = useState<{ id: number, configData: any[], appId: number }>()
     const [configmapLoading, setConfigmapLoading] = useState(true)
     const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
+    const [namespace, setNameSpace] = useState(null);
 
     useEffect(() => {
         if (!configmapLoading && configmapList) {
@@ -48,12 +50,14 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
             try {
                 const appChartRefRes = await getAppChartRef(appId);
                 const configmapRes = await getEnvironmentConfigs(appId, envId);
+                const envdata = await getEnvironment(envId)
                 setConfigmapList({
                     appId: configmapRes.result.appId,
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
                 setAppChartRef(appChartRefRes.result);
+                setNameSpace(envdata.result.namespace)
             } catch (error) {
                 setParentState('failed');
                 showError(error);
@@ -83,9 +87,10 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
     }
 
     let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(configmapList?.configData);
+    console.log(configData)
 
     return <section className="config-map-overrides">
-        <label className="form__label bold">ConfigMaps</label>
+        <NameSpace namespace={namespace} />
         <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
             {configData.map(({ name, defaultData, data }) => <ListComponent key={name || Math.random().toString(36).substr(2, 5)}
                 name={name}
@@ -95,6 +100,17 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
             )}
         </ConfigMapContext.Provider>
     </section>
+}
+
+function NameSpace({ namespace = "" }) {
+    return (
+        <div className="pointer flex left column">
+            <div className="flex left fs-14 cn-9 fw-5">{namespace} / ConfigMaps</div>
+            <div className='mt-4'><p className="form__subtitle form__subtitle--artifacts">ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.&nbsp;
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_CONFIG_MAP} target="blank">Learn more</a>
+            </p></div>
+        </div>
+    )
 }
 
 export function ListComponent({ name = "", type, label = "", appChartRef, reload = null }) {
@@ -484,7 +500,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
 
 export function Override({ external, overridden, onClick, loading = false, type = "ConfigMap" }) {
     return (
-        <div className="override-container mb-24">
+        <div className="override-container">
             <Info />
             <div className="flex column left">
                 <div className="override-title">{external ? 'Nothing to override' : overridden ? 'Restore default configuration' : 'Override default configuration'}</div>

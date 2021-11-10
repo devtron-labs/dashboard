@@ -11,10 +11,11 @@ import { Progressing } from '../common';
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml';
-import { PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
+import { getEnvironment } from '../../components/cluster/cluster.service'
 
 const sampleJSON = [
     {
@@ -56,10 +57,13 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
     const { appId, envId } = useParams<{ appId, envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number, version: string }>();
+    const [namespace, setNameSpace] = useState(null);
 
     useEffect(() => {
         async function callGetAppChartRef() {
             const { result } = await getAppChartRef(appId);
+            const envdata = await getEnvironment(envId)
+            setNameSpace(envdata.result.namespace)
             setAppChartRef(result);
         }
         callGetAppChartRef();
@@ -85,13 +89,24 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     return (
         <section className="secret-overrides">
-            <label htmlFor="" className="form__label bold">Secrets</label>
+            <NameSpace namespace={namespace} />
             <SecretContext.Provider value={{ secrets, id, reload }}>
                 {secrets && Array.from(secrets).sort((a, b) => a[0].localeCompare(b[0])).map(([name, { data, defaultData, global, ...rest }]) => {
                     return <ListComponent key={name || Math.random().toString(36).substr(2, 5)} appChartRef={appChartRef} name={name} type="secret" label={global ? data ? 'modified' : '' : 'env'} />
                 })}
             </SecretContext.Provider>
         </section>
+    )
+}
+
+function NameSpace({ namespace = "" }) {
+    return (
+        <div className="pointer flex left column">
+            <div className="flex left fs-14 cn-9 fw-5">{namespace} / Secrets</div>
+            <div className='mt-4'><p className="form__subtitle form__subtitle--artifacts">A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.&nbsp;
+            <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank">Learn more</a>
+            </p></div>
+        </div>
     )
 }
 

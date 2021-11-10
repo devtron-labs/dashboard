@@ -40,6 +40,7 @@ interface CodeEditorHeaderInterface {
 interface CodeEditorComposition {
     Header?: React.FC<any>;
     LanguageChanger?: React.FC<any>;
+    SplitPane?: React.FC<any>;
     ThemeChanger?: React.FC<any>;
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
@@ -357,6 +358,7 @@ function CodeEditorPlaceholder({ className = "", style = {} }) {
     )
 }
 
+CodeEditor.SplitPane = SplitPane
 CodeEditor.LanguageChanger = LanguageChanger
 CodeEditor.ThemeChanger = ThemeChanger
 CodeEditor.ValidationError = ValidationError

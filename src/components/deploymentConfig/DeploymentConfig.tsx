@@ -13,6 +13,7 @@ import Help from '../../assets/icons/ic-help-green.svg';
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
+import { ReactComponent as HelpOutline } from '../../assets/icons/ic-help-outline.svg';
 
 export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
@@ -21,7 +22,7 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
     return <div id="opt-metrics" className={`flex column left br-0 white-card ${focus ? 'animate-background' : ''} ${className}`}>
         <div className="p-lr-20 p-13 flex left content-space" style={{ width: '100%' }}>
             {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled ?
-                <div className="flex column left">
+                <div className="flex left">
                     <Checkbox isChecked={appMatrixEnabled}
                         onClick={(e) => { e.stopPropagation() }}
                         rootClassName="form__checkbox-label--ignore-cache"
@@ -29,11 +30,11 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
                         disabled={disabled || isChartVersionSupported}
                         onChange={onChange}
                     >
-                        <div className="ml-14">
-                            <b>Show application metrics</b>
-                            <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
-                        </div>
                     </Checkbox>
+                    <div className="ml-14">
+                        <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" />
+                        <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
+                    </div>
                 </div> : <div />}
             <div>
                 <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
@@ -79,23 +80,15 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     const [chartVersions, setChartVersions] = useState<{ id: number, version: string; }[]>(null);
     const [selectedChart, selectChart] = useState<{ id: number, version: string; }>(null)
     const [isAppMetricsEnabled, toggleAppMetrics] = useState(null);
+    const [isAppMetricsTabVisible, setAppMetricsTabVisible] = useState(null);
     const [appMetricsLoading, setAppMetricsLoading] = useState(false);
     const [chartConfigLoading, setChartConfigLoading] = useState(null);
     const { appId } = useParams<{ appId }>();
 
-    async function saveAppMetrics(appMetricsEnabled) {
-        try {
-            setAppMetricsLoading(true)
-            await updateAppMetrics(+appId, {
-                isAppMetricsEnabled: appMetricsEnabled
-            })
-            toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null })
-            initialise();
-        }
-        catch (err) {
-            showError(err)
-            setAppMetricsLoading(false)
-        }
+    function saveAppMetrics(appMetricsEnabled) {
+        setAppMetricsLoading(appMetricsEnabled);
+        toggleAppMetrics(appMetricsEnabled)
+        setAppMetricsTabVisible(appMetricsEnabled);
     }
 
     async function initialise() {
@@ -116,7 +109,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     }
 
     return <div style={{ height: "calc(100% - 68px )" }}>
-        <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsEnabled ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
             <DeploymentConfigForm
                 respondOnSuccess={respondOnSuccess}
                 loading={loading} setLoading={setLoading}
@@ -132,8 +125,8 @@ export default function DeploymentConfig({ respondOnSuccess }) {
                 setChartConfigLoading={setChartConfigLoading}
                 initialise={initialise}
                 appId={appId} />
-            {isAppMetricsEnabled &&
-                <ApplicationmatrixInfo enableAppMatrix={isAppMetricsEnabled} />}
+            {isAppMetricsTabVisible &&
+                <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} />}
         </div>
         <div>
             <OptApplicationMetrics
@@ -149,13 +142,13 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     </div>
 }
 
-function ApplicationmatrixInfo({ enableAppMatrix }) {
+function ApplicationmatrixInfo({ setAppMetricsTabVisible }) {
     return (
         <>
             <form action="" className="white-card white-card__deployment-config br-0 bw-0">
                 <div className="flex left content-space app-matrix-header">
                     <span className="fw-6 fs-14">Using application metrics</span>
-                    <Close className="icon-dim-20 pointer" onClick={enableAppMatrix} />
+                    <Close className="icon-dim-20 pointer" onClick={() => setAppMetricsTabVisible(false)} />
                 </div>
                 <div className="app-matrix-inner p-20">
                     <div className="fs-13">Once you enable application metrics and redeploy, all the requests to your service will be passed through a transparent proxy (envoy), which is used as a sidecar to your main container.</div>
@@ -206,7 +199,6 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
     useEffect(() => {
         initialise()
     }, [])
-
     // useEffectAfterMount(() => {
     //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
     //         fetchDeploymentTemplate()
