@@ -170,9 +170,8 @@
 
 .selected-chart-widget {
     display: grid;
-    grid-template-columns: 40px 1fr 24px;
+    grid-template-columns: 220px 1fr 0px;
     grid-gap: 16px;
-    padding: 12px;
     align-items: start;
     border-radius: 4px;
     position: relative;
@@ -240,6 +239,7 @@
         padding: 14px;
         top: 0;
         right: 0;
+        z-index: 1;
 
         .stroke-color {
             stroke: var(--N400);

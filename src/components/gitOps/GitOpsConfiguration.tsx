@@ -71,7 +71,7 @@ const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => vo
         <input type="radio" name="status" value={provider} checked={providerTab === provider} onChange={!saveLoading && handleGitopsTab} />
         <span className="tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
-            <aside className="login__text-alignment" style={{lineHeight: 1.2}}> {gitops}</aside>
+            <aside className="login__text-alignment"  style={{lineHeight: 1.2}}> {gitops}</aside>
             <div>
                 {(lastActiveGitOp?.provider === provider) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
             </div>
@@ -121,7 +121,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             validatedTime: "",
             validationError: [],
-            validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS
+            validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
+            deleteRepoError: false
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -273,14 +274,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            if (resp.active) {
+            let errorMap = resp.stageErrorMap;
+            if (errorMap != null && Object.keys(errorMap).length == 0) {
                 toast.success("Configuration validated and saved successfully");
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, });
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
                 this.fetchGitOpsConfigurationList();
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, saveLoading: false, validationError: resp.stageErrorMap || [] })
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
-            }
+            } 
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
@@ -311,13 +313,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let promise = validateGitOpsConfiguration(payload);
         promise.then((response) => {
             let resp = response.result
-            let errorMap = resp.stageErrorMap
+            let errorMap = resp.stageErrorMap;
             if (errorMap != null && Object.keys(errorMap).length > 0) {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, isFormEdited: false, validationError: resp.stageErrorMap || [], saveLoading: false })
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, isFormEdited: false, saveLoading: false });
-
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
                 toast.success("Configuration validated");
             }
         }).catch((error) => {
@@ -343,6 +344,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     render() {
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId();
+        let warning = "Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.";
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -375,6 +377,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     validationError={this.state.validationError}
                     validationStatus={this.state.validationStatus}
                     configName="gitops "
+                    warning={this.state.deleteRepoError? warning : ""}
                 />
 
                 <CustomInput autoComplete="off"

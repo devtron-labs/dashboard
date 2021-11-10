@@ -2,8 +2,9 @@ import React from 'react'
 import Help from '../../../assets/icons/ic-help-green.svg';
 import { Progressing } from '../../common';
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg';
 import './validateForm.css'
+import { showError } from '../helpers/Helpers';
 
 export enum VALIDATION_STATUS {
     SUCCESS = 'SUCCESS',
@@ -46,8 +47,8 @@ function ValidateLoading({ message }) {
 
 }
 
-function ValidateSuccess({ onClickValidate }) {
-    return <div className="git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+function ValidateSuccess({ onClickValidate, warning }) {
+    return <div className="mb-16"><div className={`${warning ? 'success-no-border':'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}>
         <div className="flex flex-justify">
             <div className="flex">
                 <GreenCheck className="icon-dim-20 scg-5" />
@@ -58,13 +59,18 @@ function ValidateSuccess({ onClickValidate }) {
             {renderOnClickValidate(onClickValidate)}
         </div>
     </div>
+     {warning &&
+        <div className="p-16 bw-1 en-2 br-4 success-warning">
+            <span className="fs-13 cn-9">{warning}</span>
+        </div>}
+    </div>
 }
 
-function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false }) {
+function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, warning }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
-                <Close className="icon-dim-20 scr-5 ml--3 stroke_width" />
+                <Error className="icon-dim-20 ml--3 stroke_width" />
                 <div className="fs-13">
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
@@ -85,14 +91,17 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                     <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
                     {Object.entries(validationError).map(([value, name]) =>
                         <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
-                    )} </>
+                    )} 
+                    {warning &&
+                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>{warning}</p>}
+                    </>
                 }
             </div>
         </div>
     </div>
 }
 
-export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName }) {
+export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" }) {
     return (
         <div className="mt-16">
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
@@ -100,9 +109,9 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus == VALIDATION_STATUS.FAILURE &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} />}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} warning={warning} />}
             {validationStatus == VALIDATION_STATUS.SUCCESS &&
-                <ValidateSuccess onClickValidate={onClickValidate} />}
+                <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />}
         </div>
     )
 }

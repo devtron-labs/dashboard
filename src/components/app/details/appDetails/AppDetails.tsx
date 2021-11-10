@@ -68,6 +68,7 @@ import { AppMetrics } from './AppMetrics';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { Interface } from 'readline';
+import { sortObjectArrayAlphabetically } from '../../../common/helpers/Helpers';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -571,6 +572,7 @@ export function EnvSelector({ environments, disabled }) {
         : {};
     const environmentName = environmentsMap[+envId];
 
+    const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
@@ -590,8 +592,8 @@ export function EnvSelector({ environments, disabled }) {
                 </div>
             </div>
             <div style={{ width: '200px' }}>
-                <Select options={Array.isArray(environments) ?
-                    environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
+                <Select options={Array.isArray(sortedEnvironments) ?
+                    sortedEnvironments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
                     placeholder='Select Environment'
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}

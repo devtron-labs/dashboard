@@ -20,7 +20,7 @@ export function getChartVersionDetails2(versionId) {
     return get(`app-store/application/version/${versionId}`)
 }
 
-export function getInstalledAppDetail(installedAppId, envId ) {
+export function getInstalledAppDetail(installedAppId, envId) {
     return get(`app-store/installed-app/detail?installed-app-id=${installedAppId}&env-id=${envId}`)
 }
 
@@ -32,8 +32,15 @@ export function updateChart(request) {
     return put(`app-store/application/update`, request)
 }
 
-export function deleteInstalledChart(installedAppId) {
-    return trash(`app-store/application/delete/${installedAppId}`)
+export function deleteInstalledChart(installedAppId, force?: boolean) {
+    let URL
+    if (force) {
+        URL = `app-store/application/delete/${installedAppId}?force=${force}`
+    }
+    else {
+        URL = `app-store/application/delete/${installedAppId}`
+    }
+    return trash(URL)
 }
 
 export function getChartValuesTemplateList(chartId: number | string): Promise<any> {
@@ -41,18 +48,18 @@ export function getChartValuesTemplateList(chartId: number | string): Promise<an
     return get(URL);
 }
 
-export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId=null): Promise<any> {
+export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId = null): Promise<any> {
     let URL;
     if (installedAppVersionId) {
         URL = `${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}?installedAppVersionId=${installedAppVersionId}`;
-    } 
+    }
     else {
         URL = `${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}`;
     }
     return get(URL);
 }
 
-export function getChartValuesCategorizedListParsed(chartId: number | string, installedAppVersionId=null): Promise<{ code: number, result: ChartValuesType[] }> {
+export function getChartValuesCategorizedListParsed(chartId: number | string, installedAppVersionId = null): Promise<{ code: number, result: ChartValuesType[] }> {
     return getChartValuesCategorizedList(chartId, installedAppVersionId).then((response) => {
         let list = response.result.values || [];
         let savedCharts = list.find(chartList => chartList.kind === 'TEMPLATE');
