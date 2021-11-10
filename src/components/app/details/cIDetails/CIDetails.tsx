@@ -248,21 +248,24 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                 </div>
                 {triggerDetails?.ciMaterials?.map(ciMaterial => {
                     const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
+                    const sourceType = gitDetail?.CiConfigureSourceType ? gitDetail?.CiConfigureSourceType : ciMaterial?.type
+                    const sourceValue = gitDetail?.CiConfigureSourceValue ? gitDetail?.CiConfigureSourceValue : ciMaterial?.value
+                    const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail?.GitRepoUrl : ciMaterial?.url
                     return <div className="mt-22" key={ciMaterial.id} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}>
                         {
-                            ciMaterial.type != SourceTypeMap.WEBHOOK &&
+                            sourceType != SourceTypeMap.WEBHOOK &&
                             <>
                                 <div className="git-logo"> </div>
                                 <div className="flex left column">
-                                    <a href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{ciMaterial.value}</a>
+                                    <a href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)} target="_blank" rel="noopener noreferer" className="fs-12 fw-6 cn-9 pointer">/{sourceValue}</a>
                                     <p className="fs-12 cn-7">{gitDetail?.Message}</p>
                                 </div>
                             </>
                         }
                         {
-                            ciMaterial.type == SourceTypeMap.WEBHOOK &&
+                            sourceType == SourceTypeMap.WEBHOOK &&
                             <div className="flex left column">
-                                <CiPipelineSourceConfig sourceType={ciMaterial.type} sourceValue={ciMaterial.value} showTooltip={false} />
+                                <CiPipelineSourceConfig sourceType={sourceType} sourceValue={sourceValue} showTooltip={false} />
                             </div>
                         }
 
@@ -779,12 +782,12 @@ export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?:
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers, ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return <div key={gitTrigger?.Commit} className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12" style={{ width: 'min( 100%, 800px )' }}>
         <GitCommitInfoGeneric
-            materialUrl={ciMaterial.url}
+            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl :ciMaterial?.url}
             showMaterialInfo={true}
             commitInfo={gitTrigger}
-            materialSourceType={ciMaterial.type}
+            materialSourceType={gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type}
             selectedCommitInfo={""}
-            materialSourceValue={ciMaterial.value} />
+            materialSourceValue={gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue :ciMaterial?.value} />
     </div>
 }
 

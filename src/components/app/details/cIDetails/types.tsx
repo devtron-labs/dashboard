@@ -61,7 +61,11 @@ export interface GitTriggers {
     Date: Date;
     Message: string;
     Changes: string[];
-    WebhookData: WebHookData
+    WebhookData: WebHookData,
+    GitRepoUrl: string,
+    GitRepoName: string,
+    CiConfigureSourceType: string,
+    CiConfigureSourceValue: string
 }
 
 
