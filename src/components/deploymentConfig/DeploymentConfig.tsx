@@ -15,7 +15,7 @@ import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as HelpOutline } from '../../assets/icons/ic-help-outline.svg';
 
-export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false }) {
+export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false, onInfoClick }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
@@ -32,7 +32,7 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
                     >
                     </Checkbox>
                     <div className="ml-14">
-                        <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" />
+                        <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={onInfoClick} />
                         <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
                     </div>
                 </div> : <div />}
@@ -86,7 +86,6 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     const { appId } = useParams<{ appId }>();
 
     function saveAppMetrics(appMetricsEnabled) {
-        setAppMetricsLoading(appMetricsEnabled);
         toggleAppMetrics(appMetricsEnabled)
         setAppMetricsTabVisible(appMetricsEnabled);
     }
@@ -126,7 +125,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
                 initialise={initialise}
                 appId={appId} />
             {isAppMetricsTabVisible &&
-                <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} />}
+                <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={false} />}
         </div>
         <div>
             <OptApplicationMetrics
@@ -137,20 +136,21 @@ export default function DeploymentConfig({ respondOnSuccess }) {
                 onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
                 opted={isAppMetricsEnabled}
                 loading={appMetricsLoading}
+                onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
             />
         </div>
     </div>
 }
 
-function ApplicationmatrixInfo({ setAppMetricsTabVisible }) {
+export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride }) {
     return (
         <>
             <form action="" className="white-card white-card__deployment-config br-0 bw-0">
-                <div className="flex left content-space app-matrix-header">
+                <div className={`flex left content-space ${isEnvOverride ? 'app-matrix-header-override' : 'app-matrix-header'}`}>
                     <span className="fw-6 fs-14">Using application metrics</span>
                     <Close className="icon-dim-20 pointer" onClick={() => setAppMetricsTabVisible(false)} />
                 </div>
-                <div className="app-matrix-inner p-20">
+                <div className="app-matrix-inner p-20" style={{height:isEnvOverride? 470 : 570}}>
                     <div className="fs-13">Once you enable application metrics and redeploy, all the requests to your service will be passed through a transparent proxy (envoy), which is used as a sidecar to your main container.</div>
                     <RecommandedTab />
                     <DesiredConfig port='http1' supportStreaming={false} useHTTP2={false} useGPRC={false} />

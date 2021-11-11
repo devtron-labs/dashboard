@@ -12,6 +12,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import YAML from 'yaml'
 import { DOCUMENTATION } from '../../config';
 import { ReactComponent as HelpOutline } from '../../assets/icons/ic-help-outline.svg';
+import { ApplicationmatrixInfo } from '../deploymentConfig/DeploymentConfig'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId, envId }>()
@@ -37,7 +38,9 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
             case 'appMetricsLoading':
                 return { ...state, appMetricsLoading: true }
             case 'appMetricsEnabled':
-                return { ...state, appMetricsEnabled: false }
+                return { ...state, appMetricsEnabled: action.value }
+            case 'appMetricsTabVisible':
+                return { ...state, appMetricsTabVisible: action.value }
             case 'success':
             case 'error':
                 return { ...state, appMetricsLoading: false }
@@ -87,18 +90,10 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
         }
     }
 
-    async function handleAppMetrics(isOpted) {
+    function handleAppMetrics(isOpted) {
         dispatch({ type: 'appMetricsLoading' })
         dispatch({ type: 'appMetricsEnabled', value: isOpted })
-        try {
-            const { result } = await toggleAppMetrics(+appId, +envId, {
-                isAppMetricsEnabled: isOpted
-            })
-            initialise()
-        }
-        catch (err) {
-            showError(err)
-        }
+        dispatch({ type: 'appMetricsTabVisible', value: isOpted })
     }
 
     async function fetchDeploymentTemplate() {
@@ -150,19 +145,23 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
         }
     }
 
+    function setAppMetricsTabVisible() {
+        dispatch({ type: 'appMetricsTabVisible', value: !state.appMetricsTabVisible })
+    }
+
     if (loading || state.loading) return null
     if (parentState === 'loading') return null
     return (
         <>
             <section className="deployment-template-override white-card white-card--list br-0">
                 {state.data && state.charts && <NameSpace originalNamespace={state.data.namespace} chartRefId={state.latestAppChartRef || state.latestChartRef} id={state.data.environmentConfig.id} data={state.data} isOverride={state.data.IsOverride} />}
-                {state.data && state.charts && <DeploymentTemplateOverrideForm chartRefLoading={chartRefLoading} state={state} handleOverride={handleOverride} dispatch={dispatch} initialise={initialise} handleAppMetrics={handleAppMetrics} handleDelete={handleDelete} />}
+                {state.data && state.charts && <DeploymentTemplateOverrideForm chartRefLoading={chartRefLoading} state={state} handleOverride={handleOverride} dispatch={dispatch} initialise={initialise} handleAppMetrics={(e) => handleAppMetrics(!state.appMetricsEnabled)} handleDelete={handleDelete} setAppMetricsTabVisible={(e) => setAppMetricsTabVisible()} />}
             </section>
         </>
     )
 }
 
-function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading }) {
+function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading, setAppMetricsTabVisible }) {
     const [tempValue, setTempValue] = useState("")
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
@@ -209,78 +208,72 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return (
         <>
-            <form className="deployment-template-override-form" onSubmit={handleSubmit}>
+            <form className="deployment-template-override-form"onSubmit={handleSubmit}>
                 <Override
                     external={false}
                     overridden={!!state.duplicate}
                     onClick={handleOverride}
                     type="deployment template"
                 />
-                <div className="code-editor-container" style={{ borderWidth: 0 }}>
-                    <CodeEditor
-                        value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
-                        onChange={res => setTempValue(res)}
-                        defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
-                        mode="yaml"
-                        height={462}
-                        tabSize={4}
-                        readOnly={!state.duplicate}
-                        loading={chartRefLoading}
-                    >
-                        <div className="border-bottom p-12" style={{ display: 'grid', gridTemplateColumns: '1.5fr 0.5fr', gridColumnGap: '16px' }}>
-                            {!state.duplicate && <div className="flex left">
-                                <span className="form__label" style={{ marginBottom: 0 }}>Chart version: <span className="fw-6">{state.charts.get(state.data.globalChartRefId).version} (read-only)</span></span>
-                            </div>}
-                            {state.duplicate && <div className="flex left column" style={{ width: '20%', backgroundColor: '#f7fafc' }}>
-                                <Select onChange={e => dispatch({ type: 'selectChart', value: e.target.value })} value={state.selectedChartRefId} rootClassName="chart-version">
-                                    <Select.Button style={{ height: '28px', paddingLeft: '8px', width: '100%' }}>
-                                        <span>
-                                            {state.selectedChartRefId ? "Chart version: " : 'Select chart'}
-                                            <span className="fw-6">{state.selectedChartRefId && state.charts.get(state.selectedChartRefId).version}</span>
-                                        </span>
-                                    </Select.Button>
-                                    {state.charts && Array.from(state.charts).map((value, idx) => <Select.Option key={idx} value={value[0]}>{value[1].version}</Select.Option>)}
-                                </Select>
-                            </div>}
-                            <div className={`flex ${state.duplicate ? 'content-space' : 'right'} mr-10`}>
-                                {state.duplicate &&
-                                    <CodeEditor.SplitPane />}
-                                <a rel="noreferrer noopener" target="_blank" className="cn-9" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}><img src={fileIcon} alt="file-icon" /> Readme</a>
+                <div style={{ display: 'grid', gridTemplateColumns: state.appMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+                    <div className="code-editor-container br-0" style={{ borderWidth: 0, borderRightWidth:1, borderRadius:0 }}>
+                        <CodeEditor
+                            value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                            onChange={res => setTempValue(res)}
+                            defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                            mode="yaml"
+                            height={474}
+                            tabSize={4}
+                            readOnly={!state.duplicate}
+                            loading={chartRefLoading}
+                        >
+                            <div className="border-bottom p-12" style={{ display: 'grid', gridTemplateColumns: '1.5fr 0.5fr', gridColumnGap: '16px' }}>
+                                {!state.duplicate && <div className="flex left">
+                                    <span className="form__label" style={{ marginBottom: 0 }}>Chart version: <span className="fw-6">{state.charts?.get(state.data.globalChartRefId).version} (read-only)</span></span>
+                                </div>}
+                                {state.duplicate && <div className="flex left column" style={{ width: state.appMetricsTabVisible? '20%' : '100%', backgroundColor: '#f7fafc' }}>
+                                    <Select onChange={e => dispatch({ type: 'selectChart', value: e.target.value })} value={state.selectedChartRefId} rootClassName="chart-version">
+                                        <Select.Button style={{ height: '28px', paddingLeft: '8px', width: '100%' }}>
+                                            <span>
+                                                {state.selectedChartRefId ? "Chart version: " : 'Select chart'}
+                                                <span className="fw-6">{state.selectedChartRefId && state.charts.get(state.selectedChartRefId).version}</span>
+                                            </span>
+                                        </Select.Button>
+                                        {state.charts && Array.from(state.charts).map((value, idx) => <Select.Option key={idx} value={value[0]}>{value[1].version}</Select.Option>)}
+                                    </Select>
+                                </div>}
+                                <div className={`flex ${state.duplicate ? 'content-space' : 'right'} mr-10`}>
+                                    {state.duplicate && !state.appMetricsTabVisible &&
+                                        <CodeEditor.SplitPane />}
+                                    <a rel="noreferrer noopener" target="_blank" className="cn-9" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}><img src={fileIcon} alt="file-icon" /> Readme</a>
+                                </div>
                             </div>
-                        </div>
-                        <CodeEditor.ValidationError />
-                    </CodeEditor>
+                            <CodeEditor.ValidationError />
+                        </CodeEditor>
+                    </div>
+                    {state.appMetricsTabVisible && <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={true}/>}
                 </div>
-                <div className="flex content-space mt-12 save_container p-10">
+                <div className="flex content-space save_container p-10">
                     <div className="flex column left">
                         {state.charts && state.selectedChartRefId && appMetricsEnvironmentVariableEnabled ?
-                            <div className="flex left">
-                                <Checkbox isChecked={state.appMetricsEnabled}
-                                    onClick={(e) => { e.stopPropagation() }}
-                                    rootClassName="form__checkbox-label--ignore-cache"
-                                    value={"CHECKED"}
-                                    disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
-                                    onChange={handleAppMetrics}
-                                >
-                                </Checkbox>
-                                <div className="ml-14">
-                                    <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" />
-                                    <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
-                                </div>
-                            </div> : <div />}
+                        <div className="flex left">
+                            <Checkbox isChecked={state.appMetricsEnabled}
+                                onClick={(e) => { e.stopPropagation() }}
+                                rootClassName="form__checkbox-label--ignore-cache"
+                                value={"CHECKED"}
+                                disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
+                                onChange={handleAppMetrics}
+                            >
+                            </Checkbox>
+                            <div className="ml-14">
+                                <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={setAppMetricsTabVisible} />
+                                <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
+                            </div>
+                        </div>: <div />}
                     </div>
                     <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
-            {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
-                currentVersion={state.charts.get(state.selectedChartRefId).version}
-                onChange={handleAppMetrics}
-                className=""
-                opted={!!state.data.appMetrics}
-                loading={state.appMetricsLoading}
-                disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
-            />}
-
             {state.dialog && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="This action will cause permanent removal." subtitle="This action will cause all overrides to erase and app level configuration will be applied" />
@@ -320,7 +313,6 @@ function NameSpace({ originalNamespace = "", chartRefId, id, data, isOverride })
     return (
         <div className="p-12 pointer flex left">
             <div className="flex left fs-14 cn-9 fw-5">{namespace} / Deployment template</div>
-            {data && isOverride && <div className="flex tag">modified</div>}
         </div>
     )
 }
