@@ -2,40 +2,15 @@ import React, { useEffect } from 'react'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { iNode, iNodes } from './node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
-import { useHistory, useRouteMatch, } from 'react-router';
-import { URLS } from '../../../../../config';
-import { useSharedState } from '../../../utils/useSharedState';
-import AppDetailsStore from '../../appDetail.store';
 
-function ResourceTreeComponent() {
-    const [nodes] = useSharedState(AppDetailsStore.getAppDetailsNodes(), AppDetailsStore.getAppDetailsNodesObservable())
+function ResourceTreeComponent({ nodes, callback }) {
 
-    const [{ treeNodes }, dispatch] = useNodeTree(nodes);
-    const history = useHistory();
-    const { url } = useRouteMatch();
-
-    useEffect(() => {
-        //console.log("ResourceTreeComponent", nodes)
-    }, [])
-    
-    //const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
-
-    // useEffect(() => {
-    //     const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
-    //     if (!params.action || NodeDetailTabs[params.action.toUpperCase()] === undefined) {
-    //         history.push(link + URLS.APP_DETAILS_K8)
-    //     }
-    // }, [params.action])
-
-    // useEffect(() => {
-    //     let newUrl = window.location.href.split(`details`)[1] + URLS.APP_DETAILS_K8
-    //     console.log(newUrl)
-    //     history.push(newUrl)
-    // }, [window.location.href])
+    const [{ treeNodes }, dispatch] = useNodeTree();
 
     const handleNodeClick = (treeNode: iNode, e: any) => {
+
         e.stopPropagation()
-       
+
         if (treeNode.childNodes?.length > 0) {
             dispatch({
                 type: NodeTreeActions.MarkActive,
@@ -43,8 +18,7 @@ function ResourceTreeComponent() {
             })
         }
         else {
-            let link = `${url.split(URLS.APP_DETAILS_K8)[0]}${URLS.APP_DETAILS_K8}/${treeNode.name.toLowerCase()}`;
-            history.push(link);
+            callback(treeNode)
         }
     }
 
@@ -52,23 +26,34 @@ function ResourceTreeComponent() {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
-                    <div className="container-fluid cursor fw-6 cn-9  fs-14" onClick={(e) => handleNodeClick(treeNode, e)} >
-                        <div className="row flex left pt-6 pb-6">
-                            <div className="col-md-2">
-                                {(treeNode.childNodes?.length > 0) && <DropDown className="icon-dim-20" />}
-                            </div>
-                            <div className="col-md-10">
-                                <span> {treeNode.name}</span>
-                            </div>
+                    <div className="flex left cursor fw-6 cn-9 fs-14 pb-8" onClick={(e) => handleNodeClick(treeNode, e)}>
+                        {treeNode.childNodes?.length > 0 &&
+                            <DropDown
+                                className={`rotate icon-dim-24 pointer ${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}`}
+                                style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
+                            />
+                        }
+                        <div className="fs-14 pointer w-100 fw-6 flex left pl-8 pr-8">
+                            {treeNode.name}
                         </div>
                     </div>
-                    { (treeNode.childNodes?.length > 0 && treeNode.isSelected) &&
-                        <div className="pl-16">{makeNodeTree(treeNode.childNodes)} </div>
+
+                    {(treeNode.childNodes?.length > 0 && treeNode.isSelected) &&
+                        <div className="pl-24">{makeNodeTree(treeNode.childNodes)} </div>
                     }
                 </div>
             )
         })
     }
+
+    useEffect(() => {
+        if (nodes && nodes.length > 0) {
+            dispatch({
+                type: NodeTreeActions.Init,
+                nodes: nodes
+            })
+        }
+    }, [])
 
     return (
         <div>

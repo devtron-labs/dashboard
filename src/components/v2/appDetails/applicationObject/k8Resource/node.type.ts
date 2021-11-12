@@ -11,6 +11,7 @@ export enum iNodeType {
   Service = 'service',
   Pods = 'pods',
   GenericInfo = 'genericInfo',
+  Graph = 'graph',
 }
 
 export enum NodeDetailTabs {

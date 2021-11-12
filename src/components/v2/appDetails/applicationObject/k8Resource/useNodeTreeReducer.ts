@@ -1,7 +1,7 @@
 
 import { useReducer, useEffect } from "react";
 import { AggregationKeys, getAggregator, Node, NodeType } from "../../appDetail.type";
-import { iNode, iNodes, iNodeType } from "./node.type";
+import { iNode, iNodes } from "./node.type";
 
 export const NodeTreeActions = {
     Init: "INIT",
@@ -17,34 +17,16 @@ const initialState = {
 };
 
 const markActiveNode = (treeNodes: iNodes, selectedNode: iNode) => {
-
-    treeNodes.forEach((node: iNode) => {
-        node.isSelected = false
+    return treeNodes.map((node: iNode) => {
         if (node.name.toLowerCase() === selectedNode.name.toLowerCase()) {
-            node.isSelected = !node.isSelected
-            return
-        } else if (node.childNodes?.length > 0) {
+            node.isSelected = true //!node.isSelected
+        }else if(node.childNodes?.length > 0){
             markActiveNode(node.childNodes, selectedNode)
         }
+
+        return node
     })
-
-    return treeNodes
 }
-
-const reducer = (state: any, action: any) => {
-    switch (action.type) {
-
-        case NodeTreeActions.Init:
-            return { ...state, loading: false, treeNodes: action.nodes };
-
-        case NodeTreeActions.Error:
-            return { ...state, loading: false, error: action.error };
-
-        case NodeTreeActions.MarkActive: {
-            return { ...state, treeNodes: markActiveNode(state.treeNodes, action.node) };
-        }
-    }
-};
 
 const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
 
@@ -53,9 +35,8 @@ const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
 
     nodes.forEach((node: Node) => {
         const aggregator = getAggregator(node.kind)
-        
+
         if (aggregator.toLowerCase() === parentNodeName.toLowerCase()) {
-            console.log(node)
             uniqueINodes.add(node.kind)
         }
     });
@@ -89,15 +70,25 @@ const getTreeNodes = (_nodes: Array<Node>) => {
     return _inodes
 }
 
-export const useNodeTree = (nodes: Array<Node>) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+const reducer = (state: any, action: any) => {
+    switch (action.type) {
 
-    useEffect(() => {
-        if (nodes.length > 0) {
-            const initialNodes = getTreeNodes(nodes);
-            dispatch({ type: NodeTreeActions.Init, nodes: initialNodes });
+        case NodeTreeActions.Init:
+            const initialNodes = getTreeNodes(action.nodes);
+            return { ...state, loading: false, treeNodes: [...initialNodes] };
+
+        case NodeTreeActions.Error:
+            return { ...state, loading: false, error: action.error };
+
+        case NodeTreeActions.MarkActive: {
+            const tns = markActiveNode(state.treeNodes, action.node)
+            return { ...state, treeNodes: [...tns] };
         }
-    }, [nodes]);
+    }
+};
+
+export const useNodeTree = () => {
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     return [state, dispatch];
 };
