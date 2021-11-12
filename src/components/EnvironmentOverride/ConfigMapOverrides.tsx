@@ -506,7 +506,7 @@ export function Override({ external, overridden, onClick, loading = false, type 
                 <div className="override-title">{external ? 'Nothing to override' : overridden ? 'Restore default configuration' : 'Override default configuration'}</div>
                 <div className="override-subtitle">{external ? `This ${type} does not have any overridable values.` : overridden ? 'Restoring will discard the current overrides and application default configuration will be applied.' : `Overriding will fork the ${type} for this environment. Updating the default values will no longer affect this configuration.`}</div>
             </div>
-            {!external && <button className={`cta ${overridden ? 'delete' : 'ghosted'} override-button`} onClick={onClick}>{loading ? <Progressing /> : overridden ? 'Delete override' : 'Allow override'}</button>}
+            {!external && <button className={`cta ${overridden ? 'delete cta-delete-app' : 'ghosted'} override-button`} onClick={onClick}>{loading ? <Progressing /> : overridden ? 'Delete override' : 'Allow override'}</button>}
         </div>
     )
 }

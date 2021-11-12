@@ -153,7 +153,7 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
     if (parentState === 'loading') return null
     return (
         <>
-            <section className="deployment-template-override white-card white-card--list br-0">
+            <section className="deployment-template-override white-card white-card--list br-0" style={{height: "100%"}}>
                 {state.data && state.charts && <NameSpace originalNamespace={state.data.namespace} chartRefId={state.latestAppChartRef || state.latestChartRef} id={state.data.environmentConfig.id} data={state.data} isOverride={state.data.IsOverride} />}
                 {state.data && state.charts && <DeploymentTemplateOverrideForm chartRefLoading={chartRefLoading} state={state} handleOverride={handleOverride} dispatch={dispatch} initialise={initialise} handleAppMetrics={(e) => handleAppMetrics(!state.appMetricsEnabled)} handleDelete={handleDelete} setAppMetricsTabVisible={(e) => setAppMetricsTabVisible()} />}
             </section>
@@ -204,25 +204,49 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
             setLoading(not)
         }
     }
+    function getWindowDimensions() {
+        const { innerWidth: width, innerHeight: height } = window;
+        return {
+            width,
+            height
+        };
+    }
+
+    function useWindowDimensions() {
+        const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+        useEffect(() => {
+            function handleResize() {
+                setWindowDimensions(getWindowDimensions());
+            }
+
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }, []);
+
+        return windowDimensions;
+    }
+
+    const { height, width } = useWindowDimensions();
 
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     return (
         <>
-            <form className="deployment-template-override-form"onSubmit={handleSubmit}>
+            <form className="deployment-template-override-form"onSubmit={handleSubmit} style={{height:'100%'}}>
                 <Override
                     external={false}
                     overridden={!!state.duplicate}
                     onClick={handleOverride}
                     type="deployment template"
                 />
-                <div style={{ display: 'grid', gridTemplateColumns: state.appMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: state.appMetricsTabVisible ? '50% 50%' : '100%', overflow: 'hidden' }}>
                     <div className="code-editor-container br-0" style={{ borderWidth: 0, borderRightWidth:1, borderRadius:0 }}>
                         <CodeEditor
                             value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
                             onChange={res => setTempValue(res)}
                             defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
                             mode="yaml"
-                            height={474}
+                            height={height-315}
                             tabSize={4}
                             readOnly={!state.duplicate}
                             loading={chartRefLoading}
@@ -231,7 +255,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                                 {!state.duplicate && <div className="flex left">
                                     <span className="form__label" style={{ marginBottom: 0 }}>Chart version: <span className="fw-6">{state.charts?.get(state.data.globalChartRefId).version} (read-only)</span></span>
                                 </div>}
-                                {state.duplicate && <div className="flex left column" style={{ width: state.appMetricsTabVisible? '20%' : '100%', backgroundColor: '#f7fafc' }}>
+                                {state.duplicate && <div className="flex left column" style={{ width: !state.appMetricsTabVisible? '20%' : '40%', backgroundColor: '#f7fafc' }}>
                                     <Select onChange={e => dispatch({ type: 'selectChart', value: e.target.value })} value={state.selectedChartRefId} rootClassName="chart-version">
                                         <Select.Button style={{ height: '28px', paddingLeft: '8px', width: '100%' }}>
                                             <span>
@@ -251,7 +275,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                             <CodeEditor.ValidationError />
                         </CodeEditor>
                     </div>
-                    {state.appMetricsTabVisible && <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={true}/>}
+                    {state.appMetricsTabVisible && <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={true} height={height-315}/>}
                 </div>
                 <div className="flex content-space save_container p-10">
                     <div className="flex column left">

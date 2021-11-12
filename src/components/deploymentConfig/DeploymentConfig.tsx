@@ -3,7 +3,7 @@ import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate
 import { getChartReferences } from '../../services/service';
 import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget, Checkbox } from '../common';
 import { useEffectAfterMount, showError, usePrevious } from '../common/helpers/Helpers'
-import { useParams } from 'react-router'
+import { useParams, useHistory } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
@@ -15,11 +15,11 @@ import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as HelpOutline } from '../../assets/icons/ic-help-outline.svg';
 
-export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false, onInfoClick }) {
+export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false, onInfoClick, chartConfig }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
-    return <div id="opt-metrics" className={`flex column left br-0 white-card ${focus ? 'animate-background' : ''} ${className}`}>
+    return <div id="opt-metrics" className={`flex column left br-0  ${focus ? 'animate-background' : ''} ${className}`}>
         <div className="p-lr-20 p-13 flex left content-space" style={{ width: '100%' }}>
             {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled ?
                 <div className="flex left">
@@ -37,7 +37,7 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
                     </div>
                 </div> : <div />}
             <div>
-                <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
+                <button className="cta" type="submit">{loading ? <Progressing /> : chartConfig?.id ? 'Save' : 'Save & Next'}</button>
             </div>
         </div>
         {isChartVersionSupported && <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%', position: "absolute", bottom: 60 }}>
@@ -84,11 +84,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
     const [appMetricsLoading, setAppMetricsLoading] = useState(false);
     const [chartConfigLoading, setChartConfigLoading] = useState(null);
     const { appId } = useParams<{ appId }>();
-
-    function saveAppMetrics(appMetricsEnabled) {
-        toggleAppMetrics(appMetricsEnabled)
-        setAppMetricsTabVisible(appMetricsEnabled);
-    }
+    const [chartConfig, setChartConfig] = useState(null)
 
     async function initialise() {
         setChartConfigLoading(true)
@@ -107,42 +103,58 @@ export default function DeploymentConfig({ respondOnSuccess }) {
         }
     }
 
-    return <div style={{ height: "calc(100% - 68px )" }}>
-        <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
-            <DeploymentConfigForm
-                respondOnSuccess={respondOnSuccess}
-                loading={loading} setLoading={setLoading}
-                chartVersions={chartVersions}
-                setChartVersions={setChartVersions}
-                selectedChart={selectedChart}
-                selectChart={selectChart}
-                toggleAppMetrics={toggleAppMetrics}
-                isAppMetricsEnabled={isAppMetricsEnabled}
-                appMetricsLoading={appMetricsLoading}
-                setAppMetricsLoading={setAppMetricsLoading}
-                chartConfigLoading={chartConfigLoading}
-                setChartConfigLoading={setChartConfigLoading}
-                initialise={initialise}
-                appId={appId} />
-            {isAppMetricsTabVisible &&
-                <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={false} />}
-        </div>
-        <div>
-            <OptApplicationMetrics
-                currentVersion={selectedChart?.version}
-                appMatrixEnabled={isAppMetricsEnabled}
-                chartVersions={chartVersions}
-                selectedChart={selectedChart}
-                onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
-                opted={isAppMetricsEnabled}
-                loading={appMetricsLoading}
-                onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
-            />
-        </div>
+    function getWindowDimensions() {
+        const { innerWidth: width, innerHeight: height } = window;
+        return {
+            width,
+            height
+        };
+    }
+
+    function useWindowDimensions() {
+        const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+        useEffect(() => {
+            function handleResize() {
+                setWindowDimensions(getWindowDimensions());
+            }
+
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }, []);
+
+        return windowDimensions;
+    }
+
+    const { height, width } = useWindowDimensions();
+
+    return <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+        <DeploymentConfigForm
+            respondOnSuccess={respondOnSuccess}
+            loading={loading} setLoading={setLoading}
+            chartVersions={chartVersions}
+            setChartVersions={setChartVersions}
+            selectedChart={selectedChart}
+            selectChart={selectChart}
+            toggleAppMetrics={toggleAppMetrics}
+            isAppMetricsEnabled={isAppMetricsEnabled}
+            appMetricsLoading={appMetricsLoading}
+            setAppMetricsLoading={setAppMetricsLoading}
+            chartConfigLoading={chartConfigLoading}
+            setChartConfigLoading={setChartConfigLoading}
+            initialise={initialise}
+            setChartConfig={setChartConfig}
+            setAppMetricsTabVisible={setAppMetricsTabVisible}
+            isAppMetricsTabVisible={isAppMetricsTabVisible}
+            chartConfig={chartConfig}
+            height={height}
+            appId={appId} />
+        {isAppMetricsTabVisible &&
+            <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={false} height={height - 205} />}
     </div>
 }
 
-export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride }) {
+export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride, height }) {
     return (
         <>
             <form action="" className="white-card white-card__deployment-config br-0 bw-0">
@@ -150,7 +162,7 @@ export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride }
                     <span className="fw-6 fs-14">Using application metrics</span>
                     <Close className="icon-dim-20 pointer" onClick={() => setAppMetricsTabVisible(false)} />
                 </div>
-                <div className="app-matrix-inner p-20" style={{height:isEnvOverride? 470 : 570}}>
+                <div className="app-matrix-inner p-20" style={{ height: height }}>
                     <div className="fs-13">Once you enable application metrics and redeploy, all the requests to your service will be passed through a transparent proxy (envoy), which is used as a sidecar to your main container.</div>
                     <RecommandedTab />
                     <DesiredConfig port='http1' supportStreaming={false} useHTTP2={false} useGPRC={false} />
@@ -189,21 +201,16 @@ export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride }
 }
 
 function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVersions, setChartVersions, selectedChart, selectChart, toggleAppMetrics, isAppMetricsEnabled, appMetricsLoading, setAppMetricsLoading,
-    chartConfigLoading, setChartConfigLoading, initialise, appId }) {
+    chartConfigLoading, setChartConfigLoading, initialise, appId, chartConfig, setChartConfig, height, setAppMetricsTabVisible, isAppMetricsTabVisible }) {
     const [template, setTemplate] = useState("")
-    const [chartConfig, setChartConfig] = useState(null)
     const [tempFormData, setTempFormData] = useState("")
     const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
     const [showConfirmation, toggleConfirmation] = useState(false)
+    const history = useHistory();
 
     useEffect(() => {
         initialise()
     }, [])
-    // useEffectAfterMount(() => {
-    //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
-    //         fetchDeploymentTemplate()
-    //     }
-    // }, [chartConfigLoading])
 
     useEffectAfterMount(() => {
         fetchDeploymentTemplate();
@@ -264,6 +271,10 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
                     <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>
             )
+            if (!chartConfig.id) {
+                let url = 'app/${appId}/edit/workflow';
+                history.push(url);
+            }
         }
         catch (err) {
             showError(err)
@@ -273,6 +284,12 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
             toggleConfirmation(false)
         }
     }
+
+    function saveAppMetrics(appMetricsEnabled) {
+        toggleAppMetrics(appMetricsEnabled)
+        setAppMetricsTabVisible(appMetricsEnabled);
+    }
+
     return (
         <>
             <form action="" className="p-0 white-card white-card__deployment-config br-0 bw-0" onSubmit={handleSubmit}>
@@ -315,15 +332,25 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
                         <a rel="noreferrer noopener" className="ml-4 fs-13 cn-7" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Readme</a>
                     </div>
                 </div>
-                <div className="form__row--code-editor-container">
+                <div className="form__row--code-editor-container" style={{ height: height - 210 }}>
                     <CodeEditor
                         value={tempFormData}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
-                        height={560}
+                        height={height - 210}
                         loading={chartConfigLoading}>
-                    </CodeEditor>
-                </div>
+                    </CodeEditor>                </div>
+                <OptApplicationMetrics
+                    currentVersion={selectedChart?.version}
+                    appMatrixEnabled={isAppMetricsEnabled}
+                    chartVersions={chartVersions}
+                    selectedChart={selectedChart}
+                    onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
+                    opted={isAppMetricsEnabled}
+                    loading={appMetricsLoading}
+                    onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
+                    chartConfig={chartConfig}
+                />
             </form>
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />

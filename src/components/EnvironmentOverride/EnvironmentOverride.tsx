@@ -57,7 +57,7 @@ export default function EnvironmentOverride() {
     const loading = (deploymentState === 'loading' || configMapState === 'loading' || secretState === 'loading')
     return <ErrorBoundary>
         {loading && <Progressing pageLoader />}
-        <div className={`environment-override ${window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG) ? '' : 'env-config-container'}`}>
+        <div className={`environment-override ${window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG) ? '' : 'env-config-container'}`} style={{height: "100%"}}>
             {window.location.href.includes(URLS.APP_DEPLOYMENT_CONFIG) &&
                 <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />}
             {window.location.href.includes(URLS.APP_CM_CONFIG) &&

@@ -39,6 +39,7 @@
 .form__row--code-editor-container{
     height: 100%;
     border-top: 1px solid var(--N200);
+    border-bottom: 1px solid var(--N200);
     display: grid;
     grid-template-rows: 40px 1fr;
     overflow: hidden;

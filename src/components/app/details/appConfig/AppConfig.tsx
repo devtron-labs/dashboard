@@ -339,11 +339,11 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <>
                             <DeploymentConfig respondOnSuccess={respondOnSuccess} />
-                            <NextButton currentStageName={STAGE_NAME.DEPLOYMENT_TEMPLATE}
+                            {/* <NextButton currentStageName={STAGE_NAME.DEPLOYMENT_TEMPLATE}
                                 navItems={navItems}
                                 isDisabled={!isUnlocked.workflowEditor}
                                 isCiPipeline={isCiPipeline}
-                            />
+                            /> */}
                         </>
                     </Route>
                 )}
