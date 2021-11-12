@@ -62,11 +62,11 @@ function GenericRowComponent({selectedNodeType}) {
    
 
     return (
-        <div className="container generic-table">
+        <div className="container-fluid generic-table">
             <div className="row border-bottom ">
                 {
                     GenericPodsTablejSON.tHead.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(index === 0 ? "col-5 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
+                        return <div key={'gpt_' + index} className={(index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9")}>{cell.value}</div>
                     })
                 }
             </div>

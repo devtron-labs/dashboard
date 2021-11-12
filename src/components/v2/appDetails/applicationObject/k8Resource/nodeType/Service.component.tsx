@@ -27,7 +27,7 @@ function ServiceComponent(props) {
     return (
         <div>
             <div className="flex left column w-100 generic-info-header fw-6 cn-9 fs-14 pl-16">ServiceComponent(1)</div>
-            <div className="container ">
+            <div className="container-fluid ">
                 <div className="row pt-10 pb-10" style={{ height: '36px' }}>
                     <div className="col cn7 fw-6 ">
                         Name

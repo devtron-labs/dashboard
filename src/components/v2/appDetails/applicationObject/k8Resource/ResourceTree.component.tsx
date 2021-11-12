@@ -4,14 +4,21 @@ import { iNode, iNodes } from './node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch, } from 'react-router';
 import { URLS } from '../../../../../config';
-import { useParams } from 'react-router';
+import { useSharedState } from '../../../utils/useSharedState';
+import AppDetailsStore from '../../appDetail.store';
 
-function NodeTreeComponent(props) {
+function ResourceTreeComponent() {
+    const [nodes] = useSharedState(AppDetailsStore.getAppDetailsNodes(), AppDetailsStore.getAppDetailsNodesObservable())
 
-    const [{ treeNodes }, dispatch] = useNodeTree();
+    const [{ treeNodes }, dispatch] = useNodeTree(nodes);
     const history = useHistory();
     const { url } = useRouteMatch();
-    const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
+
+    useEffect(() => {
+        //console.log("ResourceTreeComponent", nodes)
+    }, [])
+    
+    //const params = useParams<{ appId: string, envId: string, name: string, action: string, node: string }>()
 
     // useEffect(() => {
     //     const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
@@ -28,12 +35,7 @@ function NodeTreeComponent(props) {
 
     const handleNodeClick = (treeNode: iNode, e: any) => {
         e.stopPropagation()
-        console.log(treeNode.name.toLowerCase())
-        if(treeNode){
-            console.log('hi success') 
-         }else{
-             console.log('hi failed')   
-         }
+       
         if (treeNode.childNodes?.length > 0) {
             dispatch({
                 type: NodeTreeActions.MarkActive,
@@ -43,7 +45,6 @@ function NodeTreeComponent(props) {
         else {
             let link = `${url.split(URLS.APP_DETAILS_K8)[0]}${URLS.APP_DETAILS_K8}/${treeNode.name.toLowerCase()}`;
             history.push(link);
-            
         }
     }
 
@@ -51,7 +52,7 @@ function NodeTreeComponent(props) {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
-                    <div className="container cursor fw-6 cn-9  fs-14" onClick={(e) => handleNodeClick(treeNode, e)} >
+                    <div className="container-fluid cursor fw-6 cn-9  fs-14" onClick={(e) => handleNodeClick(treeNode, e)} >
                         <div className="row flex left pt-6 pb-6">
                             <div className="col-md-2">
                                 {(treeNode.childNodes?.length > 0) && <DropDown className="icon-dim-20" />}
@@ -76,4 +77,4 @@ function NodeTreeComponent(props) {
     )
 }
 
-export default NodeTreeComponent
+export default ResourceTreeComponent

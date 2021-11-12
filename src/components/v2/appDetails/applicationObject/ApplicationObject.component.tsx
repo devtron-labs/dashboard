@@ -12,6 +12,8 @@ import { URLS } from '../../../../config';
 import './applicationObject.css';
 import ApplicationObjectStore from './applicationObject.store';
 import { useSharedState } from '../../utils/useSharedState';
+import { getInstalledAppDetail } from '../appDetails.api';
+import AppDetailsStore from '../appDetail.store';
 
 
 const ApplicationObjectComponent = () => {
@@ -22,6 +24,14 @@ const ApplicationObjectComponent = () => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
         ApplicationObjectStore.setBaseURL(link)
         ApplicationObjectStore.initApplicationObjectTab()
+
+
+        const init = async () => {
+            const response = await getInstalledAppDetail();
+            AppDetailsStore.setAppDetails(response.result);
+        }
+
+        init();
     }, [])
 
 

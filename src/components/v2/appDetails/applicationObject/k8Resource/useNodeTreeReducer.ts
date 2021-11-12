@@ -1,5 +1,6 @@
 
 import { useReducer, useEffect } from "react";
+import { AggregationKeys, getAggregator, Node, NodeType } from "../../appDetail.type";
 import { iNode, iNodes, iNodeType } from "./node.type";
 
 export const NodeTreeActions = {
@@ -8,106 +9,6 @@ export const NodeTreeActions = {
     MarkActive: "MARK_ACTIVE"
 };
 
-export const NodesJSON = [
-    {
-        id: 1,
-        name: "WorkLoad",
-        icon: "",
-        childNodes: [
-            {
-                id: 2,
-                name: "Cron Jobs",
-                icon: "",
-                childNodes: [
-                    {
-                        id: 50,
-                        name: "Pods",
-                        icon: "",
-                        type: iNodeType.Pods
-                    },
-                    {
-                        id: 51,
-                        name: "Jobs",
-                        icon: "",
-                        type: 'Service'
-                    }
-                ]
-            },
-            {
-                id: 3,
-                name: "Service",
-                icon: "",
-                type: 'Service'
-            }
-        ]
-
-    },
-    {
-        id: 4,
-        name: "Replica Set",
-        icon: "",
-        childNodes: [
-            {
-                id: 53,
-                name: "Pods",
-                icon: "",
-                type: iNodeType.Pods
-            },
-            {
-                id: 54,
-                name: "Jobs",
-                icon: "",
-                type: 'Service'
-            }
-        ]
-
-    },
-    {
-        id: 5,
-        name: "Pods",
-        icon: "",
-        type: iNodeType.Pods
-    },
-    {
-        id: 6,
-        name: "Networking",
-        icon: "",
-        type: 'GenericInfo'
-    },
-    {
-        id: 7,
-        name: "Config & Storage",
-        icon: "",
-        type: 'GenericInfo',
-        childNodes: [
-            {
-                id: 2,
-                name: "Cron Jobs",
-                icon: "",
-                childNodes: [
-                    {
-                        id: 50,
-                        name: "Pods",
-                        icon: "",
-                        type: iNodeType.Pods
-                    },
-                    {
-                        id: 51,
-                        name: "Jobs",
-                        icon: "",
-                        type: 'Service'
-                    }
-                ]
-            },
-            {
-                id: 3,
-                name: "Service",
-                icon: "",
-                type: 'Service'
-            }
-        ]
-    }
-]
 
 const initialState = {
     loading: true,
@@ -116,24 +17,17 @@ const initialState = {
 };
 
 const markActiveNode = (treeNodes: iNodes, selectedNode: iNode) => {
-    for (let index = 0; index < treeNodes.length; index++) {
-        const node = treeNodes[index];
-        if (node.id === selectedNode.id) {
-            node.isSelected = true //!node.isSelected
-            break
+
+    treeNodes.forEach((node: iNode) => {
+        node.isSelected = false
+        if (node.name.toLowerCase() === selectedNode.name.toLowerCase()) {
+            node.isSelected = !node.isSelected
+            return
         } else if (node.childNodes?.length > 0) {
             markActiveNode(node.childNodes, selectedNode)
         }
-    }
-    // treeNodes.forEach((node: iNode) => {
-    //     // node.isSelected = false
-    //     if (node.id === selectedNode.id) {
-    //         node.isSelected = !node.isSelected
-    //         return
-    //     } else if (node.childNodes?.length > 0) {
-    //         markActiveNode(node.childNodes, selectedNode)
-    //     }
-    // })
+    })
+
     return treeNodes
 }
 
@@ -152,17 +46,59 @@ const reducer = (state: any, action: any) => {
     }
 };
 
-export const useNodeTree = () => {
+const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
 
+    let _nodes = []
+    let uniqueINodes = new Set();
+
+    nodes.forEach((node: Node) => {
+        const aggregator = getAggregator(node.kind)
+        
+        if (aggregator.toLowerCase() === parentNodeName.toLowerCase()) {
+            console.log(node)
+            uniqueINodes.add(node.kind)
+        }
+    });
+
+    uniqueINodes.forEach((_n: any) => {
+        const _inode = {} as iNode;
+        _inode.name = _n
+        _nodes.push(_inode)
+    })
+
+    return _nodes
+}
+
+const getTreeNodes = (_nodes: Array<Node>) => {
+
+    const _inodes = [];
+
+    Object.keys(AggregationKeys).map(key => {
+        const aggregationKey = AggregationKeys[key];
+
+        let cNodes = getChildiNodes(_nodes, aggregationKey)
+
+        if (cNodes.length > 0) {
+            const _inode = {} as iNode;
+            _inode.name = aggregationKey
+            _inode.childNodes = cNodes
+            _inodes.push(_inode)
+        }
+    })
+
+    return _inodes
+}
+
+export const useNodeTree = (nodes: Array<Node>) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        let initialNodes = state.treeNodes;
-        // initialNodes.push(NodesJSON["K8 Resources"], NodesJSON["Log Analyzer"])
-        dispatch({ type: NodeTreeActions.Init, nodes: NodesJSON });
-    }, []);
+        if (nodes.length > 0) {
+            const initialNodes = getTreeNodes(nodes);
+            dispatch({ type: NodeTreeActions.Init, nodes: initialNodes });
+        }
+    }, [nodes]);
 
     return [state, dispatch];
-
 };
 
