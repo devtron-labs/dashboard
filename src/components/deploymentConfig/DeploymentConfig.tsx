@@ -15,7 +15,7 @@ import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as HelpOutline } from '../../assets/icons/ic-help-outline.svg';
 
-export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false, onInfoClick, chartConfig }) {
+export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false, chartVersions = [], selectedChart = null, onChange, opted, focus = false, loading, className = "", disabled = false, onInfoClick, chartConfig, handleSubmit }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
@@ -37,7 +37,7 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
                 </div>
             </div> : <div />}
             <div>
-                <button className="cta" type="submit">{loading ? <Progressing /> : chartConfig?.id ? 'Save' : 'Save & Next'}</button>
+                <button className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : chartConfig?.id ? 'Save' : 'Save & Next'}</button>
             </div>
         </div>
         {isChartVersionSupported && <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%', position: "absolute", bottom: 60 }}>
@@ -353,6 +353,7 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
                 onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
                 opted={isAppMetricsEnabled}
                 loading={appMetricsLoading}
+                handleSubmit={handleSubmit}
                 onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
                 chartConfig={chartConfig}
             />
