@@ -19,23 +19,23 @@ export function OptApplicationMetrics({ currentVersion, appMatrixEnabled = false
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
 
-    return <div id="opt-metrics" className={`flex column left br-0  ${focus ? 'animate-background' : ''} ${className}`}>
+    return <div id="opt-metrics" className={`flex column left br-0 white-card ${focus ? 'animate-background' : ''} ${className}`} style={{marginBottom:0}}> 
         <div className="p-lr-20 p-13 flex left content-space" style={{ width: '100%' }}>
             {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled ?
-                <div className="flex left">
-                    <Checkbox isChecked={appMatrixEnabled}
-                        onClick={(e) => { e.stopPropagation() }}
-                        rootClassName="form__checkbox-label--ignore-cache"
-                        value={"CHECKED"}
-                        disabled={disabled || isChartVersionSupported}
-                        onChange={onChange}
-                    >
-                    </Checkbox>
-                    <div className="ml-14">
-                        <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={onInfoClick} />
-                        <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
-                    </div>
-                </div> : <div />}
+            <div className="flex left">
+                <Checkbox isChecked={appMatrixEnabled}
+                    onClick={(e) => { e.stopPropagation() }}
+                    rootClassName="form__checkbox-label--ignore-cache"
+                    value={"CHECKED"}
+                    disabled={disabled || isChartVersionSupported}
+                    onChange={onChange}
+                >
+                </Checkbox>
+                <div className="ml-14">
+                    <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={onInfoClick} />
+                    <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
+                </div>
+            </div> : <div />}
             <div>
                 <button className="cta" type="submit">{loading ? <Progressing /> : chartConfig?.id ? 'Save' : 'Save & Next'}</button>
             </div>
@@ -128,7 +128,7 @@ export default function DeploymentConfig({ respondOnSuccess }) {
 
     const { height, width } = useWindowDimensions();
 
-    return <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+    return <div style={{ display: 'grid', gridTemplateColumns: '100%', height: '100%', overflow: 'hidden' }}>
         <DeploymentConfigForm
             respondOnSuccess={respondOnSuccess}
             loading={loading} setLoading={setLoading}
@@ -149,8 +149,6 @@ export default function DeploymentConfig({ respondOnSuccess }) {
             chartConfig={chartConfig}
             height={height}
             appId={appId} />
-        {isAppMetricsTabVisible &&
-            <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={false} height={height - 205} />}
     </div>
 }
 
@@ -158,7 +156,7 @@ export function ApplicationmatrixInfo({ setAppMetricsTabVisible, isEnvOverride, 
     return (
         <>
             <form action="" className="white-card white-card__deployment-config br-0 bw-0">
-                <div className={`flex left content-space ${isEnvOverride ? 'app-matrix-header-override' : 'app-matrix-header'}`}>
+                <div className={`flex left content-space ${isEnvOverride ? 'p-16' : 'p-20'}`}>
                     <span className="fw-6 fs-14">Using application metrics</span>
                     <Close className="icon-dim-20 pointer" onClick={() => setAppMetricsTabVisible(false)} />
                 </div>
@@ -290,68 +288,74 @@ function DeploymentConfigForm({ respondOnSuccess, loading, setLoading, chartVers
         setAppMetricsTabVisible(appMetricsEnabled);
     }
 
+    console.log(tempFormData)
+
     return (
         <>
-            <form action="" className="p-0 white-card white-card__deployment-config br-0 bw-0" onSubmit={handleSubmit}>
-                <div className="p-12 flex left content-space">
-                    <ReactSelect options={chartVersions}
-                        isMulti={false}
-                        getOptionLabel={option => `Chart version ${option.version}`}
-                        getOptionValue={option => `${option.id}`}
-                        value={selectedChart}
-                        components={{
-                            IndicatorSeparator: null
-                        }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                boxShadow: 'none',
-                                border: `solid 1px var(--N200)`,
-                                width: '168px',
-                                backgroundColor: '#f7fafc'
-                            }),
-                            option: (base, state) => {
-                                return ({
+            <div style={{ display: 'grid', gridTemplateColumns: isAppMetricsTabVisible ? '50% 50%' : '100%', height: '100%', overflow: 'hidden' }}>
+                <form action="" className="p-0 white-card white-card__deployment-config br-0 bw-0" onSubmit={handleSubmit}>
+                    <div className="p-12 flex left content-space">
+                        <ReactSelect options={chartVersions}
+                            isMulti={false}
+                            getOptionLabel={option => `Chart version ${option.version}`}
+                            getOptionValue={option => `${option.id}`}
+                            value={selectedChart}
+                            components={{
+                                IndicatorSeparator: null
+                            }}
+                            styles={{
+                                control: (base, state) => ({
                                     ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? '#f7fafc' : 'white',
-                                    fontSize: '12px',
-                                })
-                            },
-                            menu: (base, state) => {
-                                return ({
-                                    ...base,
-                                    width: '168px'
-                                })
-                            }
-                        }}
-                        onChange={(selected) => selectChart(selected as { id: number, version: string })}
-                    />
-                    <div className="pointer flex">
-                        <File className="icon-dim-20" />
-                        <a rel="noreferrer noopener" className="ml-4 fs-13 cn-7" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Readme</a>
+                                    boxShadow: 'none',
+                                    border: `solid 1px var(--N200)`,
+                                    width: '168px',
+                                    backgroundColor: '#f7fafc'
+                                }),
+                                option: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        color: 'var(--N900)',
+                                        backgroundColor: state.isFocused ? '#f7fafc' : 'white',
+                                        fontSize: '12px',
+                                    })
+                                },
+                                menu: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        width: '168px'
+                                    })
+                                }
+                            }}
+                            onChange={(selected) => selectChart(selected as { id: number, version: string })}
+                        />
+                        <div className="pointer flex">
+                            <File className="icon-dim-20" />
+                            <a rel="noreferrer noopener" className="ml-4 fs-13 cn-7" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Readme</a>
+                        </div>
                     </div>
-                </div>
-                <div className="form__row--code-editor-container" style={{ height: height - 210 }}>
-                    <CodeEditor
-                        value={tempFormData}
-                        onChange={resp => { setTempFormData(resp) }}
-                        mode="yaml"
-                        height={height - 210}
-                        loading={chartConfigLoading}>
-                    </CodeEditor>                </div>
-                <OptApplicationMetrics
-                    currentVersion={selectedChart?.version}
-                    appMatrixEnabled={isAppMetricsEnabled}
-                    chartVersions={chartVersions}
-                    selectedChart={selectedChart}
-                    onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
-                    opted={isAppMetricsEnabled}
-                    loading={appMetricsLoading}
-                    onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
-                    chartConfig={chartConfig}
-                />
-            </form>
+                    <div className="form__row--code-editor-container" style={{ height: height - 200 }}>
+                        <CodeEditor
+                            value={tempFormData}
+                            onChange={resp => { setTempFormData(resp) }}
+                            mode="yaml"
+                            height={height - 210}
+                            loading={chartConfigLoading}>
+                        </CodeEditor>                </div>
+                </form>
+                {isAppMetricsTabVisible &&
+                    <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={false} height={height - 200} />}
+            </div>
+            <OptApplicationMetrics
+                currentVersion={selectedChart?.version}
+                appMatrixEnabled={isAppMetricsEnabled}
+                chartVersions={chartVersions}
+                selectedChart={selectedChart}
+                onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
+                opted={isAppMetricsEnabled}
+                loading={appMetricsLoading}
+                onInfoClick={e => setAppMetricsTabVisible(!isAppMetricsTabVisible)}
+                chartConfig={chartConfig}
+            />
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="Retain overrides and update" />

@@ -45,9 +45,6 @@
     overflow: hidden;
 }
 
-.app-matrix-header{
-    padding: 19.5px;
-}
 .app-matrix-inner{
     border-top: 1px solid var(--N200);
     overflow: scroll;
@@ -55,7 +52,4 @@
 }
 .app-matrix-outer{
     border: solid 1px #c5bbfa
-}
-.app-matrix-header-override{
-   padding: 12.5px; 
 }
