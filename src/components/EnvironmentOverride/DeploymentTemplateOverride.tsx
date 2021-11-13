@@ -91,6 +91,21 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
     }
 
     function handleAppMetrics(isOpted) {
+        if(isOpted){
+            let originalValue = state.duplicate
+            let enabledAppMetricsValue = {
+                ContainerPort: [{
+                    supportStreaming: false,
+                    useHTTP2: false,
+                    useGPRC: false
+                }]
+            }
+            let merged = {...enabledAppMetricsValue.ContainerPort[0],...originalValue.ContainerPort[0] }
+            let mergedAppMetrics = {
+                ContainerPort: [merged]
+            }
+            state.duplicate = {...originalValue,...mergedAppMetrics }
+        }
         dispatch({ type: 'appMetricsLoading' })
         dispatch({ type: 'appMetricsEnabled', value: isOpted })
         dispatch({ type: 'appMetricsTabVisible', value: isOpted })
@@ -279,23 +294,23 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     </div>
                     {state.appMetricsTabVisible && <ApplicationmatrixInfo setAppMetricsTabVisible={setAppMetricsTabVisible} isEnvOverride={true} height={height - 315} />}
                 </div>
-                <div className="flex content-space save_container p-10">
+                <div className="flex align-start content-space save_container p-10">
                     <div className="flex column left">
                         {state.charts && state.selectedChartRefId && appMetricsEnvironmentVariableEnabled ?
-                            <div className="flex left">
-                                <Checkbox isChecked={state.appMetricsEnabled}
-                                    onClick={(e) => { e.stopPropagation() }}
-                                    rootClassName="form__checkbox-label--ignore-cache"
-                                    value={"CHECKED"}
-                                    disabled={!state.duplicate}
-                                    onChange={handleAppMetrics}
-                                >
-                                </Checkbox>
-                                <div className="ml-14">
-                                    <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={setAppMetricsTabVisible} />
-                                    <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
-                                </div>
-                            </div> : <div />}
+                        <div className="flex left">
+                            <Checkbox isChecked={state.appMetricsEnabled}
+                                onClick={(e) => { e.stopPropagation() }}
+                                rootClassName="form__checkbox-label--ignore-cache"
+                                value={"CHECKED"}
+                                disabled={!state.duplicate}
+                                onChange={handleAppMetrics}
+                            >
+                            </Checkbox>
+                            <div className="ml-14">
+                                <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={setAppMetricsTabVisible} />
+                                <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
+                            </div>
+                        </div> : <div />}
                     </div>
                     <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing /> : 'Save'}</button>
                 </div>
