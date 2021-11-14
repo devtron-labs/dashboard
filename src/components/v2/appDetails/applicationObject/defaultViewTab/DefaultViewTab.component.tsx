@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { DefaultViewTabsJSON } from '../../../utils/tabUtils/tab.json';
-import { iLink } from '../../../utils/tabUtils/tab.type';
+import { iLink } from '../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../utils/tabUtils/useTab';
 import EventsComponent from './defaultViewActionTabs/Events.component';
 import LogsComponent from './defaultViewActionTabs/Logs.component';
 import ManifestComponent from './defaultViewActionTabs/Manifest.component';
 import TerminalComponent from './defaultViewActionTabs/Terminal.component';
 import './defaultViewTab.css';
-import { NodeDetailTabs } from '../k8Resource/node.type';
 import SummaryComponent from './defaultViewActionTabs/Summary.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch } from 'react-router';
 import ApplicationObjectStore from '../applicationObject.store';
+import { NodeDetailTabs } from '../../node.type';
 
 function DefaultViewTabComponent() {
 

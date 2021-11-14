@@ -1,7 +1,7 @@
 
 import { useReducer, useEffect } from "react";
 import { AggregationKeys, getAggregator, Node, NodeType } from "../../appDetail.type";
-import { iNode, iNodes } from "./node.type";
+import { iNodes, iNode } from "../../node.type";
 
 export const NodeTreeActions = {
     Init: "INIT",

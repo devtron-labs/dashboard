@@ -1,6 +1,6 @@
 
 import { useReducer, useEffect } from "react";
-import { iLink, iLinks } from "./tab.type";
+import { iLink, iLinks } from "./link.type";
 
 export const TabActions = {
     Init: "INIT",

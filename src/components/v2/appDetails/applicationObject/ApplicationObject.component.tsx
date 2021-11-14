@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
-import { iLink } from '../../utils/tabUtils/tab.type';
+import { iLink } from '../../utils/tabUtils/link.type';
 import './applicationObject.css'
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg';
@@ -27,8 +27,15 @@ const ApplicationObjectComponent = () => {
 
 
         const init = async () => {
-            const response = await getInstalledAppDetail();
-            AppDetailsStore.setAppDetails(response.result);
+            let response = null;
+            try{
+                response = await getInstalledAppDetail();
+
+                AppDetailsStore.setAppDetails(response.result);
+            }catch(e){
+                console.log("error while fetching InstalledAppDetail", e)
+            }
+            
         }
 
         init();

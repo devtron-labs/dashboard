@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
-import { iLink } from '../../../../utils/tabUtils/tab.type';
+import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams } from 'react-router';
 

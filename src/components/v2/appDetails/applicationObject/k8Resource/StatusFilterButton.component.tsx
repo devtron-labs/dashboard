@@ -3,7 +3,7 @@ import { useSearchString } from "../../../../common";
 import {  StatusViewTabJSON } from "../../../utils/tabUtils/tab.json";
 import { useTab } from "../../../utils/tabUtils/useTab";
 import { useRouteMatch, useParams, useLocation, useHistory } from 'react-router';
-import { iLink } from "../../../utils/tabUtils/tab.type";
+import { iLink } from "../../../utils/tabUtils/link.type";
 import { NavLink } from "react-router-dom";
 
 export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {

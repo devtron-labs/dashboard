@@ -20,7 +20,7 @@ export enum AggregationKeys {
     Other = 'Other'
 }
 
-export enum Nodes {
+export enum NodeType {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
     PodSecurity = 'PodSecurityPolicy',
@@ -54,41 +54,41 @@ export enum Nodes {
     InitContainers = 'InitContainers'
 }
 
-export type NodeType = keyof typeof Nodes;
+// export type NodeType = keyof typeof NodeType;
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
-        case Nodes.DaemonSet:
-        case Nodes.Deployment:
-        case Nodes.Pod:
-        case Nodes.ReplicaSet:
-        case Nodes.Job:
-        case Nodes.CronJob:
-        case Nodes.ReplicationController:
-        case Nodes.StatefulSet:
+        case NodeType.DaemonSet:
+        case NodeType.Deployment:
+        case NodeType.Pod:
+        case NodeType.ReplicaSet:
+        case NodeType.Job:
+        case NodeType.CronJob:
+        case NodeType.ReplicationController:
+        case NodeType.StatefulSet:
             return AggregationKeys.Workloads;
-        case Nodes.Ingress:
-        case Nodes.Service:
-        case Nodes.Endpoints:
+        case NodeType.Ingress:
+        case NodeType.Service:
+        case NodeType.Endpoints:
             return AggregationKeys.Networking;
-        case Nodes.ConfigMap:
-        case Nodes.Secret:
-        case Nodes.PersistentVolume:
-        case Nodes.PersistentVolumeClaim:
+        case NodeType.ConfigMap:
+        case NodeType.Secret:
+        case NodeType.PersistentVolume:
+        case NodeType.PersistentVolumeClaim:
             return AggregationKeys.ConfigAndStorage;
-        case Nodes.ServiceAccount:
-        case Nodes.ClusterRoleBinding:
-        case Nodes.RoleBinding:
-        case Nodes.ClusterRole:
-        case Nodes.Role:
+        case NodeType.ServiceAccount:
+        case NodeType.ClusterRoleBinding:
+        case NodeType.RoleBinding:
+        case NodeType.ClusterRole:
+        case NodeType.Role:
             return AggregationKeys.RBAC;
-        case Nodes.MutatingWebhookConfiguration:
-        case Nodes.PodSecurityPolicy:
-        case Nodes.ValidatingWebhookConfiguration:
+        case NodeType.MutatingWebhookConfiguration:
+        case NodeType.PodSecurityPolicy:
+        case NodeType.ValidatingWebhookConfiguration:
             return AggregationKeys.Administration;
-        case Nodes.Alertmanager:
-        case Nodes.Prometheus:
-        case Nodes.ServiceMonitor:
+        case NodeType.Alertmanager:
+        case NodeType.Prometheus:
+        case NodeType.ServiceMonitor:
             return AggregationKeys.CustomResource;
         default:
             return AggregationKeys.CustomResource;
@@ -129,7 +129,7 @@ export interface Node {
     kind: NodeType
     name: string
     namespace: string
-    networkingInfo: TargetLabels
+    networkingInfo: NetworkingInfo
     resourceVersion: string
     uid: string
     version: string,
@@ -145,6 +145,10 @@ export interface NetworkingInfo {
 }
 
 export interface TargetLabels {
+    targetLabel: TargetLabel
+}
+
+export interface TargetLabel {
     "app.kubernetes.io/instance": string
     "app.kubernetes.io/name": string
 }
