@@ -91,7 +91,7 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
     }
 
     function handleAppMetrics(isOpted) {
-        if(isOpted){
+        if (isOpted) {
             let originalValue = state.duplicate
             let enabledAppMetricsValue = {
                 ContainerPort: [{
@@ -100,11 +100,11 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
                     useGPRC: false
                 }]
             }
-            let merged = {...enabledAppMetricsValue.ContainerPort[0],...originalValue.ContainerPort[0] }
+            let merged = { ...enabledAppMetricsValue.ContainerPort[0], ...originalValue.ContainerPort[0] }
             let mergedAppMetrics = {
                 ContainerPort: [merged]
             }
-            state.duplicate = {...originalValue,...mergedAppMetrics }
+            state.duplicate = { ...originalValue, ...mergedAppMetrics }
         }
         dispatch({ type: 'appMetricsLoading' })
         dispatch({ type: 'appMetricsEnabled', value: isOpted })
@@ -115,7 +115,9 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
         try {
             const { result } = await getDeploymentTemplate(+appId, +envId, (state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef))
             dispatch({ type: 'setResult', value: result })
-            dispatch({ type: 'appMetricsEnabled', value: result.isAppMetricsEnabled })
+            if (result.isAppMetricsEnabled) {
+                dispatch({ type: 'appMetricsEnabled', value: result.isAppMetricsEnabled })
+            }
             setParentState('loaded')
         }
         catch (err) {
@@ -170,13 +172,13 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
         <>
             <section className="deployment-template-override white-card white-card--list br-0" style={{ height: "100%" }}>
                 {state.data && state.charts && <NameSpace originalNamespace={state.data.namespace} chartRefId={state.latestAppChartRef || state.latestChartRef} id={state.data.environmentConfig.id} data={state.data} isOverride={state.data.IsOverride} />}
-                {state.data && state.charts && <DeploymentTemplateOverrideForm chartRefLoading={chartRefLoading} state={state} handleOverride={handleOverride} dispatch={dispatch} initialise={initialise} handleAppMetrics={(e) => handleAppMetrics(!state.appMetricsEnabled)} handleDelete={handleDelete} setAppMetricsTabVisible={(e) => setAppMetricsTabVisible()} diffMode={state.diffMode} />}
+                {state.data && state.charts && <DeploymentTemplateOverrideForm chartRefLoading={chartRefLoading} state={state} handleOverride={handleOverride} dispatch={dispatch} initialise={initialise} handleAppMetrics={(e) => handleAppMetrics(!state.appMetricsEnabled)} handleDelete={handleDelete} setAppMetricsTabVisible={(e) => setAppMetricsTabVisible()} />}
             </section>
         </>
     )
 }
 
-function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading, setAppMetricsTabVisible, diffMode }) {
+function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading, setAppMetricsTabVisible }) {
     const [tempValue, setTempValue] = useState("")
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
@@ -266,7 +268,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                             tabSize={4}
                             readOnly={!state.duplicate}
                             loading={chartRefLoading}
-                            diffMode={!!state.duplicate}
+                            diffMode={state.appMetricsTabVisible ? !state.appMetricsTabVisible : !!state.duplicate}
                         >
                             <div className="border-bottom p-12" style={{ display: 'grid', gridTemplateColumns: '1.5fr 0.5fr', gridColumnGap: '16px' }}>
                                 {!state.duplicate && <div className="flex left">
@@ -297,20 +299,20 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                 <div className="flex align-start content-space save_container p-10">
                     <div className="flex column left">
                         {state.charts && state.selectedChartRefId && appMetricsEnvironmentVariableEnabled ?
-                        <div className="flex left">
-                            <Checkbox isChecked={state.appMetricsEnabled}
-                                onClick={(e) => { e.stopPropagation() }}
-                                rootClassName="form__checkbox-label--ignore-cache"
-                                value={"CHECKED"}
-                                disabled={!state.duplicate}
-                                onChange={handleAppMetrics}
-                            >
-                            </Checkbox>
-                            <div className="ml-14">
-                                <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={setAppMetricsTabVisible} />
-                                <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
-                            </div>
-                        </div> : <div />}
+                            <div className="flex left">
+                                <Checkbox isChecked={state.appMetricsEnabled}
+                                    onClick={(e) => { e.stopPropagation() }}
+                                    rootClassName="form__checkbox-label--ignore-cache"
+                                    value={"CHECKED"}
+                                    disabled={!state.duplicate}
+                                    onChange={handleAppMetrics}
+                                >
+                                </Checkbox>
+                                <div className="ml-14">
+                                    <b>Show application metrics</b><HelpOutline className="icon-dim-20 ml-8 vertical-align-middle mr-5 pointer" onClick={setAppMetricsTabVisible} />
+                                    <div>Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).</div>
+                                </div>
+                            </div> : <div />}
                     </div>
                     <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing /> : 'Save'}</button>
                 </div>
