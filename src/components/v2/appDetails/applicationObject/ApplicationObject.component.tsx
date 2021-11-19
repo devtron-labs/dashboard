@@ -9,6 +9,8 @@ import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect } from 'react-router';
 import { URLS } from '../../../../config';
+import { Progressing, showError } from '../../../common';
+
 import './applicationObject.css';
 import ApplicationObjectStore from './applicationObject.store';
 import { useSharedState } from '../../utils/useSharedState';
@@ -19,6 +21,7 @@ import AppDetailsStore from '../appDetail.store';
 const ApplicationObjectComponent = () => {
     const { path, url } = useRouteMatch();
     const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
@@ -28,14 +31,16 @@ const ApplicationObjectComponent = () => {
 
         const init = async () => {
             let response = null;
-            try{
+            try {
                 response = await getInstalledAppDetail();
 
                 AppDetailsStore.setAppDetails(response.result);
-            }catch(e){
+            } catch (e) {
                 console.log("error while fetching InstalledAppDetail", e)
+            } finally {
+                setIsLoading(false)
             }
-            
+
         }
 
         init();
@@ -44,94 +49,40 @@ const ApplicationObjectComponent = () => {
 
     return (
         <div>
-            <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
-                <ul className="tab-list">
-                    {applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
-                        return (
-                            <li key={index + "tab"} className=" ellipsis-right">
-                                <NavLink to={`${tab.url}`} className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9": ""}tab-list__tab cursor cn-9 fw-6 no-decor flex left`}>
-                                    <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
-                                        {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
-                                        {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                        {tab.name}
-                                    </div>
-                                </NavLink>
-                            </li>
-                        )
-                    })
-                    }
-                </ul>
-            </div>
-            <Switch>
-                <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent /> }} />
-                <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent /> }} />
-                <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent /> }} />
-                <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
-            </Switch>
+            {isLoading ?  <div style={{ height: "560px" }} className="flex">
+                    <Progressing pageLoader />
+                </div>
+                :
+                <div>
+                    <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
+                        <ul className="tab-list">
+                            {applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
+                                return (
+                                    <li key={index + "tab"} className=" ellipsis-right">
+                                        <NavLink to={`${tab.url}`} className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""}tab-list__tab cursor cn-9 fw-6 no-decor flex left`}>
+                                            <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
+                                                {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
+                                                {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
+                                                {tab.name}
+                                            </div>
+                                        </NavLink>
+                                    </li>
+                                )
+                            })
+                            }
+                        </ul>
+                    </div>
+                    <Switch>
+                        <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent /> }} />
+                        <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent /> }} />
+                        <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent /> }} />
+                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
+                    </Switch>
+                </div>
+            }
+
         </div>
     )
 }
 
 export default ApplicationObjectComponent;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const addResourceTabClick = (ndtt: NodeDetailTabsType, cell: tCell) => {
-    //     dispatch({
-    //         type: TabActions.AddTab,
-    //         tabName: ndtt.valueOf().toString()
-    //     })
-
-    //     setDefaultViewData({
-    //         cell: cell,
-    //         ndtt: ndtt,
-    //     })
-
-    //     setSelectedTab(ndtt.valueOf().toString())
-    // }
-
-    // const handleTabClick = (_tabName: string) => {
-    //     dispatch({
-    //         type: TabActions.MarkActive,
-    //         tabName: _tabName
-    //     })
-    //     setSelectedTab(_tabName)
-    // }
-
-
-    // const tabData = () => {
-    //     switch (selectedTab) {
-    //         case "K8 Resources":
-    //             return <K8ResourceComponent />
-    //         case "Log Analyzer":
-    //             return <LogAnalyzerComponent />
-    //         default:
-    //             return <DefaultViewTabComponent data={defaultViewData} />
-    //     }
-    // }
-
-
-    // const tabData = () => {
-    //     return showDefault ? <DefaultViewTabComponent /> : 
-
-    // }

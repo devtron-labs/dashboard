@@ -1,22 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import AppDetailsStore from '../../appDetail.store';
 import { NodeType } from '../../appDetail.type';
 import GenericTableComponent from './nodeType/GenericTable.component';
 import PodNodeComponent from './nodeType/PodNode.component';
 import ServiceNodeComponent from './nodeType/ServiceNode.component';
 
-function NodeDetailComponent({ selectedNode }) {
-
+function NodeDetailComponent({ nodeKind }) {
     return (
         <div>
+            {console.log('node',nodeKind)}
             {(() => {
-                if (selectedNode?.name === NodeType.Pod) {
-                    return <PodNodeComponent></PodNodeComponent>
-                } else if (selectedNode?.name === NodeType.Service) {
-                    return <ServiceNodeComponent></ServiceNodeComponent>
+                if (nodeKind === NodeType.Pod) {
+                    return <PodNodeComponent selectedNodeType={nodeKind} />
+                } else if (nodeKind === NodeType.Service) {
+                    return <ServiceNodeComponent />
                 } else {
-                    return <GenericTableComponent selectedNodeType={selectedNode?.name}></GenericTableComponent>
+                    // return <PodNodeComponent selectedNodeType={nodeType} />
+                    return  <GenericTableComponent selectedNodeType={nodeKind}/>
                 }
-
             })()}
         </div>
     )

@@ -3,7 +3,7 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { iNode, iNodes } from '../../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 
-function NodeTreeComponent({ nodes, callback }) {
+function NodeTreeComponent({ nodes, nodeKind, callback }) {
 
     const [{ treeNodes }, dispatch] = useNodeTree();
 
@@ -18,7 +18,7 @@ function NodeTreeComponent({ nodes, callback }) {
             })
         }
         else {
-            callback(treeNode)
+            callback(treeNode.name)
         }
     }
 

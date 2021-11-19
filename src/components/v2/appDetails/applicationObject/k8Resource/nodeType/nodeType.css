@@ -16,3 +16,16 @@
 .generic-body > .row:hover .action-buttons {
     display: inline-block
  }
+
+ .generic-row-header{
+    position: sticky;
+    width: 100%;
+}
+
+.indent-line{
+    border-left: 1px solid var(--N100)
+}
+
+.border-bottom{
+    border-bottom: 1px solid var(--N100)
+}
