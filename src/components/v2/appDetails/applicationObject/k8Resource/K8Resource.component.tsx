@@ -14,7 +14,6 @@ import NodeDetailComponent from './NodeDetailComponent';
 
 export default function K8ResourceComponent() {
     const [nodes] = useSharedState(AppDetailsStore.getAppDetailsNodes(), AppDetailsStore.getAppDetailsNodesObservable())
-
     const [selectedNodeKind, setSelectedNodeKind] = useState<string>(nodes[0].kind)
 
     const { path, url } = useRouteMatch();
@@ -36,7 +35,7 @@ export default function K8ResourceComponent() {
 
         // }
 
-        setSelectedNodeKind(nodes[0].kind)
+        setSelectedNodeKind(nodes[0].kind);
 
     }, [])
 

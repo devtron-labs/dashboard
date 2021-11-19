@@ -16,9 +16,9 @@ const initialState = {
     treeNodes: []
 };
 
-const markActiveNode = (treeNodes: iNodes, selectedNode: iNode) => {
+const markActiveNode = (treeNodes: iNodes, selectedNode: string) => {
     return treeNodes.map((node: iNode) => {
-        if (node.name.toLowerCase() === selectedNode.name.toLowerCase()) {
+        if (node.name.toLowerCase() === selectedNode.toLowerCase()) {
             node.isSelected = true //!node.isSelected
         }else if(node.childNodes?.length > 0){
             markActiveNode(node.childNodes, selectedNode)
@@ -75,13 +75,14 @@ const reducer = (state: any, action: any) => {
 
         case NodeTreeActions.Init:
             const initialNodes = getTreeNodes(action.nodes);
+
             return { ...state, loading: false, treeNodes: [...initialNodes] };
 
         case NodeTreeActions.Error:
             return { ...state, loading: false, error: action.error };
 
         case NodeTreeActions.MarkActive: {
-            const tns = markActiveNode(state.treeNodes, action.node)
+            const tns = markActiveNode(state.treeNodes, action.selectedNode)
             return { ...state, treeNodes: [...tns] };
         }
     }

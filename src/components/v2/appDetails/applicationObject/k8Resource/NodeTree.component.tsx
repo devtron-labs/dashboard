@@ -1,31 +1,39 @@
 import React, { useEffect } from 'react'
+import { useState } from 'react';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { iNode, iNodes } from '../../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 
 function NodeTreeComponent({ nodes, nodeKind, callback }) {
 
+    const [selectedNodeKind, setSelectedNodeKind] = useState(nodeKind)
     const [{ treeNodes }, dispatch] = useNodeTree();
 
+    const markTreeNodeActive = (treeNodeName) => {
+        dispatch({
+            type: NodeTreeActions.MarkActive,
+            selectedNode: treeNodeName,
+
+        })
+    }
     const handleNodeClick = (treeNode: iNode, e: any) => {
 
         e.stopPropagation()
 
         if (treeNode.childNodes?.length > 0) {
-            dispatch({
-                type: NodeTreeActions.MarkActive,
-                node: treeNode
-            })
+           markTreeNodeActive(treeNode.name)
         }
         else {
+            setSelectedNodeKind(treeNode.name)
             callback(treeNode.name)
+
         }
     }
 
     const makeNodeTree = (treeNodes: iNodes) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
-                <div key={index + treeNode.name}>
+                <div key={index + treeNode.name} >
                     <div className="flex left cursor fw-6 cn-9 fs-14 pb-8" onClick={(e) => handleNodeClick(treeNode, e)}>
                         {treeNode.childNodes?.length > 0 &&
                             <DropDown
@@ -33,7 +41,8 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
                                 style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
                             />
                         }
-                        <div className="fs-14 pointer w-100 fw-6 flex left pl-8 pr-8">
+
+                        <div className={`fs-14 pointer w-100 fw-6 flex left pl-8 pr-8 ${(treeNode.name === selectedNodeKind) ? 'bcb-1 cb-5' : ''}`}>
                             {treeNode.name}
                         </div>
                     </div>
@@ -52,6 +61,7 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
                 type: NodeTreeActions.Init,
                 nodes: nodes
             })
+            markTreeNodeActive(nodeKind)
         }
     }, [])
 
