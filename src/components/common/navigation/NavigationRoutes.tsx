@@ -11,6 +11,7 @@ import { Security } from '../../security/Security';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const V2Details = lazy(() => import('../../v2/appDetails/AppDetails.components'));
 // const ExternalListContainer = lazy(() => import('../../externalApp/src/components/apps/appList/ExternalListContainer'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
@@ -65,6 +66,8 @@ export default function NavigationRoutes() {
                     <ErrorBoundary>
                         <Switch>
                             <Route path={URLS.APP} render={() => <AppRouter />} />
+                            <Route path={URLS.V2_CHARTS} render={() => <V2Router  envType='chart'/>} />
+                            <Route path={URLS.V2_APP} render={() => <V2Router envType="app"/>} />
                             <Route path={URLS.CHARTS} render={() => <Charts />} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
@@ -91,6 +94,28 @@ export function AppRouter() {
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
                     <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
+                    <Route exact path="">
+                        <AppListContainer />
+                    </Route>
+                    <Route>
+                        <RedirectWithSentry />
+                    </Route>
+                </Switch>
+            </AppContext.Provider>
+        </ErrorBoundary>
+    );
+}
+
+
+export function V2Router({envType}) {
+    const { path } = useRouteMatch()
+    const [environmentId, setEnvironmentId] = useState(null)
+    return (
+        <ErrorBoundary>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+                <Switch>
+                    {console.log(envType)}
+                    <Route path={`${path}/:appId(\\d+)/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={() => <V2Details envType={`${envType}`} />} />
                     <Route exact path="">
                         <AppListContainer />
                     </Route>

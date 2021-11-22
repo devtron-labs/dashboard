@@ -23,7 +23,7 @@ import AppDetailComponent from '../../v2/appDetails/AppDetails.components'
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'));
-// const AppDetails = lazy(() => import('./appDetails/AppDetails'));
+const AppDetails = lazy(() => import('./appDetails/AppDetails'));
 // const AppDetails = lazy(() => import('../details/appDetails/index'));
 
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'));
@@ -38,7 +38,9 @@ export default function AppDetailsPage() {
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailComponent envType="application"/>} />
+                    {/* <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailComponent envType="application"/>} /> */}
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetails />} />
+
                     <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                     <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
                         <CIDetails key={appId} />

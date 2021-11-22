@@ -1,8 +1,9 @@
 import { get } from "../../../services/api";
-import AppDetailsStore from "./appDetail.store";
 
-export const getInstalledAppDetail = () => {
-    const envDetails = AppDetailsStore.getEnvDetails();
+export const getInstalledChartDetail = (_appId: number, _envId: number) => {
+    return get(`/app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
+}
 
-    return get(`app-store/installed-app/detail?installed-app-id=${envDetails.appId}&env-id=${envDetails.envId}`)
+export const getInstalledAppDetail = (_appId: number, _envId: number) => {
+    return get(`app/detail?app-id=${_appId}&env-id=${_envId}`)
 }

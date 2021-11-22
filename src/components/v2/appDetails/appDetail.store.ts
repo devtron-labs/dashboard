@@ -9,13 +9,13 @@ let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_appDetail
 const AppDetailsStore = {
 
     setEnvDetails: (envType: string, appId: number, envId: number) => {
-        _envDetails.envType = EnvType[envType]
+        _envDetails.envType = envType as EnvType
         _envDetails.appId = appId
         _envDetails.envId = envId
     },
 
     getEnvDetails: () => {
-        return _envDetails
+        return {..._envDetails}
     },
 
     setAppDetails: (data: AppDetails) => {

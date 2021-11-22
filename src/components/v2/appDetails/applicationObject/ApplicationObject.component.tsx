@@ -14,14 +14,16 @@ import { Progressing, showError } from '../../../common';
 import './applicationObject.css';
 import ApplicationObjectStore from './applicationObject.store';
 import { useSharedState } from '../../utils/useSharedState';
-import { getInstalledAppDetail } from '../appDetails.api';
+import { getInstalledAppDetail, getInstalledChartDetail } from '../appDetails.api';
 import AppDetailsStore from '../appDetail.store';
+import { EnvType } from '../appDetail.type';
 
 
 const ApplicationObjectComponent = () => {
     const { path, url } = useRouteMatch();
     const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
     const [isLoading, setIsLoading] = useState(true)
+    const {envType, appId, envId} = AppDetailsStore.getEnvDetails()
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
@@ -32,15 +34,20 @@ const ApplicationObjectComponent = () => {
         const init = async () => {
             let response = null;
             try {
-                response = await getInstalledAppDetail();
-
+                if(envType === EnvType.CHART){
+                    response = await getInstalledChartDetail(appId, envId);
+                    console.log(response)
+                }else{
+                    response = await getInstalledAppDetail(appId, envId);
+                    console.log(response)
+                }
+                
                 AppDetailsStore.setAppDetails(response.result);
+                setIsLoading(false)
             } catch (e) {
                 console.log("error while fetching InstalledAppDetail", e)
-            } finally {
-                setIsLoading(false)
-            }
-
+                alert('error loading data')
+            } 
         }
 
         init();

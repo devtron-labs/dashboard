@@ -8,12 +8,10 @@ import { NavLink } from 'react-router-dom'
 import './list/list.scss';
 import '../app/details/appDetails/appDetails.scss';
 import './charts.css';
-import AppDetailsComponent from '../v2/appDetails/AppDetails.components';
 
 export default function Charts() {
     return <Switch>
         <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-        <Route path={`${URLS.CHARTS}/deployed/:appId(\\d+)/env/:envId(\\d+)`}  render={() => { return <AppDetailsComponent envType= "chart" /> }} />
         <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
         <Route path={`${URLS.CHARTS}/deployed`} component={Deployed} />
         <Redirect to={`${URLS.CHARTS}/deployed`} />

@@ -14,6 +14,7 @@ import NodeDetailComponent from './NodeDetailComponent';
 
 export default function K8ResourceComponent() {
     const [nodes] = useSharedState(AppDetailsStore.getAppDetailsNodes(), AppDetailsStore.getAppDetailsNodesObservable())
+    console.log(nodes)
     const [selectedNodeKind, setSelectedNodeKind] = useState<string>(nodes[0].kind)
 
     const { path, url } = useRouteMatch();
@@ -35,13 +36,12 @@ export default function K8ResourceComponent() {
 
         // }
 
-        setSelectedNodeKind(nodes[0].kind);
+        setSelectedNodeKind(nodes[0]?.kind);
 
     }, [])
 
     return (
         <div className="bcn-0">
-            {console.log('selected',selectedNodeKind)}
             <div className="pt-16 pl-20 pb-16">
                 <FilterResource />
             </div>

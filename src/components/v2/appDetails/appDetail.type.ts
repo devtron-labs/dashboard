@@ -1,6 +1,6 @@
 export enum EnvType {
-    CHART = 'CHART',
-    APPLICATION = 'APPLICATION'
+    CHART = 'chart',
+    APPLICATION = 'app'
 }
 
 export interface EnvDetails {
