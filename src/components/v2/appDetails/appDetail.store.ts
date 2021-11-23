@@ -5,9 +5,7 @@ let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_appDetails.resourceTree?.nodes || []);
 
-
 const AppDetailsStore = {
-
     setEnvDetails: (envType: string, appId: number, envId: number) => {
         _envDetails.envType = envType as EnvType
         _envDetails.appId = appId

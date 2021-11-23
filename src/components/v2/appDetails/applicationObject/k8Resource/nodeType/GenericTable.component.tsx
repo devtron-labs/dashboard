@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import '../../../../lib/bootstrap-grid.min.css';
 import { useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetail.store';
 import { NavLink } from 'react-router-dom';

@@ -2,23 +2,19 @@ import React, { useEffect, useState } from 'react';
 import NodeTreeComponent from './NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { useRouteMatch, useHistory } from 'react-router';
 import { URLS } from '../../../../../config';
 import ApplicationObjectStore from '../applicationObject.store';
 import { useSharedState } from '../../../utils/useSharedState';
 import AppDetailsStore from '../../appDetail.store';
-import { iNode } from '../../node.type';
 import { NodeType } from '../../appDetail.type';
 import NodeDetailComponent from './NodeDetailComponent';
 
 export default function K8ResourceComponent() {
     const [nodes] = useSharedState(AppDetailsStore.getAppDetailsNodes(), AppDetailsStore.getAppDetailsNodesObservable())
-    console.log(nodes)
     const [selectedNodeKind, setSelectedNodeKind] = useState<string>(nodes[0].kind)
-
-    const { path, url } = useRouteMatch();
-
+    const { url } = useRouteMatch();
     const history = useHistory();
 
     const handleCallback = (_kind: string) => {
@@ -29,15 +25,7 @@ export default function K8ResourceComponent() {
 
     useEffect(() => {
         ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
-
-        //console.log("K8ResourceComponent params", params)
-
-        // if(params.action){
-
-        // }
-
-        setSelectedNodeKind(nodes[0]?.kind);
-
+        setSelectedNodeKind(nodes[0].kind);
     }, [])
 
     return (

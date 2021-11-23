@@ -46,7 +46,7 @@ const ApplicationObjectComponent = () => {
                 setIsLoading(false)
             } catch (e) {
                 console.log("error while fetching InstalledAppDetail", e)
-                alert('error loading data')
+                // alert('error loading data')
             } 
         }
 

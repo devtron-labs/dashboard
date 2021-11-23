@@ -50,7 +50,7 @@ export enum NodeType {
     Rollout = 'Rollout',
     PersistentVolumeClaim = 'PersistentVolumeClaim',
     PersistentVolume = 'PersistentVolume',
-    Containers = 'Containers',// containers are being trated same way as nodes for nsted table generation
+    Containers = 'Containers',// containers are being treated same way as nodes for nested table generation
     InitContainers = 'InitContainers'
 }
 

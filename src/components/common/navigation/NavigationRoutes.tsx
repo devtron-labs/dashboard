@@ -11,8 +11,7 @@ import { Security } from '../../security/Security';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
-const V2Details = lazy(() => import('../../v2/appDetails/AppDetails.components'));
-// const ExternalListContainer = lazy(() => import('../../externalApp/src/components/apps/appList/ExternalListContainer'));
+const V2Details = lazy(() => import('../../v2/index'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 const BulkEdit = lazy(()=> import('../../bulkEdits/BulkEdits'))
@@ -114,8 +113,7 @@ export function V2Router({envType}) {
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    {console.log(envType)}
-                    <Route path={`${path}/:appId(\\d+)/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={() => <V2Details envType={`${envType}`} />} />
+                    <Route path={`${path}/:appId(\\d+)/:envId(\\d+)?`} render={() => <V2Details envType={`${envType}`} />} />
                     <Route exact path="">
                         <AppListContainer />
                     </Route>
