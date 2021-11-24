@@ -3,32 +3,46 @@ import { useState } from 'react';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { iNode, iNodes } from '../../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
+import { useRouteMatch, useHistory } from 'react-router';
+import { URLS } from '../../../../../config';
 
-function NodeTreeComponent({ nodes, nodeKind, callback }) {
+function NodeTreeComponent() {
 
-    const [selectedNodeKind, setSelectedNodeKind] = useState(nodeKind)
-    const [{ treeNodes }, dispatch] = useNodeTree();
+   // const [selectedNodeKind, setSelectedNodeKind] = useState("")
 
-    const markTreeNodeActive = (treeNodeName) => {
+    const { url, path } = useRouteMatch();
+    const history = useHistory();
+
+    const [{ treeNodes, selectedNodeKind }, dispatch] = useNodeTree();
+
+    const markTreeNodeActive = (treeNodeName, isParent) => {
         dispatch({
-            type: NodeTreeActions.MarkActive,
+            type: NodeTreeActions.NodeClick,
             selectedNode: treeNodeName,
-
+            isParent: isParent
         })
     }
     const handleNodeClick = (treeNode: iNode, e: any) => {
-
         e.stopPropagation()
+        console.log("handleNodeClick", treeNode)
 
-        if (treeNode.childNodes?.length > 0) {
-           markTreeNodeActive(treeNode.name)
-        }
-        else {
-            setSelectedNodeKind(treeNode.name)
-            callback(treeNode.name)
-
-        }
+        markTreeNodeActive(treeNode.name, treeNode.childNodes?.length > 0)
     }
+
+    useEffect(() => {
+        console.log("selectedNodeKind", selectedNodeKind)
+
+        if(selectedNodeKind){
+            let link = `${url.split(URLS.APP_DETAILS_K8)[0]}${URLS.APP_DETAILS_K8}/${selectedNodeKind.toLowerCase()}`;
+            history.push(link);
+        }
+    }, [selectedNodeKind])
+
+    useEffect(() => {
+        dispatch({
+            type: NodeTreeActions.Init
+        })
+    }, [])
 
     const makeNodeTree = (treeNodes: iNodes) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
@@ -42,7 +56,7 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
                             />
                         }
 
-                        <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 ${(treeNode.name === selectedNodeKind) ? 'bcb-1 cb-5' : ''}`}>
+                        <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
                             {treeNode.name}
                         </div>
                     </div>
@@ -54,16 +68,6 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
             )
         })
     }
-
-    useEffect(() => {
-        if (nodes && nodes.length > 0) {
-            dispatch({
-                type: NodeTreeActions.Init,
-                nodes: nodes
-            })
-            markTreeNodeActive(nodeKind)
-        }
-    }, [])
 
     return (
         <div>

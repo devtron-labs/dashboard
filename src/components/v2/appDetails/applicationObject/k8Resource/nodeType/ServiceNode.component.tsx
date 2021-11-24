@@ -10,7 +10,7 @@ import { copyToClipboard } from '../../../../../common';
 import Tippy from '@tippyjs/react';
 import './nodeType.css'
 
-function ServiceNodeComponent() {
+function ServiceNodeComponent({selectedNodeType}) {
     const { path, url } = useRouteMatch();
     const [copied, setCopied] = useState(false);
 
@@ -31,7 +31,7 @@ function ServiceNodeComponent() {
         <div className="container-fluid generic-table">
             <div>
                 <div className="cn-9 fs-14 fw-6 service-header border-bottom">
-                    <div className="pt-12 pb-12 ">Service({appDetailsNodes.length})
+                    <div className="pt-12 pb-12 ">{selectedNodeType}({appDetailsNodes.length})
                     <div className="fw-4  fs-12">2 healthy</div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@ function ServiceNodeComponent() {
                 <div className="generic-body">
                     {
                         appDetailsNodes.map((node, index) => {
-                            if (node.kind === NodeType.Service) {
+                            if (node.kind === selectedNodeType) {
                                 return (
 
                                     <div className="row" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
@@ -86,7 +86,7 @@ function ServiceNodeComponent() {
                             }
 
                             return node.parentRefs && node.parentRefs.map((parentNode, _index) => {
-                                if (parentNode.kind === NodeType.Service) {
+                                if (parentNode.kind === selectedNodeType) {
                                     return (
                                         showServiceChildElement && <>
                                             <div className="row pt-10 pb-10 pl-24 indent-line" key={'grtp' + _index}>
@@ -100,8 +100,6 @@ function ServiceNodeComponent() {
                                 }
                             })
                         })
-
-
                     }
                 </div>
 

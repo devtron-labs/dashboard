@@ -41,12 +41,15 @@ const ApplicationObjectComponent = () => {
                 }
                 
                 AppDetailsStore.setAppDetails(response.result);
+
                 setIsLoading(false)
             } catch (e) {
                 console.log("error while fetching InstalledAppDetail", e)
                 // alert('error loading data')
             } 
         }
+
+        console.log("ApplicationObjectComponent refreshed", new Date().getTime())
 
         init();
     }, [])

@@ -1,30 +1,30 @@
 
 import { useReducer, useEffect } from "react";
+import AppDetailsStore from "../../appDetail.store";
 import { AggregationKeys, getAggregator, Node, NodeType } from "../../appDetail.type";
 import { iNodes, iNode } from "../../node.type";
 
 export const NodeTreeActions = {
     Init: "INIT",
     Error: "ERROR",
-    MarkActive: "MARK_ACTIVE"
+    NodeClick: "NODE_CLICK"
 };
 
 
 const initialState = {
     loading: true,
     error: null,
-    treeNodes: []
+    treeNodes: [],
+    selectedNodeKind: ""
 };
 
 const markActiveNode = (treeNodes: iNodes, selectedNode: string) => {
     return treeNodes.map((node: iNode) => {
-        if (node.name.toLowerCase() === selectedNode.toLowerCase()) {
-            node.isSelected = true //!node.isSelected
-        }else if(node.childNodes?.length > 0){
-            markActiveNode(node.childNodes, selectedNode)
+        if(node.name.toLowerCase() === selectedNode.toLowerCase()){
+            return node.isSelected = true
+        }else if (node.childNodes?.length > 0){
+            return markActiveNode(node.childNodes, selectedNode)
         }
-
-        return node
     })
 }
 
@@ -74,16 +74,18 @@ const reducer = (state: any, action: any) => {
     switch (action.type) {
 
         case NodeTreeActions.Init:
-            const initialNodes = getTreeNodes(action.nodes);
+            const resourceNodes = AppDetailsStore.getAppDetailsNodes();
 
-            return { ...state, loading: false, treeNodes: [...initialNodes] };
+            const initialNodes = getTreeNodes(resourceNodes);
+
+            return { ...state, loading: false, treeNodes: initialNodes };
 
         case NodeTreeActions.Error:
             return { ...state, loading: false, error: action.error };
 
-        case NodeTreeActions.MarkActive: {
+        case NodeTreeActions.NodeClick: {
             const tns = markActiveNode(state.treeNodes, action.selectedNode)
-            return { ...state, treeNodes: [...tns] };
+            return { ...state, treeNodes: tns };
         }
     }
 };

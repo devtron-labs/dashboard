@@ -69,6 +69,9 @@ function GenericTableComponent({ selectedNodeType }) {
                                                         onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                                     />
                                                 </Tippy>
+                                                {console.log('path', path)}
+                                                {console.log('url', url)}
+
                                                 <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
                                                 <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
                                             </span>
