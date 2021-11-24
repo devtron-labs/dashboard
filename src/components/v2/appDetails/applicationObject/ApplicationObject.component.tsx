@@ -10,7 +10,6 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect } from 'react-router';
 import { URLS } from '../../../../config';
 import { Progressing, showError } from '../../../common';
-
 import './applicationObject.css';
 import ApplicationObjectStore from './applicationObject.store';
 import { useSharedState } from '../../utils/useSharedState';
@@ -29,7 +28,6 @@ const ApplicationObjectComponent = () => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
         ApplicationObjectStore.setBaseURL(link)
         ApplicationObjectStore.initApplicationObjectTab()
-
 
         const init = async () => {
             let response = null;
@@ -52,7 +50,6 @@ const ApplicationObjectComponent = () => {
 
         init();
     }, [])
-
 
     return (
         <div>

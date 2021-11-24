@@ -9,7 +9,6 @@ export interface EnvDetails {
     appId: number
 }
 
-
 export enum AggregationKeys {
     Workloads = 'Workloads',
     Networking = 'Networking',

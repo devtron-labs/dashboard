@@ -10,8 +10,8 @@ function PodHeaderComponent() {
                     // onClick={(e) => selectPodTab('new')}
                     data-testid="all-pods-new"
                 >
-                    <div className="fs-14 fw-6">New Pods (newPodStats.all)</div>
-                    <div className="flex left fs-12 cn-9">
+                    <div className="fs-14 fw-6 pt-12 ">New Pods (newPodStats.all)</div>
+                    <div className="flex left fs-12 cn-9 pb-12">
                         <React.Fragment>
                             {<span className="bullet mr-4 ml-4"></span>}
                             <span data-testid={`new-pod-status`}> newPodStats[status] </span>

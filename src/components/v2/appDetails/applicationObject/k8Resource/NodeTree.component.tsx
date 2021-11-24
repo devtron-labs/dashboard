@@ -34,7 +34,7 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name} >
-                    <div className="flex left cursor fw-6 cn-9 fs-14 pb-8" onClick={(e) => handleNodeClick(treeNode, e)}>
+                    <div className="flex left cursor fw-6 cn-9 fs-14" onClick={(e) => handleNodeClick(treeNode, e)}>
                         {treeNode.childNodes?.length > 0 &&
                             <DropDown
                                 className={`rotate icon-dim-24 pointer ${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}`}
@@ -42,7 +42,7 @@ function NodeTreeComponent({ nodes, nodeKind, callback }) {
                             />
                         }
 
-                        <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 ${(treeNode.name === selectedNodeKind) ? 'bcb-1 cb-5' : ''}`}>
+                        <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 ${(treeNode.name === selectedNodeKind) ? 'bcb-1 cb-5' : ''}`}>
                             {treeNode.name}
                         </div>
                     </div>

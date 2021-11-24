@@ -8,15 +8,15 @@ import ServiceNodeComponent from './nodeType/ServiceNode.component';
 function NodeDetailComponent({ nodeKind }) {
     return (
         <div>
-            {console.log('node',nodeKind)}
             {(() => {
                 if (nodeKind === NodeType.Pod) {
                     return <PodNodeComponent selectedNodeType={nodeKind} />
                 } else if (nodeKind === NodeType.Service) {
-                    return <ServiceNodeComponent />
+                    // return <ServiceNodeComponent />
+                    return <PodNodeComponent selectedNodeType={nodeKind} />
                 } else {
-                    // return <PodNodeComponent selectedNodeType={nodeType} />
-                    return  <GenericTableComponent selectedNodeType={nodeKind}/>
+                    return <PodNodeComponent selectedNodeType={nodeKind} />
+                    // return  <GenericTableComponent selectedNodeType={nodeKind}/>
                 }
             })()}
         </div>

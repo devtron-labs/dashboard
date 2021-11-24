@@ -84,7 +84,7 @@ function AppHeaderComponent() {
     );
 
     return (
-        <div className="page-header" style={{ gridTemplateColumns: "unset" }}>
+        <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
         <h1 className="m-0 fw-6 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
             {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
@@ -92,7 +92,7 @@ function AppHeaderComponent() {
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div> */}
-            {showInfoModal &&
+            {/* {showInfoModal && 
                 <VisibleModal className="app-status__material-modal"  >
                     <div className="modal__body br-8 bcn-0 p-20">
                         {/* <AboutAppInfoModal
@@ -106,9 +106,10 @@ function AppHeaderComponent() {
                             handleSubmit={handleSubmit}
                             handleTagsChange={handleTagsChange}
                             submitting={submitting}
-                        /> */}
+                        /> 
                     </div>
                 </VisibleModal>}
+                */}
         </h1>
 
         <ul role="tablist" className="tab-list">
@@ -130,16 +131,6 @@ function AppHeaderComponent() {
                             action: 'Trigger Clicked',
                         });
                     }}>Values
-                </NavLink>
-            </li>
-            <li className="tab-list__tab">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_CI_DETAILS}`} className="tab-list__tab-link"
-                    onClick={(event) => {
-                        ReactGA.event({
-                            category: 'App',
-                            action: 'Build History Clicked',
-                        });
-                    }}>Deployment history
                 </NavLink>
             </li>
         </ul>

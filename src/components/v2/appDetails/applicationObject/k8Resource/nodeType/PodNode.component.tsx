@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
 import { NodeDetailTabs } from '../../../node.type';
-import { NodeType } from '../../../appDetail.type';
 import AppDetailsStore from '../../../appDetail.store';
 import Tippy from '@tippyjs/react';
 import { copyToClipboard } from '../../../../../common';
 import { ReactComponent as DropDown } from '../../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../../assets/icons/ic-copy.svg';
+import PodHeaderComponent from './PodHeader.component';
 
 function PodNodeComponent({ selectedNodeType }) {
     const { path, url } = useRouteMatch();
@@ -26,15 +26,10 @@ function PodNodeComponent({ selectedNodeType }) {
     }
 
     return (
-        <div className="container-fluid generic-table">
+        <div className="container-fluid generic-table ml-0 mr-0" style={{paddingRight: 0, paddingLeft: 0 }}>
+                <PodHeaderComponent />
             <div>
-                <div className="cn-9 fs-14 fw-6 service-header border-bottom">
-                    <div className="pt-12 pb-12 ">Pod({appDetailsNodes.length})
-                        <div className="fw-4  fs-12">2 healthy</div>
-                    </div>
-                </div>
-
-                <div className="row border-bottom fw-6">
+                <div className="row border-bottom fw-6 " style={{paddingLeft: '40px'}}>
                     {
                         ["Pod (All)", "Ready", "Restarts", "Age", "Live sync status"].map((cell, index) => {
                             return <div key={'gpt_' + index} className={(index === 0 ? "col-6 pt-9 pb-9" : "col pt-9 pb-9")}>{cell}</div>

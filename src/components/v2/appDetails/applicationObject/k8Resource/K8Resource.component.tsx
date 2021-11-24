@@ -35,10 +35,10 @@ export default function K8ResourceComponent() {
             </div>
             <div className="container-fluid">
                 <div className="row" >
-                    <div className="col-md-2 k8-resources-node-tree">
+                    <div className="col-md-2 k8-resources-node-tree pt-8 ">
                         <NodeTreeComponent nodes={nodes} nodeKind={selectedNodeKind} callback={handleCallback} />
                     </div>
-                    <div className="col-md-10">
+                    <div className="col-md-10 p-0">
                         <Switch>
                             {[...new Set(Object.keys(NodeType))].map((_nodeType) => {
                                 return <NodeDetailComponent key={_nodeType} nodeKind={selectedNodeKind} />

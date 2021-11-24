@@ -37,7 +37,7 @@ function EnvironmentSelectorComponent() {
                             // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                             styles={{
                                 ...multiSelectStyles,
-                                control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                                control: (base, state) => ({ ...base, border: '1px solid #0066cc',color: '#0066cc', fontWeight: 600, backgroundColor: 'white', minHeight: '32px !important' }),
                                 singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
                             }}
                             // isDisabled={disabled}

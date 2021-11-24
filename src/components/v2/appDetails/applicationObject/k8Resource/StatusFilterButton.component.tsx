@@ -20,9 +20,9 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
 
                     return (
                         <div key={`${'tab' + index}`} className="pointer flex left ">
-                            <NavLink to={``} className="cn-9 pr-6 fw-6 no-decor flex left">
-                                {tab.status !== 'all' && <div className={`app-summary__icon icon-dim-16 mr-6 ${tab.status.toLowerCase()} ${tab.status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
-                                <span className="capitalize">{tab.count}  {tab.status.toLowerCase()}</span> <div className="cn-7">|</div>
+                            <NavLink to={``} className="cn-9 pr-6 fw-6 no-decor flex left bcb-1 border-right">
+                                {tab.status !== 'all' && <div className={`app-summary__icon icon-dim-16 mr-6 ml-6 mt-6 mb-6 ${tab.status.toLowerCase()} ${tab.status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
+                                <span className="capitalize ">{tab.count}  {tab.status.toLowerCase()}</span>
                             </NavLink>
                         </div>
                     )
