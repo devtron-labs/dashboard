@@ -5,7 +5,6 @@ import './applicationObject.css'
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
-import DefaultViewTabComponent from './defaultViewTab/DefaultViewTab.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect } from 'react-router';
 import { URLS } from '../../../../config';
@@ -80,10 +79,8 @@ const ApplicationObjectComponent = () => {
                         </ul>
                     </div>
                     <Switch>
-                        <Route exact path={`${path}/${URLS.APP_DETAILS_K8}/:iNodeType/:podName/:action`} render={() => { return <DefaultViewTabComponent /> }} />
                         <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent /> }} />
                         <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent /> }} />
-                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </div>
             }

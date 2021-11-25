@@ -54,8 +54,8 @@ function ServiceNodeComponent({selectedNodeType}) {
 
                                         <div className={"col-md-6 pt-9 pb-9 flex left pl-0"} >
                                             <DropDown
-                                                className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'}`}
-                                                style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                                className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
+                                                style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
                                             /> <span>{node.name}</span>
                                              <div>healthy</div>
                                             <span className="action-buttons ">

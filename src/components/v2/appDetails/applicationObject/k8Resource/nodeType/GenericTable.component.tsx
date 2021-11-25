@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouteMatch } from 'react-router';
+import { useRouteMatch, useParams } from 'react-router';
 import AppDetailsStore from '../../../appDetail.store';
 import { NavLink } from 'react-router-dom';
 import { NodeDetailTabs } from '../../../node.type';
@@ -10,14 +10,20 @@ import { ReactComponent as DropDown } from '../../../../../../assets/icons/ic-dr
 import { ReactComponent as Clipboard } from '../../../../../../assets/icons/ic-copy.svg';
 import { useState } from 'react';
 
-function GenericTableComponent({ selectedNodeType }) {
+
+function GenericTableComponent() {
     const { path, url } = useRouteMatch();
     const [copied, setCopied] = useState(false);
+
+    const params = useParams<{ nodeType?: NodeType }>()
+
+    console.log("params.nodeType", params.nodeType)
 
     useEffect(() => {
         if (!copied) return
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
+
     const appDetailsNodes = AppDetailsStore.getAppDetailsNodes()
     const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
@@ -29,7 +35,7 @@ function GenericTableComponent({ selectedNodeType }) {
         <div className="container-fluid generic-table">
             <div>
                 <div className="cn-9 fs-14 fw-6 service-header border-bottom">
-                    <div className="pt-12 pb-12 ">{selectedNodeType}({appDetailsNodes.length})
+                    <div className="pt-12 pb-12 ">{params.nodeType}({appDetailsNodes.length})
                     <div className="fw-4  fs-12">2 healthy</div>
                     </div>
                 </div>
@@ -45,15 +51,15 @@ function GenericTableComponent({ selectedNodeType }) {
                 <div className="generic-body">
                     {
                         appDetailsNodes.map((node, index) => {
-                            if (node.kind === selectedNodeType) {
+                            if (node.kind.toLowerCase() === params.nodeType.toLowerCase()) {
                                 return (
 
                                     <div className="row" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
 
                                         <div className={"col-md-6 pt-9 pb-9 flex left pl-0"} >
                                             <DropDown
-                                                className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'}`}
-                                                style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                                className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
+                                                style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
                                             /> <span>{node.name}</span>
                                             <div>healthy</div>
                                             <span className="action-buttons">
@@ -81,7 +87,7 @@ function GenericTableComponent({ selectedNodeType }) {
                             }
 
                             return node.parentRefs && node.parentRefs.map((parentNode, _index) => {
-                                if (parentNode.kind === selectedNodeType) {
+                                if (parentNode.kind.toLowerCase() === params.nodeType.toLowerCase()) {
                                     return (
                                         showServiceChildElement && <>
                                             <div className="row pt-10 pb-10 pl-24 indent-line" key={'grtp' + _index}>

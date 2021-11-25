@@ -7,7 +7,8 @@ import { iNodes, iNode } from "../../node.type";
 export const NodeTreeActions = {
     Init: "INIT",
     Error: "ERROR",
-    NodeClick: "NODE_CLICK"
+    ParentNodeClick: "PARENT_NODE_CLICK",
+    ChildNodeClick: "CHILD_NODE_CLICK"
 };
 
 
@@ -18,14 +19,33 @@ const initialState = {
     selectedNodeKind: ""
 };
 
-const markActiveNode = (treeNodes: iNodes, selectedNode: string) => {
+const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
     return treeNodes.map((node: iNode) => {
-        if(node.name.toLowerCase() === selectedNode.toLowerCase()){
-            return node.isSelected = true
-        }else if (node.childNodes?.length > 0){
-            return markActiveNode(node.childNodes, selectedNode)
+
+        if(node.name === selectedNode.name){
+            node.isSelected = true
         }
+
+        return node
     })
+}
+
+const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, parentNode: iNode) => {
+    for (let index = 0; index < treeNodes.length; index++) {
+        const cNodes = treeNodes[index].childNodes || [];
+        
+        for (let _index = 0; _index < cNodes.length; _index++) {
+            const _cNode = cNodes[_index];
+
+            _cNode.isSelected = false
+            
+            if (_cNode.name.toLowerCase() === selectedNode.name.toLowerCase()) {
+                _cNode.isSelected = true
+            }
+        }
+    }
+
+    return treeNodes
 }
 
 const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
@@ -83,9 +103,14 @@ const reducer = (state: any, action: any) => {
         case NodeTreeActions.Error:
             return { ...state, loading: false, error: action.error };
 
-        case NodeTreeActions.NodeClick: {
-            const tns = markActiveNode(state.treeNodes, action.selectedNode)
-            return { ...state, treeNodes: tns };
+        case NodeTreeActions.ParentNodeClick: {
+            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode)
+            return { ...state, treeNodes: [...tns] };
+        }
+
+        case NodeTreeActions.ChildNodeClick: {
+            const tns = handleChildNodeClick(state.treeNodes, action.selectedNode, action.parentNode)
+            return { ...state, treeNodes: [...tns] };
         }
     }
 };
