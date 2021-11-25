@@ -424,12 +424,15 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                 {
                     state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
                         <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                        <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
+                        <div>
+                            <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
+                            <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>
+                                <Warn className="icon-dim-16 mr-4 " />
+                                If using Github, use token instead of password.
+                            </div>
+                        </div>
                     </div>
                 }
-                {/* {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
-                    <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-                </div>} */}
                 {
                     state.auth.value === 'SSH' && <div className="form__row ">
                         <div className="form__label">Private SSH key*</div>
