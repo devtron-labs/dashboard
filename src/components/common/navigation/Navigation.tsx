@@ -184,7 +184,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
 		return <>
 			<nav>
-				<aside className="short-nav nav-grid nav-grid--collapsed" style={{marginBottom:16}}>
+				<aside className="short-nav nav-grid nav-grid--collapsed" style={{marginBottom:30}}>
 					<NavLink to={URLS.APP} onClick={(event) => {
 						ReactGA.event({
 							category: 'Main Navigation',
