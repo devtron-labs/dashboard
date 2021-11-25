@@ -27,7 +27,7 @@
 
     <!-- Discord widget -->
     <script src='https://cdn.jsdelivr.net/npm/@widgetbot/crate@3' async defer>
-        new Crate({
+        const crate = new Crate({
             server: '769482988882493450', // Devtron
             channel: '769508553118842881', // #general
             location: ['bottom', 'left'],
@@ -39,6 +39,13 @@
                     }
                  `
         })
+
+        crate.notify({
+            content: 'Need help?',
+            timeout: 8000,
+            avatar: 'https://i.postimg.cc/MK5M3H87/1516624713231.jpg'
+        })
+
     </script>
 </head>
 
