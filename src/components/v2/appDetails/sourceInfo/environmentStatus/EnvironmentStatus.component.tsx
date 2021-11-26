@@ -1,37 +1,49 @@
 import React, { useState } from 'react'
-import { VisibleModal } from '../../../../common'
-import { DeploymentStatusModal } from '../../../../externalApp/src/components/apps/details/DeploymentStatusModal'
 import AppStatusDetailModal from './AppStatusDetailModal'
+import './environmentStatus.css'
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import ConfigStatusModalComponent from './ConfigStatusModal.component'
 
 function EnvironmentStatusComponent() {
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
-    const [showDeploymentStatusDetail, setShowDeploymentStatusDetail] = useState(false)
+    const [showConfigStatusModal, setShowConfigStatusModal] = useState(false)
 
 
     return (
         <div>
-            <div className="pl-20 pr-20" style={{
-                display: 'grid',
-                gridTemplateColumns: '50% 50%',
-                minHeight: '92px',
-                gridGap: "16px"
-            }}>
-                <div className="bcn-0 br-8 p-16" onClick={() => setShowAppStatusDetail(true)}>
-                    <div className="cn-9 fw-6">Config Apply</div>
-                    <div className="cg-5 fw-6 fs-14 cursor">Success</div>
-                    <div>Last update <span className="fw-6"> 12 mins ago </span> <span className="cb-5">Details</span></div>
+            <div className="flex left ml-20">
+                <div className="app-status-card  bcn-0 mr-12 br-8 p-16">
+                    <div className="lh-1-33 cn-9 flex left"><span>Application status</span><Question className="icon-dim-16 ml-4" /></div>
+                    <div className="cg-5 fw-6 fs-14 ">Success</div>
+                    <div onClick={() => setShowAppStatusDetail(true)}><span className="cursor cb-5">Details</span></div>
                 </div>
-                <div className="bcn-0 br-8 pt-16 pl-16 pb-16 mr-16" onClick={() => setShowDeploymentStatusDetail(true)}>
-                    <div className="cn-9 fw-6">Application status</div>
-                    <div className="cg-5 fw-6 fs-14 cursor">Healthy</div>
-                    <div>The active service is serving traffic to the current pod spec</div>
+                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12" >
+                    <div className="cn-9 lh-1-33 flex left"><span>Config apply status</span><Question className="icon-dim-16 ml-4" /></div>
+                    <div className="cr-5 fw-6 fs-14 cursor" onClick={() => setShowConfigStatusModal(true)}>Failed</div>
+                    <div className="lh-1-33">The active service is serving traffic to the current pod spec</div>
+                </div>
+                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
+                    <div className="cn-9 lh-1-33 flex left"><span>Last updated</span><Question className="icon-dim-16 ml-4" /></div>
+                    <div className=" fw-6 fs-14">12 mins ago</div>
+                </div>
+                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12" >
+                    <div className="cn-9 lh-1-33 flex left"><span>Chart used</span><Question className="icon-dim-16 ml-4" /></div>
+                    <div className=" fw-6 fs-14">anchore-engine (v3.4.0)</div>
                 </div>
             </div>
-                    {showAppStatusDetail && <AppStatusDetailModal
-                        message={'text'}
-                        close={() => { setShowAppStatusDetail(false) }}
-                        status={'DEGRADED'} />}
-                    {showDeploymentStatusDetail && <DeploymentStatusModal />}
+
+            {showAppStatusDetail &&
+                <AppStatusDetailModal
+                    message={'text'}
+                    close={() => { setShowAppStatusDetail(false) }}
+                    status={'DEGRADED'}
+                     />}
+
+            {showConfigStatusModal &&  <ConfigStatusModalComponent
+                    close={()=>setShowConfigStatusModal(false)}
+                    status={'FAILED'}
+                />
+                }
         </div>
     )
 }

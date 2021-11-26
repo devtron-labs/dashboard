@@ -23,9 +23,31 @@
 }
 
 .indent-line{
-    border-left: 1px solid var(--N100)
+    border-left: 2px solid var(--N100)
+}
+
+.border-shadow{
+    box-shadow: inset 0 -1px 0 0 var(--n-200);
 }
 
 .border-bottom{
     border-bottom: 1px solid var(--N100)
+}
+
+.pod-node-tab__wrapper{
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
+
+.pod-tab{
+    min-width: 300px;
+}
+
+.pod-tab__active{
+    color: var(--B500);
+    border-top: 2px solid var(--B500);
+    border-bottom: 2px solid #fff;
+}
+
+.generic-row__base-align{
+    align-items: baseline;
 }

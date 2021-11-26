@@ -25,7 +25,7 @@ export default function K8ResourceComponent() {
             </div>
             <div className="container-fluid">
                 <div className="row" >
-                    <div className="col-md-2 k8-resources-node-tree pt-8 ">
+                    <div className="col-md-2 k8-resources-node-tree pt-8 border-right">
                         <NodeTreeComponent />
                     </div>
                     <div className="col-md-10 p-0">

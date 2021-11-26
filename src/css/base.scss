@@ -1589,11 +1589,14 @@ button.anchor {
 }
 
 .border-bottom{
-    border-bottom: solid 1px var(--N200);
+    border-bottom: solid 2px var(--N200);
 }
 
 .border-right{
     border-right: solid 1px var(--N200);
+}
+.border-left{
+    border-left: solid 1px var(--N200);
 }
 
 .box-shadow{

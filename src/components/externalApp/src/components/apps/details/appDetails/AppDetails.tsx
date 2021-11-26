@@ -4,7 +4,7 @@ import ResourceTreeNodes from '../resourceTreeNode/ResourceTreeNode';
 import '../../../../../css/base.scss';
 import '../../../../../css/formulae.scss';
 import ExternalAppScaleModal from '../externalAppScaleModal/ExternalScalePodModal';
-import { DeploymentStatusModal } from '../DeploymentStatusModal';
+// import { DeploymentStatusModal } from '../DeploymentStatusModal';
 import './appDetail.css'
 import { EventsLogsTabSelector } from '../eventsLogsTabs/EventsLogsTabs'
 import { ReactComponent as Object } from '../../../../assets/icons/ic-object.svg';
@@ -44,7 +44,7 @@ export default function AppDetails(  ) {
 
     return (<div style={{ overflowY: "auto", height: "100%" }}>
         <EnvironmentSelector />
-        <DeploymentStatusModal />
+        {/* <DeploymentStatusModal /> */}
         <EventsTabsSelector />
     </div>
     )

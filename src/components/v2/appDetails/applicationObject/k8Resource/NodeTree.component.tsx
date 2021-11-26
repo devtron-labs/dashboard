@@ -69,7 +69,7 @@ function NodeTreeComponent() {
                             </React.Fragment>
                             :
 
-                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
+                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
                                 {treeNode.name}
                             </NavLink>
                         }

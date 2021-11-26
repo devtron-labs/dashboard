@@ -62,6 +62,7 @@ const ApplicationObjectComponent = () => {
                 <div>
                     <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                         <ul className="tab-list">
+                            {console.log(applicationObjectTabs)}
                             {applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
                                 return (
                                     <li key={index + "tab"} className=" ellipsis-right">

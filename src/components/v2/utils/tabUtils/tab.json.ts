@@ -40,10 +40,6 @@ export const ManifestTabJSON = [
 
 export const StatusViewTabJSON = [
     {
-        status: "ALL",
-        isSelected: true
-    },
-    {
         status: "HEALTHY",
         count: 6,
         isSelected: false
@@ -54,7 +50,7 @@ export const StatusViewTabJSON = [
         isSelected: false
     }, 
     {
-        status: "PROGRESSING",
+        status: "RUNNING",
         count: 6,
         isSelected: false
     }
