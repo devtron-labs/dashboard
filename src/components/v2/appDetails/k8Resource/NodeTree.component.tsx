@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
-import { iNode, iNodes } from '../../node.type';
+import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg';
+import { iNode, iNodes } from '../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch } from "react-router";
 import { NavLink } from 'react-router-dom';
@@ -63,13 +63,13 @@ function NodeTreeComponent() {
                                     className={`rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
                                 />
-                                <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
+                                <div className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
                                 </div>
                             </React.Fragment>
                             :
 
-                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
+                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`cn-7 fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : ''}`}>
                                 {treeNode.name}
                             </NavLink>
                         }

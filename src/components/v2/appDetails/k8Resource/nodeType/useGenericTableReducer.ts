@@ -1,8 +1,8 @@
 
 import { useReducer, useEffect } from "react";
-import { Table, tCell } from "../../../../utils/tableUtils/table.type";
-import AppDetailsStore from "../../../appDetail.store";
-import { NodeType } from "../../../appDetail.type";
+import { Table, tCell } from "../../../utils/tableUtils/table.type";
+import AppDetailsStore from "../../index.store";
+import { NodeType } from "../../appDetails.type";
 
 export const GenericTableActions = {
     Init: "INIT",

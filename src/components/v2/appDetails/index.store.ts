@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { AppDetails, EnvDetails, EnvType, Node } from "./appDetail.type";
+import { AppDetails, EnvDetails, EnvType, Node } from "./appDetails.type";
 
 let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails

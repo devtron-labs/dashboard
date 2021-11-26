@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Tippy from '@tippyjs/react';
-import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play.svg';
-import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop.svg';
-import { ReactComponent as Abort } from '../../../../../../assets/icons/ic-abort.svg';
+import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
+import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
+import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 
 function TerminalComponent() {
 

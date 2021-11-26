@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
-import { iLink } from '../../utils/tabUtils/link.type';
-import './applicationObject.css'
-import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg';
-import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg';
+import { iLink } from '../utils/tabUtils/link.type';
+import './appDetails.css';
+import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
+import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect } from 'react-router';
-import { URLS } from '../../../../config';
-import { Progressing, showError } from '../../../common';
-import './applicationObject.css';
-import ApplicationObjectStore from './applicationObject.store';
-import { useSharedState } from '../../utils/useSharedState';
-import { getInstalledAppDetail, getInstalledChartDetail } from '../appDetails.api';
-import AppDetailsStore from '../appDetail.store';
-import { EnvType } from '../appDetail.type';
+import { URLS } from '../../../config';
+import { Progressing, showError } from '../../common';
+import ApplicationObjectStore from './appDetails.store';
+import { useSharedState } from '../utils/useSharedState';
+import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails.api';
+import AppDetailsStore from './index.store';
+import { EnvType } from './appDetails.type';
+import AppHeaderComponent from '../appHeader/AppHeader.component';
+import SourceInfoComponent from './sourceInfo/SourceInfo.component';
 
 
 const ApplicationObjectComponent = () => {
     const { path, url } = useRouteMatch();
     const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
     const [isLoading, setIsLoading] = useState(true)
-    const {envType, appId, envId} = AppDetailsStore.getEnvDetails()
+    const { envType, appId, envId } = AppDetailsStore.getEnvDetails()
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
@@ -31,21 +32,21 @@ const ApplicationObjectComponent = () => {
         const init = async () => {
             let response = null;
             try {
-                if(envType === EnvType.CHART){
+                if (envType === EnvType.CHART) {
                     response = await getInstalledChartDetail(appId, envId);
                     console.log(response)
-                }else{
+                } else {
                     response = await getInstalledAppDetail(appId, envId);
                     console.log(response)
                 }
-                
+
                 AppDetailsStore.setAppDetails(response.result);
 
                 setIsLoading(false)
             } catch (e) {
                 console.log("error while fetching InstalledAppDetail", e)
                 // alert('error loading data')
-            } 
+            }
         }
 
         console.log("ApplicationObjectComponent refreshed", new Date().getTime())
@@ -55,11 +56,13 @@ const ApplicationObjectComponent = () => {
 
     return (
         <div>
-            {isLoading ?  <div style={{ height: "560px" }} className="flex">
-                    <Progressing pageLoader />
-                </div>
+            {isLoading ? <div style={{ height: "560px" }} className="flex">
+                <Progressing pageLoader />
+            </div>
                 :
                 <div>
+                    <AppHeaderComponent />
+                    <SourceInfoComponent />
                     <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                         <ul className="tab-list">
                             {console.log(applicationObjectTabs)}

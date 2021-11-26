@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
-import { NodeDetailTabs } from '../../../node.type';
-import AppDetailsStore from '../../../appDetail.store';
+import { NodeDetailTabs } from '../../node.type';
+import AppDetailsStore from '../../index.store';
 import Tippy from '@tippyjs/react';
-import { copyToClipboard } from '../../../../../common';
-import { ReactComponent as DropDown } from '../../../../../../assets/icons/ic-dropdown-filled.svg';
-import { ReactComponent as Clipboard } from '../../../../../../assets/icons/ic-copy.svg';
+import { copyToClipboard } from '../../../../common';
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
+import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
 
 function PodNodeComponent({ selectedNodeType }) {

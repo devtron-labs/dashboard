@@ -1,4 +1,4 @@
-import { Node, NodeType } from "./appDetail.type";
+import { Node, NodeType } from "./appDetails.type";
 
 export interface iNodes extends Array<iNode> { }
 

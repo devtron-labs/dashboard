@@ -10,7 +10,7 @@ import './defaultViewTab.css';
 import SummaryComponent from './defaultViewActionTabs/Summary.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch } from 'react-router';
-import ApplicationObjectStore from '../applicationObject.store';
+import ApplicationObjectStore from '../../appDetails.store';
 import { NodeDetailTabs } from '../../node.type';
 
 function DefaultViewTabComponent() {

@@ -1,10 +1,10 @@
 import React from 'react'
-import CodeEditor from '../../../../CodeEditor/CodeEditor';
+import CodeEditor from '../../../CodeEditor/CodeEditor';
 import Select, { components } from 'react-select';
-import { multiSelectStyles, SingleSelectOption as Option, } from '../../../common/ReactSelectCustomization'
+import { multiSelectStyles, SingleSelectOption as Option, } from '../../common/ReactSelectCustomization'
 import { useEffect } from 'react';
-import ApplicationObjectStore from '../applicationObject.store';
-import { URLS } from '../../../../../config';
+import ApplicationObjectStore from '../appDetails.store';
+import { URLS } from '../../../../config';
 
 function LogAnalyzerComponent() {
 

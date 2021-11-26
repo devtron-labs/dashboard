@@ -1,7 +1,7 @@
 import React from "react";
-import { StatusViewTabJSON } from "../../../utils/tabUtils/tab.json";
-import { useTab } from "../../../utils/tabUtils/useTab";
-import { iLink } from "../../../utils/tabUtils/link.type";
+import { StatusViewTabJSON } from "../../utils/tabUtils/tab.json";
+import { useTab } from "../../utils/tabUtils/useTab";
+import { iLink } from "../../utils/tabUtils/link.type";
 import { NavLink } from "react-router-dom";
 
 export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
-import { NodeDetailTabs } from '../../../node.type';
-import { NodeType } from '../../../appDetail.type';
-import AppDetailsStore from '../../../appDetail.store';
-import { ReactComponent as DropDown } from '../../../../../../assets/icons/ic-dropdown-filled.svg';
-import { ReactComponent as Clipboard } from '../../../../../../assets/icons/ic-copy.svg';
-import { copyToClipboard } from '../../../../../common';
+import { NodeDetailTabs } from '../../node.type';
+import AppDetailsStore from '../../index.store';
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
+import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
+import { copyToClipboard } from '../../../../common';
 import Tippy from '@tippyjs/react';
 import './nodeType.css'
 

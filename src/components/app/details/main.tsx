@@ -17,8 +17,6 @@ import AboutAppInfoModal from './AboutAppInfoModal';
 import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } from '../appLabelCommon'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
-import Index from './appDetails/index'
-import AppDetailComponent from '../../v2/appDetails/AppDetails.components'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));

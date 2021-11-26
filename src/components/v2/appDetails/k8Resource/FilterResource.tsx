@@ -1,6 +1,6 @@
 import React from 'react'
 import { StatusFilterButtonComponent } from './StatusFilterButton.component'
-import { ReactComponent as Search } from '../../../../../assets/icons/ic-search.svg';
+import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg';
 
 export default function FilterResource() {
     return (

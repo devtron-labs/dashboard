@@ -5,7 +5,7 @@ import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams } from 'react-router';
 
-import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-edit.svg';
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 
 function ManifestComponent() {
     

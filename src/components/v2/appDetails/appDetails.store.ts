@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
-import { ApplicationObject } from "./applicationObject.type";
-import { URLS } from "../../../../config";
+import { ApplicationObject } from "./appDetails.type";
+import { URLS } from "../../../config";
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
