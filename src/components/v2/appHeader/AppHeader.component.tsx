@@ -10,6 +10,8 @@ import AppSelector from '../../AppSelector';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { getAppMetaInfo } from '../../app/service';
 import { OptionType } from './appHeader.type'
+import { useSharedState } from '../utils/useSharedState';
+import IndexStore from '../appDetails/index.store';
 
 function AppHeaderComponent() {
     const { appId } = useParams<{ appId }>();
@@ -21,6 +23,8 @@ function AppHeaderComponent() {
     const [result, setResult] = useState(undefined)
     const [isLoading, setIsLoading] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
+    const params = useParams<{ appId: string}>()
+    const [ envDetails ] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable())
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true)
@@ -114,7 +118,7 @@ function AppHeaderComponent() {
 
         <ul role="tablist" className="tab-list">
             <li className="tab-list__tab ellipsis-right">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}`} className="tab-list__tab-link"
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}/${envDetails.envId}`} className="tab-list__tab-link"
                     onClick={(event) => {
                         ReactGA.event({
                             category: 'App',
@@ -124,7 +128,7 @@ function AppHeaderComponent() {
                 </NavLink>
             </li>
             <li className="tab-list__tab">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_TRIGGER}`} className="tab-list__tab-link"
+                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`} className="tab-list__tab-link"
                     onClick={(event) => {
                         ReactGA.event({
                             category: 'App',

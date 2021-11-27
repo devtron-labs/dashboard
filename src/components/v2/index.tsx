@@ -13,14 +13,14 @@ import { EnvType } from './appDetails/appDetails.type';
 function RouterComponent({ envType }) {
 
     const { path } = useRouteMatch();
-    
+
     return (
         <div>
             <Suspense fallback={<Progressing pageLoader />}>
                 <AppHeaderComponent />
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_VALUES}/:envId(\\d+)?/`} render={(props) => <ValuesComponent envType={envType}/>} />
-                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailsComponent envType={envType}/>} />
+                    <Route path={`${path}/${URLS.APP_VALUES}/:envId(\\d+)?/`} render={(props) => <ValuesComponent envType={envType} />} />
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailsComponent envType={envType} />} />
 
                 </Switch>
             </Suspense>
