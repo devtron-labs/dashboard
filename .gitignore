@@ -25,8 +25,6 @@ npm-error.log
 npm.lock
 yarn-debug.log
 yarn-error.log
-yarn.lock
-package-lock.json
 /public/env-config.js
 env-config.js
 .idea/
