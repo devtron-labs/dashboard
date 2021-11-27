@@ -1,12 +1,28 @@
 import Tippy from '@tippyjs/react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
+import { useParams, useRouteMatch, useHistory } from 'react-router';
+import AppDetailsStore from '../../../appDetails.store';
+import { NodeDetailTabs } from '../../../node.type';
 
-function LogsComponent() {
+function LogsComponent({selectedTab}) {
     const [logsPaused, toggleLogStream] = useState(false);
     const [terminalCleared, setTerminalCleared] = useState(false);
+    const { path, url } = useRouteMatch()
+    const params = useParams<{ actionName: string, podName: string }>()
+
+    useEffect(() => {
+        selectedTab(NodeDetailTabs.LOGS)
+        if (params.podName) {
+            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+        }
+    }, [params.podName])
+
+    // useEffect(() => {
+    //     selectedTab(NodeDetailTabs.LOGS)
+    // }, [])
 
     function handleLogsPause(paused: boolean) {
         toggleLogStream(paused);
@@ -60,7 +76,3 @@ function LogsComponent() {
 }
 
 export default LogsComponent
-function useParams<T>() {
-    throw new Error('Function not implemented.');
-}
-

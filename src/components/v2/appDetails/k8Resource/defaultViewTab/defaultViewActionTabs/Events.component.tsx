@@ -3,6 +3,7 @@ import TableUtil from '../../../../utils/tableUtils/Table.util'
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import IndexStore from '../../../index.store';
 import AppDetailsStore from '../../../appDetails.store';
+import { NodeDetailTabs } from '../../../node.type';
 
 
 const EventTableJSON = {
@@ -34,15 +35,28 @@ const EventTableJSON = {
     ]
 }
 
-function EventsComponent() {
+function EventsComponent({selectedTab}) {
 
     const params = useParams<{ actionName: string, podName: string }>()
+    const { path, url } = useRouteMatch()
+
+    useEffect(() => {
+        selectedTab(NodeDetailTabs.EVENTS)
+
+        if (params.podName) {
+            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+        }
+    }, [params.podName])
 
     useEffect(() => {
         if(params.actionName){
             AppDetailsStore.setCurrentTab(params.actionName)
         }
     }, [params.actionName])
+
+    // useEffect(() => {
+    //     selectedTab(NodeDetailTabs.EVENTS)
+    // }, [])
 
     return (
         <div className="bcn-0" >

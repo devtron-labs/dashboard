@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Progressing, useSearchString } from '../../../../../common';
-import YAMLJSParser from 'yamljs';
+import { useSearchString } from '../../../../../common';
 import '../defaultViewTab.css';
+import { useParams, useRouteMatch } from 'react-router';
+import AppDetailsStore from '../../../appDetails.store';
+import { NodeDetailTabs } from '../../../node.type';
 
-export interface SummaryProps {
-    appName: string;
-    environmentName: string;
-    nodeName: string;
-    // nodes: AggregatedNodes;
-}
 
-const SummaryComponent: React.FC= () => {
+const SummaryComponent = ({selectedTab}) => {
     const { queryParams, searchParams } = useSearchString()
     // const node = searchParams?.kind && nodes?.nodes[searchParams.kind]?.has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [manifest, setManifest] = useState(null);
     const [isManifestLoading, setManifestLoading] = useState(true);
+    const { path, url } = useRouteMatch()
+    const params = useParams<{ actionName: string, podName: string }>()
+
+    useEffect(() => {
+        selectedTab(NodeDetailTabs.SUMMARY)
+
+        if (params.podName) {
+            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+        }
+    }, [params.podName])
+
+    // useEffect(() => {
+    //     selectedTab(NodeDetailTabs.SUMMARY)
+    // }, [])
 
     // useEffect(() => {
     //     async function getManifest() {

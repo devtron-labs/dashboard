@@ -17,8 +17,6 @@ function GenericTableComponent() {
 
     const params = useParams<{ nodeType?: NodeType }>()
 
-    console.log("params.nodeType", params.nodeType)
-
     useEffect(() => {
         if (!copied) return
         setTimeout(() => setCopied(false), 2000)
@@ -36,7 +34,7 @@ function GenericTableComponent() {
             <div>
                 <div className="cn-9 fs-14 fw-6 service-header border-bottom">
                     <div className="pt-12 pb-12 ">{params.nodeType}({appDetailsNodes.length})
-                    <div className="fw-4  fs-12">2 healthy</div>
+                        <div className="fw-4  fs-12">2 healthy</div>
                     </div>
                 </div>
 
@@ -75,11 +73,11 @@ function GenericTableComponent() {
                                                         onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                                     />
                                                 </Tippy>
-                                                {console.log('path', path)}
-                                                {console.log('url', url)}
+                                                <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
 
-                                                <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
-                                                <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                                {/* <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink> */}
                                             </span>
                                         </div>
                                     </div>
@@ -107,8 +105,11 @@ function GenericTableComponent() {
                                                                 onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                                             />
                                                         </Tippy>
-                                                        <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
-                                                        <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                                        <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                        <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+
+                                                        {/* <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                        <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink> */}
                                                     </span>
                                                 </div>
                                             </div>

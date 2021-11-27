@@ -48,8 +48,8 @@ function PodNodeComponent({ selectedNodeType }) {
                                             <div className=" flex left">
                                                 <span className="mr-8">
                                                     <DropDown
-                                                        className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'}`}
-                                                        style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                                        className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
+                                                        style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
                                                     />
                                                 </span>
                                                 <div className="flexbox">

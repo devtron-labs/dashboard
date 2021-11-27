@@ -1,10 +1,11 @@
 import { BehaviorSubject } from "rxjs";
-import { AppDetails } from "../../app/types";
+import { AppDetails, Node } from "./appDetails.type";
 import { EnvDetails, EnvType } from "./appDetails.type";
 
 let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails
-let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_appDetails.resourceTree?.nodes || []);
+let _nodes = [] as Node[]
+let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodes);
 
 const IndexStore = {
     setEnvDetails: (envType: string, appId: number, envId: number) => {

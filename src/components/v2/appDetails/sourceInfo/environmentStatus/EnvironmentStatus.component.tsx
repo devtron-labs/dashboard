@@ -12,7 +12,6 @@ function EnvironmentStatusComponent() {
     const [showConfigStatusModal, setShowConfigStatusModal] = useState(false)
     const response = IndexStore.getAppDetails()
     const status = response?.resourceTree?.status || ""
-    console.log(response)
 
     return (
         <div>

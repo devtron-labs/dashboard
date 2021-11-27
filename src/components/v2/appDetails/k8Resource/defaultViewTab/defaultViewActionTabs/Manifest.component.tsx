@@ -3,14 +3,29 @@ import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
-import { useParams } from 'react-router';
+import { useParams, useRouteMatch } from 'react-router';
 
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
+import AppDetailsStore from '../../../appDetails.store';
+import { NodeDetailTabs } from '../../../node.type';
 
-function ManifestComponent() {
+function ManifestComponent({selectedTab}) {
     
     const [{ tabs }, dispatch] = useTab(ManifestTabJSON);
-    const params = useParams<{ action: string, podName: string }>()
+    const { path, url } = useRouteMatch()
+    const params = useParams<{ actionName: string, podName: string }>()
+
+    useEffect(() => {
+        selectedTab(NodeDetailTabs.MANIFEST)
+
+        if (params.podName) {
+            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+        }
+    }, [params.podName])
+
+    // useEffect(() => {
+    //     selectedTab(NodeDetailTabs.MANIFEST)
+    // }, [])
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -20,8 +35,10 @@ function ManifestComponent() {
     }
 
     useEffect(() => {
-        handleTabClick(params.action)
-    }, [])
+        if(params.actionName){
+            handleTabClick(params.actionName)
+        }
+    }, [params.actionName])
 
     const renderCodeEditor = () => {
         return <div>
