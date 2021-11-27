@@ -3,13 +3,13 @@ import CodeEditor from '../../../CodeEditor/CodeEditor';
 import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../common/ReactSelectCustomization'
 import { useEffect } from 'react';
-import ApplicationObjectStore from '../appDetails.store';
+import AppDetailsStore from '../appDetails.store';
 import { URLS } from '../../../../config';
 
 function LogAnalyzerComponent() {
 
     useEffect(() => {
-        ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_LOG)
+        AppDetailsStore.markApplicationObjectTabActive(URLS.APP_DETAILS_LOG)
     }, [])
 
     const renderFilters = () => {

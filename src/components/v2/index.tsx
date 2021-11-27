@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { URLS } from '../../config'
-import AppDetailsStore from './appDetails/index.store'
+import IndexStore from './appDetails/index.store'
 import { useParams, useRouteMatch } from 'react-router';
 import { Progressing } from '../common';
 import './lib/bootstrap-grid.min.css';
@@ -12,7 +12,7 @@ function RouterComponent({ envType, ...otherProps }) {
     const { path } = useRouteMatch();
     const params = useParams<{ appId: string, envId: string }>()
 
-    AppDetailsStore.setEnvDetails(envType, +params.appId, +params.envId)
+    IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
 
     return (
         <div>

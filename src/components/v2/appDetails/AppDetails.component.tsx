@@ -9,38 +9,37 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect } from 'react-router';
 import { URLS } from '../../../config';
 import { Progressing, showError } from '../../common';
-import ApplicationObjectStore from './appDetails.store';
+import AppDetailsStore from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
 import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails.api';
-import AppDetailsStore from './index.store';
+import IndexStore from './index.store';
 import { EnvType } from './appDetails.type';
 import AppHeaderComponent from '../appHeader/AppHeader.component';
 import SourceInfoComponent from './sourceInfo/SourceInfo.component';
+import DefaultViewTabComponent from './k8Resource/defaultViewTab/DefaultViewTab.component';
 
 
 const ApplicationObjectComponent = () => {
     const { path, url } = useRouteMatch();
-    const [applicationObjectTabs] = useSharedState(ApplicationObjectStore.getApplicationObjectTabs(), ApplicationObjectStore.getApplicationObjectTabsObservable())
+    const [applicationObjectTabs] = useSharedState(AppDetailsStore.getApplicationObjectTabs(), AppDetailsStore.getApplicationObjectTabsObservable())
     const [isLoading, setIsLoading] = useState(true)
-    const { envType, appId, envId } = AppDetailsStore.getEnvDetails()
+    const { envType, appId, envId } = IndexStore.getEnvDetails()
 
     useEffect(() => {
         const link = url.split(URLS.APP_DETAILS)[0] + URLS.APP_DETAILS + '/'
-        ApplicationObjectStore.setBaseURL(link)
-        ApplicationObjectStore.initApplicationObjectTab()
+        AppDetailsStore.setBaseURL(link)
+        AppDetailsStore.initApplicationObjectTab()
 
         const init = async () => {
             let response = null;
             try {
                 if (envType === EnvType.CHART) {
                     response = await getInstalledChartDetail(appId, envId);
-                    console.log(response)
                 } else {
                     response = await getInstalledAppDetail(appId, envId);
-                    console.log(response)
                 }
 
-                AppDetailsStore.setAppDetails(response.result);
+                IndexStore.setAppDetails(response.result);
 
                 setIsLoading(false)
             } catch (e) {
@@ -48,8 +47,6 @@ const ApplicationObjectComponent = () => {
                 // alert('error loading data')
             }
         }
-
-        console.log("ApplicationObjectComponent refreshed", new Date().getTime())
 
         init();
     }, [])
@@ -65,7 +62,6 @@ const ApplicationObjectComponent = () => {
                     <SourceInfoComponent />
                     <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                         <ul className="tab-list">
-                            {console.log(applicationObjectTabs)}
                             {applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
                                 return (
                                     <li key={index + "tab"} className=" ellipsis-right">
@@ -83,6 +79,7 @@ const ApplicationObjectComponent = () => {
                         </ul>
                     </div>
                     <Switch>
+                        <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`} render={() => { return <DefaultViewTabComponent /> }} />
                         <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent /> }} />
                         <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent /> }} />
                     </Switch>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
 import { NodeDetailTabs } from '../../node.type';
-import AppDetailsStore from '../../index.store';
+import IndexStore from '../../index.store';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import { copyToClipboard } from '../../../../common';
@@ -18,7 +18,7 @@ function ServiceNodeComponent({selectedNodeType}) {
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
-    const appDetailsNodes = AppDetailsStore.getAppDetailsNodes()
+    const appDetailsNodes = IndexStore.getAppDetailsNodes()
     const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
     const toggleServiceChildElement = () => {
@@ -58,13 +58,11 @@ function ServiceNodeComponent({selectedNodeType}) {
                                             /> <span>{node.name}</span>
                                              <div>healthy</div>
                                             <span className="action-buttons ">
-                                                <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
-                                                <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                                <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
+                                                <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
                                             </span>
                                         </div>
                                        
-
-
                                         <div className={"col-md-6 pt-9 pb-9"} >
                                             {node.name + "." + node.namespace}  : portnumber
                                                 <Tippy

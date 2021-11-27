@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouteMatch, useParams } from 'react-router';
-import AppDetailsStore from '../../index.store';
+import IndexStore from '../../index.store';
 import { NavLink } from 'react-router-dom';
 import { NodeDetailTabs } from '../../node.type';
 import Tippy from '@tippyjs/react';
@@ -24,7 +24,7 @@ function GenericTableComponent() {
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
-    const appDetailsNodes = AppDetailsStore.getAppDetailsNodes()
+    const appDetailsNodes = IndexStore.getAppDetailsNodes()
     const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
     const toggleServiceChildElement = () => {

@@ -1,6 +1,6 @@
 
 import { useReducer, useEffect } from "react";
-import AppDetailsStore from "../index.store";
+import IndexStore from "../index.store";
 import { AggregationKeys, getAggregator, Node, NodeType } from "../appDetails.type";
 import { iNodes, iNode } from "../node.type";
 
@@ -94,7 +94,7 @@ const reducer = (state: any, action: any) => {
     switch (action.type) {
 
         case NodeTreeActions.Init:
-            const resourceNodes = AppDetailsStore.getAppDetailsNodes();
+            const resourceNodes = IndexStore.getAppDetailsNodes();
 
             const initialNodes = getTreeNodes(resourceNodes);
 

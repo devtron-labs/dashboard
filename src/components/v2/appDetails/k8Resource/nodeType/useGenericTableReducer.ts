@@ -1,7 +1,7 @@
 
 import { useReducer, useEffect } from "react";
 import { Table, tCell } from "../../../utils/tableUtils/table.type";
-import AppDetailsStore from "../../index.store";
+import IndexStore from "../../index.store";
 import { NodeType } from "../../appDetails.type";
 
 export const GenericTableActions = {
@@ -33,7 +33,7 @@ const getTableData = (nodeType: NodeType) => {
 
     let genericTablejSON = {} as Table
 
-    const appDetailsNodes = AppDetailsStore.getAppDetailsNodes()
+    const appDetailsNodes = IndexStore.getAppDetailsNodes()
 
     let _tHeader = []
 

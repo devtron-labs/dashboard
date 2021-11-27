@@ -1,11 +1,12 @@
 import { BehaviorSubject } from "rxjs";
-import { AppDetails, EnvDetails, EnvType, Node } from "./appDetails.type";
+import { AppDetails } from "../../app/types";
+import { EnvDetails, EnvType } from "./appDetails.type";
 
 let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_appDetails.resourceTree?.nodes || []);
 
-const AppDetailsStore = {
+const IndexStore = {
     setEnvDetails: (envType: string, appId: number, envId: number) => {
         _envDetails.envType = envType as EnvType
         _envDetails.appId = appId
@@ -35,4 +36,4 @@ const AppDetailsStore = {
     }
 }
 
-export default AppDetailsStore;
+export default IndexStore;

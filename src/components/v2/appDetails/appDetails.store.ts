@@ -15,7 +15,7 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean) => {
     applicationObjectTabs.push(tab)
 }
 
-const ApplicationObjectStore = {
+const AppDetailsStore = {
 
     getApplicationObjectTabs: () => {
         return applicationObjectTabsSubject.getValue()
@@ -65,7 +65,7 @@ const ApplicationObjectStore = {
     },
     setCurrentTab: (_str: string) => {
         currentTab = _str
-        ApplicationObjectStore.markApplicationObjectTabActive(_str)
+        AppDetailsStore.markApplicationObjectTabActive(_str)
     },
     getCurrentTab: () => {
         return currentTab
@@ -78,4 +78,4 @@ const ApplicationObjectStore = {
     },
 }
 
-export default ApplicationObjectStore;
+export default AppDetailsStore;

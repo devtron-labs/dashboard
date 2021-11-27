@@ -4,7 +4,7 @@ import FilterResource from './FilterResource';
 import './k8resources.css';
 import { useRouteMatch, Redirect } from 'react-router';
 import { URLS } from '../../../../config';
-import ApplicationObjectStore from '../appDetails.store';
+import AppDetailsStore from '../appDetails.store';
 import { NodeType } from '../appDetails.type';
 import { Switch, Route } from 'react-router-dom';
 import GenericTableComponent from './nodeType/GenericTable.component';
@@ -15,7 +15,7 @@ export default function K8ResourceComponent() {
     const { path, url } = useRouteMatch();
 
     useEffect(() => {
-        ApplicationObjectStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
+        AppDetailsStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
     }, [])
 
     return (

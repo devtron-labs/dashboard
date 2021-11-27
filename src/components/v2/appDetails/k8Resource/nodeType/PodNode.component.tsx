@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
 import { NodeDetailTabs } from '../../node.type';
-import AppDetailsStore from '../../index.store';
+import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
 import { copyToClipboard } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
@@ -18,7 +18,7 @@ function PodNodeComponent({ selectedNodeType }) {
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
-    const appDetailsNodes = AppDetailsStore.getAppDetailsNodes()
+    const appDetailsNodes = IndexStore.getAppDetailsNodes()
     const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
     const toggleServiceChildElement = () => {

@@ -1,5 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TableUtil from '../../../../utils/tableUtils/Table.util'
+import { useParams, useRouteMatch, useHistory } from 'react-router';
+import IndexStore from '../../../index.store';
+import AppDetailsStore from '../../../appDetails.store';
 
 
 const EventTableJSON = {
@@ -30,7 +33,16 @@ const EventTableJSON = {
         ]
     ]
 }
+
 function EventsComponent() {
+
+    const params = useParams<{ actionName: string, podName: string }>()
+
+    useEffect(() => {
+        if(params.actionName){
+            AppDetailsStore.setCurrentTab(params.actionName)
+        }
+    }, [params.actionName])
 
     return (
         <div className="bcn-0" >
