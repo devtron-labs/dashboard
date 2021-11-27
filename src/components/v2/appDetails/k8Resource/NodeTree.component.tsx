@@ -1,21 +1,18 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg';
 import { iNode, iNodes } from '../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch } from "react-router";
 import { NavLink } from 'react-router-dom';
-import { node } from 'prop-types';
 
 
 function NodeTreeComponent() {
-
-    // const [selectedNodeKind, setSelectedNodeKind] = useState("")
-
     const { url, path } = useRouteMatch();
     const history = useHistory();
 
-    const [{ treeNodes, selectedNodeKind }, dispatch] = useNodeTree();
+    const [selectedNodeKind, setSelectedNodeKind] = useState("")
+
+    const [{ treeNodes }, dispatch] = useNodeTree();
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         e.stopPropagation()
@@ -32,18 +29,24 @@ function NodeTreeComponent() {
                 parentNode: parentNode
             })
 
-            //history.push(`${url}/${treeNode.name.toLowerCase()}`);
+           setSelectedNodeKind(treeNode.name)
         }
     }
 
     useEffect(() => {
         const firstNode = treeNodes[0]
 
-        if (firstNode) {
-            let link = `${url}/${firstNode.name.toLowerCase()}`;
+        if (!selectedNodeKind && firstNode && firstNode.childNodes && firstNode.childNodes.length > 0) {
+            let link = `${url}/${firstNode.childNodes[0].name.toLowerCase()}`;
             history.push(link);
+
+            // dispatch({
+            //     type: NodeTreeActions.ParentNodeClick,
+            //     selectedNode: firstNode,
+            // })
         }
-    }, [])
+
+    }, [treeNodes, selectedNodeKind ])
 
     useEffect(() => {
         dispatch({

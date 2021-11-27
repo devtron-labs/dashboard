@@ -16,7 +16,6 @@ const initialState = {
     loading: true,
     error: null,
     treeNodes: [],
-    selectedNodeKind: ""
 };
 
 const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
