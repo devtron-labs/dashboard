@@ -5,8 +5,8 @@ export interface ApplicationObject extends iLink {
 }
 
 export enum EnvType {
-    CHART = 'chart',
-    APPLICATION = 'app'
+    CHART = 'helm_charts',
+    APPLICATION = 'apps'
 }
 
 export interface EnvDetails {

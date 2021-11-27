@@ -8,8 +8,8 @@ export interface NavItem {
 export const URLS = {
     CHARTS: '/chart-store',
     APP: '/app',
-    V2_APP: '/v2/app',           // for V2 router
-    V2_CHARTS: '/v2/charts',     // for V2 router
+    APPS: '/apps',           // for V2 router
+    HELM_CHARTS: '/helm-charts',     // for V2 router
     APP_VALUES: 'values',        // for V2 router
     APP_DETAILS: 'details',
     APP_DETAILS_K8: 'k8-resources',

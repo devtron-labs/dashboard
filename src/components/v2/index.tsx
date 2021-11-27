@@ -6,20 +6,22 @@ import { useParams, useRouteMatch } from 'react-router';
 import { Progressing } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/Values.component';
-import ApplicationObjectComponent from './appDetails/AppDetails.component';
+import AppDetailsComponent from './appDetails/AppDetails.component';
+import AppHeaderComponent from './appHeader/AppHeader.component';
+import { EnvType } from './appDetails/appDetails.type';
 
-function RouterComponent({ envType, ...otherProps }) {
+function RouterComponent({ envType }) {
+
     const { path } = useRouteMatch();
-    const params = useParams<{ appId: string, envId: string }>()
-
-    IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
-
+    
     return (
         <div>
             <Suspense fallback={<Progressing pageLoader />}>
+                <AppHeaderComponent />
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}`} render={(props) => <ApplicationObjectComponent />} />
-                    <Route path={`${path}/${URLS.APP_VALUES}`} render={(props) => <ValuesComponent/>} />
+                    <Route path={`${path}/${URLS.APP_VALUES}/:envId(\\d+)?/`} render={(props) => <ValuesComponent envType={envType}/>} />
+                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetailsComponent envType={envType}/>} />
+
                 </Switch>
             </Suspense>
         </div>

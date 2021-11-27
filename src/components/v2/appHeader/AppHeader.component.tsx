@@ -38,14 +38,14 @@ function AppHeaderComponent() {
 
     }
 
-    useEffect(() => {
-        try {
-            getAppMetaInfoRes()
-        }
-        catch (err) {
-            showError(err)
-        }
-    }, [appId])
+    // useEffect(() => {
+    //     try {
+    //         getAppMetaInfoRes()
+    //     }
+    //     catch (err) {
+    //         showError(err)
+    //     }
+    // }, [appId])
 
     const handleAppChange = useCallback(({ label, value }) => {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];

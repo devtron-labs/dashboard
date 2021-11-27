@@ -99,6 +99,7 @@ export const BreadCrumb: React.FC<Breadcrumbs> = ({ breadcrumbs, sep = "/", clas
     return <React.Fragment>
         {filteredCrumbs.map((breadcrumb, idx)=>
             <React.Fragment key={idx}>
+       { console.log(breadcrumb)}
                 <ConditionalWrap
                     condition={!!breadcrumb.to}
                     wrap={children => <Link className={`${url === breadcrumb.to ? 'active' : ''} ${className} ${breadcrumb.className || ""}`} to={breadcrumb.to}>

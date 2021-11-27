@@ -7,6 +7,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import * as Sentry from '@sentry/browser';
 import ReactGA from 'react-ga';
 import { Security } from '../../security/Security';
+import { EnvType } from '../../v2/appDetails/appDetails.type';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
@@ -14,13 +15,13 @@ const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
 const V2Details = lazy(() => import('../../v2/index'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
-const BulkEdit = lazy(()=> import('../../bulkEdits/BulkEdits'))
+const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
-    
+
     useEffect(() => {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
@@ -57,6 +58,7 @@ export default function NavigationRoutes() {
         }
     }, [])
 
+
     return (
         <main>
             <Navigation history={history} match={match} location={location} />
@@ -65,12 +67,17 @@ export default function NavigationRoutes() {
                     <ErrorBoundary>
                         <Switch>
                             <Route path={URLS.APP} render={() => <AppRouter />} />
-                            <Route path={URLS.V2_CHARTS} render={() => <V2Router  envType='chart'/>} />
-                            <Route path={URLS.V2_APP} render={() => <V2Router envType="app"/>} />
+
+                         
+                            {/*----- V2 routing start---*/}
+                            <Route path={URLS.HELM_CHARTS} render={() => <V2Router envType={EnvType.CHART} />} />
+                            <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} />
+                            {/*---- V2 routing end-----*/}
+
                             <Route path={URLS.CHARTS} render={() => <Charts />} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
-                            <Route path={URLS.BULK_EDITS} render={props=> < BulkEdit {...props}  />} />
+                            <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
                             <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
                             <Route>
                                 <RedirectWithSentry />
@@ -112,8 +119,10 @@ export function V2Router({envType}) {
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+                {console.log('route', path)}
                 <Switch>
-                    <Route path={`${path}/:appId(\\d+)/:envId(\\d+)?`} render={() => <V2Details envType={`${envType}`} />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <V2Details envType={`${envType}`} />} />
+                    {/* <Route path={`${path}/:appId(\\d+)/${URLS.HELM_CHARTS}/:envId(\\d+)?`} render={() => <V2Details envType={`${EnvType.CHART}`} />} /> */}
                     <Route exact path="">
                         <AppListContainer />
                     </Route>

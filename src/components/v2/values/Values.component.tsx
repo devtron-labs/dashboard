@@ -8,7 +8,7 @@ import { styles, menuList, DropdownIndicator } from '../../charts/charts.util';
 import AsyncSelect from 'react-select/async';
 import '../../charts/modal/DeployChart.scss';
 
-function ValuesComponent() {
+function ValuesComponent({envType}) {
     const deployChartForm = useRef(null);
     let environmentId = 1
     let teamId = 1
