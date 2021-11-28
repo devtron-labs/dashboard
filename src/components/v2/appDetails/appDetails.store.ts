@@ -4,7 +4,6 @@ import { URLS } from "../../../config";
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
-let baseURL: string = '';
 let currentTab: string = "";
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean) => {
@@ -23,11 +22,11 @@ const AppDetailsStore = {
     getApplicationObjectTabsObservable: () => {
         return applicationObjectTabsSubject.asObservable()
     },
-    initApplicationObjectTab: () => {
+    initApplicationObjectTab: (_url: string) => {
         applicationObjectTabs = []
 
-        addAOT(URLS.APP_DETAILS_K8, baseURL + URLS.APP_DETAILS_K8, true)
-        addAOT(URLS.APP_DETAILS_LOG, baseURL + URLS.APP_DETAILS_LOG, false)
+        addAOT(URLS.APP_DETAILS_K8, _url + "/" + URLS.APP_DETAILS_K8, true)
+        addAOT(URLS.APP_DETAILS_LOG, _url + "/" + URLS.APP_DETAILS_LOG, false)
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
@@ -69,13 +68,7 @@ const AppDetailsStore = {
     },
     getCurrentTab: () => {
         return currentTab
-    },
-    setBaseURL: (_str: string) => {
-        baseURL = _str
-    },
-    getBaseURL: () => {
-        return baseURL
-    },
+    }
 }
 
 export default AppDetailsStore;

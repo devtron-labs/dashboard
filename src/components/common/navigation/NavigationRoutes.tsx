@@ -119,7 +119,6 @@ export function V2Router({envType}) {
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                {console.log('route', path)}
                 <Switch>
                     <Route path={`${path}/:appId(\\d+)`} render={() => <V2Details envType={`${envType}`} />} />
                     {/* <Route path={`${path}/:appId(\\d+)/${URLS.HELM_CHARTS}/:envId(\\d+)?`} render={() => <V2Details envType={`${EnvType.CHART}`} />} /> */}

@@ -25,8 +25,6 @@ function DefaultViewTabComponent() {
     return (
         <div>
             <div className="bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
-                { console.log("tabs", tabs)}
-                { console.log("selectedTabName", selectedTabName)}
                 {
                     (tabs && tabs.length > 0) && tabs.map((tab: iLink, index: number) => {
                         return (

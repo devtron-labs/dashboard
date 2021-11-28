@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import NodeTreeComponent from './NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
-import { useRouteMatch, Redirect } from 'react-router';
+import { useRouteMatch } from 'react-router';
 import { URLS } from '../../../../config';
 import AppDetailsStore from '../appDetails.store';
-import { NodeType } from '../appDetails.type';
 import { Switch, Route } from 'react-router-dom';
-import GenericTableComponent from './nodeType/GenericTable.component';
-import PodNodeComponent from './nodeType/PodNode.component';
-import ServiceNodeComponent from './nodeType/ServiceNode.component';
+import NodeComponent from './nodeType/Node.component';
 
 export default function K8ResourceComponent() {
     const { path, url } = useRouteMatch();
@@ -30,9 +27,7 @@ export default function K8ResourceComponent() {
                     </div>
                     <div className="col-md-10 p-0">
                         <Switch>
-                            <Route path={`${path}/pod`} render={() => { return <PodNodeComponent selectedNodeType={NodeType.Pod} /> }} />
-                            <Route path={`${path}/service`} render={() => { return <ServiceNodeComponent selectedNodeType={NodeType.Service} /> }} />
-                            <Route path={`${path}/:nodeType`} render={() => { return <GenericTableComponent  /> }} />
+                            <Route path={`${path}/:nodeType`} render={() => { return <NodeComponent  /> }} />
                         </Switch>
                     </div>
                 </div>
