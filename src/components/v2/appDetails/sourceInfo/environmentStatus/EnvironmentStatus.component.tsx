@@ -18,7 +18,7 @@ function EnvironmentStatusComponent() {
             <div className="flex left ml-20">
                 <div className="app-status-card  bcn-0 mr-12 br-8 p-16">
                     <div className="lh-1-33 cn-9 flex left"><span>Application status</span><Question className="icon-dim-16 ml-4" /></div>
-                    <div className=" fw-6 fs-14 ">{status}</div>
+                    <div className="text-capitalize fw-6 fs-14 ">{status}</div>
                     <div onClick={() => setShowAppStatusDetail(true)}><span className="cursor cb-5">Details</span></div>
                 </div>
                 <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12" >
@@ -30,7 +30,7 @@ function EnvironmentStatusComponent() {
                     ?
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left"><span>Last updated</span><Question className="icon-dim-16 ml-4" /></div>
-                        <div className=" fw-6 fs-14">{moment(response?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</div>
+                        <div className=" fw-6 fs-14 text-capitalize">{moment(response?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</div>
                     </div>
                     : ''}
 

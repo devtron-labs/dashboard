@@ -9,7 +9,7 @@ import { copyToClipboard } from '../../../../common';
 import Tippy from '@tippyjs/react';
 import './nodeType.css'
 
-function ServiceNodeComponent({selectedNodeType}) {
+function ServiceNodeComponent({ selectedNodeType }) {
     const { path, url } = useRouteMatch();
     const [copied, setCopied] = useState(false);
 
@@ -52,18 +52,22 @@ function ServiceNodeComponent({selectedNodeType}) {
                                     <div className="row" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
 
                                         <div className={"col-md-6 pt-9 pb-9 flex left pl-0"} >
-                                            <DropDown
-                                                className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
-                                                style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
-                                            /> <span>{node.name}</span>
-                                             <div>healthy</div>
-                                            <span className="action-buttons ">
+                                            <div>
+                                                <DropDown
+                                                    className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
+                                                    style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
+                                                /> <span>{node.name}</span>
+                                            </div>
+                                            <div>healthy</div>
+                                            <div
+                                            //  className="action-buttons "
+                                            >
                                                 <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
                                                 <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
-                                            </span>
+                                            </div>
                                         </div>
-                                       
-                                        <div className={"col-md-6 pt-9 pb-9"} >
+
+                                        <div className={"col-md-6 pt-9 pb-9 flex left"} >
                                             {node.name + "." + node.namespace}  : portnumber
                                                 <Tippy
                                                 className="default-tt"

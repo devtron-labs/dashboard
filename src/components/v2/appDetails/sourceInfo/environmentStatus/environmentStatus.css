@@ -13,3 +13,15 @@
 .config-error-wrap{
     word-wrap: break-word;
 }
+
+.table__padding-left{
+    padding-left: 20px !important;
+}
+
+.table__padding-row{
+    padding-right: 20px !important;
+}
+
+.text-capitalize{
+    text-transform: capitalize;
+}

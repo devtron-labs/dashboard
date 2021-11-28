@@ -68,7 +68,7 @@ const AppDetailsComponent = ({ envType }) => {
                                 return (
                                     <li key={index + "tab"} className=" ellipsis-right">
                                         <NavLink to={`${tab.url}`} className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""} tab-list__tab cursor cn-9 fw-6 no-decor flex left`}>
-                                            <div className="pl-12 pt-8 pb-8 pr-12 flex left" >
+                                            <div className={`pl-12 pt-8 pb-8 pr-12 flex left ${tab.isSelected ? "fw-6 cn-9" : ""} "`} >
                                                 {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                                 {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
                                                 {tab.name}

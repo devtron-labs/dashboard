@@ -33,7 +33,7 @@ function GenericTableComponent() {
         <div className="container-fluid generic-table">
             <div>
                 <div className="cn-9 fs-14 fw-6 service-header border-bottom">
-                    <div className="pt-12 pb-12 ">{params.nodeType}({appDetailsNodes.length})
+                    <div className="pt-12 pb-12 text-capitalize">{params.nodeType}({appDetailsNodes.length})
                         <div className="fw-4  fs-12">2 healthy</div>
                     </div>
                 </div>
@@ -55,12 +55,14 @@ function GenericTableComponent() {
                                     <div className="row" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
 
                                         <div className={"col-md-6 pt-9 pb-9 flex left pl-0"} >
-                                            <DropDown
-                                                className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
-                                                style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
-                                            /> <span>{node.name}</span>
+                                                <DropDown
+                                                    className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
+                                                    style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
+                                                /> <span>{node.name}</span>
                                             <div>healthy</div>
-                                            <span className="action-buttons">
+                                            <div 
+                                            // className="action-buttons"
+                                            >
                                                 <Tippy
                                                     className="default-tt"
                                                     arrow={false}
@@ -78,7 +80,7 @@ function GenericTableComponent() {
 
                                                 {/* <NavLink to={`${path}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
                                                 <NavLink to={`${path}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink> */}
-                                            </span>
+                                            </div>
                                         </div>
                                     </div>
                                 )
