@@ -7,9 +7,13 @@ import { URLS } from '../../../../config';
 import AppDetailsStore from '../appDetails.store';
 import { Switch, Route } from 'react-router-dom';
 import NodeComponent from './nodeType/Node.component';
+import { useSharedState } from '../../utils/useSharedState';
+import IndexStore from '../index.store';
 
 export default function K8ResourceComponent() {
     const { path, url } = useRouteMatch();
+
+    const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
 
     useEffect(() => {
         AppDetailsStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
@@ -21,16 +25,20 @@ export default function K8ResourceComponent() {
                 <FilterResource />
             </div>
             <div className="container-fluid">
-                <div className="row" >
-                    <div className="col-md-2 k8-resources-node-tree pt-8 border-right">
-                        <NodeTreeComponent />
+                {nodes.length > 0 ?
+                    <div className="row" >
+                        <div className="col-md-2 k8-resources-node-tree pt-8 border-right">
+                            <NodeTreeComponent />
+                        </div>
+                        <div className="col-md-10 p-0">
+                            <Switch>
+                                <Route path={`${path}/:nodeType`} render={() => { return <NodeComponent /> }} />
+                            </Switch>
+                        </div>
                     </div>
-                    <div className="col-md-10 p-0">
-                        <Switch>
-                            <Route path={`${path}/:nodeType`} render={() => { return <NodeComponent  /> }} />
-                        </Switch>
-                    </div>
-                </div>
+                    : 
+                    <div>Empty UI</div>
+                }
             </div>
         </div>
     )

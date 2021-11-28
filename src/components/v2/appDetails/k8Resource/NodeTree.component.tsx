@@ -4,14 +4,16 @@ import { iNode, iNodes } from '../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch } from "react-router";
 import { NavLink } from 'react-router-dom';
+import IndexStore from '../index.store';
+import { useSharedState } from '../../utils/useSharedState';
+import { node } from 'prop-types';
 
 
 function NodeTreeComponent() {
     const { url, path } = useRouteMatch();
     const history = useHistory();
-
+    const [nodes] =  useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const [selectedNodeKind, setSelectedNodeKind] = useState("")
-
     const [{ treeNodes }, dispatch] = useNodeTree();
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
@@ -39,20 +41,16 @@ function NodeTreeComponent() {
         if (!selectedNodeKind && firstNode && firstNode.childNodes && firstNode.childNodes.length > 0) {
             let link = `${url}/${firstNode.childNodes[0].name.toLowerCase()}`;
             history.push(link);
-
-            // dispatch({
-            //     type: NodeTreeActions.ParentNodeClick,
-            //     selectedNode: firstNode,
-            // })
         }
 
     }, [treeNodes, selectedNodeKind ])
 
     useEffect(() => {
         dispatch({
-            type: NodeTreeActions.Init
+            type: NodeTreeActions.Init,
+            nodes: nodes
         })
-    }, [])
+    }, [nodes.length])
 
     const makeNodeTree = (treeNodes: iNodes, parentNode?: iNode) => {
         return treeNodes.map((treeNode: iNode, index: number) => {

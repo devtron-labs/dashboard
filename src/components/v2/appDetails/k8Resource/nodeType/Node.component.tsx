@@ -9,6 +9,7 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
 import { NodeType } from '../../appDetails.type';
+import { useSharedState } from '../../../utils/useSharedState';
 
 import './nodeType.css'
 
@@ -17,10 +18,11 @@ function NodeComponent() {
     const { path, url } = useRouteMatch();
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
-
+    const [nodes] =  useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
+    
     const params = useParams<{ nodeType: NodeType }>()
 
-    const appDetailsNodes = IndexStore.getAppDetailsNodes()
+    //const appDetailsNodes = IndexStore.getAppDetailsNodes()
     const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
     useEffect(() => {
@@ -68,7 +70,7 @@ function NodeComponent() {
 
                 <div className="generic-body">
                     {
-                        appDetailsNodes.map((node, index) => {
+                        nodes.map((node, index) => {
                             if (node.kind.toLowerCase() === params.nodeType) {
                                 return (
                                     <div className="row m-0" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
@@ -79,7 +81,7 @@ function NodeComponent() {
                                                 style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
                                             />
                                             <div className="ml-6">{node.name}</div>
-                                            <div className="ml-6">healthy</div>
+                                            <div className="ml-6">{node.health?.status}</div>
                                             <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
                                             <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
 
@@ -92,7 +94,7 @@ function NodeComponent() {
                                             }
                                         </div>
 
-                                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
+                                        {(params.nodeType === NodeType.Service) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
                                             {node.name + "." + node.namespace}  : portnumber
                                             <Tippy
                                                 className="default-tt"
@@ -164,3 +166,4 @@ function NodeComponent() {
 }
 
 export default NodeComponent
+
