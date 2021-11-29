@@ -80,12 +80,30 @@ function NodeComponent() {
                                                 className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
                                                 style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
                                             />
-                                            <div className="ml-6">{node.name}</div>
-                                            <div className="ml-6">{node.health?.status}</div>
-                                            <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
-                                            <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="learn-more-href ml-6 cursor">Events</NavLink>
+                                             <div className="flexbox">
+                                                    <div>
+                                                        <div>{node.name}</div>
+                                                        <div className="cg-5">{node.health?.status}</div>
+                                                    </div>
+                                                    <div className="">
+                                                        <Tippy
+                                                            className="default-tt"
+                                                            arrow={false}
+                                                            placement="bottom"
+                                                            content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                                            trigger='mouseenter click'
+                                                        >
+                                                            <Clipboard
+                                                                className="hover-only icon-dim-12 pointer ml-8 mr-8"
+                                                                onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
+                                                            />
+                                                        </Tippy>
+                                                        <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">Manifest</NavLink>
+                                                        <NavLink to={`${url}/${node.name}/${NodeDetailTabs.EVENTS.toLowerCase()}`} className="fw-6 cb-5 ml-6 cursor">Events</NavLink>
+                                                    </div>
+                                                </div>
 
-                                            {params.nodeType === NodeType.Pod &&
+                                            {params.nodeType === NodeType.Pod.toLowerCase() &&
                                                 <React.Fragment>
                                                     <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
                                                     <NavLink to={`${url}/${node.name}/${NodeDetailTabs.MANIFEST.toLowerCase()}`} className="learn-more-href ml-6 cursor">Manifest</NavLink>
@@ -94,7 +112,7 @@ function NodeComponent() {
                                             }
                                         </div>
 
-                                        {(params.nodeType === NodeType.Service) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
+                                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
                                             {node.name + "." + node.namespace}  : portnumber
                                             <Tippy
                                                 className="default-tt"

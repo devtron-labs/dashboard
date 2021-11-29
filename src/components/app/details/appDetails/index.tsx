@@ -1,9 +1,9 @@
 import React from 'react';
 import Select, { components } from 'react-select';
-import AppDetails from '../../../externalApp/src/components/apps/details/appDetails/AppDetails';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import {useAsync, multiSelectStyles, SingleSelectOption as Option,} from '../../../common';
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
+import AppDetails from './AppDetails';
 
 export default function Index() {
     return (

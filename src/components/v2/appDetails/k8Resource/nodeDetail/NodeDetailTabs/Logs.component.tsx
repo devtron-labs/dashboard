@@ -29,7 +29,7 @@ function LogsComponent({selectedTab}) {
     }
 
     return (<>
-        <div className="flex left bcn-0">
+        <div className="flex left bcn-0 pl-20 pt-8">
             <Tippy
                 className="default-tt"
                 arrow={false}
@@ -40,7 +40,7 @@ function LogsComponent({selectedTab}) {
                     className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
                     onClick={(e) => handleLogsPause(!logsPaused)}
                 >
-                    {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
+                    {logsPaused ? <PlayButton className="icon-dim-16"/> : <StopButton className="stop-btn icon-dim-16 br-4 fcr-5" />}
                 </div>
             </Tippy>
 
@@ -64,7 +64,7 @@ function LogsComponent({selectedTab}) {
 
         </div>
 
-        <div className="bcy-2 loading-dots">
+        <div className="bcy-2 loading-dots pl-20 fs-13 pt-2 pb-2">
             Connecting
         </div>
 

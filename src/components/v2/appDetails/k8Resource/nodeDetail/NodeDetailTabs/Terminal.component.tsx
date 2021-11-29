@@ -6,8 +6,8 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTabs } from '../../../node.type';
-
-function TerminalComponent({selectedTab}) {
+import './nodeDetailTab.css'
+function TerminalComponent({ selectedTab }) {
 
     const [logsPaused, toggleLogStream] = useState(false);
     const [terminalCleared, setTerminalCleared] = useState(false);
@@ -32,8 +32,8 @@ function TerminalComponent({selectedTab}) {
         toggleLogStream(paused);
     }
 
-    return (<>
-        <div className="flex left bcn-0">
+    return (<div>
+        <div className="flex left bcn-0 pt-8 pl-20">
             <Tippy
                 className="default-tt"
                 arrow={false}
@@ -41,12 +41,17 @@ function TerminalComponent({selectedTab}) {
                 content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
             >
                 <div
-                    className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
+                    className={`toggle-logs mr-12 flex ${logsPaused ? 'play' : 'stop'}`}
                     onClick={(e) => handleLogsPause(!logsPaused)}
                 >
                     {isSocketConnecting ?
-                        <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} />
-                        : <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />}
+                        <span>
+                            <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} />
+                        </span>
+                        : <span>
+                            <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />
+                        </span>
+                    }
                 </div>
             </Tippy>
 
@@ -70,14 +75,14 @@ function TerminalComponent({selectedTab}) {
 
         </div>
 
-        <div className="bcy-2 loading-dots">
+        <div className="bcy-2 pl-20 loading-dots">
             Connecting
         </div>
 
         <div className="bcn-0 pl-20 pr-20" style={{ height: '460px' }}>
 
         </div>
-    </>
+    </div>
     )
 }
 

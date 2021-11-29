@@ -4,6 +4,7 @@ export interface iLink {
     icon?: string;
     className?: string;
     isSelected: boolean;
+    isDisabled?: boolean;
     isHidden?: boolean;
     status?: string;
     count?: number;

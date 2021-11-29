@@ -2,12 +2,12 @@ import React, {useState } from 'react'
 import { DefaultViewTabsJSON } from '../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../utils/tabUtils/useTab';
-import EventsComponent from './NodeDetailTabs/Events.component';
-import LogsComponent from './NodeDetailTabs/Logs.component';
-import ManifestComponent from './NodeDetailTabs/Manifest.component';
-import TerminalComponent from './NodeDetailTabs/Terminal.component';
+import EventsComponent from './nodeDetailTabs/Events.component';
+import LogsComponent from './nodeDetailTabs/Logs.component';
+import ManifestComponent from './nodeDetailTabs/Manifest.component';
+import TerminalComponent from './nodeDetailTabs/Terminal.component';
 import './nodeDetail.css';
-import SummaryComponent from './NodeDetailTabs/Summary.component';
+import SummaryComponent from './nodeDetailTabs/Summary.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTabs } from '../../node.type';

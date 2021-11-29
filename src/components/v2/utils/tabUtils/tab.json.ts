@@ -26,15 +26,18 @@ export const DefaultViewTabsJSON = [
 export const ManifestTabJSON = [
     {
         name: "Live Manifest",
-        isSelected: true
-    },
+        isSelected: true,
+        isDisabled: false
+     },
     {
         name: "Compare",
-        isSelected: false
+        isSelected: false,
+        isDisabled: true
     },
     {
         name: "Desired manifest",
-        isSelected: false
+        isSelected: false,
+        isDisabled: true
     }
 ]
 

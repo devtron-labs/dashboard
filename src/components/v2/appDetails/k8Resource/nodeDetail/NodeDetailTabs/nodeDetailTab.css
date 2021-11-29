@@ -1,0 +1,7 @@
+.no-drop{
+    cursor: no-drop;
+}
+
+.table__padding-left{
+    padding-left: 20px !important;
+}
