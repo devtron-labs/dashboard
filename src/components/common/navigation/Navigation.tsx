@@ -69,12 +69,7 @@ const NavigationListBottom = [
 		title: 'View on Github',
 		iconClass: 'nav-short-github',
 		href: 'https://github.com/devtron-labs/devtron',
-	},
-	{
-		title: 'Discord Community',
-		iconClass: 'nav-short-discord',
-		href: 'https://discord.gg/jsRG5qx2gp',
-	},
+	}
 ];
 export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
 
@@ -162,6 +157,16 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					</a>
 				</div>
 				<div className="more-option-card__title">
+					<a className="more-option-card__link" href="https://discord.gg/jsRG5qx2gp" target="_blank" rel="noreferrer noopener" onClick={(event) => {
+						ReactGA.event({
+							category: 'Main Navigation',
+							action: `Join Discord community clicked`,
+						})
+					}}>
+						<div className="more-option-card__rect">Join Discord Community</div>
+					</a>
+				</div>
+				<div className="more-option-card__title">
 					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer noopener" onClick={(event) => {
 						ReactGA.event({
 							category: 'Main Navigation',
@@ -179,7 +184,7 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
 		return <>
 			<nav>
-				<aside className="short-nav nav-grid nav-grid--collapsed">
+				<aside className="short-nav nav-grid nav-grid--collapsed" style={{marginBottom:30}}>
 					<NavLink to={URLS.APP} onClick={(event) => {
 						ReactGA.event({
 							category: 'Main Navigation',
