@@ -2,17 +2,17 @@ import React, {useState } from 'react'
 import { DefaultViewTabsJSON } from '../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../utils/tabUtils/useTab';
-import EventsComponent from './defaultViewActionTabs/Events.component';
-import LogsComponent from './defaultViewActionTabs/Logs.component';
-import ManifestComponent from './defaultViewActionTabs/Manifest.component';
-import TerminalComponent from './defaultViewActionTabs/Terminal.component';
-import './defaultViewTab.css';
-import SummaryComponent from './defaultViewActionTabs/Summary.component';
+import EventsComponent from './NodeDetailTabs/Events.component';
+import LogsComponent from './NodeDetailTabs/Logs.component';
+import ManifestComponent from './NodeDetailTabs/Manifest.component';
+import TerminalComponent from './NodeDetailTabs/Terminal.component';
+import './nodeDetail.css';
+import SummaryComponent from './NodeDetailTabs/Summary.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTabs } from '../../node.type';
 
-function DefaultViewTabComponent() {
+function NodeDetailComponent() {
 
     const [{ tabs }, dispatch] = useTab(DefaultViewTabsJSON);
     const [selectedTabName, setSelectedTabName] = useState("")
@@ -50,4 +50,4 @@ function DefaultViewTabComponent() {
     )
 }
 
-export default DefaultViewTabComponent
+export default NodeDetailComponent

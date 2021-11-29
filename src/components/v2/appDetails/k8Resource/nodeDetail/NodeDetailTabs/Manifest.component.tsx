@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
@@ -8,12 +8,14 @@ import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTabs } from '../../../node.type';
+import { getManifestResource } from '../nodeDetail.api';
 
 function ManifestComponent({selectedTab}) {
     
     const [{ tabs }, dispatch] = useTab(ManifestTabJSON);
     const { path, url } = useRouteMatch()
     const params = useParams<{ actionName: string, podName: string }>()
+    const [manifest, setManifest] = useState("...");
 
     useEffect(() => {
         selectedTab(NodeDetailTabs.MANIFEST)
@@ -21,11 +23,14 @@ function ManifestComponent({selectedTab}) {
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)
         }
-    }, [params.podName])
 
-    // useEffect(() => {
-    //     selectedTab(NodeDetailTabs.MANIFEST)
-    // }, [])
+        getManifestResource().then((response) => {
+            setManifest(response.result.manifest)
+        }).catch((err) => {
+            console.log("err", err)
+        })
+
+    }, [params.podName])
 
     const handleTabClick = (_tabName: string) => {
         dispatch({
@@ -39,19 +44,6 @@ function ManifestComponent({selectedTab}) {
             handleTabClick(params.actionName)
         }
     }, [params.actionName])
-
-    const renderCodeEditor = () => {
-        return <div>
-            <CodeEditor
-                theme='vs-gray--dt'
-                height={500}
-                // value={this.state.codeEditorPayload}
-                mode="yaml"
-            // onChange={(event) => { this.handleConfigChange(event) }}
-            >
-            </CodeEditor>
-        </div>
-    }
     
 
     return (
@@ -73,7 +65,14 @@ function ManifestComponent({selectedTab}) {
                     <Edit className="icon-dim-16 pr-4 fc-5" /> Edit Live Manifest
                 </div>
             </div>
-            {renderCodeEditor()}
+            <CodeEditor
+                theme='vs-gray--dt'
+                height={500}
+                value={manifest}
+                mode="yaml"
+            // onChange={(event) => { this.handleConfigChange(event) }}
+            >
+            </CodeEditor>
         </div>
     )
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchString } from '../../../../../common';
-import '../defaultViewTab.css';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTabs } from '../../../node.type';
