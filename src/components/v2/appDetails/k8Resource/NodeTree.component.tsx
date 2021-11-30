@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg';
-import { iNode, iNodes } from '../node.type';
 import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch } from "react-router";
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../index.store';
 import { useSharedState } from '../../utils/useSharedState';
 import { node } from 'prop-types';
+import { iNode, iNodes } from '../appDetails.type';
 
 
 function NodeTreeComponent() {

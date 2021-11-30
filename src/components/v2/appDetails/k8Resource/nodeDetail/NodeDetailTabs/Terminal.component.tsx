@@ -5,7 +5,7 @@ import { ReactComponent as Connect } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
-import { NodeDetailTabs } from '../../../node.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 import './nodeDetailTab.css'
 function TerminalComponent({ selectedTab }) {
 
@@ -17,7 +17,7 @@ function TerminalComponent({ selectedTab }) {
     const params = useParams<{ actionName: string, podName: string }>()
 
     useEffect(() => {
-        selectedTab(NodeDetailTabs.TERMINAL)
+        selectedTab(NodeDetailTab.TERMINAL)
 
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)

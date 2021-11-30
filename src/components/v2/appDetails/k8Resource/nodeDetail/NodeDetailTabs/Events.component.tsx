@@ -3,7 +3,7 @@ import TableUtil from '../../../../utils/tableUtils/Table.util'
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import IndexStore from '../../../index.store';
 import AppDetailsStore from '../../../appDetails.store';
-import { NodeDetailTabs } from '../../../node.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 import { getEvent } from '../nodeDetail.api';
 
 
@@ -38,18 +38,20 @@ const EventTableJSON = {
 
 function EventsComponent({selectedTab}) {
 
-    const params = useParams<{ actionName: string, podName: string }>()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string  }>()
     const { path, url } = useRouteMatch()
     const [event, setEvent] = useState("...");
     
     useEffect(() => {
-        selectedTab(NodeDetailTabs.EVENTS)
+        selectedTab(NodeDetailTab.EVENTS)
 
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)
         }
 
-        getEvent().then((response) => {
+        const appDetails = IndexStore.getAppDetails();
+
+        getEvent(appDetails, params.podName).then((response) => {
             console.log("response", response);
             //setEvent(response.result.manifest)
         }).catch((err) => {

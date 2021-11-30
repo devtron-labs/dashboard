@@ -1,18 +1,14 @@
 import { get } from "../../../../../services/api";
+import { AppDetails } from "../../appDetails.type";
 
-// export const getManifestResource = (appName: string, _envId: number) => {
-//     return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
-// }
 
-export const getEvent = () => {
-    //http://localhost:3000/orchestrator/api/v1/applications/aviral25nov-devtron-demo/events?resourceNamespace=devtron-demo&resourceUID=925f8545-306c-4470-8256-8c8e4e97efa8&resourceName=secret-cm-472
-    return get(`api/v1/applications/aviral25nov-devtron-demo/events?resourceNamespace=devtron-demo&resourceUID=925f8545-306c-4470-8256-8c8e4e97efa8&resourceName=secret-cm-472`)
+export const getEvent = (ad: AppDetails, nodeName: string) => {
+    const cn =  ad.resourceTree.nodes.filter((node)=> node.name === nodeName)[0]
+    return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`)
 }
 
-//export const getManifestResource = (appName: string, envName: string, version: string, namespace: string, group: string, kind: string, name: string ) => {
-//  if (!group) group = '';
-export const getManifestResource = () => {
-    //http://localhost:3000/orchestrator/api/v1/applications/aviral25nov-devtron-demo/resource?version=v1&namespace=devtron-demo&group=&kind=Secret&resourceName=secret-cm-472
-    //return get(`api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`)
-    return get(`api/v1/applications/aviral25nov-devtron-demo/resource?version=v1&namespace=devtron-demo&group=&kind=Secret&resourceName=secret-cm-472`)
+export const getManifestResource = (ad: AppDetails, nodeName: string) => {
+    const cn =  ad.resourceTree.nodes.filter((node)=> node.name === nodeName)[0]
+    //TODO: fix group
+    return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=&kind=${cn.kind}&resourceName=${cn.name}`)
 }

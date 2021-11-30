@@ -157,3 +157,11 @@ export interface TargetLabel {
     "app.kubernetes.io/instance": string
     "app.kubernetes.io/name": string
 }
+
+export interface iNodes extends Array<iNode> { }
+
+export interface iNode extends Node {
+  childNodes: iNodes;
+  type: NodeType;
+  isSelected: boolean
+}

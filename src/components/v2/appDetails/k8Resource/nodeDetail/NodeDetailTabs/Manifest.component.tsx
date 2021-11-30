@@ -6,29 +6,31 @@ import { useParams, useRouteMatch } from 'react-router';
 
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import AppDetailsStore from '../../../appDetails.store';
-import { NodeDetailTabs } from '../../../node.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 import { getManifestResource } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
-import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
+import IndexStore from '../../../index.store';
 
 function ManifestComponent({ selectedTab }) {
 
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string, podName: string }>()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
     const [manifest, setManifest] = useState("...");
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('');
     const [desiredManifest, setDesiredManifest] = useState('');
     const [diffMode, setDiffMode] = useState(false)
 
     useEffect(() => {
-        selectedTab(NodeDetailTabs.MANIFEST)
+        selectedTab(NodeDetailTab.MANIFEST)
 
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)
         }
 
-        getManifestResource().then((response) => {
+        const appDetails = IndexStore.getAppDetails();
+
+        getManifestResource(appDetails, params.podName).then((response) => {
             setManifest(response.result.manifest)
             setActiveManifestEditorData(response.result.manifest)
         }).catch((err) => {

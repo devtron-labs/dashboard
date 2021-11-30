@@ -5,7 +5,7 @@ import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.s
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
-import { NodeDetailTabs } from '../../../node.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 
 function LogsComponent({selectedTab}) {
     const [logsPaused, toggleLogStream] = useState(false);
@@ -14,7 +14,7 @@ function LogsComponent({selectedTab}) {
     const params = useParams<{ actionName: string, podName: string }>()
 
     useEffect(() => {
-        selectedTab(NodeDetailTabs.LOGS)
+        selectedTab(NodeDetailTab.LOGS)
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)
         }

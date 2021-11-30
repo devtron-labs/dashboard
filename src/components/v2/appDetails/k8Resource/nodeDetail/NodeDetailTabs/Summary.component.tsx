@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchString } from '../../../../../common';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
-import { NodeDetailTabs } from '../../../node.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 
 
 const SummaryComponent = ({selectedTab}) => {
@@ -14,7 +14,7 @@ const SummaryComponent = ({selectedTab}) => {
     const params = useParams<{ actionName: string, podName: string }>()
 
     useEffect(() => {
-        selectedTab(NodeDetailTabs.SUMMARY)
+        selectedTab(NodeDetailTab.SUMMARY)
 
         if (params.podName) {
             AppDetailsStore.addApplicationObjectTab(params.podName, url)
