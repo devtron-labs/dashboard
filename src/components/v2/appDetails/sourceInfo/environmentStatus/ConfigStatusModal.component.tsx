@@ -1,12 +1,12 @@
 import React from 'react';
-import { VisibleModal } from '../../../../common';
+import { Drawer, VisibleModal } from '../../../../common';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ReactComponent as Warning } from '../../../assets/icons/ic-errorInfo.svg';
 
 function ConfigStatusModalComponent({ close, status }) {
     return (
         <div>
-            <VisibleModal className="app-status__material-modal">
+              <Drawer position="right" width="50%" onClose={close} >
                 <div className="app-status-detail-modal bcn-0 pt-12">
 
                     <div className="app-status-detail__header box-shadow pb-12">
@@ -42,7 +42,7 @@ function ConfigStatusModalComponent({ close, status }) {
                     <div className="app-status-detail__header ">
                     </div>
                 </div>
-            </VisibleModal>
+            </Drawer>
         </div>
     )
 }
