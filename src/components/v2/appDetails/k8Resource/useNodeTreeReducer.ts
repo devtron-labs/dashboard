@@ -20,7 +20,7 @@ const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => 
     return treeNodes.map((node: iNode) => {
 
         if(node.name === selectedNode.name){
-            node.isSelected = true
+            node.isSelected = !!true
         }
 
         return node

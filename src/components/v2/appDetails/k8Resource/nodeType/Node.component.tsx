@@ -82,7 +82,7 @@ function NodeComponent() {
                                 return (
                                     <div className="row m-0" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
 
-                                        <div className={"col-md-6 pt-9 pb-9 flex left pl-0"} >
+                                        <div className={"col-md-6 pt-9 pb-9 flex left pl-0 top"} >
                                             <DropDown
                                                 className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'}`}
                                                 style={{ ['--rotateBy' as any]: !node["isSelected"] ? '-90deg' : '0deg' }}
