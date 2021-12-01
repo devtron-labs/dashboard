@@ -57,7 +57,7 @@ const AppDetailsComponent = ({ envType }) => {
         setTimeout(() => {
             history.push(url)
         }, 1);
-       
+
     }
 
     return (
@@ -70,17 +70,22 @@ const AppDetailsComponent = ({ envType }) => {
                     <SourceInfoComponent />
                     <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                         <ul className="tab-list">
-                            { applicationObjectTabs.map((tab: iLink, index: number) => {
+                            {applicationObjectTabs.map((tab: iLink, index: number) => {
                                 return (
                                     <li key={index + "tab"} className="flex left  ellipsis-right">
-                                        <NavLink to={`${tab.url}`} className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""} tab-list__tab cursor cn-9 fw-6 no-decor flex left`}>
-                                            <div className={`pl-12 pt-8 pb-8 pr-12 flex left ${tab.isSelected ? "fw-6 cn-9" : ""} "`} >
-                                                {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
-                                                {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                                <span className=" mr-8"> {tab.name}</span>
-                                            </div>
-                                        </NavLink>
-                                        {(tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8) && <span onClick={(e) => handleCloseTab(e, tab.name)}><Close className="icon-dim-16" /> </span>}
+                                        <div className={`${tab.isSelected ? " resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
+                                            <NavLink to={`${tab.url}`} className={`tab-list__tab cursor cn-9 fw-6 no-decor `}>
+                                                <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
+                                                    {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
+                                                    {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
+                                                    <span className=" mr-8"> {tab.name}</span>
+                                                </div>
+                                            </NavLink>
+
+                                            {(tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8) &&
+                                              <Close onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" /> 
+                                            }
+                                        </div>
                                     </li>
                                 )
                             })
