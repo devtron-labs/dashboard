@@ -4,9 +4,10 @@ import { iLink } from '../utils/tabUtils/link.type';
 import './appDetails.css';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import { useRouteMatch, Redirect, useParams } from 'react-router';
+import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import { Progressing } from '../../common';
 import AppDetailsStore from './appDetails.store';
@@ -19,15 +20,16 @@ import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 
 
 const AppDetailsComponent = ({ envType }) => {
-    const params = useParams<{ appId: string, envId: string }>()
+    const params = useParams<{ appId: string, envId: string, nodeType: string }>()
     const { path, url } = useRouteMatch();
     const [applicationObjectTabs] = useSharedState(AppDetailsStore.getApplicationObjectTabs(), AppDetailsStore.getApplicationObjectTabsObservable())
     const [isLoading, setIsLoading] = useState(true)
+    const history = useHistory();
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
         AppDetailsStore.initApplicationObjectTab(url)
-
+        IndexStore.getAppDetails()
         const init = async () => {
             let response = null;
             try {
@@ -49,6 +51,15 @@ const AppDetailsComponent = ({ envType }) => {
         init();
     }, [params.appId, params.envId])
 
+    const handleCloseTab = (e: any, tabName: string) => {
+        e.stopPropagation()
+        AppDetailsStore.removeApplicationObjectTab(tabName)
+        setTimeout(() => {
+            history.push(url)
+        }, 1);
+       
+    }
+
     return (
         <div>
             {isLoading ? <div style={{ height: "560px" }} className="flex">
@@ -59,16 +70,17 @@ const AppDetailsComponent = ({ envType }) => {
                     <SourceInfoComponent />
                     <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                         <ul className="tab-list">
-                            {applicationObjectTabs && applicationObjectTabs.map((tab: iLink, index: number) => {
+                            { applicationObjectTabs.map((tab: iLink, index: number) => {
                                 return (
-                                    <li key={index + "tab"} className=" ellipsis-right">
+                                    <li key={index + "tab"} className="flex left  ellipsis-right">
                                         <NavLink to={`${tab.url}`} className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""} tab-list__tab cursor cn-9 fw-6 no-decor flex left`}>
                                             <div className={`pl-12 pt-8 pb-8 pr-12 flex left ${tab.isSelected ? "fw-6 cn-9" : ""} "`} >
                                                 {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                                 {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                                {tab.name}
+                                                <span className=" mr-8"> {tab.name}</span>
                                             </div>
                                         </NavLink>
+                                        {(tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8) && <span onClick={(e) => handleCloseTab(e, tab.name)}><Close className="icon-dim-16" /> </span>}
                                     </li>
                                 )
                             })

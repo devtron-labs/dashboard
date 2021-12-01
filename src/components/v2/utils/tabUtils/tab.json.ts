@@ -40,21 +40,3 @@ export const ManifestTabJSON = [
         isDisabled: true
     }
 ]
-
-export const StatusViewTabJSON = [
-    {
-        status: "HEALTHY",
-        count: 6,
-        isSelected: false
-    },
-    {
-        status: "FAILED",
-        count: 1,
-        isSelected: false
-    }, 
-    {
-        status: "RUNNING",
-        count: 6,
-        isSelected: false
-    }
-]

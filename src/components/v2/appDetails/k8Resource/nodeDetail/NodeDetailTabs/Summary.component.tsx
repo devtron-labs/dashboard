@@ -11,13 +11,13 @@ const SummaryComponent = ({selectedTab}) => {
     const [manifest, setManifest] = useState(null);
     const [isManifestLoading, setManifestLoading] = useState(true);
     const { path, url } = useRouteMatch()
-    const params = useParams<{ actionName: string, podName: string }>()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
 
     useEffect(() => {
         selectedTab(NodeDetailTab.SUMMARY)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
         }
     }, [params.podName])
 

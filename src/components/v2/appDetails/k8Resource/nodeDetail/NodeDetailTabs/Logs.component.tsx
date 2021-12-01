@@ -6,19 +6,51 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
+import appDetails from '../../../../../app/details/appDetails';
+import { getLogs } from '../nodeDetail.api';
+import IndexStore from '../../../index.store';
 
 function LogsComponent({selectedTab}) {
     const [logsPaused, toggleLogStream] = useState(false);
     const [terminalCleared, setTerminalCleared] = useState(false);
     const { path, url } = useRouteMatch()
-    const params = useParams<{ actionName: string, podName: string }>()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
 
     useEffect(() => {
+
         selectedTab(NodeDetailTab.LOGS)
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
         }
+
+        const appDetails = IndexStore.getAppDetails();
+
     }, [params.podName])
+
+    function getPods(){
+        // let pods = [];
+        // let selectedNodeItems= [];
+        // if (selectedLogsNode){
+        //     selectedNodeItems= getSelectedNodeItems(selectedLogsNode, nodeItems, isAppDeployment, nodesMap, kind);
+        //     setSelectedNodesItem(selectedNodeItems)
+        // }
+
+        // selectedNodeItems.map((item) => {
+        //     pods.push(item.value)
+        // })
+        // return pods
+    }
+
+    function getLogsURL() {
+
+        let pods = getPods();
+        getLogs(appDetails, params.podName).then((response) => {
+            console.log("response", response);
+            // setEvent(response.result.manifest)
+        }).catch((err) => {
+            console.log("err", err)
+        })
+    }
 
     // useEffect(() => {
     //     selectedTab(NodeDetailTabs.LOGS)

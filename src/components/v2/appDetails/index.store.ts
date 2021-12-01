@@ -55,7 +55,6 @@ const IndexStore = {
     },
 
     setAppDetails: (data: AppDetails) => {
-        console.log("setting app details", data)
         _appDetails = data
         publishAppDetails()
     },

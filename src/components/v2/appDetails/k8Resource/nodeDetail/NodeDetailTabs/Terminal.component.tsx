@@ -14,13 +14,13 @@ function TerminalComponent({ selectedTab }) {
     const [isReconnection, setIsReconnection] = useState(false);
     const [isSocketConnecting, setSocketConnection] = useState<'CONNECTING' | 'DISCONNECTING'>('CONNECTING')
     const { path, url } = useRouteMatch()
-    const params = useParams<{ actionName: string, podName: string }>()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
         }
     }, [params.podName])
 

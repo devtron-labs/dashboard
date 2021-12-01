@@ -3,7 +3,6 @@ import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams, useRouteMatch } from 'react-router';
-
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
@@ -25,7 +24,8 @@ function ManifestComponent({ selectedTab }) {
         selectedTab(NodeDetailTab.MANIFEST)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.podName, url)
+            console.log('adding application object tab', new Date())
+            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
         }
 
         const appDetails = IndexStore.getAppDetails();

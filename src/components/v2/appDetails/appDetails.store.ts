@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import { ApplicationObject } from "./appDetails.type";
 import { URLS } from "../../../config";
+import { Tab } from '../../configMaps/ConfigMap';
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
@@ -30,12 +31,13 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    addApplicationObjectTab: (tabName: string, tabURL: string) => {
+    addApplicationObjectTab: (tabKind: string, tabName: string, tabURL: string) => {
 
-        if(!tabName || !tabURL) return
+        if (!tabName || !tabURL || !tabKind) return
 
         let alredyAdded = false
-     
+        tabName = tabKind + '/...' + tabName.slice(-6)
+
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false
@@ -49,6 +51,21 @@ const AppDetailsStore = {
             addAOT(tabName, tabURL, true)
         }
 
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
+    },
+    removeApplicationObjectTab: (tabName: string) => {
+        let _applicationObjectTabs = []
+
+        for (let index = 0; index < applicationObjectTabs.length; index++) {
+            const tab = applicationObjectTabs[index];
+            tab.isSelected = index === 0
+            if (tab.name.toLowerCase() !== tabName.toLowerCase()) {
+                _applicationObjectTabs.push(tab)
+            }
+        }
+
+        applicationObjectTabs = _applicationObjectTabs
+        
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     markApplicationObjectTabActive: (tabName: string) => {

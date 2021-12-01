@@ -29,4 +29,9 @@
     margin-right: 16px;
 }
 
-
+.app-detail__default-tab{
+    max-width: 173px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
