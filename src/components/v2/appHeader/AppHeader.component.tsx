@@ -89,7 +89,7 @@ function AppHeaderComponent() {
 
     return (
         <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
-        <h1 className="m-0 fw-6 flex left fs-18 cn-9">
+        <h1 className="m-0 flex left fs-18 cn-9">
             <BreadCrumb breadcrumbs={breadcrumbs} />
             {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
                 <Tippy className="default-tt " arrow={false} content={'About app'}>
@@ -117,7 +117,7 @@ function AppHeaderComponent() {
         </h1>
 
         <ul role="tablist" className="tab-list">
-            <li className="tab-list__tab ellipsis-right">
+            <li className="tab-list__tab ellipsis-right fs-13">
                 <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}/${envDetails.envId}`} className="tab-list__tab-link"
                     onClick={(event) => {
                         ReactGA.event({
