@@ -3,6 +3,7 @@ import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../../common'
 import ScalePodModalComponent from './ScalePodModal.component';
 import './sourceInfo.css';
+import {ReactComponent as CodeCompare} from '../../assets/icons/ic-code-compare.svg'
 
 function EnvironmentSelectorComponent() {
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
@@ -47,8 +48,8 @@ function EnvironmentSelectorComponent() {
                 </div>
             </div>
             <div >
-                <button className="cta pb-16" onClick={() => setshowHibernateConfirmationModal(true)}>
-                    Scale Pd To 0
+                <button className="flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
+                   <CodeCompare/> Scale objects
             </button>
             </div>
             {showhiberbateConfirmationModal && <ScalePodModalComponent onClose={() => setshowHibernateConfirmationModal(false)} />}
