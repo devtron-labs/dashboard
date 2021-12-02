@@ -35,3 +35,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.resource-tab__node {
+    margin-right: 0px !important;
+}

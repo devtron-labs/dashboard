@@ -4,7 +4,7 @@ import { iLink } from '../utils/tabUtils/link.type';
 import './appDetails.css';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
@@ -74,16 +74,16 @@ const AppDetailsComponent = ({ envType }) => {
                                 return (
                                     <li key={index + "tab"} className="flex left  ellipsis-right">
                                         <div className={`${tab.isSelected ? " resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
-                                            <NavLink to={`${tab.url}`} className={`tab-list__tab cursor cn-9 fw-6 no-decor `}>
+                                            <NavLink to={`${tab.url}`} className={`tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
                                                 <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
                                                     {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                                     {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                                    <span className=" mr-8"> {tab.name}</span>
+                                                    <span className={`${tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8 ? 'mr-8' : 'ml-8'} `}> {tab.name}</span>
                                                 </div>
                                             </NavLink>
 
                                             {(tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8) &&
-                                              <Close onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" /> 
+                                              <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" /> 
                                             }
                                         </div>
                                     </li>
