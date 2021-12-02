@@ -31,3 +31,7 @@
     /* color: white; */
     opacity: 0.6;
 }
+
+.scale-pod__btn{
+    max-height: 32px;
+}

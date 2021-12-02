@@ -31,7 +31,7 @@ const AppDetailJSON = {
 
 function AppStatusDetailModal({ message, close, status }) {
     return (
-        <Drawer position="right" width="50%" onClose={close} >
+        <Drawer position="right" width="50%" >
                 <div className="app-status-detail-modal bcn-0 pt-12">
 
                     <div className="app-status-detail__header box-shadow pb-12 mb-8">

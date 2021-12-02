@@ -3,7 +3,7 @@ import Select, { components } from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../../common'
 import ScalePodModalComponent from './ScalePodModal.component';
 import './sourceInfo.css';
-import {ReactComponent as CodeCompare} from '../../assets/icons/ic-code-compare.svg'
+import { ReactComponent as CodeCompare } from '../../assets/icons/ic-code-compare.svg'
 
 function EnvironmentSelectorComponent() {
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
@@ -38,7 +38,7 @@ function EnvironmentSelectorComponent() {
                             // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                             styles={{
                                 ...multiSelectStyles,
-                                control: (base, state) => ({ ...base, border: '1px solid #0066cc',color: '#0066cc', fontWeight: 600, backgroundColor: 'white', minHeight: '32px !important' }),
+                                control: (base, state) => ({ ...base, border: '1px solid #0066cc', color: '#0066cc', fontWeight: 600, backgroundColor: 'white', minHeight: '32px !important' }),
                                 singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
                             }}
                             // isDisabled={disabled}
@@ -48,8 +48,8 @@ function EnvironmentSelectorComponent() {
                 </div>
             </div>
             <div >
-                <button className="flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
-                   <CodeCompare/> Scale objects
+                <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
+                    <CodeCompare className="mr-4" /> Scale objects
             </button>
             </div>
             {showhiberbateConfirmationModal && <ScalePodModalComponent onClose={() => setshowHibernateConfirmationModal(false)} />}
