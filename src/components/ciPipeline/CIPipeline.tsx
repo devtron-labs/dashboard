@@ -346,7 +346,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return isValid;
         }, true);
         valid = valid && errObj.isValid;
-        let scanValidation = this.state.form.scanEnabled || !window._env_.SECURITY_SCANNING_FORCED;
+        let scanValidation = this.state.form.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING;
         if (!scanValidation) {
             this.setState({ loadingData: false })
             toast.error("Scanning is mandotory, please enable scanning");

@@ -18,7 +18,7 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
 
 export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
     return Promise.all([getCIPipelineNameSuggestion(appId), getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true)]).then(([pipelineNameRes, pipelineMetaConfig]) => {
-        let scanEnabled = (window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.SECURITY_SCANNING_FORCED))
+        let scanEnabled = (window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING))
         return {
             result: {
                 form: {

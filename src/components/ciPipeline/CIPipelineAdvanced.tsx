@@ -297,7 +297,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                         <p className="ci-stage__description mb-0">Perform security scan after container image is built.</p>
                     </div>
                     <div className="" style={{ width: "32px", height: "20px" }}>
-                        <Toggle disabled={window._env_.SECURITY_SCANNING_FORCED && this.props.form.scanEnabled} selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
+                        <Toggle disabled={window._env_.FORCE_SECURITY_SCANNING && this.props.form.scanEnabled} selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
                     </div>
                 </div>
             </div>
