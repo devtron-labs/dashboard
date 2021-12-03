@@ -37,10 +37,10 @@ export default function Docker({ ...props }) {
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback("id", a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList);
     return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-        <h2 className="form__title">Docker registries</h2>
-        <h5 className="form__subtitle">Manage your organization’s docker registries.&nbsp;
+        <h2 className="form__title">Container registries</h2>
+        <h5 className="form__subtitle">Manage your organization’s container registries.&nbsp;
             <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER} rel="noopener noreferrer" target="_blank">
-                Learn more about docker registries
+                Learn more
             </a>
         </h5>
         {dockerRegistryList.map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
@@ -56,7 +56,7 @@ function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryTyp
                     : <List.Logo><Add className="icon-dim-24 fcb-5 vertical-align-middle" /></List.Logo>}
 
                 <div className="flex left">
-                    <List.Title title={id || 'Add docker registry'} subtitle={registryUrl} tag={isDefault ? 'DEFAULT' : ''} />
+                    <List.Title title={id || 'Add Container Registry'} subtitle={registryUrl} tag={isDefault ? 'DEFAULT' : ''} />
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
@@ -209,7 +209,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 <div className="flex left column top">
                     <label htmlFor="" className="form__label w-100">Registry type*</label>
                     <Select name="registryType" tabIndex={2} rootClassName="w-100" onChange={handleOnChange} value={state.registryType.value}>
-                        <Select.Button rootClassName="select-button--docker-register">{selectedDckerRegistryType?.label || `Select Docker Registry`}</Select.Button>
+                        <Select.Button rootClassName="select-button--docker-register">{selectedDckerRegistryType?.label || `Select Container Registry`}</Select.Button>
                         {DockerRegistryType.map(type => <Select.Option value={type.value} key={type.value}>{type.label}</Select.Option>)}
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
@@ -261,7 +261,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                         className="rotate icon-dim-18 pointer fcn-6"
                         style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
                     />
-                    <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}>Advanced Registry URL connection options</label>
+                    <label className="fs-13 mb-0 ml-8 pointer" onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}>Advanced Registry URL Connection Options</label>
                     <a target="_blank" href="https://docs.docker.com/registry/insecure/"><Info className="icon-dim-16 ml-4 mt-5" /></a>
                 </div>}
             {toggleCollapsedAdvancedRegistry &&
@@ -292,7 +292,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                     <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
                     <div className="mr-4"> Set as default </div>
                     <Tippy className="default-tt" arrow={false} placement="top" content={
-                        <span style={{ display: "block", width: "160px" }}> Default docker registry is automatically selected while creating an application. </span>}>
+                        <span style={{ display: "block", width: "160px" }}> Default container registry is automatically selected while creating an application. </span>}>
                         <Question className="icon-dim-20" />
                     </Tippy>
                 </label>

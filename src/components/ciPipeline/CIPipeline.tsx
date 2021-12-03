@@ -346,6 +346,12 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             return isValid;
         }, true);
         valid = valid && errObj.isValid;
+        let scanValidation = this.state.form.scanEnabled || !window._env_.SECURITY_SCANNING_FORCED;
+        if (!scanValidation) {
+            this.setState({ loadingData: false })
+            toast.error("Scanning is mandotory, please enable scanning");
+            return;
+        }
         if (!valid) {
             this.setState({ loadingData: false })
             toast.error("Some Required Fields are missing");
@@ -365,7 +371,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                 this.setState({ loadingData: false });
             })
     }
-   
+
     deletePipeline() {
         deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, Number(this.props.match.params.appId), Number(this.props.match.params.workflowId), false, this.state.form.webhookConditionList).then((response) => {
             if (response) {

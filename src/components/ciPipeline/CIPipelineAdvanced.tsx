@@ -65,11 +65,11 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
         let description, title;
         if (key == 'beforeDockerBuildScripts') {
             title = "Pre-build Stages";
-            description = " These stages are run in sequence before the docker image is built";
+            description = " These stages are run in sequence before the container image is built";
         }
         else {
             title = "Post-build Stages";
-            description = " These stages are run in sequence after the docker image is built";
+            description = " These stages are run in sequence after the container image is built";
         }
         let showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild;
 
@@ -294,10 +294,10 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 <div className="white-card flexbox flex-justify mb-20">
                     <div>
                         <p className="ci-stage__title">Scan for vulnerabilities</p>
-                        <p className="ci-stage__description mb-0">Perform security scan after docker image is built.</p>
+                        <p className="ci-stage__description mb-0">Perform security scan after container image is built.</p>
                     </div>
                     <div className="" style={{ width: "32px", height: "20px" }}>
-                        <Toggle selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
+                        <Toggle disabled={window._env_.SECURITY_SCANNING_FORCED && this.props.form.scanEnabled} selected={this.props.form.scanEnabled} onSelect={this.props.handleScanToggle} />
                     </div>
                 </div>
             </div>

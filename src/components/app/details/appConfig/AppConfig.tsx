@@ -62,7 +62,7 @@ function isUnlocked(stage) {
 function getNavItems(isUnlocked, appId): { navItems } {
     let navItems = [
         {
-            title: 'Git Material',
+            title: 'Git Repository',
             href: `/app/${appId}/edit/materials`,
             stage: STAGE_NAME.GIT_MATERIAL,
             isLocked: !isUnlocked.material,
