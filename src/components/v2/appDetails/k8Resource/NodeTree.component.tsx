@@ -11,10 +11,19 @@ import { iNode, iNodes } from '../appDetails.type';
 function NodeTreeComponent() {
     const { url, path } = useRouteMatch();
     const history = useHistory();
-    const [nodes] =  useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
+    const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const [selectedNodeKind, setSelectedNodeKind] = useState("")
     const [{ treeNodes }, dispatch] = useNodeTree();
-    const [toggleNode , setToggleNode] = useState(false)
+    const [toggleNode, setToggleNode] = useState(false)
+
+    useEffect(() => {
+        if (treeNodes[0]?.childNodes?.length > 0) {
+            dispatch({
+                type: NodeTreeActions.ParentNodeClick,
+                toggleNode: true
+            })
+        }
+    }, [])
 
     const handleToggleNode = () => {
         setToggleNode(!toggleNode)
@@ -37,7 +46,7 @@ function NodeTreeComponent() {
                 parentNode: parentNode
             })
 
-           setSelectedNodeKind(treeNode.name)
+            setSelectedNodeKind(treeNode.name)
         }
     }
 
@@ -49,7 +58,7 @@ function NodeTreeComponent() {
             history.push(link);
         }
 
-    }, [treeNodes, selectedNodeKind ])
+    }, [treeNodes, selectedNodeKind])
 
     useEffect(() => {
         dispatch({
@@ -57,6 +66,7 @@ function NodeTreeComponent() {
             nodes: nodes
         })
     }, [nodes.length])
+
 
     const makeNodeTree = (treeNodes: iNodes, parentNode?: iNode) => {
         return treeNodes.map((treeNode: iNode, index: number) => {

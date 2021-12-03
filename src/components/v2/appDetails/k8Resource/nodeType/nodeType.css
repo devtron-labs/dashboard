@@ -51,3 +51,7 @@
 .generic-row__base-align{
     align-items: baseline;
 }
+
+.row__cell-val{
+    padding-left: 0 !important;
+}

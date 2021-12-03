@@ -17,9 +17,8 @@ const initialState = {
 };
 
 const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, toggleNode: boolean) => {
-    console.log(toggleNode)
+   
     return treeNodes.map((node: iNode) => {
-
         if(node.name === selectedNode.name){
             node.isSelected = !toggleNode
         }
@@ -89,7 +88,6 @@ const getTreeNodes = (_nodes: Array<Node>) => {
 }
 
 const reducer = (state: any, action: any) => {
-    console.log(state)
 
     switch (action.type) {
 
