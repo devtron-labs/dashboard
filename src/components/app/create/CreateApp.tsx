@@ -295,7 +295,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <Info />
                     <div className="flex column left">
                         <div className="info__title">Important</div>
-                        <div className="info__subtitle">Do not forget to modify git repositories, corresponding branches and docker repositories to be used for each CI Pipeline if required.</div>
+                        <div className="info__subtitle">Do not forget to modify git repositories, corresponding branches and container registries to be used for each CI Pipeline if required.</div>
                     </div>
                 </div>}
                 <div className=" mt-40">

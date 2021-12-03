@@ -23,7 +23,7 @@ export default function ChartRepo() {
         <section className="global-configuration__component">
             <h2 className="form__title">Chart Repository</h2>
             <p className="form__subtitle">Manage your organization’s chart repositories.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more about Git Material</a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
             {[{ id: null, default: true, url: "", name: "", active: true, authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
         </section>
     );
@@ -179,7 +179,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         try {
             setLoading(true);
             const { result } = await api(chartRepoPayload, id);
-          
+
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
                 toast.success('Successfully saved.')
@@ -237,4 +237,3 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         </form>
     )
 }
-

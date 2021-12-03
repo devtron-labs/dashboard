@@ -13,6 +13,11 @@ interface customEnv {
     APPLICATION_METRICS_ENABLED?: boolean;
     GA_ENABLED?: boolean;
     GA_TRACKING_ID?: string;
+    RECOMMEND_SECURITY_SCANNING?: boolean;
+    FORCE_SECURITY_SCANNING?: boolean;
+    HIDE_DISCORD?: boolean;
+    POSTHOG_ENABLED?: boolean;
+    POSTHOG_TOKEN?: string;
 }
 declare global {
     interface Window {
@@ -45,6 +50,20 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
     });
 }
+
+// window._env_ = {
+//     SENTRY_ENV: "staging",
+//     SENTRY_ENABLED: false,
+//     HOTJAR_ENABLED: false,
+//     GA_ENABLED: false,
+//     APPLICATION_METRICS_ENABLED: false,
+//     POSTHOG_ENABLED: false,
+//     POSTHOG_TOKEN: "",
+//     RECOMMEND_SECURITY_SCANNING: true,
+//     FORCE_SECURITY_SCANNING: false,
+//     HIDE_DISCORD: true,
+//   }
+
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self

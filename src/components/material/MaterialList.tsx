@@ -98,9 +98,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     renderPageHeader() {
         return <>
-            <h1 className="form__title form__title--artifacts">Git Materials</h1>
-            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application. 
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more about Git Material</a> </span></p>
+            <h1 className="form__title form__title--artifacts">Git Repositories</h1>
+            <p className="form__subtitle form__subtitle--artifacts">Manage source code repositories for this application.
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GIT}> Learn more</a> </span></p>
         </>
     }
 

@@ -173,24 +173,24 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         <div className="form__app-compose">
             <h1 className="form__title">Docker build configuration</h1>
             <p className="form__subtitle">Required to execute CI pipelines for this application.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}> Learn more about Docker Build Config</a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}> Learn more</a> </span></p>
             <div className="white-card white-card__docker-config">
                 <div className="fs-16 fw-6 pb-16">Image store</div>
                 <div className="mb-4 form-row__docker">
                     <div className="form__field">
-                        <label htmlFor="" className="form__label">Docker registry*</label>
+                        <label htmlFor="" className="form__label">Container registry*</label>
                         <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
                             <Select.Button >{registry.value || 'Select registry'}</Select.Button>
                             {Array.isArray(dockerRegistries) && dockerRegistries.map(reg => <Select.Option value={reg.id} key={reg.id}>{reg.id}</Select.Option>)}
                             <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor">
                                 <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                Add Docker Registry
+                                Add Container Registry
                             </NavLink>
                         </Select>
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
-                        <label htmlFor="" className="form__label">Docker repository</label>
+                        <label htmlFor="" className="form__label">Container Repository</label>
                         <input
                             tabIndex={4}
                             type="text"
