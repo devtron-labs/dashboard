@@ -5,7 +5,6 @@ import { useHistory, useRouteMatch } from "react-router";
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../index.store';
 import { useSharedState } from '../../utils/useSharedState';
-import { node } from 'prop-types';
 import { iNode, iNodes } from '../appDetails.type';
 
 
@@ -15,14 +14,21 @@ function NodeTreeComponent() {
     const [nodes] =  useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const [selectedNodeKind, setSelectedNodeKind] = useState("")
     const [{ treeNodes }, dispatch] = useNodeTree();
+    const [toggleNode , setToggleNode] = useState(false)
+
+    const handleToggleNode = () => {
+        setToggleNode(!toggleNode)
+    }
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         e.stopPropagation()
 
         if (treeNode.childNodes?.length > 0) {
+            handleToggleNode()
             dispatch({
                 type: NodeTreeActions.ParentNodeClick,
                 selectedNode: treeNode,
+                toggleNode: toggleNode
             })
         } else {
             dispatch({
@@ -56,7 +62,7 @@ function NodeTreeComponent() {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name} >
-                    <div className="flex left cursor fw-6 cn-9 fs-14" onClick={(e) => handleNodeClick(treeNode, parentNode, e)}>
+                    <div className={`flex left cursor fw-6 cn-9 fs-14 `} onClick={(e) => handleNodeClick(treeNode, parentNode, e)}>
 
                         {treeNode.childNodes?.length > 0 ?
                             <React.Fragment>
@@ -77,7 +83,7 @@ function NodeTreeComponent() {
                     </div>
 
                     {(treeNode.childNodes?.length > 0 && treeNode.isSelected) &&
-                        <div className="pl-24 ">{makeNodeTree(treeNode.childNodes, treeNode)} </div>
+                        <div className={`pl-24`}>{makeNodeTree(treeNode.childNodes, treeNode)} </div>
                     }
                 </div>
             )

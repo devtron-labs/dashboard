@@ -1,5 +1,5 @@
 
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { AggregationKeys, getAggregator, iNode, Node } from "../appDetails.type";
 
 export const NodeTreeActions = {
@@ -16,11 +16,12 @@ const initialState = {
     treeNodes: [],
 };
 
-const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
+const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, toggleNode: boolean) => {
+    console.log(toggleNode)
     return treeNodes.map((node: iNode) => {
 
         if(node.name === selectedNode.name){
-            node.isSelected = !!true
+            node.isSelected = !toggleNode
         }
 
         return node
@@ -88,6 +89,8 @@ const getTreeNodes = (_nodes: Array<Node>) => {
 }
 
 const reducer = (state: any, action: any) => {
+    console.log(state)
+
     switch (action.type) {
 
         case NodeTreeActions.Init:
@@ -99,7 +102,8 @@ const reducer = (state: any, action: any) => {
             return { ...state, loading: false, error: action.error };
 
         case NodeTreeActions.ParentNodeClick: {
-            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode)
+
+            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode, action.toggleNode)
             return { ...state, treeNodes: [...tns] };
         }
 
@@ -107,6 +111,7 @@ const reducer = (state: any, action: any) => {
             const tns = handleChildNodeClick(state.treeNodes, action.selectedNode, action.parentNode)
             return { ...state, treeNodes: [...tns] };
         }
+
     }
 };
 
