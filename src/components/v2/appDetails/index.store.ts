@@ -74,6 +74,11 @@ const IndexStore = {
         return _nodesSubject.asObservable()
     },
 
+    getAppDetailsPodNodes: () => {
+        return  _nodesSubject.getValue().filter((node: Node)=>node.kind === NodeType.Pod)
+    },
+
+
     updateFilterType: (filterType: string) => {
         _nodeFilter = {..._nodeFilter, filterType: filterType }
         publishAppDetails()
