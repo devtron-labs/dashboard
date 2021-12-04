@@ -19,4 +19,9 @@ export const saveChartProviderConfig = (request: any, id: any) => {
 export const validateChartRepoConfiguration = (request: any):Promise<any> => {
     const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/validate`;
     return post(URL, request);
-  }
+}
+
+export const reSyncChartRepo = ():Promise<any> => {
+    const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/${Routes.CHART_RESYNC}`;
+    return get(URL);
+}
