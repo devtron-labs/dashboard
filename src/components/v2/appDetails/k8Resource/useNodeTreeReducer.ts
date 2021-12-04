@@ -16,11 +16,11 @@ const initialState = {
     treeNodes: [],
 };
 
-const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, toggleNode: boolean) => {
+const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
    
     return treeNodes.map((node: iNode) => {
         if(node.name === selectedNode.name){
-            node.isSelected = !toggleNode
+            node.isSelected = !node.isSelected 
         }
 
         return node
@@ -101,7 +101,7 @@ const reducer = (state: any, action: any) => {
 
         case NodeTreeActions.ParentNodeClick: {
 
-            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode, action.toggleNode)
+            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode)
             return { ...state, treeNodes: [...tns] };
         }
 

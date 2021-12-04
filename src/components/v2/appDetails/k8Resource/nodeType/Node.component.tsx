@@ -61,10 +61,9 @@ function NodeComponent() {
             {
                 nodes.map((node, index) => {
                     if (node.kind.toLowerCase() === params.nodeType) {
-                        return (<>
-                      {  console.log(node.kind)}
+                        return (<div key={`node_row_${index}`}>
                             {(params.nodeType === NodeType.Pod.toLowerCase()) && <PodHeaderComponent />}
-                            <div>
+                            <div >
                                 <div className="border-bottom  pt-10 pb-10" >
                                     <div className="pl-16 fw-6 fs-14">{node.kind}(1)</div>
                                     <div className="pl-16"> 1 {node.health?.status.toLowerCase()}</div>
@@ -86,35 +85,34 @@ function NodeComponent() {
                                                     <div className="row m-0" key={'grt' + index} onClick={() => toggleServiceChildElement()}>
                                                         <div className={"col-md-6 pt-9 pb-9 flex left top pl-16"} >
 
-                                                           {(node.parentRefs?.length > 0 ) ?  <DropDown
+                                                            {(node.parentRefs?.length > 0) ? <DropDown
                                                                 className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'} `}
                                                                 style={{ ['--rotateBy' as any]: !showServiceChildElement ? '-90deg' : '0deg' }}
-                                                            /> : null }
+                                                            /> : null}
                                                             <div className="flexbox">
                                                                 <div>
                                                                     <div>{node.name}</div>
                                                                     <div className="cg-5">{node?.health?.status}</div>
                                                                 </div>
-                                                                <div className="">
-                                                                    <Tippy
-                                                                        className="default-tt"
-                                                                        arrow={false}
-                                                                        placement="bottom"
-                                                                        content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                                                        trigger='mouseenter click'
-                                                                    >
-                                                                        <Clipboard
-                                                                            className="hover-only icon-dim-12 pointer ml-8 mr-8"
-                                                                            onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
-                                                                        />
-                                                                    </Tippy>
-
-                                                                </div>
+                                                            </div>
+                                                            <div className="hover-trigger">
+                                                                <Tippy
+                                                                    className="default-tt"
+                                                                    arrow={false}
+                                                                    placement="bottom"
+                                                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                                                    trigger='mouseenter click'
+                                                                >
+                                                                    <Clipboard
+                                                                        className="hover-only icon-dim-12 pointer ml-8 mr-8"
+                                                                        onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
+                                                                    />
+                                                                </Tippy>
+                                                                {tabs && tabs.map((tab, index) => {
+                                                                    return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
+                                                                })}
                                                             </div>
 
-                                                            {tabs && tabs.map((tab, index) => {
-                                                                return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
-                                                            })}
 
                                                         </div>
 
@@ -185,7 +183,7 @@ function NodeComponent() {
                                     }
                                 </div>
                             </div>
-                        </>)
+                        </div>)
                     }
                 })
             }

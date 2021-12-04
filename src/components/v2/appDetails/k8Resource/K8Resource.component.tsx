@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import NodeTreeComponent from './NodeTree.component';
+import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
 import { useRouteMatch } from 'react-router';
