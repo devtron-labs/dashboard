@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { Progressing, showError, Select, useThrottledEffect, RadioGroup, not, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, isChartRefIdLessThanOrEqualToTarget } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service';
 import { getAppChartRef, getConfigMapList } from '../../services/service';
@@ -247,7 +247,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
     const [isSubPathChecked, setIsSubPathChecked] = useState(!!subPath)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRefIdLessThanOrEqualToTarget(appChartRef.id, 10);
 
     function setKeyValueArray(arr) {
         tempArray.current = arr

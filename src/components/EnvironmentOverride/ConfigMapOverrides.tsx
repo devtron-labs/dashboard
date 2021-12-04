@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useReducer, useRef, memo } from 'react'
 import { overRideConfigMap, deleteConfigMap } from './service'
-import { getEnvironmentConfigs } from '../../services/service';
+import { getAppChartRefForAppAndEnv, getEnvironmentConfigs } from '../../services/service';
 import { useParams } from 'react-router'
 import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, isChartRefIdLessThanOrEqualToTarget } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -46,7 +46,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
         async function initialise() {
             setConfigmapLoading(true);
             try {
-                const appChartRefRes = await getAppChartRef(appId);
+                const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId);
                 const configmapRes = await getEnvironmentConfigs(appId, envId);
                 setConfigmapList({
                     appId: configmapRes.result.appId,
@@ -196,7 +196,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRefIdLessThanOrEqualToTarget(appChartRef.id, 10);
 
     function changeEditorMode(e) {
         if (yamlMode) {
