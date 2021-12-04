@@ -112,13 +112,40 @@ function LogsComponent({ selectedTab }) {
                     <span className="cn-2 mr-8 ml-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
                     <div className="cn-6 flex left">
-                       <span className="pl-8 pr-8"> Container</span>
+                       <span className="pl-8 pr-8"> Pod</span>
                            
                         <ReactSelect
                             defaultInputValue={IndexStore.getAppDetailsPodNodes()[0].name}
                             name="log_select_container"
                             className="w-200"
                             placeholder="Select Container"
+                            components={{
+                                DropdownIndicator,
+                                Option
+                            }}
+                            styles={{ ...styles }}
+                            onChange={(selectedPod) => { 
+                                setLogFormDTO({...logFormDTO, pods:[selectedPod.value]})
+                             }}
+                            options={IndexStore.getAppDetailsPodNodes().map((_n) => {
+                                return (
+                                    {
+                                        label: _n.name,
+                                        value: _n.name
+                                    }
+                                )
+                            })}
+                        />
+                    </div>
+
+                    <div className="cn-6 flex left">
+                       <span className="pl-8 pr-8"> Pods</span>
+                           
+                        <ReactSelect
+                            defaultInputValue={IndexStore.getAppDetailsPodNodes()[0].name}
+                            name="log_select_container"
+                            className="w-200"
+                            placeholder="Select Pod"
                             components={{
                                 DropdownIndicator,
                                 Option
