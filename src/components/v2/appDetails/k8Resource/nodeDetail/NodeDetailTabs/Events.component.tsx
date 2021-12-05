@@ -40,7 +40,6 @@ function EventsComponent({selectedTab}) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string  }>()
     const { path, url } = useRouteMatch()
-    const [event, setEvent] = useState("...");
     
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS)

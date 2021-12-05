@@ -7,11 +7,12 @@ let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
 let currentTab: string = "";
 
-const addAOT = (tabName: string, tabUrl: string, isSelected: boolean) => {
+const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
     let tab = {} as ApplicationObject
     tab.name = tabName.toLowerCase()
     tab.url = tabUrl
     tab.isSelected = isSelected
+    tab.title = title || tabName
     applicationObjectTabs.push(tab)
 }
 
@@ -36,6 +37,7 @@ const AppDetailsStore = {
         if (!tabName || !tabURL || !tabKind) return
 
         let alredyAdded = false
+        let title = tabKind + '/' + tabName
         tabName = tabKind + '/...' + tabName.slice(-6)
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
@@ -48,7 +50,7 @@ const AppDetailsStore = {
         }
 
         if (!alredyAdded) {
-            addAOT(tabName, tabURL, true)
+            addAOT(tabName, tabURL, true, title)
         }
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
@@ -65,7 +67,7 @@ const AppDetailsStore = {
         }
 
         applicationObjectTabs = _applicationObjectTabs
-        
+
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     markApplicationObjectTabActive: (tabName: string) => {

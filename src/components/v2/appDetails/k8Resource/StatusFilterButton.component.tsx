@@ -5,7 +5,7 @@ import IndexStore from "../index.store";
 import { useParams } from 'react-router';
 import { useState } from "react";
 
-export const StatusViewTabJSON = [
+const StatusViewTabJSON = [
     {
         status: "HEALTHY",
         count: 6,
@@ -14,50 +14,64 @@ export const StatusViewTabJSON = [
 ]
 
 export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
-    const [{ tabs }, dispatch] = useTab(StatusViewTabJSON);
-    const [statusFilters, setStatusFilters] = useState([])
+    const nodes = IndexStore.getAppDetailsNodes()
+
+    const [tabs, setTabs] = useState([]);
+    const [selectedTab, setSelectedTab] = useState('all')
     const params = useParams<{ envId: string, appId: string }>()
 
     const handleFileterClick = (filterName: string) => {
         IndexStore.updateFilterType(filterName)
+        setSelectedTab(filterName.toLowerCase())
     }
 
     useEffect(() => {
-       const nodes = IndexStore.getAppDetailsNodes()
-       let healthyNode, progressingNode, failedNode = 0
-       nodes.map((_node) => {
 
-        let _nodeHealth = _node.health?.status || "Healthy"
-         if(_nodeHealth.toLowerCase() === "healthy"){
-            healthyNode++
-         } else if(_nodeHealth.toLowerCase() === "failed"){
-            failedNode++
-         }else if(_nodeHealth.toLowerCase() === "progressing"){
-            progressingNode++
-         }
+        if (nodes.length > 0) {
+            let allNodeCount: number = 0, healthyNodeCount: number = 0, progressingNodeCount: number = 0, failedNodeCount: number = 0
 
-        const _statusFilter = {
-            health : _nodeHealth , //Todo today
+            nodes.map((_node) => {
+                let _nodeHealth = _node.health?.status || ''
+                console.log("_nodeHealth", _nodeHealth)
+
+                if (_nodeHealth.toLowerCase() === "healthy") {
+                    healthyNodeCount++
+                } else if (_nodeHealth.toLowerCase() === "failed") {
+                    failedNodeCount++
+                } else if (_nodeHealth.toLowerCase() === "progressing") {
+                    progressingNodeCount++
+                }
+                allNodeCount++
+            })
+
+
+            const statusViewTabJSON = [
+                { status: "ALL", count: allNodeCount, isSelected: true },
+                { status: "HEALTHY", count: healthyNodeCount, isSelected: false },
+                { status: "FAILED", count: failedNodeCount, isSelected: false },
+                { status: "PROCESSING", count: progressingNodeCount, isSelected: false },
+            ]
+
+
+            setTabs(statusViewTabJSON)
         }
-           
-       })
 
-    }, [params.appId, params.envId])
+    }, [nodes.length])
 
     return (
         <div className="en-2 bw-1 br-4 flex left">
-            <span className="border-right bcb-1 fw-6 cb-5 pl-8 pr-8 pt-5 pb-5">All</span>
             {
-                tabs.map((tab: iLink, index) => {
-                    return (
-                        <div key={`${'filter_tab_' + index}`} onClick={() => {
-                            handleFileterClick(tab.status)
-                        }} className="pointer flex left border-right">
-                            <a className="cn-9 pr-6 fw-6 no-decor flex left" >
-                                {tab.status !== 'all' && <div className={`app-summary__icon icon-dim-16 mr-6 ml-6 mt-6 mb-6 ${tab.status.toLowerCase()} ${tab.status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
-                                <span className="capitalize " style={{ minWidth: '58px' }}>{tab.count}  {tab.status.toLowerCase()}</span>
+                tabs.length && tabs.map((tab: any, index: number) => {
+                    return (<React.Fragment key={`${'filter_tab_' + index}`}>
+                        { (tab.count > 0) &&
+                            <a onClick={() => { handleFileterClick(tab.status) }} className={`${(tab.status.toLowerCase() === selectedTab) ? 'bcb-1' : ''} p-6 pointer border-right cn-9 pr-6 fw-6 no-decor flex left`} >
+                                {index !== 0 && <span className={`app-summary__icon icon-dim-16 mr-6 ${tab.status.toLowerCase()} ${tab.status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
+                                <span className="capitalize">{tab.status.toLowerCase()}</span>
+                                <span className="pl-4">({tab.count})</span>
+
                             </a>
-                        </div>
+                        }
+                    </React.Fragment>
                     )
                 })
             }

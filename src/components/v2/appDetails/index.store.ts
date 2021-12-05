@@ -20,7 +20,7 @@ const publishAppDetails = () => {
             return true
         }
 
-        let _nodeHealth = _node.health?.status || "Healthy"
+        let _nodeHealth = _node.health?.status || ""
 
         if (_nodeFilter.filterType && _nodeFilter.filterType !== "All" && _nodeFilter.filterType.toLowerCase() !== _nodeHealth.toLowerCase()) {
             return false

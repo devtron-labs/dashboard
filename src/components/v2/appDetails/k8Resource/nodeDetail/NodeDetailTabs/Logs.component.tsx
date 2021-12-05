@@ -11,10 +11,10 @@ import IndexStore from '../../../index.store';
 import WebWorker from '../../../../../app/WebWorker';
 import sseWorker from '../../../../../app/grepSSEworker';
 import { Host } from "../../../../../../config";
-import LogViewer from '../../../../../LogViewer/LogViewer';
 import { Subject } from '../../../../../../util/Subject';
 import ReactSelect from 'react-select';
 import { styles, DropdownIndicator, Option } from '../../../../common/ReactSelect.utils';
+import LogViewerComponent from './LogViewer.component';
 
 
 function LogsComponent({ selectedTab }) {
@@ -173,7 +173,7 @@ function LogsComponent({ selectedTab }) {
                 <div className="pr-20" style={{ minWidth: '700px' }}>
                     {/* <form name="log_form" onSubmit={handleLogsSearch}> */}
                      
-                        <input type="text" onKeyUp={handleLogsSearch} className="w-100 br-4" placeholder="grep token" name="log_search_input" />
+                        <input type="text" onKeyUp={handleLogsSearch} className="w-100 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4" placeholder="grep token" name="log_search_input" />
                     {/* </form> */}
                 </div>
   
@@ -183,7 +183,7 @@ function LogsComponent({ selectedTab }) {
             </div>
 
             <div className="bcn-0 pl-20 pr-20" style={{ height: '460px' }}>
-                <LogViewer subject={subject} />
+                <LogViewerComponent subject={subject} />
             </div>
         </React.Fragment>
     )
