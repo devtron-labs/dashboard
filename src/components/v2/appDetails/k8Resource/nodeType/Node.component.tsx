@@ -17,6 +17,7 @@ function NodeComponent() {
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
+    const [firstColWidth, setFirstColWidth] = useState("col-12");
 
     // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>()
@@ -33,21 +34,25 @@ function NodeComponent() {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             setTabs(_tabs)
 
-            let tableHeader;
+            let tableHeader: Array<String>, _fcw: string;
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ["Pod (All)", "Ready", "Restarts", "Age", "Live sync status"]
+                    tableHeader = ["Pod (All)", "Ready", "Restarts", "Age", "Status"]
+                    _fcw = "col-8 pl-16"
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ["Name", "URL"]
+                    _fcw = "col-6 pl-16"
                     break;
                 default:
                     tableHeader = ["Name"]
+                    _fcw = "col-12 pl-16"
                     break;
             }
 
             setTableHeader(tableHeader)
+            setFirstColWidth(_fcw)
 
             let _selectedNodes = IndexStore.getNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
@@ -84,43 +89,45 @@ function NodeComponent() {
     const makeNodeTree = (nodes: Array<iNode>) => {
         return nodes.map((node, index) => {
             return (
-                <div key={'grt' + index}>
+                <React.Fragment key={'grt' + index}>
                     <div className="row m-0" onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
-                        <div className={"col-md-8 pt-9 pb-9 flex left top pl-16"} >
-                            {(node.childNodes?.length > 0) ? <DropDown
-                                className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                style={{ ['--rotateBy' as any]: !node.isSelected  ? '-90deg' : '0deg' }}
-                            /> : <span className="pl-12 pr-12"></span>}
+                        <div className={`${firstColWidth} pt-9 pb-9`} >
+                            <div className="flex left top">
+                                {(node.childNodes?.length > 0) ? <DropDown
+                                    className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                    style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                /> : <span className="pl-12 pr-12"></span>}
 
-                            <div className="flexbox">
-                                <div>
-                                    <div>{node.name}</div>
-                                    <div className="cg-5">{node?.health?.status}</div>
+                                <div className="flexbox">
+                                    <div>
+                                        <div>{node.name}</div>
+                                        <div className="cg-5">{node?.health?.status}</div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="hover-trigger">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger='mouseenter click'
-                                >
-                                    <Clipboard
-                                        className="hover-only icon-dim-12 pointer ml-8 mr-8"
-                                        onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
-                                    />
-                                </Tippy>
-                                {tabs && tabs.map((tab, index) => {
-                                    return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
-                                })}
+                                <div className="hover-trigger">
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                        trigger='mouseenter click'
+                                    >
+                                        <Clipboard
+                                            className="hover-only icon-dim-12 pointer ml-8 mr-8"
+                                            onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
+                                        />
+                                    </Tippy>
+                                    {tabs && tabs.map((tab, index) => {
+                                        return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
+                                    })}
+                                </div>
                             </div>
                         </div>
 
-                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
+                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-6 pt-9 pb-9 flex left"} >
                             {node.name + "." + node.namespace}  : portnumber
                             <Tippy
                                 className="default-tt"
@@ -138,16 +145,16 @@ function NodeComponent() {
 
                         {params.nodeType === NodeType.Pod.toLowerCase() &&
                             <React.Fragment>
-                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-1 pt-9 pb-9"} > ... </div>
                             </React.Fragment>
                         }
                     </div>
 
                     {(node.childNodes?.length > 0 && node.isSelected) && makeNodeTree(node.childNodes)}
-                </div>
+                </React.Fragment>
             )
         })
     }
@@ -160,20 +167,17 @@ function NodeComponent() {
                     <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
                 </div>}
 
-            <div className="row border-bottom fw-6 m-0 " style={{ paddingLeft: '40px' }}>
+            <div className="row border-bottom fw-6 m-0">
                 {
                     tableHeader.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(index === 0 ? "col-8 pt-9 pb-9 row__cell-val" : "col pt-9 pb-9")}>{cell}</div>
+                        return <div key={'gpt_' + index} className={(`${index === 0 ? firstColWidth : 'col-1'} pt-9 pb-9`)}>{cell}</div>
                     })
                 }
             </div>
 
-
-            <div className="generic-body">
-                {
-                    selectedNodes && makeNodeTree(selectedNodes)
-                }
-            </div>
+            {
+                selectedNodes && makeNodeTree(selectedNodes)
+            }
         </div>
     )
 }

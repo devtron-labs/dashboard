@@ -39,11 +39,13 @@ const publishAppDetails = () => {
 const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
     return _allParentNodes.map((_pn: iNode) => {
         let childNodes = [];
+        let _childNodesTypes = []
 
         _nodes.forEach((_n: Node) => {
             _n.parentRefs?.forEach(_pr => {
-                if (_pr.kind === _pn.kind) {
+                if (_pr.kind === _pn.kind && _childNodesTypes.indexOf(_n.name) === -1) {
                     childNodes.push(_n as iNode)
+                    _childNodesTypes.push(_n.name)
                 }
             })
         })
