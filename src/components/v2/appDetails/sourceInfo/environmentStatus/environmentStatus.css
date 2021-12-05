@@ -24,3 +24,32 @@
 .text-capitalize{
     text-transform: capitalize;
 }
+
+.f-healthy,
+.f-synced,
+.f-sync.ok,
+.f-running,
+.f-scalingreplicasetdown {
+    color: var(--green);
+}
+
+.f-suspended,
+.f-switchedtoactiveservice {
+    color: var(--orange);
+}
+
+.f-degraded,
+.f-sync.failed,
+.f-failed,
+.f-imagepullbackoff,
+.f-errimagepull,
+.f-outofsync {
+    color: var(--R500);
+}
+
+.f-progressing,
+.f-inprogress,
+.f-unknown,
+.initiated {
+    color: var(--yellow);
+}
