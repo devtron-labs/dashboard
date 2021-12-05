@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch, useParams } from 'react-router';
-import { NodeDetailTab } from '../nodeDetail/nodeDetail.type';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
 import { copyToClipboard } from '../../../../common';
@@ -9,21 +8,19 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode } from '../../appDetails.type';
-import { useSharedState } from '../../../utils/useSharedState';
 import './nodeType.css'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 
 function NodeComponent() {
-
     const { path, url } = useRouteMatch();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
-    const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
+
+    // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>()
     const [tabs, setTabs] = useState([])
-    const [showServiceChildElement, hideServiceChildElement] = useState(false)
 
     useEffect(() => {
         if (!copied) return
@@ -35,45 +32,66 @@ function NodeComponent() {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             setTabs(_tabs)
-        }
 
-        let tableHeader;
-        switch (params.nodeType) {
-            case NodeType.Pod.toLowerCase():
-                tableHeader = ["Pod (All)", "Ready", "Restarts", "Age", "Live sync status"]
-                break;
-            case NodeType.Service.toLowerCase():
-                tableHeader = ["Name", "URL"]
-                break;
-            default:
-                tableHeader = ["Name"]
-                break;
-        }
+            let tableHeader;
 
-        setTableHeader(tableHeader)
-        let _selectedNodes = IndexStore.getNodesByKind(params.nodeType)
-        let _healthyNodeCount = 0
-        
-        _selectedNodes.forEach((node: Node) => {
-            if (node.health?.status.toLowerCase() === "healthy") {
-                _healthyNodeCount++
+            switch (params.nodeType) {
+                case NodeType.Pod.toLowerCase():
+                    tableHeader = ["Pod (All)", "Ready", "Restarts", "Age", "Live sync status"]
+                    break;
+                case NodeType.Service.toLowerCase():
+                    tableHeader = ["Name", "URL"]
+                    break;
+                default:
+                    tableHeader = ["Name"]
+                    break;
             }
+
+            setTableHeader(tableHeader)
+
+            let _selectedNodes = IndexStore.getNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+
+            let _healthyNodeCount = 0
+
+            console.log("nodeTreeDetails", _selectedNodes)
+
+            _selectedNodes.forEach((node: Node) => {
+                if (node.health?.status.toLowerCase() === "healthy") {
+                    _healthyNodeCount++
+                }
+            })
+
+            setSelectedNodes([..._selectedNodes])
+
+            setSelectedHealthyNodeCount(_healthyNodeCount)
+        }
+    }, [params.nodeType])
+
+    const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
+        const updatedNodes = nodes.map(node => {
+            if (node.name === nodeName) {
+                node.isSelected = !node.isSelected
+            } else if (node.childNodes?.length > 0) {
+                markNodeSelected(node.childNodes, nodeName)
+            }
+
+            return node
         })
 
-        setSelectedNodes([..._selectedNodes])
-        setSelectedHealthyNodeCount(_healthyNodeCount)
-    }, [params.nodeType])
+        return updatedNodes
+    }
 
     const makeNodeTree = (nodes: Array<iNode>) => {
         return nodes.map((node, index) => {
             return (
-                <React.Fragment>
-                    <div className="row m-0" key={'grt' + index}>
-                        <div className={"col-md-6 pt-9 pb-9 flex left top pl-16"} >
-
+                <div key={'grt' + index}>
+                    <div className="row m-0" onClick={() => {
+                        setSelectedNodes(markNodeSelected(selectedNodes, node.name))
+                    }} >
+                        <div className={"col-md-8 pt-9 pb-9 flex left top pl-16"} >
                             {(node.childNodes?.length > 0) ? <DropDown
-                                className={`rotate icon-dim-24 pointer ${node["isSelected"] ? 'fcn-9' : 'fcn-5'} `}
-                                style={{ ['--rotateBy' as any]: !showServiceChildElement ? '-90deg' : '0deg' }}
+                                className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                style={{ ['--rotateBy' as any]: !node.isSelected  ? '-90deg' : '0deg' }}
                             /> : <span className="pl-12 pr-12"></span>}
 
                             <div className="flexbox">
@@ -100,13 +118,11 @@ function NodeComponent() {
                                     return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
                                 })}
                             </div>
-
-
                         </div>
 
                         {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-md-6 pt-9 pb-9 flex left"} >
                             {node.name + "." + node.namespace}  : portnumber
-                        <Tippy
+                            <Tippy
                                 className="default-tt"
                                 arrow={false}
                                 placement="bottom"
@@ -122,18 +138,16 @@ function NodeComponent() {
 
                         {params.nodeType === NodeType.Pod.toLowerCase() &&
                             <React.Fragment>
-                                <div className={"col-md-2 pt-9 pb-9"} > ... </div>
                                 <div className={"col-md-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-md-2 pt-9 pb-9"} > ... </div>
+                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-md-1 pt-9 pb-9"} > ... </div>
                                 <div className={"col-md-1 pt-9 pb-9"} > ... </div>
                             </React.Fragment>
                         }
                     </div>
 
-                    {(node.childNodes?.length > 0) &&
-                        makeNodeTree(node.childNodes)
-                    }
-                </React.Fragment>
+                    {(node.childNodes?.length > 0 && node.isSelected) && makeNodeTree(node.childNodes)}
+                </div>
             )
         })
     }
@@ -149,7 +163,7 @@ function NodeComponent() {
             <div className="row border-bottom fw-6 m-0 " style={{ paddingLeft: '40px' }}>
                 {
                     tableHeader.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(index === 0 ? "col-6 pt-9 pb-9 row__cell-val" : "col pt-9 pb-9")}>{cell}</div>
+                        return <div key={'gpt_' + index} className={(index === 0 ? "col-8 pt-9 pb-9 row__cell-val" : "col pt-9 pb-9")}>{cell}</div>
                     })
                 }
             </div>

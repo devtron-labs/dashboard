@@ -115,7 +115,6 @@ function LogsComponent({ selectedTab }) {
                        <span className="pl-8 pr-8"> Pod</span>
                            
                         <ReactSelect
-                            defaultInputValue={IndexStore.getAppDetailsPodNodes()[0].name}
                             name="log_select_container"
                             className="w-200"
                             placeholder="Select Container"

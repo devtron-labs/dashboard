@@ -36,51 +36,44 @@ const publishAppDetails = () => {
     _nodesSubject.next([...filteredNodes])
 }
 
-const getAllParentNods = (_nodes: Array<Node>): Array<iNode>  => {
-    let _allNodes: Set<iNode> = new Set()
+const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
+    return _allParentNodes.map((_pn: iNode) => {
+        let childNodes = [];
 
-    _nodes.forEach(_n => {
-        //_allNodes.add(_n as iNode)
-        _n.parentRefs?.forEach(_prn => {
-            _allNodes.add(_prn as iNode)
+        _nodes.forEach((_n: Node) => {
+            _n.parentRefs?.forEach(_pr => {
+                if (_pr.kind === _pn.kind) {
+                    childNodes.push(_n as iNode)
+                }
+            })
         })
-    })
 
-    return Array.from(_allNodes)
+        if (childNodes.length > 0) {
+            fillChildNodes(childNodes, _nodes)
+        }
+
+        _pn.childNodes = childNodes
+
+        return _pn
+    })
 }
 
-const prepareNodeTreeForKind = (_nodes: Array<Node>, _kind: string ) : Array<iNode> => {
+const getAllParentNods = (_nodes: Array<Node>): Array<iNode> => {
+    let _allParentNodes = []
+    let _allParentNodeTypes = []
 
-    let _filteredNodes = _nodes.filter(_node => _node.kind.toLowerCase() === _kind.toLowerCase()).map(_n => {
-        return _n as iNode
-    })
-
-
-    const filteredParentNodes =  getAllParentNods(_nodes).filter(_node => _node.kind.toLowerCase() === _kind.toLowerCase())
-    
-
-    filteredParentNodes.map(_fpn => {
-        _fpn.childNodes = _nodes.filter(_n => _n.kind.toLowerCase() === _kind.toLowerCase()).map(_n => {
-            return _n as iNode
+    _nodes.forEach(_n => {
+        _n.parentRefs?.forEach((_prn: Node) => {
+            if (_allParentNodeTypes.indexOf(_prn.kind) === -1) {
+                let prn = _prn as iNode;
+                _allParentNodes.push(prn)
+                _allParentNodeTypes.push(_prn.kind)
+            }
         })
     })
-    
-    // return filteredNodes.map((_node: Node) => {
-    //     let iNode = _node as iNode
-
-    //     //let _childNodes  = [] as Array<Node>
-
-       
-
-    //     //if(_childNodes.length > 0){
-    //         iNode.childNodes = prepareNodeTreeForKind(getAllNod(_nodes), _kind)
-    //     //}
-
-    //     return iNode
-    // })
 
 
-    return _filteredNodes
+    return fillChildNodes(_allParentNodes, _nodes)
 }
 
 const IndexStore = {
@@ -121,7 +114,18 @@ const IndexStore = {
     },
 
     getNodesByKind: (_kind: string) => {
-        return prepareNodeTreeForKind(IndexStore.getAppDetailsNodes(), _kind)
+        const _nodes = _nodesSubject.getValue()
+        const parentNodes = getAllParentNods(_nodes)
+
+        let _filteredNodes = parentNodes.filter((pn) => pn.kind.toLowerCase() === _kind.toLowerCase())
+
+        if (_filteredNodes.length === 0) {
+            _filteredNodes = _nodes.filter(_node => _node.kind.toLowerCase() === _kind.toLowerCase()).map(_n => {
+                return _n as iNode
+            })
+        }
+
+        return _filteredNodes
     },
 
     getAppDetailsPodNodes: () => {
