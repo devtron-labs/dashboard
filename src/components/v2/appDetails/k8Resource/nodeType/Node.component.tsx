@@ -8,7 +8,7 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode } from '../../appDetails.type';
-import './nodeType.css'
+import './nodeType.scss'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 
 function NodeComponent() {
@@ -90,10 +90,10 @@ function NodeComponent() {
         return nodes.map((node, index) => {
             return (
                 <React.Fragment key={'grt' + index}>
-                    <div className="row m-0" onClick={() => {
+                    <div className="resource-row row m-0 " onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
-                        <div className={`${firstColWidth} pt-9 pb-9`} >
+                        <div className={`${firstColWidth} pt-9 pb-9 cursor`} >
                             <div className="flex left top">
                                 {(node.childNodes?.length > 0) ? <DropDown
                                     className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
@@ -107,7 +107,7 @@ function NodeComponent() {
                                     </div>
                                 </div>
 
-                                <div className="hover-trigger">
+                                <div className="">
                                     <Tippy
                                         className="default-tt"
                                         arrow={false}
@@ -116,12 +116,12 @@ function NodeComponent() {
                                         trigger='mouseenter click'
                                     >
                                         <Clipboard
-                                            className="hover-only icon-dim-12 pointer ml-8 mr-8"
+                                            className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
                                             onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                         />
                                     </Tippy>
                                     {tabs && tabs.map((tab, index) => {
-                                        return <NavLink key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
+                                        return <NavLink  key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
                                     })}
                                 </div>
                             </div>

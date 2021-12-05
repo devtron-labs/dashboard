@@ -55,3 +55,17 @@
 .row__cell-val{
     padding-left: 0 !important;
 }
+
+.resource-row:hover{
+    background-color: #edf1f5;
+}
+
+.resource-row{
+    .resource-action-tabs__active{
+       visibility: hidden;
+    }
+        .resource-action-tabs__active:hover{
+          visibility: visible;
+        }
+}
+

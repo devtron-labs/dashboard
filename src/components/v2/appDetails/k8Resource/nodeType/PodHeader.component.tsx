@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import './nodeType.css'
+import './nodeType.scss'
 
 function PodHeaderComponent() {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')

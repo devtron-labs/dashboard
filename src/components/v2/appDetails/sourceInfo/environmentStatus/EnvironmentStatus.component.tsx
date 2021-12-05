@@ -20,22 +20,17 @@ function EnvironmentStatusComponent() {
 
                     <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
                         <span>{status}</span>
-                        <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure>
+                        <figure className={`${status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
                     </div>
                     <div onClick={() => setShowAppStatusDetail(true)}><span className="cursor cb-5">Details</span></div>
                 </div>
 
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12" >
-                    <div className="cn-9 lh-1-33 flex left"><span>Config apply status</span><Question className="icon-dim-16 ml-4" /></div>
-                    <div className="cr-5 fw-6 fs-14 cursor" onClick={() => setShowConfigStatusModal(true)}>Failed</div>
-                    <div className="lh-1-33">The active service is serving traffic to the current pod spec</div>
-                </div>
-                
                 {response?.lastDeployedTime
                     ?
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left"><span>Last updated</span><Question className="icon-dim-16 ml-4" /></div>
                         <div className=" fw-6 fs-14 text-capitalize">{moment(response?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}</div>
+                        { response?.lastDeployedBy && response?.lastDeployedBy }
                     </div>
                     : ''}
 
@@ -43,6 +38,7 @@ function EnvironmentStatusComponent() {
                     <div className="cn-9 lh-1-33 flex left"><span>Chart used</span><Question className="icon-dim-16 ml-4" /></div>
                     <div className=" fw-6 fs-14">anchore-engine (v3.4.0)</div>
                 </div>
+
             </div>
 
             {showAppStatusDetail &&
@@ -52,11 +48,7 @@ function EnvironmentStatusComponent() {
                     status={'DEGRADED'}
                 />}
 
-            {showConfigStatusModal && <ConfigStatusModalComponent
-                close={() => setShowConfigStatusModal(false)}
-                status={'FAILED'}
-            />
-            }
+           
         </div>
     )
 }
