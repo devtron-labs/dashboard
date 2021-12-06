@@ -177,7 +177,7 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                 <div  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '16px' }}>
                     <div className="flex left column">
                         <label className="form__label">Chart type</label>
-                    { !selectedChart? (
+                    { selectedChart? (
                         <ReactSelect options={chartNames}
                         isMulti={false}
                         getOptionLabel={option => `${option.name}`}
