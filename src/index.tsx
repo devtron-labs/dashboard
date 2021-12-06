@@ -61,7 +61,7 @@ if (!window || !window._env_ ) {
         APPLICATION_METRICS_ENABLED: false,
         POSTHOG_ENABLED: false,
         POSTHOG_TOKEN: "",
-        RECOMMEND_SECURITY_SCANNING: true,
+        RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
         HIDE_DISCORD: true,
     }
