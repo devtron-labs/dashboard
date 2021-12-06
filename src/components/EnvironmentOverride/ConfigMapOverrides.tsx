@@ -6,7 +6,7 @@ import addIcon from '../../assets/icons/ic-add.svg'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, isChartRefIdLessThanOrEqualToTarget } from '../common'
+import { showError, Progressing, Info, ConfirmationDialog, Select, RadioGroup, not, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -53,6 +53,10 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
+                if (!appChartRefRes.result) {
+                  toast.error("Error happened while fetching the results. Please try again");
+                  return;
+                }
                 setAppChartRef(appChartRefRes.result);
             } catch (error) {
                 setParentState('failed');
@@ -196,7 +200,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate, setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRefIdLessThanOrEqualToTarget(appChartRef.id, 10);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRef3090OrBelow(appChartRef.id);
 
     function changeEditorMode(e) {
         if (yamlMode) {

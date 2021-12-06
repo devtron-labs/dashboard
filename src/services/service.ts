@@ -302,9 +302,9 @@ export function getChartReferencesForAppAndEnv(appId: number, envId: number): Pr
 
 export function getAppChartRefForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
     return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
-        const { result: { chartRefs, latestEnvChartRef } } = response;
-        let selectedChartId = latestEnvChartRef;
-        let chart = chartRefs.find(chart => selectedChartId === chart.id);
+        const { result: { chartRefs, latestEnvChartRef, latestAppChartRef } } = response;
+        let selectedChartId = latestEnvChartRef || latestAppChartRef;
+        let chart = chartRefs?.find(chart => selectedChartId === chart.id);
         return {
             code: response.code,
             status: response.status,

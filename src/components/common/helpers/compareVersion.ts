@@ -25,6 +25,6 @@ export function isVersionLessThanOrEqualToTarget(version: string, target: number
     return false;
 }
 
-export function isChartRefIdLessThanOrEqualToTarget(id: number, target: number): boolean {
-    return id <= target
+export function isChartRef3090OrBelow(id: number): boolean {
+    return id <= 10
 }
