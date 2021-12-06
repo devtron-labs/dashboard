@@ -23,13 +23,13 @@ import Tippy from '@tippyjs/react';
 const AppDetailsComponent = ({ envType }) => {
     const params = useParams<{ appId: string, envId: string, nodeType: string }>()
     const { path, url } = useRouteMatch();
-    const [applicationObjectTabs] = useSharedState(AppDetailsStore.getApplicationObjectTabs(), AppDetailsStore.getApplicationObjectTabsObservable())
+    const [applicationObjectTabs] = useSharedState(AppDetailsStore.getAppDetailsTabs(), AppDetailsStore.getAppDetailsTabsObservable())
     const [isLoading, setIsLoading] = useState(true)
     const history = useHistory();
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
-        AppDetailsStore.initApplicationObjectTab(url)
+        AppDetailsStore.initAppDetailsTabs(url)
         IndexStore.getAppDetails()
         const init = async () => {
             let response = null;
@@ -54,7 +54,7 @@ const AppDetailsComponent = ({ envType }) => {
 
     const handleCloseTab = (e: any, tabName: string) => {
         e.stopPropagation()
-        AppDetailsStore.removeApplicationObjectTab(tabName)
+        AppDetailsStore.removeAppDetailsTab(tabName)
         setTimeout(() => {
             history.push(url)
         }, 1);
@@ -77,7 +77,7 @@ const AppDetailsComponent = ({ envType }) => {
                                         <Tippy
                                             className="default-tt"
                                             arrow={false}
-                                            placement="bottom"
+                                            placement="top"
                                             content={tab.title}
                                         >
                                             <div className={`${tab.isSelected ? " resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
@@ -85,7 +85,7 @@ const AppDetailsComponent = ({ envType }) => {
                                                     <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
                                                         {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
                                                         {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                                        <span className={`${tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8 ? 'mr-8' : 'ml-8'} `}> {tab.name}</span>
+                                                        <span className={`${tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8 ? 'mr-8' : 'ml-8'} fs-12 `}> {tab.name}</span>
                                                     </div>
                                                 </NavLink>
 

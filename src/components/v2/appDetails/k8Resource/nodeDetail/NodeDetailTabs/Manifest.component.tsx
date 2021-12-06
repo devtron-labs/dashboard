@@ -25,7 +25,7 @@ function ManifestComponent({ selectedTab }) {
 
         if (params.podName) {
             console.log('adding application object tab', new Date())
-            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
+            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
 
         const appDetails = IndexStore.getAppDetails();

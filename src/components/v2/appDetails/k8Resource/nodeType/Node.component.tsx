@@ -21,7 +21,7 @@ function NodeComponent() {
 
     // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>()
-    const [tabs, setTabs] = useState([])
+    // const [tabs, setTabs] = useState([])
 
     useEffect(() => {
         if (!copied) return
@@ -31,8 +31,8 @@ function NodeComponent() {
     useEffect(() => {
 
         if (params.nodeType) {
-            const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
-            setTabs(_tabs)
+            // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
+            // setTabs(_tabs)
 
             let tableHeader: Array<String>, _fcw: string;
 
@@ -120,8 +120,8 @@ function NodeComponent() {
                                             onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                         />
                                     </Tippy>
-                                    {tabs && tabs.map((tab, index) => {
-                                        return <NavLink  key={"tab__" + index} to={`${url}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
+                                    {getNodeDetailTabs(node.kind).map((tab, index) => {
+                                        return <NavLink key={"tab__" + index} to={`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
                                     })}
                                 </div>
                             </div>

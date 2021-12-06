@@ -20,7 +20,7 @@ function TerminalComponent({ selectedTab }) {
         selectedTab(NodeDetailTab.TERMINAL)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
+            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
     }, [params.podName])
 

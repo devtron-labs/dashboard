@@ -72,7 +72,7 @@ function NodeTreeComponent() {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name} >
-                    <div className={`flex left cursor fw-6 cn-9 fs-14 `} onClick={(e) => handleNodeClick(treeNode, parentNode, e)}>
+                    <div className={`flex left cursor fw-6 fs-14 cb-5`} onClick={(e) => handleNodeClick(treeNode, parentNode, e)}>
 
                         {treeNode.childNodes?.length > 0 ?
                             <React.Fragment>

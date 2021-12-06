@@ -3,7 +3,7 @@ import { NodeDetailTab } from "./nodeDetail.type"
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
 
-    if (nodeType === NodeType.Pod.toLowerCase()) {
+    if (nodeType === NodeType.Pod) {
         return [
             NodeDetailTab.MANIFEST,
             NodeDetailTab.EVENTS,

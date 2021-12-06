@@ -16,7 +16,7 @@ export default function K8ResourceComponent() {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
 
     useEffect(() => {
-        AppDetailsStore.markApplicationObjectTabActive(URLS.APP_DETAILS_K8)
+        AppDetailsStore.markAppDetailsTabActive(URLS.APP_DETAILS_K8)
     }, [])
 
     return (

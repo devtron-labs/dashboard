@@ -45,7 +45,7 @@ function EventsComponent({selectedTab}) {
         selectedTab(NodeDetailTab.EVENTS)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
+            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
 
         const appDetails = IndexStore.getAppDetails();

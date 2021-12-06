@@ -5,6 +5,11 @@ export interface ApplicationObject extends iLink {
     title: string
 }
 
+export enum APIEnvType {
+    CHART = 'chart',
+    APPLICATION = 'apps'
+}
+
 export enum EnvType {
     CHART = 'helm_charts',
     APPLICATION = 'apps'
@@ -140,6 +145,8 @@ export interface Node {
     uid: string
     version: string,
     parentRefs: Array<Node>
+    group: string;
+    isSelected: boolean      
 }
 
 export interface Health {

@@ -37,7 +37,7 @@ function LogsComponent({ selectedTab }) {
         selectedTab(NodeDetailTab.LOGS)
 
         if (params.podName) {
-            AppDetailsStore.addApplicationObjectTab(params.nodeType, params.podName, url)
+            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
 
     }, [params.podName])

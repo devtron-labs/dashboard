@@ -18,13 +18,13 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: st
 
 const AppDetailsStore = {
 
-    getApplicationObjectTabs: () => {
+    getAppDetailsTabs: () => {
         return applicationObjectTabsSubject.getValue()
     },
-    getApplicationObjectTabsObservable: () => {
+    getAppDetailsTabsObservable: () => {
         return applicationObjectTabsSubject.asObservable()
     },
-    initApplicationObjectTab: (_url: string) => {
+    initAppDetailsTabs: (_url: string) => {
         applicationObjectTabs = []
 
         addAOT(URLS.APP_DETAILS_K8, _url + "/" + URLS.APP_DETAILS_K8, true)
@@ -32,7 +32,7 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    addApplicationObjectTab: (tabKind: string, tabName: string, tabURL: string) => {
+    addAppDetailsTab: (tabKind: string, tabName: string, tabURL: string) => {
 
         if (!tabName || !tabURL || !tabKind) return
 
@@ -55,7 +55,7 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    removeApplicationObjectTab: (tabName: string) => {
+    removeAppDetailsTab: (tabName: string) => {
         let _applicationObjectTabs = []
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
@@ -70,7 +70,7 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    markApplicationObjectTabActive: (tabName: string) => {
+    markAppDetailsTabActive: (tabName: string) => {
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false
@@ -83,7 +83,7 @@ const AppDetailsStore = {
     },
     setCurrentTab: (_str: string) => {
         currentTab = _str
-        AppDetailsStore.markApplicationObjectTabActive(_str)
+        AppDetailsStore.markAppDetailsTabActive(_str)
     },
     getCurrentTab: () => {
         return currentTab

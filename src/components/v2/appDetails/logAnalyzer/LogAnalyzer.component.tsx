@@ -9,7 +9,7 @@ import { URLS } from '../../../../config';
 function LogAnalyzerComponent() {
 
     useEffect(() => {
-        AppDetailsStore.markApplicationObjectTabActive(URLS.APP_DETAILS_LOG)
+        AppDetailsStore.markAppDetailsTabActive(URLS.APP_DETAILS_LOG)
     }, [])
 
     const renderFilters = () => {
