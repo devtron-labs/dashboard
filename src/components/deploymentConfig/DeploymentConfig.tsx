@@ -170,16 +170,13 @@ function DeploymentConfigForm({ respondOnSuccess }) {
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
     let chartNames = chartVersions.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
-    let filteredChartVersions = selectedChart? chartVersions.filter(cv => cv.name == selectedChart.name) : []
-    console.log(selectedChart)
-    console.log(filteredChartVersions)
+    let filteredChartVersions = selectedChart? chartVersions.filter(cv => cv.name == selectedChart.name) : [];
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
-                <div className="form__row">
+                <div  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '16px' }}>
                     <div className="flex left column">
                         <label className="form__label">Chart type</label>
-
                     { !selectedChart? (
                         <ReactSelect options={chartNames}
                         isMulti={false}
@@ -202,11 +199,17 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                                     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                                 })
                             },
+                            container: (base, state) => {
+                                return ({
+                                    ...base,
+                                    width: '100%'
+                                })
+                            },
                         }}
                         onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
                     />
                     ):(
-                        <input autoComplete="off" value={selectedChart.name} className="form__input" disabled />
+                        <input autoComplete="off" value={selectedChart?.name} className="form__input" disabled />
                     )}
                     </div>
                     <div className="flex left column">
@@ -223,13 +226,20 @@ function DeploymentConfigForm({ respondOnSuccess }) {
                             control: (base, state) => ({
                                 ...base,
                                 boxShadow: 'none',
-                                border: `solid 1px var(--B500)`
+                                border: `solid 1px var(--B500)`,
+                                width: '100%'
                             }),
                             option: (base, state) => {
                                 return ({
                                     ...base,
                                     color: 'var(--N900)',
                                     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                })
+                            },
+                            container: (base, state) => {
+                                return ({
+                                    ...base,
+                                    width: '100%'
                                 })
                             },
                         }}

@@ -215,6 +215,11 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     onClick={handleOverride}
                     type="deployment template"
                 />
+                <div className="form__row">
+                    <div className="m-b-4 form__label">Chart type</div>
+                    <div className="text__subtitle">{state.charts.get(state.data.globalChartRefId)?.name}</div>
+
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '16px' }}>
                     <div className="flex left column">
                         <label htmlFor="" className="form__label">Template version {state.duplicate ? '(app default)' : ''}</label>

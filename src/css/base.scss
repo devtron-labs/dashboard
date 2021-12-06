@@ -261,6 +261,10 @@ a:focus {
     padding-right: 20px
 }
 
+.m-b-4 {
+    margin-bottom: 4px !important;
+}
+
 
 .loading-wrapper {
     height: calc(100vh - 172px);
@@ -1606,4 +1610,11 @@ button.anchor {
 
 .align-start{
     align-items: flex-start !important;
+}
+
+.text__subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--n-900);
+    line-height: 1.5;
 }
