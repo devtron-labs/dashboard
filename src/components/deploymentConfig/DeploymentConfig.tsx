@@ -10,7 +10,7 @@ import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
-import { bool } from 'prop-types';
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
@@ -32,19 +32,20 @@ export function OptApplicationMetrics({ currentVersion, onChange, opted, focus =
     </div>
 }
 
-export default function DeploymentConfig({ respondOnSuccess }) {
+export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
     return <div className="form__app-compose">
         <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
         <p className="form__subtitle">Required to execute deployment pipelines for this application.&nbsp;
             <a rel="noreferrer noopener" className="learn-more__href" href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE} target="_blank">Learn more about Deployment Template Configurations</a>
         </p>
-        <DeploymentConfigForm respondOnSuccess={respondOnSuccess} />
+        <DeploymentConfigForm respondOnSuccess={respondOnSuccess} isUnSet={isUnSet} />
     </div>
 }
 
-function DeploymentConfigForm({ respondOnSuccess }) {
+function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [chartVersions, setChartVersions] = useState<{ id: number, version: string, name: string; }[]>([])
     const [selectedChart, selectChart] = useState<{ id: number, version: string, name: string; }>(null)
+    const [selectedChartRefId, setSelectedChartRefId] = useState(0)
     const [template, setTemplate] = useState("")
     const [loading, setLoading] = useState(false)
     const [appMetricsLoading, setAppMetricsLoading] = useState(false)
@@ -174,79 +175,93 @@ function DeploymentConfigForm({ respondOnSuccess }) {
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
-                <div  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '16px' }}>
+                <div  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '4px' }}>
                     <div className="flex left column">
                         <label className="form__label">Chart type</label>
-                    { selectedChart? (
-                        <ReactSelect options={chartNames}
-                        isMulti={false}
-                        getOptionLabel={option => `${option.name}`}
-                        getOptionValue={option => `${option.name}`}
-                        value={selectedChart}
-                        components={{
-                            IndicatorSeparator: null
-                        }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                boxShadow: 'none',
-                                border: `solid 1px var(--B500)`
-                            }),
-                            option: (base, state) => {
-                                return ({
+                    { isUnSet ? (
+                        <>
+                            <ReactSelect options={chartNames}
+                            isMulti={false}
+                            getOptionLabel={option => `${option.name}`}
+                            getOptionValue={option => `${option.name}`}
+                            value={selectedChart}
+                            components={{
+                                IndicatorSeparator: null
+                            }}
+                            styles={{
+                                control: (base, state) => ({
                                     ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                })
-                            },
-                            container: (base, state) => {
-                                return ({
-                                    ...base,
-                                    width: '100%'
-                                })
-                            },
-                        }}
-                        onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
-                    />
+                                    boxShadow: 'none',
+                                    border: `solid 1px var(--B500)`
+                                }),
+                                option: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        color: 'var(--N900)',
+                                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    })
+                                },
+                                container: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        width: '100%'
+                                    })
+                                },
+                            }}
+                            onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
+                        />
+                    </>
                     ):(
                         <input autoComplete="off" value={selectedChart?.name} className="form__input" disabled />
                     )}
                     </div>
                     <div className="flex left column">
-                    <div className="form__label">Chart version</div>
-                    <ReactSelect options={filteredChartVersions}
-                        isMulti={false}
-                        getOptionLabel={option => `${option.version}`}
-                        getOptionValue={option => `${option.id}`}
-                        value={selectedChart}
-                        components={{
-                            IndicatorSeparator: null
-                        }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                boxShadow: 'none',
-                                border: `solid 1px var(--B500)`,
-                                width: '100%'
-                            }),
-                            option: (base, state) => {
-                                return ({
+                        <div className="form__label">Chart version</div>
+                        <ReactSelect options={filteredChartVersions}
+                            isMulti={false}
+                            getOptionLabel={option => `${option.version}`}
+                            getOptionValue={option => `${option.id}`}
+                            value={selectedChart}
+                            components={{
+                                IndicatorSeparator: null
+                            }}
+                            styles={{
+                                control: (base, state) => ({
                                     ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                })
-                            },
-                            container: (base, state) => {
-                                return ({
-                                    ...base,
+                                    boxShadow: 'none',
+                                    border: `solid 1px var(--B500)`,
                                     width: '100%'
-                                })
-                            },
-                        }}
-                        onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
-                    />
+                                }),
+                                option: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        color: 'var(--N900)',
+                                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    })
+                                },
+                                container: (base, state) => {
+                                    return ({
+                                        ...base,
+                                        width: '100%'
+                                    })
+                                },
+                            }}
+                            onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
+                        />
                     </div>
                 </div>
+                <div className="deploymentConfig__warning flex fs-12 left pt-4 m-b-16">
+                    { isUnSet ? (
+                        <>
+                        <Warn className="icon-dim-16 mr-4 " />
+                        Chart type cannot be changed once saved.
+                        </>
+                    ): (
+                        <></>
+                    )
+                    }
+                </div>
+
                 <div className="form__row form__row--code-editor-container">
                     <CodeEditor
                         value={tempFormData}
