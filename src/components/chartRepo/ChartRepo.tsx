@@ -26,15 +26,8 @@ export default function ChartRepo() {
             return;
         }
         setFetching(true);
-        toast.success("Re-syncing charts in repos")
+        toast.success("Re-sync initiated. It may take upto 5 minutes for it to complete.")
         await reSyncChartRepo().then((response) => {
-            let reSyncResp = response?.result
-            let errors = reSyncResp?.errors
-            if (!errors || !errors.length) {
-                toast.success("Re-sync successful");
-            } else {
-                toast.error("Re-sync failed please try again");
-            }
             setFetching(false);
         }).catch((error) => {
             showError(error);
@@ -58,11 +51,7 @@ export default function ChartRepo() {
                             <path d="M4.9895 9.76775H1.9895V12.7677" stroke="#0066CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M11.8891 11.8891C11.3784 12.3998 10.7721 12.8049 10.1048 13.0813C9.4375 13.3577 8.7223 13.5 8.00003 13.5C7.27776 13.5 6.56256 13.3577 5.89527 13.0813C5.22798 12.8049 4.62167 12.3998 4.11094 11.8891L1.98962 9.76776" stroke="#0066CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg></span>
-                        {fetching ?(
-                            <span>Fetching</span>
-                        ): (
-                            <span>Refetch Charts</span>
-                        )}
+                        <span>Refetch Charts</span>
                     </a>
                 </div>
             </Tippy>
