@@ -171,7 +171,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
-    let uniqueChartNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
+    let chartsWithUniqueNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
     let filteredCharts = selectedChart? charts.filter(cv => cv.name == selectedChart.name) : [];
     return (
         <>
@@ -181,7 +181,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         <label className="form__label">Chart type</label>
                     { isUnSet ? (
 
-                        <ReactSelect options={uniqueChartNames}
+                        <ReactSelect options={chartsWithUniqueNames}
                             isMulti={false}
                             getOptionLabel={option => `${option.name}`}
                             getOptionValue={option => `${option.name}`}
