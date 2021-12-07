@@ -43,9 +43,9 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
 }
 
 function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
-    const [chartVersions, setChartVersions] = useState<{ id: number, version: string, name: string; }[]>([])
+    const [charts, setCharts] = useState<{ id: number, version: string, name: string; }[]>([])
+    const [selectedChartRefId, selectChartRefId] = useState(0);
     const [selectedChart, selectChart] = useState<{ id: number, version: string, name: string; }>(null)
-    const [selectedChartRefId, setSelectedChartRefId] = useState(0)
     const [template, setTemplate] = useState("")
     const [loading, setLoading] = useState(false)
     const [appMetricsLoading, setAppMetricsLoading] = useState(false)
@@ -92,9 +92,10 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         setChartConfigLoading(true)
         try {
             const { result: { chartRefs, latestAppChartRef, latestChartRef } } = await getChartReferences(+appId)
-            setChartVersions(chartRefs);
+            setCharts(chartRefs);
             let selectedChartId: number = latestAppChartRef || latestChartRef;
             let chart = chartRefs.find(chart => chart.id === selectedChartId);
+            selectChartRefId(selectedChartId);
             selectChart(chart);
         }
         catch (err) {
@@ -170,8 +171,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
-    let chartNames = chartVersions.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
-    let filteredChartVersions = selectedChart? chartVersions.filter(cv => cv.name == selectedChart.name) : [];
+    let uniqueChartNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
+    let filteredCharts = selectedChart? charts.filter(cv => cv.name == selectedChart.name) : [];
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
@@ -179,8 +180,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <div className="flex left column">
                         <label className="form__label">Chart type</label>
                     { isUnSet ? (
-                        <>
-                            <ReactSelect options={chartNames}
+
+                        <ReactSelect options={uniqueChartNames}
                             isMulti={false}
                             getOptionLabel={option => `${option.name}`}
                             getOptionValue={option => `${option.name}`}
@@ -208,16 +209,25 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                     })
                                 },
                             }}
-                            onChange={(selected) => selectChart(selected as { id: number, version: string, name: string })}
+                            onChange={(selected) => {
+                                let filteredCharts = charts.filter(chart => chart.name == selected.name);
+                                let selectedChart = filteredCharts.find(chart => chart.id == selectedChartRefId);
+                                if (selectedChart) {
+                                    selectChart(selectedChart)
+                                } else {
+                                    let sortedFilteredCharts = filteredCharts.sort((a, b) => a.id - b.id)
+                                    selectChart(sortedFilteredCharts[sortedFilteredCharts.length? sortedFilteredCharts.length - 1 : 0])
+                                }
+                            }}
                         />
-                    </>
+
                     ):(
                         <input autoComplete="off" value={selectedChart?.name} className="form__input" disabled />
                     )}
                     </div>
                     <div className="flex left column">
                         <div className="form__label">Chart version</div>
-                        <ReactSelect options={filteredChartVersions}
+                        <ReactSelect options={filteredCharts}
                             isMulti={false}
                             getOptionLabel={option => `${option.version}`}
                             getOptionValue={option => `${option.id}`}
@@ -229,8 +239,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 control: (base, state) => ({
                                     ...base,
                                     boxShadow: 'none',
-                                    border: `solid 1px var(--B500)`,
-                                    width: '100%'
+                                    border: `solid 1px var(--B500)`
                                 }),
                                 option: (base, state) => {
                                     return ({
@@ -251,14 +260,11 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     </div>
                 </div>
                 <div className="deploymentConfig__warning flex fs-12 left pt-4 m-b-16">
-                    { isUnSet ? (
+                    { isUnSet &&
                         <>
                         <Warn className="icon-dim-16 mr-4 " />
                         Chart type cannot be changed once saved.
                         </>
-                    ): (
-                        <></>
-                    )
                     }
                 </div>
 
@@ -288,7 +294,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <button type="button" className="cta" onClick={e => save()}>{loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}</button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>}
-            {chartVersions && selectedChart && appMetricsEnvironmentVariableEnabled &&
+            {charts && selectedChart && appMetricsEnvironmentVariableEnabled &&
                 <OptApplicationMetrics
                     currentVersion={selectedChart?.version}
                     onChange={e => saveAppMetrics(!isAppMetricsEnabled)}
