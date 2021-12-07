@@ -74,11 +74,12 @@ const AppDetailsComponent = ({ envType }) => {
                             {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                                 return (
                                     <li key={index + "tab"} className="flex left  ellipsis-right">
+
                                         <Tippy
-                                            className="default-tt"
+                                            className={`${(tab.name === URLS.APP_DETAILS_LOG) && (tab.name === URLS.APP_DETAILS_K8) ? 'w-0 h-0' : '' } default-tt `}
                                             arrow={false}
                                             placement="top"
-                                            content={tab.title}
+                                            content={ tab.title}
                                         >
                                             <div className={`${tab.isSelected ? " resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
                                                 <NavLink to={`${tab.url}`} className={`tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
@@ -94,6 +95,7 @@ const AppDetailsComponent = ({ envType }) => {
                                                 }
                                             </div>
                                         </Tippy>
+
                                     </li>
                                 )
                             })

@@ -48,9 +48,9 @@ function EnvironmentSelectorComponent() {
                 </div>
             </div>
             <div >
-                <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
+                {/* <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
                     <CodeCompare className="mr-4" /> Scale objects
-            </button>
+            </button> */}
             </div>
             {showhiberbateConfirmationModal && <ScalePodModalComponent onClose={() => setshowHibernateConfirmationModal(false)} />}
         </div>

@@ -7,14 +7,23 @@ import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import './nodeDetailTab.css'
+import IndexStore from '../../../index.store';
+import { getTerminalData } from '../nodeDetail.api';
+import { TerminalView } from './terminal/TerminalWrapper';
+
+export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
+
 function TerminalComponent({ selectedTab }) {
 
     const [logsPaused, toggleLogStream] = useState(false);
+    const [containerName, setContainerName] = useState('');
+    const [selectedtTerminalType, setSelectedtTerminalType] = useState("sh");
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
     const [isSocketConnecting, setSocketConnection] = useState<'CONNECTING' | 'DISCONNECTING'>('CONNECTING')
     const { path, url } = useRouteMatch()
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
+    const appDetails = IndexStore.getAppDetails();
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
@@ -22,7 +31,16 @@ function TerminalComponent({ selectedTab }) {
         if (params.podName) {
             AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
+        getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
+            console.log("getTerminalData", response)
+        }).catch((err) => {
+            console.log("err", err)
+        })
+
     }, [params.podName])
+
+
+    
 
     // useEffect(() => {
     //     selectedTab(NodeDetailTabs.TERMINAL)
@@ -80,6 +98,17 @@ function TerminalComponent({ selectedTab }) {
         </div>
 
         <div className="bcn-0 pl-20 pr-20" style={{ height: '460px' }}>
+        {/* <TerminalView appDetails={appDetails}
+                        nodeName={params.podName}
+                        containerName={containerName}
+                        socketConnection={`CONNECTED`}
+                        terminalCleared={terminalCleared}
+                        shell={'sh'}
+                        isReconnection={isReconnection}
+                        setIsReconnection={setIsReconnection}
+                        setTerminalCleared={setTerminalCleared}
+                        setSocketConnection={()=>setSocketConnection}
+                    /> */}
 
         </div>
     </div>

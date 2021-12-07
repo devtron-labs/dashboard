@@ -58,8 +58,6 @@ function NodeComponent() {
 
             let _healthyNodeCount = 0
 
-            console.log("nodeTreeDetails", _selectedNodes)
-
             _selectedNodes.forEach((node: Node) => {
                 if (node.health?.status.toLowerCase() === "healthy") {
                     _healthyNodeCount++
@@ -86,10 +84,13 @@ function NodeComponent() {
         return updatedNodes
     }
 
-    const makeNodeTree = (nodes: Array<iNode>) => {
+    const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {
             return (
                 <React.Fragment key={'grt' + index}>
+                    {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
+                        <span >{node.kind}</span>
+                    </div>}
                     <div className="resource-row row m-0 " onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
@@ -98,16 +99,14 @@ function NodeComponent() {
                                 {(node.childNodes?.length > 0) ? <DropDown
                                     className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
                                     style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
-                                /> : <span className="pl-12 pr-12"></span>}
-
-                                <div className="flexbox">
-                                    <div>
-                                        <div>{node.name}</div>
-                                        <div className="cg-5">{node?.health?.status}</div>
-                                    </div>
+                                /> : <span className="pl-12"></span>}
+                                <div>
+                                <div>{node.name}</div>
+                                <div className="cg-5">{node.health?.status}</div>
                                 </div>
+                        
 
-                                <div className="">
+                                <div>
                                     <Tippy
                                         className="default-tt"
                                         arrow={false}
@@ -125,6 +124,8 @@ function NodeComponent() {
                                     })}
                                 </div>
                             </div>
+
+
                         </div>
 
                         {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-6 pt-9 pb-9 flex left"} >
@@ -153,7 +154,11 @@ function NodeComponent() {
                         }
                     </div>
 
-                    {(node.childNodes?.length > 0 && node.isSelected) && makeNodeTree(node.childNodes)}
+                    {(node.childNodes?.length > 0 && node.isSelected) &&
+                        <div className="ml-24 indent-line">
+                            <div>{makeNodeTree(node.childNodes, true)}</div>
+                        </div>
+                    }
                 </React.Fragment>
             )
         })

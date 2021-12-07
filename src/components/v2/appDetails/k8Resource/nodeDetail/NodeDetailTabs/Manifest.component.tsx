@@ -114,10 +114,10 @@ function ManifestComponent({ selectedTab }) {
                         )
                     })
                 }
-                <div className="pl-16 pr-16">|</div>
+                {/* <div className="pl-16 pr-16">|</div>
                 <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
                     <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
-                </div>
+                </div> */}
             </div>
             {
                 diffMode ?

@@ -32,7 +32,6 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
 
             nodes.map((_node) => {
                 let _nodeHealth = _node.health?.status || ''
-                console.log("_nodeHealth", _nodeHealth)
 
                 if (_nodeHealth.toLowerCase() === "healthy") {
                     healthyNodeCount++

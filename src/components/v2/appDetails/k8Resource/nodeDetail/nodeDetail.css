@@ -3,7 +3,6 @@
 }
 
 .default-tab-row{
-    color: var(--B500);
     border-bottom: solid 2px var(--B500);
 }       
 

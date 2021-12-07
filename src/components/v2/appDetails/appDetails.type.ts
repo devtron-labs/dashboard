@@ -106,6 +106,8 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
     }
 }
 
+
+
 export interface AppDetails {
     appId: number
     appName: string
@@ -125,7 +127,32 @@ export interface AppDetails {
     lastDeployedTime: string
     namespace: string
     resourceTree: ResourceTree
+    materialInfo: MaterialInfo[];
+    releaseVersion: string;
+    dataSource: string;
+    lastDeployedPipeline: string;
+    otherEnvironment: OtherEnvironment[];
+    projectName?: string;
 }
+
+interface MaterialInfo {
+    author: string;
+    branch: string;
+    message: string;
+    modifiedTime: string;
+    revision: string;
+    url: string;
+    webhookData: string
+}
+
+ interface OtherEnvironment {
+    environmentId: number;
+    environmentName: string;
+    appMetrics: boolean;
+    infraMetrics: boolean;
+    prod: boolean;
+}
+
 
 export interface ResourceTree {
     conditions: any
