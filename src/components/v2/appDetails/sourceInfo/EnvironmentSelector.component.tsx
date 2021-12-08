@@ -4,9 +4,11 @@ import { multiSelectStyles, SingleSelectOption as Option, } from '../../../commo
 import ScalePodModalComponent from './ScalePodModal.component';
 import './sourceInfo.css';
 import { ReactComponent as CodeCompare } from '../../assets/icons/ic-code-compare.svg'
+import IndexStore from '../index.store';
 
 function EnvironmentSelectorComponent() {
     const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
+     const appDetails =IndexStore.getAppDetails()
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -28,22 +30,8 @@ function EnvironmentSelectorComponent() {
                             ENV
                 </div>
                     </div>
-                    <div style={{ width: '200px' }}>
-                        <Select
-                            // options={Array.isArray(environments) ? environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
-                            placeholder='Select Environment'
-                            // value={envId ? { value: +envId, label: environmentName } : null}
-                            // onChange={(selected, meta) => selectEnvironment((selected as any).value)}
-                            closeMenuOnSelect
-                            // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
-                            styles={{
-                                ...multiSelectStyles,
-                                control: (base, state) => ({ ...base, border: '1px solid #0066cc', color: '#0066cc', fontWeight: 600, backgroundColor: 'white', minHeight: '32px !important' }),
-                                singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
-                            }}
-                            // isDisabled={disabled}
-                            isSearchable={false}
-                        />
+                    <div style={{ width: '200px' }} className="eb-5 br-4 fw-6 fs-14 cb-5 bw-1 bcn-0 flex left pl-12 pr-12">
+                     <div>{appDetails.environmentName}</div>
                     </div>
                 </div>
             </div>

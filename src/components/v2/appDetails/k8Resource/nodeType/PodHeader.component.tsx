@@ -1,10 +1,35 @@
-import React from 'react'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import IndexStore from '../../index.store'
 import './nodeType.scss'
 
-function PodHeaderComponent() {
+function PodHeaderComponent({callBack}) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
-    
+
+    const podMetaData = IndexStore.getPodMetaData()
+    const [newPods, setNewPods] = useState([])
+    const [oldPods, setOldPods] = useState([])
+
+    useEffect(() => {
+        if(podMetaData.length > 0){
+            let _newPods = []
+            let _oldPods = []
+            podMetaData.forEach((pod)=>{
+               if(pod.isNew){
+                   _newPods.push(pod)
+               }else{
+                   _oldPods.push(pod)
+               }
+            })
+            setNewPods(_newPods)
+            setOldPods(_oldPods)
+        }
+
+    }, [podMetaData.length])
+
+    useEffect(() => {
+       callBack(podTab==='new')
+    }, [podTab])
+
     return (
         <div>
             <div className="pod-node-tab__wrapper flex left old-new-switch-container">
@@ -13,11 +38,11 @@ function PodHeaderComponent() {
                     onClick={(e) => selectPodTab('new')}
                     data-testid="all-pods-new"
                 >
-                    <div className="fs-14 fw-6 pt-12 ">New Pods (23)</div>
+                    <div className="fs-14 fw-6 pt-12 ">New Pods ({newPods.length})</div>
                     <div className="flex left fs-12 cn-9 pb-12">
                         <React.Fragment>
                             {/* {<span className="bullet mr-4 ml-4"></span>} */}
-                            <span data-testid={`new-pod-status`}> 8 running • 3 failed • 5 pending • 4 succeeded </span>
+                            {/* <span data-testid={`new-pod-status`}> 8 running • 3 failed • 5 pending • 4 succeeded </span> */}
                         </React.Fragment>
                     </div>
                 </div>
@@ -26,11 +51,11 @@ function PodHeaderComponent() {
                     onClick={(e) => selectPodTab('old')}
                     data-testid="all-pods-old"
                 >
-                    <div className="fs-14 fw-6 pt-12">Old Pods (0)</div>
+                    <div className="fs-14 fw-6 pt-12">Old Pods ({oldPods.length})</div>
                     <div className="flex left fs-12 cn-9 pb-12 ">
                         <React.Fragment >
-                            {<span className="bullet mr-4 ml-4"></span>}
-                            <span > 0 running</span>
+                            {/* {<span className="bullet mr-4 ml-4"></span>} */}
+                            {/* <span > 0 running</span> */}
                         </React.Fragment>
                     </div>
                 </div>

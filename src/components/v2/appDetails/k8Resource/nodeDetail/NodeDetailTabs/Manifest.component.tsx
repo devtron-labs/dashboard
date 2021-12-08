@@ -102,7 +102,7 @@ function ManifestComponent({ selectedTab }) {
 
     return (
         <div className="bcn-0">
-            <div className="flex left pl-20 pr-20 border-bottom">
+            {/* <div className="flex left pl-20 pr-20 border-bottom">
                 {
                     tabs.map((tab: iLink, index) => {
                         return (
@@ -114,11 +114,11 @@ function ManifestComponent({ selectedTab }) {
                         )
                     })
                 }
-                {/* <div className="pl-16 pr-16">|</div>
+                <div className="pl-16 pr-16">|</div>
                 <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
                     <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
-                </div> */}
-            </div>
+                </div>
+            </div> */}
             {
                 diffMode ?
                     <CodeEditor

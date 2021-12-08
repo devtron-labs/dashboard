@@ -1,10 +1,11 @@
 import { BehaviorSubject } from "rxjs";
-import { AppDetails, Node, EnvDetails, EnvType, NodeType, AggregationKeys, iNode, getAggregator } from "./appDetails.type";
+import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from "./appDetails.type";
 
 let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails
-let _nodes = [] as Node[]
-let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodes);
+const _nodesEmpty = [] as Node[]
+let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
+let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
 let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails);
 
 let _nodeFilter = {
@@ -12,28 +13,34 @@ let _nodeFilter = {
     searchString: ''
 }
 
-const publishAppDetails = () => {
-    let _nodes = _appDetails.resourceTree.nodes;
+const publishFilteredNodes = () => {
 
-    let filteredNodes = _nodes.filter((_node: Node) => {
+    let filteredNodes = _nodesSubject.getValue().filter((_node: Node) => {
         if (!_nodeFilter.filterType && !_nodeFilter.searchString) {
             return true
         }
 
-        let _nodeHealth = _node.health?.status || ""
-
-        if (_nodeFilter.filterType && _nodeFilter.filterType !== "All" && _nodeFilter.filterType.toLowerCase() !== _nodeHealth.toLowerCase()) {
-            return false
+        if (_nodeFilter.filterType === "ALL") {
+            return true
         }
 
-        if (_node.name.indexOf(_nodeFilter.searchString) === -1) {
-            return false
+        if (_nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()) {
+            return true
         }
+        // let _nodeHealth = _node.health?.status || ""
 
-        return true
+        // if (_nodeFilter.filterType && _nodeFilter.filterType !== "All" && _nodeFilter.filterType.toLowerCase() !== _nodeHealth.toLowerCase()) {
+        //     return false
+        // }
+
+        // if (_node.name.indexOf(_nodeFilter.searchString) === -1) {
+        //     return false
+        // }
+
+        return false
     });
 
-    _nodesSubject.next([...filteredNodes])
+    _nodesFilteredSubject.next([...filteredNodes])
 }
 
 const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
@@ -66,8 +73,8 @@ const getAllParentNods = (_nodes: Array<Node>): Array<iNode> => {
 
     _nodes.forEach(_n => {
         _n.parentRefs?.forEach((_prn: Node) => {
-            if (_allParentNodeTypes.indexOf(_prn.kind) === -1) {
-                let prn = _prn as iNode;
+            if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
+                let prn = _n as iNode;
                 _allParentNodes.push(prn)
                 _allParentNodeTypes.push(_prn.kind)
             }
@@ -100,7 +107,10 @@ const IndexStore = {
 
         console.log("setAppDetails", _appDetails)
 
-        publishAppDetails()
+        const _nodes = _appDetails.resourceTree.nodes;
+
+        _nodesSubject.next([..._nodes])
+        _nodesFilteredSubject.next([..._nodes])
     },
 
     getAppDetails: () => {
@@ -113,6 +123,14 @@ const IndexStore = {
 
     getAppDetailsNodesObservable: () => {
         return _nodesSubject.asObservable()
+    },
+
+    getAppDetailsFilteredNodes: () => {
+        return _nodesFilteredSubject.getValue()
+    },
+
+    getAppDetailsNodesFilteredObservable: () => {
+        return _nodesFilteredSubject.asObservable()
     },
 
     getNodesByKind: (_kind: string) => {
@@ -130,13 +148,21 @@ const IndexStore = {
         return _filteredNodes
     },
 
+    getMetaDataForPod: (_name: string) => {
+        return _appDetails.resourceTree.podMetadata.filter(pod => pod.name === _name)[0]
+    },
+
+    getPodMetaData: () => {
+        return _appDetails.resourceTree.podMetadata
+    },
+
     getAppDetailsPodNodes: () => {
         return _nodesSubject.getValue().filter((node: Node) => node.kind === NodeType.Pod)
     },
 
     updateFilterType: (filterType: string) => {
         _nodeFilter = { ..._nodeFilter, filterType: filterType }
-        publishAppDetails()
+        publishFilteredNodes()
     },
 
     updateFilterSearch: (searchString: string) => {
@@ -144,7 +170,7 @@ const IndexStore = {
             return
         }
         _nodeFilter = { ..._nodeFilter, searchString: searchString }
-        publishAppDetails()
+        publishFilteredNodes()
     }
 }
 

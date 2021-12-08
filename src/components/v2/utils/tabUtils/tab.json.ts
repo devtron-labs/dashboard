@@ -29,14 +29,14 @@ export const ManifestTabJSON = [
         isSelected: true,
         isDisabled: false
      },
-    // {
-    //     name: "Compare",
-    //     isSelected: false,
-    //     isDisabled: true
-    // },
-    // {
-    //     name: "Desired manifest",
-    //     isSelected: false,
-    //     isDisabled: true
-    // }
+    {
+        name: "Compare",
+        isSelected: false,
+        isDisabled: true
+    },
+    {
+        name: "Desired manifest",
+        isSelected: false,
+        isDisabled: true
+    }
 ]

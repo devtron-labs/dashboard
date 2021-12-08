@@ -1,17 +1,7 @@
 import React, { useEffect } from "react";
-import { useTab } from "../../utils/tabUtils/useTab";
-import { iLink } from "../../utils/tabUtils/link.type";
 import IndexStore from "../index.store";
 import { useParams } from 'react-router';
 import { useState } from "react";
-
-const StatusViewTabJSON = [
-    {
-        status: "HEALTHY",
-        count: 6,
-        isSelected: false
-    },
-]
 
 export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
     const nodes = IndexStore.getAppDetailsNodes()
@@ -58,7 +48,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
     }, [nodes.length])
 
     return (
-        <div className="en-2 bw-1 br-4 flex left">
+        <div className="en-2 bw-1 br-4 flexbox">
             {
                 tabs.length && tabs.map((tab: any, index: number) => {
                     return (<React.Fragment key={`${'filter_tab_' + index}`}>

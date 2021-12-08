@@ -18,6 +18,7 @@ function NodeComponent() {
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState("col-12");
+    const [podType, setPodType] = useState(false)
 
     // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>()
@@ -38,7 +39,7 @@ function NodeComponent() {
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ["Pod (All)", "Ready", "Restarts", "Age", "Status"]
+                    tableHeader = ["Pod (All)", "Ready"]
                     _fcw = "col-8 pl-16"
                     break;
                 case NodeType.Service.toLowerCase():
@@ -56,6 +57,14 @@ function NodeComponent() {
 
             let _selectedNodes = IndexStore.getNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
+            if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
+                _selectedNodes = _selectedNodes.filter((node) => {
+                    const _podMetaData = IndexStore.getMetaDataForPod(node.name)
+                    
+                    return _podMetaData.isNew === podType
+
+                })
+            }
             let _healthyNodeCount = 0
 
             _selectedNodes.forEach((node: Node) => {
@@ -68,7 +77,7 @@ function NodeComponent() {
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
-    }, [params.nodeType])
+    }, [params.nodeType, podType])
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map(node => {
@@ -101,10 +110,10 @@ function NodeComponent() {
                                     style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
                                 /> : <span className="pl-12"></span>}
                                 <div>
-                                <div>{node.name}</div>
-                                <div className="cg-5">{node.health?.status}</div>
+                                    <div>{node.name}</div>
+                                    <div className="cg-5">{node.health?.status}</div>
                                 </div>
-                        
+
 
                                 <div>
                                     <Tippy
@@ -147,9 +156,6 @@ function NodeComponent() {
                         {params.nodeType === NodeType.Pod.toLowerCase() &&
                             <React.Fragment>
                                 <div className={"col-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-1 pt-9 pb-9"} > ... </div>
-                                <div className={"col-1 pt-9 pb-9"} > ... </div>
                             </React.Fragment>
                         }
                     </div>
@@ -166,7 +172,7 @@ function NodeComponent() {
 
     return (
         <div className="container-fluid generic-table ml-0 mr-0" style={{ paddingRight: 0, paddingLeft: 0 }}>
-            {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent /> :
+            {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent callBack={setPodType} /> :
                 <div className="border-bottom  pt-10 pb-10" >
                     <div className="pl-16 fw-6 fs-14 text-capitalize">{params.nodeType}({selectedNodes?.length})</div>
                     <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>

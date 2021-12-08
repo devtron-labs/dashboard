@@ -11,9 +11,10 @@ import { iNode, iNodes } from '../../appDetails.type';
 function NodeTreeComponent() {
     const { url, path } = useRouteMatch();
     const history = useHistory();
-    const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
+    //const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const [selectedNodeKind, setSelectedNodeKind] = useState("")
     const [{ treeNodes }, dispatch] = useNodeTree();
+    const [filteredNodes] = useSharedState(IndexStore.getAppDetailsFilteredNodes(), IndexStore.getAppDetailsNodesFilteredObservable())
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         if (e) { e.stopPropagation() }
@@ -52,12 +53,15 @@ function NodeTreeComponent() {
     }, [treeNodes.length, selectedNodeKind])
 
     useEffect(() => {
+
         dispatch({
             type: NodeTreeActions.Init,
-            nodes: nodes
-        })
-    }, [nodes.length])
+            nodes: filteredNodes,
 
+        })
+        setSelectedNodeKind('')
+
+    }, [filteredNodes.length])
 
     const makeNodeTree = (treeNodes: iNodes, parentNode?: iNode) => {
         return treeNodes.map((treeNode: iNode, index: number) => {

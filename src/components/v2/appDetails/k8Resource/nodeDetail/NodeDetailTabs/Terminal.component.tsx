@@ -8,22 +8,26 @@ import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import './nodeDetailTab.css'
 import IndexStore from '../../../index.store';
-import { getTerminalData } from '../nodeDetail.api';
-import { TerminalView } from './terminal/TerminalWrapper';
+import { TerminalView } from './terminal/TerminalViewWrapper';
+import Select from 'react-select';
+import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
 function TerminalComponent({ selectedTab }) {
+    const { url } = useRouteMatch()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
+    const appDetails = IndexStore.getAppDetails()
+    const containers = IndexStore.getMetaDataForPod(params.podName).containers
 
     const [logsPaused, toggleLogStream] = useState(false);
-    const [containerName, setContainerName] = useState('');
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState("sh");
+    const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
+    const [selectedtTerminalType, setSelectedtTerminalType] = useState({ label: "sh", value: "sh" });
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
-    const [isSocketConnecting, setSocketConnection] = useState<'CONNECTING' | 'DISCONNECTING'>('CONNECTING')
-    const { path, url } = useRouteMatch()
-    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-    const appDetails = IndexStore.getAppDetails();
+
+    const [socketConnectionType, setSocketConnectionType] = useState<SocketConnectionType>('DISCONNECTED')
+
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
@@ -31,16 +35,13 @@ function TerminalComponent({ selectedTab }) {
         if (params.podName) {
             AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
         }
-        getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
-            console.log("getTerminalData", response)
-        }).catch((err) => {
-            console.log("err", err)
-        })
+        // getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
+        //     console.log("getTerminalData", response)
+        // }).catch((err) => {
+        //     console.log("err", err)
+        // })
 
     }, [params.podName])
-
-
-    
 
     // useEffect(() => {
     //     selectedTab(NodeDetailTabs.TERMINAL)
@@ -62,12 +63,12 @@ function TerminalComponent({ selectedTab }) {
                     className={`toggle-logs mr-12 flex ${logsPaused ? 'play' : 'stop'}`}
                     onClick={(e) => handleLogsPause(!logsPaused)}
                 >
-                    {isSocketConnecting ?
+                    {socketConnectionType === 'CONNECTING' ?
                         <span>
-                            <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} />
+                            <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnectionType('DISCONNECTING'); setIsReconnection(true); }} />
                         </span>
                         : <span>
-                            <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />
+                            <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnectionType('CONNECTING') }} />
                         </span>
                     }
                 </div>
@@ -85,7 +86,29 @@ function TerminalComponent({ selectedTab }) {
 
             <span className="cn-2 mr-8 ml-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
-            <div className="cn-6">Container <span className="cn-9">dashboard-devtron</span></div>
+            <div className="cn-6">Container </div>
+
+            <div style={{ minWidth: '145px' }}>
+                <Select
+                    className="br-4 pl-8"
+                    options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
+                    placeholder='All Containers'
+                    value={{ label: selectedContainerName, value: selectedContainerName }}
+                    onChange={(selected, meta) => setSelectedContainerName((selected as any).value)}
+                    closeMenuOnSelect
+                    // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
+                    styles={{
+                        ...multiSelectStyles,
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                        indicatorsContainer: (provided, state) => ({
+                            ...provided,
+                            height: '24px',
+                        }),
+                    }}
+                    isSearchable={false}
+                />
+            </div>
 
             <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
@@ -93,22 +116,18 @@ function TerminalComponent({ selectedTab }) {
 
         </div>
 
-        <div className="bcy-2 pl-20 loading-dots">
-            Connecting
-        </div>
-
-        <div className="bcn-0 pl-20 pr-20" style={{ height: '460px' }}>
-        {/* <TerminalView appDetails={appDetails}
-                        nodeName={params.podName}
-                        containerName={containerName}
-                        socketConnection={`CONNECTED`}
-                        terminalCleared={terminalCleared}
-                        shell={'sh'}
-                        isReconnection={isReconnection}
-                        setIsReconnection={setIsReconnection}
-                        setTerminalCleared={setTerminalCleared}
-                        setSocketConnection={()=>setSocketConnection}
-                    /> */}
+        <div style={{ height: '460px', background: 'black' }}>
+            <TerminalView appDetails={appDetails}
+                nodeName={params.podName}
+                containerName={selectedContainerName}
+                socketConnection={socketConnectionType}
+                terminalCleared={terminalCleared}
+                shell={selectedtTerminalType}
+                isReconnection={isReconnection}
+                setIsReconnection={setIsReconnection}
+                setTerminalCleared={setTerminalCleared}
+                setSocketConnection={setSocketConnectionType}
+            />
 
         </div>
     </div>

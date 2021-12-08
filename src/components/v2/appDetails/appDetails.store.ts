@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import { ApplicationObject } from "./appDetails.type";
 import { URLS } from "../../../config";
-import { Tab } from '../../configMaps/ConfigMap';
+import { toast } from 'react-toastify';
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
@@ -35,6 +35,12 @@ const AppDetailsStore = {
     addAppDetailsTab: (tabKind: string, tabName: string, tabURL: string) => {
 
         if (!tabName || !tabURL || !tabKind) return
+
+
+        if(applicationObjectTabs.length ===7) {
+            toast.error('Max 5 tabs allowed')
+            return
+        }
 
         let alredyAdded = false
         let title = tabKind + '/' + tabName

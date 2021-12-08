@@ -12,7 +12,7 @@ import './terminal.css';
 import { SocketConnectionType } from '../Terminal.component';
 import IndexStore from '../../../../index.store';
 import { AppDetails } from '../../../../appDetails.type';
-
+// newone
 
 interface TerminalViewProps {
     appDetails: AppDetails;
@@ -50,6 +50,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     }
 
     componentDidMount() {
+
+
+        console.log("TerminalViewProps", this.props)
+
         if (!window.location.origin) { // Some browsers (mainly IE) do not have this property, so we need to build it manually...
             // @ts-ignore
             window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
@@ -262,7 +266,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--show`;
         }
         return <AutoSizer>
-            {({ height, width }) => <div className={"terminal-view pt-24"} style={{ overflow: 'auto' }}>
+            {({ height, width }) => <div className={"terminal-view"} style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
                     <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
                         {this.props.socketConnection.toLowerCase()}
