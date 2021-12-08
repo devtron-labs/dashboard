@@ -51,18 +51,21 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
     });
 }
 
-// window._env_ = {
-//     SENTRY_ENV: "staging",
-//     SENTRY_ENABLED: false,
-//     HOTJAR_ENABLED: false,
-//     GA_ENABLED: false,
-//     APPLICATION_METRICS_ENABLED: false,
-//     POSTHOG_ENABLED: false,
-//     POSTHOG_TOKEN: "",
-//     RECOMMEND_SECURITY_SCANNING: true,
-//     FORCE_SECURITY_SCANNING: false,
-//     HIDE_DISCORD: true,
-//   }
+
+if (!window || !window._env_ ) {
+    window._env_ = {
+        SENTRY_ENV: "staging",
+        SENTRY_ENABLED: false,
+        HOTJAR_ENABLED: false,
+        GA_ENABLED: false,
+        APPLICATION_METRICS_ENABLED: false,
+        POSTHOG_ENABLED: false,
+        POSTHOG_TOKEN: "",
+        RECOMMEND_SECURITY_SCANNING: false,
+        FORCE_SECURITY_SCANNING: false,
+        HIDE_DISCORD: true,
+    }
+}
 
 ReactDOM.render(
     <React.StrictMode>
