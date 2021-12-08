@@ -171,8 +171,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
-    let chartsWithUniqueNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}});
-    let filteredCharts = selectedChart? charts.filter(cv => cv.name == selectedChart.name) : [];
+    let chartsWithUniqueNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}}).sort((a,b) => b.name.localeCompare(a.name));
+    let filteredCharts = selectedChart? charts.filter(cv => cv.name == selectedChart.name).sort((a, b) => b.id - a.id) : [];
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
