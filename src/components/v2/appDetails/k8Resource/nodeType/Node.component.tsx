@@ -10,6 +10,7 @@ import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode } from '../../appDetails.type';
 import './nodeType.scss'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
+import Menu from './DeleteRowPopUp.component';
 
 function NodeComponent() {
     const { path, url } = useRouteMatch();
@@ -19,7 +20,8 @@ function NodeComponent() {
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState("col-12");
     const [podType, setPodType] = useState(false)
-
+    const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
+    const appDetails = IndexStore.getAppDetails()
     // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>()
     // const [tabs, setTabs] = useState([])
@@ -93,6 +95,11 @@ function NodeComponent() {
         return updatedNodes
     }
 
+    const describeNode = (name: string, containerName: string) => {
+        setDetailedNode({ name, containerName });
+    }
+
+
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {
             return (
@@ -103,7 +110,7 @@ function NodeComponent() {
                     <div className="resource-row row m-0 " onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
-                        <div className={`${firstColWidth} pt-9 pb-9 cursor`} >
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
                             <div className="flex left top">
                                 {(node.childNodes?.length > 0) ? <DropDown
                                     className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
@@ -133,9 +140,17 @@ function NodeComponent() {
                                         </NavLink>
                                     })}
                                 </div>
+
                             </div>
-
-
+                            <div>
+                                <Menu nodeDetails={appDetails.resourceTree.nodes}
+                                    describeNode={describeNode}
+                                    appName={appDetails.appName}
+                                    environmentName={appDetails.environmentName}
+                                    // key={column}
+                                    appId={appDetails.appId}
+                                />
+                            </div>
                         </div>
 
                         {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-6 pt-9 pb-9 flex left"} >

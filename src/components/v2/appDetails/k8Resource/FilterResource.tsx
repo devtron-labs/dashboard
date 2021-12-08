@@ -9,7 +9,7 @@ export default function FilterResource() {
     }
     
     return (
-        <div className="flex wrap right pr-20 w-100">
+        <div className="flexbox pr-20 w-100">
             {/* ---for  later purpose---- */}
             {/* <div className="search" style={{ width: '100%' }}>
                 <Search className="search__icon icon-dim-18" />

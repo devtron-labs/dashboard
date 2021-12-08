@@ -16,22 +16,22 @@ const EventTableJSON = {
     ],
     tBody: [
         [
-            { value: "Pulled", className:"table__padding-left pr-20" },
-            { value: "Container image docker.elastic.co/elasticsearch/elasticsearch:7.9.1 already present on machine" },
-            { value: "0" },
-            { value: "Wed, 19 Jun 2019, 16:02 PM" },
+            { value: "Pulled", className:"table__padding-left pr-20 mono" },
+            { value: "Container image docker.elastic.co/elasticsearch/elasticsearch:7.9.1 already present on machine" , className: "mono"},
+            { value: "0" , className: "mono"},
+            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
         ],
         [
-            { value: "Back off", className:"table__padding-left pr-20" },
-            { value: "Back-off restarting failed container" },
-            { value: "0" },
-            { value: "Wed, 19 Jun 2019, 16:02 PM" },
+            { value: "Back off", className:"table__padding-left pr-20 mono" },
+            { value: "Back-off restarting failed container", className: "mono" },
+            { value: "0", className: "mono" },
+            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
         ],
         [
-            { value: "FailedGetResourceMetric", className:" table__padding-left pr-20" },
-            { value: "missing request for memory" },
-            { value: "0" },
-            { value: "Wed, 19 Jun 2019, 16:02 PM" },
+            { value: "FailedGetResourceMetric", className:" table__padding-left pr-20 mono" },
+            { value: "missing request for memory", className: "mono" },
+            { value: "0" , className: "mono"},
+            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
         ]
     ]
 }
@@ -71,7 +71,7 @@ function EventsComponent({selectedTab}) {
 
     return (
         <div className="bcn-0" >
-            <TableUtil table={EventTableJSON} bodyFont="SourceCodePro"/>
+            <TableUtil table={EventTableJSON}/>
         </div>
     )
 }

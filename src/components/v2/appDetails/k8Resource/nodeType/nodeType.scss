@@ -73,3 +73,30 @@
     background-color: #edf1f5;
     color: #000a14;
 }
+
+.resource-row__content{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.pod-info__popup-container {
+    padding: 8px 0px;
+    width: 160px;
+
+    .pod-info__popup-row {
+        justify-content: flex-start;
+        height: 36px;
+        cursor: pointer;
+        padding: 0 12px;
+
+        &:hover {
+            background: #f5f5f5;
+        }
+    }
+
+    .pod-info__popup-row--red {
+        justify-content: space-between;
+        color: red;
+    }
+}

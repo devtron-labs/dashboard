@@ -19,7 +19,6 @@ function TerminalComponent({ selectedTab }) {
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
     const appDetails = IndexStore.getAppDetails()
     const containers = IndexStore.getMetaDataForPod(params.podName).containers
-
     const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
     const [selectedtTerminalType, setSelectedtTerminalType] = useState({ label: "sh", value: "sh" });
@@ -112,7 +111,29 @@ function TerminalComponent({ selectedTab }) {
 
             <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
-            <div className="cn-6">sh <span className="cn-9">dashboard-devtron</span></div>
+
+            <div className="cn-6">sh </div>
+            <div style={{ minWidth: '145px' }}>
+                <Select
+                    className="br-4 pl-8 bw-0"
+                    options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
+                    placeholder='All Containers'
+                    value={{ label: selectedContainerName, value: selectedContainerName }}
+                    onChange={(selected, meta) => setSelectedContainerName((selected as any).value)}
+                    closeMenuOnSelect
+                    // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
+                    styles={{
+                        ...multiSelectStyles,
+                        control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                        indicatorsContainer: (provided, state) => ({
+                            ...provided,
+                            height: '24px',
+                        }),
+                    }}
+                    isSearchable={false}
+                />
+            </div>
 
         </div>
 

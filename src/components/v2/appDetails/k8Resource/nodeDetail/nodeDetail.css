@@ -3,7 +3,7 @@
 }
 
 .default-tab-row{
-    border-bottom: solid 2px var(--B500);
+    border-bottom: solid 2px var(--B500) ;
 }       
 
 .selected-manifest-tab{
