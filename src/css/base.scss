@@ -302,6 +302,14 @@ a:focus {
     float: right;
 }
 
+.float-left {
+    float: left;
+}
+
+.clear-both {
+    clear: both;
+}
+
 .truncate-text {
     white-space: nowrap;
     overflow: hidden;
