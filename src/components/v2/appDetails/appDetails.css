@@ -11,6 +11,12 @@
     border-top-left-radius: 8px;
 } 
 
+.resource-tree-tab__border{
+    width: 1px;
+    height: 16px;
+    background-color: var(--N200);
+}
+
 .tab-list {
     list-style: none;
     display: flex;

@@ -72,11 +72,17 @@ function NodeTreeComponent() {
                         {treeNode.childNodes?.length > 0 ?
                             <React.Fragment>
                                 <DropDown
-                                    className={`rotate icon-dim-24 pointer`}
+                                    className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5' }  rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
+                                    {/* {aggregatedNodes?.nodeStatusCount[kind]?.Degraded > 0 && (
+                                    <ErrorImage
+                                        className="icon-dim-16 rotate"
+                                        style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }} */}
+                                    {/* /> */}
+                                {/* )} */}
                                 </div>
                             </React.Fragment>
                             :

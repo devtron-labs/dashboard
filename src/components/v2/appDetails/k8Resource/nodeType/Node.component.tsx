@@ -60,7 +60,7 @@ function NodeComponent() {
             if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 _selectedNodes = _selectedNodes.filter((node) => {
                     const _podMetaData = IndexStore.getMetaDataForPod(node.name)
-                    
+
                     return _podMetaData.isNew === podType
 
                 })
@@ -114,7 +114,6 @@ function NodeComponent() {
                                     <div className="cg-5">{node.health?.status}</div>
                                 </div>
 
-
                                 <div>
                                     <Tippy
                                         className="default-tt"
@@ -129,7 +128,9 @@ function NodeComponent() {
                                         />
                                     </Tippy>
                                     {getNodeDetailTabs(node.kind).map((tab, index) => {
-                                        return <NavLink key={"tab__" + index} to={`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`} className="fw-6  cb-5 ml-6 cursor">{tab}</NavLink>
+                                        return <NavLink key={"tab__" + index} to={`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`} className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
+                                            {tab}
+                                        </NavLink>
                                     })}
                                 </div>
                             </div>
@@ -147,7 +148,7 @@ function NodeComponent() {
                                 trigger='mouseenter click'
                             >
                                 <Clipboard
-                                    className="hover-only icon-dim-18 pointer"
+                                    className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
                                     onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
                                 />
                             </Tippy>
@@ -155,7 +156,7 @@ function NodeComponent() {
 
                         {params.nodeType === NodeType.Pod.toLowerCase() &&
                             <React.Fragment>
-                                <div className={"col-1 pt-9 pb-9"} > ... </div>
+                                <div className={"col-1 pt-9 pb-9"} > 1/1 </div>
                             </React.Fragment>
                         }
                     </div>
@@ -174,7 +175,10 @@ function NodeComponent() {
         <div className="container-fluid generic-table ml-0 mr-0" style={{ paddingRight: 0, paddingLeft: 0 }}>
             {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent callBack={setPodType} /> :
                 <div className="border-bottom  pt-10 pb-10" >
-                    <div className="pl-16 fw-6 fs-14 text-capitalize">{params.nodeType}({selectedNodes?.length})</div>
+                    <div className="pl-16 fw-6 fs-14 text-capitalize">
+                        <span className="pr-4">{params.nodeType}</span>
+                        <span>({selectedNodes?.length})</span>
+                    </div>
                     <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
                 </div>}
 

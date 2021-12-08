@@ -58,15 +58,15 @@
 
 .resource-row:hover{
     background-color: #edf1f5;
+    .resource-action-tabs__active{
+        visibility: visible;
+     }
 }
 
 .resource-row{
     .resource-action-tabs__active{
        visibility: hidden;
     }
-        .resource-action-tabs__active:hover{
-          visibility: visible;
-        }
 }
 
 .resource-tree__nodes:hover{

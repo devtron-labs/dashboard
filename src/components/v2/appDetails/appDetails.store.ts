@@ -9,7 +9,7 @@ let currentTab: string = "";
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
     let tab = {} as ApplicationObject
-    tab.name = tabName.toLowerCase()
+    tab.name = tabName
     tab.url = tabUrl
     tab.isSelected = isSelected
     tab.title = title || tabName
