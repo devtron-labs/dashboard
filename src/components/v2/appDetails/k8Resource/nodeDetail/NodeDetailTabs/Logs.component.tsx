@@ -4,7 +4,6 @@ import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.s
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch } from 'react-router';
-import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getLogsURLs } from '../nodeDetail.api';
 import IndexStore from '../../../index.store';
@@ -15,7 +14,6 @@ import { Subject } from '../../../../../../util/Subject';
 import ReactSelect from 'react-select';
 import LogViewerComponent from './LogViewer.component';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
-
 
 function LogsComponent({ selectedTab }) {
     const [logsPaused, toggleLogStream] = useState(false);
@@ -38,10 +36,6 @@ function LogsComponent({ selectedTab }) {
 
     useEffect(() => {
         selectedTab(NodeDetailTab.LOGS)
-
-        if (params.podName) {
-            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
-        }
 
     }, [params.podName])
 

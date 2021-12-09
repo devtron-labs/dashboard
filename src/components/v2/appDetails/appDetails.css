@@ -17,6 +17,12 @@
     background-color: var(--N200);
 }
 
+.resource-tab__close-wrapper{
+    width: 16px;
+    height: 16px;
+
+}
+
 .tab-list {
     list-style: none;
     display: flex;
@@ -44,4 +50,8 @@
 
 .resource-tab__node {
     margin-right: 0px !important;
+}
+
+.resource-tree__tab-hover:hover{
+   color: #0066cc !important;
 }

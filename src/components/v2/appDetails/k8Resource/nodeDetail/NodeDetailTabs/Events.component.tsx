@@ -1,58 +1,34 @@
 import React, { useEffect, useState } from 'react'
-import TableUtil from '../../../../utils/tableUtils/Table.util'
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import IndexStore from '../../../index.store';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getEvent } from '../nodeDetail.api';
+import { Pod as PodIcon} from '../../../../../common';
+import moment from 'moment';
+import { Spinner } from 'patternfly-react';
+import InfoIcon from '../../../../assets/icons/ic-info-filled.svg'
 
-
-const EventTableJSON = {
-    tHead: [
-        { value: "Reason", className:"table__padding-left pr-20" },
-        { value: "Message" },
-        { value: "Count" },
-        { value: "Last Time stamp" },
-    ],
-    tBody: [
-        [
-            { value: "Pulled", className:"table__padding-left pr-20 mono" },
-            { value: "Container image docker.elastic.co/elasticsearch/elasticsearch:7.9.1 already present on machine" , className: "mono"},
-            { value: "0" , className: "mono"},
-            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
-        ],
-        [
-            { value: "Back off", className:"table__padding-left pr-20 mono" },
-            { value: "Back-off restarting failed container", className: "mono" },
-            { value: "0", className: "mono" },
-            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
-        ],
-        [
-            { value: "FailedGetResourceMetric", className:" table__padding-left pr-20 mono" },
-            { value: "missing request for memory", className: "mono" },
-            { value: "0" , className: "mono"},
-            { value: "Wed, 19 Jun 2019, 16:02 PM", className: "mono" },
-        ]
-    ]
+interface EventType {
+    reason: string;
+    message: string;
+    count: number;
+    lastTimestamp: string
 }
+function EventsComponent({ selectedTab }) {
 
-function EventsComponent({selectedTab}) {
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
+    const [eventsResult, setEventResult] = useState(undefined)
+    const events = eventsResult?.items || []
+    const [loading, setLoading] = useState(false)
 
-    const params = useParams<{ actionName: string, podName: string, nodeType: string  }>()
-    const { path, url } = useRouteMatch()
-    
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS)
-
-        if (params.podName) {
-            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
-        }
-
         const appDetails = IndexStore.getAppDetails();
-
+        console.log(events)
         getEvent(appDetails, params.podName).then((response) => {
             console.log("response", response);
-            //setEvent(response.result.manifest)
+            setEventResult(response.result)
         }).catch((err) => {
             console.log("err", err)
         })
@@ -60,7 +36,7 @@ function EventsComponent({selectedTab}) {
     }, [params.podName])
 
     useEffect(() => {
-        if(params.actionName){
+        if (params.actionName) {
             AppDetailsStore.setCurrentTab(params.actionName)
         }
     }, [params.actionName])
@@ -69,9 +45,49 @@ function EventsComponent({selectedTab}) {
     //     selectedTab(NodeDetailTabs.EVENTS)
     // }, [])
 
+     const NoPod = ({ selectMessage = "Select a pod to view events", style = {} })  => {
+        return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
+            <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+            <p>{selectMessage}</p>
+        </div>
+    }
+
+    const NoEvents = ({ title = "Events not available" }) => {
+        return (
+            <div style={{ width: '100%', textAlign: 'center' }}>
+                <img src={InfoIcon} />
+                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+            </div>
+        )
+    }
+    
     return (
-        <div className="bcn-0" >
-            <TableUtil table={EventTableJSON}/>
+        <div className="bcn-0 flex" style={{ width: '100%', textAlign: 'center', minHeight: '600px' }} >
+            { events.filter(event => event).length > 0 && <div className="events-logs__events-table">
+
+                <div className="events-logs__events-table-row header m-0">
+                    {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
+                        <span className="events-logs__event" key={idx}>{head}</span>)}
+                </div>
+
+                {events.ite && events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
+                    <span className="events-logs__event">{event.reason}</span>
+                    <span className="events-logs__event">{event.message}</span>
+                    <span className="events-logs__event">{event.count}</span>
+                    <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
+                </div>)
+                }
+            </div>}
+
+            {params.podName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
+                {loading && <div  className="flex h-100" >
+                    <Spinner loading></Spinner>
+                    <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                </div>}
+                {!loading && events.filter(event => event).length === 0 && <NoEvents />}
+            </div>}
+
+            {!params.podName && <NoPod />}
         </div>
     )
 }

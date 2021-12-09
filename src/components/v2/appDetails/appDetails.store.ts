@@ -1,7 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { ApplicationObject } from "./appDetails.type";
 import { URLS } from "../../../config";
-import { toast } from 'react-toastify';
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
@@ -36,10 +35,9 @@ const AppDetailsStore = {
 
         if (!tabName || !tabURL || !tabKind) return
 
-
-        if(applicationObjectTabs.length ===7) {
-            toast.error('Max 5 tabs allowed')
-            return
+        if (applicationObjectTabs.length === 7) {
+            //maximum tab allowed on resource tree node
+            return false
         }
 
         let alredyAdded = false
@@ -60,6 +58,8 @@ const AppDetailsStore = {
         }
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
+
+        return true;
     },
     removeAppDetailsTab: (tabName: string) => {
         let _applicationObjectTabs = []

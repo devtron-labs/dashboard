@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useRouteMatch, useParams } from 'react-router';
+import { useRouteMatch, useParams, useHistory } from 'react-router';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
 import { copyToClipboard } from '../../../../common';
@@ -11,9 +11,12 @@ import { NodeType, Node, iNode } from '../../appDetails.type';
 import './nodeType.scss'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import Menu from './DeleteRowPopUp.component';
+import AppDetailsStore from '../../appDetails.store';
+import { toast } from 'react-toastify';
 
 function NodeComponent() {
     const { path, url } = useRouteMatch();
+    const history = useHistory()
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
     const [copied, setCopied] = useState(false);
@@ -99,6 +102,18 @@ function NodeComponent() {
         setDetailedNode({ name, containerName });
     }
 
+    const handleActionTabClick = (node: iNode, _tabName: string) => {
+        // {`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`
+        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, url)
+        if (isAdded) {
+            history.push(`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`)
+        } else {
+            toast.error(<div>
+                <div>Max 5 tabs allowed</div>
+                <p>Please close an open tab and try again.</p>
+            </div>)
+        }
+    }
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {
@@ -107,7 +122,7 @@ function NodeComponent() {
                     {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                         <span >{node.kind}</span>
                     </div>}
-                    <div className="resource-row row m-0 " onClick={() => {
+                    <div className="resource-row m-0 flex flex-justify" style={{width: '100vw'}} onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
@@ -115,7 +130,7 @@ function NodeComponent() {
                                 {(node.childNodes?.length > 0) ? <DropDown
                                     className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
                                     style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
-                                /> : <span className="pl-12"></span>}
+                                /> : <span className="pl-12 pr-12"></span>}
                                 <div>
                                     <div>{node.name}</div>
                                     <div className="cg-5">{node.health?.status}</div>
@@ -135,23 +150,15 @@ function NodeComponent() {
                                         />
                                     </Tippy>
                                     {getNodeDetailTabs(node.kind).map((tab, index) => {
-                                        return <NavLink key={"tab__" + index} to={`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`} className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
+                                        return <a key={"tab__" + index} onClick={() => handleActionTabClick(node, tab)} className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
                                             {tab}
-                                        </NavLink>
+                                        </a>
                                     })}
                                 </div>
 
                             </div>
-                            <div>
-                                <Menu nodeDetails={appDetails.resourceTree.nodes}
-                                    describeNode={describeNode}
-                                    appName={appDetails.appName}
-                                    environmentName={appDetails.environmentName}
-                                    // key={column}
-                                    appId={appDetails.appId}
-                                />
-                            </div>
                         </div>
+
 
                         {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-6 pt-9 pb-9 flex left"} >
                             {node.name + "." + node.namespace}  : portnumber
@@ -174,13 +181,33 @@ function NodeComponent() {
                                 <div className={"col-1 pt-9 pb-9"} > 1/1 </div>
                             </React.Fragment>
                         }
+
+                        <div className="">
+                            <Menu nodeDetails={appDetails.resourceTree.nodes}
+                                describeNode={describeNode}
+                                appName={appDetails.appName}
+                                environmentName={appDetails.environmentName}
+                                // key={column}
+                                appId={appDetails.appId}
+                            />
+                        </div>
+
+
                     </div>
 
-                    {(node.childNodes?.length > 0 && node.isSelected) &&
+                    {(node.childNodes?.length > 0 && node.isSelected) ?
                         <div className="ml-24 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
+                        :
+                        <React.Fragment>
+                            {node.kind === NodeType.Pod && <div className="col-12 pl-16 pt-9 pb-9 ">
+                                <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
+                                <div className="resource-row__content col-12 pl-32 pt-9 pb-9 cursor">{IndexStore.getMetaDataForPod(node.name).name}</div>
+                            </div>}
+                        </React.Fragment>
                     }
+
                 </React.Fragment>
             )
         })
@@ -191,7 +218,7 @@ function NodeComponent() {
             {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent callBack={setPodType} /> :
                 <div className="border-bottom  pt-10 pb-10" >
                     <div className="pl-16 fw-6 fs-14 text-capitalize">
-                        <span className="pr-4">{params.nodeType}</span>
+                        <span className="pr-4">{selectedNodes && selectedNodes[0].kind}</span>
                         <span>({selectedNodes?.length})</span>
                     </div>
                     <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>

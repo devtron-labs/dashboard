@@ -29,10 +29,6 @@ const publishFilteredNodes = () => {
         }
         // let _nodeHealth = _node.health?.status || ""
 
-        // if (_nodeFilter.filterType && _nodeFilter.filterType !== "All" && _nodeFilter.filterType.toLowerCase() !== _nodeHealth.toLowerCase()) {
-        //     return false
-        // }
-
         // if (_node.name.indexOf(_nodeFilter.searchString) === -1) {
         //     return false
         // }
@@ -46,22 +42,22 @@ const publishFilteredNodes = () => {
 const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
     return _allParentNodes.map((_pn: iNode) => {
         let childNodes = [];
-        let _childNodesTypes = []
+        //let _childNodesTypes = []
 
         _nodes.forEach((_n: Node) => {
             _n.parentRefs?.forEach(_pr => {
-                if (_pr.kind === _pn.kind && _childNodesTypes.indexOf(_n.name) === -1) {
+                if (_pr.uid === _pn.uid) {
                     childNodes.push(_n as iNode)
-                    _childNodesTypes.push(_n.name)
+                    //_childNodesTypes.push(_n.name)
                 }
             })
         })
 
         if (childNodes.length > 0) {
             fillChildNodes(childNodes, _nodes)
-        }
 
-        _pn.childNodes = childNodes
+            _pn.childNodes = childNodes
+        }
 
         return _pn
     })
@@ -73,11 +69,11 @@ const getAllParentNods = (_nodes: Array<Node>): Array<iNode> => {
 
     _nodes.forEach(_n => {
         _n.parentRefs?.forEach((_prn: Node) => {
-            if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
+            //if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
                 let prn = _n as iNode;
                 _allParentNodes.push(prn)
                 _allParentNodeTypes.push(_prn.kind)
-            }
+           // }
         })
     })
 

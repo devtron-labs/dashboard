@@ -77,6 +77,7 @@ function NodeTreeComponent() {
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
+
                                     {/* {aggregatedNodes?.nodeStatusCount[kind]?.Degraded > 0 && (
                                     <ErrorImage
                                         className="icon-dim-16 rotate"
@@ -87,7 +88,7 @@ function NodeTreeComponent() {
                             </React.Fragment>
                             :
 
-                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`resource-tree__nodes no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7'}`}>
+                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '}`}>
                                 {treeNode.name}
                             </NavLink>
                         }

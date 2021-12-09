@@ -71,31 +71,31 @@ const AppDetailsComponent = ({ envType }) => {
                         <ul className="tab-list">
                             {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                                 return (
-                                    <li key={index + "tab"} className="flex left ellipsis-right">
+                                    <li key={index + "tab"} className="flex left ellipsis-right ">
                                         <Tippy
-                                            className={`${((tab.name === URLS.APP_DETAILS_LOG) || (tab.name === URLS.APP_DETAILS_K8)) && 'w-0 h-0 bcn-0'} default-tt `}
+                                            className={`${((tab.name === URLS.APP_DETAILS_LOG) || (tab.name === URLS.APP_DETAILS_K8)) ? 'w-0 h-0 bcn-0' : ''} default-tt `}
                                             arrow={false}
                                             placement="top"
                                             content={(tab.name !== URLS.APP_DETAILS_LOG) && (tab.name !== URLS.APP_DETAILS_K8) && tab.title}
                                         >
-                                            <>
-                                                <div className={`${tab.isSelected ? " resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
-                                                    <NavLink to={`${tab.url}`} className={`tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
+                                            <div className="flex">
+                                                <div className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
+                                                    <NavLink to={`${tab.url}`} className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
                                                         <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
-                                                            {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 mr-4"> <LogAnalyzerIcon /></span> : ''}
-                                                            {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 mr-4"> <K8ResourceIcon /></span> : ''}
-                                                            <span className={`${tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8 ? 'mr-8' : 'ml-8 text-capitalize'} fs-12 `}>
+                                                            {tab.name === URLS.APP_DETAILS_LOG ? <span className="icon-dim-16 resource-tree__tab-hover fcb-5"> <LogAnalyzerIcon /></span> : ''}
+                                                            {tab.name === URLS.APP_DETAILS_K8 ? <span className="icon-dim-16 resource-tree__tab-hover "> <K8ResourceIcon /></span> : ''}
+                                                            <span className={`${tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8 ? 'mr-8' : 'ml-8 text-capitalize '} fs-12 `}>
                                                                 {tab.name.split('-').join(' ')}
                                                             </span>
                                                         </div>
                                                     </NavLink>
 
                                                     {(tab.name !== URLS.APP_DETAILS_LOG && tab.name !== URLS.APP_DETAILS_K8) &&
-                                                        <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" />
+                                                       <span className="resource-tab__close-wrapper flex br-5 bcn-5 fcn-0"> <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" /></span>
                                                     }
                                                 </div>
                                                 <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>
-                                            </>
+                                            </div>
                                         </Tippy>
                                     </li>
                                 )

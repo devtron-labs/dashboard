@@ -7,7 +7,7 @@ import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 import {ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg';
-import './nodeDetailTab.css'
+import './nodeDetailTab.scss'
 import { Subject } from '../../../../../../util/Subject'
 import { Scroller } from '../../../../../app/details/cIDetails/CIDetails';
 

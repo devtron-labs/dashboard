@@ -64,7 +64,7 @@ function Menu({ appName, environmentName, nodeDetails, describeNode, appId }) {
         </div>
     }
 
-    return (<td style={{ width: '40px' }}>
+    return (<div style={{ width: '40px' }}>
         <PopupMenu autoClose>
             <PopupMenu.Button isKebab={true}>
                 <img src={dots} className="pod-info__dots" />
@@ -83,7 +83,7 @@ function Menu({ appName, environmentName, nodeDetails, describeNode, appId }) {
                 />
             </PopupMenu.Body>
         </PopupMenu>
-    </td>)
+    </div>)
 }
 
 export default Menu

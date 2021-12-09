@@ -5,7 +5,7 @@ import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 
 
-const SummaryComponent = ({selectedTab}) => {
+const SummaryComponent = ({ selectedTab }) => {
     const { queryParams, searchParams } = useSearchString()
     // const node = searchParams?.kind && nodes?.nodes[searchParams.kind]?.has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [manifest, setManifest] = useState(null);
@@ -15,10 +15,6 @@ const SummaryComponent = ({selectedTab}) => {
 
     useEffect(() => {
         selectedTab(NodeDetailTab.SUMMARY)
-
-        if (params.podName) {
-            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
-        }
     }, [params.podName])
 
     // useEffect(() => {
@@ -54,37 +50,37 @@ const SummaryComponent = ({selectedTab}) => {
         <div className="w-100" style={{ display: "grid", gridTemplateColumns: '1fr 1fr', gap: "12px" }}>
             <div className="summary-view__card pt-16 pb-16 pl-16 pr-16 br-4">
                 <div className=" fw-6 fs-14">Configuration</div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Priority</div>
-                        <div className="pt-6">{manifest?.spec.priority}</div>
-                    </div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Node</div>
-                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec.nodeName}</div>
-                    </div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Selector</div>
-                        <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec?.selector}</div>
-                    </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Priority</div>
+                    <div className="pt-6">{manifest?.spec.priority}</div>
+                </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Node</div>
+                    <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec.nodeName}</div>
+                </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Selector</div>
+                    <div className="pt-6" style={{ color: "#62aceb" }}>{manifest?.spec?.selector}</div>
+                </div>
             </div>
             <div className="summary-view__card  pt-16 pb-16 pl-16 pr-16 br-4">
                 <div className=" fw-6 fs-14">Status</div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05 ">QoS</div>
-                        <div className="">{manifest?.status?.qosClass}</div>
-                    </div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Phase</div>
-                        <div className="cg-5">{manifest?.status?.phase}</div>
-                    </div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Pod IP</div>
-                        <div>{manifest?.status?.podIP}</div>
-                    </div>
-                    <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
-                        <div className="pt-6 o-05">Host IP</div>
-                        <div>{manifest?.status?.hostIP}</div>
-                    </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05 ">QoS</div>
+                    <div className="">{manifest?.status?.qosClass}</div>
+                </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Phase</div>
+                    <div className="cg-5">{manifest?.status?.phase}</div>
+                </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Pod IP</div>
+                    <div>{manifest?.status?.podIP}</div>
+                </div>
+                <div className="w-100" style={{ display: "grid", gridTemplateColumns: '100px 1fr', gap: "16px" }}>
+                    <div className="pt-6 o-05">Host IP</div>
+                    <div>{manifest?.status?.hostIP}</div>
+                </div>
             </div>
         </div>
 
@@ -109,7 +105,7 @@ const SummaryComponent = ({selectedTab}) => {
                 })}
             </div>
         </div>
-      
+
         {manifest?.spec.containers?.map((container) => {
             return <div className="summary-view__card mt-12 flex left top column pt-16 pl-16 pr-16 br-4">
                 <div className=" mb-8 fw-6 fs-14">{container.name}</div>
@@ -153,4 +149,4 @@ const SummaryComponent = ({selectedTab}) => {
     </div >
 }
 
-export  default SummaryComponent;
+export default SummaryComponent;

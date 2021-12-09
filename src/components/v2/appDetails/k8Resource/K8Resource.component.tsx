@@ -20,7 +20,7 @@ export default function K8ResourceComponent() {
     }, [])
 
     return (
-        <div className="bcn-0">
+        <div className="k8-resource-wrapper bcn-0 ">
             <div className="pt-16 pl-20 pb-16">
                 <FilterResource />
             </div>

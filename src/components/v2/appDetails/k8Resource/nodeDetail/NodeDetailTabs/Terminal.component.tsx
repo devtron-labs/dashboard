@@ -6,7 +6,7 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
-import './nodeDetailTab.css'
+import './nodeDetailTab.scss'
 import IndexStore from '../../../index.store';
 import { TerminalView } from './terminal/TerminalViewWrapper';
 import Select from 'react-select';
@@ -30,10 +30,6 @@ function TerminalComponent({ selectedTab }) {
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
-
-        if (params.podName) {
-            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
-        }
         // getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
         //     console.log("getTerminalData", response)
         // }).catch((err) => {

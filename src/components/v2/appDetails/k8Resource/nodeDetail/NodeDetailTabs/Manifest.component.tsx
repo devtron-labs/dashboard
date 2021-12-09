@@ -23,11 +23,6 @@ function ManifestComponent({ selectedTab }) {
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST)
 
-        if (params.podName) {
-            console.log('adding application object tab', new Date())
-            AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, url)
-        }
-
         const appDetails = IndexStore.getAppDetails();
 
         getManifestResource(appDetails, params.podName).then((response) => {
