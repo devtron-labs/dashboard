@@ -1,15 +1,14 @@
 import React from 'react'
 import CodeEditor from '../../../CodeEditor/CodeEditor';
-import Select, { components } from 'react-select';
+import Select from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../common/ReactSelectCustomization'
 import { useEffect } from 'react';
-import AppDetailsStore from '../appDetails.store';
-import { URLS } from '../../../../config';
+import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 
 function LogAnalyzerComponent() {
 
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActive(URLS.APP_DETAILS_LOG)
+        AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.log_analyzer)
     }, [])
 
     const renderFilters = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Tippy from '@tippyjs/react';
-import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-play.svg';
-import { ReactComponent as Connect } from '../../../../assets/icons/ic-stop.svg';
+import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnect.svg';
+import { ReactComponent as Connect } from '../../../../assets/icons/ic-connect.svg';
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { useParams, useRouteMatch } from 'react-router';
 import AppDetailsStore from '../../../appDetails.store';
@@ -25,7 +25,7 @@ function TerminalComponent({ selectedTab }) {
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [isReconnection, setIsReconnection] = useState(false);
 
-    const [socketConnectionType, setSocketConnectionType] = useState<SocketConnectionType>('DISCONNECTED')
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING")
 
 
     useEffect(() => {
@@ -46,27 +46,24 @@ function TerminalComponent({ selectedTab }) {
         toggleLogStream(paused);
     }
 
+    let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
+
     return (<div>
         <div className="flex left bcn-0 pt-8 pl-20">
             <Tippy
                 className="default-tt"
                 arrow={false}
                 placement="bottom"
-                content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
+                content={isSocketConnecting ? 'Disconnect' : 'Connect'}
             >
-                <div
-                    className={`toggle-logs mr-12 flex ${logsPaused ? 'play' : 'stop'}`}
-                    onClick={(e) => handleLogsPause(!logsPaused)}
-                >
-                    {socketConnectionType === 'CONNECTING' ?
-                        <span>
-                            <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnectionType('DISCONNECTING'); setIsReconnection(true); }} />
-                        </span>
-                        : <span>
-                            <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnectionType('CONNECTING') }} />
-                        </span>
-                    }
-                </div>
+                {isSocketConnecting ?
+                    <span>
+                        <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} />
+                    </span>
+                    : <span>
+                        <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />
+                    </span>
+                }
             </Tippy>
 
 
@@ -85,7 +82,7 @@ function TerminalComponent({ selectedTab }) {
 
             <div style={{ minWidth: '145px' }}>
                 <Select
-                    className="br-4 pl-8"
+                    className="bw-0 pl-8"
                     options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
                     placeholder='All Containers'
                     value={{ label: selectedContainerName, value: selectedContainerName }}
@@ -137,13 +134,13 @@ function TerminalComponent({ selectedTab }) {
             <TerminalView appDetails={appDetails}
                 nodeName={params.podName}
                 containerName={selectedContainerName}
-                socketConnection={socketConnectionType}
+                socketConnection={socketConnection}
                 terminalCleared={terminalCleared}
                 shell={selectedtTerminalType}
                 isReconnection={isReconnection}
                 setIsReconnection={setIsReconnection}
                 setTerminalCleared={setTerminalCleared}
-                setSocketConnection={setSocketConnectionType}
+                setSocketConnection={setSocketConnection}
             />
 
         </div>

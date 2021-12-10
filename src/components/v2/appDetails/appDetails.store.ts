@@ -4,7 +4,6 @@ import { URLS } from "../../../config";
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
-let currentTab: string = "";
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
     let tab = {} as ApplicationObject
@@ -13,6 +12,11 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: st
     tab.isSelected = isSelected
     tab.title = title || tabName
     applicationObjectTabs.push(tab)
+}
+
+export const AppDetailsTabs = {
+    k8s_Resources: "K8s Resources",
+    log_analyzer: "Log Analyzer"
 }
 
 const AppDetailsStore = {
@@ -26,8 +30,8 @@ const AppDetailsStore = {
     initAppDetailsTabs: (_url: string) => {
         applicationObjectTabs = []
 
-        addAOT(URLS.APP_DETAILS_K8, _url + "/" + URLS.APP_DETAILS_K8, true)
-        addAOT(URLS.APP_DETAILS_LOG, _url + "/" + URLS.APP_DETAILS_LOG, false)
+        addAOT(AppDetailsTabs.k8s_Resources, _url + "/" + URLS.APP_DETAILS_K8, true)
+        addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, false)
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
@@ -76,24 +80,23 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    markAppDetailsTabActive: (tabName: string) => {
+    markAppDetailsTabActive: (tabName: string, url?: string) => {
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false
             if (tab.name.toLowerCase() === tabName.toLowerCase()) {
                 tab.isSelected = true
+            } else if (tab.url.indexOf(url) !== -1) {
+                tab.isSelected = true
             }
         }
 
+        // let title = tabKind + '/' + tabName
+        // tabName = tabKind + '/...' + tabName.slice(-6)
+
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    setCurrentTab: (_str: string) => {
-        currentTab = _str
-        AppDetailsStore.markAppDetailsTabActive(_str)
-    },
-    getCurrentTab: () => {
-        return currentTab
-    }
+
 }
 
 export default AppDetailsStore;

@@ -103,10 +103,10 @@ function NodeComponent() {
     }
 
     const handleActionTabClick = (node: iNode, _tabName: string) => {
-        // {`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${tab.toLowerCase()}`
-        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, url)
+        const _url = `${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`
+        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
         if (isAdded) {
-            history.push(`${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`)
+            history.push(_url)
         } else {
             toast.error(<div>
                 <div>Max 5 tabs allowed</div>

@@ -7,7 +7,7 @@ const _nodesEmpty = [] as Node[]
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
 let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
 let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails);
-
+let _activeNodeDetailTab = ''
 let _nodeFilter = {
     filterType: '',
     searchString: ''
@@ -167,7 +167,16 @@ const IndexStore = {
         }
         _nodeFilter = { ..._nodeFilter, searchString: searchString }
         publishFilteredNodes()
+    },
+
+    setActiveNodeDetailTab: (activeNodeDetailTab: string) => {
+        _activeNodeDetailTab = activeNodeDetailTab
+    },
+
+    getActiveNodeDetailTab: () => {
+        return _activeNodeDetailTab
     }
+
 }
 
 export default IndexStore;

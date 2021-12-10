@@ -20,7 +20,6 @@ function LogsComponent({ selectedTab }) {
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
     const containers = IndexStore.getMetaDataForPod(params.podName).containers
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState({ label: "sh", value: "sh" });
     const appDetails = IndexStore.getAppDetails()
     const [logFormDTO, setLogFormDTO] = useState({
         pods: [params.podName],
@@ -29,7 +28,6 @@ function LogsComponent({ selectedTab }) {
     });
 
     const [terminalCleared, setTerminalCleared] = useState(false);
-    const { path, url } = useRouteMatch()
 
     const workerRef = useRef(null);
     const subject: Subject<string> = new Subject()
@@ -40,21 +38,16 @@ function LogsComponent({ selectedTab }) {
     }, [params.podName])
 
     const handleMessage = (event: any) => {
-        console.log("processRealtimeLogData", event)
-
         event.data.result.forEach((log: string) => subject.publish(log));
     }
 
     useEffect(() => {
         workerRef.current = new WebWorker(sseWorker);
-
         workerRef.current['addEventListener' as any]('message', handleMessage);
-
         workerRef.current['postMessage' as any]({
             type: 'start',
             payload: { urls: logFormDTO.urls, grepTokens: logFormDTO.grepTokens, timeout: 300, pods: logFormDTO.pods },
         });
-
     }, [logFormDTO]);
 
     useEffect(() => {
@@ -96,7 +89,6 @@ function LogsComponent({ selectedTab }) {
                         </div>
                     </Tippy>
 
-
                     <Tippy className="default-tt"
                         arrow={false}
                         placement="bottom"
@@ -117,7 +109,6 @@ function LogsComponent({ selectedTab }) {
                                 value={{ label: selectedContainerName, value: selectedContainerName }}
                                 onChange={(selected, meta) => setSelectedContainerName((selected as any).value)}
                                 closeMenuOnSelect
-                                // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                                 styles={{
                                     ...multiSelectStyles,
                                     control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
@@ -131,34 +122,8 @@ function LogsComponent({ selectedTab }) {
                             />
                         </div>
                         <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-
-                        <div className="cn-6">sh </div>
-                        <div style={{ minWidth: '145px' }}>
-                            <ReactSelect
-                                className="br-4 pl-8 bw-0"
-                                options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
-                                placeholder='All Containers'
-                                value={{ label: selectedContainerName, value: selectedContainerName }}
-                                onChange={(selected, meta) => setSelectedContainerName((selected as any).value)}
-                                closeMenuOnSelect
-                                // components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
-                                styles={{
-                                    ...multiSelectStyles,
-                                    control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
-                                    singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
-                                    indicatorsContainer: (provided, state) => ({
-                                        ...provided,
-                                        height: '24px',
-                                    }),
-                                }}
-                                isSearchable={false}
-                            />
-                        </div>
                     </div>
-
-
                 </div>
-
 
                 <div className="pr-20" style={{ minWidth: '700px' }}>
                     {/* <form name="log_form" onSubmit={handleLogsSearch}> */}

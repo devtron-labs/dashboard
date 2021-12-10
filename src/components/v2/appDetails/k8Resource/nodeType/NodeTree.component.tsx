@@ -16,6 +16,7 @@ function NodeTreeComponent() {
     const [{ treeNodes }, dispatch] = useNodeTree();
     const [filteredNodes] = useSharedState(IndexStore.getAppDetailsFilteredNodes(), IndexStore.getAppDetailsNodesFilteredObservable())
 
+
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         if (e) { e.stopPropagation() }
 
@@ -36,19 +37,30 @@ function NodeTreeComponent() {
     }
 
     useEffect(() => {
-        const firstNode = treeNodes[0]
+        const activeTabName = IndexStore.getActiveNodeDetailTab()
 
-        if (!selectedNodeKind && firstNode && firstNode.childNodes && firstNode.childNodes.length > 0) {
-            let firstChildNode = firstNode.childNodes[0];
+        // if (activeTabName) {
+        //     IndexStore.setActiveNodeDetailTab("") //TODO: validate
+
+        //     const _nodeToBeSelected = IndexStore.getNodesByKind(activeTabName)[0]
+
+        //     console.log(_nodeToBeSelected)
+
+        // }else{
+        const nodeToBeSelected = treeNodes[0]
+
+        if (!selectedNodeKind && nodeToBeSelected && nodeToBeSelected.childNodes && nodeToBeSelected.childNodes.length > 0) {
+            let firstChildNode = nodeToBeSelected.childNodes[0];
 
             let link = `${url}/${firstChildNode.name.toLowerCase()}`;
             history.push(link);
-            
+
             setTimeout(() => {
-                handleNodeClick(firstNode, null, null)
-                handleNodeClick(firstChildNode, firstNode, null)
+                handleNodeClick(nodeToBeSelected, null, null)
+                handleNodeClick(firstChildNode, nodeToBeSelected, null)
             }, 100)
         }
+        // }
 
     }, [treeNodes.length, selectedNodeKind])
 
@@ -72,7 +84,7 @@ function NodeTreeComponent() {
                         {treeNode.childNodes?.length > 0 ?
                             <React.Fragment>
                                 <DropDown
-                                    className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5' }  rotate icon-dim-24 pointer`}
+                                    className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
@@ -83,7 +95,7 @@ function NodeTreeComponent() {
                                         className="icon-dim-16 rotate"
                                         style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }} */}
                                     {/* /> */}
-                                {/* )} */}
+                                    {/* )} */}
                                 </div>
                             </React.Fragment>
                             :

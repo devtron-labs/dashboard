@@ -10,16 +10,16 @@ import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTab } from './nodeDetail.type';
 import { getNodeDetailTabs } from './nodeDetail.util';
 import { NodeType } from '../../appDetails.type';
+import IndexStore from '../../index.store';
+import AppDetailsStore from '../../appDetails.store';
 
 function NodeDetailComponent() {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-
     const [tabs, setTabs] = useState([])
-
     const [selectedTabName, setSelectedTabName] = useState("")
     const { path, url } = useRouteMatch()
-
+    
     useEffect(() => {
        
         if(params.nodeType){
@@ -29,8 +29,11 @@ function NodeDetailComponent() {
 
     }, [params.nodeType, params.podName])
 
+
     const handleSelectedTab = (_tabName: string) => {
         setSelectedTabName(_tabName)
+        IndexStore.setActiveNodeDetailTab(params.nodeType)
+        AppDetailsStore.markAppDetailsTabActive(_tabName, url)
     }
 
     return (

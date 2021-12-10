@@ -3,8 +3,7 @@ import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
 import { useRouteMatch } from 'react-router';
-import { URLS } from '../../../../config';
-import AppDetailsStore from '../appDetails.store';
+import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import { Switch, Route } from 'react-router-dom';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
@@ -16,7 +15,7 @@ export default function K8ResourceComponent() {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
 
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActive(URLS.APP_DETAILS_K8)
+        AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.k8s_Resources)
     }, [])
 
     return (

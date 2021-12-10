@@ -9,12 +9,7 @@ import moment from 'moment';
 import { Spinner } from 'patternfly-react';
 import InfoIcon from '../../../../assets/icons/ic-info-filled.svg'
 
-interface EventType {
-    reason: string;
-    message: string;
-    count: number;
-    lastTimestamp: string
-}
+
 function EventsComponent({ selectedTab }) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
@@ -25,9 +20,7 @@ function EventsComponent({ selectedTab }) {
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS)
         const appDetails = IndexStore.getAppDetails();
-        console.log(events)
         getEvent(appDetails, params.podName).then((response) => {
-            console.log("response", response);
             setEventResult(response.result)
         }).catch((err) => {
             console.log("err", err)
@@ -35,15 +28,6 @@ function EventsComponent({ selectedTab }) {
 
     }, [params.podName])
 
-    useEffect(() => {
-        if (params.actionName) {
-            AppDetailsStore.setCurrentTab(params.actionName)
-        }
-    }, [params.actionName])
-
-    // useEffect(() => {
-    //     selectedTab(NodeDetailTabs.EVENTS)
-    // }, [])
 
      const NoPod = ({ selectMessage = "Select a pod to view events", style = {} })  => {
         return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
