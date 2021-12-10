@@ -1179,6 +1179,8 @@ export const ProgressStatus: React.FC<{
                                 </tr>
                             </thead>
                             <tbody>
+                               { console.log(nodes)}
+
                                 {nodes &&
                                     Object.keys(nodes.nodes)
                                         .filter((kind) => kind.toLowerCase() !== 'rollout')

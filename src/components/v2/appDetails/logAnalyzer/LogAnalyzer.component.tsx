@@ -4,6 +4,10 @@ import Select from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../common/ReactSelectCustomization'
 import { useEffect } from 'react';
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
+import LogViewerComponent from '../k8Resource/nodeDetail/NodeDetailTabs/LogViewer.component';
+import { Subject } from '../../../../util/Subject';
+
+const subject: Subject<string> = new Subject()
 
 function LogAnalyzerComponent() {
 
@@ -89,8 +93,11 @@ function LogAnalyzerComponent() {
 
     return (
         <div>
-            {renderFilters()}
-            {renderCodeEditorAnalyzer()}
+            {/* {renderFilters()}
+            {renderCodeEditorAnalyzer()} */}
+            <div className=" pl-20 pr-20" style={{ height: '460px', background: 'black' }}>
+                <LogViewerComponent subject={subject} />
+            </div>
         </div>
     )
 }

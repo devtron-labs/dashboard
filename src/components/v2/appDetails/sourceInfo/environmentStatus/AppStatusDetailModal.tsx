@@ -1,35 +1,26 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Drawer, VisibleModal } from '../../../../common'
 import TableUtil from '../../../utils/tableUtils/Table.util'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
+import IndexStore from '../../index.store';
+import { AggregatedNodes } from '../../../../app/types';
+import { aggregateNodes } from '../../../../app/details/appDetails/utils';
+const _appDetails = IndexStore.getAppDetails()
 
-const AppDetailJSON = {
-    tHead: [
-        { value: "NAME", className: "table__padding-left col-md-5" },
-        { value: "STATUS", className: "col-md-2" },
-        { value: "MESSAGE", className: "table__padding-right col-md-5" },
-    ],
-    tBody: [
-        [
-            { value: " manish-testing-devtron-demo-service", className: "table__padding-left col-md-5" },
-            { value: "healthy", className: "col-md-2" },
-            { value: "Waiting for rollout to finish: 0 out of 1 new replicas are availab", className: "table__padding-right col-md-5" },
-
-        ],
-        [
-            { value: "manish-testing-devtron-demo-service-fh48c", className: "table__padding-left col-md-5" },
-            { value: "progressing", className: "col-md-2" },
-            { value: "Waiting for rollout to finish: 0 out of 1 new replicas are available.", className: "table__padding-right col-md-5" },
-        ],
-        [
-            { value: "shivani-testing-devtron-demo-service-fh48c", className: "table__padding-left col-md-5" },
-            { value: "imagepullbackoff", className: "col-md-2" },
-            { value: "Back-off pulling image 686244538589.dkr.ecr.us-east-2.amazonaws.com/dheeth/devtron:tag1new-27", className: "table__padding-right col-md-5" },
-        ]
-    ]
-}
+// function getNodeMessage(kind, name) {
+//     if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
+//         const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
+//         if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
+//     }
+//     return '';
+// }
 
 function AppStatusDetailModal({ message, close, status }) {
+
+    const nodes: AggregatedNodes = useMemo(() => {
+        return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || []);
+    }, [_appDetails]);
+
     return (
         <Drawer position="right" width="50%" >
                 <div className="app-status-detail-modal bcn-0 pt-12">
@@ -46,7 +37,62 @@ function AppStatusDetailModal({ message, close, status }) {
                     </div>
 
                     <div className="app-status-detail__header">
-                        <TableUtil table={AppDetailJSON} />
+                    <table>
+                            <thead>
+                                <tr>
+                                    {['name', 'status', 'message'].map((n, index) => (
+                                        <th key={`header_${index}`}>{n}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {console.log(nodes)}
+                                {nodes &&
+                                    Object.keys(nodes.nodes)
+                                        .filter((kind) => kind.toLowerCase() !== 'rollout')
+                                        .map((kind) =>
+                                            Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
+                                                <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
+                                                    <td valign="top">
+                                                        <div className="kind-name">
+                                                            <div>{nodeDetails.kind}/</div>
+                                                            <div className="ellipsis-left">{nodeDetails.name}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        valign="top"
+                                                        className={`app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
+                                                            ? nodeDetails.health.status.toLowerCase()
+                                                            : ''
+                                                            }`}
+                                                    >
+                                                        {nodeDetails.status
+                                                            ? nodeDetails.status
+                                                            : nodeDetails.health
+                                                                ? nodeDetails.health.status
+                                                                : ''}
+                                                    </td>
+                                                    <td valign="top">
+                                                        <div
+                                                            style={{
+                                                                display: 'grid',
+                                                                gridAutoColumns: '1fr',
+                                                                gridRowGap: '8px',
+                                                            }}
+                                                        >
+                                                            {/* {getNodeMessage(kind, nodeDetails.name) && (
+                                                                <div>{getNodeMessage(kind, nodeDetails.name)}</div>
+                                                            )} */}
+                                                            {nodeDetails.health && nodeDetails.health.message && (
+                                                                <div>{nodeDetails.health.message}</div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )),
+                                        )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
         </Drawer>

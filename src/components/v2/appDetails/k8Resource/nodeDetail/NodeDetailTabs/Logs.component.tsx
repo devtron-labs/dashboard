@@ -74,7 +74,7 @@ function LogsComponent({ selectedTab }) {
     return (
         <React.Fragment>
             <div className="flex bcn-0 pl-28 pt-2 pb-2 content-space">
-                <div className="flex left">
+                <div className="flex ">
                     <Tippy
                         className="default-tt"
                         arrow={false}
@@ -82,7 +82,7 @@ function LogsComponent({ selectedTab }) {
                         content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
                     >
                         <div
-                            className={`toggle-logs mr-12 ${logsPaused ? 'play' : 'stop'}`}
+                            className={`toggle-logs mr-8 mt-4 ${logsPaused ? 'play' : 'stop'}`}
                             onClick={(e) => handleLogsPause(!logsPaused)}
                         >
                             {logsPaused ? <PlayButton className="icon-dim-16" /> : <StopButton className="stop-btn icon-dim-16 br-4 fcr-5" />}
@@ -93,12 +93,12 @@ function LogsComponent({ selectedTab }) {
                         arrow={false}
                         placement="bottom"
                         content={'Clear'} >
-                        <div>
+                        <div className={`mr-8 mt-4 `}>
                             <Abort className="icon-dim-20" onClick={(e) => { setTerminalCleared(true); }} />
                         </div>
                     </Tippy>
 
-                    <span className="cn-2 mr-8 ml-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+                    <span className="cn-2 mr-8 " style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                     <div className="cn-6">Container </div>
                     <div className="cn-6 flex left">
                         <div style={{ minWidth: '145px' }}>
@@ -118,10 +118,12 @@ function LogsComponent({ selectedTab }) {
                                         height: '24px',
                                     }),
                                 }}
+                                components={{
+                                    IndicatorSeparator: null,
+                                }}
                                 isSearchable={false}
                             />
                         </div>
-                        <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                     </div>
                 </div>
 
@@ -139,7 +141,7 @@ function LogsComponent({ selectedTab }) {
                 Connecting
             </div> */}
 
-            <div className=" pl-20 pr-20" style={{ height: '460px', background: 'black' }}>
+            <div className=" pl-20 pr-20" style={{ minHeight: '600px', background: 'black' }}>
                 <LogViewerComponent subject={subject} />
             </div>
         </React.Fragment>

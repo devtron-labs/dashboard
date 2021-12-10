@@ -82,7 +82,7 @@ const AppDetailsComponent = ({ envType }) => {
                                                 <div className={`${tab.isSelected ? "resource-tree-tab bcn-0 cn-9" : ""} flex left pl-12 pt-8 pb-8 pr-12 `}>
                                                     <NavLink to={`${tab.url}`} className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
                                                         <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
-                                                            {tab.name === AppDetailsTabs.log_analyzer ? <span className="icon-dim-16 resource-tree__tab-hover fcb-5"> <LogAnalyzerIcon /></span> : ''}
+                                                            {tab.name === AppDetailsTabs.log_analyzer ? <span className="icon-dim-16 resource-tree__tab-hover fcb-9"> <LogAnalyzerIcon /></span> : ''}
                                                             {tab.name === AppDetailsTabs.k8s_Resources ? <span className="icon-dim-16 resource-tree__tab-hover "> <K8ResourceIcon /></span> : ''}
                                                             <span className={`${tab.name !== AppDetailsTabs.k8s_Resources && tab.name !== AppDetailsTabs.log_analyzer ? 'mr-8' : 'ml-8 text-capitalize '} fs-12 `}>
                                                                 {tab.name}

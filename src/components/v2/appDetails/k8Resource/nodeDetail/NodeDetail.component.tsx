@@ -51,7 +51,7 @@ function NodeDetailComponent() {
                     })
                 }
             </div>
-            <div>
+            <div className="" style={{minHeight: '600px'}}>
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab}  /> }} />
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`} render={() => { return <EventsComponent selectedTab={handleSelectedTab} /> }} />

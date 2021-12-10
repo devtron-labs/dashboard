@@ -119,7 +119,7 @@ function ManifestComponent({ selectedTab }) {
                     <CodeEditor
                         original={manifest}
                         theme='vs-gray--dt'
-                        height={500}
+                        height={600}
                         value={activeManifestEditorData}
                         mode="yaml"
                         readOnly={activeTab !== 'Desired manifest'}
@@ -127,7 +127,7 @@ function ManifestComponent({ selectedTab }) {
                     </CodeEditor> :
                     <CodeEditor
                         theme='vs-gray--dt'
-                        height={500}
+                        height={600}
                         value={activeManifestEditorData}
                         mode="yaml"
                         readOnly={activeTab !== 'Desired manifest'}

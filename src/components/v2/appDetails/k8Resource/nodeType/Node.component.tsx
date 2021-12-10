@@ -203,7 +203,7 @@ function NodeComponent() {
                         <React.Fragment>
                             {node.kind === NodeType.Pod && <div className="col-12 pl-16 pt-9 pb-9 ">
                                 <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
-                                <div className="resource-row__content col-12 pl-32 pt-9 pb-9 cursor">{IndexStore.getMetaDataForPod(node.name).name}</div>
+                                <div className="resource-row__content pl-32 pt-9 pb-9 cursor">{IndexStore.getMetaDataForPod(node.name).name}</div>
                             </div>}
                         </React.Fragment>
                     }

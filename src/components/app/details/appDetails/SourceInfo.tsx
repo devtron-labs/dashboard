@@ -13,7 +13,6 @@ import { Nodes } from '../../types';
 
 export function SourceInfo({ appDetails, setDetailed = null, environments, showCommitInfo = null, showHibernateModal = null }) {
 
-    console.log('appDetails', appDetails)
     const status = appDetails?.resourceTree?.status || ""
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions;
