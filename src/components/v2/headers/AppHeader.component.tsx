@@ -42,14 +42,6 @@ function AppHeaderComponent() {
 
     }
 
-    // useEffect(() => {
-    //     try {
-    //         getAppMetaInfoRes()
-    //     }
-    //     catch (err) {
-    //         showError(err)
-    //     }
-    // }, [appId])
 
     const handleAppChange = useCallback(({ label, value }) => {
         const tab = currentPathname.current.replace(match.url, "").split("/")[1];
@@ -90,8 +82,7 @@ function AppHeaderComponent() {
     return (
         <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
             <h1 className="m-0 flex left fs-18 cn-9">
-                {/* <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 3)} /> */}
-                <BreadCrumb breadcrumbs={breadcrumbs} />
+                <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
 
                 {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
                 <Tippy className="default-tt " arrow={false} content={'About app'}>

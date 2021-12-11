@@ -10,8 +10,7 @@ import AppHeaderComponent from './headers/AppHeader.component';
 import { EnvType } from './appDetails/appDetails.type';
 import ChartHeaderComponent from './headers/ChartHeader.component';
 import IndexStore from './appDetails/index.store';
-import { getInstalledChartDetail } from './appDetails/appDetails.api';
-import { getInstalledAppDetail } from '../charts/charts.service';
+import { getInstalledChartDetail, getInstalledAppDetail } from './appDetails/appDetails.api';
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true)

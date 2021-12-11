@@ -27,11 +27,13 @@ const AppDetailsStore = {
     getAppDetailsTabsObservable: () => {
         return applicationObjectTabsSubject.asObservable()
     },
-    initAppDetailsTabs: (_url: string) => {
+    initAppDetailsTabs: (_url: string, displayLogAnalyzer) => {
         applicationObjectTabs = []
 
         addAOT(AppDetailsTabs.k8s_Resources, _url + "/" + URLS.APP_DETAILS_K8, true)
-        addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, false)
+        if (displayLogAnalyzer) {
+            addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, false)
+        }
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },

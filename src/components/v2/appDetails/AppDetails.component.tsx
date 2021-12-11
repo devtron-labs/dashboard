@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
 import './appDetails.css';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
@@ -10,10 +10,11 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject } from './appDetails.type';
+import { ApplicationObject, NodeType } from './appDetails.type';
 import SourceInfoComponent from './sourceInfo/SourceInfo.component';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
+import IndexStore from './index.store';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string, envId: string, nodeType: string }>()
@@ -22,7 +23,8 @@ const AppDetailsComponent = () => {
     const history = useHistory();
 
     useEffect(() => {
-        AppDetailsStore.initAppDetailsTabs(url)
+        const _pods = IndexStore.getNodesByKind(NodeType.Pod)
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0)
     }, [params.appId, params.envId])
 
     const handleCloseTab = (e: any, tabName: string) => {

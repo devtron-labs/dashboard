@@ -129,7 +129,7 @@ const IndexStore = {
         return _nodesFilteredSubject.asObservable()
     },
 
-    getNodesByKind: (_kind: string) => {
+    getiNodesByKind: (_kind: string) => {
         const _nodes = _nodesSubject.getValue()
         const parentNodes = getAllParentNods(_nodes)
 
@@ -142,6 +142,11 @@ const IndexStore = {
         }
 
         return _filteredNodes
+    },
+
+    getNodesByKind: (_kind: string) => {
+        const _nodes = _nodesSubject.getValue()
+        return _nodes.filter(_node => _node.kind.toLowerCase() === _kind.toLowerCase())
     },
 
     getMetaDataForPod: (_name: string) => {

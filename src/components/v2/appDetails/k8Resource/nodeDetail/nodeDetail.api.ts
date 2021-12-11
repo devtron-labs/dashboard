@@ -6,7 +6,7 @@ import IndexStore from "../../index.store";
 
 export const getManifestResource = (ad: AppDetails, nodeName: string) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const ed = IndexStore.getNodesByKind(cn.kind)[0]
+    const ed = IndexStore.getiNodesByKind(cn.kind)[0]
     return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=${ed.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`)
 }
 
@@ -23,7 +23,7 @@ export const getLogsURLs = (ad, nodeName, Host) => {
     } else {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
-    return [`${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${ad.appName}&follow=true&namespace=${ad.namespace}&tailLines=500`]
+    return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${ad.appName}&follow=true&namespace=${ad.namespace}&tailLines=500`
 }
 
 export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {

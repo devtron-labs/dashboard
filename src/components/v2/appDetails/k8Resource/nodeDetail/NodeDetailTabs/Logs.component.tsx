@@ -14,16 +14,21 @@ import { Subject } from '../../../../../../util/Subject';
 import ReactSelect from 'react-select';
 import LogViewerComponent from './LogViewer.component';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
+import { NodeType } from '../../../appDetails.type';
 
 function LogsComponent({ selectedTab }) {
     const [logsPaused, toggleLogStream] = useState(false);
+    const [pods, setPods] = useState([])
+    const [containers, setContainers] = useState([])
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-    const containers = IndexStore.getMetaDataForPod(params.podName).containers
-    const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
+    const [selectedContainerName, setSelectedContainerName] = useState();
+    const [selectedPodName, setSelectedPodName] = useState();
     const appDetails = IndexStore.getAppDetails()
+    const [isLogAnalyzer, setLogAnalyzer] = useState(false)
+    
     const [logFormDTO, setLogFormDTO] = useState({
-        pods: [params.podName],
-        urls: getLogsURLs(appDetails, params.podName, Host),
+        pods: [],
+        urls: [],
         grepTokens: ""
     });
 
@@ -33,7 +38,37 @@ function LogsComponent({ selectedTab }) {
     const subject: Subject<string> = new Subject()
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.LOGS)
+
+        if (params.podName) {
+
+            if (selectedTab) {
+                selectedTab(NodeDetailTab.LOGS)
+            }
+
+            setLogFormDTO({
+                pods: [params.podName],
+                urls: [getLogsURLs(appDetails, params.podName, Host)],
+                grepTokens: ""
+            });
+
+
+            setContainers(IndexStore.getMetaDataForPod(params.podName).containers)
+        } else {
+            setLogAnalyzer(true)
+            const _pods = IndexStore.getNodesByKind(NodeType.Pod)
+
+            const _urls = _pods.map((pod) => {
+                return getLogsURLs(appDetails, pod.name, Host)
+            })
+
+            setLogFormDTO({
+                pods: _pods,
+                urls: _urls,
+                grepTokens: ""
+            });
+
+            // setContainers(IndexStore.getPodMetaData()?[0].containers)
+        }
 
     }, [params.podName])
 
@@ -60,6 +95,9 @@ function LogsComponent({ selectedTab }) {
         };
     }, [])
 
+    useEffect(()=>{
+
+    },[selectedPodName])
 
     const handleLogsPause = (paused: boolean) => {
         toggleLogStream(paused);
@@ -98,6 +136,33 @@ function LogsComponent({ selectedTab }) {
                         </div>
                     </Tippy>
 
+                    {isLogAnalyzer && <div className='flex left'>
+                        <div className="cn-6">Pods</div>
+                        <div className="cn-6 flex left">
+                            <div style={{ minWidth: '200px' }}>
+                                <ReactSelect
+                                    className="br-4 pl-8 bw-0"
+                                    options={logFormDTO.pods.map(pod => ({ label: pod.name, value: pod.name})) }
+                                    placeholder='All Pods'
+                                    // value={{ label: selectedPodName, value: selectedPodName }}
+                                    onChange={(selected, meta) => setSelectedPodName((selected as any).value)}
+                                    closeMenuOnSelect
+                                    styles={{
+                                        ...multiSelectStyles,
+                                        control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                        indicatorsContainer: (provided, state) => ({
+                                            ...provided,
+                                            height: '24px',
+                                        }),
+                                    }}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                    }}
+                                    isSearchable={false}
+                                />
+                            </div>
+                        </div></div>}
                     <span className="cn-2 mr-8 " style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                     <div className="cn-6">Container </div>
                     <div className="cn-6 flex left">

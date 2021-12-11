@@ -60,7 +60,7 @@ function NodeComponent() {
             setTableHeader(tableHeader)
             setFirstColWidth(_fcw)
 
-            let _selectedNodes = IndexStore.getNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+            let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
             if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 _selectedNodes = _selectedNodes.filter((node) => {
