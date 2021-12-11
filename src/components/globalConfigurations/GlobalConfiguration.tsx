@@ -30,7 +30,7 @@ const ConfigRequired = [
     { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
     { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
     { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
-    { name: 'Docker registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
+    { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
 ]
 
 const ConfigOptional = [

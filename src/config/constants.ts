@@ -39,7 +39,7 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/labels',
-    
+
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
 
@@ -94,6 +94,7 @@ export const Routes = {
     CHART_INSTALLED: 'app-store/installed-app',
     CHART_AVAILABLE: 'app-store',
     CHART_REPO: 'repo',
+    CHART_RESYNC: 'sync-charts',
     CHART_VALUES: 'app-store/template/values',
     CHART_VALUES_LIST_CATEGORIZED: 'app-store/application/values/list',
     CHART_VALUES_LIST_TEMPLATE: 'app-store/template/values/list',

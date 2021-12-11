@@ -25,22 +25,8 @@
     -->
     <title>DevTron Labs</title>
 
-    <!-- Discord widget -->
-    <script src='https://cdn.jsdelivr.net/npm/@widgetbot/crate@3' async defer>
-        const crate = new Crate({
-            server: '769482988882493450', // Devtron
-            channel: '769508553118842881', // #devtron-novice
-            location: ['bottom', 'left'],
-            color: '#023263'
-        })
 
-        crate.notify({
-            content: 'Need help?',
-            timeout: 8000,
-            avatar: 'https://i.postimg.cc/MK5M3H87/1516624713231.jpg'
-        })
 
-    </script>
 </head>
 
 <body>
@@ -57,5 +43,11 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 </body>
+<!-- Discord widget -->
+<script type="text/javascript">
+  if (!window._env_.HIDE_DISCORD) {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>const crate = new Crate({server: "769482988882493450",channel: "769508553118842881", location: ["bottom", "left"], color: "#023263"});crate.notify({content: "Need help?",timeout: 8000,avatar: "https://i.postimg.cc/MK5M3H87/1516624713231.jpg"});<\/script>');
+  }
+</script>
 
 </html>

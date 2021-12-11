@@ -38,7 +38,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                     Add git account</NavLink>
                 <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor mt-8 pb-8 flex left" style={{ ['color']: docker ? `#767d84` : `#0066cc` }}>
                     {!docker ? <img src={Uncheck} className="icon-dim-16 mr-8" /> : <Check className="icon-dim-16 mr-8" />}
-                    Add docker registry</NavLink>
+                    Add container registry</NavLink>
             </div> : ''}
         </>
     }
