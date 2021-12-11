@@ -92,7 +92,7 @@
         "jest-junit": "^11.0.1",
         "jsdom-worker": "^0.2.1",
         "mocha": "^6.2.2",
-        "node-sass": "^4.12.0",
+        "node-sass": "^4.14.1",
         "prettier": "^2.0.5",
         "react-scripts": "3.2.0",
         "react-test-render": "^1.1.2",
