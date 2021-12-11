@@ -1,158 +1,79 @@
-import { versions } from 'process'
-import React, { useRef, useState } from 'react'
-import { ChartValuesSelect } from '../../charts/util/ChartValueSelect'
-import CodeEditor from '../../CodeEditor/CodeEditor'
-import { Select } from '../../common'
-import ReactSelect from 'react-select';
-import { styles, menuList, DropdownIndicator } from '../../charts/charts.util';
-import AsyncSelect from 'react-select/async';
-import '../../charts/modal/DeployChart.scss';
+import React, { useRef, useState, useEffect } from 'react'
+import DeployChart from '../../charts/modal/DeployChart'
+import { toast } from 'react-toastify';
+import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
+import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../../charts/charts.service';
+import IndexStore from '../appDetails/index.store';
+// TODO: appDetails from useSharedState
 
-function ValuesComponent({envType}) {
-    const deployChartForm = useRef(null);
-    let environmentId = 1
-    let teamId = 1
-    let isUpdate = environmentId && teamId;
-    const [appName, setAppName] = useState('')
+function ValuesComponent() {
+    const [installedConfig, setInstalledConfig] = useState(null)
+    const [loading, setLoading] = useState<boolean>(true)
+    const [isPollingRequired, setPollingRequired] = useState<boolean>(true);
+    const history = useHistory()
+    const { url, path } = useRouteMatch();
+    const appDetails = IndexStore.getAppDetails()
+
+    function mapById(arr) {
+        if (!Array.isArray(arr)) {
+            throw 'parameter is not an array'
+        }
+        return arr.reduce((agg, curr) => agg.set(curr.id || curr.Id, curr), new Map())
+    }
+
+    useEffect(() => {
+        getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId).then((result) => {
+            setInstalledConfig(result);
+            setPollingRequired(false);
+            setLoading(false);
+        }).catch((err) => {
+            console.log(err)
+            if (Array.isArray(err.errors)) {
+                err.errors.map(({ userMessage }, idx) => toast.error(userMessage));
+            }
+        })
+
+        // history.push(`${url}/update-chart`);
+
+    }, [])
 
     return (
-        // <div className="container-fluid ">
-        //     <div className="row justify-content-center">
-                    <div className="deploy-chart-container readmeCollapsed " >
-                        {/* <div className="header-container flex column bcn-0 pt-16 pb-16">
-                            <div className="title">prometheus-community/alert</div>
-                            <div className="border" />
-                        </div> */}
-                        <div className="deploy-chart-body bcn-0 m-auto ">
-                            <div className="overflown" ref={deployChartForm}>
-                                <div className="hide-scroll">
-                                    <label className="form__row form__row--w-100">
-                                        <span className="form__label">App Name</span>
-                                        <input autoComplete="off" tabIndex={1} placeholder="App name" className="form__input"
-                                            value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
-                                    </label>
-                                    <label className="form__row form__row--w-100">
-                                        <span className="form__label">Project</span>
-                                        <ReactSelect
-                                            components={{
-                                                IndicatorSeparator: null,
-                                                DropdownIndicator
-                                            }}
-                                            placeholder="Select Project"
-                                            // value={selectedProject}
-                                            styles={{
-                                                ...styles,
-                                                ...menuList,
-                                            }}
-                                        // onChange={selectProject}
-                                        // options={projects}
-                                        />
-                                    </label>
-                                    <div className="form__row form__row--w-100">
-                                        <span className="form__label">Environment</span>
-                                        <ReactSelect
-                                            components={{
-                                                IndicatorSeparator: null,
-                                                DropdownIndicator
-                                            }}
-                                            // isDisabled={!!isUpdate}
-                                            placeholder="Select Environment"
-                                            // value={selectedEnvironment}
-                                            styles={{
-                                                ...styles,
-                                                ...menuList,
-                                            }}
-                                        // onChange={selectEnvironment}
-                                        // options={environments}
-                                        />
-                                    </div>
-                                    {
-                                        isUpdate &&
-                                        <div className="form__row form__row--w-100">
-                                            <span className="form__label">Repo/Chart</span>
-                                            {/* <AsyncSelect
-                                    cacheOptions
-                                    // defaultOptions={repoChartOptions}
-                                    // formatOptionLabel={repoChartSelectOptionLabel}
-                                    // value={repoChartValue}
-                                    // loadOptions={repoChartLoadOptions}
-                                    // onFocus={handlerepoChartFocus}
-                                    // onChange={handleRepoChartValueChange}
-                                    components={{
-                                        IndicatorSeparator: () => null,
-                                        // Option: repoChartOptionLabel
-                                    }}
-                                    styles={{
-                                        control: (base, state) => ({
-                                            ...base,
-                                            boxShadow: 'none',
-                                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N500)',
-                                            cursor: 'pointer'
-                                        }),
-                                        option: (base, state) => {
-                                            return ({
-                                                ...base,
-                                                color: 'var(--N900)',
-                                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                                padding: '10px 12px'
-                                            })
-                                        },
-                                    }}
-                                /> */}
-                                        </div>
-                                    }
-                                    <div className="form__row form__row--flex form__row--w-100">
-                                        {
-                                            isUpdate === null ?
-                                                <div className="w-50">
-                                                    <span className="form__label">Chart Version</span>
-                                                    <Select tabIndex={4}
-                                                        rootClassName="select-button--default"
-                                                        // value={selectedVersion}
-                                                        onChange={event => { }}
-                                                    >
-                                                    </Select>
-                                                </div>
-                                                :
-                                                <div className="w-50">
-                                                    <span className="form__label">Chart Version</span>
-                                                    <Select tabIndex={4}
-                                                        rootClassName="select-button--default"
-                                                        // value={selectedVersion}
-                                                        onChange={event => { }}
-                                                    >
-                                                    </Select>
-                                                </div>
-                                        }
-                                        <span className="mr-16"></span>
-                                        <div className="w-50">
-                                            <span className="form__label">Chart Values*</span>
-                                            {/* <ChartValuesSelect 
-                                chartValuesList={[]} 
-                                // chartValues={} 
-                                redirectToChartValues={redirectToChartValues}
-                                    onChange={(event) => { setChartValues(event) }}
-                                     /> */}
-                                        </div>
-                                    </div>
-                                    <div className="code-editor-container">
-                                        <CodeEditor
-                                            // value={textRef}
-                                            noParsing
-                                            mode="yaml"
-                                        // onChange={value => { setTextRef(value) }}
-                                        >
-                                            <CodeEditor.Header>
-                                                <span className="bold">values.yaml</span>
-                                            </CodeEditor.Header>
-                                        </CodeEditor>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        //         </div>
-        // </div>
+        <div>
+            {!loading &&
+                <DeployChart
+                    versions={mapById([
+                        {
+                            id: installedConfig.appStoreVersion,
+                            version: appDetails.appStoreAppVersion,
+                        },
+                    ])}
+                    // {...installedConfig}
+                    installedAppId={installedConfig.installedAppId}
+                    appStoreVersion={installedConfig.appStoreVersion}
+                    appName={installedConfig.appName}
+                    environmentId={installedConfig.environmentId}
+                    teamId={installedConfig.teamId}
+                    readme={installedConfig.readme}
+                    deprecated={installedConfig.deprecated}
+                    appStoreId={installedConfig.appStoreId}
+                    installedAppVersionId={installedConfig.id}
+                    valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
+                    rawValues={
+                        installedConfig.valuesOverrideYaml
+                    }
+                    installedAppVersion={installedConfig.id}
+                    chartIdFromDeploymentDetail={appDetails.appStoreChartId}
+                    chartValuesFromParent={{
+                        id: appDetails.appStoreInstalledAppVersionId,
+                        kind: 'DEPLOYED',
+                    }}
+                    chartName={appDetails.appStoreChartName}
+                    name={appDetails.appStoreAppName}
+                    onHide={''}
+                />
+            }
+        </div>
+
     )
 }
 

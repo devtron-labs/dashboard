@@ -23,8 +23,8 @@ function AppHeaderComponent() {
     const [result, setResult] = useState(undefined)
     const [isLoading, setIsLoading] = useState(false)
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
-    const params = useParams<{ appId: string}>()
-    const [ envDetails ] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable())
+    const params = useParams<{ appId: string }>()
+    const [envDetails] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable())
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true)
@@ -89,14 +89,16 @@ function AppHeaderComponent() {
 
     return (
         <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
-        <h1 className="m-0 flex left fs-18 cn-9">
-            <BreadCrumb breadcrumbs={breadcrumbs} />
-            {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
+            <h1 className="m-0 flex left fs-18 cn-9">
+                {/* <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 3)} /> */}
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+
+                {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
                 <Tippy className="default-tt " arrow={false} content={'About app'}>
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div> */}
-            {/* {showInfoModal && 
+                {/* {showInfoModal && 
                 <VisibleModal className="app-status__material-modal"  >
                     <div className="modal__body br-8 bcn-0 p-20">
                         {/* <AboutAppInfoModal
@@ -114,31 +116,31 @@ function AppHeaderComponent() {
                     </div>
                 </VisibleModal>}
                 */}
-        </h1>
+            </h1>
 
-        <ul role="tablist" className="tab-list">
-            <li className="tab-list__tab ellipsis-right fs-13">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_DETAILS}/${envDetails.envId}`} className="tab-list__tab-link"
-                    onClick={(event) => {
-                        ReactGA.event({
-                            category: 'App',
-                            action: 'App Details Clicked',
-                        });
-                    }}>App Details
-                </NavLink>
-            </li>
-            <li className="tab-list__tab">
-                <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`} className="tab-list__tab-link"
-                    onClick={(event) => {
-                        ReactGA.event({
-                            category: 'App',
-                            action: 'Trigger Clicked',
-                        });
-                    }}>Values
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+            <ul role="tablist" className="tab-list">
+                <li className="tab-list__tab ellipsis-right fs-13">
+                    <NavLink activeClassName="active" to={`${match.url}/env/${envDetails.envId}`} className="tab-list__tab-link"
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'App Details Clicked',
+                            });
+                        }}>App Details
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink activeClassName="active" to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`} className="tab-list__tab-link"
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'Trigger Clicked',
+                            });
+                        }}>Values
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
     )
 }
 

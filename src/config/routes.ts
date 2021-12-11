@@ -9,7 +9,7 @@ export const URLS = {
     CHARTS: '/chart-store',
     APP: '/app',
     APPS: '/devtron-apps',           // for V2 router
-    HELM_CHARTS: '/helm-apps',     // for V2 router
+    HELM_CHARTS: 'helm-apps',     // for V2 router
     APP_VALUES: 'values',        // for V2 router
     APP_DETAILS: 'details',
     APP_DETAILS_K8: 'k8s-resources',// for V2 

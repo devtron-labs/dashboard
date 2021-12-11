@@ -70,8 +70,8 @@ export default function NavigationRoutes() {
 
                          
                             {/*----- V2 routing start---*/}
-                            <Route path={URLS.HELM_CHARTS} render={() => <V2Router envType={EnvType.CHART} />} />
-                            <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} />
+                            {/* <Route path={`${URLS.HELM_CHARTS}`} render={() => <V2Router envType={EnvType.CHART} />} /> */}
+                            {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
                             {/*---- V2 routing end-----*/}
 
                             <Route path={URLS.CHARTS} render={() => <Charts />} />

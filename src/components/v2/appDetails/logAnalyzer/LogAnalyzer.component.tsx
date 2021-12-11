@@ -1,25 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import CodeEditor from '../../../CodeEditor/CodeEditor';
 import Select from 'react-select';
 import { multiSelectStyles, SingleSelectOption as Option, } from '../../common/ReactSelectCustomization'
 import { useEffect } from 'react';
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
-import LogViewerComponent from '../k8Resource/nodeDetail/NodeDetailTabs/LogViewer.component';
-import { Subject } from '../../../../util/Subject';
+import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.component';
+import IndexStore from '../index.store';
+import { useParams, useRouteMatch } from 'react-router';
 
-const subject: Subject<string> = new Subject()
 
 function LogAnalyzerComponent() {
+    const [selectedTabName, setSelectedTabName] = useState("")
+    const { url } = useRouteMatch()
+    const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
 
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.log_analyzer)
     }, [])
 
+    const handleSelectedTab = (_tabName: string) => {
+        setSelectedTabName(_tabName)
+        IndexStore.setActiveNodeDetailTab(params.nodeType)
+        AppDetailsStore.markAppDetailsTabActive(_tabName, url)
+    }
+
     const renderFilters = () => {
         return <div className=" row bcn-0 pl-20 pr-20 pt-6 pb-6 border-bottom flex flex-justify">
             <div className="flex left col-md-8">
                 <div className="flexbox pr-8 border-right ">
-                    <span style={{paddingTop: '4px'}} >Pod</span>
+                    <span style={{ paddingTop: '4px' }} >Pod</span>
                     <div style={{ minWidth: '145px' }}>
                         <Select
                             className="br-4 pl-8"
@@ -49,7 +58,7 @@ function LogAnalyzerComponent() {
                     </div>
                 </div>
                 <div className="flexbox ml-8">
-                    <span style={{paddingTop: '4px'}}>Container</span>
+                    <span style={{ paddingTop: '4px' }}>Container</span>
                     <div style={{ minWidth: '145px' }}>
                         <Select
                             className="br-4 pl-8"
@@ -95,8 +104,8 @@ function LogAnalyzerComponent() {
         <div>
             {/* {renderFilters()}
             {renderCodeEditorAnalyzer()} */}
-            <div className=" pl-20 pr-20" style={{ height: '460px', background: 'black' }}>
-                <LogViewerComponent subject={subject} />
+            <div className=" pl-20 pr-20" style={{ minHeight: '600px', background: 'black' }}>
+                {/* <LogsComponent selectedTab={handleSelectedTab} /> */}
             </div>
         </div>
     )
