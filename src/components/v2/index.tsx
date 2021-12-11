@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { URLS } from '../../config'
-import { useRouteMatch, useParams } from 'react-router';
+import { useRouteMatch, useParams, Redirect } from 'react-router';
 import { Progressing } from '../common';
 import './lib/bootstrap-grid.min.css';
-import ValuesComponent from './values/Values.component';
+import ValuesComponent from './values/ChartValues.component';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import { EnvType } from './appDetails/appDetails.type';
@@ -20,9 +20,11 @@ function RouterComponent({ envType }) {
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
+        setIsLoading(true)
 
         const init = async () => {
             let response = null;
+
             try {
                 if (envType === EnvType.CHART) {
                     response = await getInstalledChartDetail(+params.appId, +params.envId);
@@ -44,14 +46,16 @@ function RouterComponent({ envType }) {
 
     return (
         <div>
-            {isLoading ? <div style={{ height: "560px" }} className="flex">
-                <Progressing pageLoader />
-            </div> :
+            {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+
+            {isLoading ?
+                <div style={{ height: "560px" }} className="flex"></div>
+                :
                 <Suspense fallback={<Progressing pageLoader />}>
-                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Switch>
                         <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
                         <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
+                        <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                     </Switch>
                 </Suspense>
             }

@@ -1,17 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react'
-import DeployChart from '../../charts/modal/DeployChart'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
-import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router'
-import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../../charts/charts.service';
+import { getChartVersionDetails2 } from '../../charts/charts.service';
 import IndexStore from '../appDetails/index.store';
+import DeployChart from './DeployChart';
 // TODO: appDetails from useSharedState
 
 function ValuesComponent() {
     const [installedConfig, setInstalledConfig] = useState(null)
-    const [loading, setLoading] = useState<boolean>(true)
-    const [isPollingRequired, setPollingRequired] = useState<boolean>(true);
-    const history = useHistory()
-    const { url, path } = useRouteMatch();
     const appDetails = IndexStore.getAppDetails()
 
     function mapById(arr) {
@@ -22,24 +17,21 @@ function ValuesComponent() {
     }
 
     useEffect(() => {
-        getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId).then((result) => {
-            setInstalledConfig(result);
-            setPollingRequired(false);
-            setLoading(false);
+        getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId).then((res) => {
+            console.log("getChartVersionDetails2 result", res.result)
+            setInstalledConfig(res.result);
         }).catch((err) => {
             console.log(err)
             if (Array.isArray(err.errors)) {
                 err.errors.map(({ userMessage }, idx) => toast.error(userMessage));
             }
         })
-
         // history.push(`${url}/update-chart`);
-
     }, [])
 
     return (
         <div>
-            {!loading &&
+            {installedConfig &&
                 <DeployChart
                     versions={mapById([
                         {
