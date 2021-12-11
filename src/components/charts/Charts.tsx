@@ -18,17 +18,17 @@ const V2Details = lazy(() => import('../v2/index'));
 // const AppDetailsComponent = lazy(() => import('../v2/appDetails/AppDetails.component'));
 
 
-export default function Charts() {
+export default function Charts({ isV2 }) {
     const { path } = useRouteMatch()
 
     return <Switch>
-        {/* <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} /> */}
-        {/* http://localhost:3000/chart-store/deployments/helm-apps/169/details/1/k8s-resources */}
-        {/* <Route path={`${URLS.CHARTS}/deployments`} component={V2Router} /> */}
-        <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} />
-        <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
-        <Route path={`${URLS.CHARTS}/deployed`} component={Deployed} />
-        <Redirect to={`${URLS.CHARTS}/deployed`} />
+        {isV2 ?
+            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} /> :
+            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
+        }
+        <Route path={`${path}/discover`} component={DiscoverCharts} />
+        <Route path={`${path}/deployed`} component={Deployed} />
+        <Redirect to={`${path}/deployed`} />
     </Switch>
 }
 

@@ -7,6 +7,7 @@ export interface NavItem {
 
 export const URLS = {
     CHARTS: '/chart-store',
+    CHARTS_OLD: '/chart-store-old',
     APP: '/app',
     APPS: '/devtron-apps',           // for V2 router
     HELM_CHARTS: 'helm-apps',     // for V2 router

@@ -74,7 +74,8 @@ export default function NavigationRoutes() {
                             {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
                             {/*---- V2 routing end-----*/}
 
-                            <Route path={URLS.CHARTS} render={() => <Charts />} />
+                            <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
+                            <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                             <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
