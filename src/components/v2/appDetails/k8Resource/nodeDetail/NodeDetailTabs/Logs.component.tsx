@@ -26,7 +26,7 @@ function LogsComponent({ selectedTab }) {
     const [pods, setPods] = useState([])
     const [containers, setContainers] = useState([])
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-    const [selectedContainerName, setSelectedContainerName] = useState(new URLSearchParams(location.search).get('container'));
+    const [selectedContainerName, setSelectedContainerName] = useState("");
     const [selectedPodName, setSelectedPodName] = useState();
     const [grepTokens, setGrepTokens] = useState('');
     const appDetails = IndexStore.getAppDetails()
@@ -43,6 +43,14 @@ function LogsComponent({ selectedTab }) {
 
     const workerRef = useRef(null);
     const subject: Subject<string> = new Subject()
+
+
+    useEffect(() => {
+        const _selectedContainerName = new URLSearchParams(location.search).get('container')
+        if(_selectedContainerName){
+            setSelectedContainerName(_selectedContainerName)
+        }
+    }, [location.search])
 
     useEffect(() => {
 
@@ -87,13 +95,11 @@ function LogsComponent({ selectedTab }) {
     }
 
     useEffect(() => {
-        console.log("fetching log data for ", selectedContainerName)
-
         if (selectedContainerName && params.podName) {
             workerRef.current = new WebWorker(sseWorker);
             workerRef.current['addEventListener' as any]('message', handleMessage);
 
-            const _urls = containers.map((container) => {
+            const _urls = containers.filter(container => container === selectedContainerName).map((container) => {
                 return getLogsURL(appDetails, params.podName, Host, container)
             })
 
@@ -117,7 +123,7 @@ function LogsComponent({ selectedTab }) {
 
 
     const handleContainerNameChange = (containerName: string) => {
-        setSelectedContainerName(containerName)
+        // setSelectedContainerName(containerName)
         let _url = `${url}?container=${containerName}`
         history.push(_url)
     }

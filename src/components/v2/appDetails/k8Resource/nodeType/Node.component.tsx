@@ -187,7 +187,7 @@ function NodeComponent() {
                         }
 
                         <div className="">
-                            <Menu nodeDetails={appDetails.resourceTree.nodes}
+                            <Menu nodeDetails={node}
                                 describeNode={describeNode}
                                 appName={appDetails.appName}
                                 environmentName={appDetails.environmentName}
