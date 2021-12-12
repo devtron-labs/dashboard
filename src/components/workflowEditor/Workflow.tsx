@@ -22,7 +22,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     height: number;
     isGitOpsConfigAvailable: boolean;
     showDeleteDialog: (workflowId: number) => void;
-    handleCDSelect: (workflowId: string | number, cdPipelineId) => void;
+    handleCDSelect: (workflowId: string | number, ciPipelineId: number | string, parentPipelineType: string, parentPipelineId: number | string) => void;
     openEditWorkflow: (event, workflowId: number) => string;
     handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
@@ -65,7 +65,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     return this.renderCINodes(node)
                 }
                 else {
-                    return this.renderCDNodes(node);
+                    return this.renderCDNodes(node, ci.id);
                 }
             })
         else {
@@ -137,12 +137,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             isExternalCI={node.isExternalCI}
             isLinkedCI={node.isLinkedCI}
             linkedCount={node.linkedCount}
-            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, node.id); }}
+            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, node.id, "ci-pipeline", node.id); }}
             to={this.openCIPipeline(node)}
         />
     }
 
-    renderCDNodes(node) {
+    renderCDNodes(node, ciPipelineId: string | number) {
         return <CDNode key={node.id}
             x={node.x}
             y={node.y}
@@ -155,6 +155,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             environmentId={node.environmentId}
             triggerType={node.triggerType}
             deploymentStrategy={node.deploymentStrategy}
+            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, ciPipelineId, "cd-pipeline", node.id); }}
             to={this.openCDPipeline(node)}
         />
     }

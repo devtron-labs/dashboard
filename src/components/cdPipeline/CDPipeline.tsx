@@ -40,6 +40,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     constructor(props) {
         super(props);
+
+
+        const urlParams = new URLSearchParams(this.props.location.search);
+        const parentPipelineType = urlParams.get('parentPipelineType');
+        const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
             loadingData: false,
@@ -76,6 +81,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 runPreStageInEnv: false,
                 runPostStageInEnv: false,
                 isClusterCdActive: false,
+                parentPipelineId: +parentPipelineId,
+                parentPipelineType: parentPipelineType,
             },
             showPreStage: false,
             showDeploymentStage: true,

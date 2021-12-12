@@ -100,6 +100,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
             isLinkedCI: isLinkedCI,
             linkedCount: pipeline.linkedCount || 0,
         } as NodeAttr
+        //TODO: use find instead of filter
         let relevantWF = workflows
             //We will act on all those workflows which have this CI
             //count of this would be one as same CI cannot be shared across
@@ -110,9 +111,13 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
             w.nodes.push(...sourceNodes, ciNode)
         })
         if (cdConfig && cdConfig.pipelines) {
+            let wfParentNodesId = new Set([pipeline.id]);
+            let pipelineTypes = new Set(["CI_PIPELINE", "CD_PIPELINE"]);
             relevantWF.forEach(w => {
                 //CD nodes which have this CI as parent are only relevant
-                let relevantCD = w.dag.filter(n => n.type == "CD_PIPELINE" && n.parentId == pipeline.id && n.parentType == "CI_PIPELINE")
+                //TODO: CD nodes can also be parent
+
+                let relevantCD = w.dag.filter(n => n.type == "CD_PIPELINE" && wfParentNodesId.has(n.parentId) && pipelineTypes.has(n.parentType) && wfParentNodesId.add(n.componentId));
                 let ciChildren = cdConfig.pipelines.filter((cd) => relevantCD.filter(n => n.componentId == cd.id).length > 0);
                 ciNode.downstreams = ciChildren.map(cd => {
                     if (dimensions.type === 'trigger' && cd.preStage && !isEmpty(cd.preStage.config)) { return `PRECD-${cd.id}` } else { return `CD-${cd.id}` }

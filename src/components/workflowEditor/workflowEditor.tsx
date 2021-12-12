@@ -133,8 +133,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         this.handleCISelect(workflowId || 0, type);
     }
 
-    handleCDSelect = (workflowId, ciPipelineId) => {
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline`;
+    handleCDSelect = (workflowId: number | string, ciPipelineId: number| string, parentPipelineType: string, parentPipelineId?: number| string) => {
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`;
         this.props.history.push(LINK);
     }
 
@@ -178,6 +178,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             }} />
             <Route path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(pipeline => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`)}
                 render={(props) => {
+                    {console.log("reached")}
                     return <CDPipeline match={props.match} history={props.history} location={props.location}
                         appName={this.state.appName}
                         close={this.closePipeline}
