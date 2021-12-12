@@ -3,6 +3,160 @@ import { WorkflowType, NodeAttr } from './types';
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions } from './config';
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config';
 import { isEmpty } from '../../../common';
+import CDPipeline from '../../../cdPipeline/CDPipeline';
+
+//Start Workflow Response
+export interface Tree {
+    id: number;
+    appWorkflowId: number;
+    type: string;
+    componentId: number;
+    parentId: number;
+    parentType: string;
+}
+
+export interface Workflow {
+    id: number;
+    name: string;
+    appId: number;
+    tree: Tree[];
+}
+
+export interface WorkflowResult {
+    appId: number;
+    appName: string;
+    workflows: Workflow[];
+}
+//End Workflow Response
+
+//Start CI Response
+export interface DockerBuildConfig {
+    gitMaterialId: number;
+    dockerfileRelativePath: string;
+}
+
+export interface DockerArgs {
+}
+
+export interface ExternalCiConfig {
+    id: number;
+    webhookUrl: string;
+    payload: string;
+    accessKey: string;
+}
+
+export interface Source {
+    type: string;
+    value: string;
+}
+
+export interface CiMaterial {
+    source: Source;
+    gitMaterialId: number;
+    id: number;
+    gitMaterialName: string;
+}
+
+export interface CiPipeline {
+    isManual: boolean;
+    dockerArgs: DockerArgs;
+    isExternal: boolean;
+    parentCiPipeline: number;
+    parentAppId: number;
+    externalCiConfig: ExternalCiConfig;
+    ciMaterial: CiMaterial[];
+    name: string;
+    id: number;
+    active: boolean;
+    linkedCount: number;
+    scanEnabled: boolean;
+    deleted: boolean
+}
+
+export interface Material {
+    gitMaterialId: number;
+    materialName: string;
+}
+
+export interface CiPipelineResult {
+    id: number;
+    appId: number;
+    dockerRegistry: string;
+    dockerRepository: string;
+    dockerBuildConfig: DockerBuildConfig;
+    ciPipelines: CiPipeline[];
+    appName: string;
+    materials: Material[];
+    scanEnabled: boolean;
+}
+//End CI Response
+
+//Start CD response
+export interface Rolling {
+    maxSurge: string;
+    maxUnavailable: number;
+}
+
+export interface Strategy2 {
+    rolling: Rolling;
+}
+
+export interface Deployment {
+    strategy: Strategy2;
+}
+
+export interface Config {
+    deployment: Deployment;
+}
+
+export interface Strategy {
+    deploymentTemplate: string;
+    config: Config;
+    default: boolean;
+}
+
+export interface PreStage {
+}
+
+export interface PostStage {
+}
+
+export interface PreStageConfigMapSecretNames {
+    configMaps: any[];
+    secrets: any[];
+}
+
+export interface PostStageConfigMapSecretNames {
+    configMaps: any[];
+    secrets: any[];
+}
+
+export interface CdPipeline {
+    id: number;
+    environmentId: number;
+    environmentName: string;
+    ciPipelineId: number;
+    triggerType: string;
+    name: string;
+    strategies: Strategy[];
+    deploymentTemplate: string;
+    preStage: PreStage;
+    postStage: PostStage;
+    preStageConfigMapSecretNames: PreStageConfigMapSecretNames;
+    postStageConfigMapSecretNames: PostStageConfigMapSecretNames;
+    runPreStageInEnv: boolean;
+    runPostStageInEnv: boolean;
+    isClusterCdActive: boolean;
+    active: boolean;
+    deleted: boolean;
+}
+
+export interface CdPipelineResult {
+    pipelines: CdPipeline[];
+    appId: number;
+}
+
+//End CD response
 
 export const getTriggerWorkflows = (appId): Promise<{ appName: string, workflows: WorkflowType[] }> => {
     return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow);
@@ -15,6 +169,50 @@ export const getCreateWorkflows = (appId): Promise<{ appName: string, workflows:
 const getInitialWorkflows = (id, dimensions: WorkflowDimensions, workflowOffset: Offset): Promise<{ appName: string, workflows: WorkflowType[] }> => {
     return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id)]).then(([workflow, ciConfig, cdConfig]) => {
         return getWorkflows(workflow, ciConfig, cdConfig, dimensions, workflowOffset);
+    });
+}
+
+function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipelineResult, cdResponse: CdPipelineResult, dimensions: WorkflowDimensions, workflowOffset: Offset) {
+    let root = new Array<NodeAttr>();
+    // let ciMap = ciResponse.ciPipelines.
+    //             reduce((previousValue, currentValue) => {
+    //                     previousValue.set(currentValue.id, currentValue);
+    //                     return previousValue;
+    //                 }, new Map<number, CiPipeline>()
+    //             );
+    // let cdMap = cdResponse.pipelines.
+    //             reduce((previousValue, currentValue) => {
+    //                     previousValue.set(currentValue.id, currentValue);
+    //                     return previousValue;
+    //                 }, new Map<number, CdPipeline>()
+    //             );
+    let ciMap = new Map(
+        (ciResponse?.ciPipelines?.filter(pipeline => pipeline.active && !pipeline.deleted) ?? [])
+            .map(ciPipeline => [ciPipeline.id, ciPipeline] as [number, CiPipeline])
+    );
+    let cdMap = new Map(
+        (cdResponse?.pipelines?.filter(pipeline => pipeline.active && !pipeline.deleted) ?? [])
+            .map(cdPipeline => [cdPipeline.id, cdPipeline] as [number, CdPipeline])
+    );
+
+    let workflows = new Array<WorkflowType>();
+    workflow.workflows.forEach(workflow => {
+        let wf = {
+            id: "" + workflow.id,
+            name: workflow.name,
+            dag: workflow.tree,
+            nodes: new Array<NodeAttr>(),
+            startX: 0,
+            startY: 0,
+            height: 0,
+            width: 0
+        } as WorkflowType
+        workflows.push(wf)
+        workflow.tree.sort((a, b) => a.componentId - b.componentId).forEach( branch => {
+            if (branch.type == 'CI_PIPELINE') {
+
+            }
+        })
     });
 }
 
