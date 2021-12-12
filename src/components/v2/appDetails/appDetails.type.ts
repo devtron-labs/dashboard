@@ -145,7 +145,7 @@ interface MaterialInfo {
     webhookData: string
 }
 
- interface OtherEnvironment {
+interface OtherEnvironment {
     environmentId: number;
     environmentName: string;
     appMetrics: boolean;
@@ -158,8 +158,16 @@ export interface ResourceTree {
     conditions: any
     newGenerationReplicaSet: string
     nodes: Array<Node>
-    podMetadata: any
+    podMetadata: Array<PodMetaData>
     status: string
+}
+
+export interface PodMetaData {
+    containers: Array<string>
+    initContainers: any
+    isNew: boolean
+    name: string
+    uid: string
 }
 
 export interface Node {
@@ -173,7 +181,7 @@ export interface Node {
     version: string,
     parentRefs: Array<Node>
     group: string;
-    isSelected: boolean      
+    isSelected: boolean
 }
 
 export interface Health {
@@ -196,7 +204,7 @@ export interface TargetLabel {
 export interface iNodes extends Array<iNode> { }
 
 export interface iNode extends Node {
-  childNodes: iNodes;
-  type: NodeType;
-  isSelected: boolean
+    childNodes: iNodes;
+    type: NodeType;
+    isSelected: boolean
 }

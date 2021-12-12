@@ -13,6 +13,7 @@ import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import Menu from './DeleteRowPopUp.component';
 import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
+import { NodeDetailTab } from '../nodeDetail/nodeDetail.type';
 
 function NodeComponent() {
     const { path, url } = useRouteMatch();
@@ -102,8 +103,11 @@ function NodeComponent() {
         setDetailedNode({ name, containerName });
     }
 
-    const handleActionTabClick = (node: iNode, _tabName: string) => {
-        const _url = `${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`
+    const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
+        let _url = `${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`
+        if (containerName) {
+            _url = `${_url}?container=${containerName}`
+        }
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
         if (isAdded) {
             history.push(_url)
@@ -122,7 +126,7 @@ function NodeComponent() {
                     {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                         <span >{node.kind}</span>
                     </div>}
-                    <div className="resource-row m-0 flex flex-justify" style={{width: '100vw'}} onClick={() => {
+                    <div className="resource-row m-0 flex flex-justify" style={{ width: '100vw' }} onClick={() => {
                         setSelectedNodes(markNodeSelected(selectedNodes, node.name))
                     }} >
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
@@ -201,10 +205,32 @@ function NodeComponent() {
                         </div>
                         :
                         <React.Fragment>
-                            {node.kind === NodeType.Pod && <div className="col-12 pl-16 pt-9 pb-9 ">
-                                <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
-                                <div className="resource-row__content pl-32 pt-9 pb-9 cursor">{IndexStore.getMetaDataForPod(node.name).name}</div>
-                            </div>}
+                            {node.kind === NodeType.Pod &&
+                                <div className="col-12 pl-16 pt-9 pb-9 ">
+                                    <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
+                                    {IndexStore.getMetaDataForPod(node.name).containers.map(container => {
+                                        return <div className="flex left">
+                                            <div className="resource-row__content pl-32 pt-9 pb-9 cursor">{container}</div>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                                trigger='mouseenter click'
+                                            >
+                                                <Clipboard
+                                                    className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
+                                                    onClick={(e) => copyToClipboard(container, () => setCopied(true))}
+                                                />
+                                            </Tippy>
+                                            <a onClick={() => handleActionTabClick(node, NodeDetailTab.LOGS, container)} className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
+                                                {NodeDetailTab.LOGS}
+                                            </a>
+                                        </div>
+                                    })}
+
+
+                                </div>}
                         </React.Fragment>
                     }
 

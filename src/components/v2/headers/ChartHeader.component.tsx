@@ -64,9 +64,9 @@ function ChartHeaderComponent() {
 
     return (
         <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
-            <h1 className="m-0 flex left fs-18 cn-9">
+            <div className="m-0 flex left fs-12 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
-            </h1>
+            </div>
 
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right fs-13">
