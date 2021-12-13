@@ -12,6 +12,7 @@ import { getNodeDetailTabs } from './nodeDetail.util';
 import { NodeType } from '../../appDetails.type';
 import IndexStore from '../../index.store';
 import AppDetailsStore from '../../appDetails.store';
+import { URLS } from '../../../../../config';
 
 function NodeDetailComponent() {
 
@@ -19,9 +20,9 @@ function NodeDetailComponent() {
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState("")
     const { path, url } = useRouteMatch()
+    const history = useHistory()
 
     useEffect(() => {
-
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             setTabs(_tabs)
@@ -31,9 +32,13 @@ function NodeDetailComponent() {
 
 
     const handleSelectedTab = (_tabName: string) => {
-        setSelectedTabName(_tabName)
-        IndexStore.setActiveNodeDetailTab(params.nodeType)
-        AppDetailsStore.markAppDetailsTabActive(_tabName, url)
+        if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
+            history.push(url.split(URLS.APP_DETAILS_K8)[0])
+        } else {
+            setSelectedTabName(_tabName)
+            IndexStore.setActiveNodeDetailTab(params.nodeType)
+            AppDetailsStore.markAppDetailsTabActive(_tabName, url)
+        }
     }
 
     return (
@@ -51,13 +56,13 @@ function NodeDetailComponent() {
                     })
                 }
             </div>
-                <Switch>
-                    <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab} /> }} />
-                    <Route path={`${path}/${NodeDetailTab.EVENTS}`} render={() => { return <EventsComponent selectedTab={handleSelectedTab} /> }} />
-                    <Route path={`${path}/${NodeDetailTab.LOGS}`} render={() => { return <LogsComponent selectedTab={handleSelectedTab} /> }} />
-                    <Route path={`${path}/${NodeDetailTab.SUMMARY}`} render={() => { return <SummaryComponent selectedTab={handleSelectedTab} /> }} />
-                    <Route path={`${path}/${NodeDetailTab.TERMINAL}`} render={() => { return <TerminalComponent selectedTab={handleSelectedTab} /> }} />
-                </Switch>
+            <Switch>
+                <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab} /> }} />
+                <Route path={`${path}/${NodeDetailTab.EVENTS}`} render={() => { return <EventsComponent selectedTab={handleSelectedTab} /> }} />
+                <Route path={`${path}/${NodeDetailTab.LOGS}`} render={() => { return <LogsComponent selectedTab={handleSelectedTab} /> }} />
+                <Route path={`${path}/${NodeDetailTab.SUMMARY}`} render={() => { return <SummaryComponent selectedTab={handleSelectedTab} /> }} />
+                <Route path={`${path}/${NodeDetailTab.TERMINAL}`} render={() => { return <TerminalComponent selectedTab={handleSelectedTab} /> }} />
+            </Switch>
         </React.Fragment>
     )
 }

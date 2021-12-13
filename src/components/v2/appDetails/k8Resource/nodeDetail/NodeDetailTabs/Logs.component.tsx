@@ -34,7 +34,7 @@ function LogsComponent({ selectedTab }) {
     const isLogAnalyzer = pods.length > 0
 
     const workerRef = useRef(null);
-    
+
     useEffect(() => {
         if (selectedTab) {
             selectedTab(NodeDetailTab.LOGS)
@@ -143,7 +143,7 @@ function LogsComponent({ selectedTab }) {
                                 <div className="cn-6">Pods</div>
                                 <div className="cn-6 flex left">
 
-                                    <select className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
+                                    <select defaultValue={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
                                         const value = e.target.value
                                         if (value) {
                                             setSelectedPodName(e.target.value)
@@ -153,7 +153,7 @@ function LogsComponent({ selectedTab }) {
                                         <option>Select</option>
                                         {pods.map((pod, index) => {
 
-                                            return <option selected={selectedPodName == pod.name} value={pod.name} key={`pod_${index}`}>{pod.name}</option>
+                                            return <option value={pod.name} key={`pod_${index}`}>{pod.name}</option>
                                         })}
                                     </select>
 
@@ -187,13 +187,13 @@ function LogsComponent({ selectedTab }) {
 
                         <div className="cn-6 ml-8">Container </div>
 
-                        <select className="bw-0 en-2  ml-8 w-200"  onChange={(e) => {
+                        <select defaultValue={selectedContainerName} className="bw-0 en-2  ml-8 w-200"  onChange={(e) => {
                             const value = e.target.value
                             if (value) { handleContainerNameChange(e.target.value) }
                         }}>
                             <option>Select</option>
                             {containers.map((container, index) => {
-                                return <option selected={selectedContainerName == container} value={container} key={`c_${index}`}>{container}</option>
+                                return <option value={container} key={`c_${index}`}>{container}</option>
                             })}
                         </select>
 

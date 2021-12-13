@@ -24,7 +24,8 @@ const AppDetailsComponent = () => {
 
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0)
+        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL)
     }, [params.appId, params.envId])
 
     const handleCloseTab = (e: any, tabName: string) => {
