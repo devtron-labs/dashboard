@@ -36,7 +36,7 @@ export function updateCluster(request) {
 }
 
 export function retryClusterInstall(id: number, payload): Promise<ResponseType> {
-    const URL = `app-store/cluster-component/install/${id}`;
+    const URL = `${Routes.CHART_AVAILABLE}/cluster-component/install/${id}`;
     return post(URL, payload);
 }
 
