@@ -17,10 +17,14 @@
     background-color: var(--N200);
 }
 
+    .resource-tab__close-wrapper:hover{
+        background-color: var(--N500);
+        fill: white
+     }
+
 .resource-tab__close-wrapper{
     width: 16px;
     height: 16px;
-
 }
 
 .tab-list {

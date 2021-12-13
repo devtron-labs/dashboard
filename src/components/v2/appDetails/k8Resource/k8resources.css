@@ -2,7 +2,7 @@
     min-height: 532px;
     overflow-y: auto;
 }
-.k8-resource-wrapper{
+.resource-node-wrapper{
     min-height: 600px;
-    height: calc(100vh - 300px)
+    height: calc(100vh - 288px)
 }

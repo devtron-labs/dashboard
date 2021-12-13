@@ -22,7 +22,7 @@ function NodeComponent() {
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
-    const [firstColWidth, setFirstColWidth] = useState("col-12");
+    const [firstColWidth, setFirstColWidth] = useState("");
     const [podType, setPodType] = useState(false)
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails()
@@ -50,11 +50,11 @@ function NodeComponent() {
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ["Name", "URL"]
-                    _fcw = "col-6 pl-16"
+                    _fcw = "col-5 pl-16"
                     break;
                 default:
                     tableHeader = ["Name"]
-                    _fcw = "col-12 pl-16"
+                    _fcw = "col-10 pl-16"
                     break;
             }
 
@@ -126,15 +126,14 @@ function NodeComponent() {
                     {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                         <span >{node.kind}</span>
                     </div>}
-                    <div className="resource-row m-0 flex flex-justify" style={{ width: '100vw' }} onClick={() => {
-                        setSelectedNodes(markNodeSelected(selectedNodes, node.name))
-                    }} >
+                    <div className="resource-row m-0 flex flex-justify"  >
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
-                            <div className="flex left top">
-                                {(node.childNodes?.length > 0) ? <DropDown
-                                    className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                    style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
-                                /> : <span className="pl-12 pr-12"></span>}
+                            <div className="flex left top" onClick={() => { setSelectedNodes(markNodeSelected(selectedNodes, node.name)) }}>
+                                {(node.childNodes?.length > 0) ?
+                                    <DropDown
+                                        className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                        style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                    /> : <span className="pl-12 pr-12"></span>}
                                 <div>
                                     <div>{node.name}</div>
                                     <div className="cg-5">{node.health?.status}</div>
@@ -208,8 +207,8 @@ function NodeComponent() {
                             {node.kind === NodeType.Pod &&
                                 <div className="col-12 pl-16 pt-9 pb-9 ">
                                     <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
-                                    {IndexStore.getMetaDataForPod(node.name).containers.map(container => {
-                                        return <div className="flex left">
+                                    {IndexStore.getMetaDataForPod(node.name).containers.map((container, index) => {
+                                        return <div key={`container_${index}`} className="flex left">
                                             <div className="resource-row__content pl-32 pt-9 pb-9 cursor">{container}</div>
                                             <Tippy
                                                 className="default-tt"

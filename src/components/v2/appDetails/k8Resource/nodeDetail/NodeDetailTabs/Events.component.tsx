@@ -7,7 +7,7 @@ import { getEvent } from '../nodeDetail.api';
 import { Pod as PodIcon} from '../../../../../common';
 import moment from 'moment';
 import { Spinner } from 'patternfly-react';
-import InfoIcon from '../../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIcon} from '../../../../assets/icons/ic-info-filled-gray.svg'
 
 
 function EventsComponent({ selectedTab }) {
@@ -39,8 +39,8 @@ function EventsComponent({ selectedTab }) {
     const NoEvents = ({ title = "Events not available" }) => {
         return (
             <div style={{ width: '100%', textAlign: 'center' }}>
-                <img src={InfoIcon} />
-                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+                <InfoIcon />
+                <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{title}</div>
             </div>
         )
     }
@@ -54,7 +54,7 @@ function EventsComponent({ selectedTab }) {
                         <span className="events-logs__event" key={idx}>{head}</span>)}
                 </div>
 
-                {events.ite && events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
+                {events.item && events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
                     <span className="events-logs__event">{event.reason}</span>
                     <span className="events-logs__event">{event.message}</span>
                     <span className="events-logs__event">{event.count}</span>
@@ -66,7 +66,7 @@ function EventsComponent({ selectedTab }) {
             {params.podName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
                 {loading && <div  className="flex h-100" >
                     <Spinner loading></Spinner>
-                    <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                    <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
                 </div>}
                 {!loading && events.filter(event => event).length === 0 && <NoEvents />}
             </div>}

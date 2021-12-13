@@ -10,7 +10,7 @@ function LogAnalyzerComponent() {
     }, [])
 
     return (
-        <div className=" pl-20 pr-20" style={{ minHeight: '600px', background: 'black' }}>
+        <div className="resource-node-wrapper pl-20 pr-20">
             <LogsComponent selectedTab={null} />
         </div>
     )

@@ -80,7 +80,7 @@ function AppHeaderComponent() {
     );
 
     return (
-        <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
+        <div className="page-header" style={{ display: 'grid', gridTemplateRows: "40px 40px" }}>
             <h1 className="m-0 flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
 

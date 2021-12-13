@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EventsComponent from './NodeDetailTabs/Events.component';
 import LogsComponent from './NodeDetailTabs/Logs.component';
 import ManifestComponent from './NodeDetailTabs/Manifest.component';
@@ -19,10 +19,10 @@ function NodeDetailComponent() {
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState("")
     const { path, url } = useRouteMatch()
-    
+
     useEffect(() => {
-       
-        if(params.nodeType){
+
+        if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             setTabs(_tabs)
         }
@@ -38,22 +38,22 @@ function NodeDetailComponent() {
 
     return (
         <div>
-            <div className="bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
+            <div className="resource-node-wrapper bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
                 {
                     (tabs && tabs.length > 0) && tabs.map((tab: string, index: number) => {
                         return (
                             <div key={index + "resourceTreeTab"} className={`${tab.toLowerCase() === selectedTabName.toLowerCase() ? 'default-tab-row cb-5' : 'cn-7'} pt-6 pb-6 cursor pl-8 pr-8`}>
                                 <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left" >
-                                    <span className={`${tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'} default-tab-cell`}> {tab.toLowerCase()}</span>
+                                    <span className={`${tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'} default-tab-cell `}> {tab.toLowerCase()}</span>
                                 </NavLink>
                             </div>
                         )
                     })
                 }
             </div>
-            <div className="" style={{minHeight: '600px'}}>
+            <div className="" style={{ minHeight: '600px' }}>
                 <Switch>
-                    <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab}  /> }} />
+                    <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab} /> }} />
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`} render={() => { return <EventsComponent selectedTab={handleSelectedTab} /> }} />
                     <Route path={`${path}/${NodeDetailTab.LOGS}`} render={() => { return <LogsComponent selectedTab={handleSelectedTab} /> }} />
                     <Route path={`${path}/${NodeDetailTab.SUMMARY}`} render={() => { return <SummaryComponent selectedTab={handleSelectedTab} /> }} />

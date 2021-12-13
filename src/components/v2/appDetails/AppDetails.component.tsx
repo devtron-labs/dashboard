@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
-import './appDetails.css';
+import './appDetails.scss';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
 import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg';
@@ -54,7 +54,7 @@ const AppDetailsComponent = () => {
                                             <NavLink to={`${tab.url}`} className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}>
                                                 <div className={`flex left ${tab.isSelected ? "fw-6 cn-9" : ""}`} >
                                                     {tab.name === AppDetailsTabs.log_analyzer ? <span className="icon-dim-16 resource-tree__tab-hover fcb-9"> <LogAnalyzerIcon /></span> : ''}
-                                                    {tab.name === AppDetailsTabs.k8s_Resources ? <span className="icon-dim-16 resource-tree__tab-hover "> <K8ResourceIcon /></span> : ''}
+                                                    {tab.name === AppDetailsTabs.k8s_Resources ? <span className="icon-dim-16 resource-tree__tab-hover fcn-9 "> <K8ResourceIcon /></span> : ''}
                                                     <span className={`${tab.name !== AppDetailsTabs.k8s_Resources && tab.name !== AppDetailsTabs.log_analyzer ? 'mr-8' : 'ml-8 text-capitalize '} fs-12 `}>
                                                         {tab.name}
                                                     </span>
@@ -62,7 +62,9 @@ const AppDetailsComponent = () => {
                                             </NavLink>
 
                                             {(tab.name !== AppDetailsTabs.log_analyzer && tab.name !== AppDetailsTabs.k8s_Resources) &&
-                                                <span className="resource-tab__close-wrapper flex br-5 bcn-5 fcn-0"> <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" /></span>
+                                                <span className="resource-tab__close-wrapper flex br-5"> 
+                                                <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" />
+                                                </span>
                                             }
                                         </div>
                                         <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>

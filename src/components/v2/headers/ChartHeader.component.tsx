@@ -7,7 +7,7 @@ import AppSelector from '../../AppSelector';
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
 import { get} from '../../../services/api';
 import { handleUTCTime} from '../../common';
-
+import  './header.css'
 function ChartHeaderComponent() {
     const match = useRouteMatch();
     const history = useHistory();
@@ -63,7 +63,7 @@ function ChartHeaderComponent() {
     );
 
     return (
-        <div className="page-header pt-12" style={{ gridTemplateColumns: "unset" }}>
+        <div className="app-page-header" style={{ gridTemplateColumns: "unset" }}>
             <div className="m-0 flex left fs-12 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
             </div>

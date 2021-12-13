@@ -96,8 +96,8 @@ a:focus {
     grid-template-rows: 1fr;
     background-color: var(--N000);
     color: var(--N900);
-    box-shadow: 0 4px 8px -2px rgba(0, 56, 112, 0.2);
     z-index: var(--page-header-index);
+    border-bottom: 1px solid var(--N200);
 }
 
 .page-header--tabs {
