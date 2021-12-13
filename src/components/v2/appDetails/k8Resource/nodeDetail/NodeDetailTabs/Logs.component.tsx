@@ -11,11 +11,9 @@ import WebWorker from '../../../../../app/WebWorker';
 import sseWorker from '../../../../../app/grepSSEworker';
 import { Host } from "../../../../../../config";
 import { Subject } from '../../../../../../util/Subject';
-import ReactSelect from 'react-select';
 import LogViewerComponent from './LogViewer.component';
-import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
-import { NodeType } from '../../../appDetails.type';
-import * as queryString from 'query-string';
+
+const subject: Subject<string> = new Subject()
 
 function LogsComponent({ selectedTab }) {
     const location = useLocation()
@@ -29,14 +27,14 @@ function LogsComponent({ selectedTab }) {
     const [selectedContainerName, setSelectedContainerName] = useState("");
     const [selectedPodName, setSelectedPodName] = useState(params.podName);
     const [grepTokens, setGrepTokens] = useState('');
+    const [highlightString, setHighlightString] = useState('');
+   
     const appDetails = IndexStore.getAppDetails()
     const pods = IndexStore.getAppDetailsPodNodes()
     const isLogAnalyzer = pods.length > 0
 
     const workerRef = useRef(null);
-    const subject: Subject<string> = new Subject()
-
-
+    
     useEffect(() => {
         if (selectedTab) {
             selectedTab(NodeDetailTab.LOGS)
@@ -110,13 +108,15 @@ function LogsComponent({ selectedTab }) {
     const handleLogsSearch = (e) => {
         if (e.key === 'Enter' || e.keyCode === 13) {
             setGrepTokens(e.target.value)
+            const { length, [length - 1]: highlightString } = e.target.value.split(" ")
+            setHighlightString(highlightString)
         }
     }
 
     return (
         <React.Fragment>
 
-            <div className="container-fluid">
+            <div className="container-fluid bcn-0">
                 <div className='row pt-2 pb-2 pl-16 pr-16'>
                     <div className='col-6 d-flex align-items-center'>
                         <Tippy
@@ -143,7 +143,7 @@ function LogsComponent({ selectedTab }) {
                                 <div className="cn-6">Pods</div>
                                 <div className="cn-6 flex left">
 
-                                    <select onChange={(e) => {
+                                    <select className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
                                         const value = e.target.value
                                         if (value) {
                                             setSelectedPodName(e.target.value)
@@ -185,9 +185,9 @@ function LogsComponent({ selectedTab }) {
                             </React.Fragment>
                         }
 
-                        <div className="cn-6">Container </div>
+                        <div className="cn-6 ml-8">Container </div>
 
-                        <select onChange={(e) => {
+                        <select className="bw-0 en-2  ml-8 w-200"  onChange={(e) => {
                             const value = e.target.value
                             if (value) { handleContainerNameChange(e.target.value) }
                         }}>
@@ -234,7 +234,12 @@ function LogsComponent({ selectedTab }) {
             </div>
 
             <div style={{ minHeight: '600px' }}>
-                <LogViewerComponent subject={subject} />
+                <LogViewerComponent
+                 subject={subject} 
+                 highlightString={highlightString}
+                 rootClassName="event-logs__logs"
+                 key={selectedPodName + selectedContainerName + grepTokens}
+                 />
             </div>
 
         </React.Fragment>
