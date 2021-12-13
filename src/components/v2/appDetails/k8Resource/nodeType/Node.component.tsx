@@ -246,7 +246,7 @@ function NodeComponent() {
                         <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                         <span>({selectedNodes?.length})</span>
                     </div>
-                    <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
+                    {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div> }
                 </div>}
 
             <div className="row border-bottom fw-6 m-0">

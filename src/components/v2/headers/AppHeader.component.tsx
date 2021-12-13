@@ -12,6 +12,7 @@ import { getAppMetaInfo } from '../../app/service';
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState';
 import IndexStore from '../appDetails/index.store';
+import './header.css';
 
 function AppHeaderComponent() {
     const { appId } = useParams<{ appId }>();
@@ -80,7 +81,7 @@ function AppHeaderComponent() {
     );
 
     return (
-        <div className="page-header" style={{ display: 'grid', gridTemplateRows: "40px 40px" }}>
+        <div className="app-page-header" style={{ display: 'grid', gridTemplateRows: "40px 40px" }}>
             <h1 className="m-0 flex left fs-18 cn-9">
                 <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
 

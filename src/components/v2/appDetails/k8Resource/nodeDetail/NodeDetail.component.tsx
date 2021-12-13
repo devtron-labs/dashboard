@@ -37,8 +37,8 @@ function NodeDetailComponent() {
     }
 
     return (
-        <div>
-            <div className="resource-node-wrapper bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
+        <React.Fragment>
+            <div className=" bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
                 {
                     (tabs && tabs.length > 0) && tabs.map((tab: string, index: number) => {
                         return (
@@ -51,7 +51,6 @@ function NodeDetailComponent() {
                     })
                 }
             </div>
-            <div className="" style={{ minHeight: '600px' }}>
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`} render={() => { return <ManifestComponent selectedTab={handleSelectedTab} /> }} />
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`} render={() => { return <EventsComponent selectedTab={handleSelectedTab} /> }} />
@@ -59,8 +58,7 @@ function NodeDetailComponent() {
                     <Route path={`${path}/${NodeDetailTab.SUMMARY}`} render={() => { return <SummaryComponent selectedTab={handleSelectedTab} /> }} />
                     <Route path={`${path}/${NodeDetailTab.TERMINAL}`} render={() => { return <TerminalComponent selectedTab={handleSelectedTab} /> }} />
                 </Switch>
-            </div>
-        </div>
+        </React.Fragment>
     )
 }
 
