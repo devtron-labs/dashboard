@@ -94,9 +94,19 @@ function HeaderSection() {
     )
 }
 
-export default function UserGroupRoute() {
-    const { url, path } = useRouteMatch()
-    const [listsLoading, lists, listsError, reloadLists] = useAsync(() => Promise.allSettled([getGroupList(), get(Routes.PROJECT_LIST), getEnvironmentListMin(), getChartGroups(), getUserRole()]), [])
+export default function UserGroupRoute({isEAModule}) {
+    const { url, path } = useRouteMatch();
+    const [listsLoading, lists, listsError, reloadLists] = useAsync(
+        () =>
+            Promise.allSettled([
+                getGroupList(),
+                get(Routes.PROJECT_LIST),
+                isEAModule ? null : getEnvironmentListMin(),
+                isEAModule ? null : getChartGroups(),
+                getUserRole(),
+            ]),
+        [],
+    );
     const [appsList, setAppsList] = useState(new Map())
     useEffect(() => {
         if (!lists) return

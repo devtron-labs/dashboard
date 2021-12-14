@@ -54,8 +54,8 @@ export default function GlobalConfiguration({ ...props }) {
     });
 
     useEffect(() => {
-        getHostURLConfig();
-        fetchCheckList();
+      !isEAModule && getHostURLConfig();
+      !isEAModule && fetchCheckList();
     }, [])
 
     useEffect(() => {
@@ -184,7 +184,7 @@ function Body({ getHostURLConfig, checkList }) {
             return <SSOLogin {...props} />
         }} />
         <Route path={URLS.GLOBAL_CONFIG_AUTH} render={(props) => {
-            return <UserGroup />
+            return <UserGroup isEAModule={isEAModule}/>
         }} />
         <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => {
             return <AddNotification {...props} />
@@ -192,7 +192,7 @@ function Body({ getHostURLConfig, checkList }) {
         <Route path={URLS.GLOBAL_CONFIG_NOTIFIER} render={(props) => {
             return <Notifier {...props} />
         }} />
-        <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
+        <Redirect to={isEAModule ? URLS.GLOBAL_CONFIG_PROJECT : URLS.GLOBAL_CONFIG_HOST_URL} />
     </Switch>
 }
 
