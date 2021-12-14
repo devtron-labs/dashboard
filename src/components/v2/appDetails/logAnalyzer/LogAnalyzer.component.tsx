@@ -10,7 +10,7 @@ function LogAnalyzerComponent() {
     }, [])
 
     return (
-        <div className="resource-node-wrapper pl-20 pr-20">
+        <div className="resource-node-wrapper">
             <LogsComponent selectedTab={null} />
         </div>
     )

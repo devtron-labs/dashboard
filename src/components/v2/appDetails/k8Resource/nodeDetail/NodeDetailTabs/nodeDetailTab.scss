@@ -62,3 +62,41 @@
             }
         }
     }
+
+    .log-viewer-container {
+        height: 100%;
+        width: 100%;
+        align-items: flex-start;
+        position: relative;
+
+        &:focus {
+            outline: none;
+        }
+
+        .log-viewer {
+            height: 100%;
+            width: 100%;
+            padding: 0 0 0 20px;
+            overflow: hidden;
+
+            &:focus {
+                outline: none;
+            }
+
+            .xterm {
+                height: 100%;
+            }
+        }
+
+        .logs {
+            font-family: monospace;
+
+            .log {
+                grid-template-columns: 100%;
+
+                .content {
+                    padding-right: 16px;
+                }
+            }
+        }
+    }

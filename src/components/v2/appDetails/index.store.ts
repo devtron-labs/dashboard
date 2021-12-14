@@ -157,8 +157,10 @@ const IndexStore = {
         return _appDetails.resourceTree.podMetadata
     },
 
-    getAppDetailsPodNodes: () => {
-        return _nodesSubject.getValue().filter((node: Node) => node.kind === NodeType.Pod)
+    getAppDetailsPodNodesNames: () => {
+        return _nodesSubject.getValue().filter((node: Node) => node.kind === NodeType.Pod).map(node => {
+            return node.name
+        })
     },
 
     updateFilterType: (filterType: string) => {

@@ -874,7 +874,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`}
                         onClick={(e) => handleLogsPause(!logsPaused)}
                     >
-                        {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
+                        {logsPaused ? <PlayButton className='icon-dim-20'/> : <StopButton className="stop-btn fcr-5" />}
                     </div>
                 </Tippy>
 
