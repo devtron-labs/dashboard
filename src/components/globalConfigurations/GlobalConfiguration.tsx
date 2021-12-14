@@ -23,21 +23,22 @@ const Notifier = lazy(() => import('../notifications/Notifications'));
 const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(() => import('../login/SSOLogin'));
+const isEAModule = true;
 
 const ConfigRequired = [
-    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration },
-    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
-    { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
-    { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
-    { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
+    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration , isAvailableInEA: false},
+    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration , isAvailableInEA: false},
+    { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project , isAvailableInEA: true},
+    { name: 'Clusters' + (isEAModule ? '' : ' & Environments'), href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList , isAvailableInEA: true},
+    { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider , isAvailableInEA: false},
+    { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker , isAvailableInEA: false},
 ]
 
 const ConfigOptional = [
-    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
-    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
-    { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
-    { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
+    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo , isAvailableInEA: false},
+    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin , isAvailableInEA: true},
+    { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup , isAvailableInEA: true},
+    { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier , isAvailableInEA: false},
 ]
 
 export default function GlobalConfiguration({ ...props }) {
@@ -125,13 +126,13 @@ function NavItem({ hostURLConfig }) {
     let showError = (!hostURLConfig || hostURLConfig.value !== window.location.origin) && !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
 
     return <div className="flex column left">
-        {ConfigRequired.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+        {ConfigRequired.map(route => (!isEAModule || route.isAvailableInEA ) && (<NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
-        </NavLink>)}
+        </NavLink>))}
         <hr className="mt-8 mb-8 w-100 checklist__divider" />
-        {ConfigOptional.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+        {ConfigOptional.map(route => (!isEAModule || route.isAvailableInEA ) && (<NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
-        </NavLink>)}
+        </NavLink>))}
     </div>
 }
 
@@ -159,7 +160,7 @@ function Body({ getHostURLConfig, checkList }) {
         }} />
         <Route path={URLS.GLOBAL_CONFIG_CLUSTER} render={(props) => {
             return <div className="flexbox h-100">
-                <ClusterList {...props} />
+                <ClusterList {...props} isEAModule={isEAModule} />
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
