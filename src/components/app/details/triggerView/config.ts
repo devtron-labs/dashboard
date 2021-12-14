@@ -1,5 +1,11 @@
+
+export enum WorkflowDimensionType {
+    TRIGGER = 'trigger',
+    CREATE = 'create'
+}
+
 export const WorkflowCreate = {
-    type: "create",
+    type: WorkflowDimensionType.CREATE,
     staticNodeSizes: {
         nodeHeight: 64,
         nodeWidth: 200,
@@ -24,7 +30,7 @@ export const WorkflowCreate = {
 } as WorkflowDimensions
 
 export const WorkflowTrigger = {
-    type: "trigger",
+    type: WorkflowDimensionType.TRIGGER,
     staticNodeSizes: {
         nodeHeight: 64,
         nodeWidth: 200,
@@ -72,8 +78,9 @@ export interface NodeDimension {
     distanceY: number,
 }
 
+
 export interface WorkflowDimensions {
-    type: string,
+    type: WorkflowDimensionType,
     staticNodeSizes: NodeDimension,
     cINodeSizes: NodeDimension,
     externalCINodeSizes?: NodeDimension,

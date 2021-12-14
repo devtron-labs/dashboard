@@ -1,4 +1,4 @@
-import { getWorkflows } from './workflow.service';
+import { getWorkflows, processWorkflow, WorkflowResult, CiPipelineResult, CdPipelineResult } from './workflow.service';
 import { WorkflowTrigger, WorkflowCreate } from './config';
 import {
     ciConfigResp, cdConfigResp, cdConfigPreResp, cdConfigPostResp, cdConfigPrePostResp, workflow,
@@ -8,6 +8,10 @@ import {
     workflowsTriggerPrePostCD, workflowsCreatePrePostCD,
     workflows2Resp, ciConfigWithLinkedCIResp, cdConfig2Resp, workflows2Trigger
 } from './workflow.data';
+
+import {
+    workflowWithSequential
+} from './workflow.sequential.data';
 
 //Test Cases for PRECD and POSTCD
 test('workflows no PRECD, no POSTCD', () => {
@@ -33,3 +37,8 @@ test('workflows PRECD, POSTCD', () => {
 // test('LInked CI', () => {
 //     expect(getWorkflows(workflows2Resp, ciConfigWithLinkedCIResp, cdConfig2Resp, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflows2Trigger);
 // })
+
+test('workflows process', () => {
+    let out = processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow)
+    console.log(out);
+})

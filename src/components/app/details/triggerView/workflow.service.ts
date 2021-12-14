@@ -1,18 +1,30 @@
 import { getCIConfig, getCDConfig, getWorkflowList } from '../../../../services/service';
 import { WorkflowType, NodeAttr } from './types';
-import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions } from './config';
+import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config';
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config';
 import { isEmpty } from '../../../common';
-import CDPipeline from '../../../cdPipeline/CDPipeline';
+
+
+enum PipelineType {
+    CI_PIPELINE = "CI_PIPELINE",
+    CD_PIPELINE = "CD_PIPELINE"
+}
+
+export interface Task {
+    name?: string;
+    type?: string;
+    cmd?: string;
+    args?: Array<string>;
+}
 
 //Start Workflow Response
 export interface Tree {
     id: number;
     appWorkflowId: number;
-    type: string;
+    type: PipelineType;
     componentId: number;
     parentId: number;
-    parentType: string;
+    parentType: PipelineType;
 }
 
 export interface Workflow {
@@ -33,9 +45,7 @@ export interface WorkflowResult {
 export interface DockerBuildConfig {
     gitMaterialId: number;
     dockerfileRelativePath: string;
-}
-
-export interface DockerArgs {
+    args?: Map<string, string>;
 }
 
 export interface ExternalCiConfig {
@@ -57,20 +67,34 @@ export interface CiMaterial {
     gitMaterialName: string;
 }
 
+export interface CiScript {
+    id: number;
+    index: number;
+    name: string;
+    script: string;
+    outputLocation?: string;
+}
+
 export interface CiPipeline {
     isManual: boolean;
-    dockerArgs: DockerArgs;
+    dockerArgs?: Map<string, string>;
     isExternal: boolean;
     parentCiPipeline: number;
     parentAppId: number;
     externalCiConfig: ExternalCiConfig;
-    ciMaterial: CiMaterial[];
-    name: string;
-    id: number;
-    active: boolean;
+    ciMaterial?: CiMaterial[];
+    name?: string;
+    id?: number;
+    active?: boolean;
     linkedCount: number;
     scanEnabled: boolean;
-    deleted: boolean
+    deleted?: boolean;
+    version?: string;
+    beforeDockerBuild?: Array<Task>;
+    afterDockerBuild?: Array<Task>;
+    appWorkflowId?: number;
+    beforeDockerBuildScripts?: Array<CiScript>;
+    afterDockerBuildScripts?: Array<CiScript>;
 }
 
 export interface Material {
@@ -79,54 +103,37 @@ export interface Material {
 }
 
 export interface CiPipelineResult {
-    id: number;
-    appId: number;
-    dockerRegistry: string;
-    dockerRepository: string;
-    dockerBuildConfig: DockerBuildConfig;
-    ciPipelines: CiPipeline[];
-    appName: string;
+    id?: number;
+    appId?: number;
+    dockerRegistry?: string;
+    dockerRepository?: string;
+    dockerBuildConfig?: DockerBuildConfig;
+    ciPipelines?: CiPipeline[];
+    appName?: string;
+    version?: string;
     materials: Material[];
     scanEnabled: boolean;
+    appWorkflowId?: number;
+    beforeDockerBuild?: Array<Task>;
+    afterDockerBuild?: Array<Task>;
 }
 //End CI Response
 
 //Start CD response
-export interface Rolling {
-    maxSurge: string;
-    maxUnavailable: number;
-}
-
-export interface Strategy2 {
-    rolling: Rolling;
-}
-
-export interface Deployment {
-    strategy: Strategy2;
-}
-
-export interface Config {
-    deployment: Deployment;
-}
-
 export interface Strategy {
     deploymentTemplate: string;
-    config: Config;
-    default: boolean;
+    config: any;
+    default?: boolean;
 }
 
-export interface PreStage {
+export interface CDStage {
+    status: string;
+    name: string;
+    triggerType: 'AUTOMATIC' | 'MANUAL';
+    config: string;
 }
 
-export interface PostStage {
-}
-
-export interface PreStageConfigMapSecretNames {
-    configMaps: any[];
-    secrets: any[];
-}
-
-export interface PostStageConfigMapSecretNames {
+export interface CDStageConfigMapSecretNames {
     configMaps: any[];
     secrets: any[];
 }
@@ -134,29 +141,46 @@ export interface PostStageConfigMapSecretNames {
 export interface CdPipeline {
     id: number;
     environmentId: number;
-    environmentName: string;
+    environmentName?: string;
     ciPipelineId: number;
-    triggerType: string;
+    triggerType: 'AUTOMATIC' | 'MANUAL';
     name: string;
-    strategies: Strategy[];
-    deploymentTemplate: string;
-    preStage: PreStage;
-    postStage: PostStage;
-    preStageConfigMapSecretNames: PreStageConfigMapSecretNames;
-    postStageConfigMapSecretNames: PostStageConfigMapSecretNames;
-    runPreStageInEnv: boolean;
-    runPostStageInEnv: boolean;
-    isClusterCdActive: boolean;
-    active: boolean;
-    deleted: boolean;
+    strategies?: Strategy[];
+    namespace?: string;
+    appWorkflowId?: number;
+    deploymentTemplate?: string;
+    preStage?: CDStage;
+    postStage?: CDStage;
+    preStageConfigMapSecretNames?: CDStageConfigMapSecretNames;
+    postStageConfigMapSecretNames?: CDStageConfigMapSecretNames;
+    runPreStageInEnv?: boolean;
+    runPostStageInEnv?: boolean;
+    isClusterCdActive?: boolean;
+    parentPipelineId?: number;
+    parentPipelineType?: string;
 }
 
 export interface CdPipelineResult {
-    pipelines: CdPipeline[];
+    pipelines?: CdPipeline[];
     appId: number;
 }
 
 //End CD response
+
+type PartialNodeAttr = Partial<NodeAttr>
+
+export interface FullNode {
+    node: PartialNodeAttr;
+    hasPre: true;
+    hasPost: true;
+}
+
+export interface WorkflowDisplay {
+    id: number;
+    name: string;
+    nodes: Array<NodeAttr>;
+    type: string;
+}
 
 export const getTriggerWorkflows = (appId): Promise<{ appName: string, workflows: WorkflowType[] }> => {
     return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow);
@@ -172,48 +196,239 @@ const getInitialWorkflows = (id, dimensions: WorkflowDimensions, workflowOffset:
     });
 }
 
-function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipelineResult, cdResponse: CdPipelineResult, dimensions: WorkflowDimensions, workflowOffset: Offset) {
-    let root = new Array<NodeAttr>();
-    // let ciMap = ciResponse.ciPipelines.
-    //             reduce((previousValue, currentValue) => {
-    //                     previousValue.set(currentValue.id, currentValue);
-    //                     return previousValue;
-    //                 }, new Map<number, CiPipeline>()
-    //             );
-    // let cdMap = cdResponse.pipelines.
-    //             reduce((previousValue, currentValue) => {
-    //                     previousValue.set(currentValue.id, currentValue);
-    //                     return previousValue;
-    //                 }, new Map<number, CdPipeline>()
-    //             );
+export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipelineResult, cdResponse: CdPipelineResult, dimensions: WorkflowDimensions, workflowOffset: Offset): Array<WorkflowType> {
     let ciMap = new Map(
         (ciResponse?.ciPipelines?.filter(pipeline => pipeline.active && !pipeline.deleted) ?? [])
             .map(ciPipeline => [ciPipeline.id, ciPipeline] as [number, CiPipeline])
     );
     let cdMap = new Map(
-        (cdResponse?.pipelines?.filter(pipeline => pipeline.active && !pipeline.deleted) ?? [])
+        (cdResponse?.pipelines ?? [])
             .map(cdPipeline => [cdPipeline.id, cdPipeline] as [number, CdPipeline])
     );
 
     let workflows = new Array<WorkflowType>();
     workflow.workflows.forEach(workflow => {
-        let wf = {
-            id: "" + workflow.id,
-            name: workflow.name,
-            dag: workflow.tree,
-            nodes: new Array<NodeAttr>(),
-            startX: 0,
-            startY: 0,
-            height: 0,
-            width: 0
-        } as WorkflowType
-        workflows.push(wf)
-        workflow.tree.sort((a, b) => a.componentId - b.componentId).forEach( branch => {
-            if (branch.type == 'CI_PIPELINE') {
-
+        let wf = toWorkflowDisplay(workflow);
+        workflows.push(wf);
+        workflow.tree
+        .sort((a, b) => a.id - b.id)
+        .forEach( branch => {
+            if (branch.type == PipelineType.CI_PIPELINE) {
+                let ciPipeline = ciMap.get(branch.componentId);
+                let ciNode = ciPipelineToNode(ciPipeline, dimensions);
+                wf.nodes.push(ciNode);
+            } else {
+                let cdPipeline = cdMap.get(branch.componentId);
+                if (!cdPipeline) {
+                    return
+                }
+                let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId);
+                let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI': 'CD';
+                let type = 'CD';
+                wf.nodes.filter(n => n.id == String(branch.parentId) && n.type == parentType).forEach(node => node.downstreams.push(type+"-"+branch.componentId));
+                wf.nodes.push(cdNode);
             }
         })
     });
+    if (dimensions.type == WorkflowDimensionType.TRIGGER) {
+        workflows = workflows.filter(wf => wf.nodes.length > 0);
+    }
+    let finalWorkflows = new Array<WorkflowType>();
+    workflows.forEach( (workflow, index) => {
+        let startY = 0;
+        let startX = 0;
+        if (workflow.nodes.length == 0) {
+            finalWorkflows.push(workflow);
+            return;
+        }
+        let ciNode = workflow.nodes[0];
+        ciNode.sourceNodes?.forEach((s, si) => {
+            let sourceNodeY = startY + workflowOffset.offsetY + si * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
+            s.x = 0 + workflowOffset.offsetX
+            s.y = sourceNodeY;
+            s.height = dimensions.staticNodeSizes.nodeHeight
+            s.width = dimensions.staticNodeSizes.nodeWidth
+        });
+        ciNode.x = workflowOffset.offsetX + startX + dimensions.staticNodeSizes.nodeWidth + dimensions.staticNodeSizes.distanceX
+        ciNode.y = workflowOffset.offsetY + startY;
+    });
+    return workflows;
+}
+
+function toWorkflowDisplay(workflow:Workflow): WorkflowType {
+    return {
+        id: ""+workflow.id,
+        name: workflow.name,
+        nodes: new Array<NodeAttr>(),
+        startX: 0,
+        startY: 0,
+        height: 0,
+        width: 0,
+        dag: [],
+    } as WorkflowType
+}
+
+function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions): NodeAttr {
+    let sourceNodes = ciPipeline.ciMaterial
+        .map((ciMaterial) => {
+            let materialName = ciMaterial.gitMaterialName || "";
+            return {
+                parents: [],
+                height: dimensions.staticNodeSizes.nodeHeight,
+                width: dimensions.staticNodeSizes.nodeWidth,
+                title: materialName.toLowerCase(),
+                isSource: true,
+                isRoot: true,
+                isGitSource: true,
+                url: "",
+                id: `GIT-${materialName}`,
+                downstreams: [`CI-${ciPipeline.id}`],
+                type: 'GIT',
+                icon: "git",
+                branch: ciMaterial?.source?.value ?? "",
+                sourceType: ciMaterial?.source?.type ?? "",
+                x: 0,
+                y: 0
+            } as NodeAttr
+        });
+        let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase();
+        let isExternalCI = ciPipeline.isExternal;
+        let isLinkedCI = !!ciPipeline.parentCiPipeline;
+        let l = ciPipeline.name.length - 1;
+        if (isLinkedCI) {
+            l = ciPipeline.name.lastIndexOf('-');
+        }
+        let ciNodeHeight = getCINodeHeight(dimensions.type, ciPipeline);
+        let ciNode = {
+            isSource: true,
+            isGitSource: false,
+            isRoot: false,
+            parents: sourceNodes.map(sn => sn.id),
+            id: String(ciPipeline.id),
+            x: 0,
+            y: 0,
+            parentAppId: ciPipeline.parentAppId,
+            parentCiPipeline: ciPipeline.parentCiPipeline,
+            height: ciNodeHeight,
+            width: dimensions.cINodeSizes.nodeWidth,
+            title: isLinkedCI ? ciPipeline.name.substring(0, l) || ciPipeline.name : ciPipeline.name, //show parent CI name if Linked CI
+            triggerType: TriggerTypeMap[trigger],
+            status: DEFAULT_STATUS,
+            type: 'CI',
+            inputMaterialList: [],
+            downstreams: [],
+            isExternalCI: isExternalCI,
+            isLinkedCI: isLinkedCI,
+            linkedCount: ciPipeline.linkedCount || 0,
+            sourceNodes: sourceNodes
+        } as NodeAttr
+
+    return ciNode;
+}
+
+function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
+    let trigger = cdPipeline.triggerType?.toLowerCase() ?? '';
+    let preCD : NodeAttr, postCD: NodeAttr;
+    let stageIndex = 1;
+    if (!isEmpty(cdPipeline?.preStage?.config)) {
+        let trigger = cdPipeline.preStage.triggerType?.toLowerCase() ?? '';
+        preCD = {
+            parents: [parentId],
+            height: dimensions.cDNodeSizes.nodeHeight,
+            width: dimensions.cDNodeSizes.nodeWidth,
+            title: cdPipeline.preStage.name,
+            isSource: false,
+            isGitSource: false,
+            id: String(cdPipeline.id),
+            activeIn: false,
+            activeOut: false,
+            downstreams: [`CD-${cdPipeline.id}`],
+            type: 'PRECD',
+            status: cdPipeline.preStage.status || DEFAULT_STATUS,
+            triggerType: TriggerTypeMap[trigger],
+            environmentName: cdPipeline.environmentName || "",
+            environmentId: "" + cdPipeline.environmentId,
+            deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
+            inputMaterialList: [],
+            rollbackMaterialList: [],
+            stageIndex: stageIndex,
+            x: 0,
+            y: 0,
+            isRoot: false,
+        } as NodeAttr
+        stageIndex++;
+    }
+    let cdDownstreams = [];
+    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postStage?.config)) {
+        cdDownstreams = [`POSTCD-${cdPipeline.id}`]
+    }
+    let CD = {
+        parents: [parentId],
+        height: dimensions.cDNodeSizes.nodeHeight,
+        width: dimensions.cDNodeSizes.nodeWidth,
+        title: cdPipeline.name,
+        isSource: false,
+        isGitSource: false,
+        id: String(cdPipeline.id),
+        activeIn: false,
+        activeOut: false,
+        downstreams: cdDownstreams,
+        type: 'CD',
+        status: DEFAULT_STATUS,
+        triggerType: TriggerTypeMap[trigger],
+        environmentName: cdPipeline.environmentName || "",
+        environmentId: "" + cdPipeline.environmentId,
+        deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
+        inputMaterialList: [],
+        rollbackMaterialList: [],
+        stageIndex: stageIndex,
+        x: 0,
+        y: 0,
+        isRoot: false,
+        preNode: undefined,
+        postNode: undefined
+    } as NodeAttr
+    stageIndex++;
+
+    if (!isEmpty(cdPipeline?.postStage?.config)) {
+        let trigger = cdPipeline.postStage.triggerType?.toLowerCase() ?? '';
+        postCD = {
+            parents: [cdPipeline.id],
+            height: dimensions.cDNodeSizes.nodeHeight,
+            width: dimensions.cDNodeSizes.nodeWidth,
+            title: cdPipeline.postStage.name,
+            isSource: false,
+            isGitSource: false,
+            id: String(cdPipeline.id),
+            activeIn: false,
+            activeOut: false,
+            downstreams: [],
+            type: 'POSTCD',
+            status: cdPipeline.postStage.status || DEFAULT_STATUS,
+            triggerType: TriggerTypeMap[trigger],
+            environmentName: cdPipeline.environmentName || "",
+            environmentId: "" + cdPipeline.environmentId,
+            deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
+            inputMaterialList: [],
+            rollbackMaterialList: [],
+            stageIndex: stageIndex,
+            x: 0,
+            y: 0,
+            isRoot: false
+        } as NodeAttr;
+    }
+    if (dimensions.type === WorkflowDimensionType.TRIGGER) {
+        CD.preNode = preCD;
+        CD.postNode = postCD;
+    }
+    if (dimensions.type === WorkflowDimensionType.CREATE) {
+        let title = "";
+        title += preCD ? "Pre-deploy, " : "";
+        title += "Deploy";
+        title += postCD ? ", Post-deploy" : "";
+        CD.title = title;
+    }
+    return CD;
 }
 
 export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, workflowOffset): { appName: string, workflows: WorkflowType[] } => {
@@ -309,16 +524,14 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
             w.nodes.push(...sourceNodes, ciNode)
         })
         if (cdConfig && cdConfig.pipelines) {
-            let wfParentNodesId = new Set([pipeline.id]);
-            let pipelineTypes = new Set(["CI_PIPELINE", "CD_PIPELINE"]);
             relevantWF.forEach(w => {
                 //CD nodes which have this CI as parent are only relevant
                 //TODO: CD nodes can also be parent
 
-                let relevantCD = w.dag.filter(n => n.type == "CD_PIPELINE" && wfParentNodesId.has(n.parentId) && pipelineTypes.has(n.parentType) && wfParentNodesId.add(n.componentId));
+                let relevantCD = w.dag.filter(n => n.type == "CD_PIPELINE" && n.parentId == pipeline.id && n.parentType == "CI_PIPELINE")
                 let ciChildren = cdConfig.pipelines.filter((cd) => relevantCD.filter(n => n.componentId == cd.id).length > 0);
                 ciNode.downstreams = ciChildren.map(cd => {
-                    if (dimensions.type === 'trigger' && cd.preStage && !isEmpty(cd.preStage.config)) { return `PRECD-${cd.id}` } else { return `CD-${cd.id}` }
+                    if (dimensions.type === WorkflowDimensionType.TRIGGER && cd.preStage && !isEmpty(cd.preStage.config)) { return `PRECD-${cd.id}` } else { return `CD-${cd.id}` }
                 })
                 ciChildren.forEach((cd, cdIndex) => {
                     let trigger = cd.triggerType.toLowerCase() || '';
@@ -353,7 +566,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
                         stageIndex++;
                     }
                     let cdDownstreams = [];
-                    if (dimensions.type === 'trigger' && cd.postStage && !isEmpty(cd.postStage.config)) {
+                    if (dimensions.type === WorkflowDimensionType.TRIGGER && cd.postStage && !isEmpty(cd.postStage.config)) {
                         cdDownstreams = [`POSTCD-${cd.id}`]
                     }
                     let CD = {
@@ -411,14 +624,14 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
                             isRoot: false
                         } as NodeAttr;
                     }
-                    if (dimensions.type === 'trigger') {
+                    if (dimensions.type === WorkflowDimensionType.TRIGGER) {
                         CD.preNode = preCD;
                         CD.postNode = postCD;
                     }
-                    if (preCD && dimensions.type === 'trigger') w.nodes.push(preCD)
+                    if (preCD && dimensions.type === WorkflowDimensionType.TRIGGER) w.nodes.push(preCD)
                     w.nodes.push(CD)
-                    if (postCD && dimensions.type === 'trigger') w.nodes.push(postCD)
-                    if (dimensions.type === 'create') {
+                    if (postCD && dimensions.type === WorkflowDimensionType.TRIGGER) w.nodes.push(postCD)
+                    if (dimensions.type === WorkflowDimensionType.CREATE) {
                         let title = "";
                         title += preCD ? "Pre-deploy, " : "";
                         title += "Deploy";
@@ -429,7 +642,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
             })
         }
     })
-    if (dimensions.type == 'trigger') {
+    if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter(wf => wf.nodes.length > 0);
     }
     //dag was a placeholder for workflow tree for easier processing
@@ -478,7 +691,7 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
                 })
             })
         })
-        let workflowWidth = dimensions.type === 'create' ? 840 : 1280;
+        let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
         gitHeight = sn.length * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
         ciHeight = cin ? (dimensions.cINodeSizes.nodeHeight + dimensions.cINodeSizes.distanceY) : 0;
         cdHeight = cdn.length * (dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY);
@@ -490,8 +703,8 @@ export const getWorkflows = (workflow, ciConfigResponse, cdConfig, dimensions, w
     return { appName, workflows };
 }
 
-function getCINodeHeight(dimensionType: 'trigger' | 'create', pipeline): number {
-    if (dimensionType === 'create') return WorkflowCreate.cINodeSizes.nodeHeight;
+function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline): number {
+    if (dimensionType === WorkflowDimensionType.CREATE) return WorkflowCreate.cINodeSizes.nodeHeight;
     else {
         if (pipeline.parentCiPipeline) //linked CI pipeline
             return WorkflowTrigger.linkedCINodeSizes.nodeHeight;

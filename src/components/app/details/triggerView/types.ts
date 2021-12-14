@@ -94,13 +94,14 @@ export interface NodeAttr {
   environmentId?: string;
   inputMaterialList?: any[]
   rollbackMaterialList?: any[]; //used for CDs
-  linkedCount?: number; //used for CI 
+  linkedCount?: number; //used for CI
   deploymentStrategy?: string;
   height: number;
   width: number;
   preNode?: NodeAttr, //used for CDs
   postNode?: NodeAttr, //used for CDs
   stageIndex?: number; //used for CDs
+  sourceNodes?: Array<NodeAttr> //used for CI
 }
 
 export interface DownStreams {
@@ -189,8 +190,8 @@ export interface WorkflowType {
 }
 
 export interface WebhookPayloadDataResponse {
-  ParsedDataId: number;  
-  EventTime: string;           
+  ParsedDataId: number;
+  EventTime: string;
   MatchedFiltersCount: number;
   FailedFiltersCount: number;
   MatchedFilters: boolean;

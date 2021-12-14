@@ -70,6 +70,19 @@ export const cdConfigResp = {
                 "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
             },
             {
+                "id": 80,
+                "environmentId": 2,
+                "ciPipelineId": 96,
+                "triggerType": "AUTOMATIC",
+                "name": "amit-16-jan-replica-amit-16-jan-erferf2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
                 "id": 92,
                 "environmentId": 3,
                 "ciPipelineId": 106,
@@ -88,6 +101,19 @@ export const cdConfigResp = {
                 "ciPipelineId": 106,
                 "triggerType": "MANUAL",
                 "name": "amit-16-jan-replica-dep",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 95,
+                "environmentId": 6,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-dep2",
                 "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
                 "deploymentTemplate": "ROLLING",
                 "preStage": {},
