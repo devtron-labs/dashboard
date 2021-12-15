@@ -4,75 +4,132 @@ import IndexStore from '../../../index.store';
 import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getEvent } from '../nodeDetail.api';
-import { Pod as PodIcon} from '../../../../../common';
+import { Pod as PodIcon } from '../../../../../common';
 import moment from 'moment';
 import { Spinner } from 'patternfly-react';
-import { ReactComponent as InfoIcon} from '../../../../assets/icons/ic-info-filled-gray.svg'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-filled-gray.svg'
+import { NodeType } from '../../../appDetails.type';
 
 
 function EventsComponent({ selectedTab }) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-    const [eventsResult, setEventResult] = useState(undefined)
-    const events = eventsResult?.items || []
-    const [loading, setLoading] = useState(false)
+    const [events, setEvents] = useState([])
+    const [loading, setLoading] = useState(true)
+    const appDetails = IndexStore.getAppDetails();
+    const [podName, setPodName] = useState(params.podName)
+    const pods = IndexStore.getNodesByKind(NodeType.Pod)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS)
-        const appDetails = IndexStore.getAppDetails();
-        getEvent(appDetails, params.podName).then((response) => {
-            setEventResult(response.result)
-        }).catch((err) => {
-            console.log("err", err)
-        })
+
+        if (!appDetails) {
+            //Refresh case -- need to sent to k8 , histrory push
+        }
 
     }, [params.podName])
 
+    useEffect(() => {
+        setLoading(true)
 
-     const NoPod = ({ selectMessage = "Select a pod to view events", style = {} })  => {
-        return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
-            <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
-            <p>{selectMessage}</p>
-        </div>
-    }
+        getEvent(appDetails, params.podName).then((response) => {
+            setEvents(response.result.items || [])
+            setLoading(false)
+        }).catch((err) => {
+            console.log("err", err)
+            setEvents([])
+            setLoading(false)
+        })
+    }, [podName])
 
-    const NoEvents = ({ title = "Events not available" }) => {
-        return (
-            <div style={{ width: '100%', textAlign: 'center' }}>
-                <InfoIcon />
-                <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{title}</div>
-            </div>
-        )
-    }
-    
+
+    // const NoPod = ({ selectMessage = "Select a pod to view events", style = {} }) => {
+    //     return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
+    //         <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+    //         <p>{selectMessage}</p>
+    //     </div>
+    // }
+
+    // const NoEvents = ({ title = "Events not available" }) => {
+    //     return (
+    //         <div style={{ width: '100%', textAlign: 'center' }}>
+    //             <InfoIcon />
+    //             <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{title}</div>
+    //         </div>
+    //     )
+    // }
+
     return (
-        <div className="bcn-0 flex" style={{ width: '100%', textAlign: 'center', minHeight: '600px' }} >
-            { events.filter(event => event).length > 0 && <div className="events-logs__events-table">
-
-                <div className="events-logs__events-table-row header m-0">
-                    {['reason', 'message', 'count', 'last timestamp'].map((head, idx) =>
-                        <span className="events-logs__event" key={idx}>{head}</span>)}
-                </div>
-
-                {events.item && events.map((event, index) => <div className="events-logs__events-table-row" key={index}>
-                    <span className="events-logs__event">{event.reason}</span>
-                    <span className="events-logs__event">{event.message}</span>
-                    <span className="events-logs__event">{event.count}</span>
-                    <span className="events-logs__event">{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</span>
-                </div>)
+        <React.Fragment>
+            {pods && pods.length > 0 && <div className="bcn-0 cn-9" >
+                {
+                    <div className='d-flex pl-20 pr-20 pt-4 pb-4'>
+                        <span className='pl-4 pr-4'>Pod</span>
+                        <select className='bw-1 en-2' onChange={(e) => {
+                            setPodName(e.target.value)
+                        }}>
+                            {pods.map((pod, index) => {
+                                return (
+                                    <option key={`ph_${index}`}>{pod.name}</option>
+                                )
+                            })}
+                        </select>
+                    </div>
                 }
+
+                {!loading && events && events.length > 0 &&
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
+                                    return <th key={`eh_${idx}`}>{head}</th>
+                                }
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {events.map((event, index) => {
+                                return (
+                                    <tr key={`eb_${index}`}>
+                                        <td>{event.reason}</td>
+                                        <td>{event.message}</td>
+                                        <td>{event.count}</td>
+                                        <td>{moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss').add(5, 'hours').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')}</td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                }
+
+                {
+                    (!loading && (!events || events.length === 0)) && <div style={{ width: '100%', textAlign: 'center' }}>
+                        <InfoIcon />
+                        <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>Events not available</div>
+                    </div>
+                }
+
+
+                {
+                    loading && <div className="flex h-100" >
+                        <Spinner loading></Spinner>
+                        <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                    </div>
+                }
+
+
             </div>}
 
-            {params.podName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
-                {loading && <div  className="flex h-100" >
-                    <Spinner loading></Spinner>
-                    <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
-                </div>}
-                {!loading && events.filter(event => event).length === 0 && <NoEvents />}
-            </div>}
+            {
+                (pods.length === 0) &&
+                <div data-testid="no-pod" className="no-pod no-pod--pod">
+                    <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+                    <p>Select a pod to view events</p>
+                </div>
+            }
 
-            {!params.podName && <NoPod />}
-        </div>
+        </React.Fragment>
     )
 }
 
