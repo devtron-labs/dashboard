@@ -1,4 +1,4 @@
-import { getWorkflows, processWorkflow, WorkflowResult, CiPipelineResult, CdPipelineResult } from './workflow.service';
+import { processWorkflow, WorkflowResult, CiPipelineResult, CdPipelineResult } from './workflow.service';
 import { WorkflowTrigger, WorkflowCreate } from './config';
 import {
     ciConfigResp, cdConfigResp, cdConfigPreResp, cdConfigPostResp, cdConfigPrePostResp, workflow,
@@ -6,39 +6,64 @@ import {
     workflowsTriggerPreCDResp, workflowsCreatePreCDResp,
     workflowsTriggerPostCD, workflowsCreatePostCD,
     workflowsTriggerPrePostCD, workflowsCreatePrePostCD,
-    workflows2Resp, ciConfigWithLinkedCIResp, cdConfig2Resp, workflows2Trigger
+    workflows2Resp, ciConfigWithLinkedCIResp, cdConfig2Resp, workflows2Trigger, cdConfigPrePostRespWithPrePostSequential
 } from './workflow.data';
 
 import {
-    workflowWithSequential
+    workflowsCreatePostCDWithSequential,
+    workflowsCreatePreCDRespWithSequential,
+    workflowsCreatePrePostCDWithSequential,
+    workflowsCreateWithSequential,
+    workflowsTriggerPostCDWithSequential,
+    workflowsTriggerPreCDRespWithSequential,
+    workflowsTriggerPrePostCDWithSequential,
+    workflowsTriggerWithSequential,
+    workflowWithSequential,
+    workflowsTriggerPrePostCDWithPrePostSequential,
+    workflowsCreatePrePostCDWithPrePostSequential
 } from './workflow.sequential.data';
 
-//Test Cases for PRECD and POSTCD
-test('workflows no PRECD, no POSTCD', () => {
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigResp.result, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsCreate);
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigResp.result, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsTrigger);
+test('process workflows no PRECD, no POSTCD', () => {
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTrigger);
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreate);
 })
 
-test('workflows PRECD, no POSTCD', () => {
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPreResp.result, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPreCDResp);
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPreResp.result, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePreCDResp);
+test('process workflows PRECD, no POSTCD', () => {
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPreResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPreCDResp);
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPreResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePreCDResp);
 })
 
-test('workflows no PRECD, POSTCD', () => {
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPostResp.result, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPostCD);
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPostResp.result, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePostCD);
+test('process workflows no PRECD, POSTCD', () => {
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPostResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPostCD);
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPostResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePostCD);
 })
 
-test('workflows PRECD, POSTCD', () => {
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPrePostResp.result, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPrePostCD);
-    expect(getWorkflows(workflow, ciConfigResp, cdConfigPrePostResp.result, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePrePostCD);
+test('process workflows PRECD, POSTCD', () => {
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPrePostCD);
+    expect(processWorkflow(workflow.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePrePostCD);
 })
 
-// test('LInked CI', () => {
-//     expect(getWorkflows(workflows2Resp, ciConfigWithLinkedCIResp, cdConfig2Resp, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflows2Trigger);
-// })
+test('process workflows sequential no PRECD, no POSTCD', () => {
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerWithSequential);
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreateWithSequential);
+})
 
-test('workflows process', () => {
-    let out = processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow)
-    console.log(out);
+test('process workflows sequeqntial PRECD, no POSTCD', () => {
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPreResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPreCDRespWithSequential);
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPreResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePreCDRespWithSequential);
+})
+
+test('process workflows sequential no PRECD, POSTCD', () => {
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPostResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPostCDWithSequential);
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPostResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePostCDWithSequential);
+})
+
+test('process workflows sequential PRECD, POSTCD', () => {
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostResp.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPrePostCDWithSequential);
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostResp.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePrePostCDWithSequential);
+})
+
+test('process workflows pre and post sequential PRECD, POSTCD', () => {
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostRespWithPrePostSequential.result as CdPipelineResult, WorkflowTrigger, WorkflowTrigger.workflow).workflows).toStrictEqual(workflowsTriggerPrePostCDWithPrePostSequential);
+    expect(processWorkflow(workflowWithSequential.result as WorkflowResult, ciConfigResp.result as CiPipelineResult, cdConfigPrePostRespWithPrePostSequential.result as CdPipelineResult, WorkflowCreate, WorkflowCreate.workflow).workflows).toStrictEqual(workflowsCreatePrePostCDWithPrePostSequential);
 })

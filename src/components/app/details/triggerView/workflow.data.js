@@ -168,6 +168,106 @@ export const cdConfigPrePostResp = {
                 "postStage": { "triggerType": "AUTOMATIC", "name": "Post-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    afterStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
                 "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
                 "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 80,
+                "environmentId": 2,
+                "ciPipelineId": 96,
+                "triggerType": "AUTOMATIC",
+                "name": "amit-16-jan-replica-amit-16-jan-erferf2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 95,
+                "environmentId": 6,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-dep2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            }
+        ],
+        "appId": 80
+    }
+};
+
+export const cdConfigPrePostRespWithPrePostSequential = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "pipelines": [{
+                "id": 92,
+                "environmentId": 3,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-deploy",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 94,
+                "environmentId": 5,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-dep",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 79,
+                "environmentId": 1,
+                "ciPipelineId": 96,
+                "triggerType": "AUTOMATIC",
+                "name": "amit-16-jan-replica-amit-16-jan-erferf",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": { "triggerType": "AUTOMATIC", "name": "Pre-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    beforeStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                "postStage": { "triggerType": "AUTOMATIC", "name": "Post-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    afterStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 80,
+                "environmentId": 2,
+                "ciPipelineId": 96,
+                "triggerType": "AUTOMATIC",
+                "name": "amit-16-jan-replica-amit-16-jan-erferf2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": { "triggerType": "AUTOMATIC", "name": "Pre-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    beforeStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                "postStage": { "triggerType": "AUTOMATIC", "name": "Post-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    afterStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 95,
+                "environmentId": 6,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-dep2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": { "triggerType": "AUTOMATIC", "name": "Pre-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    beforeStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                "postStage": { "triggerType": "AUTOMATIC", "name": "Post-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    afterStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+                 "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
             }
         ],
         "appId": 80
@@ -229,7 +329,7 @@ export const workflow = {
     }
 };
 
-export const workflowsCreate = [{
+export const workflowsTrigger = [{
         "id": "92",
         "name": "first",
         "nodes": [{
@@ -422,12 +522,12 @@ export const workflowsCreate = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 326,
+        "height": 325,
         "width": 1280
     }
 ];
 
-export const workflowsTrigger = [{
+export const workflowsCreate = [{
         "id": "92",
         "name": "first",
         "nodes": [{
@@ -619,7 +719,7 @@ export const workflowsTrigger = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 202,
+        "height": 201,
         "width": 840
     }
 ];
@@ -758,7 +858,7 @@ export const workflowsTriggerPrePostCD = [{
                 },
                 "postNode": {
                     "parents": [
-                        79
+                        "79"
                     ],
                     "height": 126,
                     "width": 200,
@@ -785,7 +885,7 @@ export const workflowsTriggerPrePostCD = [{
             },
             {
                 "parents": [
-                    79
+                    "79"
                 ],
                 "height": 126,
                 "width": 200,
@@ -924,7 +1024,7 @@ export const workflowsTriggerPrePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 326,
+        "height": 325,
         "width": 1280
     }
 ];
@@ -1121,7 +1221,7 @@ export const workflowsCreatePrePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 202,
+        "height": 201,
         "width": 840
     }
 ];
@@ -1167,6 +1267,32 @@ export const cdConfigPostResp = {
             "deploymentTemplate": "ROLLING",
             "preStage": {},
             "postStage": { "triggerType": "AUTOMATIC", "name": "Post-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    afterStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n\"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: \"date \u003e test2.report\\n\"\n        outputLocation: ./test2.report" },
+            "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+            "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+        },
+        {
+            "id": 80,
+            "environmentId": 2,
+            "ciPipelineId": 96,
+            "triggerType": "AUTOMATIC",
+            "name": "amit-16-jan-replica-amit-16-jan-erferf2",
+            "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+            "deploymentTemplate": "ROLLING",
+            "preStage": {},
+            "postStage": {},
+            "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+            "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+        },
+        {
+            "id": 95,
+            "environmentId": 6,
+            "ciPipelineId": 106,
+            "triggerType": "MANUAL",
+            "name": "amit-16-jan-replica-dep2",
+            "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+            "deploymentTemplate": "ROLLING",
+            "preStage": {},
+            "postStage": {},
             "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
             "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
         }],
@@ -1216,6 +1342,32 @@ export const cdConfigPreResp = {
                 "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
                 "deploymentTemplate": "ROLLING",
                 "preStage": { "triggerType": "AUTOMATIC", "name": "Pre-Deployment", "config": "version: 0.0.1\ncdPipelineConf:\n  -\n    beforeStages:\n      -\n        name: test-1\n        script: \"date \u003e test.report\\necho 'hello'\\n date \u003e test.report\\necho 'hello2'\\n date \u003e test.report\\necho 'hello3'\\n sleep 2m\\n\"\n        outputLocation: ./test.report" },
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 80,
+                "environmentId": 2,
+                "ciPipelineId": 96,
+                "triggerType": "AUTOMATIC",
+                "name": "amit-16-jan-replica-amit-16-jan-erferf2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
+                "postStage": {},
+                "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
+                "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
+            },
+            {
+                "id": 95,
+                "environmentId": 6,
+                "ciPipelineId": 106,
+                "triggerType": "MANUAL",
+                "name": "amit-16-jan-replica-dep2",
+                "strategies": [{ "deploymentTemplate": "ROLLING", "config": { "deployment": { "strategy": { "rolling": { "maxSurge": "25%", "maxUnavailable": 1 } } } }, "default": true }],
+                "deploymentTemplate": "ROLLING",
+                "preStage": {},
                 "postStage": {},
                 "preStageConfigMapSecretNames": { "configMaps": [], "secrets": [] },
                 "postStageConfigMapSecretNames": { "configMaps": [], "secrets": [] }
@@ -1472,7 +1624,7 @@ export const workflowsTriggerPreCDResp = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 326,
+        "height": 325,
         "width": 1280
     }
 ];
@@ -1669,7 +1821,7 @@ export const workflowsCreatePreCDResp = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 202,
+        "height": 201,
         "width": 840
     }
 ];
@@ -1866,7 +2018,7 @@ export const workflowsCreatePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 202,
+        "height": 201,
         "width": 840
     }
 ];
@@ -1950,7 +2102,7 @@ export const workflowsTriggerPostCD = [{
                 "preNode": undefined,
                 "postNode": {
                     "parents": [
-                        79
+                        "79"
                     ],
                     "height": 126,
                     "width": 200,
@@ -1977,7 +2129,7 @@ export const workflowsTriggerPostCD = [{
             },
             {
                 "parents": [
-                    79
+                    "79"
                 ],
                 "height": 126,
                 "width": 200,
@@ -2116,7 +2268,7 @@ export const workflowsTriggerPostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 326,
+        "height": 325,
         "width": 1280
     }
 ];

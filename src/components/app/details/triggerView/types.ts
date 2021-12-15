@@ -91,7 +91,7 @@ export interface NodeAttr {
   isExternalCI?: boolean;
   isLinkedCI?: boolean;
   environmentName?: string; //used for CDs
-  environmentId?: string;
+  environmentId?: number;
   inputMaterialList?: any[]
   rollbackMaterialList?: any[]; //used for CDs
   linkedCount?: number; //used for CI
@@ -102,6 +102,7 @@ export interface NodeAttr {
   postNode?: NodeAttr, //used for CDs
   stageIndex?: number; //used for CDs
   sourceNodes?: Array<NodeAttr> //used for CI
+  downstreamNodes?: Array<NodeAttr>
 }
 
 export interface DownStreams {
