@@ -45,16 +45,16 @@ function NodeComponent() {
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ["Pod (All)", "Ready"]
-                    _fcw = "col-8 pl-16"
+                    tableHeader = ["Pod (All)", "Ready", ""]
+                    _fcw = "col-10"
                     break;
                 case NodeType.Service.toLowerCase():
-                    tableHeader = ["Name", "URL"]
-                    _fcw = "col-5 pl-16"
+                    tableHeader = ["Name", "URL", ""]
+                    _fcw = "col-6"
                     break;
                 default:
-                    tableHeader = ["Name"]
-                    _fcw = "col-10 pl-16"
+                    tableHeader = ["Name", ""]
+                    _fcw = "col-11"
                     break;
             }
 
@@ -126,9 +126,9 @@ function NodeComponent() {
                     {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                         <span >{node.kind}</span>
                     </div>}
-                    <div className="resource-row m-0 flex flex-justify"  >
+                    <div className="row m-0"  >
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
-                            <div className="flex left top" onClick={() => { setSelectedNodes(markNodeSelected(selectedNodes, node.name)) }}>
+                            <div className="flex left top ml-2" onClick={() => { setSelectedNodes(markNodeSelected(selectedNodes, node.name)) }}>
                                 {(node.childNodes?.length > 0) ?
                                     <DropDown
                                         className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
@@ -162,8 +162,7 @@ function NodeComponent() {
                             </div>
                         </div>
 
-
-                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-6 pt-9 pb-9 flex left"} >
+                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-5 pt-9 pb-9 flex left"} >
                             {node.name + "." + node.namespace}  : portnumber
                             <Tippy
                                 className="default-tt"
@@ -180,25 +179,23 @@ function NodeComponent() {
                         </div>}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() &&
-                            <React.Fragment>
-                                <div className={"col-1 pt-9 pb-9"} > 1/1 </div>
-                            </React.Fragment>
+                            <div className={"col-1 pt-9 pb-9"} > 1/1 </div>
                         }
 
-                        <div className="">
+                        <div className={"col-1 pt-9 pb-9 d-flex flex-row-reverse"} >
                             <NodeDeleteComponent nodeDetails={node}
-                                describeNode={describeNode}
-                                appName={appDetails.appName}
-                                environmentName={appDetails.environmentName}
-                                // key={column}
-                                appId={appDetails.appId}
-                            />
+                            describeNode={describeNode}
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            // key={column}
+                            appId={appDetails.appId}
+                        />
                         </div>
-                        
+
                     </div>
 
                     {(node.childNodes?.length > 0 && node.isSelected) ?
-                        <div className="ml-24 indent-line">
+                        <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
                         :
@@ -238,20 +235,20 @@ function NodeComponent() {
     }
 
     return (
-        <div className="container-fluid generic-table ml-0 mr-0" style={{ paddingRight: 0, paddingLeft: 0 }}>
+        <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0 }}>
             {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent callBack={setPodType} /> :
                 <div className="border-bottom  pt-10 pb-10" >
                     <div className="pl-16 fw-6 fs-14 text-capitalize">
                         <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                         <span>({selectedNodes?.length})</span>
                     </div>
-                    {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div> }
+                    {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>}
                 </div>}
 
             <div className="row border-bottom fw-6 m-0">
                 {
                     tableHeader.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(`${index === 0 ? firstColWidth : 'col-1'} pt-9 pb-9`)}>{cell}</div>
+                        return <div key={'gpt_' + index} className={(`${index === 0 ? `pl-16 ${firstColWidth}` : 'col-1'} pt-9 pb-9`)}>{cell}</div>
                     })
                 }
             </div>
