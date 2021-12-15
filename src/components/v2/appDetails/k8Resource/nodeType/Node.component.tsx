@@ -10,7 +10,7 @@ import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode } from '../../appDetails.type';
 import './nodeType.scss'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
-import Menu from './DeleteRowPopUp.component';
+import NodeDeleteComponent from './NodeDelete.component';
 import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { NodeDetailTab } from '../nodeDetail/nodeDetail.type';
@@ -186,7 +186,7 @@ function NodeComponent() {
                         }
 
                         <div className="">
-                            <Menu nodeDetails={node}
+                            <NodeDeleteComponent nodeDetails={node}
                                 describeNode={describeNode}
                                 appName={appDetails.appName}
                                 environmentName={appDetails.environmentName}
@@ -194,8 +194,7 @@ function NodeComponent() {
                                 appId={appDetails.appId}
                             />
                         </div>
-
-
+                        
                     </div>
 
                     {(node.childNodes?.length > 0 && node.isSelected) ?

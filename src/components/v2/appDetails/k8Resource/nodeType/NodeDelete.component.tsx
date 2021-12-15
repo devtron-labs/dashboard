@@ -3,12 +3,12 @@ import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 
 import { PopupMenu, Pod as PodIcon, Trash, showError, copyToClipboard, not, useSearchString } from '../../../../common';
 import dots from '../../../assets/icons/ic-menu-dot.svg';
 import { toast } from 'react-toastify';
-import { deleteResource } from '../../../../app/service';
 import { NodeDetailTabsType, NodeType } from '../../../../app/types';
 import './nodeType.scss';
 import IndexStore from '../../index.store';
+import { deleteResource } from '../../appDetails.api';
 
-function Menu({ appName, environmentName, nodeDetails, describeNode, appId }) {
+function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId }) {
     const { path } = useRouteMatch();
     const history = useHistory();
     // const params = useParams();
@@ -17,10 +17,11 @@ function Menu({ appName, environmentName, nodeDetails, describeNode, appId }) {
     const { queryParams } = useSearchString();
 
     function describeNodeWrapper(tab) {
-        queryParams.set('kind', params.podName);
-        const newUrl = generatePath(path, { ...params, tab }) + '?' + queryParams.toString();
-        describeNode(nodeDetails.name);
-        history.push(newUrl);
+        console.log("describeNodeWrapper", tab)
+        // queryParams.set('kind', params.podName);
+        // const newUrl = generatePath(path, { ...params, tab }) + '?' + queryParams.toString();
+        // describeNode(nodeDetails.name);
+        // history.push(newUrl);
     }
 
     const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode, appId }) => {
@@ -86,4 +87,4 @@ function Menu({ appName, environmentName, nodeDetails, describeNode, appId }) {
     </div>)
 }
 
-export default Menu
+export default NodeDeleteComponent

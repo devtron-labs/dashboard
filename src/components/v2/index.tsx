@@ -19,29 +19,36 @@ function RouterComponent({ envType }) {
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
-        setIsLoading(true)
-
-        const init = async () => {
-            let response = null;
-
-            try {
-                if (envType === EnvType.CHART) {
-                    response = await getInstalledChartDetail(+params.appId, +params.envId);
-                } else {
-                    response = await getInstalledAppDetail(+params.appId, +params.envId);
-                }
-
-                IndexStore.setAppDetails(response.result);
-
-                setIsLoading(false)
-            } catch (e) {
-                console.log("error while fetching InstalledAppDetail", e)
-                // alert('error loading data')
-            }
-        }
 
         init();
+
+        //setInterval(init, 30*1000) //30 sec, setting fixed interval to fetch app details
+
     }, [params.appId, params.envId])
+
+    const init = async () => {
+        setIsLoading(true)
+
+        let response = null;
+
+        try {
+            if (envType === EnvType.CHART) {
+                response = await getInstalledChartDetail(+params.appId, +params.envId);
+            } else {
+                response = await getInstalledAppDetail(+params.appId, +params.envId);
+            }
+
+            IndexStore.setAppDetails(response.result);
+            
+            setIsLoading(false)
+        } catch (e) {
+            console.log("error while fetching InstalledAppDetail", e)
+            // alert('error loading data')
+        }
+    }
+
+
+
 
     return (
         <div>
