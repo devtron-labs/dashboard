@@ -45,7 +45,7 @@ const PrometheusRequiredFieldInfo = () => {
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef;
-    serverMode;
+    subscription;
 
     constructor(props) {
         super(props);
@@ -60,7 +60,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     componentDidMount() {
         this.initialise();
-        dataService.serverModeObservable().subscribe((message) => {
+        this.subscription = dataService.serverModeObservable().subscribe((message) => {
           this.setState({...this.state, serverMode: message});
           this.initialise();
         });
@@ -126,6 +126,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     componentWillUnmount() {
         clearInterval(this.timerRef);
+        this.subscription.unsubscribe();
     }
 
     render() {
