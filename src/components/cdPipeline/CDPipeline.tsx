@@ -43,8 +43,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
 
         const urlParams = new URLSearchParams(this.props.location.search);
-        const parentPipelineType = urlParams.get('parentPipelineType');
-        const parentPipelineId = urlParams.get('parentPipelineId')
+        const parentPipelineType = (urlParams.get('parentPipelineType') ?? '').toLocaleUpperCase().replace('-','_');
+        const parentPipelineId = urlParams.get('parentPipelineId');
         this.state = {
             view: ViewType.LOADING,
             loadingData: false,
