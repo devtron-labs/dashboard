@@ -83,7 +83,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         let classNames = this.state.show ? "filter__menu filter__menu--show" : "filter__menu";
         let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
         let isDisable = this.shouldApplyFilter();
-        let badge = this.getSavedFilter();
+        let badge = this.props.badgeCount ? this.props.badgeCount : this.getSavedFilter();
 
         let filterOptions = this.state.filteredList.map((env, index) => {
             return <label key={index} className="filter-element">

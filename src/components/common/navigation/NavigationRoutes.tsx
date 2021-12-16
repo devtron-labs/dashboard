@@ -11,6 +11,7 @@ import { Security } from '../../security/Security';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const NewAppList = lazy(() => import('../../app/list-new/AppList'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 const BulkEdit = lazy(()=> import('../../bulkEdits/BulkEdits'))
@@ -64,6 +65,7 @@ export default function NavigationRoutes() {
                     <ErrorBoundary>
                         <Switch>
                             <Route path={URLS.APP} render={() => <AppRouter />} />
+                            <Route path={URLS.APP_LIST} render={() => <AppListRouter />} />
                             <Route path={URLS.CHARTS} render={() => <Charts />} />
                             <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                             <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
@@ -91,7 +93,27 @@ export function AppRouter() {
                     <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <AppListContainer />
+                        <RedirectToDevtronAppList />
+                    </Route>
+                    <Route>
+                        <RedirectWithSentry />
+                    </Route>
+                </Switch>
+            </AppContext.Provider>
+        </ErrorBoundary>
+    );
+}
+
+export function AppListRouter() {
+    const { path } = useRouteMatch()
+    const [environmentId, setEnvironmentId] = useState(null)
+    return (
+        <ErrorBoundary>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+                <Switch>
+                    <Route path={`${path}/:appType`} render={() => <NewAppList />} />
+                    <Route exact path="">
+                        <RedirectToDevtronAppList />
                     </Route>
                     <Route>
                         <RedirectWithSentry />
@@ -107,7 +129,16 @@ export function RedirectWithSentry() {
     const { pathname } = useLocation()
     useEffect(() => {
         if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, Sentry.Severity.Warning)
-        push(`${URLS.APP}`)
+        push(`${URLS.APP_LIST}`)
+    }, [])
+    return null
+}
+
+export function RedirectToDevtronAppList() {
+    const { push } = useHistory()
+    const { pathname } = useLocation()
+    useEffect(() => {
+        push(`${URLS.APP_LIST}/d`)
     }, [])
     return null
 }

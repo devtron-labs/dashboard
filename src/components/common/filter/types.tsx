@@ -11,9 +11,10 @@ export interface FilterProps {
     placeholder: string;
     buttonText: string;
     type: string;
-    searchable ?: boolean;
-    multi ?: boolean;
+    searchable?: boolean;
+    multi?: boolean;
     applyFilter: (type: string, list: FilterOption[]) => void;
+    badgeCount?: number;
 }
 
 export interface FilterState {

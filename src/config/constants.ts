@@ -33,6 +33,7 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    //APP_NEW_LIST: 'app/new-list',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',

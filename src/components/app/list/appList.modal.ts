@@ -1,84 +1,42 @@
-import { getAppCheckList, getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
-export const getInitState = (appListPayload): Promise<any> => {
-    return Promise.all([getAppCheckList(), getTeamListMin(), getEnvironmentListMin()]).then(([checkList, teams, environments]) => {
-        let appChecklist = checkList.result.appChecklist;
-        let chartChecklist = checkList.result.chartChecklist;
-        let appStageArray: number[] = Object.values(appChecklist);
-        let chartStageArray: number[] = Object.values(chartChecklist);
-        let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-            sum = sum + item;
-            return sum;
-        }, 0)
-        let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-            sum = sum + item;
-            return sum;
-        }, 0)
+export const buildInitState = (appListPayload, appCheckListRes, teamListRes, environmentListRes): any => {
+    let appChecklist = appCheckListRes.result.appChecklist;
+    let chartChecklist = appCheckListRes.result.chartChecklist;
+    let appStageArray: number[] = Object.values(appChecklist);
+    let chartStageArray: number[] = Object.values(chartChecklist);
+    let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+        sum = sum + item;
+        return sum;
+    }, 0)
+    let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+        sum = sum + item;
+        return sum;
+    }, 0)
 
-        let filterApplied = {
-            environments: new Set(appListPayload.environments),
-            statuses: new Set(appListPayload.statuses),
-            teams: new Set(appListPayload.teams),
-        }
-
-        let filters = {
-            environment: [],
-            team: [],
-            status: []
-        }
-
-        filters.environment = environments.result ? environments.result.map((env) => {
-            return {
-                key: env.id,
-                label: env.environment_name.toLocaleLowerCase(),
-                isSaved: true,
-                isChecked: filterApplied.environments.has(env.id)
-            }
-        }) : [];
-        filters.status = getStatus().map((status) => {
-            return {
-                key: status,
-                label: status.toLocaleLowerCase(),
-                isSaved: true,
-                isChecked: filterApplied.statuses.has(status)
-            }
-        })
-        filters.team = teams.result ? teams.result.map((team) => {
-            return {
-                key: team.id,
-                label: team.name.toLocaleLowerCase(),
-                isSaved: true,
-                isChecked: filterApplied.teams.has(team.id)
-            }
-        }) : []
-        filters.environment = filters.environment.sort((a, b) => { return sortByLabel(a, b) });
-        filters.status = filters.status.sort((a, b) => { return sortByLabel(a, b) });
-        filters.team = filters.team.sort((a, b) => { return sortByLabel(a, b) });
-        let parsedResponse = {
-            code: teams.code,
-            filters,
-            apps: [],
-            offset: appListPayload.offset,
-            size: 0,
-            pageSize: appListPayload.size,
-            sortRule: {
-                key: appListPayload.sortBy,
-                order: appListPayload.sortOrder,
-            },
-            searchQuery: appListPayload.appNameSearch || "",
-            searchApplied: !!appListPayload.appNameSearch.length,
-            isAppCreated: checkList.result.isAppCreated,
-            appChecklist,
-            chartChecklist,
-            appStageCompleted,
-            chartStageCompleted,
-        }
-        return parsedResponse;
-    })
+    let parsedResponse = {
+        code: teamListRes.code,
+        apps: [],
+        offset: appListPayload.offset,
+        size: 0,
+        pageSize: appListPayload.size,
+        sortRule: {
+            key: appListPayload.sortBy,
+            order: appListPayload.sortOrder,
+        },
+        searchQuery: appListPayload.appNameSearch || "",
+        searchApplied: !!appListPayload.appNameSearch.length,
+        isAppCreated: appCheckListRes.result.isAppCreated,
+        appChecklist,
+        chartChecklist,
+        appStageCompleted,
+        chartStageCompleted,
+    }
+    return parsedResponse;
 }
+
 
 export const appListModal = (appList) => {
     return appList.map(app => {
@@ -104,6 +62,8 @@ const environmentModal = (env) => {
         default: env.default ? env.default : false,
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
+        clusterName: env.clusterName || '',
+        namespace: env.namespace || ''
     }
 }
 
@@ -127,6 +87,8 @@ const getDefaultEnvironment = (envList): Environment => {
         status: env.status ? handleDeploymentInitiatedStatus(env.status) : "notdeployed",
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
+        clusterName: env.clusterName || '',
+        namespace: env.namespace || ''
     }
 }
 

@@ -1,15 +1,15 @@
-import './list.css';
 import React, { Component } from 'react';
-import { getInitState, appListModal } from './appList.modal';
+import { buildInitState, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';
 import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
-import { FilterOption, showError } from '../../common';
+import { showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
+import './list.css';
 
 class AppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -21,14 +21,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             view: AppListViewType.LOADING,
             errors: [],
             apps: [],
-            searchQuery: "",
-            searchApplied: false,
             size: 0,
-            filters: {
-                environment: [],
-                status: [],
-                team: [],
-            },
             sortRule: {
                 key: SortBy.APP_NAME,
                 order: OrderBy.ASC
@@ -47,137 +40,36 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     componentDidMount() {
-        let payload = this.createPayloadFromURL(this.props.location.search);
-        getInitState(payload).then((response) => {
-            this.setState({
-                code: response.code,
-                filters: response.filters,
-                apps: [],
-                offset: response.offset,
-                size: 0,
-                pageSize: response.size,
-                sortRule: {
-                    key: response.sortBy,
-                    order: response.sortOrder,
-                },
-                searchQuery: response.appNameSearch || "",
-                searchApplied: !!response.appNameSearch?.length,
-                isAppCreated: response.isAppCreated,
-                appChecklist: response.appChecklist,
-                chartChecklist: response.chartChecklist,
-                appStageCompleted: response.appStageCompleted,
-                chartStageCompleted: response.chartStageCompleted,
-            });
-        }).then(() => {
-            if (this.state.isAppCreated) {
-                let payload = this.createPayloadFromURL(this.props.location.search);
-                this.getAppList(payload);
-            }
-            else {
-                this.setState({ view: AppListViewType.EMPTY });
-            }
-        }).catch((errors: ServerErrors) => {
-            showError(errors);
-            this.setState({ view: AppListViewType.ERROR, code: errors.code });
-        })
-    }
+        let response = buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes, this.props.teamListRes, this.props.environmentListRes);
+        this.setState({
+            code: response.code,
+            apps: [],
+            offset: response.offset,
+            size: 0,
+            pageSize: response.size,
+            sortRule: {
+                key: response.sortBy,
+                order: response.sortOrder,
+            },
+            isAppCreated: response.isAppCreated,
+            appChecklist: response.appChecklist,
+            chartChecklist: response.chartChecklist,
+            appStageCompleted: response.appStageCompleted,
+            chartStageCompleted: response.chartStageCompleted,
+        });
 
-    componentDidUpdate(nextProps) {
-        if (nextProps.location.search !== this.props.location.search) {
-            let payload = this.createPayloadFromURL(this.props.location.search);
-            this.getAppList(payload);
+        if (response.isAppCreated) {
+            this.getAppList(this.props.payloadParsedFromUrl);
+        }
+        else {
+            this.setState({ view: AppListViewType.EMPTY });
         }
     }
 
-    createPayloadFromURL(searchQuery: string) {
-        let params = queryString.parse(searchQuery);
-        let search = params.search || "";
-        let environments = params.environment || "";
-        let statuses = params.status || "";
-        let teams = params.team || "";
-        let sortBy = params.orderBy || SortBy.APP_NAME;
-        let sortOrder = params.sortOrder || OrderBy.ASC;
-        let offset = +params.offset || 0;
-        let pageSize: number = +params.pageSize || 20;
-        let pageSizes = new Set([20, 40, 50]);
-
-        if (!pageSizes.has(pageSize)) { //handle invalid pageSize
-            pageSize = 20;
+    componentDidUpdate(prevProps) {
+        if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
+            this.getAppList(this.props.payloadParsedFromUrl);
         }
-        if ((offset % pageSize != 0)) { //pageSize must be a multiple of offset
-            offset = 0;
-        }
-        if (this.state.size > 0 && offset > this.state.size) {
-            offset = 0;
-        }
-
-        let payload = {
-            environments: environments.toString().split(",").map(env => +env).filter(item => item != 0),
-            statuses: statuses.toString().split(",").filter(item => item != ""),
-            teams: teams.toString().split(",").map(team => +team).filter(item => item != 0),
-            appNameSearch: search,
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            offset: offset,
-            size: +pageSize,
-        }
-        return payload;
-    }
-
-    handleSearchStr = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let str = event.target.value || "";
-        str = str.toLowerCase();
-        this.setState({ searchQuery: str });
-    }
-
-    applyFilter = (type: string, list: FilterOption[]): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        let items = list.filter(item => item.isChecked);
-        let ids = items.map(item => item.key);
-        let str = ids.toString();
-        query[type] = str;
-        query['offset'] = 0;
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
-    removeFilter = (val, type: string): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        query['offset'] = 0;
-        let appliedFilters = query[type];
-        let arr = appliedFilters.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        query[type] = arr.toString();
-        if (query[type] == "") delete query[type];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
-    removeAllFilters = (): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        delete query['environment'];
-        delete query['team'];
-        delete query['status'];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
     }
 
     sort = (key: string): void => {
@@ -190,36 +82,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         query["orderBy"] = key;
         query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
-    search = (event: React.FormEvent): void => {
-        event.preventDefault();
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        query['search'] = this.state.searchQuery.trim();
-        query['offset'] = 0;
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
-    clearSearch = (): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        delete query['search'];
-        delete query['offset'];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
@@ -235,7 +98,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         delete query['team'];
         delete query['status'];
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
@@ -249,7 +112,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         })
         query['offset'] = offset;
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
@@ -263,7 +126,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         query['offset'] = 0;
         query['pageSize'] = size;
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP}?${queryStr}`;
+        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
@@ -276,49 +139,12 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
-        let isSearchOrFilterApplied = request.environments?.length || request.statuses?.length || request.teams?.length || request.appNameSearch?.length;
-        let filterApplied = {
-            environments: new Set(request.environments),
-            statuses: new Set(request.statuses),
-            teams: new Set(request.teams),
-        }
+        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.appNameSearch?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
-        state.filters.environment = state.filters.environment.map((env) => {
-            return {
-                key: env.key,
-                label: env.label,
-                isSaved: true,
-                isChecked: filterApplied.environments.has(env.key)
-            }
-        })
-        state.filters.status = state.filters.status.map((status) => {
-            return {
-                key: status.key,
-                label: status.label,
-                isSaved: true,
-                isChecked: filterApplied.statuses.has(status.key)
-            }
-        })
-        state.filters.team = state.filters.team.map((team) => {
-            return {
-                key: team.key,
-                label: team.label,
-                isSaved: true,
-                isChecked: filterApplied.teams.has(team.key)
-            }
-        })
         state.sortRule = {
             key: request.sortBy,
             order: request.sortOrder,
-        }
-        if (request.appNameSearch.length) {
-            state.searchQuery = request.appNameSearch;
-            state.searchApplied = true;
-        }
-        else {
-            state.searchQuery = "";
-            state.searchApplied = false;
         }
         state.expandedRow = false;
         state.appData = null;
@@ -353,27 +179,14 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         })
     }
 
-    handleEditApp = (appId: number): void => {
-        let url = `/app/${appId}/edit`;
-        this.props.history.push(url);
-    }
 
     redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
-            return `${this.props.match.url}/${app.id}/details/${envId}`;
+            return `/app/${app.id}/details/${envId}`;
         }
-        return `${this.props.match.url}/${app.id}/trigger`;
+        return `/app/${app.id}/trigger`;
     }
 
-    closeModal = () => {
-        let url = `${URLS.APP}${this.props.location.search}`;
-        this.props.history.push(`${url}`);
-    }
-
-    openTriggerInfoModal = (appId: number | string, ciArtifactId: number, commit: string): void => {
-        let url = `${URLS.APP}/${appId}/material-info/${ciArtifactId}/commit/${commit}${this.props.location.search}`;
-        this.props.history.push(`${url}`);
-    }
 
     render() {
         return <AppListView
@@ -381,22 +194,13 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             match={this.props.match}
             location={this.props.location}
             history={this.props.history}
-            applyFilter={this.applyFilter}
             expandRow={this.expandRow}
             closeExpandedRow={this.closeExpandedRow}
-            removeFilter={this.removeFilter}
-            removeAllFilters={this.removeAllFilters}
-            search={this.search}
-            clearSearch={this.clearSearch}
-            handleSearchStr={this.handleSearchStr}
             sort={this.sort}
             redirectToAppDetails={this.redirectToAppDetails}
-            handleEditApp={this.handleEditApp}
             clearAll={this.clearAll}
             changePage={this.changePage}
             changePageSize={this.changePageSize}
-            closeModal={this.closeModal}
-            openTriggerInfoModal={this.openTriggerInfoModal}
         />
     }
 }
