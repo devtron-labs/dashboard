@@ -125,7 +125,7 @@ function NodeComponent() {
                     {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                         <span >{node.kind}</span>
                     </div>}
-                    <div className="row m-0"  >
+                    <div className="row m-0 resource-row"  >
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
                             <div className="flex left top ml-2" onClick={() => { setSelectedNodes(markNodeSelected(selectedNodes, node.name)) }}>
                                 {(node.childNodes?.length > 0) ?
@@ -247,7 +247,7 @@ function NodeComponent() {
             <div className="row border-bottom fw-6 m-0">
                 {
                     tableHeader.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(`${index === 0 ? `pl-16 ${firstColWidth}` : 'col-1'} pt-9 pb-9`)}>{cell}</div>
+                        return <div key={'gpt_' + index} className={(`${index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'} pt-9 pb-9`)}>{cell}</div>
                     })
                 }
             </div>
