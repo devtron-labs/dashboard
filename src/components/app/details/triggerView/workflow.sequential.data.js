@@ -439,7 +439,7 @@ export const workflowsCreateWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 113,
-    "width": 840
+    "width": 1140
 },
 {
     "id": "93",
@@ -581,7 +581,7 @@ export const workflowsCreateWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 201,
-    "width": 840
+    "width": 1140
 }
 ];
 
@@ -806,7 +806,7 @@ export const workflowsTriggerPrePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 175,
-    "width": 1280
+    "width": 1540
 },
 {
     "id": "93",
@@ -948,7 +948,7 @@ export const workflowsTriggerPrePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 325,
-    "width": 1280
+    "width": 1540
 }
 ];
 
@@ -1281,7 +1281,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 175,
-    "width": 1280
+    "width": 2060
 },
 {
     "id": "93",
@@ -1531,7 +1531,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 325,
-    "width": 1280
+    "width": 2060
 }
 ];
 
@@ -1646,7 +1646,7 @@ export const workflowsCreatePrePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 113,
-    "width": 840
+    "width": 1140
 },
 {
     "id": "93",
@@ -1788,7 +1788,7 @@ export const workflowsCreatePrePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 201,
-    "width": 840
+    "width": 1140
 }
 ];
 
@@ -1903,7 +1903,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 113,
-    "width": 840
+    "width": 1140
 },
 {
     "id": "93",
@@ -2045,7 +2045,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 201,
-    "width": 840
+    "width": 1140
 }
 ];
 
@@ -2571,7 +2571,7 @@ export const workflowsCreatePreCDRespWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 113,
-    "width": 840
+    "width": 1140
 },
 {
     "id": "93",
@@ -2713,7 +2713,7 @@ export const workflowsCreatePreCDRespWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 201,
-    "width": 840
+    "width": 1140
 }
 ];
 
@@ -2828,7 +2828,7 @@ export const workflowsCreatePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 113,
-    "width": 840
+    "width": 1140
 },
 {
     "id": "93",
@@ -2970,7 +2970,7 @@ export const workflowsCreatePostCDWithSequential = [{
     "startX": 0,
     "startY": 0,
     "height": 201,
-    "width": 840
+    "width": 1140
 }
 ];
 
