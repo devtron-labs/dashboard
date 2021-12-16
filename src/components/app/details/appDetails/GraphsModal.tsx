@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { VisibleModal, DatePickerType2 as DateRangePicker } from '../../../common';
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type';
-import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue } from './utils';
+import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect } from './utils';
 import { Moment } from 'moment';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { DEFAULTK8SVERSION } from '../../../../config';
@@ -53,6 +53,7 @@ interface GraphModalState {
         endDate: string;
     },
     mainChartName: ChartTypes;
+    selectedLatency: number;
 }
 
 export class GraphModal extends Component<GraphModalProps, GraphModalState>{
@@ -67,13 +68,14 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             status2xx: "",
             status4xx: "",
             status5xx: "",
-            statusCode: StatusType.Throughput,
+            statusCode: StatusType.status5xx,
             focusedInput: 'startDate',
             calendarValue: '',
             mainChartUrl: '',
             calendar: { ...this.props.calendar },
             calendarInputs: { ...this.props.calendarInputs },
             mainChartName: this.props.chartName,
+            selectedLatency: .999,
         }
         this.handleTabChange = this.handleTabChange.bind(this);
         this.handleStatusChange = this.handleStatusChange.bind(this);
@@ -82,7 +84,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     componentDidMount() {
-        let { cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
+        let { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(this.state.tab);
         let str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate);
         this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl, calendarValue: str });
     }
@@ -102,15 +104,15 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
         let cpu = getIframeSrc(appInfo, ChartType.Cpu, this.state.calendarInputs, tab, false);
         let ram = getIframeSrc(appInfo, ChartType.Ram, this.state.calendarInputs, tab, false);
-        let latency = getIframeSrc(appInfo, ChartType.Latency, this.state.calendarInputs, tab, false);
+        let latency = getIframeSrc(appInfo, ChartType.Latency, this.state.calendarInputs, tab, false, undefined, this.state.selectedLatency);
         let status2xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status2xx);
         let status4xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status4xx);
         let status5xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status5xx);
-        let status = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
+        // let status = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let throughput = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, tab, true, this.state.statusCode);
 
-        return { cpu, ram, throughput, status2xx, status4xx, status5xx, status, latency, mainChartUrl };
+        return { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl };
     }
 
     handleDatesChange = ({ startDate, endDate }) => {
@@ -150,8 +152,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     handleApply = (): void => {
         let str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate);
         this.setState({ calendarValue: str }, () => {
-            let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
-            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
+            let { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(this.state.tab);
+            this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl });
         });
     }
 
@@ -168,8 +170,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             },
             calendarValue: str,
         }, () => {
-            let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(this.state.tab);
-            this.setState({ cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
+            let { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(this.state.tab);
+            this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl });
         });
     }
 
@@ -185,7 +187,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             newPodHash: this.props.newPodHash,
             k8sVersion: k8sVersion,
         }
-        let mainChartUrl = getIframeSrc(appInfo, chartName, this.state.calendarInputs, this.state.tab, true, statusCode);
+        let mainChartUrl = getIframeSrc(appInfo, chartName, this.state.calendarInputs, this.state.tab, true, statusCode, this.state.selectedLatency);
         this.setState({
             mainChartName: chartName,
             statusCode: statusCode,
@@ -194,8 +196,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleTabChange(event) {
-        let { cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl } = this.getNewGraphs(event.target.value);
-        this.setState({ tab: event.target.value, cpu, ram, throughput, status2xx, status4xx, status5xx, mainChartUrl });
+        let { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(event.target.value);
+        this.setState({ tab: event.target.value, cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl });
     }
 
     handleStatusChange(selected): void {
@@ -214,6 +216,26 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
 
         this.setState({
             statusCode: selected.value,
+            mainChartUrl,
+        });
+    }
+
+    handleLatencyChange(selected): void {
+        let k8sVersion = this.props.k8sVersion;
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = DEFAULTK8SVERSION;
+        }
+        let appInfo = {
+            appId: this.props.appId,
+            envId: this.props.envId,
+            environmentName: this.props.environmentName,
+            newPodHash: this.props.newPodHash,
+            k8sVersion: k8sVersion,
+        }
+        let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, this.state.tab, true, undefined, selected.value);
+
+        this.setState({
+            selectedLatency: selected.value,
             mainChartUrl,
         });
     }
@@ -276,7 +298,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                             <h3 className="app-details-graph__title pl-16">Latency</h3>
                             <div className="app-details-graph__iframe-container" >
                                 <div className="app-details-graph__transparent-div"></div>
-                                <iframe src={this.state.status5xx} title="5xx" className={iframeClasses} />
+                                <iframe src={this.state.latency} title="Latency" className={iframeClasses} />
                             </div>
                         </div>
                         }
@@ -290,6 +312,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                                 </h3>
                                 {this.state.mainChartName === "status" &&
                                     <ThroughputSelect status={this.state.statusCode} handleStatusChange={this.handleStatusChange} />}
+                                {this.state.mainChartName === "latency" &&
+                                    <LatencySelect latency={this.state.selectedLatency} handleStatusChange={this.handleLatencyChange} />}
                             </div>
                             <div className="flex">
                                 <div className="mr-16">

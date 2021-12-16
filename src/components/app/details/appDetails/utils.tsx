@@ -204,6 +204,60 @@ export function ThroughputSelect(props) {
     />
 }
 
+export function LatencySelect(props) {
+    return <CreatableSelect className=""
+        placeholder="Latency"
+        value={{ label: props.latency, value: props.latency }}
+        options={[
+            { label: '.999', value: '.999' },
+            { label: '.995', value: '.995' },
+            { label: '.99', value: '.99' },
+            { label: '.95', value: '.95' }
+        ]}
+        onChange={props.handleLatencyChange}
+        styles={{
+            container: (base, state) => ({
+                ...base,
+                outline: 'unset',
+                height: "100%",
+            }),
+            control: (base, state) => ({
+                ...base,
+                backgroundColor: 'transparent',
+                borderColor: 'transparent',
+                minHeight: '20px',
+                height: '100%',
+            }),
+            menu: (base, state) => ({
+                ...base,
+                width: '150px'
+            }),
+            valueContainer: base => ({
+                ...base,
+                padding: '0',
+                height: '100%',
+                fontWeight: 600,
+            }),
+            singleValue: base => ({
+                ...base,
+                position: 'relative',
+                top: '9px',
+                maxWidth: '77px',
+            }),
+            dropdownIndicator: base => ({
+                ...base,
+                padding: '0',
+                height: '20px'
+            }),
+        }}
+        components={{
+            IndicatorSeparator: null,
+            DropdownIndicator: DropdownIndicator,
+        }}
+        formatCreateLabel={(inputValue) => inputValue}
+    />
+}
+
 export function getCalendarValue(startDateStr: string, endDateStr: string): string {
     let str: string = `${startDateStr} - ${endDateStr}`;
     if (endDateStr === 'now' && startDateStr.includes('now')) {
@@ -242,10 +296,10 @@ export interface AppInfo {
     k8sVersion: string;
 }
 
-export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes, latency?: number): string {
     let baseURL = getGrafanaBaseURL(chartName);
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode);
-    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode)
+    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode, latency)
     return grafanaURL;
 }
 
@@ -322,7 +376,7 @@ export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, 
     return url;
 }
 
-export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes, latency?: number): string {
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`;
@@ -340,6 +394,9 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
             url += (statusCode.includes("xx")) ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`;
             url += (statusCode.includes("xx")) ? `&var-response_code=` : `&var-response_code=${statusCode}`;
         }
+    }
+    if (chartName === 'latency') {
+        url += `&var-percentile=${latency}`
     }
     let panelId = (tab === 'aggregate') ? 2 : 3;
     if (!isLegendRequired) {
