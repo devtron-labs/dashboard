@@ -277,7 +277,7 @@ function LogsComponent({ selectedTab }) {
 
                         <div className="cn-6 ml-8">Container </div>
 
-                        {/* <select value={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
+                        <select value={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
                             const value = e.target.value
                             if (value) { handleContainerNameChange(e.target.value) }
                         }}>
@@ -285,11 +285,10 @@ function LogsComponent({ selectedTab }) {
                             {containers.map((container, index) => {
                                 return <option value={container} key={`c_${index}`}>{container}</option>
                             })}
-                        </select> */}
+                        </select>
 
-                        <div style={{ width: '175px' }}>
-                           { console.log(containers)}
-                        <Select placeholder="Select Container"
+                        {/* <div style={{ width: '175px' }}> */}
+                        {/* <Select placeholder="Select Container"
                             options={containers[0] && containers[0].map((container) => ({ label: container, value: container }))}
                             value={selectedContainerName ? { label: selectedContainerName, value: selectedContainerName } : null}
                             onChange={(e) => handleContainerNameChange(e.label) }
@@ -319,9 +318,9 @@ function LogsComponent({ selectedTab }) {
                             }}
                             components={{
                                 IndicatorSeparator: null,
-                            }}
-                        />
-                    </div>
+                            }}/> */}
+                        
+                    {/* </div> */}
 
                         {/* <div style={{ minWidth: '200px' }}>
                             
