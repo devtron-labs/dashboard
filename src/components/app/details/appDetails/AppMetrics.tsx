@@ -201,7 +201,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }, [calendarValue])
 
     //@ts-ignore
-    if (!datasource.isConfigured || !datasource.isHealthy /* || !hostURLConfig || hostURLConfig.value !== window.location.origin */) {
+    if (!datasource.isConfigured || !datasource.isHealthy  || !hostURLConfig || hostURLConfig.value !== window.location.origin ) {
         return <>
             <AppMetricsEmptyState isLoading={datasource.isLoading}
                 isConfigured={datasource.isConfigured}
