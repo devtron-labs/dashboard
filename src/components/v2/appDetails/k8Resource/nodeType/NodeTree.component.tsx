@@ -68,14 +68,15 @@ function NodeTreeComponent() {
             if (_urlArray?.length === 2) {
                 const _kind = _urlArray[1].split("/")[0]
 
-                const _nodeByKind = IndexStore.getiNodesByKind(_kind)[0]
-
-                activeParentNode = {
-                    name: getPNodeName(_kind),
-                    childNodes: [{
-                        name: _nodeByKind.kind
-                    }]
-                } as iNode
+                const _nodesByKind = IndexStore.getiNodesByKind(_kind)
+                if (_nodesByKind && _nodesByKind.length > 0) {
+                    activeParentNode = {
+                        name: getPNodeName(_kind),
+                        childNodes: [{
+                            name: _nodesByKind[0].kind
+                        }]
+                    } as iNode
+                }
             } else {
 
                 const pods = IndexStore.getiNodesByKind(NodeType.Pod)
@@ -129,13 +130,6 @@ function NodeTreeComponent() {
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-
-                                    {/* {aggregatedNodes?.nodeStatusCount[kind]?.Degraded > 0 && (
-                                    <ErrorImage
-                                        className="icon-dim-16 rotate"
-                                        style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }} */}
-                                    {/* /> */}
-                                    {/* )} */}
                                 </div>
                             </React.Fragment>
                             :

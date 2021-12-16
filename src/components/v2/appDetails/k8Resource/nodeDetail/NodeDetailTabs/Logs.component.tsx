@@ -15,6 +15,8 @@ import LogViewerComponent from './LogViewer.component';
 import { useKeyDown } from '../../../../../common';
 import './nodeDetailTab.scss';
 import { toast } from 'react-toastify';
+import Select, { components } from 'react-select'
+import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -275,7 +277,7 @@ function LogsComponent({ selectedTab }) {
 
                         <div className="cn-6 ml-8">Container </div>
 
-                        <select value={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
+                        {/* <select value={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
                             const value = e.target.value
                             if (value) { handleContainerNameChange(e.target.value) }
                         }}>
@@ -283,7 +285,43 @@ function LogsComponent({ selectedTab }) {
                             {containers.map((container, index) => {
                                 return <option value={container} key={`c_${index}`}>{container}</option>
                             })}
-                        </select>
+                        </select> */}
+
+                        <div style={{ width: '175px' }}>
+                           { console.log(containers)}
+                        <Select placeholder="Select Container"
+                            options={containers[0] && containers[0].map((container) => ({ label: container, value: container }))}
+                            value={selectedContainerName ? { label: selectedContainerName, value: selectedContainerName } : null}
+                            onChange={(e) => handleContainerNameChange(e.label) }
+                            styles={{
+                                ...multiSelectStyles,
+                                menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: 'transparent',
+                                    borderColor: 'transparent',
+                                }),
+                                singleValue: (base, state) => ({
+                                    ...base,
+                                    direction: 'rtl',
+                                    color: 'var(--N000)',
+                                }),
+                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                    color: 'var(--N900)',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    direction: 'rtl',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                            }}
+                        />
+                    </div>
 
                         {/* <div style={{ minWidth: '200px' }}>
                             
