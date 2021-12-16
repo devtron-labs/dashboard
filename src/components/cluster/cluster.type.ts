@@ -52,7 +52,6 @@ export interface ClusterInstallStatusProps {
 
 
 export interface ClusterListProps extends RouteComponentProps<{}> {
-  isEAModule: boolean
     // view: string;
     // clusters: {
     //     id: number;
