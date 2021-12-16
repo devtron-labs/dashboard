@@ -282,15 +282,19 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
         .reduce((maxY, node) => {
             return Math.max(node.y, maxY);
         }, 0);
+        let maxX = workflow.nodes
+        .reduce((maxX, node) => {
+            return Math.max(node.x + node.height, maxX);
+        }, 0);
 
-        let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
+        // let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
         let gitHeight = (workflow.nodes[0].sourceNodes?.length ?? 0 ) * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
         let ciHeight = dimensions.cINodeSizes.nodeHeight + dimensions.cINodeSizes.distanceY;
         let cdHeight = maxY + (dimensions.cDNodeSizes.nodeHeight);
         let maxHeight = Math.max(gitHeight, ciHeight, cdHeight);
         workflow.height = maxHeight + workflowOffset.offsetY;
         workflow.startY = !index ? 0 : startY;
-        workflow.width = workflowWidth;
+        workflow.width = maxX;
 
         let finalWorkflow = new Array<NodeAttr>();
         workflow.nodes.forEach( node => {
