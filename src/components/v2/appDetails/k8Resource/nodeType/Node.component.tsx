@@ -36,7 +36,6 @@ function NodeComponent() {
     }, [copied])
 
     useEffect(() => {
-
         if (params.nodeType) {
             // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             // setTabs(_tabs)

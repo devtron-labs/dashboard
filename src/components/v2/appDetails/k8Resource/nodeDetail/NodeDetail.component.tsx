@@ -10,7 +10,6 @@ import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTab } from './nodeDetail.type';
 import { getNodeDetailTabs } from './nodeDetail.util';
 import { NodeType } from '../../appDetails.type';
-import IndexStore from '../../index.store';
 import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
 
@@ -33,10 +32,9 @@ function NodeDetailComponent() {
 
     const handleSelectedTab = (_tabName: string) => {
         if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
-            history.push(url.split(URLS.APP_DETAILS_K8)[0])
+            history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
         } else {
             setSelectedTabName(_tabName)
-            IndexStore.setActiveNodeDetailTab(params.nodeType)
             AppDetailsStore.markAppDetailsTabActive(_tabName, url)
         }
     }

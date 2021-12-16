@@ -67,39 +67,40 @@ export enum NodeType {
 
 // export type NodeType = keyof typeof NodeType;
 
+
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-    switch (nodeType) {
-        case NodeType.DaemonSet:
-        case NodeType.Deployment:
-        case NodeType.Pod:
-        case NodeType.ReplicaSet:
-        case NodeType.Job:
-        case NodeType.CronJob:
-        case NodeType.ReplicationController:
-        case NodeType.StatefulSet:
+    switch (nodeType.toLowerCase()) {
+        case NodeType.DaemonSet.toLowerCase():
+        case NodeType.Deployment.toLowerCase():
+        case NodeType.Pod.toLowerCase():
+        case NodeType.ReplicaSet.toLowerCase():
+        case NodeType.Job.toLowerCase():
+        case NodeType.CronJob.toLowerCase():
+        case NodeType.ReplicationController.toLowerCase():
+        case NodeType.StatefulSet.toLowerCase():
             return AggregationKeys.Workloads;
-        case NodeType.Ingress:
-        case NodeType.Service:
-        case NodeType.Endpoints:
+        case NodeType.Ingress.toLowerCase():
+        case NodeType.Service.toLowerCase():
+        case NodeType.Endpoints.toLowerCase():
             return AggregationKeys.Networking;
-        case NodeType.ConfigMap:
-        case NodeType.Secret:
-        case NodeType.PersistentVolume:
-        case NodeType.PersistentVolumeClaim:
+        case NodeType.ConfigMap.toLowerCase():
+        case NodeType.Secret.toLowerCase():
+        case NodeType.PersistentVolume.toLowerCase():
+        case NodeType.PersistentVolumeClaim.toLowerCase():
             return AggregationKeys.ConfigAndStorage;
-        case NodeType.ServiceAccount:
-        case NodeType.ClusterRoleBinding:
-        case NodeType.RoleBinding:
-        case NodeType.ClusterRole:
-        case NodeType.Role:
+        case NodeType.ServiceAccount.toLowerCase():
+        case NodeType.ClusterRoleBinding.toLowerCase():
+        case NodeType.RoleBinding.toLowerCase():
+        case NodeType.ClusterRole.toLowerCase():
+        case NodeType.Role.toLowerCase():
             return AggregationKeys.RBAC;
-        case NodeType.MutatingWebhookConfiguration:
-        case NodeType.PodSecurityPolicy:
-        case NodeType.ValidatingWebhookConfiguration:
+        case NodeType.MutatingWebhookConfiguration.toLowerCase():
+        case NodeType.PodSecurityPolicy.toLowerCase():
+        case NodeType.ValidatingWebhookConfiguration.toLowerCase():
             return AggregationKeys.Administration;
-        case NodeType.Alertmanager:
-        case NodeType.Prometheus:
-        case NodeType.ServiceMonitor:
+        case NodeType.Alertmanager.toLowerCase():
+        case NodeType.Prometheus.toLowerCase():
+        case NodeType.ServiceMonitor.toLowerCase():
             return AggregationKeys.CustomResource;
         default:
             return AggregationKeys.CustomResource;

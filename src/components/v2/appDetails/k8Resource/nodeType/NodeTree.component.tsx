@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { Children, useEffect, useState } from 'react'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
-import { NodeTreeActions, useNodeTree } from '../useNodeTreeReducer';
-import { useHistory, useRouteMatch } from "react-router";
+import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
+import { useHistory, useRouteMatch, useParams } from "react-router";
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
 import { useSharedState } from '../../../utils/useSharedState';
-import { iNode, iNodes } from '../../appDetails.type';
+import { getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
+import AppDetailsStore from '../../appDetails.store';
+import { URLS } from '../../../../../config';
 
 
 function NodeTreeComponent() {
     const { url, path } = useRouteMatch();
     const history = useHistory();
-    //const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
-    const [selectedNodeKind, setSelectedNodeKind] = useState("")
+    const [k8URL, setK8URL] = useState("")
+
     const [{ treeNodes }, dispatch] = useNodeTree();
     const [filteredNodes] = useSharedState(IndexStore.getAppDetailsFilteredNodes(), IndexStore.getAppDetailsNodesFilteredObservable())
 
+    const params = useParams<{ nodeType: NodeType }>()
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         if (e) { e.stopPropagation() }
@@ -25,6 +28,8 @@ function NodeTreeComponent() {
                 type: NodeTreeActions.ParentNodeClick,
                 selectedNode: treeNode,
             })
+
+            AppDetailsStore.setNodeTreeActiveParentNode(treeNode)
         } else {
             dispatch({
                 type: NodeTreeActions.ChildNodeClick,
@@ -32,46 +37,81 @@ function NodeTreeComponent() {
                 parentNode: parentNode
             })
 
-            setSelectedNodeKind(treeNode.name)
+            AppDetailsStore.setNodeTreeActiveParentNode(parentNode)
+            AppDetailsStore.setNodeTreeActiveNode(treeNode)
         }
     }
 
-    useEffect(() => {
-        const activeTabName = IndexStore.getActiveNodeDetailTab()
+    const _navigate = (nodeToBeSelected) => {
+        let _url = url
 
-        // if (activeTabName) {
-        //     IndexStore.setActiveNodeDetailTab("") //TODO: validate
-
-        //     const _nodeToBeSelected = IndexStore.getNodesByKind(activeTabName)[0]
-
-        //     console.log(_nodeToBeSelected)
-
-        // }else{
-        const nodeToBeSelected = treeNodes[0]
-
-        if (!selectedNodeKind && nodeToBeSelected && nodeToBeSelected.childNodes && nodeToBeSelected.childNodes.length > 0) {
-            let firstChildNode = nodeToBeSelected.childNodes[0];
-
-            let link = `${url}/${firstChildNode.name.toLowerCase()}`;
-            history.push(link);
-
-            setTimeout(() => {
-                handleNodeClick(nodeToBeSelected, null, null)
-                handleNodeClick(firstChildNode, nodeToBeSelected, null)
-            }, 100)
+        if (!params.nodeType) {
+            _url = `${url}/${nodeToBeSelected.name.toLowerCase()}`;
         }
-        // }
 
-    }, [treeNodes.length, selectedNodeKind])
+        history.push(_url);
+    }
+
+    const getPNodeName = (_string: string) => {
+        return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType);
+    }
 
     useEffect(() => {
+        if (!treeNodes || treeNodes.length === 0) return
 
+        let activeParentNode = AppDetailsStore.getNodeTreeActiveParentNode()
+        let activeNode = AppDetailsStore.getNodeTreeActiveNode()
+
+        if (!activeParentNode) {
+            const _urlArray = window.location.href.split(URLS.APP_DETAILS_K8 + "/")
+
+            if (_urlArray?.length === 2) {
+                const _kind = _urlArray[1].split("/")[0]
+
+                const _nodeByKind = IndexStore.getiNodesByKind(_kind)[0]
+
+                activeParentNode = {
+                    name: getPNodeName(_kind),
+                    childNodes: [{
+                        name: _nodeByKind.kind
+                    }]
+                } as iNode
+            } else {
+
+                const pods = IndexStore.getiNodesByKind(NodeType.Pod)
+
+                if (pods.length > 0) {
+                    activeParentNode = {
+                        name: getPNodeName(NodeType.Pod),
+                        childNodes: [{
+                            name: pods[0].kind
+                        }]
+                    } as iNode
+                }
+            }
+        }
+
+        activeParentNode = activeParentNode || treeNodes[0]
+        activeNode = activeNode || activeParentNode.childNodes[0]
+
+        _navigate(activeNode)
+
+        setTimeout(() => {
+            handleNodeClick(activeParentNode, null, null)
+            handleNodeClick(activeNode, activeParentNode, null)
+        }, 100)
+
+    }, [treeNodes.length])
+
+    useEffect(() => {
         dispatch({
             type: NodeTreeActions.Init,
             nodes: filteredNodes,
-
         })
-        setSelectedNodeKind('')
+
+        const _arr = url.split(URLS.APP_DETAILS_K8)
+
+        setK8URL(_arr[0] + URLS.APP_DETAILS_K8)
 
     }, [filteredNodes.length])
 
@@ -100,7 +140,7 @@ function NodeTreeComponent() {
                             </React.Fragment>
                             :
 
-                            <NavLink to={`${url}/${treeNode.name.toLowerCase()}`} className={`no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '}`}>
+                            <NavLink to={`${k8URL}/${treeNode.name.toLowerCase()}`} className={`no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '}`}>
                                 {treeNode.name}
                             </NavLink>
                         }

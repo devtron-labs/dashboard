@@ -1,9 +1,12 @@
 import { BehaviorSubject } from 'rxjs';
-import { ApplicationObject } from "./appDetails.type";
+import { ApplicationObject, iNode } from "./appDetails.type";
 import { URLS } from "../../../config";
 
 let applicationObjectTabs: Array<ApplicationObject> = [];
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
+
+let _nodeTreeActiveParentNode: iNode
+let _nodeTreeActiveNode: iNode
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
     let tab = {} as ApplicationObject
@@ -31,7 +34,7 @@ const AppDetailsStore = {
         applicationObjectTabs = []
 
         addAOT(AppDetailsTabs.k8s_Resources, _url + "/" + URLS.APP_DETAILS_K8, !isLogAnalyserURL)
-        
+
         if (displayLogAnalyzer) {
             addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, isLogAnalyserURL)
         }
@@ -99,6 +102,21 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
+
+    setNodeTreeActiveParentNode: (_n: iNode) => {
+        _nodeTreeActiveParentNode = _n
+    },
+    getNodeTreeActiveParentNode: () => {
+        return _nodeTreeActiveParentNode
+    },
+
+    setNodeTreeActiveNode: (_n: iNode) => {
+        _nodeTreeActiveNode = _n
+    },
+
+    getNodeTreeActiveNode: () => {
+        return _nodeTreeActiveNode
+    }
 
 }
 

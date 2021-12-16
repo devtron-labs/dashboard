@@ -79,6 +79,7 @@ const AppDetailsComponent = () => {
             </div>
             <Switch>
                 <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`} render={() => { return <NodeDetailComponent /> }} />
+                <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`} render={() => { return <K8ResourceComponent /> }} />
                 <Route path={`${path}/${URLS.APP_DETAILS_K8}`} render={() => { return <K8ResourceComponent /> }} />
                 <Route exact path={`${path}/${URLS.APP_DETAILS_LOG}`} render={() => { return <LogAnalyzerComponent /> }} />
                 <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />

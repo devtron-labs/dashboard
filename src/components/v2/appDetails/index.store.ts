@@ -4,10 +4,10 @@ import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from "./appDet
 let _envDetails = {} as EnvDetails
 let _appDetails = {} as AppDetails
 const _nodesEmpty = [] as Node[]
-let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
-let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty);
-let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails);
-let _activeNodeDetailTab = ''
+let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
+let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
+let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails)
+
 let _nodeFilter = {
     filterType: '',
     searchString: ''
@@ -174,14 +174,6 @@ const IndexStore = {
         }
         _nodeFilter = { ..._nodeFilter, searchString: searchString }
         publishFilteredNodes()
-    },
-
-    setActiveNodeDetailTab: (activeNodeDetailTab: string) => {
-        _activeNodeDetailTab = activeNodeDetailTab
-    },
-
-    getActiveNodeDetailTab: () => {
-        return _activeNodeDetailTab
     }
 
 }
