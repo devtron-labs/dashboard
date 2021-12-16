@@ -278,25 +278,10 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
             processDownstreams(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y);
         }
 
-        let maxY = workflow.nodes
-        .filter(node => node.type == 'CD')
-        .reduce((maxY, node) => {
-            return Math.max(node.y, maxY);
-        }, 0);
-        let maxX = workflow.nodes
-        .reduce((maxX, node) => {
-            return Math.max(node.x + node.width, maxX);
-        }, 0);
 
-        let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
-        let gitHeight = (workflow.nodes[0].sourceNodes?.length ?? 0 ) * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
-        let ciHeight = dimensions.cINodeSizes.nodeHeight + dimensions.cINodeSizes.distanceY;
-        let cdHeight = maxY + (dimensions.cDNodeSizes.nodeHeight);
-        let maxHeight = Math.max(gitHeight, ciHeight, cdHeight);
-        workflow.height = maxHeight + workflowOffset.offsetY;
-        workflow.startY = !index ? 0 : startY;
-        workflow.width = Math.max(maxX + workflowOffset.offsetX, workflowWidth);
-        maxWorkflowWidth = Math.max(maxWorkflowWidth, workflow.width);
+
+
+
         let finalWorkflow = new Array<NodeAttr>();
         workflow.nodes.forEach( node => {
             if (node.type == 'CI') {
@@ -314,6 +299,28 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
             delete node['downstreamNodes'];
         });
         delete workflow['dag'];
+
+        let maxY = finalWorkflow
+        .filter(node => node.type == 'CD')
+        .reduce((maxY, node) => {
+            return Math.max(node.y, maxY);
+        }, 0);
+        let maxX = finalWorkflow
+        .reduce((maxX, node) => {
+            return Math.max(node.x + node.width, maxX);
+        }, 0);
+
+        let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
+        let gitHeight = (workflow.nodes[0].sourceNodes?.length ?? 0 ) * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
+        let ciHeight = dimensions.cINodeSizes.nodeHeight + dimensions.cINodeSizes.distanceY;
+        let cdHeight = maxY + (dimensions.cDNodeSizes.nodeHeight);
+        let maxHeight = Math.max(gitHeight, ciHeight, cdHeight);
+        workflow.height = maxHeight + workflowOffset.offsetY;
+        workflow.startY = !index ? 0 : startY;
+
+
+        workflow.width = Math.max(maxX + workflowOffset.offsetX, workflowWidth);
+        maxWorkflowWidth = Math.max(maxWorkflowWidth, workflow.width);
 
         workflow.nodes = finalWorkflow;
     });
