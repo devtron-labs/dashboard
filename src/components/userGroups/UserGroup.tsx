@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
@@ -20,7 +20,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import './UserGroup.scss';
-import { dataService } from '../../services/dataShareService';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean, result: { id: number, name: string }[], error: any }>;
@@ -96,21 +96,20 @@ function HeaderSection() {
 }
 
 export default function UserGroupRoute() {
-    const tempServerMode = dataService.getServerModeData();
+    const {serverMode} = useContext(mainContext);
     const { url, path } = useRouteMatch();
     const [listsLoading, lists, listsError, reloadLists] = useAsync(
         () =>
             Promise.allSettled([
                 getGroupList(),
                 get(Routes.PROJECT_LIST),
-                tempServerMode === SERVER_MODE.EA_ONLY  ? null : getEnvironmentListMin(),
-                tempServerMode === SERVER_MODE.EA_ONLY  ? null : getChartGroups(),
+                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
+                serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
             ]),
-        [],
+        [serverMode],
     );
     const [appsList, setAppsList] = useState(new Map())
-    const [serverMode, setServerMode] = useState(undefined);
     useEffect(() => {
         if (!lists) return
         lists.forEach(list => {
@@ -119,12 +118,6 @@ export default function UserGroupRoute() {
             }
         })
     }, [lists])
-
-    useEffect(() => {
-      dataService.serverModeObservable().subscribe((message) => {
-          setServerMode(message);
-      });
-    }, [serverMode])
 
     async function fetchAppList(projectIds: number[]) {
         const missingProjects = projectIds.filter(projectId => !appsList.has(projectId))

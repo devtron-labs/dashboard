@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, Suspense } from 'react';
+import React, { lazy, useState, useEffect, Suspense, useContext } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
@@ -14,6 +14,7 @@ import { showError } from '../common';
 import './globalConfigurations.scss';
 import { SERVER_MODE } from '../../config/constants';
 import { dataService } from '../../services/dataShareService';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -37,17 +38,11 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     });
-    const [serverMode, setServerMode] = useState(undefined);
-
+    const {serverMode, setServerMode} =  useContext(mainContext);
     useEffect(() => {
-      const tempServerMode = dataService.getServerModeData();
-      setServerMode(tempServerMode);
-      dataService.serverModeObservable().subscribe((message) => {
-          setServerMode(message);
-      });
-      tempServerMode !== SERVER_MODE.EA_ONLY  && getHostURLConfig();
-      tempServerMode !== SERVER_MODE.EA_ONLY  && fetchCheckList();
-    }, [serverMode])
+      serverMode !== SERVER_MODE.EA_ONLY  && getHostURLConfig();
+      serverMode !== SERVER_MODE.EA_ONLY  && fetchCheckList();
+    }, [])
 
     useEffect(() => {
         if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
@@ -91,10 +86,21 @@ export default function GlobalConfiguration(props) {
         })
     }
 
+    let serverModeChange = ()=>{
+      if(serverMode === 'FULL'){
+        setServerMode('EA_ONLY');
+      } else{
+        setServerMode('FULL');
+      }
+
+    }
+
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
                 <div className="flex left page-header__title">Global configurations</div>
+
+        <button onClick={serverModeChange}> Change Server Mode</button>
             </section>
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
@@ -171,7 +177,7 @@ function Body({ getHostURLConfig, checkList, serverMode}) {
         }} />
         <Route path={URLS.GLOBAL_CONFIG_CLUSTER} render={(props) => {
             return <div className="flexbox h-100">
-                <ClusterList {...props}/>
+                <ClusterList {...props} serverMode={serverMode}/>
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />

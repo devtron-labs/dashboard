@@ -21,7 +21,6 @@ import { getPosthogData } from './services/service';
 import Reload from './components/Reload/Reload';
 import posthog from 'posthog-js';
 import Hash from 'object-hash';
-import { dataService } from './services/dataShareService';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -217,10 +216,6 @@ export default function App() {
 			updateToastRef.current = toast.info(bgUpdatedToastBody, { autoClose: false, closeButton: false })
 		}
 	}, [bgUpdated])
-
-  useEffect(() => {
-    dataService.refreshServerModeData();
-  }, []);
 
 	return (
 		<Suspense fallback={null}>
