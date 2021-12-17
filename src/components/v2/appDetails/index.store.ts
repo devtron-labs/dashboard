@@ -39,7 +39,7 @@ const publishFilteredNodes = () => {
     _nodesFilteredSubject.next([...filteredNodes])
 }
 
-const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
+const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kind: string) => {
     return _allParentNodes.map((_pn: iNode) => {
         let childNodes = [];
         //let _childNodesTypes = []
@@ -54,16 +54,28 @@ const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>) => {
         })
 
         if (childNodes.length > 0) {
-            fillChildNodes(childNodes, _nodes)
+            fillChildNodes(childNodes, _nodes, _kind)
 
             _pn.childNodes = childNodes
+        }
+
+        if(_kind.toLowerCase() === NodeType.Pod.toLowerCase()){
+            _pn.childNodes = _appDetails.resourceTree.podMetadata.filter(_pmd => {
+                return _pmd.uid === _pn.uid
+            })[0]?.containers.map(_c => {
+                let childNode = {} as iNode
+                childNode.kind = NodeType.Containers
+                childNode['pNode'] = _pn
+                childNode.name = _c
+                return childNode
+            })
         }
 
         return _pn
     })
 }
 
-const getAllParentNods = (_nodes: Array<Node>): Array<iNode> => {
+const getAllParentNods = (_nodes: Array<Node>, _kind: string): Array<iNode> => {
     let _allParentNodes = []
     let _allParentNodeTypes = []
 
@@ -78,7 +90,7 @@ const getAllParentNods = (_nodes: Array<Node>): Array<iNode> => {
     })
 
 
-    return fillChildNodes(_allParentNodes, _nodes)
+    return fillChildNodes(_allParentNodes, _nodes, _kind)
 }
 
 const IndexStore = {
@@ -131,7 +143,7 @@ const IndexStore = {
 
     getiNodesByKind: (_kind: string) => {
         const _nodes = _nodesSubject.getValue()
-        const parentNodes = getAllParentNods(_nodes)
+        const parentNodes = getAllParentNods(_nodes, _kind)
 
         let _filteredNodes = parentNodes.filter((pn) => pn.kind.toLowerCase() === _kind.toLowerCase())
 

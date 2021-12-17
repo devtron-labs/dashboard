@@ -10,9 +10,12 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
             NodeDetailTab.LOGS,
             NodeDetailTab.TERMINAL
         ]
+    } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
+        return [
+            NodeDetailTab.LOGS,
+        ]
+    } else {
+        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
     }
-
-
-    return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
 
 }

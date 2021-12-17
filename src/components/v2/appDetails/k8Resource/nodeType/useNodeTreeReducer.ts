@@ -1,5 +1,5 @@
 
-import { useReducer} from "react";
+import { useReducer } from "react";
 import { AggregationKeys, getAggregator, iNode, Node } from "../../appDetails.type";
 
 export const NodeTreeActions = {
@@ -17,10 +17,10 @@ const initialState = {
 };
 
 const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
-   
+
     return treeNodes.map((node: iNode) => {
-        if(node.name === selectedNode.name){
-            node.isSelected = !node.isSelected 
+        if (node.name === selectedNode.name) {
+            node.isSelected = !node.isSelected
         }
 
         return node
@@ -30,12 +30,12 @@ const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => 
 const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, parentNode: iNode) => {
     for (let index = 0; index < treeNodes.length; index++) {
         const cNodes = treeNodes[index].childNodes || [];
-        
+
         for (let _index = 0; _index < cNodes.length; _index++) {
             const _cNode = cNodes[_index];
 
             _cNode.isSelected = false
-            
+
             if (_cNode.name.toLowerCase() === selectedNode.name.toLowerCase()) {
                 _cNode.isSelected = true
             }
@@ -48,21 +48,30 @@ const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, pare
 const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
 
     let _nodes = []
-    let uniqueINodes = new Set();
+    let _alreadyAddedNodes = []
+    //let uniqueINodes = new Set();
 
     nodes.forEach((node: Node) => {
         const aggregator = getAggregator(node.kind)
 
         if (aggregator.toLowerCase() === parentNodeName.toLowerCase()) {
-            uniqueINodes.add(node.kind)
+            // uniqueINodes.add(node.kind)
+            if (_alreadyAddedNodes.indexOf(node.kind) === -1) {
+                _alreadyAddedNodes.push(node.kind)
+
+                const _inode = {} as iNode;
+                _inode.name = node.kind
+                _nodes.push(_inode)
+            }
+
         }
     });
 
-    uniqueINodes.forEach((_n: any) => {
-        const _inode = {} as iNode;
-        _inode.name = _n
-        _nodes.push(_inode)
-    })
+    // uniqueINodes.forEach((_n: any) => {
+    //     const _inode = {} as iNode;
+    //     _inode.name = _n
+    //     _nodes.push(_inode)
+    // })
 
     return _nodes
 }
