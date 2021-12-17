@@ -81,6 +81,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         this.handleStatusChange = this.handleStatusChange.bind(this);
         this.handleChartChange = this.handleChartChange.bind(this);
         this.handlePredefinedRange = this.handlePredefinedRange.bind(this);
+        this.handleLatencyChange = this.handleLatencyChange.bind(this);
     }
 
     componentDidMount() {
@@ -110,7 +111,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         let status5xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status5xx);
         // let status = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let throughput = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
-        let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, tab, true, this.state.statusCode);
+        let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, tab, true, this.state.statusCode, this.state.selectedLatency);
 
         return { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl };
     }
@@ -295,7 +296,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                             </div>
                         </div>}
                         {this.props.appMetrics && <div className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Latency ? 'app-details-graph__iframe--selected' : ''}`} onClick={(e) => this.handleChartChange(ChartType.Latency)}>
-                            <h3 className="app-details-graph__title pl-16">Latency</h3>
+                            <h3 className="app-details-graph__title pl-16">Latency {this.state.selectedLatency}</h3>
                             <div className="app-details-graph__iframe-container" >
                                 <div className="app-details-graph__transparent-div"></div>
                                 <iframe src={this.state.latency} title="Latency" className={iframeClasses} />
@@ -313,7 +314,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                                 {this.state.mainChartName === "status" &&
                                     <ThroughputSelect status={this.state.statusCode} handleStatusChange={this.handleStatusChange} />}
                                 {this.state.mainChartName === "latency" &&
-                                    <LatencySelect latency={this.state.selectedLatency} handleStatusChange={this.handleLatencyChange} />}
+                                    <LatencySelect latency={this.state.selectedLatency} handleLatencyChange={this.handleLatencyChange} />}
                             </div>
                             <div className="flex">
                                 <div className="mr-16">
