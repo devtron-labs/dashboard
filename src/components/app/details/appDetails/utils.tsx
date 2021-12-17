@@ -148,6 +148,42 @@ export function DropdownIndicator(props) {
     </components.DropdownIndicator>
 }
 
+const throughputAndLatencySelectStyle = {
+    container: (base, state) => ({
+        ...base,
+        outline: 'unset',
+        height: "100%",
+    }),
+    control: (base, state) => ({
+        ...base,
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        minHeight: '20px',
+        height: '100%',
+    }),
+    menu: (base, state) => ({
+        ...base,
+        width: '150px'
+    }),
+    valueContainer: base => ({
+        ...base,
+        padding: '0',
+        height: '100%',
+        fontWeight: 600,
+    }),
+    singleValue: base => ({
+        ...base,
+        position: 'relative',
+        top: '9px',
+        maxWidth: '77px',
+    }),
+    dropdownIndicator: base => ({
+        ...base,
+        padding: '0',
+        height: '20px'
+    }),
+};
+
 export function ThroughputSelect(props) {
     return <CreatableSelect className=""
         placeholder="Status Code"
@@ -162,45 +198,31 @@ export function ThroughputSelect(props) {
             { label: 'Throughput', value: 'Throughput' }
         ]}
         onChange={props.handleStatusChange}
-        styles={{
-            container: (base, state) => ({
-                ...base,
-                outline: 'unset',
-                height: "100%",
-            }),
-            control: (base, state) => ({
-                ...base,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                minHeight: '20px',
-                height: '100%',
-            }),
-            menu: (base, state) => ({
-                ...base,
-                width: '150px'
-            }),
-            valueContainer: base => ({
-                ...base,
-                padding: '0',
-                height: '100%',
-                fontWeight: 600,
-            }),
-            singleValue: base => ({
-                ...base,
-                position: 'relative',
-                top: '9px',
-                maxWidth: '77px',
-            }),
-            dropdownIndicator: base => ({
-                ...base,
-                padding: '0',
-                height: '20px'
-            }),
-        }}
+        styles={throughputAndLatencySelectStyle}
         components={{
             IndicatorSeparator: null,
             DropdownIndicator: DropdownIndicator,
         }}
+    />
+}
+
+export function LatencySelect(props) {
+    return <CreatableSelect className=""
+        placeholder="Latency"
+        value={{ label: props.latency, value: props.latency }}
+        options={[
+            { label: '99.9', value: '99.9' },
+            { label: '99.5', value: '99.5' },
+            { label: '99', value: '99' },
+            { label: '95', value: '95' }
+        ]}
+        onChange={props.handleLatencyChange}
+        styles={throughputAndLatencySelectStyle}
+        components={{
+            IndicatorSeparator: null,
+            DropdownIndicator: DropdownIndicator,
+        }}
+        formatCreateLabel={(inputValue) => inputValue}
     />
 }
 
@@ -242,10 +264,10 @@ export interface AppInfo {
     k8sVersion: string;
 }
 
-export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+export function getIframeSrc(appInfo: AppInfo, chartName: ChartTypes, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes, latency?: number): string {
     let baseURL = getGrafanaBaseURL(chartName);
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode);
-    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode)
+    grafanaURL = addQueryParamToGrafanaURL(grafanaURL, appInfo.appId, appInfo.envId, appInfo.environmentName, chartName, appInfo.newPodHash, calendarInputs, tab, isLegendRequired, statusCode, latency)
     return grafanaURL;
 }
 
@@ -322,7 +344,7 @@ export function addChartNameExtensionToBaseURL(url: string, k8sVersion: string, 
     return url;
 }
 
-export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes): string {
+export function addQueryParamToGrafanaURL(url: string, appId: string | number, envId: string | number, environmentName: string, chartName: ChartTypes, newPodHash: string, calendarInputs, tab: AppMetricsTabType, isLegendRequired: boolean, statusCode?: StatusTypes, latency?: number): string {
     let startTime: string = calendarInputs.startDate;
     let endTime: string = calendarInputs.endDate;
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`;
@@ -340,6 +362,12 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
             url += (statusCode.includes("xx")) ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`;
             url += (statusCode.includes("xx")) ? `&var-response_code=` : `&var-response_code=${statusCode}`;
         }
+    }
+    if (chartName === 'latency') {
+        if (!isNaN(latency) ) {
+            latency = latency/100;
+        }
+        url += `&var-percentile=${latency}`
     }
     let panelId = (tab === 'aggregate') ? 2 : 3;
     if (!isLegendRequired) {
