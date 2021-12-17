@@ -9,9 +9,9 @@ import * as XtermWebfont from 'xterm-webfont';
 import { useThrottledEffect } from '../../../../../../common';
 import ReactGA from 'react-ga';
 import './terminal.css';
-import { SocketConnectionType } from '../Terminal.component';
 import IndexStore from '../../../../index.store';
 import { AppDetails } from '../../../../appDetails.type';
+import { SocketConnectionType } from '../node.type';
 // newone
 
 interface TerminalViewProps {
@@ -50,7 +50,6 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     }
 
     componentDidMount() {
-
 
         console.log("TerminalViewProps", this.props)
 
@@ -243,6 +242,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         };
 
         socket.onmessage = function (evt) {
+            console.log("socket.onmessage", evt)
             terminal.write(JSON.parse(evt.data).Data);
             terminal?.focus();
             if (!self.state.firstMessageReceived) {
@@ -251,10 +251,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
 
         socket.onclose = function (evt) {
+            console.log("socket.onclose", evt)
             setSocketConnection('DISCONNECTED');
         }
 
         socket.onerror = function (evt) {
+            console.log("socket.onerror", evt)
             setSocketConnection('DISCONNECTED');
         }
     }
@@ -269,7 +271,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             {({ height, width }) => <div className={"terminal-view"} style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
                     <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
-                        {this.props.socketConnection.toLowerCase()}
+                        {this.props.socketConnection?.toLowerCase()}
                     </span>
                     {this.props.socketConnection === 'DISCONNECTED' && <>
                         <span>.&nbsp;</span>
@@ -279,6 +281,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     </button>
                     </>}
                 </p>
+
                 <TerminalContent height={height} width={width} fitAddon={self._fitAddon} />
 
                 {this.props.socketConnection === 'CONNECTED' && <p style={{ position: 'relative', bottom: '10px' }}

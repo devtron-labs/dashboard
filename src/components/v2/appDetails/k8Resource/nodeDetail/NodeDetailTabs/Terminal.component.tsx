@@ -7,27 +7,26 @@ import { useParams, useRouteMatch } from 'react-router';
 import { NodeDetailTab } from '../nodeDetail.type';
 import './nodeDetailTab.scss'
 import IndexStore from '../../../index.store';
-import { TerminalView } from './terminal/TerminalViewWrapper';
 import Select from 'react-select';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
-import { SingleSelectOption as Option } from '../../../../../common'
+import { SocketConnectionType } from './node.type';
+import TerminalView from './terminal/Terminal';
 
-export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
+const sellTypes = [{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]
 
 function TerminalComponent({ selectedTab }) {
-    const { url } = useRouteMatch()
+
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
     const appDetails = IndexStore.getAppDetails()
     const containers = IndexStore.getMetaDataForPod(params.podName).containers
     const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState({ label: "sh", value: "sh" });
+    const [selectedtTerminalType, setSelectedtTerminalType] = useState(sellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
-    const [isReconnection, setIsReconnection] = useState(false);
-    const [shell, selectShell] = useState({ label: "sh", value: "sh" });
 
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING")
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('DISCONNECTED')
 
+    
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
@@ -47,19 +46,17 @@ function TerminalComponent({ selectedTab }) {
         toggleLogStream(paused);
     }
 
-    let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED';
-
     return (<div>
         <div className="flex left bcn-0 pt-4 pb-4 pl-20">
             <Tippy
                 className="default-tt"
                 arrow={false}
                 placement="bottom"
-                content={isSocketConnecting ? 'Disconnect' : 'Connect'}
+                content={(socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED') ? 'Disconnect' : 'Connect'}
             >
-                {isSocketConnecting ?
+                {(socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED') ?
                     <span>
-                        <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING'); setIsReconnection(true); }} />
+                        <Disconnect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('DISCONNECTING') }} />
                     </span>
                     : <span>
                         <Connect className="icon-dim-20 mr-5" onClick={(e) => { setSocketConnection('CONNECTING') }} />
@@ -82,7 +79,27 @@ function TerminalComponent({ selectedTab }) {
             <div className="cn-6">Container </div>
 
             <div style={{ minWidth: '145px' }}>
-                <Select
+            <Select 
+                    placeholder="Select Containers"
+                    options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
+                    defaultValue={{ label: selectedContainerName, value: selectedContainerName }}
+                    onChange={selected =>{
+                        setSelectedContainerName((selected as any).value)
+                        setTerminalCleared(true)
+                    }}
+                    styles={{
+                        ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                        control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                        indicatorsContainer: (provided, state) => ({
+                            ...provided,
+                            height: '24px',
+                        }),
+                    }}
+                />
+
+                {/* <Select
                     className="bw-0 pl-8"
                     options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
                     placeholder='All Containers'
@@ -91,7 +108,7 @@ function TerminalComponent({ selectedTab }) {
                     closeMenuOnSelect
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '0px', borderColor:'transparent', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                        control: (base, state) => ({ ...base, border: '0px', borderColor: 'transparent', backgroundColor: 'transparent', minHeight: '24px !important' }),
                         singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                         indicatorsContainer: (provided, state) => ({
                             ...provided,
@@ -103,19 +120,23 @@ function TerminalComponent({ selectedTab }) {
                         Option,
                     }}
                     isSearchable={false}
-                />
+                /> */}
             </div>
 
             <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
             <div style={{ minWidth: '145px' }}>
-            <Select
-                    className="bw-0 pl-8"
-                    value={shell}
-                    placeholder="Select shell" 
-                    options={[{ label: "bash", value: "bash" }, { label: "sh", value: "sh" }, { label: "powershell", value: "powershell" }, { label: "cmd", value: "cmd" }]}
+                <Select 
+                    placeholder="Select Shell"
+                    options={sellTypes}
+                    defaultValue={sellTypes[0]}
+                    onChange={selected =>{
+                        setSelectedtTerminalType(selected as any)
+                        setTerminalCleared(true)
+                    }}
                     styles={{
                         ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
                         control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
                         singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                         indicatorsContainer: (provided, state) => ({
@@ -123,28 +144,18 @@ function TerminalComponent({ selectedTab }) {
                             height: '24px',
                         }),
                     }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                    }}
-                    onChange={(selected) => { selectShell(selected) }}
-                    closeMenuOnSelect
-                    isSearchable={false}
                 />
-               
             </div>
 
         </div>
 
-        <div style={{ minHeight: '600px', background: 'black' }}>
-            <TerminalView appDetails={appDetails}
+        <div style={{ minHeight: '600px', background: '#0b0f22' }}>
+            <TerminalView
                 nodeName={params.podName}
                 containerName={selectedContainerName}
                 socketConnection={socketConnection}
                 terminalCleared={terminalCleared}
                 shell={selectedtTerminalType}
-                isReconnection={isReconnection}
-                setIsReconnection={setIsReconnection}
                 setTerminalCleared={setTerminalCleared}
                 setSocketConnection={setSocketConnection}
             />

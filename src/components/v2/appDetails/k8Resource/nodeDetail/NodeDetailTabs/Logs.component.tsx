@@ -390,7 +390,7 @@ function LogsComponent({ selectedTab }) {
                     </div>
 
 
-                    <div className="log-viewer bcn-9" style={{ minHeight: '600px' }}>
+                    <div className="log-viewer" style={{ minHeight: '600px' }}>
                         <LogViewerComponent
                             subject={subject}
                             highlightString={highlightString}

@@ -19,16 +19,14 @@ function RouterComponent({ envType }) {
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
+        
+        setIsLoading(true)
 
         init();
-
-        //setInterval(init, 30*1000) //30 sec, setting fixed interval to fetch app details
-
     }, [params.appId, params.envId])
 
     const init = async () => {
-        setIsLoading(true)
-
+       
         let response = null;
 
         try {
@@ -41,6 +39,9 @@ function RouterComponent({ envType }) {
             IndexStore.setAppDetails(response.result);
             
             setIsLoading(false)
+
+            setTimeout(init, 30*60*1000);
+
         } catch (e) {
             console.log("error while fetching InstalledAppDetail", e)
             // alert('error loading data')
