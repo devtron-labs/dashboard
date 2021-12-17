@@ -86,21 +86,10 @@ export default function GlobalConfiguration(props) {
         })
     }
 
-    let serverModeChange = ()=>{
-      if(serverMode === 'FULL'){
-        setServerMode('EA_ONLY');
-      } else{
-        setServerMode('FULL');
-      }
-
-    }
-
     return (
         <main className="global-configuration">
             <section className="page-header flex left">
                 <div className="flex left page-header__title">Global configurations</div>
-
-        <button onClick={serverModeChange}> Change Server Mode</button>
             </section>
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
