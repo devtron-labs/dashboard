@@ -28,6 +28,7 @@ export interface GraphModalProps {
     calendarInputs: { startDate: string, endDate: string };
     tab: AppMetricsTabType;
     k8sVersion: string;
+    selectedLatency: number;
     close: () => void;
 }
 
@@ -75,7 +76,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             calendar: { ...this.props.calendar },
             calendarInputs: { ...this.props.calendarInputs },
             mainChartName: this.props.chartName,
-            selectedLatency: .999,
+            selectedLatency: this.props.selectedLatency,
         }
         this.handleTabChange = this.handleTabChange.bind(this);
         this.handleStatusChange = this.handleStatusChange.bind(this);
@@ -109,7 +110,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
         let status2xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status2xx);
         let status4xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status4xx);
         let status5xx = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.status5xx);
-        // let status = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let throughput = getIframeSrc(appInfo, ChartType.Status, this.state.calendarInputs, tab, false, StatusType.Throughput);
         let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, tab, true, this.state.statusCode, this.state.selectedLatency);
 
@@ -177,18 +177,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleChartChange(chartName: ChartTypes, statusCode?: StatusTypes): void {
-        let k8sVersion = this.props.k8sVersion;
-        if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
-        }
-        let appInfo = {
-            appId: this.props.appId,
-            envId: this.props.envId,
-            environmentName: this.props.environmentName,
-            newPodHash: this.props.newPodHash,
-            k8sVersion: k8sVersion,
-        }
-        let mainChartUrl = getIframeSrc(appInfo, chartName, this.state.calendarInputs, this.state.tab, true, statusCode, this.state.selectedLatency);
+        let mainChartUrl = this.buildMainChart(chartName, statusCode, this.state.selectedLatency);
         this.setState({
             mainChartName: chartName,
             statusCode: statusCode,
@@ -202,19 +191,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleStatusChange(selected): void {
-        let k8sVersion = this.props.k8sVersion;
-        if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
-        }
-        let appInfo = {
-            appId: this.props.appId,
-            envId: this.props.envId,
-            environmentName: this.props.environmentName,
-            newPodHash: this.props.newPodHash,
-            k8sVersion: k8sVersion,
-        }
-        let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, this.state.tab, true, selected.value);
-
+        let mainChartUrl = this.buildMainChart(this.state.mainChartName, selected.value, this.state.selectedLatency);
         this.setState({
             statusCode: selected.value,
             mainChartUrl,
@@ -222,6 +199,14 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
     }
 
     handleLatencyChange(selected): void {
+        let mainChartUrl = this.buildMainChart(this.state.mainChartName, undefined, selected.value);
+        this.setState({
+            selectedLatency: selected.value,
+            mainChartUrl,
+        });
+    }
+
+    buildMainChart(chartType: ChartTypes, statusCode?: StatusTypes, selectedLatency?: number): string {
         let k8sVersion = this.props.k8sVersion;
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION;
@@ -233,12 +218,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
             newPodHash: this.props.newPodHash,
             k8sVersion: k8sVersion,
         }
-        let mainChartUrl = getIframeSrc(appInfo, this.state.mainChartName, this.state.calendarInputs, this.state.tab, true, undefined, selected.value);
-
-        this.setState({
-            selectedLatency: selected.value,
-            mainChartUrl,
-        });
+        return getIframeSrc(appInfo, chartType, this.state.calendarInputs, this.state.tab, true, statusCode, selectedLatency);
     }
 
     render() {

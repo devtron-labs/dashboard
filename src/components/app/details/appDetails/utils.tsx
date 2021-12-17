@@ -148,6 +148,42 @@ export function DropdownIndicator(props) {
     </components.DropdownIndicator>
 }
 
+const throughputAndLatencySelectStyle = {
+    container: (base, state) => ({
+        ...base,
+        outline: 'unset',
+        height: "100%",
+    }),
+    control: (base, state) => ({
+        ...base,
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        minHeight: '20px',
+        height: '100%',
+    }),
+    menu: (base, state) => ({
+        ...base,
+        width: '150px'
+    }),
+    valueContainer: base => ({
+        ...base,
+        padding: '0',
+        height: '100%',
+        fontWeight: 600,
+    }),
+    singleValue: base => ({
+        ...base,
+        position: 'relative',
+        top: '9px',
+        maxWidth: '77px',
+    }),
+    dropdownIndicator: base => ({
+        ...base,
+        padding: '0',
+        height: '20px'
+    }),
+};
+
 export function ThroughputSelect(props) {
     return <CreatableSelect className=""
         placeholder="Status Code"
@@ -162,41 +198,7 @@ export function ThroughputSelect(props) {
             { label: 'Throughput', value: 'Throughput' }
         ]}
         onChange={props.handleStatusChange}
-        styles={{
-            container: (base, state) => ({
-                ...base,
-                outline: 'unset',
-                height: "100%",
-            }),
-            control: (base, state) => ({
-                ...base,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                minHeight: '20px',
-                height: '100%',
-            }),
-            menu: (base, state) => ({
-                ...base,
-                width: '150px'
-            }),
-            valueContainer: base => ({
-                ...base,
-                padding: '0',
-                height: '100%',
-                fontWeight: 600,
-            }),
-            singleValue: base => ({
-                ...base,
-                position: 'relative',
-                top: '9px',
-                maxWidth: '77px',
-            }),
-            dropdownIndicator: base => ({
-                ...base,
-                padding: '0',
-                height: '20px'
-            }),
-        }}
+        styles={throughputAndLatencySelectStyle}
         components={{
             IndicatorSeparator: null,
             DropdownIndicator: DropdownIndicator,
@@ -209,47 +211,13 @@ export function LatencySelect(props) {
         placeholder="Latency"
         value={{ label: props.latency, value: props.latency }}
         options={[
-            { label: '.999', value: '.999' },
-            { label: '.995', value: '.995' },
-            { label: '.99', value: '.99' },
-            { label: '.95', value: '.95' }
+            { label: '99.9', value: '99.9' },
+            { label: '99.5', value: '99.5' },
+            { label: '99', value: '99' },
+            { label: '95', value: '95' }
         ]}
         onChange={props.handleLatencyChange}
-        styles={{
-            container: (base, state) => ({
-                ...base,
-                outline: 'unset',
-                height: "100%",
-            }),
-            control: (base, state) => ({
-                ...base,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                minHeight: '20px',
-                height: '100%',
-            }),
-            menu: (base, state) => ({
-                ...base,
-                width: '150px'
-            }),
-            valueContainer: base => ({
-                ...base,
-                padding: '0',
-                height: '100%',
-                fontWeight: 600,
-            }),
-            singleValue: base => ({
-                ...base,
-                position: 'relative',
-                top: '9px',
-                maxWidth: '77px',
-            }),
-            dropdownIndicator: base => ({
-                ...base,
-                padding: '0',
-                height: '20px'
-            }),
-        }}
+        styles={throughputAndLatencySelectStyle}
         components={{
             IndicatorSeparator: null,
             DropdownIndicator: DropdownIndicator,
@@ -396,6 +364,9 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
         }
     }
     if (chartName === 'latency') {
+        if (!isNaN(latency) ) {
+            latency = latency/100;
+        }
         url += `&var-percentile=${latency}`
     }
     let panelId = (tab === 'aggregate') ? 2 : 3;

@@ -39,7 +39,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const { appId, envId } = useParams<AppDetailsPathParams>();
     const [calendarValue, setCalendarValue] = useState('');
     const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
-    const [latency, setLatency] = useState<number>(.999);
+    const [selectedLatency, setLatency] = useState<number>(99.9);
     const [hostURLConfig, setHostURLConfig] = useState(undefined);
     const [graphs, setGraphs] = useState({
         cpu: "",
@@ -176,7 +176,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         }
         let cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true);
         let ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true);
-        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true, undefined, 0.999);
+        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true, undefined, selectedLatency);
         let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput);
         setGraphs({
             cpu,
@@ -201,7 +201,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }, [calendarValue])
 
     //@ts-ignore
-    if (!datasource.isConfigured || !datasource.isHealthy  /* || !hostURLConfig || hostURLConfig.value !== window.location.origin */ ) {
+    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin ) {
         return <>
             <AppMetricsEmptyState isLoading={datasource.isLoading}
                 isConfigured={datasource.isConfigured}
@@ -240,6 +240,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 calendarInputs={calendarInputs}
                                 tab={tab}
                                 k8sVersion={k8sVersion}
+                                selectedLatency={selectedLatency}
                                 close={() => setChartName(null)} /> : null}
                         </div>
                         <DateRangePicker calendar={calendar}
@@ -299,7 +300,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                             <div className='flexbox'>
                                 <h3 className="app-details-graph__title flexbox m-0">Latency</h3>
                                 <h3 className="app-details-graph__title flexbox m-0">
-                                    <LatencySelect latency={latency} handleLatencyChange={handleLatencyChange} />
+                                    <LatencySelect latency={selectedLatency} handleLatencyChange={handleLatencyChange} />
                                 </h3>
                             </div>
                             <Tippy className="default-tt"
