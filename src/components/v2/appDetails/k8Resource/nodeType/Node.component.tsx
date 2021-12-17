@@ -162,7 +162,7 @@ function NodeComponent() {
                         </div>
 
                         {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-5 pt-9 pb-9 flex left"} >
-                            {node.name + "." + node.namespace}  : portnumber
+                            {node.name + "." + node.namespace}  : <span className='ml-4'>{` { portnumber }`}</span>
                             <Tippy
                                 className="default-tt"
                                 arrow={false}
