@@ -48,10 +48,11 @@ function PodHeaderComponent({ callBack }) {
             >
                 <div className="fs-14 fw-6 pt-12 ">
                     New Pods ({newPods.length})
-                    {selectedHealthyNewNodeCount > 0 && <div className="pl-16"> {selectedHealthyNewNodeCount} healthy</div>}
                     </div>
                 <div className="flex left fs-12 cn-9 pb-12">
                     <React.Fragment>
+                    {selectedHealthyNewNodeCount > 0 ? <div className="pl-16"> {selectedHealthyNewNodeCount} healthy</div> : ''}
+
                         {/* {<span className="bullet mr-4 ml-4"></span>} */}
                         {/* <span data-testid={`new-pod-status`}> 8 running • 3 failed • 5 pending • 4 succeeded </span> */}
                     </React.Fragment>
@@ -63,11 +64,9 @@ function PodHeaderComponent({ callBack }) {
                 data-testid="all-pods-old"
             >
                 <div className="fs-14 fw-6 pt-12">Old Pods ({oldPods.length})</div>
-                {selectedHealthyOldNodeCount > 0 && <div className="pl-16"> {selectedHealthyOldNodeCount} healthy</div>}
                 <div className="flex left fs-12 cn-9 pb-12 ">
                     <React.Fragment >
-                        {/* {<span className="bullet mr-4 ml-4"></span>} */}
-                        {/* <span > 0 running</span> */}
+                    {selectedHealthyOldNodeCount > 0 ? <div className="pl-16"> {selectedHealthyOldNodeCount} healthy</div> : ''}
                     </React.Fragment>
                 </div>
             </div>
