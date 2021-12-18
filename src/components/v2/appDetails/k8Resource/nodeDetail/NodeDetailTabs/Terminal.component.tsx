@@ -26,7 +26,7 @@ function TerminalComponent({ selectedTab }) {
 
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('DISCONNECTED')
 
-    
+
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL)
@@ -79,11 +79,11 @@ function TerminalComponent({ selectedTab }) {
             <div className="cn-6">Container </div>
 
             <div style={{ minWidth: '145px' }}>
-            <Select 
+                <Select
                     placeholder="Select Containers"
                     options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
                     defaultValue={{ label: selectedContainerName, value: selectedContainerName }}
-                    onChange={selected =>{
+                    onChange={selected => {
                         setSelectedContainerName((selected as any).value)
                         setTerminalCleared(true)
                     }}
@@ -107,11 +107,11 @@ function TerminalComponent({ selectedTab }) {
             <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
             <div style={{ minWidth: '145px' }}>
-                <Select 
+                <Select
                     placeholder="Select Shell"
                     options={sellTypes}
                     defaultValue={sellTypes[0]}
-                    onChange={selected =>{
+                    onChange={selected => {
                         setSelectedtTerminalType(selected as any)
                         setTerminalCleared(true)
                     }}
