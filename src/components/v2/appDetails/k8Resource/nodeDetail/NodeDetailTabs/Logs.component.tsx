@@ -31,7 +31,7 @@ function LogsComponent({ selectedTab }) {
     const [logsPaused, setLogsPaused] = useState(false);
     const [containers, setContainers] = useState([])
     const [selectedContainerName, setSelectedContainerName] = useState("");
-    const [selectedPodName, setSelectedPodName] = useState(params.podName);
+    const [selectedPodNames, setSelectedPodNames] = useState([]);
     const [logSearchString, setLogSearchString] = useState('');
     const [grepTokens, setGrepTokens] = React.useState(null);
     const [highlightString, setHighlightString] = useState('');
@@ -42,8 +42,40 @@ function LogsComponent({ selectedTab }) {
     const workerRef = useRef(null);
 
     const appDetails = IndexStore.getAppDetails()
-    const pods = IndexStore.getAppDetailsPodNodesNames()
+    const pods = IndexStore.getAllPodNames()
     const isLogAnalyzer = !params.podName
+
+    const additionalOptions = [{ label: "All pods", value: "All pods" }, { label: "All new pods", value: "All new pods" }, { label: "All old pods", value: "All old pods" }]
+    let options = [];
+    if (pods.length > 1) {
+        options = additionalOptions.concat(pods.map((pod) => {
+            return { value: pod, label: pod }
+        }));
+    } else {
+        options = pods.map((pod) => {
+            return { value: pod, label: pod }
+        })
+    }
+
+    const handlePodChange = (selected) => {
+        // setSelectedPodName((selected as any).value)
+        const selectedOption = (selected as any).value
+
+        switch (selectedOption) {
+            case "All pods":
+                setSelectedPodNames(pods)
+                break;
+            case "All new pods":
+                setSelectedPodNames(IndexStore.getAllNewPodNames())
+                break;
+            case "All old pods":
+                setSelectedPodNames(IndexStore.getAllOldPodNames())
+                break;
+            default:
+                setSelectedPodNames([(selected as any).value])
+                break;
+        }
+    }
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -133,7 +165,7 @@ function LogsComponent({ selectedTab }) {
         workerRef.current['addEventListener' as any]('message', handleMessage);
 
         const urls = containers.filter(container => container === selectedContainerName).map((container) => {
-            return getLogsURL(appDetails, selectedPodName, Host, container)
+            return getLogsURL(appDetails, selectedPodNames, Host, container)
         })
 
         console.log("payload", { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods })
@@ -156,12 +188,12 @@ function LogsComponent({ selectedTab }) {
             if (_selectedContainerName) {
                 setSelectedContainerName(_selectedContainerName)
             } else {
-                setSelectedPodName(pods[0])
+                setSelectedPodNames(pods)
             }
 
         } else {
-            if (!selectedPodName) {
-                setSelectedPodName(pods[0])
+            if (!selectedPodNames) {
+                setSelectedPodNames(pods)
             }
         }
 
@@ -178,13 +210,20 @@ function LogsComponent({ selectedTab }) {
     }, [selectedContainerName, params.podName, grepTokens]);
 
     useEffect(() => {
-        if (selectedPodName) {
-            const _pod = IndexStore.getMetaDataForPod(selectedPodName)
-            setContainers(_pod.containers)
+        if (selectedPodNames && selectedPodNames.length > 0) {
+            let _cs = []
 
-            setSelectedContainerName(_pod.containers[0])
+            selectedPodNames.forEach(pod => {
+                IndexStore.getMetaDataForPod(pod).containers.forEach(c => {
+                    _cs.push(c)
+                });
+            });
+
+            setContainers(_cs)
+
+            setSelectedContainerName(_cs[0])
         }
-    }, [selectedPodName])
+    }, [selectedPodNames])
 
 
     const handleContainerNameChange = (containerName: string) => {
@@ -234,7 +273,7 @@ function LogsComponent({ selectedTab }) {
                                 <div className="cn-6">Pods</div>
                                 <div className="cn-6 flex left">
 
-                                    <select value={selectedPodName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
+                                    {/* <select value={selectedPodName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
                                         const value = e.target.value
                                         if (value) {
                                             setSelectedPodName(e.target.value)
@@ -245,18 +284,19 @@ function LogsComponent({ selectedTab }) {
                                         {pods.map((pod, index) => {
                                             return <option value={pod} key={`pod_${index}`}>{pod}</option>
                                         })}
-                                    </select>
+                                    </select> */}
 
-                                    {/* <div style={{ minWidth: '200px' }}>
-                                        <ReactSelect
+                                    <div style={{ minWidth: '200px' }}>
+                                        <Select
                                             className="br-4 pl-8 bw-0"
-                                            // options={logFormDTO.pods.map(pod => ({ label: pod.name, value: pod.name }))}
+                                            options={options}
                                             placeholder='All Pods'
-                                            // value={{ label: selectedPodName, value: selectedPodName }}
-                                            onChange={(selected, meta) => setSelectedPodName((selected as any).value)}
+                                            defaultValue={{ label: selectedPodNames, value: selectedPodNames }}
+                                            onChange={(selected, meta) => handlePodChange(selected)}
                                             closeMenuOnSelect
                                             styles={{
                                                 ...multiSelectStyles,
+                                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
                                                 control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
                                                 singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                                 indicatorsContainer: (provided, state) => ({
@@ -269,7 +309,7 @@ function LogsComponent({ selectedTab }) {
                                             }}
                                             isSearchable={false}
                                         />
-                                    </div> */}
+                                    </div>
                                 </div>
 
                             </React.Fragment>
@@ -277,65 +317,17 @@ function LogsComponent({ selectedTab }) {
 
                         <div className="cn-6 ml-8">Container </div>
 
-                        <select value={selectedContainerName} className="bw-0 en-2  ml-8 w-200" onChange={(e) => {
-                            const value = e.target.value
-                            if (value) { handleContainerNameChange(e.target.value) }
-                        }}>
-                            <option>Select</option>
-                            {containers.map((container, index) => {
-                                return <option value={container} key={`c_${index}`}>{container}</option>
-                            })}
-                        </select>
-
-                        {/* <div style={{ width: '175px' }}> */}
-                        {/* <Select placeholder="Select Container"
-                            options={containers[0] && containers[0].map((container) => ({ label: container, value: container }))}
-                            value={selectedContainerName ? { label: selectedContainerName, value: selectedContainerName } : null}
-                            onChange={(e) => handleContainerNameChange(e.label) }
-                            styles={{
-                                ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'transparent',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    direction: 'rtl',
-                                    color: 'var(--N000)',
-                                }),
-                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                    color: 'var(--N900)',
-                                    textOverflow: 'ellipsis',
-                                    overflow: 'hidden',
-                                    whiteSpace: 'nowrap',
-                                    direction: 'rtl',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                            }}/> */}
-                        
-                    {/* </div> */}
-
-                        {/* <div style={{ minWidth: '200px' }}>
-                            
-                            <ReactSelect
-                                value={{ label: selectedContainerName, value: selectedContainerName }}
-                                defaultValue={{ label: selectedContainerName, value: selectedContainerName }}
-                                className="br-4 pl-8 bw-0"
+                        <div style={{ minWidth: '145px' }}>
+                            <Select
+                                placeholder="Select Containers"
                                 options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
-                                placeholder='All Containers'
-                                onChange={(selected) => {
-                                    console.log('test')
-                                    handleContainerNameChange((selected as any).value)
+                                defaultValue={{ label: selectedContainerName, value: selectedContainerName }}
+                                onChange={selected => {
+                                    setSelectedContainerName((selected as any).value)
                                 }}
                                 styles={{
                                     ...multiSelectStyles,
+                                    menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
                                     control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
                                     singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                     indicatorsContainer: (provided, state) => ({
@@ -344,11 +336,12 @@ function LogsComponent({ selectedTab }) {
                                     }),
                                 }}
                                 components={{
-                                    IndicatorSeparator: null,
+                                    IndicatorSeparator: null
                                 }}
-                                isSearchable={false}
                             />
-                        </div> */}
+
+                        </div>
+
                     </div>
                     <div className='col-6'>
                         <input type="text" onKeyUp={handleLogsSearch}
@@ -357,8 +350,10 @@ function LogsComponent({ selectedTab }) {
                     </div>
                 </div>
             </div>
-            {!logsCleared &&
+            {!logsCleared && selectedContainerName &&
                 <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
+                    {console.log(selectedContainerName)}
+
                     <div
                         className={`pod-readyState pod-readyState--top bcr-7 ${logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
                             }`}
@@ -395,7 +390,7 @@ function LogsComponent({ selectedTab }) {
                             subject={subject}
                             highlightString={highlightString}
                             rootClassName="event-logs__logs"
-                            key={selectedPodName + selectedContainerName + logSearchString}
+                            key={selectedPodNames + selectedContainerName + logSearchString}
                         />
                     </div>
 

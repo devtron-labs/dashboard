@@ -169,12 +169,29 @@ const IndexStore = {
         return _appDetails.resourceTree.podMetadata
     },
 
-    getAppDetailsPodNodesNames: () => {
+    getAllPodNames: () => {
         return _nodesSubject.getValue().filter((node: Node) => node.kind === NodeType.Pod).map(node => {
             return node.name
         })
     },
 
+    getAllNewPodNames: () => {
+        return _appDetails.resourceTree.podMetadata.filter((pod) =>{
+          return  pod.isNew === true
+        })
+        .map((pod)=>{
+           return pod.name
+        })
+    },
+
+    getAllOldPodNames: () => {
+        return _appDetails.resourceTree.podMetadata.filter((pod) =>{
+          return  pod.isNew !== true
+        })
+        .map((pod)=>{
+            return pod.name
+         })
+    },
     updateFilterType: (filterType: string) => {
         _nodeFilter = { ..._nodeFilter, filterType: filterType }
         publishFilteredNodes()
