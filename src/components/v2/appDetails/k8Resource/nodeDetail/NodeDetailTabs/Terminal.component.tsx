@@ -97,30 +97,11 @@ function TerminalComponent({ selectedTab }) {
                             height: '24px',
                         }),
                     }}
+                    components={{
+                        IndicatorSeparator: null
+                    }}
                 />
 
-                {/* <Select
-                    className="bw-0 pl-8"
-                    options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
-                    placeholder='All Containers'
-                    value={{ label: selectedContainerName, value: selectedContainerName }}
-                    onChange={(selected, meta) => setSelectedContainerName((selected as any).value)}
-                    closeMenuOnSelect
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '0px', borderColor: 'transparent', backgroundColor: 'transparent', minHeight: '24px !important' }),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
-                        indicatorsContainer: (provided, state) => ({
-                            ...provided,
-                            height: '24px',
-                        }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                    }}
-                    isSearchable={false}
-                /> */}
             </div>
 
             <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -143,6 +124,9 @@ function TerminalComponent({ selectedTab }) {
                             ...provided,
                             height: '24px',
                         }),
+                    }}
+                    components={{
+                        IndicatorSeparator: null
                     }}
                 />
             </div>

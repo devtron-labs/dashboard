@@ -8,11 +8,15 @@ function PodHeaderComponent({ callBack }) {
     const podMetaData = IndexStore.getPodMetaData()
     const [newPods, setNewPods] = useState([])
     const [oldPods, setOldPods] = useState([])
+    const [selectedHealthyNewNodeCount, setSelectedHealthyNewNodeCount] = useState<Number>(0)
+    const [selectedHealthyOldNodeCount, setSelectedHealthyOldNodeCount] = useState<Number>(0)
+
 
     useEffect(() => {
         if (podMetaData.length > 0) {
             let _newPods = []
             let _oldPods = []
+
             podMetaData.forEach((pod) => {
                 if (pod.isNew) {
                     _newPods.push(pod)
@@ -22,9 +26,14 @@ function PodHeaderComponent({ callBack }) {
             })
             setNewPods(_newPods)
             setOldPods(_oldPods)
+
+            setSelectedHealthyNewNodeCount(_newPods.length)
+            setSelectedHealthyOldNodeCount(_oldPods.length)
+            console.log(selectedHealthyNewNodeCount, selectedHealthyOldNodeCount)
         }
 
     }, [podMetaData.length])
+
 
     useEffect(() => {
         callBack(podTab === 'new')
@@ -37,7 +46,10 @@ function PodHeaderComponent({ callBack }) {
                 onClick={(e) => selectPodTab('new')}
                 data-testid="all-pods-new"
             >
-                <div className="fs-14 fw-6 pt-12 ">New Pods ({newPods.length})</div>
+                <div className="fs-14 fw-6 pt-12 ">
+                    New Pods ({newPods.length})
+                    {selectedHealthyNewNodeCount > 0 && <div className="pl-16"> {selectedHealthyNewNodeCount} healthy</div>}
+                    </div>
                 <div className="flex left fs-12 cn-9 pb-12">
                     <React.Fragment>
                         {/* {<span className="bullet mr-4 ml-4"></span>} */}
@@ -51,6 +63,7 @@ function PodHeaderComponent({ callBack }) {
                 data-testid="all-pods-old"
             >
                 <div className="fs-14 fw-6 pt-12">Old Pods ({oldPods.length})</div>
+                {selectedHealthyOldNodeCount > 0 && <div className="pl-16"> {selectedHealthyOldNodeCount} healthy</div>}
                 <div className="flex left fs-12 cn-9 pb-12 ">
                     <React.Fragment >
                         {/* {<span className="bullet mr-4 ml-4"></span>} */}
