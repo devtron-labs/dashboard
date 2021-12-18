@@ -31,41 +31,54 @@ function LogsComponent({ selectedTab }) {
     const [logsPaused, setLogsPaused] = useState(false);
     const [containers, setContainers] = useState([])
     const [podOptions, setPodOptions] = useState([]);
-    const [selectedContainerName, setSelectedContainerName] = useState("");
-    const [selectedPodNames, setSelectedPodNames] = useState([]);
+    const [selectedContainerName, setSelectedContainerName] = useState('');
+    //const [selectedPodName, setSelectedPodName] = useState('');
     const [logSearchString, setLogSearchString] = useState('');
     const [grepTokens, setGrepTokens] = useState(null);
     const [highlightString, setHighlightString] = useState('');
     const [logsCleared, setLogsCleared] = useState(false);
     const [readyState, setReadyState] = useState(null);
+    const [selectedPods, setSelectedPods] = useState([]);
 
     const logsPausedRef = useRef(false);
     const workerRef = useRef(null);
 
     const appDetails = IndexStore.getAppDetails()
-    const pods = IndexStore.getAllPodNames()
+
     const isLogAnalyzer = !params.podName
 
-    const handlePodChange = (selected) => {
+    const handlePodChange = (selectedOption) => {
         // setSelectedPodName((selected as any).value)
-        const selectedOption = (selected as any).value
+
+        let cs
 
         switch (selectedOption) {
             case "All pods":
-                setSelectedPodNames(pods)
+                cs = IndexStore.getAllContainers()
+                setContainers(cs.containers)
+                setSelectedPods(cs.pods)
+                setSelectedContainerName(cs.containers[0])
                 break;
             case "All new pods":
-                const newPodNames = IndexStore.getAllNewPodNames()
-                setSelectedPodNames(newPodNames)
+                cs = IndexStore.getAllNewContainers()
+                setContainers(cs.containers)
+                setSelectedPods(cs.pods)
+                setSelectedContainerName(cs.containers[0])
                 break;
             case "All old pods":
-                const oldPodNames = IndexStore.getAllOldPodNames()
-                setSelectedPodNames(oldPodNames)
+                cs = IndexStore.getAllOldContainers()
+                setContainers(cs.containers)
+                setSelectedPods(cs.pods)
+                setSelectedContainerName(cs.containers[0])
                 break;
             default:
-                setSelectedPodNames([(selected as any).value])
+                cs = IndexStore.getAllContainersForPod(selectedOption)
+                setContainers(cs)
+                setSelectedPods([selectedOption])
+                setSelectedContainerName(cs[0])
                 break;
         }
+
     }
 
     const parsePipes = (expression) => {
@@ -128,22 +141,27 @@ function LogsComponent({ selectedTab }) {
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
 
-        const urls = containers.filter(container => container === selectedContainerName).map((container) => {
-            return getLogsURL(appDetails, selectedPodNames, Host, container)
+        let urls = []
+
+        containers.forEach(c => {
+            let _url 
+
+            if(isLogAnalyzer){
+                _url = getLogsURL(appDetails, IndexStore.getPodForAContainer(c), Host, c)
+            }else{
+                _url = getLogsURL(appDetails, params.podName, Host, c)
+            }
+
+            urls.push(_url)
         })
 
-        console.log("payload", { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods })
+        console.log("payload", { urls: urls, grepTokens: grepTokens, timeout: 300, pods: selectedPods })
 
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods },
+            payload: { urls: urls, grepTokens: grepTokens, timeout: 300, pods: selectedPods },
         });
 
-    }
-
-    const handleContainerNameChange = (containerName: string) => {
-        let _url = `${url}?container=${containerName}`
-        history.push(_url)
     }
 
     const handleLogsSearch = (e) => {
@@ -162,18 +180,20 @@ function LogsComponent({ selectedTab }) {
 
         if (!isLogAnalyzer) {
             const _selectedContainerName = new URLSearchParams(location.search).get('container')
+            
+            const containers = IndexStore.getAllContainersForPod(params.podName)
 
-            setSelectedPodNames([params.podName])
-
-            if (_selectedContainerName) {
-                setSelectedContainerName(_selectedContainerName)
-            }
-
-
+            setSelectedPods([params.podName])
+            
+            setContainers(containers)
+            
+            setSelectedContainerName(_selectedContainerName || containers[0])
         } else {
             const additionalPodOptions = [{ label: "All pods", value: "All pods" }, { label: "All new pods", value: "All new pods" }, { label: "All old pods", value: "All old pods" }]
 
             let podOptions = [];
+
+            const pods = IndexStore.getAllPodNames()
 
             if (pods.length > 1) {
                 podOptions = additionalPodOptions.concat(pods.map((pod) => {
@@ -186,7 +206,8 @@ function LogsComponent({ selectedTab }) {
             }
 
             setPodOptions(podOptions)
-            setSelectedPodNames([podOptions[3].value])
+
+            handlePodChange(podOptions[0].value)
         }
 
     }, [])
@@ -200,21 +221,6 @@ function LogsComponent({ selectedTab }) {
         return () => stopWorker
 
     }, [selectedContainerName, params.podName, grepTokens]);
-
-    useEffect(() => {
-        let _cs = []
-
-        selectedPodNames.forEach(pod => {
-            IndexStore.getMetaDataForPod(pod).containers.forEach(c => {
-                _cs.push(c)
-            });
-        });
-
-        setContainers(_cs)
-
-        setSelectedContainerName(_cs[0])
-
-    }, [selectedPodNames])
 
     useEffect(() => {
         logsPausedRef.current = logsPaused;
@@ -279,8 +285,8 @@ function LogsComponent({ selectedTab }) {
                                         <Select
                                             placeholder="Select Pod"
                                             options={podOptions}
-                                            defaultValue={podOptions[3]}
-                                            onChange={(selected, meta) => handlePodChange(selected)}
+                                            defaultValue={podOptions[0]}
+                                            onChange={(selected, meta) => handlePodChange(selected.value)}
                                             styles={{
                                                 ...multiSelectStyles,
                                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
@@ -300,33 +306,37 @@ function LogsComponent({ selectedTab }) {
                             </React.Fragment>
                         }
 
-                        <div className="cn-6 ml-8">Container </div>
+                        {containers && containers.length > 0 &&
+                            <React.Fragment>
+                                <div className="cn-6 ml-8">Container </div>
 
-                        <div style={{ minWidth: '145px' }}>
-                            {containers && containers.length > 0 &&
-                                <Select
-                                    placeholder="Select Containers"
-                                    options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
-                                    defaultValue={{ label: containers[0], value: containers[0] }}
-                                    onChange={selected => {
-                                        setSelectedContainerName((selected as any).value)
-                                    }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-                                        control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
-                                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
-                                        indicatorsContainer: (provided, state) => ({
-                                            ...provided,
-                                            height: '24px',
-                                        }),
-                                    }}
-                                    components={{
-                                        IndicatorSeparator: null
-                                    }}
-                                />}
-                        </div>
+                                <div style={{ minWidth: '145px' }}>
 
+                                    <Select
+                                        placeholder="Select Containers"
+                                        options={Array.isArray(containers) ? containers.map(container => ({ label: container, value: container })) : []}
+                                        defaultValue={{ label: containers[0], value: containers[0] }}
+                                        onChange={selected => {
+                                            setSelectedContainerName((selected as any).value)
+                                        }}
+                                        styles={{
+                                            ...multiSelectStyles,
+                                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            control: (base, state) => ({ ...base, border: '0px', backgroundColor: 'transparent', minHeight: '24px !important' }),
+                                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                            indicatorsContainer: (provided, state) => ({
+                                                ...provided,
+                                                height: '24px',
+                                            }),
+                                        }}
+                                        components={{
+                                            IndicatorSeparator: null
+                                        }}
+                                    />
+                                </div>
+                            </React.Fragment>
+
+                        }
                     </div>
                     <div className='col-6'>
                         <input type="text" onKeyUp={handleLogsSearch}
@@ -373,7 +383,6 @@ function LogsComponent({ selectedTab }) {
                             subject={subject}
                             highlightString={highlightString}
                             rootClassName="event-logs__logs"
-                            key={selectedPodNames + selectedContainerName + logSearchString}
                         />
                     </div>
 
@@ -393,7 +402,11 @@ function LogsComponent({ selectedTab }) {
                     <div className="no-pod__container-icon">
                         {Array(6).fill(0).map((z, idx) => <span key={idx} className="no-pod__container-sub-icon"></span>)}
                     </div>
-                    <p>Select a container to view logs</p>
+                    {containers.length > 0 ?
+                        <p>Select a container to view logs</p>
+                        :
+                        <p>No container</p>
+                    }
                 </div>
             }
 

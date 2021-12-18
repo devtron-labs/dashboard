@@ -18,7 +18,7 @@ function TerminalComponent({ selectedTab }) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
     const appDetails = IndexStore.getAppDetails()
-    const containers = IndexStore.getMetaDataForPod(params.podName).containers
+    const containers = IndexStore.getAllContainersForPod(params.podName)
     const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(sellTypes[0]);

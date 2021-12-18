@@ -59,7 +59,7 @@ const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kin
             _pn.childNodes = childNodes
         }
 
-        if(_kind.toLowerCase() === NodeType.Pod.toLowerCase()){
+        if (_kind.toLowerCase() === NodeType.Pod.toLowerCase()) {
             _pn.childNodes = _appDetails.resourceTree.podMetadata.filter(_pmd => {
                 return _pmd.uid === _pn.uid
             })[0]?.containers.map(_c => {
@@ -82,10 +82,10 @@ const getAllParentNods = (_nodes: Array<Node>, _kind: string): Array<iNode> => {
     _nodes.forEach(_n => {
         _n.parentRefs?.forEach((_prn: Node) => {
             //if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
-                let prn = _n as iNode;
-                _allParentNodes.push(prn)
-                _allParentNodeTypes.push(_prn.kind)
-           // }
+            let prn = _n as iNode;
+            _allParentNodes.push(prn)
+            _allParentNodeTypes.push(_prn.kind)
+            // }
         })
     })
 
@@ -175,23 +175,66 @@ const IndexStore = {
         })
     },
 
-    getAllNewPodNames: () => {
-        return _appDetails.resourceTree.podMetadata.filter((pod) =>{
-          return  pod.isNew === true
-        })
-        .map((pod)=>{
-           return pod.name
-        })
+    getAllContainersForPod: (_name: string) => {
+        return _appDetails.resourceTree.podMetadata.filter(pod => pod.name === _name)[0].containers
     },
 
-    getAllOldPodNames: () => {
-        return _appDetails.resourceTree.podMetadata.filter((pod) =>{
-          return  pod.isNew !== true
+    getAllContainers: () => {
+        let containers = []
+
+        const pods = _appDetails.resourceTree.podMetadata;
+        
+        pods.forEach(pmd => {
+            pmd.containers.forEach(c => {
+                containers.push(c)
+            })
         })
-        .map((pod)=>{
-            return pod.name
-         })
+
+        return {containers: containers, pods : pods}
     },
+
+    getAllNewContainers: () => {
+        let containers = []
+
+        const pods = _appDetails.resourceTree.podMetadata.filter(p => p.isNew)
+
+        pods.forEach(pmd => {
+            pmd.containers.forEach(c => {
+                    containers.push(c)
+            })
+        })
+
+        return {containers: containers, pods : pods}
+    },
+
+    getAllOldContainers: () => {
+        let containers = []
+
+        const pods = _appDetails.resourceTree.podMetadata.filter(p => !p.isNew)
+
+        pods.forEach(pmd => {
+            pmd.containers.forEach(c => {
+                containers.push(c)
+            })
+        })
+
+        return {containers: containers, pods : pods.map(p => p.name)}
+    },
+
+    getPodForAContainer: (_c: string) => {
+        let podeName
+        
+        _appDetails.resourceTree.podMetadata.forEach(p => {
+           p.containers.forEach(c => {
+               if(c === _c){
+                podeName = p.name 
+               }
+           }) 
+        });
+
+       return podeName
+    },
+    
     updateFilterType: (filterType: string) => {
         _nodeFilter = { ..._nodeFilter, filterType: filterType }
         publishFilteredNodes()
