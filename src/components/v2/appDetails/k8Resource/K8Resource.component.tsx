@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
-import { useRouteMatch, useParams } from 'react-router';
+import { useRouteMatch } from 'react-router';
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
-import { Switch, Route } from 'react-router-dom';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
 
 export default function K8ResourceComponent() {
-    const { path, url } = useRouteMatch();
+    const { url } = useRouteMatch();
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
-    const params = useParams<{ nodeType: string }>()
 
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.k8s_Resources)
+        AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.k8s_Resources, url)
     }, [])
 
     return (
@@ -36,7 +34,7 @@ export default function K8ResourceComponent() {
                             <NodeComponent />
                         </div>
                     </div>
-                    : 
+                    :
                     <div>Empty UI</div>
                 }
             </div>

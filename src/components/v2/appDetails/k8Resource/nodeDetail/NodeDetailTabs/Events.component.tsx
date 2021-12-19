@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useRouteMatch, useHistory } from 'react-router';
+import { useParams, useRouteMatch } from 'react-router';
 import IndexStore from '../../../index.store';
-import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getEvent } from '../nodeDetail.api';
 import { Pod as PodIcon } from '../../../../../common';
@@ -14,6 +13,7 @@ import { NodeType } from '../../../appDetails.type';
 function EventsComponent({ selectedTab }) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
+    const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const appDetails = IndexStore.getAppDetails();
@@ -21,7 +21,7 @@ function EventsComponent({ selectedTab }) {
     const pods = IndexStore.getNodesByKind(NodeType.Pod)
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.EVENTS)
+        selectedTab(NodeDetailTab.EVENTS, url)
 
         if (!appDetails) {
             //Refresh case -- need to sent to k8 , histrory push
@@ -123,7 +123,7 @@ function EventsComponent({ selectedTab }) {
 
             {
                 (pods.length === 0) &&
-                <div data-testid="no-pod" className="no-pod no-pod--pod">
+                <div data-testid="no-pod" className="no-pod no-pod--pod bcn-0" style={{ minHeight: "600px" }}>
                     <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
                     <p>Select a pod to view events</p>
                 </div>

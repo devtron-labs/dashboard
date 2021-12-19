@@ -19,11 +19,10 @@ function ManifestComponent({ selectedTab }) {
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('');
     const [desiredManifest, setDesiredManifest] = useState('');
     const [diffMode, setDiffMode] = useState(false)
+    const appDetails = IndexStore.getAppDetails();
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.MANIFEST)
-
-        const appDetails = IndexStore.getAppDetails();
+        selectedTab(NodeDetailTab.MANIFEST, url)
 
         getManifestResource(appDetails, params.podName).then((response) => {
             setManifest(response.result.manifest)
@@ -34,66 +33,65 @@ function ManifestComponent({ selectedTab }) {
 
     }, [params.podName])
 
-    const handleEditorValueChange = (codeEditorData: string) => {
-        if (activeTab === 'Desired manifest') {
-            setDesiredManifest(codeEditorData)
-            setActiveManifestEditorData(codeEditorData)
-            dispatch({
-                type: TabActions.EnableTab,
-                tabName: 'Compare',
-            })
-        }
-    }
+    // const handleEditorValueChange = (codeEditorData: string) => {
+    //     if (activeTab === 'Desired manifest') {
+    //         setDesiredManifest(codeEditorData)
+    //         setActiveManifestEditorData(codeEditorData)
+    //         dispatch({
+    //             type: TabActions.EnableTab,
+    //             tabName: 'Compare',
+    //         })
+    //     }
+    // }
 
-    const handleEditLiveManifest = () => {
-        markActiveTab('Desired manifest')
-        if (!desiredManifest) {
-            setDesiredManifest(manifest)
-            setActiveManifestEditorData(manifest)
-        } else {
-            setActiveManifestEditorData(desiredManifest)
-        }
-    }
+    // const handleEditLiveManifest = () => {
+    //     markActiveTab('Desired manifest')
+    //     if (!desiredManifest) {
+    //         setDesiredManifest(manifest)
+    //         setActiveManifestEditorData(manifest)
+    //     } else {
+    //         setActiveManifestEditorData(desiredManifest)
+    //     }
+    // }
 
-    const markActiveTab = (_tabName: string) => {
-        dispatch({
-            type: TabActions.MarkActive,
-            tabName: _tabName
-        })
-    }
+    // const markActiveTab = (_tabName: string) => {
+    //     dispatch({
+    //         type: TabActions.MarkActive,
+    //         tabName: _tabName
+    //     })
+    // }
 
-    const updateEditor = (_tabName: string) => {
-        switch (_tabName) {
-            case 'Live Manifest':
-                setDiffMode(false)
-                setActiveManifestEditorData(manifest)
-                break;
-            case 'Compare':
-                setDiffMode(true)
-                setActiveManifestEditorData('')
-                break;
-            case 'Desired manifest':
-                setDiffMode(false)
-                setActiveManifestEditorData(desiredManifest)
-                break;
-        }
+    // const updateEditor = (_tabName: string) => {
+    //     switch (_tabName) {
+    //         case 'Live Manifest':
+    //             setDiffMode(false)
+    //             setActiveManifestEditorData(manifest)
+    //             break;
+    //         case 'Compare':
+    //             setDiffMode(true)
+    //             setActiveManifestEditorData('')
+    //             break;
+    //         case 'Desired manifest':
+    //             setDiffMode(false)
+    //             setActiveManifestEditorData(desiredManifest)
+    //             break;
+    //     }
 
-    }
+    // }
 
-    const handleTabClick = (_tab: iLink) => {
-        if (_tab.isDisabled) {
-            return
-        }
-        markActiveTab(_tab.name)
-        updateEditor(_tab.name)
-    }
+    // const handleTabClick = (_tab: iLink) => {
+    //     if (_tab.isDisabled) {
+    //         return
+    //     }
+    //     markActiveTab(_tab.name)
+    //     updateEditor(_tab.name)
+    // }
 
-    useEffect(() => {
-        if (params.actionName) {
-            markActiveTab(params.actionName)
-        }
-    }, [params.actionName])
-
+    // useEffect(() => {
+    //     if (params.actionName) {
+    //         markActiveTab(params.actionName)
+    //     }
+    // }, [params.actionName])
 
     return (
         <div className="bcn-0">
@@ -130,8 +128,9 @@ function ManifestComponent({ selectedTab }) {
                         height={600}
                         value={activeManifestEditorData}
                         mode="yaml"
-                        readOnly={activeTab !== 'Desired manifest'}
-                        onChange={handleEditorValueChange}
+                        readOnly={true}
+                    // readOnly={activeTab !== 'Desired manifest'}
+                    // onChange={handleEditorValueChange}
                     >
                     </CodeEditor>
             }

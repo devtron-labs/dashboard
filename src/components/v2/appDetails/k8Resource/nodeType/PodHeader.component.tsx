@@ -13,7 +13,7 @@ function PodHeaderComponent({ callBack }) {
 
 
     useEffect(() => {
-        if (podMetaData.length > 0) {
+        if (podMetaData && podMetaData.length > 0) {
             let _newPods = []
             let _oldPods = []
 
@@ -32,7 +32,7 @@ function PodHeaderComponent({ callBack }) {
             console.log(selectedHealthyNewNodeCount, selectedHealthyOldNodeCount)
         }
 
-    }, [podMetaData.length])
+    }, [podMetaData?.length])
 
 
     useEffect(() => {

@@ -23,7 +23,6 @@ const commandLineParser = require('command-line-parser')
 
 function LogsComponent({ selectedTab }) {
     const location = useLocation()
-    const history = useHistory()
     const key = useKeyDown()
     const { url } = useRouteMatch()
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
@@ -175,7 +174,7 @@ function LogsComponent({ selectedTab }) {
     useEffect(() => {
 
         if (selectedTab) {
-            selectedTab(NodeDetailTab.LOGS)
+            selectedTab(NodeDetailTab.LOGS, url)
         }
 
         if (!isLogAnalyzer) {

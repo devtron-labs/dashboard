@@ -60,7 +60,7 @@ const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kin
         }
 
         if (_kind.toLowerCase() === NodeType.Pod.toLowerCase()) {
-            _pn.childNodes = _appDetails.resourceTree.podMetadata.filter(_pmd => {
+            _pn.childNodes = _appDetails.resourceTree?.podMetadata?.filter(_pmd => {
                 return _pmd.uid === _pn.uid
             })[0]?.containers.map(_c => {
                 let childNode = {} as iNode

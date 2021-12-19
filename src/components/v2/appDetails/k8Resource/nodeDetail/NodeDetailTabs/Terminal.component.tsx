@@ -17,7 +17,7 @@ const sellTypes = [{ label: "bash", value: "bash" }, { label: "sh", value: "sh" 
 function TerminalComponent({ selectedTab }) {
 
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
-    const appDetails = IndexStore.getAppDetails()
+    const { url } = useRouteMatch()
     const containers = IndexStore.getAllContainersForPod(params.podName)
     const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
@@ -29,7 +29,7 @@ function TerminalComponent({ selectedTab }) {
 
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.TERMINAL)
+        selectedTab(NodeDetailTab.TERMINAL, url)
         // getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
         //     console.log("getTerminalData", response)
         // }).catch((err) => {

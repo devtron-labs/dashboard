@@ -6,12 +6,11 @@ import TerminalComponent from './NodeDetailTabs/Terminal.component';
 import './nodeDetail.css';
 import SummaryComponent from './NodeDetailTabs/Summary.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import { useParams, useRouteMatch, useHistory } from 'react-router';
+import { useParams, useRouteMatch } from 'react-router';
 import { NodeDetailTab } from './nodeDetail.type';
 import { getNodeDetailTabs } from './nodeDetail.util';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
-import { URLS } from '../../../../../config';
 
 function NodeDetailComponent() {
 
@@ -19,7 +18,6 @@ function NodeDetailComponent() {
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState("")
     const { path, url } = useRouteMatch()
-    const history = useHistory()
 
     useEffect(() => {
         if (params.nodeType) {
@@ -30,13 +28,13 @@ function NodeDetailComponent() {
     }, [params.nodeType, params.podName])
 
 
-    const handleSelectedTab = (_tabName: string) => {
-        if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
-            history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
-        } else {
-            setSelectedTabName(_tabName)
-            AppDetailsStore.markAppDetailsTabActive(_tabName, url)
-        }
+    const handleSelectedTab = (_tabName: string, _url: string) => {
+        // if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
+        //     history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
+        // } else {
+        setSelectedTabName(_tabName)
+        AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
+        // }
     }
 
     return (
