@@ -6,6 +6,7 @@ import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import Tippy from '@tippyjs/react';
 
 
@@ -39,6 +40,7 @@ export class AppListView extends Component<AppListViewProps>{
             let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
             return <div className="app-list">
                 <div className="app-list__header">
+                    <div className="app-list__cell--icon"></div>
                     <div className="app-list__cell app-list__cell--name">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
@@ -61,6 +63,9 @@ export class AppListView extends Component<AppListViewProps>{
                     return <React.Fragment key={app.id} >
                         {!(this.props.appData && this.props.appData.id == app.id) ?
                             <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className="app-list__row">
+                                <div className="app-list__cell--icon">
+                                    <DevtronAppIcon className="icon-dim-24"/>
+                                </div>
                                 <div className="app-list__cell app-list__cell--name">
                                     <p className="truncate-text m-0">{app.name}</p>
                                 </div>

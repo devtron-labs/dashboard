@@ -184,3 +184,23 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }
+
+// APP LIST STARTS
+export const AppListConstants = {
+    CREATE_APP_URL: 'create-app',
+    AppTabs : {
+        DEVTRON_APPS: 'Devtron Apps',
+        HELM_APPS: 'Helm Apps'
+    },
+    AppType : {
+        DEVTRON_APPS: 'd',
+        HELM_APPS: 'h'
+    },
+    FilterType : {
+        PROJECT: 'team',
+        CLUTSER: 'cluster',
+        NAMESPACE: 'namespace',
+        ENVIRONMENT: 'environment'
+    }
+}
+// APP LIST ENDS

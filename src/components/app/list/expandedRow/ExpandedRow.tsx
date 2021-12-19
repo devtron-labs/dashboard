@@ -14,6 +14,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
         return this.props.app.environments.map((env) => {
             let color = 'var(--N700)';
             return <Link key={env.id} to={`${this.props.redirect(this.props.app, env.id)}`} className="app-list__row app-list__row--expanded">
+                <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
                     <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
                         <line x1="0" y1="20" x2="300" y2="20" stroke={color} strokeWidth="1" />

@@ -76,14 +76,12 @@
     display: flex;
     align-items: center;
     justify-content: stretch;
-    text-transform: uppercase;
     font-size: 12px;
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: var(--N500);
     padding-left: 24px;
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
@@ -136,6 +134,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.app-list__cell--icon{
+    width: 40px;
 }
 
 .app-list__cell--name {
@@ -206,7 +208,7 @@
 
 .round-button__icon {
     display: inline-block;
-    margin-right: 8px;
+    margin-left: 8px;
 }
 
 .button-edit {
@@ -374,4 +376,47 @@
     .filters__label {
         margin: 0px;
     }
+}
+
+.app-create-model-wrapper{
+    position : fixed;
+    right : 24px;
+    top : 50px;
+}
+
+.app-create-model-wrapper .app-create-child{
+    padding : 10px 15px;
+    display: flex;
+}
+
+.app-create-model-wrapper .app-create-child:first-child{
+    border-bottom: 1px solid #edf1f5;
+}
+
+.app-create-model-wrapper .app-create-child:hover {
+    background-color: #edf1f5;
+}
+
+.c-pointer {
+    cursor: pointer;
+}
+
+.app-tabs-wrapper{
+    position: relative;
+    border-bottom: 1px solid #ddd;
+}
+
+.app-tabs-wrapper .tab-list{
+    padding-left: 30px;
+}
+
+.app-tabs-wrapper .app-tabs-sync{
+    position: absolute;
+    right: 28px;
+    top: 10px;
+}
+
+.app-tabs-wrapper .app-tabs-sync button{
+    margin-top : -2px;
+
 }

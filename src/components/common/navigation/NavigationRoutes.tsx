@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { URLS } from '../../../config';
+import { URLS, AppListConstants } from '../../../config';
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
 import Navigation from './Navigation';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
@@ -137,7 +137,7 @@ export function RedirectToDevtronAppList() {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-        push(`${URLS.APP_LIST}/d`)
+        push(`${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}`)
     }, [])
     return null
 }

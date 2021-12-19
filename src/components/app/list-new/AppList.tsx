@@ -1,38 +1,21 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
-import {Progressing, Filter, showError, FilterOption } from '../../common';
+import { Link, Switch, Route } from 'react-router-dom';
+import {Progressing, Filter, showError, FilterOption, Modal } from '../../common';
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
+import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
+import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
 import {getInitData, getApplicationList, AppsList, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
-import {URLS} from '../../../config';
+import {URLS, AppListConstants} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import defaultChartImage from '../../../assets/icons/ic-plc-chart.svg'
 import AppListContainer from '../list/AppListContainer';
 import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
+import { AddNewApp } from '../create/CreateApp';
 import '../list/list.css';
-
-const APP_LIST_PARAM = {
-    createApp: 'create-app',
-}
-
-const APP_TABS = {
-    DEVTRON_APPS: 'Devtron Apps',
-    HELM_APPS: 'Helm Apps'
-}
-
-const APP_TYPE = {
-    DEVTRON_APPS: 'd',
-    HELM_APPS: 'h'
-}
-
-const APP_LIST_FILTER_TYPE = {
-    PROJECT: 'team',
-    CLUTSER: 'cluster',
-    NAMESPACE: 'namespace',
-    ENVIRONMENT: 'environment'
-}
 
 export default function AppList() {
     const location = useLocation();
@@ -41,6 +24,7 @@ export default function AppList() {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
+    const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false);
 
     // API master data
     const [appCheckListRes, setAppCheckListRes] = useState({});
@@ -57,7 +41,7 @@ export default function AppList() {
 
     // on page load
     useEffect(() => {
-        setCurrentTab(params.appType == APP_TYPE.DEVTRON_APPS ? APP_TABS.DEVTRON_APPS : APP_TABS.HELM_APPS);
+        setCurrentTab(params.appType == AppListConstants.AppType.DEVTRON_APPS ? AppListConstants.AppTabs.DEVTRON_APPS : AppListConstants.AppTabs.HELM_APPS);
 
         // set search data
         let searchQuery = location.search;
@@ -181,8 +165,13 @@ export default function AppList() {
     }
 
 
-    function openAppCreateModel(event: React.MouseEvent) {
-        let url = `${URLS.APP}/${APP_LIST_PARAM.createApp}${location.search}`
+    function openDevtronAppCreateModel(event: React.MouseEvent) {
+        let url = `${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_APP_URL}${location.search}`
+        history.push(`${url}`);
+    }
+
+    function redirectToHelmAppDiscover(event: React.MouseEvent) {
+        let url = `${URLS.CHARTS_DISCOVER}`
         history.push(`${url}`);
     }
 
@@ -209,7 +198,7 @@ export default function AppList() {
         }
 
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
     }
 
@@ -221,14 +210,14 @@ export default function AppList() {
             query[key] = qs[key];
         })
 
-        let queryParamType = (type == APP_LIST_FILTER_TYPE.CLUTSER || type == APP_LIST_FILTER_TYPE.NAMESPACE) ? 'namespace' : type;
+        let queryParamType = (type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : type;
         let checkedItems = list.filter(item => item.isChecked);
         let ids = checkedItems.map(item => item.key);
         let str = ids.toString();
         query[queryParamType] = str;
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
     }
 
@@ -241,10 +230,10 @@ export default function AppList() {
             query[key] = qs[key];
         })
         query['offset'] = 0;
-        let queryParamType = (filterType == APP_LIST_FILTER_TYPE.CLUTSER || filterType == APP_LIST_FILTER_TYPE.NAMESPACE) ? 'namespace' : filterType;
+        let queryParamType = (filterType == AppListConstants.FilterType.CLUTSER || filterType == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : filterType;
         let appliedFilters = query[queryParamType];
         let arr = appliedFilters.split(",");
-        if(filterType == APP_LIST_FILTER_TYPE.CLUTSER) {
+        if(filterType == AppListConstants.FilterType.CLUTSER) {
             arr = arr.filter((item) => !item.startsWith(val.toString()));
         }else{
             arr = arr.filter((item) => item != val.toString());
@@ -252,7 +241,7 @@ export default function AppList() {
         query[queryParamType] = arr.toString();
         if (query[queryParamType] == "") delete query[queryParamType];
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
     }
 
@@ -267,7 +256,7 @@ export default function AppList() {
         delete query['team'];
         delete query['namespace'];
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
     }
 
@@ -275,7 +264,7 @@ export default function AppList() {
         if (appTabType == currentTab){
             return;
         }
-        let url = (appTabType == APP_TABS.DEVTRON_APPS) ? `${URLS.APP_LIST_DEVTRON}${location.search}` : `${URLS.APP_LIST_HELM}${location.search}`;
+        let url = (appTabType == AppListConstants.AppTabs.DEVTRON_APPS) ? `${URLS.APP_LIST_DEVTRON}${location.search}` : `${URLS.APP_LIST_HELM}${location.search}`;
         history.push(url);
         setCurrentTab(appTabType);
     }
@@ -304,19 +293,15 @@ export default function AppList() {
         setSearchString(str);
     }
 
-    function renderPageHeaderWithFilters() {
-        return <div className="app-header">
-            <div className="app-header__title">
+    function renderPageHeader() {
+        return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
-                <button type="button" className="cta" onClick={openAppCreateModel}>
-                    <span className="round-button__icon"><i className="fa fa-plus" aria-hidden="true"></i></span>
-                    Add new app
+                <button type="button" className="cta" onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}>
+                    Create new
+                    <span className="round-button__icon"><i className="fa fa-caret-down" aria-hidden="true"></i></span>
                 </button>
+                {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </div>
-            {renderMasterFilters()}
-            {renderAppliedFilters()}
-            {renderAppTabs()}
-        </div>
     }
 
     function renderMasterFilters() {
@@ -339,28 +324,28 @@ export default function AppList() {
                             buttonText="Projects"
                             placeholder="Search Project"
                             searchable multi
-                            type={APP_LIST_FILTER_TYPE.PROJECT}
+                            type={AppListConstants.FilterType.PROJECT}
                             applyFilter={applyFilter} />
                     <Filter list={masterFilters.clusters}
                             labelKey="label"
                             buttonText="Cluster"
                             searchable multi
                             placeholder="Search Cluster"
-                            type={APP_LIST_FILTER_TYPE.CLUTSER}
+                            type={AppListConstants.FilterType.CLUTSER}
                             applyFilter={applyFilter} />
                     <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
                             labelKey="label"
                             buttonText="Namespace"
                             searchable multi
                             placeholder="Search Namespace"
-                            type={APP_LIST_FILTER_TYPE.NAMESPACE}
+                            type={AppListConstants.FilterType.NAMESPACE}
                             applyFilter={applyFilter} />
                     <Filter list={masterFilters.environments}
                             labelKey="label"
                             buttonText="Environment"
                             searchable multi
                             placeholder="Search Environment"
-                            type={APP_LIST_FILTER_TYPE.ENVIRONMENT}
+                            type={AppListConstants.FilterType.ENVIRONMENT}
                             applyFilter={applyFilter} />
                 </div>
             </div>
@@ -373,13 +358,13 @@ export default function AppList() {
             {keys.map((key) => {
                 let filterType = '';
                 if (key == 'projects'){
-                    filterType = APP_LIST_FILTER_TYPE.PROJECT;
+                    filterType = AppListConstants.FilterType.PROJECT;
                 }else if (key == 'clusters'){
-                    filterType = APP_LIST_FILTER_TYPE.CLUTSER;
+                    filterType = AppListConstants.FilterType.CLUTSER;
                 }else if (key == 'namespaces'){
-                    filterType = APP_LIST_FILTER_TYPE.NAMESPACE;
+                    filterType = AppListConstants.FilterType.NAMESPACE;
                 }else if (key == 'environments'){
-                    filterType = APP_LIST_FILTER_TYPE.ENVIRONMENT;
+                    filterType = AppListConstants.FilterType.ENVIRONMENT;
                 }
                 return masterFilters[key].map((filter) => {
                     if (filter.isChecked) {
@@ -404,18 +389,53 @@ export default function AppList() {
     }
 
     function renderAppTabs() {
-        return <>
-            <ul className="tab-list" style={{paddingLeft: 30, background: 'white'}}>
+        return <div className="app-tabs-wrapper">
+            <ul className="tab-list">
                 <li className="tab-list__tab">
-                    <a className={`tab-list__tab-link ${currentTab == APP_TABS.DEVTRON_APPS ? 'active' : ''}`}
-                       onClick={() => changeAppTab(APP_TABS.DEVTRON_APPS)}>Devtron Apps</a>
+                    <a className={`tab-list__tab-link ${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''}`}
+                       onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}>Devtron Apps</a>
                 </li>
                 <li className="tab-list__tab">
-                    <a className={`tab-list__tab-link ${currentTab == APP_TABS.HELM_APPS ? 'active' : ''}`}
-                       onClick={() => changeAppTab(APP_TABS.HELM_APPS)}>Helm Apps</a>
+                    <a className={`tab-list__tab-link ${currentTab == AppListConstants.AppTabs.HELM_APPS ? 'active' : ''}`}
+                       onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}>Helm Apps</a>
                 </li>
             </ul>
-        </>
+            <div className="app-tabs-sync">
+                Last synced 1 hour ago hello <button className="text-primary btn btn-link p-0">sync now</button>
+            </div>
+        </div>
+    }
+
+    const closeDevtronAppCreateModal = () => {
+        let url = `${URLS.APP_LIST_DEVTRON}${location.search}`;
+        history.push(`${url}`);
+    }
+
+    function renderAppCreateRouter() {
+        return <Switch>
+            <Route path={`${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_APP_URL}`}
+                   render={(props) => <AddNewApp close={closeDevtronAppCreateModal}  match={props.match} location={props.location} history={props.history} />}
+            />
+        </Switch>
+    }
+
+    function renderAppCreateSelectionModal() {
+        return <Modal rootClassName="app-create-model-wrapper" onClick={ () => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)} >
+                <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
+                    <AddIcon className="icon-dim-20 fcn-9"/>
+                    <div className="ml-5">
+                        <strong>Custom app</strong>
+                        <div>Connect a git repository to deploy <br/> a custom application</div>
+                    </div>
+                </div>
+                <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
+                    <ChartIcon className="icon-dim-20"/>
+                    <div className="ml-5">
+                        <strong>From Chart store</strong>
+                        <div>Deploy apps using third party helm <br/> charts (eg. prometheus, redis etc.)</div>
+                    </div>
+                </div>
+        </Modal>
     }
 
     return (
@@ -431,9 +451,15 @@ export default function AppList() {
             {
                 dataStateType != AppListViewType.LOADING &&
                 <>
-                    {renderPageHeaderWithFilters()}
+                    <div className="app-header">
+                        {renderPageHeader()}
+                        {renderMasterFilters()}
+                        {renderAppliedFilters()}
+                        {renderAppTabs()}
+                    </div>
+                    {renderAppCreateRouter()}
                     {
-                        params.appType == APP_TYPE.DEVTRON_APPS &&
+                        params.appType == AppListConstants.AppType.DEVTRON_APPS &&
                         <AppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
                     }
                 </>

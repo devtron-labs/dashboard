@@ -7,6 +7,7 @@ export interface NavItem {
 
 export const URLS = {
     CHARTS: '/chart-store',
+    CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
     APP_LIST: '/apps',
     APP_LIST_DEVTRON: '/apps/d',
