@@ -169,7 +169,7 @@ export default function AppList() {
 
         let payload = {
             environments: environments.toString().split(",").map(env => +env).filter(item => item != 0),
-            teams: teams.toString().split(",").map(team => +team).filter(item => item != 0),
+            teams: teams.toString().split(",").filter(team => team != '').map(team => Number(team)),
             namespaces : clustersAndNamespaces.toString().split(",").filter(item => item != ""),
             appNameSearch: search,
             sortBy: sortBy,
@@ -304,7 +304,7 @@ export default function AppList() {
         setSearchString(str);
     }
 
-    function renderPageHeader() {
+    function renderPageHeaderWithFilters() {
         return <div className="app-header">
             <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
@@ -313,6 +313,9 @@ export default function AppList() {
                     Add new app
                 </button>
             </div>
+            {renderMasterFilters()}
+            {renderAppliedFilters()}
+            {renderAppTabs()}
         </div>
     }
 
@@ -420,7 +423,6 @@ export default function AppList() {
             {
                 dataStateType == AppListViewType.LOADING &&
                 <>
-                    {renderPageHeader()}
                     <div className="loading-wrapper">
                         <Progressing pageLoader/>
                     </div>
@@ -429,10 +431,7 @@ export default function AppList() {
             {
                 dataStateType != AppListViewType.LOADING &&
                 <>
-                    {renderPageHeader()}
-                    {renderMasterFilters()}
-                    {renderAppliedFilters()}
-                    {renderAppTabs()}
+                    {renderPageHeaderWithFilters()}
                     {
                         params.appType == APP_TYPE.DEVTRON_APPS &&
                         <AppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { AppListViewType } from '../config';
-import { ErrorScreenManager, Pagination, Progressing } from '../../common';
+import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import Tippy from '@tippyjs/react';
 
 
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
@@ -53,7 +54,7 @@ export class AppListView extends Component<AppListViewProps>{
                         <span className="app-list__cell-header">Namespace</span>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        <span className="app-list__cell-header">Last Deployed Time </span>
+                        <span className="app-list__cell-header">Last deployed at</span>
                     </div>
                 </div>
                 {this.props.apps.map((app) => {
@@ -71,7 +72,11 @@ export class AppListView extends Component<AppListViewProps>{
                                     <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.namespace : ""}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
-                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.lastDeployedTime : ""}</p>
+                                    {app.defaultEnv && app.defaultEnv.lastDeployedTime &&
+                                        <Tippy arrow={true} placement="top" content={app.defaultEnv.lastDeployedTime}>
+                                            <p className="truncate-text m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
+                                        </Tippy>
+                                    }
                                 </div>
                             </Link>
                             : null}

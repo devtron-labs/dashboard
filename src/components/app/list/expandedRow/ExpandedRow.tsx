@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { statusIcon, statusColor } from '../../config';
+import { handleUTCTime } from '../../../common';
 import { ExpandedRowProps } from './types';
 import { Link } from 'react-router-dom'
 import { ReactComponent as Commit } from '../../../../assets/icons/ic-commit.svg';
 import { ReactComponent as Settings } from '../../../../assets/icons/ic-settings.svg';
+import Tippy from '@tippyjs/react';
 import './expandedRow.css';
 
 export class ExpandedRow extends Component<ExpandedRowProps>{
@@ -12,7 +14,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
         return this.props.app.environments.map((env) => {
             let color = 'var(--N700)';
             return <Link key={env.id} to={`${this.props.redirect(this.props.app, env.id)}`} className="app-list__row app-list__row--expanded">
-                <div className="app-list__cell app-list__cell--name-pseudo">
+                <div className="app-list__cell app-list__cell--name">
                     <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
                         <line x1="0" y1="20" x2="300" y2="20" stroke={color} strokeWidth="1" />
                         <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
@@ -21,8 +23,12 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                 <div className="app-list__cell app-list__cell--env">{env.name}</div>
                 <div className="app-list__cell app-list__cell--cluster-name">{env.clusterName}</div>
                 <div className="app-list__cell app-list__cell--namespace">{env.namespace}</div>
-                <div className="app-list__cell app-list__cell--time">{env.lastDeployedTime}</div>
-                <div className="app-list__cell app-list__cell--action">
+                <div className="app-list__cell app-list__cell--time">
+                    {env.lastDeployedTime &&
+                        <Tippy arrow={true} placement="top" content={env.lastDeployedTime}>
+                            <p className="truncate-text m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
+                        </Tippy>
+                    }
                 </div>
             </Link>
         })
