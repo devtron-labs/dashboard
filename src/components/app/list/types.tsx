@@ -56,6 +56,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     appCheckListRes? : any;
     teamListRes? : any;
     environmentListRes? : any;
+    clearAllFilters: () => void;
 }
 
 export interface AppListResponse {

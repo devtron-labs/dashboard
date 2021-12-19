@@ -120,9 +120,9 @@ export class AppListView extends Component<AppListViewProps>{
         else if (this.props.view === AppListViewType.NO_RESULT) {
             return <React.Fragment>
                 <Empty view={this.props.view}
-                    title={"No matching apps"}
+                    title={"No apps found"}
                     message={"We couldn't find any matching applications."}
-                    buttonLabel={"View All Apps"}
+                    buttonLabel={"Clear filters"}
                     clickHandler={this.props.clearAll} />
             </React.Fragment>
         }

@@ -86,22 +86,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         this.props.history.push(url);
     }
 
-    clearAll = (): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        delete query['search'];
-        delete query['environment'];
-        delete query['team'];
-        delete query['status'];
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
-        this.props.history.push(url);
-    }
-
     changePage = (pageNo: number): void => {
         let offset = this.state.pageSize * (pageNo - 1);
         let qs = queryString.parse(this.props.location.search);
@@ -139,7 +123,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
-        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.appNameSearch?.length;
+        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
         state.sortRule = {
@@ -198,7 +182,7 @@ class AppListContainer extends Component<AppListProps, AppListState>{
             closeExpandedRow={this.closeExpandedRow}
             sort={this.sort}
             redirectToAppDetails={this.redirectToAppDetails}
-            clearAll={this.clearAll}
+            clearAll={this.props.clearAllFilters}
             changePage={this.changePage}
             changePageSize={this.changePageSize}
         />

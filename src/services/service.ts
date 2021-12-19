@@ -2,7 +2,7 @@ import { get, post } from './api';
 import { Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 
@@ -332,4 +332,9 @@ export function getWebhookEventsForEventId(eventId: string | number) {
 export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     const URL = `git/host/webhook-meta-config/${gitProviderId}`;
     return get(URL);
+}
+
+export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {
+    let url = `${Routes.CLUSTER_ENV_MAPPING}`;
+    return get(url);
 }

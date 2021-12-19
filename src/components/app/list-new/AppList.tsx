@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
 import {Progressing, Filter, showError, FilterOption } from '../../common';
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
-import {getInitData, getApplicationList, AppsList} from './AppListService'
+import {getInitData, getApplicationList, AppsList, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
 import {URLS} from '../../../config';
@@ -25,6 +25,13 @@ const APP_TABS = {
 const APP_TYPE = {
     DEVTRON_APPS: 'd',
     HELM_APPS: 'h'
+}
+
+const APP_LIST_FILTER_TYPE = {
+    PROJECT: 'team',
+    CLUTSER: 'cluster',
+    NAMESPACE: 'namespace',
+    ENVIRONMENT: 'environment'
 }
 
 export default function AppList() {
@@ -90,14 +97,20 @@ export default function AppList() {
         let search = params.search || "";
         let environments = params.environment || "";
         let teams = params.team || "";
+        let clustersAndNamespaces = params.namespace || "";
 
+        let _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces);
 
-        // update master filters data (check/uncheck)
+        ////// update master filters data (check/uncheck)
         let filterApplied = {
             environments: new Set(environments),
             teams: new Set(teams),
+            clusterVsNamespaceMap : _clusterVsNamespaceMap
         }
+
         let _masterFilters = {projects :[], clusters :[], namespaces :[], environments : []};
+
+        // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
             return {
                 key: project.key,
@@ -106,6 +119,30 @@ export default function AppList() {
                 isChecked: filterApplied.teams.has(project.key.toString())
             }
         })
+
+        // set clusters (check/uncheck)
+        _masterFilters.clusters = masterFilters.clusters.map((cluster) => {
+            return {
+                key: cluster.key,
+                label: cluster.label,
+                isSaved: true,
+                isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString())
+            }
+        })
+
+        // set namespace (check/uncheck)
+        _masterFilters.namespaces = masterFilters.namespaces.map((namespace) => {
+            return {
+                key: namespace.key,
+                label: namespace.label,
+                isSaved: true,
+                isChecked: filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()) && filterApplied.clusterVsNamespaceMap.get(namespace.clusterId.toString()).includes(namespace.key.split("_")[1]),
+                toShow : filterApplied.clusterVsNamespaceMap.size == 0 || filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()),
+                clusterId : namespace.clusterId
+            }
+        })
+
+        // set environments (check/uncheck)
         _masterFilters.environments = masterFilters.environments.map((env) => {
             return {
                 key: env.key,
@@ -115,7 +152,7 @@ export default function AppList() {
             }
         })
         setMasterFilters(_masterFilters);
-        // update master filters data ends (check/uncheck)
+        ////// update master filters data ends (check/uncheck)
 
         let sortBy = params.orderBy || SortBy.APP_NAME;
         let sortOrder = params.sortOrder || OrderBy.ASC;
@@ -133,6 +170,7 @@ export default function AppList() {
         let payload = {
             environments: environments.toString().split(",").map(env => +env).filter(item => item != 0),
             teams: teams.toString().split(",").map(team => +team).filter(item => item != 0),
+            namespaces : clustersAndNamespaces.toString().split(",").filter(item => item != ""),
             appNameSearch: search,
             sortBy: sortBy,
             sortOrder: sortOrder,
@@ -182,17 +220,20 @@ export default function AppList() {
         keys.map((key) => {
             query[key] = qs[key];
         })
-        let items = list.filter(item => item.isChecked);
-        let ids = items.map(item => item.key);
+
+        let queryParamType = (type == APP_LIST_FILTER_TYPE.CLUTSER || type == APP_LIST_FILTER_TYPE.NAMESPACE) ? 'namespace' : type;
+        let checkedItems = list.filter(item => item.isChecked);
+        let ids = checkedItems.map(item => item.key);
         let str = ids.toString();
-        query[type] = str;
+        query[queryParamType] = str;
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
     }
 
-    const removeFilter = (val, type: string): void => {
+    const removeFilter = (filter, filterType: string): void => {
+        let val = filter.key;
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
@@ -200,11 +241,16 @@ export default function AppList() {
             query[key] = qs[key];
         })
         query['offset'] = 0;
-        let appliedFilters = query[type];
+        let queryParamType = (filterType == APP_LIST_FILTER_TYPE.CLUTSER || filterType == APP_LIST_FILTER_TYPE.NAMESPACE) ? 'namespace' : filterType;
+        let appliedFilters = query[queryParamType];
         let arr = appliedFilters.split(",");
-        arr = arr.filter((item) => item != val.toString());
-        query[type] = arr.toString();
-        if (query[type] == "") delete query[type];
+        if(filterType == APP_LIST_FILTER_TYPE.CLUTSER) {
+            arr = arr.filter((item) => !item.startsWith(val.toString()));
+        }else{
+            arr = arr.filter((item) => item != val.toString());
+        }
+        query[queryParamType] = arr.toString();
+        if (query[queryParamType] == "") delete query[queryParamType];
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
@@ -219,7 +265,7 @@ export default function AppList() {
         })
         delete query['environment'];
         delete query['team'];
-        delete query['status'];
+        delete query['namespace'];
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == APP_TABS.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
@@ -290,14 +336,28 @@ export default function AppList() {
                             buttonText="Projects"
                             placeholder="Search Project"
                             searchable multi
-                            type={"team"}
+                            type={APP_LIST_FILTER_TYPE.PROJECT}
+                            applyFilter={applyFilter} />
+                    <Filter list={masterFilters.clusters}
+                            labelKey="label"
+                            buttonText="Cluster"
+                            searchable multi
+                            placeholder="Search Cluster"
+                            type={APP_LIST_FILTER_TYPE.CLUTSER}
+                            applyFilter={applyFilter} />
+                    <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
+                            labelKey="label"
+                            buttonText="Namespace"
+                            searchable multi
+                            placeholder="Search Namespace"
+                            type={APP_LIST_FILTER_TYPE.NAMESPACE}
                             applyFilter={applyFilter} />
                     <Filter list={masterFilters.environments}
                             labelKey="label"
                             buttonText="Environment"
                             searchable multi
                             placeholder="Search Environment"
-                            type={"environment"}
+                            type={APP_LIST_FILTER_TYPE.ENVIRONMENT}
                             applyFilter={applyFilter} />
                 </div>
             </div>
@@ -308,12 +368,22 @@ export default function AppList() {
         let keys = Object.keys(masterFilters);
         let appliedFilters = <div className="saved-filters">
             {keys.map((key) => {
+                let filterType = '';
+                if (key == 'projects'){
+                    filterType = APP_LIST_FILTER_TYPE.PROJECT;
+                }else if (key == 'clusters'){
+                    filterType = APP_LIST_FILTER_TYPE.CLUTSER;
+                }else if (key == 'namespaces'){
+                    filterType = APP_LIST_FILTER_TYPE.NAMESPACE;
+                }else if (key == 'environments'){
+                    filterType = APP_LIST_FILTER_TYPE.ENVIRONMENT;
+                }
                 return masterFilters[key].map((filter) => {
                     if (filter.isChecked) {
                         count++;
                         return <div key={filter.key} className="saved-filter">{key} : {filter.label}
                             <button type="button" className="saved-filter__clear-btn"
-                                    onClick={(event) => removeFilter(filter.key, key)} >
+                                    onClick={(event) => removeFilter(filter, filterType)} >
                                 <i className="fa fa-times-circle" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -365,7 +435,7 @@ export default function AppList() {
                     {renderAppTabs()}
                     {
                         params.appType == APP_TYPE.DEVTRON_APPS &&
-                        <AppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes}/>
+                        <AppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
                     }
                 </>
             }

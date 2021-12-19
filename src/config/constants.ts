@@ -108,6 +108,7 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    CLUSTER_ENV_MAPPING: '/env'
 };
 
 export const ViewType = {
