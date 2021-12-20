@@ -5,13 +5,15 @@ import {Progressing, Filter, showError, FilterOption, Modal } from '../../common
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
 import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
+import noresult from '../../../assets/img/empty-noresult@2x.png';
+import EmptyState from '../../EmptyState/EmptyState';
 import {getInitData, getApplicationList, AppsList, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
 import {URLS, AppListConstants} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import defaultChartImage from '../../../assets/icons/ic-plc-chart.svg'
-import AppListContainer from '../list/AppListContainer';
+import DevtronAppListContainer from '../list/DevtronAppListContainer';
 import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
@@ -38,6 +40,8 @@ export default function AppList() {
     // filters
     const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
 
+    //
+    let onlyEa = true;
 
     // on page load
     useEffect(() => {
@@ -340,13 +344,16 @@ export default function AppList() {
                             placeholder="Search Namespace"
                             type={AppListConstants.FilterType.NAMESPACE}
                             applyFilter={applyFilter} />
-                    <Filter list={masterFilters.environments}
-                            labelKey="label"
-                            buttonText="Environment"
-                            searchable multi
-                            placeholder="Search Environment"
-                            type={AppListConstants.FilterType.ENVIRONMENT}
-                            applyFilter={applyFilter} />
+                    {
+                        !onlyEa &&
+                        <Filter list={masterFilters.environments}
+                                labelKey="label"
+                                buttonText="Environment"
+                                searchable multi
+                                placeholder="Search Environment"
+                                type={AppListConstants.FilterType.ENVIRONMENT}
+                                applyFilter={applyFilter} />
+                    }
                 </div>
             </div>
     }
@@ -421,6 +428,8 @@ export default function AppList() {
 
     function renderAppCreateSelectionModal() {
         return <Modal rootClassName="app-create-model-wrapper" onClick={ () => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)} >
+            {
+                !onlyEa &&
                 <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
                     <AddIcon className="icon-dim-20 fcn-9"/>
                     <div className="ml-5">
@@ -428,6 +437,7 @@ export default function AppList() {
                         <div>Connect a git repository to deploy <br/> a custom application</div>
                     </div>
                 </div>
+            }
                 <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20"/>
                     <div className="ml-5">
@@ -457,10 +467,21 @@ export default function AppList() {
                         {renderAppliedFilters()}
                         {renderAppTabs()}
                     </div>
-                    {renderAppCreateRouter()}
+                    {!onlyEa && renderAppCreateRouter()}
                     {
-                        params.appType == AppListConstants.AppType.DEVTRON_APPS &&
-                        <AppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
+                        !onlyEa && params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                        <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
+                    }
+                    {
+                        onlyEa && params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                        <div style={{ height: "calc(100vh - 250px)" }}>
+                            <EmptyState>
+                                <img src={noresult} width="250" height="200" alt="no results" />
+                                <h2 className="fs-16 fw-4 c-9">Create, build, deploy, debug</h2>
+                                <p className="text-left">Use Discover, Sentry’s powerful built-in query language interface, to uncover patterns and trends in your event data - all in one place. Measuring the health of your application is just a few simple clicks away. Learn more</p>
+                                <p>Run below command to install</p>
+                            </EmptyState>
+                        </div>
                     }
                 </>
             }

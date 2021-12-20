@@ -11,7 +11,7 @@ import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
 import './list.css';
 
-class AppListContainer extends Component<AppListProps, AppListState>{
+class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
 
     constructor(props) {
@@ -163,7 +163,6 @@ class AppListContainer extends Component<AppListProps, AppListState>{
         })
     }
 
-
     redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
             return `/app/${app.id}/details/${envId}`;
@@ -189,4 +188,4 @@ class AppListContainer extends Component<AppListProps, AppListState>{
     }
 }
 
-export default withRouter(AppListContainer)
+export default withRouter(DevtronAppListContainer)
