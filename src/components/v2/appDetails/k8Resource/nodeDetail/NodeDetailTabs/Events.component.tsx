@@ -98,7 +98,7 @@ function EventsComponent({ selectedTab }) {
 
 
                 {
-                    loading && <div className="flex h-100" style={{ minHeight: "600px" }}>
+                    loading && <div className="flex column h-100" style={{ minHeight: "600px" }}>
                         <Spinner loading></Spinner>
                         <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
                     </div>

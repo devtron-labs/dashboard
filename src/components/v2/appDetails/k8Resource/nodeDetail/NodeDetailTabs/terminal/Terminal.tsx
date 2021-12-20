@@ -240,7 +240,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (firstMessageReceived) {
-            terminal.setOption('cursorBlink', true);
+            // terminal.setOption('cursorBlink', true);
             terminalViewProps.setSocketConnection('CONNECTED');
             fitAddon.fit();
         }

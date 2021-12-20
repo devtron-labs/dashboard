@@ -9,6 +9,7 @@ import { NodeDetailTab } from '../nodeDetail.type';
 import { getManifestResource } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
+import { Progressing } from '../../../../../common';
 
 function ManifestComponent({ selectedTab }) {
 
@@ -20,16 +21,21 @@ function ManifestComponent({ selectedTab }) {
     const [desiredManifest, setDesiredManifest] = useState('');
     const [diffMode, setDiffMode] = useState(false)
     const appDetails = IndexStore.getAppDetails();
+    const [loading, setLoading] = useState(false)
+
 
     useEffect(() => {
+        setLoading(true)
         let title = url.split('/').slice(-2)
-        selectedTab(NodeDetailTab.MANIFEST, url, title)
+        selectedTab(NodeDetailTab.MANIFEST, url)
 
         getManifestResource(appDetails, params.podName).then((response) => {
             setManifest(response.result.manifest)
             setActiveManifestEditorData(response.result.manifest)
+            setLoading(false)
         }).catch((err) => {
             console.log("err", err)
+            setLoading(false)
         })
 
     }, [params.podName])
@@ -94,8 +100,14 @@ function ManifestComponent({ selectedTab }) {
     //     }
     // }, [params.actionName])
 
-    return (
+    return (<>
+        {loading &&
+            <div className="flex bcn-0" style={{ minHeight: "600px" }}>
+                <Progressing pageLoader />
+            </div>
+        }
         <div className="bcn-0">
+
             {/* <div className="flex left pl-20 pr-20 border-bottom">
                 {
                     tabs.map((tab: iLink, index) => {
@@ -113,7 +125,7 @@ function ManifestComponent({ selectedTab }) {
                     <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
                 </div>
             </div> */}
-            {
+            {/* {
                 diffMode ?
                     <CodeEditor
                         original={manifest}
@@ -123,7 +135,7 @@ function ManifestComponent({ selectedTab }) {
                         mode="yaml"
                         readOnly={activeTab !== 'Desired manifest'}
                     >
-                    </CodeEditor> :
+                    </CodeEditor> : */}
                     <CodeEditor
                         theme='vs-gray--dt'
                         height={600}
@@ -134,8 +146,9 @@ function ManifestComponent({ selectedTab }) {
                     // onChange={handleEditorValueChange}
                     >
                     </CodeEditor>
-            }
+            {/* } */}
         </div>
+    </>
     )
 }
 

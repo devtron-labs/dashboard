@@ -12,7 +12,6 @@ import { getNodeDetailTabs } from './nodeDetail.util';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
-import IndexStore from '../../index.store';
 
 function NodeDetailComponent() {
 
@@ -21,7 +20,6 @@ function NodeDetailComponent() {
     const [selectedTabName, setSelectedTabName] = useState("")
     const { path, url } = useRouteMatch()
     const history = useHistory()
-    const podMetaData = IndexStore.getPodMetaData()
 
     useEffect(() => {
         if (params.nodeType) {
@@ -33,12 +31,14 @@ function NodeDetailComponent() {
 
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        if (AppDetailsStore.getAppDetailsTabs().length < 2) { //Invalid State need to redirect to k8
-            history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
-        } else {
-        setSelectedTabName(_tabName)
-        AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
-        }
+        console.log(url)
+        console.log(params)
+        // if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
+        //     history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
+        // } else {
+            setSelectedTabName(_tabName)
+            AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
+        // }
     }
 
     return (

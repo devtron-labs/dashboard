@@ -86,23 +86,16 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    markAppDetailsTabActive: (tabName: string, url: string, tabTitle?: string) => {
+    markAppDetailsTabActive: (tabName: string, url: string) => {
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false
-            if (tab.name.toLowerCase() === tabName.toLowerCase()) {
-                tab.isSelected = true
-            } else {
-           let _tabUrl = tab.url.split('/').slice(0, -1).join('/')
-           let _url = url.split('/').slice(0,-1).join('/')
-           
-        //    if (tab.url === url ) {
-        //         tab.isSelected = true
-        //     }  else
-             if (_tabUrl === _url  ) {
+            // if (tab.name.toLowerCase() === tabName.toLowerCase()) {
+            //     tab.isSelected = true
+            // } else 
+            if (tab.url === url) {
                 tab.isSelected = true
             }
-        }
         }
 
         // let title = tabKind + '/' + tabName
