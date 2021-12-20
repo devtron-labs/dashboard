@@ -146,6 +146,10 @@
     padding-left: 0px;
 }
 
+.app-list__cell--name.value {
+    color: #0066cc;
+}
+
 .app-list__cell--status {
     flex-basis: 16%;
     position: relative;

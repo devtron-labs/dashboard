@@ -14,6 +14,7 @@ import {URLS, AppListConstants} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import defaultChartImage from '../../../assets/icons/ic-plc-chart.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer';
+/*import HelmAppListContainer from './HelmAppListContainer';*/
 import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
@@ -83,6 +84,11 @@ export default function AppList() {
     }, [location.search])
 
 
+    useEffect(() => {
+        setLastDataSyncTime(Date());
+    }, [currentTab])
+
+
     const onRequestUrlChange = () : any => {
         let searchQuery = location.search;
 
@@ -147,9 +153,6 @@ export default function AppList() {
         setMasterFilters(_masterFilters);
         ////// update master filters data ends (check/uncheck)
 
-        // set last sync time starts
-        setLastDataSyncTime(Date());
-        // set last sync time ends
 
         let sortBy = params.orderBy || SortBy.APP_NAME;
         let sortOrder = params.sortOrder || OrderBy.ASC;
@@ -486,11 +489,11 @@ export default function AppList() {
                     </div>
                     {serverMode == 'FULL' && renderAppCreateRouter()}
                     {
-                        serverMode == 'FULL' && params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'FULL' &&
                         <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
                     }
                     {
-                        serverMode == 'ONLY_EA' && params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'ONLY_EA' &&
                         <div style={{ height: "calc(100vh - 250px)" }}>
                             <EmptyState>
                                 <img src={InstallDevtronFullImage} width="250" height="200" alt="Install devtron" />
@@ -500,6 +503,10 @@ export default function AppList() {
                             </EmptyState>
                         </div>
                     }
+                    {/*{
+                        params.appType == AppListConstants.AppType.HELM_APPS &&
+                        <HelmAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
+                    }*/}
                  </>
             }
         </div>
