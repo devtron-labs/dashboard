@@ -11,6 +11,7 @@ import { Link, NavLink } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import warn from '../../assets/icons/ic-warning.svg';
+import { CiPipeline } from '../app/details/triggerView/workflow.service';
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {
     nodes: NodeAttr[];
@@ -57,7 +58,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderNodes() {
         let ci = this.props.nodes.find(node => node.type == 'CI');
         if (ci)
-            return this.props.nodes.map((node: any) => {
+            return this.props.nodes.map((node: NodeAttr) => {
                 if (node.type == "GIT") {
                     return this.renderSourceNode(node);
                 }
@@ -105,9 +106,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         />
     }
 
-    openCDPipeline(node) {
+    openCDPipeline(node: NodeAttr) {
         let { appId } = this.props.match.params;
-        return this.props.match.url + "/" + getCDPipelineURL(appId, this.props.id.toString(), node.parents[0], node.id);
+        return this.props.match.url + "/" + getCDPipelineURL(appId, this.props.id.toString(), String( node.connectingCiPipelineId ?? 0), node.id);
     }
 
     openCIPipeline(node: NodeAttr) {
@@ -142,7 +143,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         />
     }
 
-    renderCDNodes(node, ciPipelineId: string | number) {
+    renderCDNodes(node: NodeAttr, ciPipelineId: string | number) {
         return <CDNode key={node.id}
             x={node.x}
             y={node.y}

@@ -1,4 +1,3 @@
-import { string } from 'prop-types';
 import { RouteComponentProps } from 'react-router';
 import { HostURLConfig } from '../../services/service.types';
 import { NodeAttr } from '../app/details/triggerView/types';
@@ -8,6 +7,7 @@ export interface WorkflowEditState {
     code: number;
     workflows: any[];
     allCINodeMap: Map<string, NodeAttr>;
+    allDeploymentNodeMap: Map<string, NodeAttr>
     workflowId: number;
     appName: string;
     showDeleteDialog: boolean;

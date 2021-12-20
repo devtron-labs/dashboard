@@ -409,7 +409,7 @@ export const workflowsTrigger = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -607,7 +607,7 @@ export const workflowsCreate = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     },
     {
@@ -912,7 +912,7 @@ export const workflowsTriggerPrePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -1109,7 +1109,7 @@ export const workflowsCreatePrePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     },
     {
@@ -1512,7 +1512,7 @@ export const workflowsTriggerPreCDResp = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -1709,7 +1709,7 @@ export const workflowsCreatePreCDResp = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     },
     {
@@ -1906,7 +1906,7 @@ export const workflowsCreatePostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     },
     {
@@ -2156,7 +2156,7 @@ export const workflowsTriggerPostCD = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -2416,7 +2416,7 @@ export const workflows2Trigger = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -2497,7 +2497,7 @@ export const workflows2Trigger = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     }
 ];
@@ -2580,7 +2580,7 @@ export const workflows2Create = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     },
     {
@@ -2661,7 +2661,7 @@ export const workflows2Create = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 113,
+        "height": 112,
         "width": 840
     }
 ];

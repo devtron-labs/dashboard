@@ -3,6 +3,7 @@ import { WorkflowType, NodeAttr } from './types';
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config';
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config';
 import { isEmpty } from '../../../common';
+import { CINode } from '../../../workflowEditor/nodes/CINode';
 
 
 enum PipelineType {
@@ -197,9 +198,11 @@ export const getInitialWorkflows = (id, dimensions: WorkflowDimensions, workflow
 }
 
 export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipelineResult, cdResponse: CdPipelineResult, dimensions: WorkflowDimensions, workflowOffset: Offset): { appName: string, workflows: Array<WorkflowType> } {
+    let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions);
     let ciMap = new Map(
         (ciResponse?.ciPipelines?.filter(pipeline => pipeline.active && !pipeline.deleted) ?? [])
-            .map(ciPipeline => [ciPipeline.id, ciPipeline] as [number, CiPipeline])
+            .map(ciPipelineToNodeWithDimension)
+            .map(ciPipeline => [ciPipeline.id, ciPipeline] as [string, NodeAttr])
     );
     let cdMap = new Map(
         (cdResponse?.pipelines ?? [])
@@ -218,11 +221,10 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
         .sort((a, b) => a.id - b.id)
         .forEach( branch => {
             if (branch.type == PipelineType.CI_PIPELINE) {
-                let ciPipeline = ciMap.get(branch.componentId);
-                if (!ciPipeline) {
+                let ciNode = ciMap.get(String(branch.componentId));
+                if (!ciNode) {
                     return;
                 }
-                let ciNode = ciPipelineToNode(ciPipeline, dimensions);
                 wf.nodes.push(ciNode);
             } else {
                 let cdPipeline = cdMap.get(branch.componentId);
@@ -235,11 +237,7 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
                 wf.nodes
                 .filter(n => n.id == String(branch.parentId) && n.type == parentType)
                 .forEach(node => {
-                    if (node.postNode) {
-                        node.postNode.downstreams.push( type + "-" + branch.componentId );
-                    } else {
-                        node.downstreams.push( type + "-" + branch.componentId );
-                    }
+                    (node.postNode ? node.postNode : node).downstreams.push(type + "-" + branch.componentId);
                     node.downstreamNodes.push(cdNode);
                 });
                 wf.nodes.push(cdNode);
@@ -247,7 +245,6 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
         })
     });
 
-    console.log("here")
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter(wf => wf.nodes.length > 0);
     }
@@ -275,19 +272,14 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
         ciNode.y = startY + workflowOffset.offsetY;
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
-            processDownstreams(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y);
+            processDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y);
         }
-
-
-
 
 
         let finalWorkflow = new Array<NodeAttr>();
         workflow.nodes.forEach( node => {
             if (node.type == 'CI') {
-                (node.sourceNodes ?? []).forEach( sn => {
-                    finalWorkflow.push(sn);
-                })
+                node.sourceNodes && finalWorkflow.push(...node.sourceNodes);
                 finalWorkflow.push(node);
                 delete node['sourceNodes'];
             }
@@ -300,26 +292,15 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
         });
         delete workflow['dag'];
 
-        let maxY = finalWorkflow
-        .filter(node => node.type == 'CD')
-        .reduce((maxY, node) => {
-            return Math.max(node.y, maxY);
-        }, 0);
-        let maxX = finalWorkflow
-        .reduce((maxX, node) => {
-            return Math.max(node.x + node.width, maxX);
-        }, 0);
+        let maxY = finalWorkflow.reduce((maxY, node) => Math.max(node.y + node.height + workflowOffset.offsetY, maxY), 0);
+        let maxX = finalWorkflow.reduce((maxX, node) => Math.max(node.x + node.width + workflowOffset.offsetX, maxX), 0);
 
         let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280;
-        let gitHeight = (workflow.nodes[0].sourceNodes?.length ?? 0 ) * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY);
-        let ciHeight = dimensions.cINodeSizes.nodeHeight + dimensions.cINodeSizes.distanceY;
-        let cdHeight = maxY + (dimensions.cDNodeSizes.nodeHeight);
-        let maxHeight = Math.max(gitHeight, ciHeight, cdHeight);
-        workflow.height = maxHeight + workflowOffset.offsetY;
+        workflow.height = maxY;
         workflow.startY = !index ? 0 : startY;
 
+        workflow.width = Math.max(maxX, workflowWidth);
 
-        workflow.width = Math.max(maxX + workflowOffset.offsetX, workflowWidth);
         maxWorkflowWidth = Math.max(maxWorkflowWidth, workflow.width);
 
         workflow.nodes = finalWorkflow;
@@ -329,7 +310,7 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
     return {appName, workflows};
 }
 
-function processDownstreams(downstreams: Array<NodeAttr>, dimensions: WorkflowDimensions, startX: number, startY: number) {
+function processDownstreamDeployments(downstreams: Array<NodeAttr>, dimensions: WorkflowDimensions, startX: number, startY: number) {
     let lastY = startY
     for (let index = 0; index < downstreams.length; index++) {
         const element = downstreams[index];
@@ -356,7 +337,7 @@ function processDownstreams(downstreams: Array<NodeAttr>, dimensions: WorkflowDi
         lastY = cdNodeY  + dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY;
 
         if ((element.downstreamNodes?.length ?? 0) > 0) {
-            processDownstreams(element.downstreamNodes, dimensions, lastX, cdNodeY)
+            processDownstreamDeployments(element.downstreamNodes, dimensions, lastX, cdNodeY)
             lastY = element.downstreamNodes[element.downstreamNodes.length - 1].y  + dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY;
         }
 
@@ -473,7 +454,9 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postStage?.config)) {
         cdDownstreams = [`POSTCD-${cdPipeline.id}`]
     }
+
     let CD = {
+        connectingCiPipelineId: cdPipeline.ciPipelineId,
         parents: [String(parentId)],
         height: dimensions.cDNodeSizes.nodeHeight,
         width: dimensions.cDNodeSizes.nodeWidth,

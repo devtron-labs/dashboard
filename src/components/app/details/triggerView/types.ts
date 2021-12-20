@@ -68,6 +68,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
 }
 
 export interface NodeAttr {
+  connectingCiPipelineId?: number;
   parents: string | number[] | string[];
   x: number;
   y: number;

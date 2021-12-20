@@ -23,6 +23,7 @@ export interface SavedDeploymentStrategy {
 
 export interface CDPipelineProps extends RouteComponentProps<{ appId: string, ciPipelineId: string, cdPipelineId?: string, workflowId: string }> {
     appName: string;
+    downstreamNodeSize: number;
     getWorkflows: () => void;
     close: () => void;
 }

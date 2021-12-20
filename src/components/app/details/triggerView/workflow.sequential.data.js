@@ -180,7 +180,7 @@ export const workflowsTriggerWithSequential = [{
         ],
         "startX": 0,
         "startY": 0,
-        "height": 175,
+        "height": 174,
         "width": 1280
     },
     {
@@ -438,7 +438,7 @@ export const workflowsCreateWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 1140
 },
 {
@@ -805,7 +805,7 @@ export const workflowsTriggerPrePostCDWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 1540
 },
 {
@@ -1280,7 +1280,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 2060
 },
 {
@@ -1645,7 +1645,7 @@ export const workflowsCreatePrePostCDWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 1140
 },
 {
@@ -1902,7 +1902,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 1140
 },
 {
@@ -2313,7 +2313,7 @@ export const workflowsTriggerPreCDRespWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 1280
 },
 {
@@ -2570,7 +2570,7 @@ export const workflowsCreatePreCDRespWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 1140
 },
 {
@@ -2827,7 +2827,7 @@ export const workflowsCreatePostCDWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 1140
 },
 {
@@ -3139,7 +3139,7 @@ export const workflowsTriggerPostCDWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 1280
 },
 {
@@ -3429,7 +3429,7 @@ export const workflows2TriggerWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 1280
 },
 {
@@ -3510,7 +3510,7 @@ export const workflows2TriggerWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 175,
+    "height": 174,
     "width": 1280
 }
 ];
@@ -3593,7 +3593,7 @@ export const workflows2CreateWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 840
 },
 {
@@ -3674,7 +3674,7 @@ export const workflows2CreateWithSequential = [{
     ],
     "startX": 0,
     "startY": 0,
-    "height": 113,
+    "height": 112,
     "width": 840
 }
 ];
