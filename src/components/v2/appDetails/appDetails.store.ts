@@ -93,7 +93,9 @@ const AppDetailsStore = {
             // if (tab.name.toLowerCase() === tabName.toLowerCase()) {
             //     tab.isSelected = true
             // } else 
-            if (tab.url === url) {
+           let _tabUrl = tab.url.split('/').slice(0, -1).join('/')
+           let _url = url.split('/').slice(0, -1).join('/')
+            if (_tabUrl === _url) {
                 tab.isSelected = true
             }
         }

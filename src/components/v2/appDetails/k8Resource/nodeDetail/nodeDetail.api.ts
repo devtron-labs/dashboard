@@ -7,7 +7,13 @@ import IndexStore from "../../index.store";
 export const getManifestResource = (ad: AppDetails, nodeName: string) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
     const ed = IndexStore.getiNodesByKind(cn.kind)[0]
-    return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=${ed.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`)
+    let group ;
+    if (!group){ 
+        group = '';
+    }else{
+        group = ed.group
+    }
+    return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=${group}&kind=${cn.kind}&resourceName=${cn.name}`)
 }
 
 export const getEvent = (ad: AppDetails, nodeName: string) => {

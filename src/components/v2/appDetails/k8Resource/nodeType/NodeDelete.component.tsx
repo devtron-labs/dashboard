@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
-import { PopupMenu, Pod as PodIcon, Trash, showError, copyToClipboard, not, useSearchString } from '../../../../common';
+import { PopupMenu, Trash, showError, copyToClipboard, not, useSearchString } from '../../../../common';
 import dots from '../../../assets/icons/ic-menu-dot.svg';
 import { toast } from 'react-toastify';
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types';
 import './nodeType.scss';
-import IndexStore from '../../index.store';
 import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
-import { node } from 'prop-types';
 
 function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId }) {
     const { path } = useRouteMatch();
     const history = useHistory();
-    // const params = useParams();
     const params = useParams<{ actionName: string, podName: string, nodeType: string }>()
 
     const { queryParams } = useSearchString();
@@ -62,8 +59,6 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
                 <span>Delete</span>
                 <Trash className="icon-dim-20" />
             </span>
-
-            {/* </span> */}
         </div>
     }
 
