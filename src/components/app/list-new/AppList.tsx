@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
 import { Link, Switch, Route } from 'react-router-dom';
-import {Progressing, Filter, showError, FilterOption, Modal } from '../../common';
+import {Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager } from '../../common';
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
 import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
@@ -24,6 +24,8 @@ export default function AppList() {
     const history = useHistory();
     const params = useParams<{ appType: string}>();
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
+    const [errorResponseCode, setErrorResponseCode] = useState(0);
+
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false);
@@ -69,6 +71,7 @@ export default function AppList() {
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
+            setErrorResponseCode(errors.code);
         })
     }, [])
 
@@ -452,15 +455,19 @@ export default function AppList() {
         <div>
             {
                 dataStateType == AppListViewType.LOADING &&
-                <>
-                    <div className="loading-wrapper">
-                        <Progressing pageLoader/>
-                    </div>
-                </>
+                <div className="loading-wrapper">
+                    <Progressing pageLoader/>
+                </div>
             }
             {
-                dataStateType != AppListViewType.LOADING &&
-                <>
+                dataStateType == AppListViewType.ERROR &&
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            }
+            {
+                dataStateType == AppListViewType.LIST &&
+                 <>
                     <div className="app-header">
                         {renderPageHeader()}
                         {renderMasterFilters()}
@@ -483,7 +490,7 @@ export default function AppList() {
                             </EmptyState>
                         </div>
                     }
-                </>
+                 </>
             }
         </div>
     )

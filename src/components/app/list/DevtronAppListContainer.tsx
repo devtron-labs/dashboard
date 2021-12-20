@@ -35,35 +35,39 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             appChecklist: undefined,
             chartChecklist: undefined,
             appStageCompleted: 0,
-            chartStageCompleted: 0,
+            chartStageCompleted: 0
         }
     }
 
     componentDidMount() {
-        let response = buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes, this.props.teamListRes, this.props.environmentListRes);
-        this.setState({
-            code: response.code,
-            apps: [],
-            offset: response.offset,
-            size: 0,
-            pageSize: response.size,
-            sortRule: {
-                key: response.sortBy,
-                order: response.sortOrder,
-            },
-            isAppCreated: response.isAppCreated,
-            appChecklist: response.appChecklist,
-            chartChecklist: response.chartChecklist,
-            appStageCompleted: response.appStageCompleted,
-            chartStageCompleted: response.chartStageCompleted,
-        });
-
-        if (response.isAppCreated) {
-            this.getAppList(this.props.payloadParsedFromUrl);
-        }
-        else {
-            this.setState({ view: AppListViewType.EMPTY });
-        }
+        buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes, this.props.teamListRes, this.props.environmentListRes).then((response) => {
+            this.setState({
+                code: response.code,
+                apps: [],
+                offset: response.offset,
+                size: 0,
+                pageSize: response.size,
+                sortRule: {
+                    key: response.sortBy,
+                    order: response.sortOrder,
+                },
+                isAppCreated: response.isAppCreated,
+                appChecklist: response.appChecklist,
+                chartChecklist: response.chartChecklist,
+                appStageCompleted: response.appStageCompleted,
+                chartStageCompleted: response.chartStageCompleted
+            });
+        }).then(() => {
+            if (this.state.isAppCreated) {
+                this.getAppList(this.props.payloadParsedFromUrl);
+            }
+            else {
+                this.setState({ view: AppListViewType.EMPTY });
+            }
+        }).catch((errors: ServerErrors) => {
+            showError(errors);
+            this.setState({ view: AppListViewType.ERROR, code: errors.code });
+        })
     }
 
     componentDidUpdate(prevProps) {

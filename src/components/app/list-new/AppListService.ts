@@ -130,7 +130,7 @@ export const getInitData = (payloadParsedFromUrl : any): Promise<any> => {
             appCheckListRes: appCheckListRes,
             projectsRes: projectsRes,
             environmentListRes: environmentListRes,
-            filters : filters,
+            filters : filters
         };
     })
 }

@@ -2,39 +2,41 @@ import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
-export const buildInitState = (appListPayload, appCheckListRes, teamListRes, environmentListRes): any => {
-    let appChecklist = appCheckListRes.result.appChecklist;
-    let chartChecklist = appCheckListRes.result.chartChecklist;
-    let appStageArray: number[] = Object.values(appChecklist);
-    let chartStageArray: number[] = Object.values(chartChecklist);
-    let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-        sum = sum + item;
-        return sum;
-    }, 0)
-    let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-        sum = sum + item;
-        return sum;
-    }, 0)
+export const buildInitState = (appListPayload, appCheckListRes, teamListRes, environmentListRes): Promise<any> => {
+    return new Promise((resolve) => {
+        let appChecklist = appCheckListRes.result.appChecklist;
+        let chartChecklist = appCheckListRes.result.chartChecklist;
+        let appStageArray: number[] = Object.values(appChecklist);
+        let chartStageArray: number[] = Object.values(chartChecklist);
+        let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+            sum = sum + item;
+            return sum;
+        }, 0)
+        let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+            sum = sum + item;
+            return sum;
+        }, 0)
 
-    let parsedResponse = {
-        code: teamListRes.code,
-        apps: [],
-        offset: appListPayload.offset,
-        size: 0,
-        pageSize: appListPayload.size,
-        sortRule: {
-            key: appListPayload.sortBy,
-            order: appListPayload.sortOrder,
-        },
-        searchQuery: appListPayload.appNameSearch || "",
-        searchApplied: !!appListPayload.appNameSearch.length,
-        isAppCreated: appCheckListRes.result.isAppCreated,
-        appChecklist,
-        chartChecklist,
-        appStageCompleted,
-        chartStageCompleted,
-    }
-    return parsedResponse;
+        let parsedResponse = {
+            code: teamListRes.code,
+            apps: [],
+            offset: appListPayload.offset,
+            size: 0,
+            pageSize: appListPayload.size,
+            sortRule: {
+                key: appListPayload.sortBy,
+                order: appListPayload.sortOrder,
+            },
+            searchQuery: appListPayload.appNameSearch || "",
+            searchApplied: !!appListPayload.appNameSearch.length,
+            isAppCreated: appCheckListRes.result.isAppCreated,
+            appChecklist,
+            chartChecklist,
+            appStageCompleted,
+            chartStageCompleted,
+        }
+        return resolve(parsedResponse);
+    });
 }
 
 
