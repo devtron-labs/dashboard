@@ -133,7 +133,7 @@ function NodeComponent() {
                                     /> : <span className="pl-12 pr-12"></span>}
                                 <div>
                                     <div>{node.name}</div>
-                                    <div className="cg-5">{node.health?.status}</div>
+                                    <div className={`f-${node.health?.status.toLowerCase()}`}>{node.health?.status}</div>
                                 </div>
 
                                 <div>

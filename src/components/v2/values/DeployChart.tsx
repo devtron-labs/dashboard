@@ -402,7 +402,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 		}
 	}, []);
 	return (<>
-		<div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`}>
+		<div className={`deploy-chart-container bcn-0 ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`} style={{height: 'calc(100vh - 90px)'}}>
 			<div className="header-container flex column">
 				<div className="title">{chartName}/ {name}</div>
 				<div className="border" />

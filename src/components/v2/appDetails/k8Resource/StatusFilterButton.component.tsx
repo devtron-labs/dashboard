@@ -38,7 +38,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
                 { status: "ALL", count: allNodeCount, isSelected: true },
                 { status: "HEALTHY", count: healthyNodeCount, isSelected: false },
                 { status: "FAILED", count: failedNodeCount, isSelected: false },
-                { status: "PROCESSING", count: progressingNodeCount, isSelected: false },
+                { status: "PROGRESSING", count: progressingNodeCount, isSelected: false },
             ]
 
 
