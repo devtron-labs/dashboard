@@ -29,7 +29,6 @@ function PodHeaderComponent({ callBack }) {
 
             setSelectedHealthyNewNodeCount(_newPods.length)
             setSelectedHealthyOldNodeCount(_oldPods.length)
-            console.log(selectedHealthyNewNodeCount, selectedHealthyOldNodeCount)
         }
 
     }, [podMetaData?.length])

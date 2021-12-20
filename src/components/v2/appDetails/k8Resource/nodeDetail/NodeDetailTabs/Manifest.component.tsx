@@ -22,7 +22,8 @@ function ManifestComponent({ selectedTab }) {
     const appDetails = IndexStore.getAppDetails();
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.MANIFEST, url)
+        let title = url.split('/').slice(-2)
+        selectedTab(NodeDetailTab.MANIFEST, url, title)
 
         getManifestResource(appDetails, params.podName).then((response) => {
             setManifest(response.result.manifest)

@@ -470,7 +470,6 @@ const NodeDetails: React.FC<{
         if (!selectedNode) return
         if ((params.tab === NodeDetailTabs.LOGS) || (params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
-        console.log('containers', containers)
 
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
@@ -788,7 +787,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind);
     }
 
-    console.log('nodeMap', nodesMap)
     if (selectedNodesItem) {
         selectedNodesItem.forEach((item) => {
             if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
@@ -944,7 +942,6 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                 <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                 <div className="events-logs__dropdown-selector">
                     <span className="events-logs__label">Containers</span>
-                   { console.log(allContainers)}
                     <div style={{ width: '175px' }}>
                         <Select placeholder="Select Container"
                             options={allContainers[0] && allContainers[0].map((container) => ({ label: container, value: container }))}
@@ -1183,8 +1180,6 @@ export const ProgressStatus: React.FC<{
                                 </tr>
                             </thead>
                             <tbody>
-                               { console.log(nodes)}
-
                                 {nodes &&
                                     Object.keys(nodes.nodes)
                                         .filter((kind) => kind.toLowerCase() !== 'rollout')

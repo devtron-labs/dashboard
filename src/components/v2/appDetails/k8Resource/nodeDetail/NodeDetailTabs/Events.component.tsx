@@ -62,20 +62,6 @@ function EventsComponent({ selectedTab }) {
     return (
         <React.Fragment>
             {pods && pods.length > 0 && <div className="bcn-0 cn-9" >
-                {
-                    <div className='d-flex pl-20 pr-20 pt-4 pb-4'>
-                        <span className='pl-4 pr-4'>Pod</span>
-                        <select className='bw-1 en-2' onChange={(e) => {
-                            setPodName(e.target.value)
-                        }}>
-                            {pods.map((pod, index) => {
-                                return (
-                                    <option key={`ph_${index}`}>{pod.name}</option>
-                                )
-                            })}
-                        </select>
-                    </div>
-                }
 
                 {!loading && events && events.length > 0 &&
                     <table className="table">
@@ -104,15 +90,15 @@ function EventsComponent({ selectedTab }) {
                 }
 
                 {
-                    (!loading && (!events || events.length === 0)) && <div style={{ width: '100%', textAlign: 'center' }}>
-                        <InfoIcon />
+                    (!loading && (!events || events.length === 0)) && <div className='flex column' style={{ minHeight: '600px' }}>
+                        <div><InfoIcon /></div>
                         <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>Events not available</div>
                     </div>
                 }
 
 
                 {
-                    loading && <div className="flex h-100" >
+                    loading && <div className="flex h-100" style={{ minHeight: "600px" }}>
                         <Spinner loading></Spinner>
                         <div style={{ marginTop: '8px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
                     </div>

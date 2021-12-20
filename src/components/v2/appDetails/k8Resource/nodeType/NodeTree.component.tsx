@@ -81,6 +81,7 @@ function NodeTreeComponent() {
 
                 const pods = IndexStore.getiNodesByKind(NodeType.Pod)
 
+                console.log(pods)
                 if (pods.length > 0) {
                     activeParentNode = {
                         name: getPNodeName(NodeType.Pod),
