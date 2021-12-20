@@ -55,7 +55,7 @@ export const getInitData = (payloadParsedFromUrl : any): Promise<any> => {
         ////// set master filters data starts (check/uncheck)
 
         // cluster vs namespace
-        let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.clustersAndNamespaces);
+        let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(','));
 
         let filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),

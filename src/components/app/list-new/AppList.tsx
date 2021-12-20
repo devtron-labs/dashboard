@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
 import { Link, Switch, Route } from 'react-router-dom';
-import {Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager } from '../../common';
+import {Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common';
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
 import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
@@ -25,6 +25,7 @@ export default function AppList() {
     const params = useParams<{ appType: string}>();
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
+    const [lastDataSyncTime, setLastDataSyncTime] = useState(null);
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -68,6 +69,7 @@ export default function AppList() {
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters)
             setDataStateType(AppListViewType.LIST);
+            setLastDataSyncTime(Date());
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
@@ -144,6 +146,10 @@ export default function AppList() {
         })
         setMasterFilters(_masterFilters);
         ////// update master filters data ends (check/uncheck)
+
+        // set last sync time starts
+        setLastDataSyncTime(Date());
+        // set last sync time ends
 
         let sortBy = params.orderBy || SortBy.APP_NAME;
         let sortOrder = params.sortOrder || OrderBy.ASC;
@@ -300,6 +306,10 @@ export default function AppList() {
         setSearchString(str);
     }
 
+    const syncNow = () : void => {
+        window.location.reload();
+    }
+
     function renderPageHeader() {
         return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
@@ -414,7 +424,7 @@ export default function AppList() {
                 </li>
             </ul>
             <div className="app-tabs-sync">
-                Last synced 1 hour ago hello <button className="text-primary btn btn-link p-0">sync now</button>
+                Last synced {handleUTCTime(lastDataSyncTime, true)} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button>
             </div>
         </div>
     }
