@@ -163,6 +163,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         })
     }
 
+    handleEditApp = (appId: number): void => {
+        let url = `/app/${appId}/edit`;
+        this.props.history.push(url);
+    }
+
     redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
             return `/app/${app.id}/details/${envId}`;
@@ -181,6 +186,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             closeExpandedRow={this.closeExpandedRow}
             sort={this.sort}
             redirectToAppDetails={this.redirectToAppDetails}
+            handleEditApp={this.handleEditApp}
             clearAll={this.props.clearAllFilters}
             changePage={this.changePage}
             changePageSize={this.changePageSize}

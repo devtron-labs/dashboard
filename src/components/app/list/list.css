@@ -170,6 +170,10 @@
     margin-right: 7px;
 }
 
+.app-list__cell--env-text.not-configured {
+    color: var(--N500);
+}
+
 .app-list__cell--material-info {
     flex-basis: 30%;
     justify-content: flex-start;

@@ -31,6 +31,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                         </Tippy>
                     }
                 </div>
+                <div className="app-list__cell app-list__cell--action"></div>
             </Link>
         })
     }
@@ -42,6 +43,9 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                     <span>{this.props.app.name}</span>
                     <i className="fa fa-chevron-up"></i>
                 </div>
+                <button type="button" className="button-edit button-edit--white" onClick={() => { this.props.handleEdit(this.props.app.id) }}>
+                    <Settings className="button-edit__icon" />
+                </button>
             </div >
             {this.renderRows()}
         </div >

@@ -6,7 +6,9 @@ import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
 import { App, AppListState, OrderBy, SortBy } from './types';
 import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
+import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 
 
@@ -14,6 +16,7 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     expandRow: (app: App | null) => void;
     closeExpandedRow: () => void;
     sort: (key: string) => void;
+    handleEditApp: (appId: number) => void;
     redirectToAppDetails: (app, envId: number) => string;
     clearAll: () => void;
     changePage: (pageNo: number) => void;
@@ -25,8 +28,9 @@ export class AppListView extends Component<AppListViewProps>{
     renderEnvironmentList(app) {
         let len = app.environments.length;
         if (len) {
+            let isEnvConfigured = app.defaultEnv && app.defaultEnv.name;
             return <div className="app-list__cell app-list__cell--env">
-                <p className="app-list__cell--env-text">{app.defaultEnv ? app.defaultEnv.name : ""}</p>
+                <p  className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>{isEnvConfigured ? app.defaultEnv.name  : "Not configured"}</p>
                 {len > 1 ? <button type="button" className="cell__link"
                     onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.expandRow(app); }}>
                     +{len - 1} more </button> : null}
@@ -47,7 +51,11 @@ export class AppListView extends Component<AppListViewProps>{
                         </button>
                     </div>
                     <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header">Environment</span>
+                        <span className="app-list__cell-header">Environment
+                            <Tippy arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
+                                <HelpOutlineIcon className="icon-dim-20"/>
+                            </Tippy>
+                        </span>
                     </div>
                     <div className="app-list__cell app-list__cell--cluster">
                         <span className="app-list__cell-header">Cluster</span>
@@ -58,6 +66,7 @@ export class AppListView extends Component<AppListViewProps>{
                     <div className="app-list__cell app-list__cell--time">
                         <span className="app-list__cell-header">Last deployed at</span>
                     </div>
+                    <div className="app-list__cell app-list__cell--action"></div>
                 </div>
                 {this.props.apps.map((app) => {
                     return <React.Fragment key={app.id} >
@@ -83,12 +92,18 @@ export class AppListView extends Component<AppListViewProps>{
                                         </Tippy>
                                     }
                                 </div>
+                                <div className="app-list__cell app-list__cell--action">
+                                    <button type="button" className="button-edit" onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.handleEditApp(app.id) }}>
+                                        <Edit className="button-edit__icon" />
+                                    </button>
+                                </div>
                             </Link>
                             : null}
                         {(this.props.appData && this.props.appData.id == app.id) ?
                             <ExpandedRow app={this.props.appData}
                                 close={this.props.closeExpandedRow}
-                                redirect={this.props.redirectToAppDetails} />
+                                redirect={this.props.redirectToAppDetails}
+                                handleEdit={(event) => this.props.handleEditApp(app.id)} />
                             : null}
                     </React.Fragment>
                 })}
