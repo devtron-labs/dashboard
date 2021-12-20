@@ -87,21 +87,19 @@ const AppDetailsStore = {
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     markAppDetailsTabActive: (tabName: string, url: string) => {
+        let idTabFound = false
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false
-            // if (tab.name.toLowerCase() === tabName.toLowerCase()) {
-            //     tab.isSelected = true
-            // } else 
             if (tab.url === url) {
                 tab.isSelected = true
+                idTabFound = true
             }
         }
 
-        // let title = tabKind + '/' + tabName
-        // tabName = tabKind + '/...' + tabName.slice(-6)
-
         applicationObjectTabsSubject.next([...applicationObjectTabs])
+
+        return idTabFound
     },
 
     setNodeTreeActiveParentNode: (_n: iNode) => {

@@ -102,10 +102,13 @@ function NodeComponent() {
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
         let _url = `${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`
+
         if (containerName) {
             _url = `${_url}?container=${containerName}`
         }
+
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
+
         if (isAdded) {
             history.push(_url)
         } else {
@@ -194,7 +197,6 @@ function NodeComponent() {
                                 describeNode={describeNode}
                                 appName={appDetails.appName}
                                 environmentName={appDetails.environmentName}
-                                // key={column}
                                 appId={appDetails.appId}
                             />
                         </div>
@@ -205,36 +207,6 @@ function NodeComponent() {
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
-                        //  :
-                        // <React.Fragment>
-                        //     {node.kind === NodeType.Pod &&
-                        //         <div className="col-12 pl-16 pt-9 pb-9 ">
-                        //             <div className="fw-6 pt-10 pb-10 pl-32 border-bottom">Containers</div>
-                        //             {IndexStore.getMetaDataForPod(node.name).containers.map((container, index) => {
-                        //                 return <div key={`container_${index}`} className="flex left resource-row">
-                        //                     <div className="resource-row__content pl-32 pt-9 pb-9 cursor">{container}</div>
-                        //                     <Tippy
-                        //                         className="default-tt"
-                        //                         arrow={false}
-                        //                         placement="bottom"
-                        //                         content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                        //                         trigger='mouseenter click'
-                        //                     >
-                        //                         <Clipboard
-                        //                             className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                        //                             onClick={(e) => copyToClipboard(container, () => setCopied(true))}
-                        //                         />
-                        //                     </Tippy>
-                        //                     <a onClick={() => handleActionTabClick(node, NodeDetailTab.LOGS, container)} className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
-                        //                         {NodeDetailTab.LOGS}
-                        //                     </a>
-                        //                 </div>
-                        //             })}
-
-
-                        //         </div>
-                        //     } 
-                        // </React.Fragment>
                     }
 
                 </React.Fragment>

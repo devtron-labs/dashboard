@@ -31,14 +31,24 @@ function NodeDetailComponent() {
 
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        console.log(url)
-        console.log(params)
-        // if (AppDetailsStore.getAppDetailsTabs().length < 3) { //Invalid State need to redirect to k8
-        //     history.push(`${url.split(URLS.APP_DETAILS_K8)[0]}/${params.nodeType}`)
-        // } else {
+        const isTabFound = AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
+
+        if (!isTabFound) {
+            setTimeout(() => {
+                let _url = url + '/' + _tabName
+
+                const query = new URLSearchParams(window.location.search)
+
+                if(query.get('container')){
+                    _url = _url + "?container=" + query.get('container')
+                }
+
+                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _url)
+                setSelectedTabName(_tabName)
+            }, 500);
+        }else{
             setSelectedTabName(_tabName)
-            AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
-        // }
+        }
     }
 
     return (
