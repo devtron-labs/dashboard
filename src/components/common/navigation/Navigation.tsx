@@ -9,7 +9,6 @@ import TextLogo from '../../../assets/icons/ic-nav-devtron.svg';
 import ReactDOM from 'react-dom';
 import { Command, CommandErrorBoundary } from '../../command';
 import ReactGA from 'react-ga';
-import posthog from 'posthog-js';
 import './navigation.scss';
 
 const NavigationList = [
@@ -55,7 +54,7 @@ const NavigationList = [
 		href: URLS.GLOBAL_CONFIG,
 		iconClass: 'nav-short-global'
 	},
-	
+
 ];
 
 
@@ -101,9 +100,6 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	onLogout(): void {
 		document.cookie = `argocd.token=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/`;
 		this.props.history.push('/login');
-		try {
-			posthog.reset();
-		} catch (e) { }
 	}
 
 	renderLogout() {
