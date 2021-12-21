@@ -2,7 +2,6 @@
     all: unset;
     margin: unset;
     border-bottom: unset;
-    height: 100%;
     padding: 0 24px;
     display: grid;
     grid-template-rows: 40px 40px;

@@ -17,7 +17,7 @@ export default function K8ResourceComponent() {
     }, [])
 
     return (
-        <div className="resource-node-wrapper bcn-0 ">
+        <div className="resource-node-wrapper bcn-0" style={{justifyContent: 'space-betweengit'}}>
             <div className="pt-16 pl-20 pb-16">
                 <FilterResource />
             </div>

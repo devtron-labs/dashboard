@@ -52,7 +52,7 @@ function RouterComponent({ envType }) {
 
 
     return (
-        <div>
+        <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
             {isLoading ?
@@ -66,7 +66,7 @@ function RouterComponent({ envType }) {
                     </Switch>
                 </Suspense>
             }
-        </div>
+        </React.Fragment>
     )
 }
 

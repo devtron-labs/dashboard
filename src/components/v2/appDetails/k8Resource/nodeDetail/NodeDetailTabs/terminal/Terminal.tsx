@@ -21,33 +21,24 @@ interface TerminalViewProps {
     setSocketConnection: (flag: SocketConnectionType) => void;
 }
 
-let socket = undefined
-let terminal = undefined
-let fitAddon = undefined
+// let socket = undefined
+// let terminal = undefined
+// let fitAddon = undefined
 // let ga_session_duration = undefined
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
 
-    //const terminal =React.useRef(Terminal)
-    // const [socket, setSocket] = useState(undefined)
-    //const [terminal, setTerminal] = useState(undefined)
+    // const terminal =React.useRef(Terminal)
+    const [fitAddon, setFitAddon] = useState<FitAddon>()
+    const [socket, setSocket] = useState<SockJS>()
+    const [terminal, setTerminal] = useState<Terminal>()
 
     const appDetails = IndexStore.getAppDetails()
-
-    //const [fitAddon, setFitAddon] = useState(undefined)
     const [ga_session_duration, setGA_session_duration] = useState()
     const [isReconnection, setIsReconnection] = useState(false);
 
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [showReconnectMessage, setShowReconnectMessage] = useState(false)
-
-    const search = (event): boolean => {
-        if (event.metaKey && event.key === "k" || event.key === "K") {
-            terminal?.clear();
-        }
-
-        return true
-    }
 
     const createNewTerminal = () => {
 
@@ -71,12 +62,18 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         terminal.open(document.getElementById('terminal'));
         fitAddon.fit();
         terminal.reset();
-        terminal.attachCustomKeyEventHandler(search);
+        terminal.attachCustomKeyEventHandler((event)=>{
+            if (event.metaKey && event.key === "k" || event.key === "K") {
+                terminal?.clear();
+            }
+    
+            return true
+        });
 
-        //setTerminal(terminal)
-        //setFitAddon(fitAddon)
+        setTerminal(terminal)
+        setFitAddon(fitAddon)
 
-        return terminal
+        return {terminal: terminal, fitAddon: fitAddon}
 
         // let self = this;
         // terminal.onResize(function (dim) {
@@ -89,7 +86,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const initialize = (sessionId: string): void => {
-        let terminal = createNewTerminal();
+        
+        const obj = createNewTerminal();
+
+        let terminal = obj.terminal;
+        let fitAddon = obj.fitAddon;
 
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
 
@@ -113,9 +114,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             const startData = { Op: 'bind', SessionID: sessionId };
             socket.send(JSON.stringify(startData));
 
-            //let dim = fitAddon.proposeDimensions();
-            //const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
-            //socket.send(JSON.stringify(resize));
+            let dim = fitAddon.proposeDimensions();
+            const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
+            socket.send(JSON.stringify(resize));
 
             console.log("isReconnection", isReconnection)
 
@@ -150,14 +151,15 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminalViewProps.setSocketConnection('DISCONNECTED');
         }
 
-        //setSocket(socket)
+        setSocket(socket)
     }
 
     const clearConnection = () => {
         socket?.close();
         terminal?.dispose();
-        socket = undefined
-        terminal = undefined
+        setSocket(undefined)
+        setTerminal(undefined)
+        setFitAddon(undefined)
     }
 
     useEffect(() => {
@@ -165,10 +167,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         console.log("terminalViewProps", terminalViewProps)
 
-        if (terminalViewProps.socketConnection === 'DISCONNECTED') {
-            terminalViewProps.setSocketConnection("CONNECTING");
-            setIsReconnection(true)
-        }
+        // if (terminalViewProps.socketConnection === 'DISCONNECTED' && !isReconnection ) {
+        //     terminalViewProps.setSocketConnection("CONNECTING");
+        //     // setIsReconnection(true)
+        // }
 
         if (terminalViewProps.socketConnection === 'DISCONNECTING') {
             clearConnection()
@@ -231,8 +233,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (terminalViewProps.terminalCleared) {
-            terminal?.clear();
-            terminal?.focus();
+            clearConnection()
             terminalViewProps.setTerminalCleared(false);
         }
 
@@ -240,7 +241,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (firstMessageReceived) {
-            // terminal.setOption('cursorBlink', true);
+            terminal.setOption('cursorBlink', true);
             terminalViewProps.setSocketConnection('CONNECTED');
             fitAddon.fit();
         }
@@ -254,7 +255,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         let url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`;
 
-        socket?.close()
+        clearConnection()
 
         setIsReconnection(true);
 

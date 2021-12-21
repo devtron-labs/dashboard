@@ -24,7 +24,7 @@ function TerminalComponent({ selectedTab }) {
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(sellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
 
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('DISCONNECTED')
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('CONNECTING')
 
 
 
