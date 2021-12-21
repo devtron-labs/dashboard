@@ -81,11 +81,10 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({ subje
             cursorStyle: 'bar',
             cursorWidth: 0,
             theme: {
-                background: '#FFF',
-                foreground: '#000',
-
-            }
-        })
+                background: '#ffffff',
+                foreground: '#000a14',
+            },
+        });
         terminal.current.attachCustomKeyEventHandler(handleKeyPress)
         terminal.current.onSelectionChange(handleSelectionChange)
         fitAddon.current = new FitAddon();

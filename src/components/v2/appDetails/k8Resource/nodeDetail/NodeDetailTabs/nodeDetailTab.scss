@@ -78,7 +78,7 @@
             width: 100%;
             padding: 0 0 0 20px;
             overflow: hidden;
-            background-color: #FFF;
+            background-color: var(--white);
             &:focus {
                 outline: none;
             }
@@ -98,5 +98,11 @@
                     padding-right: 16px;
                 }
             }
+        }
+    }
+
+    .pod-readyState {
+        &.pod-readyState--bottom {
+            background: var(--white);
         }
     }
