@@ -43,15 +43,18 @@ function AppHeaderComponent() {
 
     }
 
+    useEffect(() => {
+        currentPathname.current = location.pathname
+    }, [location.pathname])
 
     const handleAppChange = useCallback(({ label, value }) => {
-        const tab = currentPathname.current.replace(match.url, "").split("/")[1];
+       // const tab = currentPathname.current.replace(match.url, "").split("/")[1];
         const newUrl = generatePath(match.path, { appId: value });
-        history.push(`${newUrl}/${tab}`);
+        history.push(newUrl);
         ReactGA.event({
             category: 'App Selector',
             action: 'App Selection Changed',
-            label: tab,
+            label: label,
         });
     }, [location.pathname])
 

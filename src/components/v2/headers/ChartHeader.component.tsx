@@ -8,6 +8,7 @@ import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router
 import { get} from '../../../services/api';
 import { handleUTCTime} from '../../common';
 import  './header.css'
+
 function ChartHeaderComponent() {
     const match = useRouteMatch();
     const history = useHistory();
@@ -15,6 +16,7 @@ function ChartHeaderComponent() {
     const { path } = useRouteMatch();
 
     function handleBreadcrumbChartChange(selected) {
+        console.log("handleBreadcrumbChartChange", selected)
         const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId });
         history.push(newUrl)
     }

@@ -11,6 +11,8 @@ import { EnvType } from './appDetails/appDetails.type';
 import ChartHeaderComponent from './headers/ChartHeader.component';
 import IndexStore from './appDetails/index.store';
 import { getInstalledChartDetail, getInstalledAppDetail } from './appDetails/appDetails.api';
+import EnvironmentSelectorComponent from './appDetails/sourceInfo/EnvironmentSelector.component';
+import EnvironmentStatusComponent from './appDetails/sourceInfo/environmentStatus/EnvironmentStatus.component';
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true)
@@ -19,17 +21,19 @@ function RouterComponent({ envType }) {
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
-        
+
         setIsLoading(true)
 
-        init();
+        if (params.appId && params.envId) {
+            init();
+        }
+
     }, [params.appId, params.envId])
 
     const init = async () => {
-       
-        let response = null;
-
         try {
+            let response = null;
+
             if (envType === EnvType.CHART) {
                 response = await getInstalledChartDetail(+params.appId, +params.envId);
             } else {
@@ -37,10 +41,10 @@ function RouterComponent({ envType }) {
             }
 
             IndexStore.setAppDetails(response.result);
-            
+
             setIsLoading(false)
 
-            setTimeout(init, 30*60*1000);
+            setTimeout(init, 30 * 60 * 1000);
 
         } catch (e) {
             console.log("error while fetching InstalledAppDetail", e)
@@ -48,13 +52,12 @@ function RouterComponent({ envType }) {
         }
     }
 
-
-
-
     return (
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
+            <EnvironmentSelectorComponent />
+            
             {isLoading ?
                 <div style={{ height: "560px" }} className="flex"></div>
                 :

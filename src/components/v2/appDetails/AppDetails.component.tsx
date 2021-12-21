@@ -11,10 +11,10 @@ import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
 import { ApplicationObject, NodeType } from './appDetails.type';
-import SourceInfoComponent from './sourceInfo/SourceInfo.component';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
+import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string, envId: string, nodeType: string }>()
@@ -38,7 +38,8 @@ const AppDetailsComponent = () => {
 
     return (
         <div>
-            <SourceInfoComponent />
+            <EnvironmentStatusComponent />
+
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
@@ -63,8 +64,8 @@ const AppDetailsComponent = () => {
                                             </NavLink>
 
                                             {(tab.name !== AppDetailsTabs.log_analyzer && tab.name !== AppDetailsTabs.k8s_Resources) &&
-                                                <span className="resource-tab__close-wrapper flex br-5"> 
-                                                <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" />
+                                                <span className="resource-tab__close-wrapper flex br-5">
+                                                    <Cross onClick={(e) => handleCloseTab(e, tab.name)} className="icon-dim-16 cursor" />
                                                 </span>
                                             }
                                         </div>

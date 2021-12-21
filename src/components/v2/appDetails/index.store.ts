@@ -2,8 +2,11 @@ import { BehaviorSubject } from "rxjs";
 import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from "./appDetails.type";
 
 let _envDetails = {} as EnvDetails
-let _appDetails = {} as AppDetails
+// let _appDetails = {} as AppDetails
 const _nodesEmpty = [] as Node[]
+const appDetails = {} as AppDetails
+
+let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject(appDetails)
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
 let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
 let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails)
@@ -60,7 +63,7 @@ const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kin
         }
 
         if (_kind?.toLowerCase() === NodeType.Pod.toLowerCase()) {
-            _pn.childNodes = _appDetails.resourceTree?.podMetadata?.filter(_pmd => {
+            _pn.childNodes = _appDetailsSubject.getValue().resourceTree?.podMetadata?.filter(_pmd => {
                 return _pmd.uid === _pn.uid
             })[0]?.containers.map(_c => {
                 let childNode = {} as iNode
@@ -111,18 +114,23 @@ const IndexStore = {
     },
 
     setAppDetails: (data: AppDetails) => {
-        _appDetails = data
+        console.log("setAppDetails", data)
 
-        console.log("setAppDetails", _appDetails)
+        const _nodes = data.resourceTree.nodes;
 
-        const _nodes = _appDetails.resourceTree.nodes;
+        _appDetailsSubject.next({...data})
 
         _nodesSubject.next([..._nodes])
+
         _nodesFilteredSubject.next([..._nodes])
     },
 
     getAppDetails: () => {
-        return _appDetails
+        return _appDetailsSubject.getValue()
+    },
+
+    getAppDetailsObservable: () => {
+        return _appDetailsSubject.asObservable()
     },
 
     getAppDetailsNodes: () => {
@@ -162,11 +170,11 @@ const IndexStore = {
     },
 
     getMetaDataForPod: (_name: string) => {
-        return _appDetails.resourceTree.podMetadata.filter(pod => pod.name === _name)[0]
+        return _appDetailsSubject.getValue().resourceTree.podMetadata.filter(pod => pod.name === _name)[0]
     },
 
     getPodMetaData: () => {
-        return _appDetails.resourceTree.podMetadata
+        return _appDetailsSubject.getValue().resourceTree.podMetadata
     },
 
     getAllPodNames: () => {
@@ -176,13 +184,13 @@ const IndexStore = {
     },
 
     getAllContainersForPod: (_name: string) => {
-        return _appDetails.resourceTree.podMetadata.filter(pod => pod.name === _name)[0].containers
+        return _appDetailsSubject.getValue().resourceTree.podMetadata.filter(pod => pod.name === _name)[0].containers
     },
 
     getAllContainers: () => {
         let containers = []
 
-        const pods = _appDetails.resourceTree.podMetadata;
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata;
         
         pods.forEach(pmd => {
             pmd.containers.forEach(c => {
@@ -196,7 +204,7 @@ const IndexStore = {
     getAllNewContainers: () => {
         let containers = []
 
-        const pods = _appDetails.resourceTree.podMetadata.filter(p => p.isNew)
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter(p => p.isNew)
 
         pods.forEach(pmd => {
             pmd.containers.forEach(c => {
@@ -210,7 +218,7 @@ const IndexStore = {
     getAllOldContainers: () => {
         let containers = []
 
-        const pods = _appDetails.resourceTree.podMetadata.filter(p => !p.isNew)
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter(p => !p.isNew)
 
         pods.forEach(pmd => {
             pmd.containers.forEach(c => {
@@ -224,7 +232,7 @@ const IndexStore = {
     getPodForAContainer: (_c: string) => {
         let podeName
         
-        _appDetails.resourceTree.podMetadata.forEach(p => {
+        _appDetailsSubject.getValue().resourceTree.podMetadata.forEach(p => {
            p.containers.forEach(c => {
                if(c === _c){
                 podeName = p.name 
