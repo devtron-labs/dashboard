@@ -64,8 +64,8 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         async function getServerMode() {
-            const response = getVersionConfig();
             try {
+                const response = getVersionConfig();
                 const json = await response;
                 if (json.code == 200) {
                     setServerMode(json.result.serverMode);
