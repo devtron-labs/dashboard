@@ -13,7 +13,6 @@ import { getAppCheckList } from '../../services/service';
 import { showError } from '../common';
 import './globalConfigurations.scss';
 import { SERVER_MODE } from '../../config/constants';
-import { dataService } from '../../services/dataShareService';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
