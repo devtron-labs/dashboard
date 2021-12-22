@@ -77,6 +77,8 @@ function LogsComponent({ selectedTab }) {
                 setSelectedContainerName(cs[0])
                 break;
         }
+        
+        onLogsCleared()
 
     }
 
