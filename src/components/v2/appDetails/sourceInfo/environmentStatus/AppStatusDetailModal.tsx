@@ -5,7 +5,6 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import IndexStore from '../../index.store';
 import { AggregatedNodes } from '../../../../app/types';
 import { aggregateNodes } from '../../../../app/details/appDetails/utils';
-const _appDetails = IndexStore.getAppDetails()
 
 // function getNodeMessage(kind, name) {
 //     if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
@@ -16,6 +15,8 @@ const _appDetails = IndexStore.getAppDetails()
 // }
 
 function AppStatusDetailModal({ message, close, status }) {
+
+    const _appDetails = IndexStore.getAppDetails();
 
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || []);

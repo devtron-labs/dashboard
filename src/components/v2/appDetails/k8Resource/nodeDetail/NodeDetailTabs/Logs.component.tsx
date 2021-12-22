@@ -46,41 +46,34 @@ function LogsComponent({ selectedTab }) {
 
     const isLogAnalyzer = !params.podName
 
-    const handlePodChange = (selectedOption) => {
-        // setSelectedPodName((selected as any).value)
+    const handlePodSelecction = (cs) => {
+        setContainers(cs.containers)
+        setSelectedPods(cs.pods)
+        setSelectedContainerName(cs.containers[0])
+    }
 
-        let cs
+    const handlePodChange = (selectedOption) => {
 
         switch (selectedOption) {
-            case "All pods":
-                cs = IndexStore.getAllContainers()
-                setContainers(cs.containers)
-                setSelectedPods(cs.pods)
-                setSelectedContainerName(cs.containers[0])
+            case 'All pods':
+                handlePodSelecction(IndexStore.getAllContainers());
                 break;
-            case "All new pods":
-                cs = IndexStore.getAllNewContainers()
-                setContainers(cs.containers)
-                setSelectedPods(cs.pods)
-                setSelectedContainerName(cs.containers[0])
+            case 'All new pods':
+                handlePodSelecction(IndexStore.getAllNewContainers());
                 break;
-            case "All old pods":
-                cs = IndexStore.getAllOldContainers()
-                setContainers(cs.containers)
-                setSelectedPods(cs.pods)
-                setSelectedContainerName(cs.containers[0])
+            case 'All old pods':
+                handlePodSelecction(IndexStore.getAllOldContainers());
                 break;
             default:
-                cs = IndexStore.getAllContainersForPod(selectedOption)
-                setContainers(cs)
-                setSelectedPods([selectedOption])
-                setSelectedContainerName(cs[0])
+                const cs = IndexStore.getAllContainersForPod(selectedOption);
+                setContainers(cs);
+                setSelectedPods([selectedOption]);
+                setSelectedContainerName(cs[0]);
                 break;
         }
-        
-        onLogsCleared()
 
-    }
+        onLogsCleared();
+    };
 
     const parsePipes = (expression) => {
         const pipes = expression.split(/[\|\s]*grep[\s]*/).filter(p => !!p)
