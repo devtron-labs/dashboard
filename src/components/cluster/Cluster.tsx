@@ -406,8 +406,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 <FormError className="form__icon form__icon--error" />
                 {state.token.error}</label>}
         </div>
-        {serverMode !== SERVER_MODE.EA_ONLY  && <hr></hr>}
-        {serverMode !== SERVER_MODE.EA_ONLY  && (<div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
+        {serverMode !== SERVER_MODE.EA_ONLY  && (<hr></hr><div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
                 <div className="" style={{ width: "32px", height: "20px" }}>
