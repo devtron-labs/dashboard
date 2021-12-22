@@ -39,7 +39,7 @@ const AppDetailsComponent = () => {
 
     return (
         <div>
-             <EnvironmentSelectorComponent />
+             {/* <EnvironmentSelectorComponent /> */}
             <EnvironmentStatusComponent />
 
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">

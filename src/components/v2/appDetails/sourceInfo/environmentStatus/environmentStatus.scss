@@ -3,25 +3,26 @@
     min-height: 92px;
 }
 
-.app-status-detail-modal{
-   margin: auto;
-   margin-right: 0;
-   height: 100%;
+.app-status-detail-modal {
+    margin: auto;
+    margin-right: 0;
+    height: 100%;
+    overflow: scroll;
 }
 
-.config-error-wrap{
+.config-error-wrap {
     word-wrap: break-word;
 }
 
-.table__padding-left{
+.table__padding-left {
     padding-left: 20px !important;
 }
 
-.table__padding-row{
+.table__padding-row {
     padding-right: 20px !important;
 }
 
-.text-capitalize{
+.text-capitalize {
     text-transform: capitalize;
 }
 
@@ -52,4 +53,15 @@
 .f-unknown,
 .initiated {
     color: var(--yellow);
+}
+
+.kind-name {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr;
+
+    .ellipsis-left {
+        text-align: left;
+    }
 }

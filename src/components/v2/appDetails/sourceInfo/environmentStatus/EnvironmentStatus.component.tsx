@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
-import './environmentStatus.css'
+import './environmentStatus.scss'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import ConfigStatusModalComponent from './ConfigStatusModal.component'
@@ -59,9 +59,7 @@ function EnvironmentStatusComponent() {
 
             {showAppStatusDetail &&
                 <AppStatusDetailModal
-                    message={'text'}
                     close={() => { setShowAppStatusDetail(false) }}
-                    status={'DEGRADED'}
                 />}
 
 

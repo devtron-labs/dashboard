@@ -5,6 +5,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import IndexStore from '../../index.store';
 import { AggregatedNodes } from '../../../../app/types';
 import { aggregateNodes } from '../../../../app/details/appDetails/utils';
+import './environmentStatus.scss'
 
 // function getNodeMessage(kind, name) {
 //     if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
@@ -14,7 +15,7 @@ import { aggregateNodes } from '../../../../app/details/appDetails/utils';
 //     return '';
 // }
 
-function AppStatusDetailModal({ message, close, status }) {
+function AppStatusDetailModal({close }) {
 
     const _appDetails = IndexStore.getAppDetails();
 
@@ -32,7 +33,7 @@ function AppStatusDetailModal({ message, close, status }) {
                      <span className="cursor" onClick={close} ><Close className="icon-dim-24" /></span>
                         </div>
                         <div className="flex left">
-                            <div className={`subtitle app-summary__status-name fw-6 pl-20 f-${status.toLowerCase()} mr-16`}>{status.toUpperCase()}</div>
+                            <div className={`subtitle app-summary__status-name fw-6 pl-20 f-${_appDetails?.resourceTree?.status.toLowerCase()} mr-16`}>{_appDetails?.resourceTree?.status.toUpperCase()}</div>
                             {/* {message && <div>{message}</div>} */}
                         </div>
                     </div>
@@ -40,29 +41,28 @@ function AppStatusDetailModal({ message, close, status }) {
                     <div className="app-status-detail__header">
                     <table>
                             <thead>
-                                <tr>
+                                <tr className='pt-12 pb-12'>
                                     {['name', 'status', 'message'].map((n, index) => (
-                                        <th key={`header_${index}`}>{n}</th>
+                                        <th className='pl-20' key={`header_${index}`}>{n.toUpperCase()}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {console.log(nodes)}
                                 {nodes &&
                                     Object.keys(nodes.nodes)
                                         .filter((kind) => kind.toLowerCase() !== 'rollout')
                                         .map((kind) =>
                                             Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
                                                 <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                                    <td valign="top">
+                                                    <td className='pl-20 pt-12 pb-12' valign="top">
                                                         <div className="kind-name">
-                                                            <div>{nodeDetails.kind}/</div>
+                                                            <div className='fw-6'>{nodeDetails.kind}/</div>
                                                             <div className="ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
                                                     <td
                                                         valign="top"
-                                                        className={`app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
+                                                        className={`pl-20 pt-12 pb-12 app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
                                                             ? nodeDetails.health.status.toLowerCase()
                                                             : ''
                                                             }`}
@@ -73,7 +73,7 @@ function AppStatusDetailModal({ message, close, status }) {
                                                                 ? nodeDetails.health.status
                                                                 : ''}
                                                     </td>
-                                                    <td valign="top">
+                                                    <td valign="top" className='pl-20 pt-12 pb-12'>
                                                         <div
                                                             style={{
                                                                 display: 'grid',
