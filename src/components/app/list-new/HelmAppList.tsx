@@ -114,7 +114,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         let _externalAppRecievedClusterIds = [...externalAppRecievedClusterIds];
         _externalAppRecievedClusterIds.push(_clusterId.toString());
         setExternalAppRecievedClusterIds(_externalAppRecievedClusterIds);
-        setExternalHelmAppsList(externalAppData.result.helmApps);
+        setExternalHelmAppsList([...externalHelmAppsList, ...externalAppData.result.helmApps]);
 
         let _requestedSortedClusterIdsJson = JSON.stringify(
             _clusterIdsCsv.split(',').sort((a, b) => a.localeCompare(b)),
