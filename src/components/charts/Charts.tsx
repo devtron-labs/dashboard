@@ -13,8 +13,7 @@ export default function Charts() {
     return <Switch>
         <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
         <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
-        <Route path={`${URLS.CHARTS}/deployed`} component={Deployed} />
-        <Redirect to={`${URLS.CHARTS}/deployed`} />
+        <Redirect to={`${URLS.CHARTS}/discover`} />
     </Switch>
 }
 
@@ -28,9 +27,6 @@ export function GenericChartsHeader({ children=null }) {
 export function ChartDetailNavigator() {
     return (
         <ul role="tablist" className="tab-list">
-            <li className='tab-list__tab'>
-                <NavLink replace to="deployed" className="tab-list__tab-link" activeClassName="active">Deployed</NavLink>
-            </li>
             <li className='tab-list__tab'>
                 <NavLink replace to="discover" className="tab-list__tab-link" activeClassName="active">Discover</NavLink>
             </li>

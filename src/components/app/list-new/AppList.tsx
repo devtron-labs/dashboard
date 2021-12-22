@@ -42,6 +42,7 @@ export default function AppList() {
 
     // filters
     const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
+    const [fetchingExternalApps, setFetchingExternalApps] = useState(false);
 
     //
     let serverMode = 'FULL';
@@ -321,6 +322,10 @@ export default function AppList() {
         window.location.reload();
     }
 
+    const setFetchingExternalAppsState = (fetching : boolean) : void => {
+        setFetchingExternalApps(fetching);
+    }
+
     function renderPageHeader() {
         return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
@@ -435,7 +440,17 @@ export default function AppList() {
                 </li>
             </ul>
             <div className="app-tabs-sync">
-                Last synced {handleUTCTime(lastDataSyncTime, true)} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button>
+                {
+                    ((params.appType == AppListConstants.AppType.DEVTRON_APPS) || (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) &&
+                    <span>Last synced {handleUTCTime(lastDataSyncTime, true)} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button></span>
+                }
+                {
+                    params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps &&
+                    <>
+                        <span>Fetching apps...</span>
+                        <Progressing pageLoader/>
+                    </>
+                }
             </div>
         </div>
     }
@@ -513,7 +528,7 @@ export default function AppList() {
                     }
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
-                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters}/>
+                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState}/>
                     }
                  </>
             }

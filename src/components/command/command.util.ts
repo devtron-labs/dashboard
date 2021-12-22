@@ -1,6 +1,7 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service';
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types';
 import { APIOptions } from '../../services/service.types';
+import { URLS } from '../../config';
 
 export const AllSuggestedArguments = [
     {
@@ -281,15 +282,6 @@ function getChartArguments(args, options): Promise<CommandSuggestionType> {
                         group: undefined,
                         url: `/chart-store/discover`,
                         isEOC: false,
-                    }
-                },
-                {
-                    value: 'deployed',
-                    ref: null,
-                    data: {
-                        group: undefined,
-                        url: `/chart-store/deployed`,
-                        isEOC: true,
                     }
                 }],
                 groups: []
