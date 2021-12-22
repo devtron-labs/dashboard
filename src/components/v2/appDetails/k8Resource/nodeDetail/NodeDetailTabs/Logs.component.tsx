@@ -53,7 +53,7 @@ function LogsComponent({ selectedTab }) {
     }
 
     const handlePodChange = (selectedOption) => {
-
+        onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
                 handlePodSelecction(IndexStore.getAllContainers());
@@ -71,8 +71,6 @@ function LogsComponent({ selectedTab }) {
                 setSelectedContainerName(cs[0]);
                 break;
         }
-
-        onLogsCleared();
     };
 
     const parsePipes = (expression) => {
