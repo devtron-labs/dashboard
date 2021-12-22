@@ -27,7 +27,7 @@ function AppStatusDetailModal({close }) {
         <Drawer position="right" width="50%" >
                 <div className="app-status-detail-modal bcn-0 pt-12">
 
-                    <div className="app-status-detail__header box-shadow pb-12 mb-8">
+                    <div className="app-status-detail__header box-shadow pb-12 mb-20">
                         <div className="title flex content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
                             App status detail
                      <span className="cursor" onClick={close} ><Close className="icon-dim-24" /></span>
@@ -41,9 +41,9 @@ function AppStatusDetailModal({close }) {
                     <div className="app-status-detail__header">
                     <table>
                             <thead>
-                                <tr className='pt-12 pb-12'>
+                                <tr className='border-bottom'>
                                     {['name', 'status', 'message'].map((n, index) => (
-                                        <th className='pl-20' key={`header_${index}`}>{n.toUpperCase()}</th>
+                                        <th className='pl-20 pt-8 pb-8' key={`header_${index}`}>{n.toUpperCase()}</th>
                                     ))}
                                 </tr>
                             </thead>

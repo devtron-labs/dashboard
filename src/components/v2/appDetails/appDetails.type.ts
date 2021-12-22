@@ -208,4 +208,5 @@ export interface iNode extends Node {
     childNodes: iNodes;
     type: NodeType;
     isSelected: boolean
+    status: string
 }

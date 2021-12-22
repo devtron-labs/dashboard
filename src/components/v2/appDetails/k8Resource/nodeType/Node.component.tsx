@@ -7,7 +7,7 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode } from '../../appDetails.type';
-import './nodeType.scss'
+import './nodeType.scss';
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
 import AppDetailsStore from '../../appDetails.store';
@@ -15,23 +15,23 @@ import { toast } from 'react-toastify';
 
 function NodeComponent() {
     const { path, url } = useRouteMatch();
-    const history = useHistory()
-    const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
-    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
+    const history = useHistory();
+    const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
+    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
     const [copied, setCopied] = useState(false);
     const [tableHeader, setTableHeader] = useState([]);
-    const [firstColWidth, setFirstColWidth] = useState("");
-    const [podType, setPodType] = useState(false)
+    const [firstColWidth, setFirstColWidth] = useState('');
+    const [podType, setPodType] = useState(false);
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
-    const appDetails = IndexStore.getAppDetails()
+    const appDetails = IndexStore.getAppDetails();
     // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
-    const params = useParams<{ nodeType: NodeType }>()
+    const params = useParams<{ nodeType: NodeType }>();
     // const [tabs, setTabs] = useState([])
 
     useEffect(() => {
-        if (!copied) return
-        setTimeout(() => setCopied(false), 2000)
-    }, [copied])
+        if (!copied) return;
+        setTimeout(() => setCopied(false), 2000);
+    }, [copied]);
 
     useEffect(() => {
         if (params.nodeType) {
@@ -42,85 +42,87 @@ function NodeComponent() {
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ["Pod (All)", "Ready", ""]
-                    _fcw = "col-10"
+                    tableHeader = ['Pod (All)', 'Ready', ''];
+                    _fcw = 'col-10';
                     break;
                 case NodeType.Service.toLowerCase():
-                    tableHeader = ["Name", "URL", ""]
-                    _fcw = "col-6"
+                    tableHeader = ['Name', 'URL', ''];
+                    _fcw = 'col-6';
                     break;
                 default:
-                    tableHeader = ["Name", ""]
-                    _fcw = "col-11"
+                    tableHeader = ['Name', ''];
+                    _fcw = 'col-11';
                     break;
             }
 
-            setTableHeader(tableHeader)
-            setFirstColWidth(_fcw)
+            setTableHeader(tableHeader);
+            setFirstColWidth(_fcw);
 
-            let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType);//.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+            let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
             if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 _selectedNodes = _selectedNodes.filter((node) => {
-                    const _podMetaData = IndexStore.getMetaDataForPod(node.name)
+                    const _podMetaData = IndexStore.getMetaDataForPod(node.name);
 
-                    return _podMetaData.isNew === podType
-
-                })
+                    return _podMetaData.isNew === podType;
+                });
             }
-            let _healthyNodeCount = 0
+            let _healthyNodeCount = 0;
 
             _selectedNodes.forEach((node: Node) => {
-                if (node.health?.status.toLowerCase() === "healthy") {
-                    _healthyNodeCount++
+                if (node.health?.status.toLowerCase() === 'healthy') {
+                    _healthyNodeCount++;
                 }
-            })
+            });
 
-            setSelectedNodes([..._selectedNodes])
+            setSelectedNodes([..._selectedNodes]);
 
-            setSelectedHealthyNodeCount(_healthyNodeCount)
+            setSelectedHealthyNodeCount(_healthyNodeCount);
         }
-    }, [params.nodeType, podType])
+    }, [params.nodeType, podType]);
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
-        const updatedNodes = nodes.map(node => {
+        const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
-                node.isSelected = !node.isSelected
+                node.isSelected = !node.isSelected;
             } else if (node.childNodes?.length > 0) {
-                markNodeSelected(node.childNodes, nodeName)
+                markNodeSelected(node.childNodes, nodeName);
             }
 
-            return node
-        })
+            return node;
+        });
 
-        return updatedNodes
-    }
+        return updatedNodes;
+    };
 
     const describeNode = (name: string, containerName: string) => {
         setDetailedNode({ name, containerName });
-    }
+    };
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let _url = `${url.split("/").slice(0, -1).join("/")}/${node.kind.toLowerCase()}/${node.name}/${_tabName.toLowerCase()}`
+        let _url = `${url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
+            node.name
+        }/${_tabName.toLowerCase()}`;
 
         if (containerName) {
-            _url = `${_url}?container=${containerName}`
+            _url = `${_url}?container=${containerName}`;
         }
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
+        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url);
 
         if (isAdded) {
-            history.push(_url)
+            history.push(_url);
         } else {
-            toast.error(<div>
-                <div>Max 5 tabs allowed</div>
-                <p>Please close an open tab and try again.</p>
-            </div>)
+            toast.error(
+                <div>
+                    <div>Max 5 tabs allowed</div>
+                    <p>Please close an open tab and try again.</p>
+                </div>,
+            );
         }
-    }
+    };
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
-
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
             return (
@@ -148,9 +150,18 @@ function NodeComponent() {
                                 )}
                                 <div>
                                     <div>{node.name}</div>
-                                    <div className={`f-${node.health?.status.toLowerCase()}`}>
+                                    {(node?.status || node?.health?.status) && (
+                                        <span
+                                            className={` app-summary__status-name f-${(
+                                                node?.status || node?.health?.status
+                                            ).toLowerCase()}`}
+                                        >
+                                            {node?.status || node?.health?.status}
+                                        </span>
+                                    )}
+                                    {/* <div className={`f-${node.health?.status.toLowerCase()}`}>
                                         {node.health?.status}
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 <div>
@@ -227,34 +238,39 @@ function NodeComponent() {
                     )}
                 </React.Fragment>
             );
-        })
-    }
+        });
+    };
 
     return (
         <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0 }}>
-            {(params.nodeType === NodeType.Pod.toLowerCase()) ? <PodHeaderComponent callBack={setPodType} /> :
-                <div className="border-bottom  pt-10 pb-10" >
+            {params.nodeType === NodeType.Pod.toLowerCase() ? (
+                <PodHeaderComponent callBack={setPodType} />
+            ) : (
+                <div className="border-bottom  pt-10 pb-10">
                     <div className="pl-16 fw-6 fs-14 text-capitalize">
                         <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                         <span>({selectedNodes?.length})</span>
                     </div>
                     {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>}
-                </div>}
+                </div>
+            )}
 
             <div className="row border-bottom fw-6 m-0">
-                {
-                    tableHeader.map((cell, index) => {
-                        return <div key={'gpt_' + index} className={(`${index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'} pt-9 pb-9`)}>{cell}</div>
-                    })
-                }
+                {tableHeader.map((cell, index) => {
+                    return (
+                        <div
+                            key={'gpt_' + index}
+                            className={`${index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'} pt-9 pb-9`}
+                        >
+                            {cell}
+                        </div>
+                    );
+                })}
             </div>
 
-            {
-                selectedNodes && makeNodeTree(selectedNodes)
-            }
+            {selectedNodes && makeNodeTree(selectedNodes)}
         </div>
-    )
+    );
 }
 
-export default NodeComponent
-
+export default NodeComponent;
