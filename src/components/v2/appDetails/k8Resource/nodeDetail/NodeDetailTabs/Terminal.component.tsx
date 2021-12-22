@@ -133,7 +133,7 @@ function TerminalComponent({ selectedTab }) {
 
         </div>
 
-        <div style={{ minHeight: '600px', background: '#0b0f22' }}>
+        <div style={{ minHeight: '600px', background: '#ffffff' }}>
             <TerminalView
                 nodeName={params.podName}
                 containerName={selectedContainerName}

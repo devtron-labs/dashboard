@@ -50,9 +50,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             fontFamily: 'Inconsolata',
             screenReaderMode: true,
             theme: {
-                background: '#0B0F22',
-                foreground: '#FFFFFF'
-            }
+                background: '#ffffff',
+                foreground: '#000a14',
+                selection: '#abcff3',
+            },
         });
 
         const fitAddon = new FitAddon();
@@ -267,9 +268,20 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         })
     }
 
+    const isConnecting = terminalViewProps.socketConnection === 'CONNECTING';
+    const connStatusBarBGClass = isConnecting ? 'bcy-2' : 'bcr-7';
+    const connStatusTextClass = isConnecting ? 'cn-9' : 'cn-0';
+
     return (
-        <div className='terminal-view'>
-            <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={`${terminalViewProps.socketConnection !== "CONNECTED" ? 'bcr-7 pod-readyState--show' : ''} cn-0 m-0 w-100 pod-readyState pod-readyState--top`} >
+        <div className="terminal-view">
+            <p
+                style={{ zIndex: 4, textTransform: 'capitalize' }}
+                className={`${
+                    terminalViewProps.socketConnection !== 'CONNECTED'
+                        ? `${connStatusBarBGClass} pod-readyState--show`
+                        : ''
+                } ${connStatusTextClass} m-0 w-100 pod-readyState pod-readyState--top`}
+            >
                 <span className={terminalViewProps.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
                     {terminalViewProps.socketConnection?.toLowerCase()}
                 </span>
@@ -296,4 +308,4 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     )
 }
 
-export default TerminalView
+export default TerminalView;

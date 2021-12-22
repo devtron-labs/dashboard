@@ -83,6 +83,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({ subje
             theme: {
                 background: '#ffffff',
                 foreground: '#000a14',
+                selection: '#abcff3',
             },
         });
         terminal.current.attachCustomKeyEventHandler(handleKeyPress)
