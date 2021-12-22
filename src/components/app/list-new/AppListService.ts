@@ -4,40 +4,35 @@ import {get, post} from '../../../services/api';
 import {ResponseType, ClusterEnvironmentDetail} from '../../../services/service.types';
 
 
-
-export interface AppListData extends ResponseType {
-    result?: AppsList
+export interface AppListResponse extends ResponseType{
+    result?: AppsListResult
 }
 
-export interface AppsList {
-    devtronApps: DevtronAppList[],
-    helmApps: HelmAppList[]
+interface AppsListResult {
+    clusterIds : number[],
+    applicationType : string, //DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
+    errored: boolean,
+    errorMsg : string,
+    helmApps : HelmApp[]
 }
 
-export interface DevtronAppList {
+
+export interface HelmApp {
     appName: string,
-    appId: string | number,
-    projectId: number,
-    isExpanded: boolean,
-    environmentDetails: AppEnvironmentDetail[]
-}
-
-interface HelmAppList {
-    appName: string,
-    appId: string | number,
+    appId: string,
     chartName: string,
     chartAvatar: string,
     projectId: number,
+    lastDeployedAt: string,
     environmentDetail: AppEnvironmentDetail
 }
 
-interface AppEnvironmentDetail {
+export interface AppEnvironmentDetail {
     environmentName: string,
     environmentId: number,
     namespace: string,
     clusterName: string,
-    lastDeployedAt: string,
-    isDefault: boolean
+    clusterId: number
 }
 
 export const getInitData = (payloadParsedFromUrl : any): Promise<any> => {
@@ -135,29 +130,13 @@ export const getInitData = (payloadParsedFromUrl : any): Promise<any> => {
     })
 }
 
-export const getApplicationList = (projectIds: number[], clusterIds: number[], namespaces: string[], environmentIds: number[]): Promise<AppsList> => {
-    let requestPayload = {
-        projectIds: projectIds,
-        clusterIds: clusterIds,
-        namespaces: namespaces,
-        environmentIds: environmentIds
+
+export const getDevtronInstalledHelmApps = (clusterIdsCsv: string) : Promise<AppListResponse> => {
+    let url = `${Routes.CHART_INSTALLED}`
+    if (clusterIdsCsv) {
+        url = `${url}?clusterIds=${clusterIdsCsv}`
     }
-
-    // getNewAppListFromApi(requestPayload)
-    return Promise.all([getProjectList()]).then(([appList]) => {
-        // below mock
-        let appListRes: AppListData = JSON.parse('{"result":{"devtronApps" : [{"appName" : "devtronApp1", "environmentDetails" : [{"environmentName" : "e1", "clusterName" : "cluster1", "namespace" : "n1", "lastDeployedAt" : "2021-12-10 11:45:13.859424+00", "isDefault" : true}]},{"appName" : "devtronApp2", "environmentDetails" : [{"environmentName" : "e2", "clusterName" : "cluster1", "namespace" : "n2", "lastDeployedAt" : "2021-12-11 11:45:13.859424+00", "isDefault" : false},{"environmentName" : "e1", "clusterName" : "cluster1", "namespace" : "n1", "lastDeployedAt" : "2021-12-12 11:45:13.859424+00", "isDefault" : true}]}], "helmApps" : [{"appName" : "helmApp1", "chartName" : "chart1", "chartAvatar" : "https://raw.githubusercontent.com/kedacore/keda/master/images/keda-logo-500x500-white.png", "environmentDetail" : {"environmentName" : "e21", "clusterName" : "cluster2", "namespace" : "n21", "lastDeployedAt" : "2021-12-14 11:45:13.859424+00"}},{"appName" : "helmApp2", "chartName" : "chart1", "chartAvatar" : "", "environmentDetail" : {"environmentName" : "e22", "clusterName" : "cluster2", "namespace" : "n22", "lastDeployedAt" : "2021-12-18 11:45:13.859424+00"}}]}}');
-        return {
-            devtronApps: appListRes.result ? appListRes.result.devtronApps : [],
-            helmApps: appListRes.result ? appListRes.result.helmApps : []
-        }
-    })
-}
-
-const getNewAppListFromApi = (requestPayload: any): Promise<any> => {
-    //const URL = `${Routes.APP_NEW_LIST}`;
-    const URL = "";
-    return post(URL, requestPayload);
+    return get(url);
 }
 
 const sortByLabel = (a, b) => {

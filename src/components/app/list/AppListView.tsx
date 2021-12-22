@@ -75,8 +75,8 @@ export class AppListView extends Component<AppListViewProps>{
                                 <div className="app-list__cell--icon">
                                     <DevtronAppIcon className="icon-dim-24"/>
                                 </div>
-                                <div className="app-list__cell app-list__cell--name value">
-                                    <p className="truncate-text m-0">{app.name}</p>
+                                <div className="app-list__cell app-list__cell--name">
+                                    <p className="truncate-text m-0 value">{app.name}</p>
                                 </div>
                                 {this.renderEnvironmentList(app)}
                                 <div className="app-list__cell app-list__cell--cluster-name">

@@ -54,9 +54,9 @@ export interface Environment {
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
     payloadParsedFromUrl?: any;
     appCheckListRes? : any;
-    teamListRes? : any;
-    environmentListRes? : any;
+    serverMode? : string;
     clearAllFilters: () => void;
+    sortApplicationList : (key: string) => void;
 }
 
 export interface AppListResponse {

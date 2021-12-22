@@ -146,7 +146,7 @@
     padding-left: 0px;
 }
 
-.app-list__cell--name.value {
+.app-list__cell--name .value {
     color: #0066cc;
 }
 

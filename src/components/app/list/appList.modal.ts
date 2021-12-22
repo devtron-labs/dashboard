@@ -2,7 +2,7 @@ import { handleUTCTime } from '../../common';
 import { Environment } from './types';
 import moment from 'moment';
 
-export const buildInitState = (appListPayload, appCheckListRes, teamListRes, environmentListRes): Promise<any> => {
+export const buildInitState = (appListPayload, appCheckListRes): Promise<any> => {
     return new Promise((resolve) => {
         let appChecklist = appCheckListRes.result.appChecklist;
         let chartChecklist = appCheckListRes.result.chartChecklist;
@@ -18,7 +18,7 @@ export const buildInitState = (appListPayload, appCheckListRes, teamListRes, env
         }, 0)
 
         let parsedResponse = {
-            code: teamListRes.code,
+            code: appCheckListRes.code,
             apps: [],
             offset: appListPayload.offset,
             size: 0,

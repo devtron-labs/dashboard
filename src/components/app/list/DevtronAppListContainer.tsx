@@ -40,7 +40,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     componentDidMount() {
-        buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes, this.props.teamListRes, this.props.environmentListRes).then((response) => {
+        buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes).then((response) => {
             this.setState({
                 code: response.code,
                 apps: [],
@@ -74,20 +74,6 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
             this.getAppList(this.props.payloadParsedFromUrl);
         }
-    }
-
-    sort = (key: string): void => {
-        let qs = queryString.parse(this.props.location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        query["orderBy"] = key;
-        query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
-        this.props.history.push(url);
     }
 
     changePage = (pageNo: number): void => {
@@ -188,7 +174,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             history={this.props.history}
             expandRow={this.expandRow}
             closeExpandedRow={this.closeExpandedRow}
-            sort={this.sort}
+            sort={this.props.sortApplicationList}
             redirectToAppDetails={this.redirectToAppDetails}
             handleEditApp={this.handleEditApp}
             clearAll={this.props.clearAllFilters}

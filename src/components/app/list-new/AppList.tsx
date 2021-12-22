@@ -7,14 +7,13 @@ import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
 import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import {getInitData, getApplicationList, AppsList, buildClusterVsNamespace} from './AppListService'
+import {getInitData, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
 import {URLS, AppListConstants} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
-import defaultChartImage from '../../../assets/icons/ic-plc-chart.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer';
-/*import HelmAppListContainer from './HelmAppListContainer';*/
+import HelmAppList from './HelmAppList';
 import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
@@ -271,6 +270,21 @@ export default function AppList() {
         delete query['environment'];
         delete query['team'];
         delete query['namespace'];
+        delete query['search'];
+        let queryStr = queryString.stringify(query);
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        history.push(url);
+    }
+
+    const sortApplicationList = (key: string): void => {
+        let qs = queryString.parse(location.search);
+        let keys = Object.keys(qs);
+        let query = {};
+        keys.map((key) => {
+            query[key] = qs[key];
+        })
+        query["orderBy"] = key;
+        query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
@@ -283,12 +297,6 @@ export default function AppList() {
         let url = (appTabType == AppListConstants.AppTabs.DEVTRON_APPS) ? `${URLS.APP_LIST_DEVTRON}${location.search}` : `${URLS.APP_LIST_HELM}${location.search}`;
         history.push(url);
         setCurrentTab(appTabType);
-    }
-
-    function handleImageError(e) {
-        const target = e.target as HTMLImageElement
-        target.onerror = null
-        target.src = defaultChartImage
     }
 
     const searchApp = (event: React.FormEvent) => {
@@ -490,7 +498,7 @@ export default function AppList() {
                     {serverMode == 'FULL' && renderAppCreateRouter()}
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'FULL' &&
-                        <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
+                        <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} clearAllFilters={removeAllFilters} sortApplicationList={sortApplicationList}/>
                     }
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'ONLY_EA' &&
@@ -503,10 +511,10 @@ export default function AppList() {
                             </EmptyState>
                         </div>
                     }
-                    {/*{
+                    {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
-                        <HelmAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} environmentListRes={environmentListRes} teamListRes={projectListRes} clearAllFilters={removeAllFilters}/>
-                    }*/}
+                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters}/>
+                    }
                  </>
             }
         </div>
