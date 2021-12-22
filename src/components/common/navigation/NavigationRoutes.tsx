@@ -7,7 +7,6 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import * as Sentry from '@sentry/browser';
 import ReactGA from 'react-ga';
 import { Security } from '../../security/Security';
-import { EnvType } from '../../v2/appDetails/appDetails.type';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));

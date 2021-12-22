@@ -15,6 +15,7 @@ import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
+import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string, envId: string, nodeType: string }>()
@@ -38,6 +39,7 @@ const AppDetailsComponent = () => {
 
     return (
         <div>
+             <EnvironmentSelectorComponent />
             <EnvironmentStatusComponent />
 
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">

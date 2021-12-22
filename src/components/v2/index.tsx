@@ -5,14 +5,14 @@ import { useRouteMatch, useParams, Redirect } from 'react-router';
 import { Progressing } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
-import AppDetailsComponent from './appDetails/AppDetails.component';
 import AppHeaderComponent from './headers/AppHeader.component';
-import { EnvType } from './appDetails/appDetails.type';
 import ChartHeaderComponent from './headers/ChartHeader.component';
+import { getInstalledAppDetail } from '../charts/charts.service';
+import { getInstalledChartDetail } from './appDetails/appDetails.api';
+import AppDetailsComponent from './appDetails/AppDetails.component';
+import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
-import { getInstalledChartDetail, getInstalledAppDetail } from './appDetails/appDetails.api';
 import EnvironmentSelectorComponent from './appDetails/sourceInfo/EnvironmentSelector.component';
-import EnvironmentStatusComponent from './appDetails/sourceInfo/environmentStatus/EnvironmentStatus.component';
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true)
@@ -56,7 +56,7 @@ function RouterComponent({ envType }) {
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
-            <EnvironmentSelectorComponent />
+            {/* <EnvironmentSelectorComponent /> */}
             
             {isLoading ?
                 <div style={{ height: "560px" }} className="flex"></div>

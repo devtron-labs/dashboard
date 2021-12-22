@@ -45,6 +45,16 @@ function EnvironmentStatusComponent() {
 
                     </div>
                 }
+
+                {
+                    appDetails?.deprecated &&
+                    <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12" >
+                        <div className="cn-9 lh-1-33 flex left"><span>Chart deprecated</span><Alert className="icon-dim-16 ml-4" /></div>
+                        <div className=" fw-6 fs-14">Upgrade required</div>
+                        <a href={URLS.APP_VALUES} className="cb-5 fw-6">Upgrade chart</a>
+
+                    </div>
+                }
             </div>
 
             {showAppStatusDetail &&

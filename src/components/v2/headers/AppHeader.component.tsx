@@ -11,8 +11,8 @@ import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 
 import { getAppMetaInfo } from '../../app/service';
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState';
-import IndexStore from '../appDetails/index.store';
 import './header.css';
+import IndexStore from '../appDetails/index.store';
 
 function AppHeaderComponent() {
     const { appId } = useParams<{ appId }>();
