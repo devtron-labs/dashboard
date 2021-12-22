@@ -1,5 +1,5 @@
 import { getAppCheckList, getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList , getClusterNamespaceMapping} from '../../../services/service';
-import {Routes} from '../../../config';
+import {Routes, SERVER_MODE} from '../../../config';
 import {get, post} from '../../../services/api';
 import {ResponseType, ClusterEnvironmentDetail} from '../../../services/service.types';
 
@@ -35,8 +35,8 @@ export interface AppEnvironmentDetail {
     clusterId: number
 }
 
-export const getInitData = (payloadParsedFromUrl : any): Promise<any> => {
-    return Promise.all([getAppCheckList(), getProjectList(), getEnvironmentList(), getClusterNamespaceMapping()]).then(([appCheckListRes, projectsRes, environmentListRes, clusterNamespaceMappingRes]) => {
+export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Promise<any> => {
+    return Promise.all([(serverMode == SERVER_MODE.FULL ? getAppCheckList() : { result: undefined}) , getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getClusterNamespaceMapping()]).then(([appCheckListRes, projectsRes, environmentListRes, clusterNamespaceMappingRes]) => {
 
         // push apps with no projects in project res
         if(projectsRes.result && Array.isArray(projectsRes.result)){

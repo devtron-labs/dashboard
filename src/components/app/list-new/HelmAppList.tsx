@@ -3,7 +3,7 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
 import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
-import { Host } from '../../../config';
+import { Host, SERVER_MODE } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link, withRouter } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
@@ -58,7 +58,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     }, [externalHelmAppsList]);
 
     useEffect(() => {
-        if (serverMode == 'ONLY_EA'){
+        if (serverMode == SERVER_MODE.EA_ONLY){
             setDataStateType(AppListViewType.LIST);
             if(clusterIdsCsv){
                 _getExternalHelmApps();
@@ -389,11 +389,11 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 dataStateType == AppListViewType.LIST &&
                 <div className="app-list">
                     {
-                        serverMode == 'FULL' &&
+                        serverMode == SERVER_MODE.FULL &&
                         renderFullModeApplicationListContainer()
                     }
                     {
-                        serverMode == 'ONLY_EA' &&
+                        serverMode == SERVER_MODE.EA_ONLY &&
                         renderOnlyEAModeApplicationListContainer()
                     }
                 </div>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
 import { Link, Switch, Route } from 'react-router-dom';
 import {Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common';
@@ -10,19 +10,21 @@ import EmptyState from '../../EmptyState/EmptyState';
 import {getInitData, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
-import {URLS, AppListConstants} from '../../../config';
+import {URLS, AppListConstants, SERVER_MODE} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import DevtronAppListContainer from '../list/DevtronAppListContainer';
 import HelmAppList from './HelmAppList';
 import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
+import { mainContext } from '../../common/navigation/NavigationRoutes';
 import '../list/list.css';
 
 export default function AppList() {
     const location = useLocation();
     const history = useHistory();
     const params = useParams<{ appType: string}>();
+    const {serverMode} = useContext(mainContext);
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [lastDataSyncTime, setLastDataSyncTime] = useState(null);
@@ -44,8 +46,6 @@ export default function AppList() {
     const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false);
 
-    //
-    let serverMode = 'FULL';
 
     // on page load
     useEffect(() => {
@@ -64,7 +64,7 @@ export default function AppList() {
         setParsedPayloadOnUrlChange(payloadParsedFromUrl);
 
         // fetch master filters data and some master data
-        getInitData(payloadParsedFromUrl).then((initData) => {
+        getInitData(payloadParsedFromUrl, serverMode).then((initData) => {
             setAppCheckListRes(initData.appCheckListRes);
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
@@ -329,7 +329,7 @@ export default function AppList() {
     function renderPageHeader() {
         return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
-                {serverMode == 'FULL' &&
+                {serverMode == SERVER_MODE.FULL &&
                     <button type="button" className="cta"
                             onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}>
                         Create new
@@ -377,7 +377,7 @@ export default function AppList() {
                             type={AppListConstants.FilterType.NAMESPACE}
                             applyFilter={applyFilter} />
                     {
-                        serverMode == 'FULL' &&
+                        serverMode == SERVER_MODE.FULL &&
                         <Filter list={masterFilters.environments}
                                 labelKey="label"
                                 buttonText="Environment"
@@ -510,13 +510,13 @@ export default function AppList() {
                         {renderAppliedFilters()}
                         {renderAppTabs()}
                     </div>
-                    {serverMode == 'FULL' && renderAppCreateRouter()}
+                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
                     {
-                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'FULL' &&
+                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL &&
                         <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} clearAllFilters={removeAllFilters} sortApplicationList={sortApplicationList}/>
                     }
                     {
-                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == 'ONLY_EA' &&
+                        params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY &&
                         <div style={{ height: "calc(100vh - 250px)" }}>
                             <EmptyState>
                                 <img src={InstallDevtronFullImage} width="250" height="200" alt="Install devtron" />
