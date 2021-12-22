@@ -136,7 +136,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
           return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
               <h2 className="form__title">{moduleBasedTitle}</h2>
               <h5 className="form__subtitle">Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
-                  <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
+                  <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more</a>
               </h5>
               {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} serverMode={this.props.serverMode} />)}
           </section>
@@ -406,7 +406,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 <FormError className="form__icon form__icon--error" />
                 {state.token.error}</label>}
         </div>
-        <hr></hr>
+        {serverMode !== SERVER_MODE.EA_ONLY  && <hr></hr>}
         {serverMode !== SERVER_MODE.EA_ONLY  && (<div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
