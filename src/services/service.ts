@@ -294,6 +294,25 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
         }
     })
 }
+
+export function getChartReferencesForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`;
+    return get(URL);
+}
+
+export function getAppChartRefForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+    return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
+        const { result: { chartRefs, latestEnvChartRef, latestAppChartRef } } = response;
+        let selectedChartId = latestEnvChartRef || latestAppChartRef;
+        let chart = chartRefs?.find(chart => selectedChartId === chart.id);
+        return {
+            code: response.code,
+            status: response.status,
+            result: chart
+        }
+    })
+}
+
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);
@@ -334,7 +353,13 @@ export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     return get(URL);
 }
 
+
 export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {
     let url = `${Routes.CLUSTER_ENV_MAPPING}`;
     return get(url);
+}
+
+export function getVersionConfig() {
+    const URL = `${Routes.APP_VERSION}`;
+    return get(URL);
 }

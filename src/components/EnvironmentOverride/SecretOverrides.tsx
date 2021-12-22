@@ -1,9 +1,9 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { deleteSecret, overRideSecret, unlockEnvSecret } from './service'
-import { getEnvironmentSecrets, } from '../../services/service';
+import { getEnvironmentSecrets, getAppChartRefForAppAndEnv } from '../../services/service';
 import { useParams } from 'react-router';
 import { ListComponent, Override } from './ConfigMapOverrides'
-import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget } from '../common'
+import { mapByKey, showError, Pencil, not, ConfirmationDialog, useAsync, Select, RadioGroup, Info, CustomInput, Checkbox, CHECKBOX_VALUE, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify';
@@ -59,7 +59,7 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     useEffect(() => {
         async function callGetAppChartRef() {
-            const { result } = await getAppChartRef(appId);
+            const { result } = await getAppChartRefForAppAndEnv(appId, envId);
             setAppChartRef(result);
         }
         callGetAppChartRef();
@@ -189,7 +189,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const { yaml, handleYamlChange, error } = useKeyValueYaml(state.duplicate || [], setKeyValueArray, PATTERNS.CONFIG_MAP_AND_SECRET_KEY, `Key must consist of alphanumeric characters, '.', '-' and '_'`)
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]);
+    const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRef3090OrBelow(appChartRef.id);
 
     function setKeyValueArray(arr) {
         tempArr.current = arr

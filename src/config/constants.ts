@@ -95,6 +95,7 @@ export const Routes = {
     CHART_INSTALLED: 'app-store/installed-app',
     CHART_AVAILABLE: 'app-store',
     CHART_REPO: 'repo',
+    CHART_RESYNC: 'sync-charts',
     CHART_VALUES: 'app-store/template/values',
     CHART_VALUES_LIST_CATEGORIZED: 'app-store/application/values/list',
     CHART_VALUES_LIST_TEMPLATE: 'app-store/template/values/list',
@@ -108,7 +109,8 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
-    CLUSTER_ENV_MAPPING: 'env'
+    CLUSTER_ENV_MAPPING: 'env',
+    APP_VERSION: '/version'
 };
 
 export const ViewType = {
@@ -204,3 +206,9 @@ export const AppListConstants = {
     }
 }
 // APP LIST ENDS
+
+export enum SERVER_MODE {
+    EA_ONLY = 'EA_ONLY',
+    FULL = 'FULL',
+}
+export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
