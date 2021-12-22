@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, Suspense } from 'react';
+import React, { lazy, useState, useEffect, Suspense, useContext } from 'react';
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router';
 import { URLS } from '../../config';
@@ -12,6 +12,8 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import { getAppCheckList } from '../../services/service';
 import { showError } from '../common';
 import './globalConfigurations.scss';
+import { SERVER_MODE } from '../../config/constants';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -24,23 +26,7 @@ const Project = lazy(() => import('../project/ProjectList'));
 const UserGroup = lazy(() => import('../userGroups/UserGroup'));
 const SSOLogin = lazy(() => import('../login/SSOLogin'));
 
-const ConfigRequired = [
-    { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration },
-    { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration },
-    { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project },
-    { name: 'Clusters & Environments', href: URLS.GLOBAL_CONFIG_CLUSTER, component: ClusterList },
-    { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider },
-    { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker },
-]
-
-const ConfigOptional = [
-    { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo },
-    { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin },
-    { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup },
-    { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier },
-]
-
-export default function GlobalConfiguration({ ...props }) {
+export default function GlobalConfiguration(props) {
     const location = useLocation();
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
     const [checkList, setCheckList] = useState({
@@ -51,10 +37,10 @@ export default function GlobalConfiguration({ ...props }) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     });
-
+    const {serverMode, setServerMode} =  useContext(mainContext);
     useEffect(() => {
-        getHostURLConfig();
-        fetchCheckList();
+      serverMode !== SERVER_MODE.EA_ONLY  && getHostURLConfig();
+      serverMode !== SERVER_MODE.EA_ONLY  && fetchCheckList();
     }, [])
 
     useEffect(() => {
@@ -106,12 +92,12 @@ export default function GlobalConfiguration({ ...props }) {
             </section>
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <NavItem hostURLConfig={hostURLConfig} />
+                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode}/>
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} />
+                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} serverMode={serverMode}/>
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -120,22 +106,42 @@ export default function GlobalConfiguration({ ...props }) {
     )
 }
 
-function NavItem({ hostURLConfig }) {
+function NavItem({ hostURLConfig, serverMode}) {
     const location = useLocation();
+    const ConfigRequired = [
+        { name: 'Host URL', href: URLS.GLOBAL_CONFIG_HOST_URL, component: HostURLConfiguration, isAvailableInEA: false },
+        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, isAvailableInEA: false },
+        { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
+        {
+            name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
+            href: URLS.GLOBAL_CONFIG_CLUSTER,
+            component: ClusterList,
+            isAvailableInEA: true,
+        },
+        { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
+        { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+    ];
+
+    const ConfigOptional = [
+        { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: false },
+        { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
+        { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
+        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
+    ];
     let showError = (!hostURLConfig || hostURLConfig.value !== window.location.origin) && !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
 
     return <div className="flex column left">
-        {ConfigRequired.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+        {ConfigRequired.map(route => (serverMode !== SERVER_MODE.EA_ONLY  || route.isAvailableInEA ) && (<NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
-        </NavLink>)}
+        </NavLink>))}
         <hr className="mt-8 mb-8 w-100 checklist__divider" />
-        {ConfigOptional.map(route => <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
+        {ConfigOptional.map(route => (serverMode !== SERVER_MODE.EA_ONLY  || route.isAvailableInEA ) && (<NavLink to={`${route.href}`} key={route.href} activeClassName="active-route"><div className="flexbox flex-justify"><div>{route.name}</div>
             {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? <Error className="global-configuration__error-icon icon-dim-20" /> : ''}</div>
-        </NavLink>)}
+        </NavLink>))}
     </div>
 }
 
-function Body({ getHostURLConfig, checkList }) {
+function Body({ getHostURLConfig, checkList, serverMode}) {
     const location = useLocation();
 
     return <Switch location={location}>
@@ -159,7 +165,7 @@ function Body({ getHostURLConfig, checkList }) {
         }} />
         <Route path={URLS.GLOBAL_CONFIG_CLUSTER} render={(props) => {
             return <div className="flexbox h-100">
-                <ClusterList {...props} />
+                <ClusterList {...props} serverMode={serverMode}/>
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
@@ -183,7 +189,7 @@ function Body({ getHostURLConfig, checkList }) {
             return <SSOLogin {...props} />
         }} />
         <Route path={URLS.GLOBAL_CONFIG_AUTH} render={(props) => {
-            return <UserGroup />
+            return <UserGroup/>
         }} />
         <Route path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`} render={(props) => {
             return <AddNotification {...props} />
@@ -191,7 +197,7 @@ function Body({ getHostURLConfig, checkList }) {
         <Route path={URLS.GLOBAL_CONFIG_NOTIFIER} render={(props) => {
             return <Notifier {...props} />
         }} />
-        <Redirect to={URLS.GLOBAL_CONFIG_HOST_URL} />
+        <Redirect to={serverMode && (serverMode === SERVER_MODE.EA_ONLY ? URLS.GLOBAL_CONFIG_PROJECT : URLS.GLOBAL_CONFIG_HOST_URL)} />
     </Switch>
 }
 
