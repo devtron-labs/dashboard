@@ -19,7 +19,10 @@
 
     .resource-tab__close-wrapper:hover{
         background-color: var(--N500);
-        fill: white
+        
+        svg path{
+            fill: white;
+        }
      }
 
 .resource-tab__close-wrapper{

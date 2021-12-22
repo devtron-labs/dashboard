@@ -120,23 +120,37 @@ function NodeComponent() {
     }
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
+
         return nodes.map((node, index) => {
+            const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
             return (
                 <React.Fragment key={'grt' + index}>
-                    {showHeader && <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
-                        <span >{node.kind}</span>
-                    </div>}
-                    <div className="row m-0 resource-row"  >
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`} >
-                            <div className="flex left top ml-2" onClick={() => { setSelectedNodes(markNodeSelected(selectedNodes, node.name)) }}>
-                                {(node.childNodes?.length > 0) ?
+                    {showHeader && (
+                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
+                            <span>{node.kind}</span>
+                        </div>
+                    )}
+                    <div className="row m-0 resource-row">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`}>
+                            <div
+                                className="flex left top ml-2"
+                                onClick={() => {
+                                    setSelectedNodes(markNodeSelected(selectedNodes, node.name));
+                                }}
+                            >
+                                {node.childNodes?.length > 0 ? (
                                     <DropDown
                                         className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
                                         style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
-                                    /> : <span className="pl-12 pr-12"></span>}
+                                    />
+                                ) : (
+                                    <span className="pl-12 pr-12"></span>
+                                )}
                                 <div>
                                     <div>{node.name}</div>
-                                    <div className={`f-${node.health?.status.toLowerCase()}`}>{node.health?.status}</div>
+                                    <div className={`f-${node.health?.status.toLowerCase()}`}>
+                                        {node.health?.status}
+                                    </div>
                                 </div>
 
                                 <div>
@@ -145,7 +159,7 @@ function NodeComponent() {
                                         arrow={false}
                                         placement="bottom"
                                         content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                        trigger='mouseenter click'
+                                        trigger="mouseenter click"
                                     >
                                         <Clipboard
                                             className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
@@ -154,44 +168,48 @@ function NodeComponent() {
                                     </Tippy>
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
-                                            <a key={"tab__" + index} onClick={() => {
-                                                if (node.kind === NodeType.Containers) {
-                                                    handleActionTabClick(node['pNode'], kind, node.name)
-                                                } else {
-                                                    handleActionTabClick(node, kind)
-                                                }
-                                            }
-                                            } className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active">
+                                            <a
+                                                key={'tab__' + index}
+                                                onClick={() => {
+                                                    if (node.kind === NodeType.Containers) {
+                                                        handleActionTabClick(node['pNode'], kind, node.name);
+                                                    } else {
+                                                        handleActionTabClick(node, kind);
+                                                    }
+                                                }}
+                                                className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+                                            >
                                                 {kind}
                                             </a>
-                                        )
+                                        );
                                     })}
                                 </div>
-
                             </div>
                         </div>
 
-                        {(params.nodeType === NodeType.Service.toLowerCase()) && <div className={"col-5 pt-9 pb-9 flex left"} >
-                            {node.name + "." + node.namespace}  : <span className='ml-4'>{` { portnumber }`}</span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                trigger='mouseenter click'
-                            >
-                                <Clipboard
-                                    className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                    onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
-                                />
-                            </Tippy>
-                        </div>}
+                        {params.nodeType === NodeType.Service.toLowerCase() && (
+                            <div className={'col-5 pt-9 pb-9 flex left'}>
+                                {nodeName}
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="bottom"
+                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                    trigger="mouseenter click"
+                                >
+                                    <Clipboard
+                                        className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
+                                        onClick={(e) => copyToClipboard(nodeName, () => setCopied(true))}
+                                    />
+                                </Tippy>
+                            </div>
+                        )}
 
-                        {params.nodeType === NodeType.Pod.toLowerCase() &&
-                            <div className={"col-1 pt-9 pb-9"} > 1/1 </div>
-                        }
+                        {params.nodeType === NodeType.Pod.toLowerCase() && (
+                            <div className={'col-1 pt-9 pb-9'}> 1/1 </div>
+                        )}
 
-                        <div className={"col-1 pt-9 pb-9 d-flex flex-row-reverse"} >
+                        <div className={'col-1 pt-9 pb-9 d-flex flex-row-reverse'}>
                             <NodeDeleteComponent
                                 nodeDetails={node}
                                 describeNode={describeNode}
@@ -200,17 +218,15 @@ function NodeComponent() {
                                 appId={appDetails.appId}
                             />
                         </div>
-
                     </div>
 
-                    {(node.childNodes?.length > 0 && node.isSelected) &&
+                    {node.childNodes?.length > 0 && node.isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
-                    }
-
+                    )}
                 </React.Fragment>
-            )
+            );
         })
     }
 
