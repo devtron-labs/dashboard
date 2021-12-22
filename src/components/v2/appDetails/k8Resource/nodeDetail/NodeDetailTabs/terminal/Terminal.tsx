@@ -52,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             theme: {
                 background: '#ffffff',
                 foreground: '#000a14',
-                selection: '#abcff3',
+                selection: '#abcff399',
             },
         });
 
