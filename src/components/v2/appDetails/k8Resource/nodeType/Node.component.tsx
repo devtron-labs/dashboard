@@ -42,7 +42,7 @@ function NodeComponent() {
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Pod (All)', 'Ready', ''];
+                    tableHeader = ['Name', 'Ready', ''];
                     _fcw = 'col-10';
                     break;
                 case NodeType.Service.toLowerCase():
@@ -60,13 +60,13 @@ function NodeComponent() {
 
             let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
-            if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-                _selectedNodes = _selectedNodes.filter((node) => {
-                    const _podMetaData = IndexStore.getMetaDataForPod(node.name);
+            // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
+            //     _selectedNodes = _selectedNodes.filter((node) => {
+            //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
 
-                    return _podMetaData.isNew === podType;
-                });
-            }
+            //         return _podMetaData.isNew === podType;
+            //     });
+            // }
             let _healthyNodeCount = 0;
 
             _selectedNodes.forEach((node: Node) => {
@@ -122,6 +122,24 @@ function NodeComponent() {
         }
     };
 
+    const getNodeStatus = (node: iNode) => {
+        if (node.info && node.info.length > 0) {
+            const statusReason = node.info.filter((_info) => {
+                return _info.name === 'Status Reason';
+            });
+            if (statusReason && statusReason.length > 0) {
+                return statusReason[0].value;
+            }
+        }
+        if (node.status) {
+            return node.status;
+        }
+        if (node.health?.status) {
+            return node.health?.status;
+        }
+        return '';
+    };
+
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
@@ -150,18 +168,13 @@ function NodeComponent() {
                                 )}
                                 <div>
                                     <div>{node.name}</div>
-                                    {(node?.status || node?.health?.status) && (
-                                        <span
-                                            className={` app-summary__status-name f-${(
-                                                node?.status || node?.health?.status
-                                            ).toLowerCase()}`}
-                                        >
-                                            {node?.status || node?.health?.status}
-                                        </span>
-                                    )}
-                                    {/* <div className={`f-${node.health?.status.toLowerCase()}`}>
-                                        {node.health?.status}
-                                    </div> */}
+                                    <div
+                                        className={` app-summary__status-name f-${(
+                                            node?.status || node?.health?.status || ''
+                                        ).toLowerCase()}`}
+                                    >
+                                        {getNodeStatus(node)}
+                                    </div>
                                 </div>
 
                                 <div>
@@ -217,7 +230,7 @@ function NodeComponent() {
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'col-1 pt-9 pb-9'}> 1/1 </div>
+                            <div className={'col-1 pt-9 pb-9'}> {node.info?.filter((_info)=> _info.name === "Containers")[0]?.value} </div>
                         )}
 
                         <div className={'col-1 pt-9 pb-9 d-flex flex-row-reverse'}>
@@ -243,7 +256,7 @@ function NodeComponent() {
 
     return (
         <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0 }}>
-            {params.nodeType === NodeType.Pod.toLowerCase() ? (
+            {false ? (
                 <PodHeaderComponent callBack={setPodType} />
             ) : (
                 <div className="border-bottom  pt-10 pb-10">

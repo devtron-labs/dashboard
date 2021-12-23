@@ -171,6 +171,10 @@ export interface PodMetaData {
     uid: string
 }
 
+export interface Info {
+    value: string,
+    name: string;
+}
 export interface Node {
     health: Health
     kind: NodeType
@@ -183,6 +187,7 @@ export interface Node {
     parentRefs: Array<Node>
     group: string;
     isSelected: boolean
+    info: Info[]
 }
 
 export interface Health {

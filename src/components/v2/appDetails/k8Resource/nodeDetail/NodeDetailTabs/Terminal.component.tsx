@@ -114,6 +114,8 @@ function TerminalComponent({ selectedTab }) {
                     onChange={selected => {
                         setSelectedtTerminalType(selected as any)
                         setTerminalCleared(true)
+                        setSocketConnection('CONNECTING')
+                        
                     }}
                     styles={{
                         ...multiSelectStyles,
