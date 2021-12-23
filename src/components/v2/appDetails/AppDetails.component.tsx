@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
 import './appDetails.scss';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
-import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-object.svg';
+import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { NavLink, Route, Switch } from 'react-router-dom';
@@ -16,6 +18,7 @@ import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
+import {not} from '../../common'
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string, envId: string, nodeType: string }>()
@@ -37,10 +40,60 @@ const AppDetailsComponent = () => {
         }, 1);
     }
 
+
+    const SyncError: React.FC<{ appStreamData }> = ({ appStreamData }) => {
+        const [collapsed, toggleCollapsed] = useState<boolean>(true);
+        if (
+            !appStreamData?.result?.application?.status?.conditions ||
+            appStreamData?.result?.application?.status?.conditions?.length === 0
+        )
+            return null;
+        return (
+            <div className="top flex left column w-100 bcr-1 pl-25 pr-25">
+                <div className="flex left w-100 " style={{ height: '56px' }}>
+                    <AlertTriangle className="icon-dim-20 mr-8" />
+                    <span className="cr-5 fs-14 fw-6">
+                        {appStreamData?.result?.application?.status?.conditions?.length} Errors
+                    </span>
+                    {collapsed && (
+                        <span className="fs-12 cn-9 ml-24">
+                            {appStreamData?.result?.application?.status?.conditions
+                                .map((condition) => condition.type)
+                                .join(',')}
+                        </span>
+                    )}
+                    <DropDownIcon
+                        style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
+                        className="icon-dim-24 rotate pointer"
+                        onClick={(e) => toggleCollapsed(not)}
+                    />
+                </div>
+                {!collapsed && (
+                    <table className="mb-8">
+                        <tbody>
+                            {appStreamData?.result?.application?.status?.conditions.map((condition) => (
+                                <tr>
+                                    <td className="pb-8" style={{ minWidth: '200px' }}>
+                                        {condition.type}
+                                    </td>
+                                    <td className="pl-24 pb-8">{condition.message}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div>
+    
              {/* <EnvironmentSelectorComponent /> */}
-            <EnvironmentStatusComponent />
+            {/* <EnvironmentStatusComponent /> */}
+             {/*<------- TODO : Error display on app detail -----> */}
+            {/* <SyncError appStreamData={streamData} /> */}
+
 
             <div className="resource-tree-wrapper flexbox pl-20 pr-20 mt-16">
                 <ul className="tab-list">

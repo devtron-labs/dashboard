@@ -10,10 +10,10 @@ import { URLS } from '../../../../../config';
 import { Link } from 'react-router-dom';
 
 function EnvironmentStatusComponent() {
+    const appDetails = IndexStore.getAppDetails();
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
     const [showConfigStatusModal, setShowConfigStatusModal] = useState(false);
-    const appDetails = IndexStore.getAppDetails();
-    const status = appDetails?.resourceTree?.status || '';
+    const status = appDetails.resourceTree?.status || '';
 
     return (
         <div>
