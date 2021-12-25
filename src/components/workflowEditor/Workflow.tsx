@@ -11,6 +11,7 @@ import { Link, NavLink } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
 import warn from '../../assets/icons/ic-warning.svg';
+import { CiPipeline } from '../app/details/triggerView/workflow.service';
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {
     nodes: NodeAttr[];
@@ -22,7 +23,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     height: number;
     isGitOpsConfigAvailable: boolean;
     showDeleteDialog: (workflowId: number) => void;
-    handleCDSelect: (workflowId: string | number, cdPipelineId) => void;
+    handleCDSelect: (workflowId: string | number, ciPipelineId: number | string, parentPipelineType: string, parentPipelineId: number | string) => void;
     openEditWorkflow: (event, workflowId: number) => string;
     handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void;
@@ -57,7 +58,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderNodes() {
         let ci = this.props.nodes.find(node => node.type == 'CI');
         if (ci)
-            return this.props.nodes.map((node: any) => {
+            return this.props.nodes.map((node: NodeAttr) => {
                 if (node.type == "GIT") {
                     return this.renderSourceNode(node);
                 }
@@ -65,7 +66,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     return this.renderCINodes(node)
                 }
                 else {
-                    return this.renderCDNodes(node);
+                    return this.renderCDNodes(node, ci.id);
                 }
             })
         else {
@@ -105,9 +106,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         />
     }
 
-    openCDPipeline(node) {
+    openCDPipeline(node: NodeAttr) {
         let { appId } = this.props.match.params;
-        return this.props.match.url + "/" + getCDPipelineURL(appId, this.props.id.toString(), node.parents[0], node.id);
+        return this.props.match.url + "/" + getCDPipelineURL(appId, this.props.id.toString(), String( node.connectingCiPipelineId ?? 0), node.id);
     }
 
     openCIPipeline(node: NodeAttr) {
@@ -137,12 +138,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             isExternalCI={node.isExternalCI}
             isLinkedCI={node.isLinkedCI}
             linkedCount={node.linkedCount}
-            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, node.id); }}
+            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, node.id, "ci-pipeline", node.id); }}
             to={this.openCIPipeline(node)}
         />
     }
 
-    renderCDNodes(node) {
+    renderCDNodes(node: NodeAttr, ciPipelineId: string | number) {
         return <CDNode key={node.id}
             x={node.x}
             y={node.y}
@@ -155,6 +156,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             environmentId={node.environmentId}
             triggerType={node.triggerType}
             deploymentStrategy={node.deploymentStrategy}
+            toggleCDMenu={() => { this.props.handleCDSelect(this.props.id, ciPipelineId, "cd-pipeline", node.id); }}
             to={this.openCDPipeline(node)}
         />
     }
