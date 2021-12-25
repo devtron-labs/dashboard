@@ -17,27 +17,22 @@ export default function K8ResourceComponent() {
     }, [])
 
     return (
-        <div className="resource-node-wrapper bcn-0" style={{justifyContent: 'space-betweengit'}}>
+        <div className="resource-node-wrapper bcn-0" style={{ justifyContent: 'space-betweengit' }}>
             <div className="pt-16 pl-20 pb-16">
                 <FilterResource />
             </div>
-            <div className="container-fluid">
-                {nodes.length > 0 ?
-                    <div className="row" >
-                        <div className="col-md-2 k8-resources-node-tree pt-8 border-right">
-                            <NodeTreeComponent />
-                        </div>
-                        <div className="col-md-10 p-0">
-                            {/* <Switch>
-                                <Route path={`${path}/:nodeType`} render={() => { return <NodeComponent /> }} />
-                            </Switch> */}
-                            <NodeComponent />
-                        </div>
+            {nodes.length > 0 ?
+                <div className="d-flex">
+                    <div className="k8-resources-node-tree pt-8 pl-16 border-right">
+                        <NodeTreeComponent />
                     </div>
-                    :
-                    <div>Empty UI</div>
-                }
-            </div>
+                    <div className="flex-grow-1 p-0">
+                        <NodeComponent />
+                    </div>
+                </div>
+                :
+                <div>Empty UI</div>
+            }
         </div>
     )
 }

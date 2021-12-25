@@ -54,8 +54,7 @@ function RouterComponent({ envType }) {
     return (
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
-            <EnvironmentSelectorComponent />
-            <EnvironmentStatusComponent />
+            
             {isLoading ? (
                 <div style={{ height: '560px' }} className="flex"></div>
             ) : (

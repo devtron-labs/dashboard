@@ -1,4 +1,5 @@
 .k8-resources-node-tree{
+    width: 240px;
     min-height: 532px;
     overflow-y: auto;
 }

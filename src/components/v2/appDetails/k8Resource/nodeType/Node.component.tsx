@@ -187,7 +187,10 @@ function NodeComponent() {
                                     >
                                         <Clipboard
                                             className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
-                                            onClick={(e) => copyToClipboard(node?.name, () => setCopied(true))}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                copyToClipboard(node?.name, () => setCopied(true))
+                                            }}
                                         />
                                     </Tippy>
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
@@ -223,7 +226,10 @@ function NodeComponent() {
                                 >
                                     <Clipboard
                                         className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                        onClick={(e) => copyToClipboard(nodeName, () => setCopied(true))}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            copyToClipboard(nodeName, () => setCopied(true))
+                                        }}
                                     />
                                 </Tippy>
                             </div>
