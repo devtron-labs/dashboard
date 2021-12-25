@@ -634,7 +634,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
     }, [chartPermission.action])
 
     return (
-        <fieldset>
+        <>
             <legend>Chart group permissions</legend>
             <div className="w-100" style={{ display: 'grid', gridTemplateColumns: '80px 80px 200px', alignItems: 'center' }}>
                 <label className="fw-6 fs-12 cn-5">VIEW</label>
@@ -692,7 +692,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                     }}
                 />
             }
-        </fieldset>
+        </>
     )
 })
 

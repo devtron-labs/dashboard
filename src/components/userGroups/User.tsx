@@ -3,12 +3,13 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog, MultiValueChipContainer } from '../common'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable'
-import Select, { components } from 'react-select';
-import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType, APIRoleFilter } from './userGroups.types'
+import Select from 'react-select';
+import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType } from './userGroups.types'
 import { toast } from 'react-toastify'
-import { useUserGroupContext, DirectPermission, ChartPermission, GroupRow } from './UserGroup'
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
+import { useUserGroupContext, GroupRow } from './UserGroup'
 import './UserGroup.scss';
+import AppPermissions from './AppPermissions';
+import { AccessTypeMap } from '../../config';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -42,11 +43,12 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         team: null,
         action:
         {
-            label: "",
+            label: '',
             value: ActionTypes.VIEW
-        }
+        },
+        accessType: AccessTypeMap.DEVTRON_APPS
     }
-    const { userGroupsList, appsList, projectsList, fetchAppList, environmentsList, superAdmin } = useUserGroupContext()
+    const { userGroupsList, superAdmin } = useUserGroupContext()
     const userGroupsMap = mapByKey(userGroupsList, 'name')
     const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     const [emailState, setEmailState] = useState<{ emails: OptionType[], inputEmailValue: string, emailError: string }>({ emails: [], inputEmailValue: '', emailError: '' })
@@ -155,68 +157,15 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     }
 
     useEffect(() => {
-        if (!userData) {
-            setDirectPermission([emptyDirectPermission])
-            return
-        }
-        populateDataFromAPI(userData)
+      userData && populateDataFromAPI(userData)
     }, [userData])
 
     async function populateDataFromAPI(data: CreateUser) {
-        const { email_id, roleFilters, groups = [], superAdmin } = data
-        const allProjects = roleFilters.map((roleFilter) => roleFilter.team).filter(Boolean);
-        const projectsMap = mapByKey(projectsList, 'name');
-        const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
-        const uniqueProjectIds = Array.from(new Set(allProjectIds));
-        await fetchAppList(uniqueProjectIds)
-        const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
-            ?.filter(roleFilter => roleFilter.entity === EntityTypes.DIRECT)
-            ?.map(directRolefilter => {
-                const projectId = projectsMap.get(directRolefilter.team).id;
-                // fetchAppList(projectId)
-                return {
-                    ...directRolefilter,
-                    action: { label: directRolefilter.action, value: directRolefilter.action },
-                    team: { label: directRolefilter.team, value: directRolefilter.team },
-                    entity: EntityTypes.DIRECT,
-                    entityName: directRolefilter?.entityName
-                        ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: entity }))
-                        : [
-                            { label: 'All applications', value: '*' },
-                            ...(appsList.get(projectId)?.result || []).map((app) => ({ label: app.name, value: app.name })),
-                        ],
-                    environment: directRolefilter.environment ?
-                        directRolefilter.environment
-                            .split(',')
-                            .map((directRole) => ({ value: directRole, label: directRole }))
-                        : [
-                            { label: 'All environments', value: '*' },
-                            ...environmentsList.map((env) => ({ label: env.environment_name, value: env.environment_name }))
-                        ]
-                    ,
-                } as DirectPermissionsRoleFilter;
-            })
+        const { email_id, groups = [], superAdmin } = data;
         setUserGroups(groups?.map(group => ({ label: group, value: group })) || [])
         setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' })
-        if (directPermissions.length > 0) {
-            setDirectPermission(directPermissions)
-        }
-        else {
-            setDirectPermission([emptyDirectPermission])
-        }
         if (superAdmin) {
             setSuperAdmin(superAdmin)
-        }
-
-        const tempChartPermission: APIRoleFilter = roleFilters?.find(roleFilter => roleFilter.entity === EntityTypes.CHART_GROUP)
-        if (tempChartPermission) {
-            const chartPermission: ChartGroupPermissionsFilter = {
-                entity: EntityTypes.CHART_GROUP,
-                entityName: tempChartPermission?.entityName.split(",")?.map(entity => ({ value: entity, label: entity })) || [],
-                action: tempChartPermission.action === '*' ? ActionTypes.ADMIN : tempChartPermission.action
-            }
-
-            setChartPermission(chartPermission)
         }
     }
 
@@ -227,64 +176,6 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     function handleEmailChange(newValue: any, actionMeta: any) {
         setEmailState(emailState => ({ ...emailState, emails: newValue || [], emailError: '' }))
     };
-
-    function handleDirectPermissionChange(index, selectedValue, actionMeta) {
-        const { action, option, name } = actionMeta
-        const tempPermissions = [...directPermission]
-
-        if (name === "entityName") {
-            const { label, value } = option
-            if (value === '*') {
-                if (action === 'select-option') {
-                    // check all applications
-                    const projectId = projectsList.find(
-                        (project) => project.name === tempPermissions[index]['team'].value,
-                    ).id;
-                    tempPermissions[index][name] = [{ label: 'All applications', value: '*' }, ...(appsList.get(projectId).result).map(app => ({ label: app.name, value: app.name }))]
-                    tempPermissions[index]['entityNameError'] = null;
-                }
-                else {
-                    // uncheck all applications
-                    tempPermissions[index][name] = [];
-                }
-            }
-            else {
-                tempPermissions[index]['entityNameError'] = null;
-                tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*')
-            }
-        }
-
-        else if (name === 'environment') {
-            const { label, value } = option;
-            if (value === '*') {
-                if (action === 'select-option') {
-                    // select all environments
-                    tempPermissions[index][name] = [
-                        { label: 'All environments', value: '*' },
-                        ...environmentsList.map((env) => ({ label: env.environment_name, value: env.environment_name })),
-                    ];
-                    tempPermissions[index]['environmentError'] = null;
-                } else {
-                    // unselect all environments
-                    tempPermissions[index][name] = [];
-                }
-            } else {
-                tempPermissions[index]['environmentError'] = null;
-                tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*');
-            }
-        }
-        else if (name === 'team') {
-            tempPermissions[index][name] = selectedValue;
-            tempPermissions[index]['entityName'] = []
-            tempPermissions[index]['environment'] = []
-            const projectId = projectsList.find((project) => project.name === selectedValue.value).id;
-            fetchAppList([projectId])
-        }
-        else {
-            tempPermissions[index][name] = selectedValue
-        }
-        setDirectPermission(tempPermissions)
-    }
 
     const createOption = (label: string) => ({
         label,
@@ -333,15 +224,6 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         return <div className="flex left column"><span>{label}</span><small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small></div>
     }
 
-    function removeDirectPermissionRow(index) {
-        if (index === 0 && directPermission.length === 1) {
-            setDirectPermission([emptyDirectPermission])
-        }
-        else {
-            setDirectPermission(permission => removeItemsFromArray(permission, index, 1))
-        }
-    }
-
     function handleCreatableBlur(e) {
         let { emails, inputEmailValue } = emailState
         inputEmailValue = inputEmailValue.trim()
@@ -365,6 +247,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     const creatableOptions = useMemo(() => ([]), [])
 
     const availableGroups = userGroupsList?.map(group => ({ value: group.name, label: group.name }))
+
     return (
         <div className="user-form">
             {!id && (
@@ -452,42 +335,13 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                             ))}
                         </div>
                     )}
-                    <fieldset>
-                        <legend>Direct permissions</legend>
-                        <div
-                            className="w-100 mb-26"
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr 1fr 1fr 1fr 24px',
-                                gridGap: '16px',
-                            }}
-                        >
-                            <label className="fw-6 fs-12 cn-5">Project</label>
-                            <label className="fw-6 fs-12 cn-5">Environment</label>
-                            <label className="fw-6 fs-12 cn-5">Application</label>
-                            <label className="fw-6 fs-12 cn-5">Role</label>
-                            <span />
-                            {directPermission.map((permission, idx) => (
-                                <DirectPermission
-                                    index={idx}
-                                    key={idx}
-                                    permission={permission}
-                                    removeRow={removeDirectPermissionRow}
-                                    handleDirectPermissionChange={(value, actionMeta) =>
-                                        handleDirectPermissionChange(idx, value, actionMeta)
-                                    }
-                                />
-                            ))}
-                        </div>
-                        <b
-                            className="anchor pointer flex left"
-                            style={{ width: '90px' }}
-                            onClick={(e) => setDirectPermission((permission) => [...permission, emptyDirectPermission])}
-                        >
-                            <AddIcon className="add-svg mr-12" /> Add row
-                        </b>
-                    </fieldset>
-                    <ChartPermission chartPermission={chartPermission} setChartPermission={setChartPermission} />
+                    <AppPermissions
+                        data={userData}
+                        directPermission={directPermission}
+                        setDirectPermission={setDirectPermission}
+                        chartPermission={chartPermission}
+                        setChartPermission={setChartPermission}
+                    />
                 </>
             )}
             <div className="flex right mt-32">
@@ -507,10 +361,13 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>
-            {deleteConfirmationModal && (<DeleteDialog title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                description={'Deleting this user will remove the user and revoke all their permissions.'}
-                delete={handleDelete}
-                closeDelete={() => setDeleteConfirmationModal(false)} />
+            {deleteConfirmationModal && (
+                <DeleteDialog
+                    title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
+                    description={'Deleting this user will remove the user and revoke all their permissions.'}
+                    delete={handleDelete}
+                    closeDelete={() => setDeleteConfirmationModal(false)}
+                />
             )}
         </div>
     );

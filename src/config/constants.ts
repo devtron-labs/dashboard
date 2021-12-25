@@ -189,4 +189,10 @@ export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
     FULL = 'FULL',
 }
+
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
+
+export enum AccessTypeMap {
+  DEVTRON_APPS = '', // devtron app work flow
+  HELM_APPS = 'HAWF', //helm app work flow
+}

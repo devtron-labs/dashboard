@@ -1,3 +1,5 @@
+import { AccessTypeMap } from "../../config";
+
 export enum EntityTypes{
     CHART_GROUP = 'chart-group',
     DIRECT = '',
@@ -44,6 +46,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter{
         label: string;
         value: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW;
     };
+    accessType: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS;
 }
 
 export interface ChartGroupPermissionsFilter extends RoleFilter{
@@ -59,6 +62,7 @@ export interface APIRoleFilter{
     entityName?: string;
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
+    accessType: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS;
 }
 
 export interface OptionType{
