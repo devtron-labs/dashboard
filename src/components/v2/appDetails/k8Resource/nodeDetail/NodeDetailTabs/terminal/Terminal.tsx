@@ -21,11 +21,12 @@ interface TerminalViewProps {
     setSocketConnection: (flag: SocketConnectionType) => void;
 }
 
-function TerminalView(terminalViewProps: TerminalViewProps) {
-    let socket = undefined
-    let terminal = undefined
-    let fitAddon = undefined
+let socket = undefined
+let terminal = undefined
+let fitAddon = undefined
 
+function TerminalView(terminalViewProps: TerminalViewProps) {
+    
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
@@ -51,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const webFontAddon = new XtermWebfont();
         terminal.loadAddon(fitAddon);
         terminal.loadAddon(webFontAddon);
-        terminal.open(document.getElementById('terminal'));
+        terminal.open(document.getElementById('terminal-id'));
         fitAddon.fit();
         terminal.reset();
         terminal.attachCustomKeyEventHandler((event) => {
@@ -86,6 +87,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
             let dim = fitAddon.proposeDimensions();
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
+
             socket.send(JSON.stringify(resize));
 
             if (isReconnection) {
@@ -103,10 +105,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
             if (!firstMessageReceived) {
                 setFirstMessageReceived(true)
-
-                fitAddon.fit();
-                terminal.setOption('cursorBlink', true);
-                terminalViewProps.setSocketConnection('CONNECTED');
             }
         }
 
@@ -182,14 +180,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }, [terminalViewProps.terminalCleared])
 
-    // useEffect(() => {
-    //     if (firstMessageReceived) {
-    //         fitAddon.fit();
-            
-    //         terminal.setOption('cursorBlink', true);
-    //         terminalViewProps.setSocketConnection('CONNECTED');
-    //     }
-    // }, [firstMessageReceived])
+    useEffect(() => {
+        if (firstMessageReceived) {
+            fitAddon.fit();
+            terminal.setOption('cursorBlink', true);
+            terminalViewProps.setSocketConnection('CONNECTED');
+        }
+    }, [firstMessageReceived])
 
     useEffect(() => {
         if (!window.location.origin) { // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -231,14 +228,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminalViewProps.setTerminalCleared(false);
         }
     }, [terminalViewProps.terminalCleared]);
-
-    // useEffect(() => {
-    //     if (firstMessageReceived) {
-    //         terminal.setOption('cursorBlink', true);
-    //         terminalViewProps.setSocketConnection('CONNECTED');
-    //         fitAddon.fit();
-    //     }
-    // }, [firstMessageReceived]);
 
     const getNewSession = () => {
         if (
@@ -302,7 +291,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             <div>
-                <div id="terminal"></div>
+                <div id="terminal-id"></div>
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (
