@@ -32,7 +32,7 @@ export interface Workflow {
     id: number;
     name: string;
     appId: number;
-    tree: Tree[];
+    tree?: Tree[];
 }
 
 export interface WorkflowResult {
@@ -217,7 +217,7 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
     .forEach(workflow => {
         let wf = toWorkflowType(workflow);
         workflows.push(wf);
-        workflow.tree
+        (workflow.tree ?? [])
         .sort((a, b) => a.id - b.id)
         .forEach( branch => {
             if (branch.type == PipelineType.CI_PIPELINE) {
