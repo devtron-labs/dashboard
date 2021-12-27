@@ -113,7 +113,7 @@ function ManifestComponent({ selectedTab }) {
         );
     };
     return (
-        <div >
+        <div style={{minHeight: '600px'}}>
             {loading && !error && (
                 <div className="flex bcn-0" style={{ minHeight: '600px' }}>
                     <Progressing pageLoader />
@@ -124,7 +124,7 @@ function ManifestComponent({ selectedTab }) {
                     <NoEvents title="Manifest not available" />
                 </div>
             )}
-            {!error && (
+            {!error && !loading && (
                 <div>
                     <CodeEditor
                         theme="vs-gray--dt"

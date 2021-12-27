@@ -99,9 +99,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         socket.onmessage = function (evt) {
             terminal.write(JSON.parse(evt.data).Data);
-            terminal?.focus();
+            terminal.focus();
+
             if (!firstMessageReceived) {
                 setFirstMessageReceived(true)
+
+                fitAddon.fit();
+                terminal.setOption('cursorBlink', true);
+                terminalViewProps.setSocketConnection('CONNECTED');
             }
         }
 
@@ -177,13 +182,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }, [terminalViewProps.terminalCleared])
 
-    useEffect(() => {
-        if (firstMessageReceived) {
-            fitAddon.fit();
-            terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection('CONNECTED');
-        }
-    }, [firstMessageReceived])
+    // useEffect(() => {
+    //     if (firstMessageReceived) {
+    //         fitAddon.fit();
+            
+    //         terminal.setOption('cursorBlink', true);
+    //         terminalViewProps.setSocketConnection('CONNECTED');
+    //     }
+    // }, [firstMessageReceived])
 
     useEffect(() => {
         if (!window.location.origin) { // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -226,13 +232,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }, [terminalViewProps.terminalCleared]);
 
-    useEffect(() => {
-        if (firstMessageReceived) {
-            terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection('CONNECTED');
-            fitAddon.fit();
-        }
-    }, [firstMessageReceived]);
+    // useEffect(() => {
+    //     if (firstMessageReceived) {
+    //         terminal.setOption('cursorBlink', true);
+    //         terminalViewProps.setSocketConnection('CONNECTED');
+    //         fitAddon.fit();
+    //     }
+    // }, [firstMessageReceived]);
 
     const getNewSession = () => {
         if (
@@ -264,10 +270,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         <div className="terminal-view">
             <div
                 style={{ zIndex: 4, textTransform: 'capitalize' }}
-                className={`${terminalViewProps.socketConnection !== 'CONNECTED'
+                className=
+                {
+                    `${terminalViewProps.socketConnection !== 'CONNECTED'
                     ? `${terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'} pod-readyState--show`
                     : ''
-                    } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 w-100 pod-readyState pod-readyState--top`}
+                    } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 w-100 pod-readyState pod-readyState--top`
+                    }
             >
                 <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
                     {terminalViewProps.socketConnection?.toLowerCase()}
