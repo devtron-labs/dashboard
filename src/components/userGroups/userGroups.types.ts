@@ -14,7 +14,8 @@ export enum ActionTypes{
     ADMIN = 'admin',
     TRIGGER = 'trigger',
     VIEW = 'view',
-    UPDATE = 'update'
+    UPDATE = 'update',
+    EDIT = 'edit'
 }
 export interface CollapsedUserOrGroupProps {
     index: number;
@@ -62,7 +63,7 @@ export interface APIRoleFilter{
     entityName?: string;
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
-    accessType: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS;
+    accessType?: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS;
 }
 
 export interface OptionType{

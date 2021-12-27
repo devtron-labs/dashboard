@@ -35,7 +35,7 @@
 .user-list{
     background:  white;
     border-radius: 8px;
-    
+
     border: solid 1px var(--N200);
     margin-bottom:16px;
     .user-list__form{
@@ -44,7 +44,7 @@
         transition: flex-basis 0.3s;
         padding: 20px 24px;
         border-top: 1px solid var(--N100);
-       
+
     }
     &.user-list--collapsed{
         .user-list__form{
@@ -128,4 +128,8 @@
         width: 16px;
     }
 
+}
+
+.light-color{
+  color: #596168;
 }

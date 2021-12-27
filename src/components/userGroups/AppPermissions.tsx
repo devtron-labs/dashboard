@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
 import { ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup';
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { useRouteMatch } from 'react-router';
-import { AccessTypeMap } from '../../config';
+import { AccessTypeMap, SERVER_MODE } from '../../config';
 import {
     ActionTypes,
     APIRoleFilter,
@@ -14,6 +14,7 @@ import {
     EntityTypes,
 } from './userGroups.types';
 import { mapByKey, removeItemsFromArray } from '../common';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 interface AppPermissionsType {
     data: CreateGroup | CreateUser;
     directPermission: DirectPermissionsRoleFilter[];
@@ -36,7 +37,8 @@ export default function AppPermissions({
     chartPermission,
     setChartPermission,
 }: AppPermissionsType) {
-    const { appsList, fetchAppList, projectsList, environmentsList } = useUserGroupContext();
+    const { serverMode } = useContext(mainContext);
+    const { appsList, fetchAppList, projectsList, environmentsList, envClustersList } = useUserGroupContext();
     const { url, path } = useRouteMatch();
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
@@ -55,7 +57,11 @@ export default function AppPermissions({
     };
     useEffect(() => {
         if (!data) {
-            setDirectPermission([emptyDirectPermissionDevtronApps, emptyDirectPermissionHelmApps]);
+            let emptyPermissionArr = [emptyDirectPermissionHelmApps];
+            if (serverMode !== SERVER_MODE.EA_ONLY) {
+                emptyPermissionArr.push(emptyDirectPermissionDevtronApps);
+            }
+            setDirectPermission(emptyPermissionArr);
             return;
         }
         populateDataFromAPI(data.roleFilters);
@@ -73,7 +79,10 @@ export default function AppPermissions({
             ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId = projectsMap.get(directRolefilter.team).id;
-                directRolefilter['accessType'] = index % 2 === 0 ? AccessTypeMap.DEVTRON_APPS : AccessTypeMap.HELM_APPS;
+                directRolefilter['accessType'] =
+                    serverMode !== SERVER_MODE.EA_ONLY && index % 2 === 0
+                        ? AccessTypeMap.DEVTRON_APPS
+                        : AccessTypeMap.HELM_APPS;
                 if (directRolefilter.accessType === AccessTypeMap.DEVTRON_APPS) {
                     foundDevtronApps = true;
                 } else if (directRolefilter.accessType === AccessTypeMap.HELM_APPS) {
@@ -99,14 +108,14 @@ export default function AppPermissions({
                               .map((directRole) => ({ value: directRole, label: directRole }))
                         : [
                               { label: 'All environments', value: '*' },
-                              ...environmentsList.map((env) => ({
-                                  label: env.environment_name,
-                                  value: env.environment_name,
-                              })),
+                              // ...environmentsList.map((env) => ({
+                              //     label: env.environment_name,
+                              //     value: env.environment_name,
+                              // })),
                           ],
                 } as DirectPermissionsRoleFilter;
             });
-        if (!foundDevtronApps) {
+        if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps);
         }
         if (!foundHelmApps) {
@@ -130,31 +139,79 @@ export default function AppPermissions({
         }
     }
 
-    function handleDirectPermissionChange(index, selectedValue, actionMeta) {
+    function setAllExitingFutureClusterValues() {
+        return envClustersList?.map((cluster) => ({
+            label: cluster.clusterName,
+            options: [
+                ,
+                {
+                    label: 'All existing environments in ' + cluster.clusterName,
+                    value: '*' + cluster.clusterName,
+                    namespace: '',
+                    clusterName: '',
+                },
+                ...cluster.environments?.map((env) => ({
+                    label: env.environmentName,
+                    value: env.environmentName,
+                    namespace: env.namespace,
+                    clusterName: cluster.clusterName,
+                })),
+            ],
+        }));
+    }
+
+    function setClusterValues(startsWithHash, clusterName) {
+        let defaultValueArr = [];
+        if (startsWithHash) {
+            defaultValueArr.push({
+                label: 'All existing + future environments in ' + clusterName,
+                value: '#' + clusterName,
+                namespace: '',
+                clusterName: '',
+            });
+        }
+        defaultValueArr.push({
+            label: 'All existing environments in ' + clusterName,
+            value: '*' + clusterName,
+            namespace: '',
+            clusterName: '',
+        });
+        const selectedCluster = envClustersList?.filter((cluster) => cluster.clusterName === clusterName)[0];
+
+        return [
+            ...defaultValueArr,
+            ...selectedCluster['environments']?.map((env) => ({
+                label: env.environmentName,
+                value: env.environmentName,
+                namespace: env.namespace,
+                clusterName: clusterName,
+            })),
+        ];
+    }
+
+    function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta;
-        const tempPermissions = [...directPermission];
-        if (name === 'entityName') {
-            const { label, value } = option;
-            if (value === '*') {
+        const { value, clusterName } = option;
+        const startsWithHash = value && value.startsWith('#');
+        if (value.startsWith('*') || startsWithHash) {
+            if (tempPermissions[index].accessType === AccessTypeMap.HELM_APPS) {
+                const clusterName = value.substring(1);
+                // uncheck all environments
+                tempPermissions[index][name] = tempPermissions[index][name]?.filter(
+                    (env) =>
+                        env.clusterName !== clusterName &&
+                        env.value !== '#' + clusterName &&
+                        env.value !== '*' + clusterName,
+                );
                 if (action === 'select-option') {
-                    const projectId = projectsList.find(
-                        (project) => project.name === tempPermissions[index]['team'].value,
-                    ).id;
+                    // check all environments
                     tempPermissions[index][name] = [
-                        { label: 'Select all', value: '*' },
-                        ...appsList.get(projectId).result.map((app) => ({ label: app.name, value: app.name })),
+                        ...tempPermissions[index][name],
+                        ...setClusterValues(startsWithHash, clusterName),
                     ];
-                    tempPermissions[index]['entityNameError'] = null;
-                } else {
-                    tempPermissions[index][name] = [];
+                    tempPermissions[index]['environmentError'] = null;
                 }
             } else {
-                tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*');
-                tempPermissions[index]['entityNameError'] = null;
-            }
-        } else if (name === 'environment') {
-            const { label, value } = option;
-            if (value === '*') {
                 if (action === 'select-option') {
                     // check all environments
                     tempPermissions[index][name] = [
@@ -169,16 +226,60 @@ export default function AppPermissions({
                     // uncheck all environments
                     tempPermissions[index][name] = [];
                 }
+            }
+        } else {
+            if (tempPermissions[index].accessType === AccessTypeMap.HELM_APPS) {
+                tempPermissions[index][name] = selectedValue.filter(
+                    ({ value, label }) => value !== '*' + clusterName && value !== '#' + clusterName,
+                );
             } else {
                 tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*');
-                tempPermissions[index]['environmentError'] = null;
             }
+
+            tempPermissions[index]['environmentError'] = null;
+        }
+    }
+
+    function handleDirectPermissionChange(index, selectedValue, actionMeta) {
+        const { action, option, name } = actionMeta;
+        const tempPermissions = [...directPermission];
+        if (name === 'entityName') {
+            const { label, value } = option;
+            if (value === '*') {
+                if (action === 'select-option') {
+                    if (tempPermissions[index].accessType === AccessTypeMap.DEVTRON_APPS) {
+                        const projectId = projectsList.find(
+                            (project) => project.name === tempPermissions[index]['team'].value,
+                        ).id;
+                        tempPermissions[index][name] = [
+                            { label: 'Select all', value: '*' },
+                            ...appsList.get(projectId).result.map((app) => ({ label: app.name, value: app.name })),
+                        ];
+                    } else {
+                        tempPermissions[index][name] = [
+                            { label: 'Select all', value: '*' },
+                            // ...appsList.result.map((app) => ({ label: app.name, value: app.name })),
+                        ];
+                    }
+                    tempPermissions[index]['entityNameError'] = null;
+                } else {
+                    tempPermissions[index][name] = [];
+                }
+            } else {
+                tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*');
+                tempPermissions[index]['entityNameError'] = null;
+            }
+        } else if (name === 'environment') {
+            setEnvValues(index, selectedValue, actionMeta, tempPermissions);
         } else if (name === 'team') {
             tempPermissions[index][name] = selectedValue;
-            const projectId = projectsList.find((project) => project.name === tempPermissions[index]['team'].value).id;
             tempPermissions[index]['entityName'] = [];
             tempPermissions[index]['environment'] = [];
-            fetchAppList([projectId]);
+            if (tempPermissions[index].accessType === AccessTypeMap.DEVTRON_APPS) {
+                const projectId = projectsList.find((project) => project.name === tempPermissions[index]['team'].value)
+                    .id;
+                fetchAppList([projectId]);
+            }
         } else {
             tempPermissions[index][name] = selectedValue;
         }
@@ -186,11 +287,25 @@ export default function AppPermissions({
     }
 
     function removeDirectPermissionRow(index) {
-        if (index === 0 && directPermission.length === 1) {
-            setDirectPermission([emptyDirectPermissionDevtronApps]);
-        } else {
-            setDirectPermission((permission) => removeItemsFromArray(permission, index, 1));
-        }
+        setDirectPermission((permission) => {
+            let foundDevtronApps = false,
+                foundHelmApps = false;
+            let permissionArr = removeItemsFromArray(permission, index, 1);
+            for (let i = 0; i < permissionArr.length; i++) {
+                if (permissionArr[i].accessType === AccessTypeMap.DEVTRON_APPS) {
+                    foundDevtronApps = true;
+                } else if (permissionArr[i].accessType === AccessTypeMap.HELM_APPS) {
+                    foundHelmApps = true;
+                }
+            }
+            if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
+                permissionArr.push(emptyDirectPermissionDevtronApps);
+            }
+            if (!foundHelmApps) {
+                permissionArr.push(emptyDirectPermissionHelmApps);
+            }
+            return permissionArr;
+        });
     }
 
     function AddNewPermissionRowLocal(accessType) {
@@ -204,21 +319,25 @@ export default function AppPermissions({
     return (
         <>
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab">
-                    <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">
-                        Devtron Apps
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">
+                            Devtron Apps
+                        </NavLink>
+                    </li>
+                )}
                 <li className="tab-list__tab">
                     <NavLink to={`${url}/helm-apps`} className="tab-list__tab-link" activeClassName="active">
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
-                        Chart Groups
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
+                            Chart Groups
+                        </NavLink>
+                    </li>
+                )}
             </ul>
             <div>
                 <Switch>
@@ -243,7 +362,7 @@ export default function AppPermissions({
                     <Route path={`${path}/chart-groups`}>
                         <ChartPermission chartPermission={chartPermission} setChartPermission={setChartPermission} />
                     </Route>
-                    <Redirect to={`${path}/devtron-apps`} />
+                    <Redirect to={serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`} />
                 </Switch>
             </div>
         </>

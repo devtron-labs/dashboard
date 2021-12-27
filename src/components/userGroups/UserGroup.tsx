@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } 
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
-import { getUserList, getGroupList, getUserId, getGroupId, getUserRole } from './userGroup.service';
+import { getUserList, getGroupList, getUserId, getGroupId, getUserRole, getClusterEnvDetail } from './userGroup.service';
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType, CollapsedUserOrGroupProps } from './userGroups.types'
-import { DOCUMENTATION, Routes, SERVER_MODE } from '../../config'
+import { AccessTypeMap, DOCUMENTATION, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg';
@@ -30,6 +30,7 @@ interface UserGroup {
     chartGroupsList: ChartGroup[];
     fetchAppList: (projectId: number[]) => void;
     superAdmin: boolean;
+    envClustersList: any[];
 }
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -39,6 +40,7 @@ const UserGroupContext = React.createContext<UserGroup>({
     chartGroupsList: [],
     fetchAppList: () => { },
     superAdmin: false,
+    envClustersList: [],
 });
 
 const possibleRolesMeta = {
@@ -66,6 +68,34 @@ const possibleRolesMeta = {
         value: 'Build and deploy',
         description: 'Can build and deploy apps on selected environments.',
     },
+};
+
+const possibleRolesMetaHelmApps = {
+    [ActionTypes.VIEW]: {
+        value: 'View only',
+        description: 'Can view selected application(s) and resource manifests of selected application(s)',
+    },
+    [ActionTypes.EDIT]: {
+        value: 'View & Edit',
+        description: 'Can also edit resource manifests of selected application(s)',
+    },
+    [ActionTypes.ADMIN]: {
+        value: 'Admin',
+        description: 'Complete access on selected applications',
+    },
+    '*': {
+        value: 'Admin',
+        description: 'Complete access on selected applications',
+    },
+};
+
+const tempMultiSelectStyles = {
+    ...multiSelectStyles,
+    menu: (base, state) => ({
+        ...base,
+        top: 'auto',
+        width: '140%',
+    }),
 };
 
 export function useUserGroupContext() {
@@ -102,10 +132,61 @@ export default function UserGroupRoute() {
         () =>
             Promise.allSettled([
                 getGroupList(),
-                get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
+                serverMode === SERVER_MODE.EA_ONLY && get(Routes.PROJECT_LIST),
+                serverMode === SERVER_MODE.EA_ONLY && getEnvironmentListMin(),
+                serverMode === SERVER_MODE.EA_ONLY && getChartGroups(),
                 getUserRole(),
+                //getClusterEnvDetail()
+                {'result':[
+                  {
+                    "clusterName": "default_cluster",
+                    "clusterID": 0,
+                    "environments": [
+                      {
+                        "environmentName": "demo1",
+                        "environmentId": 53,
+                        "namespace": "demo1",
+                        "isPrduction": true
+                      },
+                      {
+                        "environmentName": "demo2",
+                        "environmentId": 54,
+                        "namespace": "demo2",
+                        "isPrduction": true
+                      },
+                      {
+                        "environmentName": "demo3",
+                        "environmentId": 55,
+                        "namespace": "demo3",
+                        "isPrduction": true
+                      }
+                    ]
+                  },{
+                    "clusterName": "elasticsearch",
+                    "clusterID": 0,
+                    "environments": [
+                      {
+                        "environmentName": "prod",
+                        "environmentId": 56,
+                        "namespace": "prod",
+                        "isPrduction": true
+                      },
+                      {
+                        "environmentName": "elasticsearch-demo",
+                        "environmentId": 57,
+                        "namespace": "elasticsearch-demo",
+                        "isPrduction": true
+                      },
+                      {
+                        "environmentName": "elasticsearch-demo1",
+                        "environmentId": 58,
+                        "namespace": "elasticsearch-demo1",
+                        "isPrduction": true
+                      }
+                    ]
+                  }
+                ]
+              }
             ]),
         [serverMode],
     );
@@ -120,6 +201,7 @@ export default function UserGroupRoute() {
     }, [lists])
 
     async function fetchAppList(projectIds: number[]) {
+      if(serverMode === SERVER_MODE.EA_ONLY ) return;
         const missingProjects = projectIds.filter(projectId => !appsList.has(projectId))
         if (missingProjects.length === 0) return
         setAppsList(appList => {
@@ -149,7 +231,7 @@ export default function UserGroupRoute() {
         }
     }
     if (listsLoading) return <Progressing pageLoader />
-    const [userGroups, projects, environments, chartGroups, userRole] = lists
+    const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
         <div className="auth-page">
             <HeaderSection />
@@ -162,7 +244,8 @@ export default function UserGroupRoute() {
                         environmentsList: environments.status === 'fulfilled' ? environments?.value?.result : [],
                         projectsList: projects.status === 'fulfilled' ? projects?.value?.result : [],
                         chartGroupsList: chartGroups.status === 'fulfilled' ? chartGroups?.value?.result?.groups : [],
-                        superAdmin: userRole.status === 'fulfilled' ? userRole?.value?.result?.superAdmin : false
+                        superAdmin: userRole.status === 'fulfilled' ? userRole?.value?.result?.superAdmin : false,
+                        envClustersList: envClustersList.status === 'fulfilled' ? envClustersList?.value?.result : [],
                     }}
                 >
                     <Switch>
@@ -399,17 +482,17 @@ interface DirectPermissionRow {
 }
 
 export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, handleDirectPermissionChange, index, removeRow }) => {
-    const { environmentsList, projectsList, appsList } = useUserGroupContext()
-    const projectId = permission.team ? projectsList.find(project => project.name === permission.team.value).id : null
-    const possibleRoles = [
-        ActionTypes.VIEW,
-        ActionTypes.TRIGGER,
-        ActionTypes.ADMIN,
-        ActionTypes.MANAGER
-    ]
+    const { environmentsList, projectsList, appsList, envClustersList } = useUserGroupContext()
+    const projectId =
+        permission.accessType === AccessTypeMap.DEVTRON_APPS && permission.team
+            ? projectsList.find((project) => project.name === permission.team.value).id
+            : null;
+    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER];
+    const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN];
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
+    const [envClusters, setEnvClusters] = useState([]);
 
     useEffect(() => {
         const envOptions = environmentsList?.map((env) => ({
@@ -418,6 +501,33 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
         }));
         setEnvironments(envOptions);
     }, [environmentsList])
+
+    useEffect(() => {
+        const envOptions = envClustersList?.map((cluster) => ({
+            label: cluster.clusterName,
+            options: [
+                {
+                    label: 'All existing + future environments in ' + cluster.clusterName,
+                    value: '#' + cluster.clusterName,
+                    namespace: '',
+                    clusterName: '',
+                },
+                {
+                    label: 'All existing environments in ' + cluster.clusterName,
+                    value: '*' + cluster.clusterName,
+                    namespace: '',
+                    clusterName: '',
+                },
+                ...cluster.environments?.map((env) => ({
+                    label: env.environmentName,
+                    value: env.environmentName,
+                    namespace: env.namespace,
+                    clusterName: cluster.clusterName,
+                })),
+            ],
+        }));
+        setEnvClusters(envOptions);
+    }, [envClustersList]);
 
     useEffect(() => {
         const appOptions = (appsList.get(projectId)?.result || [])?.map((app) => ({
@@ -429,7 +539,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
 
     useEffect(() => {
         if (openMenu || !projectId) return
-        if (environments.length === 0 || applications.length === 0) {
+        if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
         const sortedEnvironments =
@@ -446,9 +556,41 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
     function formatOptionLabel({ value, label }) {
         return (
             <div className="flex left column">
-                <span>{possibleRolesMeta[value]?.value}</span>
-                <small>{possibleRolesMeta[value]?.description}</small>
-            </div>)
+                <span>
+                    {
+                        (permission.accessType === AccessTypeMap.HELM_APPS
+                            ? possibleRolesMetaHelmApps
+                            : possibleRolesMeta)[value]?.value
+                    }
+                </span>
+                <small className="light-color">{(permission.accessType === AccessTypeMap.HELM_APPS
+                            ? possibleRolesMetaHelmApps
+                            : possibleRolesMeta)[value]?.description}</small>
+            </div>
+        );
+    }
+
+    function formatOptionLabelClusterEnv(option) {
+        return (
+            <div className="flex left column">
+                <span>{option.label}</span>
+                <small className={permission.accessType === AccessTypeMap.HELM_APPS && 'light-color'}>
+                    {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
+                </small>
+            </div>
+        );
+    }
+
+    function customFilter(option, searchText) {
+        if (
+            option.data.label.toLowerCase().includes(searchText.toLowerCase()) ||
+            option.data.clusterName.toLowerCase().includes(searchText.toLowerCase()) ||
+            option.data.namespace.toLowerCase().includes(searchText.toLowerCase())
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function onFocus(name: 'entityName' | 'environment') {
@@ -465,7 +607,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                 value={permission.team}
                 name="team"
                 placeholder="Select project"
-                options={projectsList?.map((project) => ({ label: project.name, value: project.name }))}
+                options={(permission.accessType === AccessTypeMap.HELM_APPS? [{'name': 'Unassigned'}] :projectsList)?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 menuPortalTarget={document.body}
@@ -476,7 +618,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                     Option,
                 }}
                 styles={{
-                    ...multiSelectStyles,
+                    ...tempMultiSelectStyles,
                     control: (base, state) => ({
                         ...base,
                         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
@@ -484,32 +626,63 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                     }),
                 }}
             />
-            <div>
-                <Select
-                    value={permission.environment}
-                    isMulti
-                    closeMenuOnSelect={false}
-                    name="environment"
-                    onFocus={() => onFocus('environment')}
-                    onMenuClose={onMenuClose}
-                    placeholder="Select environments"
-                    options={[allEnvironmentsOption, ...environments]}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    menuPortalTarget={document.body}
-                    hideSelectedOptions={false}
-                    styles={multiSelectStyles}
-                    components={{
-                        ClearIndicator: null,
-                        ValueContainer,
-                        IndicatorSeparator: null,
-                        Option,
-                    }}
-                    isDisabled={!permission.team}
-                    onChange={handleDirectPermissionChange}
-                />
-                {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
-            </div>
+            {permission.accessType === AccessTypeMap.HELM_APPS ? (
+                <div>
+                    <Select
+                        value={permission.environment}
+                        isMulti
+                        closeMenuOnSelect={false}
+                        name="environment"
+                        onFocus={() => onFocus('environment')}
+                        onMenuClose={onMenuClose}
+                        placeholder="Select environments"
+                        options={envClusters}
+                        formatOptionLabel={formatOptionLabelClusterEnv}
+                        filterOption={customFilter}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        menuPortalTarget={document.body}
+                        hideSelectedOptions={false}
+                        styles={tempMultiSelectStyles}
+                        components={{
+                            ClearIndicator: null,
+                            ValueContainer,
+                            IndicatorSeparator: null,
+                            Option,
+                        }}
+                        isDisabled={!permission.team}
+                        onChange={handleDirectPermissionChange}
+                    />
+                    {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
+                </div>
+            ) : (
+                <div>
+                    <Select
+                        value={permission.environment}
+                        isMulti
+                        closeMenuOnSelect={false}
+                        name="environment"
+                        onFocus={() => onFocus('environment')}
+                        onMenuClose={onMenuClose}
+                        placeholder="Select environments"
+                        options={[allEnvironmentsOption, ...environments]}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        menuPortalTarget={document.body}
+                        hideSelectedOptions={false}
+                        styles={tempMultiSelectStyles}
+                        components={{
+                            ClearIndicator: null,
+                            ValueContainer,
+                            IndicatorSeparator: null,
+                            Option,
+                        }}
+                        isDisabled={!permission.team}
+                        onChange={handleDirectPermissionChange}
+                    />
+                    {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
+                </div>
+            )}
             <div>
                 <Select
                     value={permission.entityName}
@@ -522,7 +695,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                     }}
                     isLoading={projectId ? appsList.get(projectId)?.loading : false}
                     isDisabled={!permission.team}
-                    styles={multiSelectStyles}
+                    styles={tempMultiSelectStyles}
                     closeMenuOnSelect={false}
                     name="entityName"
                     onFocus={() => onFocus('entityName')}
@@ -541,7 +714,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                 value={permission.action}
                 name="action"
                 placeholder="Select role"
-                options={possibleRoles.map((role) => ({ label: role as string, value: role as string }))}
+                options={(permission.accessType === AccessTypeMap.HELM_APPS
+                    ? possibleRolesHelmApps
+                    : possibleRoles
+                ).map((role) => ({ label: role as string, value: role as string }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 menuPortalTarget={document.body}
@@ -549,7 +725,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
                 styles={{
-                    ...multiSelectStyles,
+                    ...tempMultiSelectStyles,
                     option: (base, state) => ({
                         ...base,
                         borderRadius: '4px',
@@ -655,7 +831,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                         IndicatorSeparator: null,
                         Option
                     }}
-                    styles={{ ...multiSelectStyles }}
+                    styles={{ ...tempMultiSelectStyles }}
                 />
             </div>
             {chartPermission.action === ActionTypes.UPDATE &&
@@ -664,7 +840,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                     placeholder="Select Chart Group"
                     isMulti
                     styles={{
-                        ...multiSelectStyles,
+                        ...tempMultiSelectStyles,
                         multiValue: base => ({
                             ...base,
                             border: `1px solid var(--N200)`,

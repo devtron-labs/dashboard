@@ -129,3 +129,7 @@ interface UserRole extends ResponseType{
 export function getUserRole():Promise<UserRole>{
     return get(`user/check/roles`);
 }
+
+export function getClusterEnvDetail():Promise<any>{
+    return get(`/application/cluster-env-details`);
+}
