@@ -2,11 +2,11 @@ import { BehaviorSubject } from 'rxjs';
 import { ApplicationObject, iNode } from "./appDetails.type";
 import { URLS } from "../../../config";
 
-let applicationObjectTabs: Array<ApplicationObject> = [];
-let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(applicationObjectTabs);
+let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject([] as Array<ApplicationObject>);
 
 let _nodeTreeActiveParentNode: iNode
 let _nodeTreeActiveNode: iNode
+let _maxTabAllowd = 6
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
     let tab = {} as ApplicationObject
@@ -14,7 +14,7 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: st
     tab.url = tabUrl
     tab.isSelected = isSelected
     tab.title = title || tabName
-    applicationObjectTabs.push(tab)
+    return tab
 }
 
 export const AppDetailsTabs = {
@@ -23,7 +23,6 @@ export const AppDetailsTabs = {
 }
 
 const AppDetailsStore = {
-
     getAppDetailsTabs: () => {
         return applicationObjectTabsSubject.getValue()
     },
@@ -31,22 +30,27 @@ const AppDetailsStore = {
         return applicationObjectTabsSubject.asObservable()
     },
     initAppDetailsTabs: (_url: string, displayLogAnalyzer: boolean, isLogAnalyserURL: boolean) => {
-        applicationObjectTabs = []
+        let aots = [] as Array<ApplicationObject>
 
-        addAOT(AppDetailsTabs.k8s_Resources, _url + "/" + URLS.APP_DETAILS_K8, !isLogAnalyserURL)
+        aots.push(addAOT(AppDetailsTabs.k8s_Resources, _url + "/" + URLS.APP_DETAILS_K8, !isLogAnalyserURL))
 
         if (displayLogAnalyzer) {
-            addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, isLogAnalyserURL)
+            aots.push(addAOT(AppDetailsTabs.log_analyzer, _url + "/" + URLS.APP_DETAILS_LOG, isLogAnalyserURL))
+            _maxTabAllowd = 7
         }
 
-        applicationObjectTabsSubject.next([...applicationObjectTabs])
+        applicationObjectTabsSubject.next([...aots])
+
+        _nodeTreeActiveParentNode = undefined 
+        _nodeTreeActiveNode = undefined
     },
     addAppDetailsTab: (tabKind: string, tabName: string, tabURL: string) => {
 
         if (!tabName || !tabURL || !tabKind) return
 
-        if (applicationObjectTabs.length === 7) {
-            //maximum tab allowed on resource tree node
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+
+        if (applicationObjectTabs.length === _maxTabAllowd) {
             return false
         }
 
@@ -74,6 +78,8 @@ const AppDetailsStore = {
     removeAppDetailsTab: (tabName: string) => {
         let _applicationObjectTabs = []
 
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = index === 0
@@ -82,12 +88,13 @@ const AppDetailsStore = {
             }
         }
 
-        applicationObjectTabs = _applicationObjectTabs
-
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     markAppDetailsTabActive: (tabName: string, url: string) => {
         let idTabFound = false
+
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false

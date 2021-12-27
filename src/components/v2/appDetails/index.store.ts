@@ -1,15 +1,11 @@
 import { BehaviorSubject } from "rxjs";
 import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from "./appDetails.type";
 
-let _envDetails = {} as EnvDetails
-// let _appDetails = {} as AppDetails
-const _nodesEmpty = [] as Node[]
-const appDetails = {} as AppDetails
 
-let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject(appDetails)
-let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
-let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject(_nodesEmpty)
-let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject(_envDetails)
+let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject({} as AppDetails)
+let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject([] as Node[])
+let _nodesFilteredSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject([] as Node[])
+let _envDetailsSubject: BehaviorSubject<EnvDetails> = new BehaviorSubject({} as EnvDetails)
 
 let _nodeFilter = {
     filterType: '',
@@ -98,9 +94,16 @@ const getAllParentNods = (_nodes: Array<Node>, _kind: string): Array<iNode> => {
 
 const IndexStore = {
     setEnvDetails: (envType: string, appId: number, envId: number) => {
+        let _envDetails = {} as EnvDetails
+
         _envDetails.envType = envType as EnvType
         _envDetails.appId = appId
         _envDetails.envId = envId
+
+        _nodeFilter = {
+            filterType: '',
+            searchString: ''
+        }
 
         _envDetailsSubject.next({ ..._envDetails })
     },
