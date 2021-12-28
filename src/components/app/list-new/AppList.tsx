@@ -509,10 +509,10 @@ export default function AppList() {
                  <>
                     <div className="app-header">
                         {renderPageHeader()}
-                        {renderMasterFilters()}
-                        {renderAppliedFilters()}
-                        {renderAppTabs()}
                     </div>
+                    {renderMasterFilters()}
+                    {renderAppliedFilters()}
+                    {renderAppTabs()}
                     {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL &&

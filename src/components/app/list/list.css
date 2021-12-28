@@ -3,7 +3,7 @@
     overflow: visible;
     width: 100%;
     position: sticky;
-    top: -52px;
+    top: 0px;
     z-index: var(--page-header-index);
 }
 
@@ -61,8 +61,6 @@
     flex-wrap: wrap;
     box-shadow: inset 0 -1px 0 0 var(--N200);
     background-color: var(--white);
-    position: sticky;
-    top: 60px;
     z-index: var(--app-list-header-index);
 }
 
@@ -86,8 +84,6 @@
     box-shadow: 0 1px 0 0 var(--N200);
     margin-bottom: 1px;
     background: white;
-    position: sticky;
-    top: 60px;
     z-index: var(--app-list-header-index);
 }
 
@@ -416,6 +412,7 @@
 
 .app-tabs-wrapper .tab-list{
     padding-left: 30px;
+    background-color: white;
 }
 
 .app-tabs-wrapper .app-tabs-sync{
