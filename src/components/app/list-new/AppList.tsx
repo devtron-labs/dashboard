@@ -341,6 +341,7 @@ export default function AppList() {
     }
 
     function renderMasterFilters() {
+        let _isAnyClusterFilterApplied = masterFilters.clusters.some(_cluster => _cluster.isChecked);
         return <div className="search-filter-section">
                     <form style={{ display: "inline" }} onSubmit={searchApp}>
                        <div className="search">
@@ -375,7 +376,9 @@ export default function AppList() {
                             searchable multi
                             placeholder="Search Namespace"
                             type={AppListConstants.FilterType.NAMESPACE}
-                            applyFilter={applyFilter} />
+                            applyFilter={applyFilter}
+                            isDisabled={!_isAnyClusterFilterApplied}
+                            disableTooltipMessage={"Select a cluster first"} />
                     {
                         serverMode == SERVER_MODE.FULL &&
                         <Filter list={masterFilters.environments}

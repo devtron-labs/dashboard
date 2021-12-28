@@ -15,6 +15,8 @@ export interface FilterProps {
     multi?: boolean;
     applyFilter: (type: string, list: FilterOption[]) => void;
     badgeCount?: number;
+    isDisabled? : boolean;
+    disableTooltipMessage? : string;
 }
 
 export interface FilterState {

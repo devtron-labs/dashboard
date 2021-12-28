@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FilterProps, FilterState } from './types';
 import './filter.css';
+import Tippy from '@tippyjs/react';
 
 export class Filter extends Component<FilterProps, FilterState>{
     node;
@@ -98,22 +99,40 @@ export class Filter extends Component<FilterProps, FilterState>{
             filterOptions = [<p key={"none"} className="filter__no-result">{this.state.searchStr.length ? "No Matching Results" : "No Filters Found"}</p>]
         }
 
+        
         return <div className="filter" >
-            <button type="button" className="filter__trigger" onClick={() => this.setState({ show: !this.state.show })}>
-                {this.props.buttonText}
-                {badge > 0 ? <span className="badge">{badge}</span> : null}
-                <span className="filter-icon"><i className={faIcon}></i></span>
-            </button>
-            {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
-            <div className={classNames} ref={node => this.node = node}>
-                {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
-                <div className="filter__options">
-                    {filterOptions}
-                </div>
-                {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
-                    Apply Filter
-                </button>}
-            </div>
+            {
+                (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
+                <button type="button" className="filter__trigger" onClick={() => this.setState({ show: !this.state.show })}>
+                    {this.props.buttonText}
+                    {badge > 0 ? <span className="badge">{badge}</span> : null}
+                    <span className="filter-icon"><i className={faIcon}></i></span>
+                </button>
+            }
+            {
+                this.props.isDisabled && this.props.disableTooltipMessage &&
+                <Tippy arrow={true} placement="top" content={this.props.disableTooltipMessage}>
+                    <button type="button" className="filter__trigger disable__button">
+                        {this.props.buttonText}
+                        <span className="filter-icon"><i className={faIcon}></i></span>
+                    </button>
+                </Tippy>
+            }
+            {
+                !this.props.isDisabled &&
+                <>
+                    {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
+                    <div className={classNames} ref={node => this.node = node}>
+                        {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
+                        <div className="filter__options">
+                            {filterOptions}
+                        </div>
+                        {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
+                            Apply Filter
+                        </button>}
+                    </div>
+                </>
+            }
         </div>
     }
 

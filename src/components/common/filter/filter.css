@@ -38,6 +38,10 @@
     align-items: center;
 }
 
+.filter__trigger.disable__button {
+    opacity: 0.7;
+}
+
 .filter__apply {
     background-color: var(--B500);
     position: absolute;
