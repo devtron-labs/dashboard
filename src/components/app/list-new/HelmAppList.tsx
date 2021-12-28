@@ -364,19 +364,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
 
 
     function renderOnlyEAModeApplicationListContainer() {
-        if (!clusterIdsCsv){
-            return askToSelectClusterId()
-        }else{
-            if (!sseConnection && filteredHelmAppsList.length == 0){
-                if(_isAnyFilterationAppliedExceptCluster()){
-                    return askToClearFilters()
-                }else{
-                    return renderAllCheckModal()
-                }
-            }else{
-                return renderApplicationList()
-            }
-        }
+        return renderFullModeApplicationListContainer()
     }
 
     return (
