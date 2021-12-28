@@ -468,10 +468,12 @@ export default function AppList() {
                 }
                 {
                     params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps &&
-                    <>
+                    <div className="flex left">
+                        <span className="mr-10">
+                            <Progressing />
+                        </span>
                         <span>Fetching apps...</span>
-                        <Progressing pageLoader/>
-                    </>
+                    </div>
                 }
             </div>
         </div>

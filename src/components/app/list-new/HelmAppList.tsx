@@ -13,6 +13,8 @@ import { Empty } from '../list/emptyView/Empty';
 import { AllCheckModal } from '../../checkList/AllCheckModal';
 import EmptyState from '../../EmptyState/EmptyState';
 import Tippy from '@tippyjs/react';
+import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg';
+import './HelmAppList.css';
 import '../list/list.css';
 
 export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState, updateLastDataSync }) {
@@ -336,14 +338,20 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             clickHandler={clearAllFilters}
         />
     }
-
+    
     function askToClearFiltersWithSelectClusterTip(){
-        return <>
-        {askToClearFilters()}
-        <EmptyState>
-            <p className="text-left"><strong>Tip</strong> Select a cluster from above filters to see apps deployed from outside devtron.</p>
-        </EmptyState>
-        </>
+        return <div>
+            {askToClearFilters()}
+            <EmptyState>
+                <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top">
+                    <div><InfoFill style={{width : '20px', height : '20px'}}/></div>
+                    <div>
+                        <span className="fw-6">Tip </span>
+                        <span>Select a cluster from above filters to see apps deployed from outside devtron.</span>
+                    </div>
+                </p>
+            </EmptyState>
+        </div>
     }
 
     function renderFullModeApplicationListContainer() {
