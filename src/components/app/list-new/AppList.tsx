@@ -99,11 +99,13 @@ export default function AppList() {
         let clustersAndNamespaces = params.namespace || "";
 
         let _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces);
+        let environmentsArr = environments.toString().split(",").map(env => +env).filter(item => item != 0);
+        let teamsArr = teams.toString().split(",").filter(team => team != '').map(team => Number(team));
 
         ////// update master filters data (check/uncheck)
         let filterApplied = {
-            environments: new Set(environments),
-            teams: new Set(teams),
+            environments: new Set(environmentsArr),
+            teams: new Set(teamsArr),
             clusterVsNamespaceMap : _clusterVsNamespaceMap
         }
 
@@ -115,7 +117,7 @@ export default function AppList() {
                 key: project.key,
                 label: project.label,
                 isSaved: true,
-                isChecked: filterApplied.teams.has(project.key.toString())
+                isChecked: filterApplied.teams.has(project.key)
             }
         })
 
@@ -147,7 +149,7 @@ export default function AppList() {
                 key: env.key,
                 label: env.label,
                 isSaved: true,
-                isChecked: filterApplied.environments.has(env.key.toString())
+                isChecked: filterApplied.environments.has(env.key)
             }
         })
         setMasterFilters(_masterFilters);
@@ -168,8 +170,8 @@ export default function AppList() {
         }
 
         let payload = {
-            environments: environments.toString().split(",").map(env => +env).filter(item => item != 0),
-            teams: teams.toString().split(",").filter(team => team != '').map(team => Number(team)),
+            environments: environmentsArr,
+            teams: teamsArr,
             namespaces : clustersAndNamespaces.toString().split(",").filter(item => item != ""),
             appNameSearch: search,
             sortBy: sortBy,
