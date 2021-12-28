@@ -27,7 +27,7 @@ export default function AppList() {
     const {serverMode} = useContext(mainContext);
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
-    const [lastDataSyncTime, setLastDataSyncTime] = useState(null);
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -70,7 +70,6 @@ export default function AppList() {
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters)
             setDataStateType(AppListViewType.LIST);
-            setLastDataSyncTime(Date());
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
@@ -79,14 +78,22 @@ export default function AppList() {
     }, [])
 
 
+    // update lasy sync time on tab change
+    useEffect(() => {
+        const _lastDataSyncTime = Date();
+        setLastDataSyncTimeString("Last synced " +  handleUTCTime(_lastDataSyncTime, true));
+        const interval = setInterval(() => {
+            setLastDataSyncTimeString("Last synced " +  handleUTCTime(_lastDataSyncTime, true));
+        }, 1000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [currentTab])
+
+
     useEffect(() => {
         setParsedPayloadOnUrlChange(onRequestUrlChange());
     }, [location.search])
-
-
-    useEffect(() => {
-        setLastDataSyncTime(Date());
-    }, [currentTab])
 
 
     const onRequestUrlChange = () : any => {
@@ -446,8 +453,8 @@ export default function AppList() {
             </ul>
             <div className="app-tabs-sync">
                 {
-                    ((params.appType == AppListConstants.AppType.DEVTRON_APPS) || (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) &&
-                    <span>Last synced {handleUTCTime(lastDataSyncTime, true)} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button></span>
+                    lastDataSyncTimeString && ((params.appType == AppListConstants.AppType.DEVTRON_APPS) || (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) &&
+                    <span>{lastDataSyncTimeString} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button></span>
                 }
                 {
                     params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps &&
