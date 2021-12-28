@@ -8,30 +8,40 @@ import IndexStore from '../../index.store';
 import moment from 'moment';
 import { URLS } from '../../../../../config';
 import { Link } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router';
 
 function EnvironmentStatusComponent() {
     const appDetails = IndexStore.getAppDetails();
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
     const [showConfigStatusModal, setShowConfigStatusModal] = useState(false);
     const status = appDetails.resourceTree?.status || '';
+    const { path, url } = useRouteMatch();
+    const history = useHistory();
+
+    const onClickUpgrade = () => {
+        let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`;
+        history.push(_url);
+    };
 
     return (
         <div>
             <div className="flex left ml-20">
-                {status && <div className="app-status-card bcn-0 mr-12 br-8 p-16">
-                    <div className="lh-1-33 cn-9 flex left">
-                        <span>Application status</span>
-                        <Question className="icon-dim-16 ml-4" />
-                    </div>
+                {status && (
+                    <div className="app-status-card bcn-0 mr-12 br-8 p-16">
+                        <div className="lh-1-33 cn-9 flex left">
+                            <span>Application status</span>
+                            <Question className="icon-dim-16 ml-4" />
+                        </div>
 
-                    <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
-                        <span>{status}</span>
-                        <figure className={`${status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
+                        <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
+                            <span>{status}</span>
+                            <figure className={`${status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
+                        </div>
+                        <div onClick={() => setShowAppStatusDetail(true)}>
+                            <span className="cursor cb-5 fw-6">Details</span>
+                        </div>
                     </div>
-                    <div onClick={() => setShowAppStatusDetail(true)}>
-                        <span className="cursor cb-5 fw-6">Details</span>
-                    </div>
-                </div>}
+                )}
 
                 {appDetails?.lastDeployedTime && (
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
@@ -68,14 +78,16 @@ function EnvironmentStatusComponent() {
 
                 {appDetails?.deprecated && (
                     <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
+                        {console.log(`${url.split('/').pop()}`)}
+
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart deprecated</span>
                             <Alert className="icon-dim-16 ml-4" />
                         </div>
                         <div className=" fw-6 fs-14">Upgrade required</div>
-                        <a href={URLS.APP_VALUES} className="cb-5 fw-6">
+                        <div onClick={onClickUpgrade} className="cursor cb-5 fw-6">
                             Upgrade chart
-                        </a>
+                        </div>
                     </div>
                 )}
             </div>
