@@ -18,7 +18,7 @@ export interface MsgUIProps {
 
 const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle }) => {
     return (
-        <div className='flex column' style={{ ...bodyStyle, marginTop: '100px' }}>
+        <div className='flex column' style={{ ...bodyStyle, paddingTop: '100px' }}>
             <div>
                 {(() => {
                     switch (icon) {

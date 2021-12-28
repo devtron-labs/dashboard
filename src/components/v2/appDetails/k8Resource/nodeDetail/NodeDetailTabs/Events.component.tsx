@@ -43,11 +43,11 @@ function EventsComponent({ selectedTab }) {
 
 
     return (
-        <React.Fragment>
+        <div className='bcn-0'>
             {pods && pods.length > 0 &&
                 <React.Fragment>
                     {!loading && events && events.length > 0 &&
-                        <div className="bcn-0 cn-9" >
+                        <div className="cn-9" >
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -80,7 +80,7 @@ function EventsComponent({ selectedTab }) {
             }
 
             {(pods.length === 0) && <MessageUI msg='Select a pod to view events' icon={MsgUIType.POD} />}
-        </React.Fragment>
+        </div>
     )
 }
 

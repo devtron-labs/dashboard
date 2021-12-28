@@ -11,6 +11,7 @@ import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import { Progressing } from '../../../../../common';
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-filled-gray.svg';
+import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
 function ManifestComponent({ selectedTab }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -31,8 +32,13 @@ function ManifestComponent({ selectedTab }) {
 
         getManifestResource(appDetails, params.podName)
             .then((response) => {
-                setManifest(response.result.manifest);
-                setActiveManifestEditorData(response.result.manifest);
+                const _manifest = response?.result?.manifest;
+                if (_manifest) {
+                    setManifest(_manifest);
+                    setActiveManifestEditorData(_manifest);
+                } else {
+                    setError(true);
+                }
                 setLoading(false);
             })
             .catch((err) => {
@@ -104,32 +110,16 @@ function ManifestComponent({ selectedTab }) {
     //     }
     // }, [params.actionName])
 
-    const NoEvents = ({ title = 'Events not available' }) => {
-        return (
-            <div style={{ width: '100%', textAlign: 'center' }}>
-                <InfoIcon />
-                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>{title}</div>
-            </div>
-        );
-    };
     return (
-        <div style={{minHeight: '600px'}}>
-            {loading && !error && (
-                <div className="flex bcn-0" style={{ minHeight: '600px' }}>
-                    <Progressing pageLoader />
-                </div>
-            )}
-            {error && !loading && (
-                <div className="flex">
-                    <NoEvents title="Manifest not available" />
-                </div>
-            )}
-            {!error && !loading && (
+        <div className='bcn-0' style={{ minHeight: '600px' }}>
+            {loading && !error && <MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} />}
+            {error && !loading && <MessageUI msg="Manifest not available" />}
+            {!error && (
                 <div>
                     <CodeEditor
                         theme="vs-gray--dt"
-                        height={600}
-                        value={activeManifestEditorData}
+                        height={700}
+                        value={manifest}
                         mode="yaml"
                         readOnly={true}
                         // readOnly={activeTab !== 'Desired manifest'}

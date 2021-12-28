@@ -3,7 +3,6 @@ import { ApplicationObject, iNode } from "./appDetails.type";
 import { URLS } from "../../../config";
 
 let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject([] as Array<ApplicationObject>);
-
 let _nodeTreeActiveParentNode: iNode
 let _nodeTreeActiveNode: iNode
 let _maxTabAllowd = 6
@@ -48,7 +47,7 @@ const AppDetailsStore = {
 
         if (!tabName || !tabURL || !tabKind) return
 
-        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+        let applicationObjectTabs = applicationObjectTabsSubject.getValue()
 
         if (applicationObjectTabs.length === _maxTabAllowd) {
             return false
@@ -68,7 +67,7 @@ const AppDetailsStore = {
         }
 
         if (!alredyAdded) {
-            addAOT(tabName, tabURL, true, title)
+            applicationObjectTabs.push(addAOT(tabName, tabURL, true, title))
         }
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
