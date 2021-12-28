@@ -151,6 +151,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 this.setState({ code: errors.code, view: ViewType.ERROR });
             }
         })
+        this.props.updateLastDataSync();
     }
 
     handleEditApp = (appId: number): void => {

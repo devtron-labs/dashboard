@@ -57,6 +57,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     serverMode? : string;
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
+    updateLastDataSync : () => void;
 }
 
 export interface AppListResponse {

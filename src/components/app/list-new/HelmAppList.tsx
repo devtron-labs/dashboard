@@ -15,7 +15,7 @@ import EmptyState from '../../EmptyState/EmptyState';
 import Tippy from '@tippyjs/react';
 import '../list/list.css';
 
-export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState }) {
+export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState, updateLastDataSync }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [devtronInstalledHelmAppsList, setDevtronInstalledHelmAppsList] = useState<HelmApp[]>([]);
@@ -76,6 +76,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                     setErrorResponseCode(errors.code);
                 });
         }
+        updateLastDataSync();
     }, [clusterIdsCsv]);
 
     // reset data

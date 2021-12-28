@@ -28,6 +28,7 @@ export default function AppList() {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
+    const [lastDataSync, setLastDataSync] = useState(false);
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -88,7 +89,7 @@ export default function AppList() {
         return () => {
             clearInterval(interval);
         };
-    }, [currentTab])
+    }, [lastDataSync])
 
 
     useEffect(() => {
@@ -205,6 +206,10 @@ export default function AppList() {
             return `/app/${appId}/details/${envId}`;
         }
         return `/app/${appId}/trigger`;
+    }
+
+    const updateLastDataSync = () : void => {
+        setLastDataSync(!lastDataSync);
     }
 
     const handleAppSearchOperation = (_searchString : string): void => {
@@ -530,7 +535,7 @@ export default function AppList() {
                     {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL &&
-                        <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} clearAllFilters={removeAllFilters} sortApplicationList={sortApplicationList}/>
+                        <DevtronAppListContainer payloadParsedFromUrl={parsedPayloadOnUrlChange} appCheckListRes={appCheckListRes} clearAllFilters={removeAllFilters} sortApplicationList={sortApplicationList} updateLastDataSync={updateLastDataSync}/>
                     }
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY &&
@@ -545,7 +550,7 @@ export default function AppList() {
                     }
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
-                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState}/>
+                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync}/>
                     }
                  </>
             }
