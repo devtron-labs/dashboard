@@ -29,7 +29,7 @@ function EnvironmentStatusComponent() {
                         <figure className={`${status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
                     </div>
                     <div onClick={() => setShowAppStatusDetail(true)}>
-                        <span className="cursor cb-5">Details</span>
+                        <span className="cursor cb-5 fw-6">Details</span>
                     </div>
                 </div>}
 
