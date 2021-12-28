@@ -170,11 +170,14 @@ function NodeComponent() {
                                     <div>{node.name}</div>
                                     <div
                                         className={` app-summary__status-name f-${(
-                                            node?.status || node?.health?.status || ''
+                                            node?.status ||
+                                            node?.health?.status ||
+                                            ''
                                         ).toLowerCase()}`}
                                     >
                                         {getNodeStatus(node)}
                                     </div>
+                                </div>
                                 </div>
 
                                 <div>
@@ -188,8 +191,8 @@ function NodeComponent() {
                                         <Clipboard
                                             className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
                                             onClick={(e) => {
-                                                e.stopPropagation()
-                                                copyToClipboard(node?.name, () => setCopied(true))
+                                                e.stopPropagation();
+                                                copyToClipboard(node?.name, () => setCopied(true));
                                             }}
                                         />
                                     </Tippy>
@@ -211,7 +214,7 @@ function NodeComponent() {
                                         );
                                     })}
                                 </div>
-                            </div>
+                            
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -227,8 +230,8 @@ function NodeComponent() {
                                     <Clipboard
                                         className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
                                         onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(nodeName, () => setCopied(true))
+                                            e.stopPropagation();
+                                            copyToClipboard(nodeName, () => setCopied(true));
                                         }}
                                     />
                                 </Tippy>
@@ -236,7 +239,10 @@ function NodeComponent() {
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'col-1 pt-9 pb-9'}> {node.info?.filter((_info)=> _info.name === "Containers")[0]?.value} </div>
+                            <div className={'col-1 pt-9 pb-9'}>
+                                {' '}
+                                {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
+                            </div>
                         )}
 
                         <div className={'col-1 pt-9 pb-9 d-flex flex-row-reverse'}>
