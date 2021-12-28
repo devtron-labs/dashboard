@@ -188,17 +188,11 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     }
 
     function _isAnyFilterationAppliedExceptCluster() {
-        let applied = payloadParsedFromUrl.teams?.length || payloadParsedFromUrl.appNameSearch?.length || payloadParsedFromUrl.environments?.length;
-        if(applied){
-            return true
-        }
-        if(payloadParsedFromUrl.namespaces?.length){
-            applied = payloadParsedFromUrl.namespaces.some(_cluster => _cluster.includes("_"));
-        }
-        if(applied){
-            return true
-        }
-        return false;
+        return payloadParsedFromUrl.teams?.length || payloadParsedFromUrl.appNameSearch?.length || payloadParsedFromUrl.environments?.length;
+    }
+
+    function _isAnyFilterationApplied() {
+        return _isAnyFilterationAppliedExceptCluster() || payloadParsedFromUrl.namespaces?.length;
     }
 
     function handleImageError(e) {
@@ -342,12 +336,23 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         />
     }
 
+    function askToClearFiltersWithSelectClusterTip(){
+        return <>
+        {askToClearFilters()}
+        <EmptyState>
+            <p className="text-left"><strong>Tip</strong> Select a cluster from above filters to see apps deployed from outside devtron.</p>
+        </EmptyState>
+        </>
+    }
+
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0){
-            if(!clusterIdsCsv){
-                return askToSelectClusterId()
-            }else if(_isAnyFilterationAppliedExceptCluster()){
+            if(_isAnyFilterationAppliedExceptCluster() && !clusterIdsCsv){
+                return askToClearFiltersWithSelectClusterTip()
+            }else if(_isAnyFilterationApplied()){
                 return askToClearFilters()
+            }else if(!clusterIdsCsv){
+                return askToSelectClusterId()
             }else{
                 return renderAllCheckModal()
             }

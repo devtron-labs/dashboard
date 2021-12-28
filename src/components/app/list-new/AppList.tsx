@@ -281,6 +281,11 @@ export default function AppList() {
         delete query['team'];
         delete query['namespace'];
         delete query['search'];
+
+        //delete search string
+        setSearchApplied(false);
+        setSearchString("");
+
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
         history.push(url);
