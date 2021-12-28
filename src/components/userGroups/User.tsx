@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react'
 import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog, MultiValueChipContainer } from '../common'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable'
@@ -9,7 +9,8 @@ import { toast } from 'react-toastify'
 import { useUserGroupContext, GroupRow } from './UserGroup'
 import './UserGroup.scss';
 import AppPermissions from './AppPermissions';
-import { AccessTypeMap } from '../../config';
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -36,18 +37,7 @@ const CreatableChipStyle = {
 
 export default function UserForm({ id = null, userData = null, index, updateCallback, deleteCallback, createCallback, cancelCallback }) {
     // id null is for create
-    const emptyDirectPermission: DirectPermissionsRoleFilter = {
-        entity: EntityTypes.DIRECT,
-        entityName: [],
-        environment: [],
-        team: null,
-        action:
-        {
-            label: '',
-            value: ActionTypes.VIEW
-        },
-        accessType: AccessTypeMap.DEVTRON_APPS
-    }
+    const {serverMode} = useContext(mainContext);
     const { userGroupsList, superAdmin } = useUserGroupContext()
     const userGroupsMap = mapByKey(userGroupsList, 'name')
     const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false)
@@ -105,6 +95,27 @@ export default function UserForm({ id = null, userData = null, index, updateCall
         return isComplete
     }
 
+    function getSelectedEnvironments(permission) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            return permission.environment.find((env) => env.value === '*')
+                ? ''
+                : permission.environment.map((env) => env.value).join(',');
+        } else {
+            let allFutureCluster = {};
+            let envList = '';
+            permission.environment.forEach((element) => {
+                if (element.clusterName === '' && element.value.startsWith('#')) {
+                    const clusterName = element.value.substring(1);
+                    allFutureCluster[clusterName] = true;
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*';
+                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                    envList += (envList !== '' ? ',' : '') + element.value;
+                }
+            });
+            return envList;
+        }
+    }
+
     async function handleSubmit(e) {
         const validForm = validateForm()
         if (!validForm) {
@@ -125,17 +136,19 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                         ...permission,
                         action: permission.action.value,
                         team: permission.team.value,
-                        environment: permission.environment.find(env => env.value === '*') ? '' : permission.environment.map(env => env.value).join(","),
+                        environment: getSelectedEnvironments(permission),
                         entityName: permission.entityName.find(entity => entity.value === '*') ? '' : permission.entityName.map(entity => entity.value).join(",")
                     })),
-                {
-                    ...chartPermission,
-                    team: "",
-                    environment: "",
-                    entityName: chartPermission.entityName.map(entity => entity.value).join(",")
-                }
             ],
             superAdmin: localSuperAdmin
+        }
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            payload.roleFilters.push({
+                ...chartPermission,
+                team: '',
+                environment: '',
+                entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+            });
         }
         try {
             const { result } = await saveUser(payload)

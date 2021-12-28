@@ -8,7 +8,7 @@ import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/se
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType, CollapsedUserOrGroupProps } from './userGroups.types'
-import { AccessTypeMap, DOCUMENTATION, Routes, SERVER_MODE } from '../../config'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg';
@@ -21,6 +21,7 @@ import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import './UserGroup.scss';
 import { mainContext } from '../common/navigation/NavigationRoutes';
+import { responseInterceptor } from 'http-proxy-middleware';
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean, result: { id: number, name: string }[], error: any }>;
@@ -132,9 +133,10 @@ export default function UserGroupRoute() {
         () =>
             Promise.allSettled([
                 getGroupList(),
-                serverMode === SERVER_MODE.EA_ONLY && get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY && getEnvironmentListMin(),
-                serverMode === SERVER_MODE.EA_ONLY && getChartGroups(),
+                //serverMode === SERVER_MODE.EA_ONLY ? getHelmProject() : get(Routes.PROJECT_LIST),
+                serverMode === SERVER_MODE.EA_ONLY ? null : get(Routes.PROJECT_LIST),
+                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
+                serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 //getClusterEnvDetail()
                 {'result':[
@@ -482,9 +484,11 @@ interface DirectPermissionRow {
 }
 
 export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, handleDirectPermissionChange, index, removeRow }) => {
+
+    const {serverMode} = useContext(mainContext);
     const { environmentsList, projectsList, appsList, envClustersList } = useUserGroupContext()
     const projectId =
-        permission.accessType === AccessTypeMap.DEVTRON_APPS && permission.team
+        permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && permission.team
             ? projectsList.find((project) => project.name === permission.team.value).id
             : null;
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER];
@@ -493,6 +497,17 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
     const [envClusters, setEnvClusters] = useState([]);
+
+
+    const RoleValueContainer = ({ children, getValue, clearValue, cx, getStyles, hasValue, isMulti, options, selectOption, selectProps, setValue, ...props }) => {
+      const [{ value }] = getValue()
+      return (
+          <components.ValueContainer  {...{ getValue, clearValue, cx, getStyles, hasValue, isMulti, options, selectOption, selectProps, setValue, ...props }}>
+              {value === '*' ? 'Admin' : (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS? possibleRolesMetaHelmApps[value].value:possibleRolesMeta[value].value)}
+              {React.cloneElement(children[1])}
+          </components.ValueContainer>
+      );
+    };
 
     useEffect(() => {
         const envOptions = environmentsList?.map((env) => ({
@@ -558,12 +573,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
             <div className="flex left column">
                 <span>
                     {
-                        (permission.accessType === AccessTypeMap.HELM_APPS
+                        (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                             ? possibleRolesMetaHelmApps
                             : possibleRolesMeta)[value]?.value
                     }
                 </span>
-                <small className="light-color">{(permission.accessType === AccessTypeMap.HELM_APPS
+                <small className="light-color">{(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                             ? possibleRolesMetaHelmApps
                             : possibleRolesMeta)[value]?.description}</small>
             </div>
@@ -574,9 +589,20 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
         return (
             <div className="flex left column">
                 <span>{option.label}</span>
-                <small className={permission.accessType === AccessTypeMap.HELM_APPS && 'light-color'}>
+                <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
                     {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
                 </small>
+            </div>
+        );
+    }
+
+    function formatOptionLabelProject(option) {
+        return (
+            <div className="flex left column">
+                <span>{option.label}</span>
+                {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
+                    <><small className="light-color">Apps without an assigned project</small><div className="unassigned-project-border"></div></>
+                )}
             </div>
         );
     }
@@ -607,7 +633,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                 value={permission.team}
                 name="team"
                 placeholder="Select project"
-                options={(permission.accessType === AccessTypeMap.HELM_APPS? [{'name': 'Unassigned'}] :projectsList)?.map((project) => ({ label: project.name, value: project.name }))}
+                options={(serverMode === SERVER_MODE.EA_ONLY
+                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }]
+                    : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...projectsList]
+                    : projectsList
+                )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 menuPortalTarget={document.body}
@@ -616,6 +647,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     Option,
+                    ValueContainer: projectValueContainer,
                 }}
                 styles={{
                     ...tempMultiSelectStyles,
@@ -625,8 +657,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                         boxShadow: 'none',
                     }),
                 }}
+                formatOptionLabel={formatOptionLabelProject}
             />
-            {permission.accessType === AccessTypeMap.HELM_APPS ? (
+            {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
                 <div>
                     <Select
                         value={permission.environment}
@@ -714,7 +747,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                 value={permission.action}
                 name="action"
                 placeholder="Select role"
-                options={(permission.accessType === AccessTypeMap.HELM_APPS
+                options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesHelmApps
                     : possibleRoles
                 ).map((role) => ({ label: role as string, value: role as string }))}
@@ -896,12 +929,18 @@ const ValueContainer = props => {
     );
 };
 
-export const RoleValueContainer = ({ children, getValue, clearValue, cx, getStyles, hasValue, isMulti, options, selectOption, selectProps, setValue, ...props }) => {
-    const [{ value }] = getValue()
+export const projectValueContainer = (props) => {
+    const value = props.getValue();
     return (
-        <components.ValueContainer  {...{ getValue, clearValue, cx, getStyles, hasValue, isMulti, options, selectOption, selectProps, setValue, ...props }}>
-            {value === '*' ? 'Admin' : possibleRolesMeta[value].value}
-            {React.cloneElement(children[1])}
+        <components.ValueContainer {...props}>
+            {value[0] ? (
+                <>
+                    {value[0].value}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                <>{props.children}</>
+            )}
         </components.ValueContainer>
     );
 };

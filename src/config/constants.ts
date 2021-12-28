@@ -192,7 +192,9 @@ export enum SERVER_MODE {
 
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
 
-export enum AccessTypeMap {
+export enum ACCESS_TYPE_MAP {
   DEVTRON_APPS = '', // devtron app work flow
   HELM_APPS = 'HAWF', //helm app work flow
 }
+
+export const HELM_APP_UNASSIGNED_PROJECT = 'Unassigned';

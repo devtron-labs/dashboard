@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { showError, Progressing, DeleteDialog } from '../common'
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { saveGroup, deleteGroup } from './userGroup.service';
@@ -8,10 +8,12 @@ import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, 
 import './UserGroup.scss';
 import { toast } from 'react-toastify'
 import AppPermissions from './AppPermissions';
-import { AccessTypeMap } from '../../config';
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
 export default function GroupForm({ id = null, index = null, groupData = null, updateCallback, deleteCallback, createCallback, cancelCallback }) {
     // id null is for create
+    const {serverMode} = useContext(mainContext);
     const emptyDirectPermission: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
@@ -22,7 +24,7 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
             label: "",
             value: ActionTypes.VIEW
         },
-        accessType: AccessTypeMap.DEVTRON_APPS
+        accessType: ACCESS_TYPE_MAP.DEVTRON_APPS
     }
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({ entity: EntityTypes.CHART_GROUP, action: ActionTypes.VIEW, entityName: [] })
@@ -53,6 +55,27 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
         return isComplete
     }
 
+    function getSelectedEnvironments(permission) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            return permission.environment.find((env) => env.value === '*')
+                ? ''
+                : permission.environment.map((env) => env.value).join(',');
+        } else {
+            let allFutureCluster = {};
+            let envList = '';
+            permission.environment.forEach((element) => {
+                if (element.clusterName === '' && element.value.startsWith('#')) {
+                    const clusterName = element.value.substring(1);
+                    allFutureCluster[clusterName] = true;
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*';
+                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                    envList += (envList !== '' ? ',' : '') + element.value;
+                }
+            });
+            return envList;
+        }
+    }
+
     async function handleSubmit(e) {
         if (!name.value) {
             setName(name => ({ ...name, error: 'Group name is mandatory' }))
@@ -76,21 +99,21 @@ export default function GroupForm({ id = null, index = null, groupData = null, u
                         ...permission,
                         action: permission.action.value,
                         team: permission.team.value,
-                        environment: permission.environment.find((env) => env.value === '*')
-                            ? ''
-                            : permission.environment.map((env) => env.value).join(','),
+                        environment: getSelectedEnvironments(permission),
                         entityName: permission.entityName.find((entity) => entity.value === '*')
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
-                {
-                    ...chartPermission,
-                    team: '',
-                    environment: '',
-                    entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-                },
             ],
         };
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            payload.roleFilters.push({
+                ...chartPermission,
+                team: '',
+                environment: '',
+                entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+            });
+        }
 
         try {
             const { result } = await saveGroup(payload)

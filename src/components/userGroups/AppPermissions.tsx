@@ -3,7 +3,7 @@ import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
 import { ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup';
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { useRouteMatch } from 'react-router';
-import { AccessTypeMap, SERVER_MODE } from '../../config';
+import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../config';
 import {
     ActionTypes,
     APIRoleFilter,
@@ -23,10 +23,10 @@ interface AppPermissionsType {
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void;
 }
 interface AppPermissionsDetailType {
-    accessType: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS;
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
     handleDirectPermissionChange: (...rest) => void;
     removeDirectPermissionRow: (index: number) => void;
-    AddNewPermissionRow: (accessType: AccessTypeMap.DEVTRON_APPS | AccessTypeMap.HELM_APPS) => void;
+    AddNewPermissionRow: (accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS) => void;
     directPermission: DirectPermissionsRoleFilter[];
 }
 
@@ -49,11 +49,11 @@ export default function AppPermissions({
             label: '',
             value: ActionTypes.VIEW,
         },
-        accessType: AccessTypeMap.DEVTRON_APPS,
+        accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
     };
     const emptyDirectPermissionHelmApps = {
         ...emptyDirectPermissionDevtronApps,
-        accessType: AccessTypeMap.HELM_APPS,
+        accessType: ACCESS_TYPE_MAP.HELM_APPS,
     };
     useEffect(() => {
         if (!data) {
@@ -68,24 +68,26 @@ export default function AppPermissions({
     }, [data]);
 
     async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
-        const allProjects = roleFilters.map((roleFilter) => roleFilter.team).filter(Boolean);
-        const projectsMap = mapByKey(projectsList, 'name');
-        const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
-        const uniqueProjectIds = Array.from(new Set(allProjectIds));
-        await fetchAppList(uniqueProjectIds);
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            const allProjects = roleFilters.map((roleFilter) => roleFilter.team).filter(Boolean);
+            const projectsMap = mapByKey(projectsList, 'name');
+            const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
+            const uniqueProjectIds = Array.from(new Set(allProjectIds));
+            await fetchAppList(uniqueProjectIds);
+        }
+
         let foundDevtronApps = false,
             foundHelmApps = false;
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
             ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
-                const projectId = projectsMap.get(directRolefilter.team).id;
-                directRolefilter['accessType'] =
-                    serverMode !== SERVER_MODE.EA_ONLY && index % 2 === 0
-                        ? AccessTypeMap.DEVTRON_APPS
-                        : AccessTypeMap.HELM_APPS;
-                if (directRolefilter.accessType === AccessTypeMap.DEVTRON_APPS) {
+                //const projectId = projectsMap.get(directRolefilter.team).id;
+                if (!directRolefilter['accessType']) {
+                    directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS;
+                }
+                if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true;
-                } else if (directRolefilter.accessType === AccessTypeMap.HELM_APPS) {
+                } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                     foundHelmApps = true;
                 }
                 return {
@@ -95,24 +97,12 @@ export default function AppPermissions({
                     entity: EntityTypes.DIRECT,
                     entityName: directRolefilter?.entityName
                         ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: entity }))
-                        : [
-                              { label: 'All applications', value: '*' },
-                              ...(appsList.get(projectId)?.result || []).map((app) => ({
-                                  label: app.name,
-                                  value: app.name,
-                              })),
-                          ],
+                        : [],
                     environment: directRolefilter.environment
                         ? directRolefilter.environment
                               .split(',')
                               .map((directRole) => ({ value: directRole, label: directRole }))
-                        : [
-                              { label: 'All environments', value: '*' },
-                              // ...environmentsList.map((env) => ({
-                              //     label: env.environment_name,
-                              //     value: env.environment_name,
-                              // })),
-                          ],
+                        : [],
                 } as DirectPermissionsRoleFilter;
             });
         if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
@@ -194,7 +184,7 @@ export default function AppPermissions({
         const { value, clusterName } = option;
         const startsWithHash = value && value.startsWith('#');
         if (value.startsWith('*') || startsWithHash) {
-            if (tempPermissions[index].accessType === AccessTypeMap.HELM_APPS) {
+            if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 const clusterName = value.substring(1);
                 // uncheck all environments
                 tempPermissions[index][name] = tempPermissions[index][name]?.filter(
@@ -228,7 +218,7 @@ export default function AppPermissions({
                 }
             }
         } else {
-            if (tempPermissions[index].accessType === AccessTypeMap.HELM_APPS) {
+            if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 tempPermissions[index][name] = selectedValue.filter(
                     ({ value, label }) => value !== '*' + clusterName && value !== '#' + clusterName,
                 );
@@ -247,7 +237,7 @@ export default function AppPermissions({
             const { label, value } = option;
             if (value === '*') {
                 if (action === 'select-option') {
-                    if (tempPermissions[index].accessType === AccessTypeMap.DEVTRON_APPS) {
+                    if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                         const projectId = projectsList.find(
                             (project) => project.name === tempPermissions[index]['team'].value,
                         ).id;
@@ -275,7 +265,10 @@ export default function AppPermissions({
             tempPermissions[index][name] = selectedValue;
             tempPermissions[index]['entityName'] = [];
             tempPermissions[index]['environment'] = [];
-            if (tempPermissions[index].accessType === AccessTypeMap.DEVTRON_APPS) {
+            if (
+                serverMode !== SERVER_MODE.EA_ONLY &&
+                tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT
+            ) {
                 const projectId = projectsList.find((project) => project.name === tempPermissions[index]['team'].value)
                     .id;
                 fetchAppList([projectId]);
@@ -292,9 +285,9 @@ export default function AppPermissions({
                 foundHelmApps = false;
             let permissionArr = removeItemsFromArray(permission, index, 1);
             for (let i = 0; i < permissionArr.length; i++) {
-                if (permissionArr[i].accessType === AccessTypeMap.DEVTRON_APPS) {
+                if (permissionArr[i].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true;
-                } else if (permissionArr[i].accessType === AccessTypeMap.HELM_APPS) {
+                } else if (permissionArr[i].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                     foundHelmApps = true;
                 }
             }
@@ -309,9 +302,9 @@ export default function AppPermissions({
     }
 
     function AddNewPermissionRowLocal(accessType) {
-        if (accessType === AccessTypeMap.DEVTRON_APPS) {
+        if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
             setDirectPermission((permission) => [...permission, emptyDirectPermissionDevtronApps]);
-        } else if (accessType === AccessTypeMap.HELM_APPS) {
+        } else if (accessType === ACCESS_TYPE_MAP.HELM_APPS) {
             setDirectPermission((permission) => [...permission, emptyDirectPermissionHelmApps]);
         }
     }
@@ -343,7 +336,7 @@ export default function AppPermissions({
                 <Switch>
                     <Route path={`${path}/devtron-apps`}>
                         <AppPermissionDetail
-                            accessType={AccessTypeMap.DEVTRON_APPS}
+                            accessType={ACCESS_TYPE_MAP.DEVTRON_APPS}
                             removeDirectPermissionRow={removeDirectPermissionRow}
                             handleDirectPermissionChange={handleDirectPermissionChange}
                             AddNewPermissionRow={AddNewPermissionRowLocal}
@@ -352,7 +345,7 @@ export default function AppPermissions({
                     </Route>
                     <Route path={`${path}/helm-apps`}>
                         <AppPermissionDetail
-                            accessType={AccessTypeMap.HELM_APPS}
+                            accessType={ACCESS_TYPE_MAP.HELM_APPS}
                             removeDirectPermissionRow={removeDirectPermissionRow}
                             handleDirectPermissionChange={handleDirectPermissionChange}
                             AddNewPermissionRow={AddNewPermissionRowLocal}
@@ -378,23 +371,23 @@ function AppPermissionDetail({
 }: AppPermissionsDetailType) {
     return (
         <>
-            <legend>{accessType === AccessTypeMap.DEVTRON_APPS ? 'Direct ' : 'Manage '}permissions</legend>
+            <legend>{accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? 'Direct ' : 'Manage '}permissions</legend>
             <div
                 className="w-100 mb-26"
                 style={{
                     display: 'grid',
                     gridTemplateColumns:
-                        accessType === AccessTypeMap.DEVTRON_APPS ? '1fr 1fr 1fr 1fr 24px' : '1fr 2fr 1fr 1fr 24px',
+                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? '1fr 1fr 1fr 1fr 24px' : '1fr 2fr 1fr 1fr 24px',
                     gridGap: '16px',
                 }}
             >
                 <label className="fw-6 fs-12 cn-5">Project</label>
                 <label className="fw-6 fs-12 cn-5">
-                    Environment{accessType === AccessTypeMap.DEVTRON_APPS ? '' : ' or cluster/namespace'}
+                    Environment{accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? '' : ' or cluster/namespace'}
                 </label>
                 <label className="fw-6 fs-12 cn-5">Application</label>
                 <label className="fw-6 fs-12 cn-5">
-                    {accessType === AccessTypeMap.DEVTRON_APPS ? 'Role' : 'Permission'}
+                    {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? 'Role' : 'Permission'}
                 </label>
                 <span />
                 {directPermission.map(

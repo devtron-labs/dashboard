@@ -133,3 +133,12 @@
 .light-color{
   color: #596168;
 }
+
+.unassigned-project-border{
+  height: 3px;
+  width: 100%;
+  margin-left: -40px;
+  position: absolute;
+  top: 52px;
+  border-bottom: 1px solid lightgray;
+}
