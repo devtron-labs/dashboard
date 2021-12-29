@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } 
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
-import { getUserList, getGroupList, getUserId, getGroupId, getUserRole, getClusterEnvDetail } from './userGroup.service';
+import { getUserList, getGroupList, getUserId, getGroupId, getUserRole, getEnvironmentListHelmApps } from './userGroup.service';
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
@@ -32,6 +32,8 @@ interface UserGroup {
     fetchAppList: (projectId: number[]) => void;
     superAdmin: boolean;
     envClustersList: any[];
+    fetchAppListHelmApps: (projectId: number[]) => void;
+    appsListHelmApps: Map<number, { loading: boolean, result: { id: number, name: string }[], error: any }>;
 }
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -42,6 +44,8 @@ const UserGroupContext = React.createContext<UserGroup>({
     fetchAppList: () => { },
     superAdmin: false,
     envClustersList: [],
+    fetchAppListHelmApps: () => { },
+    appsListHelmApps: new Map(),
 });
 
 const possibleRolesMeta = {
@@ -133,66 +137,16 @@ export default function UserGroupRoute() {
         () =>
             Promise.allSettled([
                 getGroupList(),
-                //serverMode === SERVER_MODE.EA_ONLY ? getHelmProject() : get(Routes.PROJECT_LIST),
                 serverMode === SERVER_MODE.EA_ONLY ? null : get(Routes.PROJECT_LIST),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
-                //getClusterEnvDetail()
-                {'result':[
-                  {
-                    "clusterName": "default_cluster",
-                    "clusterID": 0,
-                    "environments": [
-                      {
-                        "environmentName": "demo1",
-                        "environmentId": 53,
-                        "namespace": "demo1",
-                        "isPrduction": true
-                      },
-                      {
-                        "environmentName": "demo2",
-                        "environmentId": 54,
-                        "namespace": "demo2",
-                        "isPrduction": true
-                      },
-                      {
-                        "environmentName": "demo3",
-                        "environmentId": 55,
-                        "namespace": "demo3",
-                        "isPrduction": true
-                      }
-                    ]
-                  },{
-                    "clusterName": "elasticsearch",
-                    "clusterID": 0,
-                    "environments": [
-                      {
-                        "environmentName": "prod",
-                        "environmentId": 56,
-                        "namespace": "prod",
-                        "isPrduction": true
-                      },
-                      {
-                        "environmentName": "elasticsearch-demo",
-                        "environmentId": 57,
-                        "namespace": "elasticsearch-demo",
-                        "isPrduction": true
-                      },
-                      {
-                        "environmentName": "elasticsearch-demo1",
-                        "environmentId": 58,
-                        "namespace": "elasticsearch-demo1",
-                        "isPrduction": true
-                      }
-                    ]
-                  }
-                ]
-              }
+                getEnvironmentListHelmApps()
             ]),
         [serverMode],
     );
     const [appsList, setAppsList] = useState(new Map())
+    const [appsListHelmApps, setAppsListHelmApps] = useState(new Map());
     useEffect(() => {
         if (!lists) return
         lists.forEach(list => {
@@ -232,6 +186,43 @@ export default function UserGroupRoute() {
             });
         }
     }
+
+    async function fetchAppListHelmApps(projectIds: number[]) {
+        if (serverMode === SERVER_MODE.EA_ONLY) return;
+        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId));
+        if (missingProjects.length === 0) return;
+        setAppsListHelmApps((appListHelmApps) => {
+            return missingProjects.reduce((appListHelmApps, projectId) => {
+                appListHelmApps.set(projectId, { loading: true, result: [], error: null });
+                return appListHelmApps;
+            }, appListHelmApps);
+        });
+        try {
+            const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.HELM_APPS);
+            const projectsMap = mapByKey(result || [], 'projectId');
+            setAppsListHelmApps((appListHelmApps) => {
+                return new Map(
+                    missingProjects.reduce((appListHelmApps, projectId, index) => {
+                        appListHelmApps.set(projectId, {
+                            loading: false,
+                            result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
+                            error: null,
+                        });
+                        return appListHelmApps;
+                    }, appListHelmApps),
+                );
+            });
+        } catch (error) {
+            showError(error);
+            setAppsListHelmApps((appListHelmApps) => {
+                return missingProjects.reduce((appList, projectId) => {
+                    appListHelmApps.set(projectId, { loading: false, result: [], error });
+                    return appListHelmApps;
+                }, appListHelmApps);
+            });
+        }
+    }
+
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
@@ -248,6 +239,8 @@ export default function UserGroupRoute() {
                         chartGroupsList: chartGroups.status === 'fulfilled' ? chartGroups?.value?.result?.groups : [],
                         superAdmin: userRole.status === 'fulfilled' ? userRole?.value?.result?.superAdmin : false,
                         envClustersList: envClustersList.status === 'fulfilled' ? envClustersList?.value?.result : [],
+                        fetchAppListHelmApps,
+                        appsListHelmApps,
                     }}
                 >
                     <Switch>
@@ -486,9 +479,9 @@ interface DirectPermissionRow {
 export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, handleDirectPermissionChange, index, removeRow }) => {
 
     const {serverMode} = useContext(mainContext);
-    const { environmentsList, projectsList, appsList, envClustersList } = useUserGroupContext()
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
-        permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && permission.team
+    permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value).id
             : null;
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER];
@@ -545,12 +538,15 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
     }, [envClustersList]);
 
     useEffect(() => {
-        const appOptions = (appsList.get(projectId)?.result || [])?.map((app) => ({
+        const appOptions = (
+            (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(projectId)
+                ?.result || []
+        )?.map((app) => ({
             label: app.name,
             value: app.name,
-        }))
-        setApplications(appOptions)
-    }, [appsList, projectId])
+        }));
+        setApplications(appOptions);
+    }, [appsList, appsListHelmApps, projectId]);
 
     useEffect(() => {
         if (openMenu || !projectId) return
@@ -679,7 +675,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                         styles={tempMultiSelectStyles}
                         components={{
                             ClearIndicator: null,
-                            ValueContainer,
+                            ValueContainer: clusterValueContainer,
                             IndicatorSeparator: null,
                             Option,
                         }}
@@ -726,7 +722,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
                         IndicatorSeparator: null,
                         Option: AppOption,
                     }}
-                    isLoading={projectId ? appsList.get(projectId)?.loading : false}
+                    isLoading={
+                        projectId
+                            ? (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                                  ? appsList
+                                  : appsListHelmApps
+                              ).get(projectId)?.loading
+                            : false
+                    }
                     isDisabled={!permission.team}
                     styles={tempMultiSelectStyles}
                     closeMenuOnSelect={false}
@@ -925,6 +928,32 @@ const ValueContainer = props => {
                     {React.cloneElement(props.children[1])}
                 </>
                 : <>{props.children}</>}
+        </components.ValueContainer>
+    );
+};
+
+const clusterValueContainer = (props) => {
+    let length = props.getValue().filter((opt) => !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
+    let count = '';
+    let totalEnv = props.options.reduce((len, cluster) => {
+        len += cluster.options.length - 2;
+        return len;
+    }, 0);
+    if (length === totalEnv) {
+        count = 'All environments';
+    } else {
+        count = length + ' environment' + (length !== 1 ? 's' : '');
+    }
+    return (
+        <components.ValueContainer {...props}>
+            {length > 0 ? (
+                <>
+                    {!props.selectProps.menuIsOpen && count}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                <>{props.children}</>
+            )}
         </components.ValueContainer>
     );
 };

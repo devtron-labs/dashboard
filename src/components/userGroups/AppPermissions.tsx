@@ -38,7 +38,15 @@ export default function AppPermissions({
     setChartPermission,
 }: AppPermissionsType) {
     const { serverMode } = useContext(mainContext);
-    const { appsList, fetchAppList, projectsList, environmentsList, envClustersList } = useUserGroupContext();
+    const {
+        appsList,
+        fetchAppList,
+        projectsList,
+        environmentsList,
+        envClustersList,
+        fetchAppListHelmApps,
+        appsListHelmApps,
+    } = useUserGroupContext();
     const { url, path } = useRouteMatch();
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
@@ -67,27 +75,104 @@ export default function AppPermissions({
         populateDataFromAPI(data.roleFilters);
     }, [data]);
 
-    async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
-        if (serverMode !== SERVER_MODE.EA_ONLY) {
-            const allProjects = roleFilters.map((roleFilter) => roleFilter.team).filter(Boolean);
-            const projectsMap = mapByKey(projectsList, 'name');
-            const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
-            const uniqueProjectIds = Array.from(new Set(allProjectIds));
-            await fetchAppList(uniqueProjectIds);
+    function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
+        if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+            return [
+                { label: 'All applications', value: '*' },
+                ...(
+                    (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(
+                        projectId,
+                    )?.result || []
+                ).map((app) => ({
+                    label: app.name,
+                    value: app.name,
+                })),
+            ];
+        } else {
+            return [{ label: 'All applications', value: '*' }];
         }
+    }
+
+    function setAllEnv(directRolefilter: APIRoleFilter) {
+        if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            if (directRolefilter.environment) {
+                return directRolefilter.environment
+                    .split(',')
+                    .map((directRole) => ({ value: directRole, label: directRole }));
+            } else {
+                return [
+                    { label: 'All environments', value: '*' },
+                    ...environmentsList.map((env) => ({
+                        label: env.environment_name,
+                        value: env.environment_name,
+                    })),
+                ];
+            }
+        } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+            let returnArr = [];
+            let envArr = directRolefilter.environment.split(',');
+            let envMap: Map<string, boolean> = new Map();
+            envArr.forEach((element) => {
+                const endsWithStar = element.endsWith('*');
+                if (endsWithStar) {
+                    const clusterName = element.slice(0, -3);
+                    returnArr.push(...setClusterValues(endsWithStar, clusterName));
+                } else {
+                    envMap.set(element, true);
+                }
+            });
+            envMap.size !== 0 &&
+                envClustersList.some((element) => {
+                    envMap.size !== 0 &&
+                        element.environments.some((env) => {
+                            if (envMap.get(env.environmentName)) {
+                                returnArr.push({
+                                    label: env.environmentName,
+                                    value: env.environmentName,
+                                    namespace: env.namespace,
+                                    clusterName: element.clusterName,
+                                });
+                                envMap.delete(env.environmentName);
+                                if (envMap.size === 0) {
+                                    return true;
+                                }
+                            }
+                        });
+                });
+            return returnArr;
+        }
+    }
+
+    async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
+        const projectsMap = mapByKey(projectsList, 'name');
+        // if (serverMode !== SERVER_MODE.EA_ONLY) {
+        //     const allProjects = roleFilters
+        //         .map((roleFilter) => roleFilter.team)
+        //         .filter((item) => {
+        //             return Boolean(item) && item !== HELM_APP_UNASSIGNED_PROJECT;
+        //         });
+        //     const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
+        //     const uniqueProjectIds = Array.from(new Set(allProjectIds));
+        //     await fetchAppList(uniqueProjectIds);
+        // }
 
         let foundDevtronApps = false,
-            foundHelmApps = false;
+            foundHelmApps = false,
+            uniqueProjectIdsDevtronApps = [],
+            uniqueProjectIdsHelmApps = [];
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
             ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
-                //const projectId = projectsMap.get(directRolefilter.team).id;
+                const projectId =
+                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT && projectsMap.get(directRolefilter.team).id;
                 if (!directRolefilter['accessType']) {
                     directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS;
                 }
                 if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true;
+                    uniqueProjectIdsDevtronApps.push(projectId);
                 } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                    projectId && uniqueProjectIdsHelmApps.push(projectId);
                     foundHelmApps = true;
                 }
                 return {
@@ -97,14 +182,16 @@ export default function AppPermissions({
                     entity: EntityTypes.DIRECT,
                     entityName: directRolefilter?.entityName
                         ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: entity }))
-                        : [],
-                    environment: directRolefilter.environment
-                        ? directRolefilter.environment
-                              .split(',')
-                              .map((directRole) => ({ value: directRole, label: directRole }))
-                        : [],
+                        : setAllApplication(directRolefilter, projectId),
+                    environment: setAllEnv(directRolefilter),
                 } as DirectPermissionsRoleFilter;
             });
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            await Promise.all([
+                fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
+                fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
+            ]);
+        }
         if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps);
         }
@@ -127,27 +214,6 @@ export default function AppPermissions({
 
             setChartPermission(chartPermission);
         }
-    }
-
-    function setAllExitingFutureClusterValues() {
-        return envClustersList?.map((cluster) => ({
-            label: cluster.clusterName,
-            options: [
-                ,
-                {
-                    label: 'All existing environments in ' + cluster.clusterName,
-                    value: '*' + cluster.clusterName,
-                    namespace: '',
-                    clusterName: '',
-                },
-                ...cluster.environments?.map((env) => ({
-                    label: env.environmentName,
-                    value: env.environmentName,
-                    namespace: env.namespace,
-                    clusterName: cluster.clusterName,
-                })),
-            ],
-        }));
     }
 
     function setClusterValues(startsWithHash, clusterName) {
@@ -237,19 +303,21 @@ export default function AppPermissions({
             const { label, value } = option;
             if (value === '*') {
                 if (action === 'select-option') {
-                    if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                    if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
                         const projectId = projectsList.find(
                             (project) => project.name === tempPermissions[index]['team'].value,
                         ).id;
                         tempPermissions[index][name] = [
                             { label: 'Select all', value: '*' },
-                            ...appsList.get(projectId).result.map((app) => ({ label: app.name, value: app.name })),
+                            ...(tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                                ? appsList
+                                : appsListHelmApps
+                            )
+                                .get(projectId)
+                                .result.map((app) => ({ label: app.name, value: app.name })),
                         ];
                     } else {
-                        tempPermissions[index][name] = [
-                            { label: 'Select all', value: '*' },
-                            // ...appsList.result.map((app) => ({ label: app.name, value: app.name })),
-                        ];
+                        tempPermissions[index][name] = [{ label: 'Select all', value: '*' }];
                     }
                     tempPermissions[index]['entityNameError'] = null;
                 } else {
@@ -265,13 +333,12 @@ export default function AppPermissions({
             tempPermissions[index][name] = selectedValue;
             tempPermissions[index]['entityName'] = [];
             tempPermissions[index]['environment'] = [];
-            if (
-                serverMode !== SERVER_MODE.EA_ONLY &&
-                tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT
-            ) {
+            if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
                 const projectId = projectsList.find((project) => project.name === tempPermissions[index]['team'].value)
                     .id;
-                fetchAppList([projectId]);
+                tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                    ? fetchAppList([projectId])
+                    : fetchAppListHelmApps([projectId]);
             }
         } else {
             tempPermissions[index][name] = selectedValue;

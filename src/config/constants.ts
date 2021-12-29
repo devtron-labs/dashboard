@@ -74,6 +74,7 @@ export const Routes = {
     ACTIVE_ENVIRONMENT: 'env/active',
     ENVIRONMENT_LIST: 'list/environments',
     ENVIRONMENT_LIST_MIN: 'env/autocomplete',
+    ENVIRONMENT_LIST_MIN_HELM_PROJECTS: 'env/autocomplete/helm',
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     APPLICATIONS: 'api/v1/applications',
@@ -194,7 +195,7 @@ export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
 
 export enum ACCESS_TYPE_MAP {
   DEVTRON_APPS = '', // devtron app work flow
-  HELM_APPS = 'HAWF', //helm app work flow
+  HELM_APPS = 'hawf', //helm app work flow
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'Unassigned';

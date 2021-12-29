@@ -2,6 +2,7 @@ import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../serv
 import { get, post, put, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 import { CreateGroup, CreateUser } from './userGroups.types'
+import { Routes } from '../../config';
 
 export function getData() {
     return Promise.all([getTeamListMin(), getAppListMin(), getEnvironmentListMin()])
@@ -130,6 +131,6 @@ export function getUserRole():Promise<UserRole>{
     return get(`user/check/roles`);
 }
 
-export function getClusterEnvDetail():Promise<any>{
-    return get(`/application/cluster-env-details`);
+export function getEnvironmentListHelmApps():Promise<any>{
+    return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
 }
