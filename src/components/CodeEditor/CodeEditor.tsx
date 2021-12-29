@@ -32,6 +32,7 @@ interface CodeEditorInterface {
     diffView?: boolean;
     loading?: boolean;
     theme?: string;
+    original?: string;
 }
 
 interface CodeEditorHeaderInterface {

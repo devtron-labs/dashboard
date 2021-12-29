@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, useState } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { URLS } from '../../config';
 import Deployed from './list/Deployed';
@@ -8,16 +8,29 @@ import { NavLink } from 'react-router-dom'
 import './list/list.scss';
 import '../app/details/appDetails/appDetails.scss';
 import './charts.css';
+import { RedirectWithSentry } from '../common/navigation/NavigationRoutes';
+import { ErrorBoundary, AppContext } from '../common';
+import { useRouteMatch, useHistory, useLocation } from 'react-router';
+import { EnvType } from '../v2/appDetails/appDetails.type';
 
-export default function Charts() {
+const V2Details = lazy(() => import('../v2/index'));
+// const AppDetailsComponent = lazy(() => import('../v2/appDetails/AppDetails.component'));
+
+
+export default function Charts({ isV2 }) {
+    const { path } = useRouteMatch()
+
     return <Switch>
-        <Route path={`${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-        <Route path={`${URLS.CHARTS}/discover`} component={DiscoverCharts} />
-        <Redirect to={`${URLS.CHARTS}/discover`} />
+        {isV2 ?
+            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} /> :
+            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
+        }
+        <Route path={`${path}/discover`} component={DiscoverCharts} />
+        <Redirect to={`${path}/discover`} />
     </Switch>
 }
 
-export function GenericChartsHeader({ children=null }) {
+export function GenericChartsHeader({ children = null }) {
     return (
         <div className="page-header page-header--tabs">
             {children}
@@ -34,15 +47,15 @@ export function ChartDetailNavigator() {
     )
 }
 
-export function HeaderTitle({ children=null }) {
+export function HeaderTitle({ children = null }) {
     return <h1 className="page-header__title flex left">{children}</h1>
 }
 
-export function HeaderSubtitle({ children=null }) {
+export function HeaderSubtitle({ children = null }) {
     return <div className="subtitle">{children}</div>
 }
 
-export function HeaderButtonGroup({ children=null }) {
+export function HeaderButtonGroup({ children = null }) {
     return <div className="page-header__cta-container flex right">
         {children}
     </div>

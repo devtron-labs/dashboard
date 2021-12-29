@@ -96,8 +96,8 @@ a:focus {
     grid-template-rows: 1fr;
     background-color: var(--N000);
     color: var(--N900);
-    box-shadow: 0 4px 8px -2px rgba(0, 56, 112, 0.2);
     z-index: var(--page-header-index);
+    border-bottom: 1px solid var(--N200);
 }
 
 .page-header--tabs {
@@ -1604,7 +1604,14 @@ button.anchor {
 }
 
 .border-bottom{
-    border-bottom: solid 1px var(--N200);
+    border-bottom: solid 2px var(--N200);
+}
+
+.border-right{
+    border-right: solid 1px var(--N200);
+}
+.border-left{
+    border-left: solid 1px var(--N200);
 }
 
 .box-shadow{
@@ -1628,4 +1635,12 @@ button.anchor {
     font-weight: 600;
     color: var(--n-900);
     line-height: 1.5;
+}
+
+.lh-20{
+   line-height: 20px;
+}
+
+.pl-16{
+    padding-left: 16px !important;
 }
