@@ -74,7 +74,7 @@ const AppDetailsStore = {
 
         return true;
     },
-    removeAppDetailsTab: (tabName: string) => {
+    removeAppDetailsTab: (tabUrl: string) => {
         let _applicationObjectTabs = []
 
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
@@ -82,7 +82,7 @@ const AppDetailsStore = {
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = index === 0
-            if (tab.name.toLowerCase() !== tabName.toLowerCase()) {
+            if (tab.url !== tabUrl) {
                 _applicationObjectTabs.push(tab)
             }
         }

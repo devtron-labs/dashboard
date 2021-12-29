@@ -42,9 +42,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             fontFamily: 'Inconsolata',
             screenReaderMode: true,
             theme: {
-                background: '#ffffff',
-                foreground: '#000a14',
-                selection: '#0066cc4d',
+                background: '#0B0F22',
+                foreground: '#FFFFFF'
             }
         })
 
