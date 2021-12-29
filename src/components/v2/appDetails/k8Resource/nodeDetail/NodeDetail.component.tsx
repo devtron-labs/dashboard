@@ -31,19 +31,20 @@ function NodeDetailComponent() {
 
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = AppDetailsStore.markAppDetailsTabActive(_tabName, _url)
+        const isTabFound = AppDetailsStore.markAppDetailsTabActive(_url, url)
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _url = url + '/' + _tabName
+                let _urlToCreate = url + '/' + _tabName.toLowerCase()
 
                 const query = new URLSearchParams(window.location.search)
 
                 if(query.get('container')){
-                    _url = _url + "?container=" + query.get('container')
+                    _urlToCreate = _urlToCreate + "?container=" + query.get('container')
                 }
 
-                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _url)
+                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
+                
                 setSelectedTabName(_tabName)
             }, 500);
         }else{

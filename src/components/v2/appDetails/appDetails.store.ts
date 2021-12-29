@@ -89,7 +89,7 @@ const AppDetailsStore = {
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
-    markAppDetailsTabActive: (tabName: string, url: string) => {
+    markAppDetailsTabActive: (url: string, parentUrl?: string) => {
         let idTabFound = false
 
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
@@ -99,6 +99,9 @@ const AppDetailsStore = {
             tab.isSelected = false
             if (tab.url === url) {
                 tab.isSelected = true
+                idTabFound = true
+            }else if(tab.url.indexOf(parentUrl) > 0){
+                tab.url = url 
                 idTabFound = true
             }
         }
