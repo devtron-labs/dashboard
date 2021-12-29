@@ -78,7 +78,7 @@
             width: 100%;
             padding: 0 0 0 20px;
             overflow: hidden;
-            background-color: var(--white);
+            background-color: #000;
             &:focus {
                 outline: none;
             }
@@ -96,39 +96,6 @@
 
                 .content {
                     padding-right: 16px;
-                }
-            }
-        }
-    }
-
-    .pod-readyState {
-        &.pod-readyState--bottom {
-            background: var(--white);
-        }
-    }
-
-    .element-scroller {
-        box-shadow: 0 4px 8px -2px rgba(60, 60, 60, 0.5);
-        border: 1px solid var(--N200);
-
-        button {
-            background: #f7fafc;
-
-            &:first-of-type {
-                border-bottom: 1px solid #000a1433;
-            }
-
-            &:last-of-type {
-                border-top: 1px solid #000a140d;
-            }
-
-            svg {
-                width: 24px;
-                height: 24px;
-
-                path {
-                    fill: var(--N800);
-                    stroke: var(--N800);
                 }
             }
         }

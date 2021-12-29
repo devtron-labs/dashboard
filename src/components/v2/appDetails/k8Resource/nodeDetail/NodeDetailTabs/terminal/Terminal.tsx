@@ -43,9 +43,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             screenReaderMode: true,
             theme: {
                 background: '#0B0F22',
-                foreground: '#FFFFFF'
-            }
-        })
+                foreground: '#FFFFFF',
+            },
+        });
 
         fitAddon = new FitAddon();
         const webFontAddon = new XtermWebfont();
@@ -258,13 +258,15 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         <div className="terminal-view">
             <div
                 style={{ zIndex: 4, textTransform: 'capitalize' }}
-                className=
-                {
-                    `${terminalViewProps.socketConnection !== 'CONNECTED'
-                    ? `${terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'} pod-readyState--show`
-                    : ''
-                    } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 w-100 pod-readyState pod-readyState--top`
-                    }
+                className={`${
+                    terminalViewProps.socketConnection !== 'CONNECTED'
+                        ? `${
+                              terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'
+                          } pod-readyState--show`
+                        : ''
+                } ${
+                    terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'
+                } m-0 w-100 pod-readyState pod-readyState--top`}
             >
                 <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
                     {terminalViewProps.socketConnection?.toLowerCase()}
@@ -275,8 +277,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         <button
                             type="button"
                             onClick={(e) => {
-                                console.log("Resume clicked")
-                                e.stopPropagation()
+                                console.log('Resume clicked');
+                                e.stopPropagation();
                                 terminalViewProps.setSocketConnection('CONNECTING');
                                 setIsReconnection(true);
                             }}
