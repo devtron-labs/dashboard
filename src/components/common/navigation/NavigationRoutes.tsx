@@ -12,6 +12,7 @@ import { showError } from '../helpers/Helpers';
 import Reload from '../../Reload/Reload';
 
 const Charts = lazy(() => import('../../charts/Charts'));
+const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const NewAppList = lazy(() => import('../../app/list-new/AppList'));
 const V2Details = lazy(() => import('../../v2/index'));
@@ -63,7 +64,7 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    
+
     useEffect(() => {
         async function getServerMode() {
             try {
@@ -103,6 +104,7 @@ export default function NavigationRoutes() {
 
                               <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
                               <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
+                              <Route path={`${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps/>} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                               <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />

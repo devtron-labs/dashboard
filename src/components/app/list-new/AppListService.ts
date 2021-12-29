@@ -20,7 +20,9 @@ interface AppsListResult {
 export interface HelmApp {
     appName: string,
     appId: string,
+    isExternal : boolean,
     chartName: string,
+    chartVersion: string,
     chartAvatar: string,
     projectId: number,
     lastDeployedAt: string,

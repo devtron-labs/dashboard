@@ -110,7 +110,8 @@ export const Routes = {
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
-    APP_VERSION: '/version'
+    APP_VERSION: '/version',
+    HELM_RELEASE_INFO_API: 'application/release-info'
 };
 
 export const ViewType = {

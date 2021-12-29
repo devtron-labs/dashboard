@@ -12,7 +12,8 @@ export enum APIEnvType {
 
 export enum EnvType {
     CHART = 'helm_charts',
-    APPLICATION = 'apps'
+    APPLICATION = 'apps',
+    EXTERNAL_HELM_APPS = 'external_helm_app'
 }
 
 export interface EnvDetails {
