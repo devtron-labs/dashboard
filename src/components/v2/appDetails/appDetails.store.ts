@@ -100,7 +100,7 @@ const AppDetailsStore = {
             if (tab.url === url) {
                 tab.isSelected = true
                 idTabFound = true
-            }else if(tab.url.indexOf(parentUrl) > 0){
+            }else if(tab.url.indexOf(parentUrl) > -1){
                 tab.url = url 
                 idTabFound = true
             }
