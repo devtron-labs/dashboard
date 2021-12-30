@@ -17,7 +17,7 @@ import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
-import { useEventSource } from '../../common';
+import { Progressing, useEventSource } from '../../common';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -26,6 +26,7 @@ const AppDetailsComponent = () => {
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
+    const [loading, setLoading] = useState(false);
     const history = useHistory();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
@@ -52,6 +53,19 @@ const AppDetailsComponent = () => {
         }, 1);
     };
 
+    const EmptyAppDetail = () => {
+        return (
+            <div className="bcn-0 flex column fs-14 fw-6" style={{ height: 'calc(100vh - 80px)', width: '100vw' }}>
+                <span style={{ width: '24px', height: '24px' }}>
+                    <Progressing />
+                </span>
+                <div>The deployment is in progress.</div>
+                <div> Please wait…</div>
+            </div>
+        );
+    };
+
+
     return (
         <div>
             <div>
@@ -62,6 +76,7 @@ const AppDetailsComponent = () => {
             <SyncErrorComponent appStreamData={streamData} />
 
             <div className="resource-tree-wrapper flexbox pl-20 pr-20">
+                x
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
