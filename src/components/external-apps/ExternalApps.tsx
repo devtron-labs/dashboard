@@ -5,6 +5,7 @@ import EAHeaderComponent from '../v2/headers/EAHeader.component';
 import { Progressing } from '../common';
 import { URLS } from '../../config';
 import ExternalAppValues from '../v2/values/ea/EAValues.component';
+import ExternalAppDeploymentHistory from '../v2/deployment-history/ea/EADeploymentHistory.component';
 
 export default function ExternalApps() {
     const params = useParams<{ appId: string; appName: string; }>();
@@ -22,6 +23,7 @@ export default function ExternalApps() {
                 </Switch>*/}
                 <Switch>
                     <Route path={`${path}/${URLS.APP_VALUES}`} render={() => <ExternalAppValues appId={params.appId} />} />
+                    <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`} render={() => <ExternalAppDeploymentHistory appId={params.appId} />} />
                     <Redirect to={`${path}/${URLS.APP_VALUES}`} />
                 </Switch>
             </Suspense>
