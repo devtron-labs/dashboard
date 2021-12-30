@@ -1,12 +1,30 @@
-
-import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react'
-import { showError, Progressing, mapByKey, removeItemsFromArray, validateEmail, Option, ClearIndicator, MultiValueRemove, multiSelectStyles, DeleteDialog, MultiValueChipContainer } from '../common'
+import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
+import {
+    showError,
+    Progressing,
+    mapByKey,
+    removeItemsFromArray,
+    validateEmail,
+    Option,
+    ClearIndicator,
+    MultiValueRemove,
+    multiSelectStyles,
+    DeleteDialog,
+    MultiValueChipContainer,
+} from '../common';
 import { saveUser, deleteUser } from './userGroup.service';
-import Creatable from 'react-select/creatable'
+import Creatable from 'react-select/creatable';
 import Select from 'react-select';
-import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, EntityTypes, ActionTypes, CreateUser, OptionType } from './userGroups.types'
-import { toast } from 'react-toastify'
-import { useUserGroupContext, GroupRow } from './UserGroup'
+import {
+    DirectPermissionsRoleFilter,
+    ChartGroupPermissionsFilter,
+    EntityTypes,
+    ActionTypes,
+    CreateUser,
+    OptionType,
+} from './userGroups.types';
+import { toast } from 'react-toastify';
+import { useUserGroupContext, GroupRow } from './UserGroup';
 import './UserGroup.scss';
 import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
@@ -14,7 +32,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
-        return ({
+        return {
             ...base,
             border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
             borderRadius: `4px`,
@@ -23,7 +41,7 @@ const CreatableChipStyle = {
             margin: '8px 8px 4px 0px',
             paddingLeft: '4px',
             fontSize: '12px',
-        })
+        };
     },
     control: (base, state) => ({
         ...base,
@@ -31,68 +49,86 @@ const CreatableChipStyle = {
         boxShadow: 'none', // no box-shadow
     }),
     indicatorsContainer: () => ({
-        height: '38px'
-    })
-}
+        height: '38px',
+    }),
+};
 
-export default function UserForm({ id = null, userData = null, index, updateCallback, deleteCallback, createCallback, cancelCallback }) {
+export default function UserForm({
+    id = null,
+    userData = null,
+    index,
+    updateCallback,
+    deleteCallback,
+    createCallback,
+    cancelCallback,
+}) {
     // id null is for create
-    const {serverMode} = useContext(mainContext);
-    const { userGroupsList, superAdmin } = useUserGroupContext()
-    const userGroupsMap = mapByKey(userGroupsList, 'name')
-    const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false)
-    const [emailState, setEmailState] = useState<{ emails: OptionType[], inputEmailValue: string, emailError: string }>({ emails: [], inputEmailValue: '', emailError: '' })
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({ entity: EntityTypes.CHART_GROUP, action: ActionTypes.VIEW, entityName: [] })
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [submitting, setSubmitting] = useState(false)
-    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
-    const creatableRef = useRef(null)
-    const groupPermissionsRef = useRef(null)
-
+    const { serverMode } = useContext(mainContext);
+    const { userGroupsList, superAdmin } = useUserGroupContext();
+    const userGroupsMap = mapByKey(userGroupsList, 'name');
+    const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false);
+    const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
+        { emails: [], inputEmailValue: '', emailError: '' },
+    );
+    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([]);
+    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
+        entity: EntityTypes.CHART_GROUP,
+        action: ActionTypes.VIEW,
+        entityName: [],
+    });
+    const [userGroups, setUserGroups] = useState<OptionType[]>([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+    const creatableRef = useRef(null);
+    const groupPermissionsRef = useRef(null);
 
     useEffect(() => {
         if (creatableRef.current) {
-            creatableRef.current.focus()
+            creatableRef.current.focus();
+        } else if (groupPermissionsRef.current) {
+            groupPermissionsRef.current.focus();
         }
-        else if (groupPermissionsRef.current) {
-            groupPermissionsRef.current.focus()
-        }
-    }, [])
+    }, []);
 
     function validateForm(): boolean {
         if (emailState.emails.length === 0) {
-            setEmailState(emailState => ({ ...emailState, emailError: 'Emails are mandatory.' }))
-            return false
+            setEmailState((emailState) => ({ ...emailState, emailError: 'Emails are mandatory.' }));
+            return false;
         }
 
-        if (emailState.emails.length !== emailState.emails.map(email => email.value).filter(email => validateEmail(email)).length) {
-            setEmailState(emailState => ({ ...emailState, emailError: 'One or more emails could not be verified to be correct.' }))
-            return false
+        if (
+            emailState.emails.length !==
+            emailState.emails.map((email) => email.value).filter((email) => validateEmail(email)).length
+        ) {
+            setEmailState((emailState) => ({
+                ...emailState,
+                emailError: 'One or more emails could not be verified to be correct.',
+            }));
+            return false;
         }
-        return true
+        return true;
     }
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true
+        let isComplete: boolean = true;
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
-                isComplete = false
-                curr.entityNameError = 'Applications are mandatory'
+                isComplete = false;
+                curr.entityNameError = 'Applications are mandatory';
             }
             if (curr.team && curr.environment.length === 0) {
-                isComplete = false
-                curr.environmentError = 'Environments are mandatory'
+                isComplete = false;
+                curr.environmentError = 'Environments are mandatory';
             }
-            agg.push(curr)
-            return agg
-        }, [])
+            agg.push(curr);
+            return agg;
+        }, []);
 
         if (!isComplete) {
-            setDirectPermission(tempPermissions)
+            setDirectPermission(tempPermissions);
         }
 
-        return isComplete
+        return isComplete;
     }
 
     function getSelectedEnvironments(permission) {
@@ -117,31 +153,36 @@ export default function UserForm({ id = null, userData = null, index, updateCall
     }
 
     async function handleSubmit(e) {
-        const validForm = validateForm()
+        const validForm = validateForm();
         if (!validForm) {
-            return
+            return;
         }
         if (!isFormComplete()) {
-            return
+            return;
         }
-        setSubmitting(true)
+        setSubmitting(true);
         const payload: CreateUser = {
             id: id || 0,
-            email_id: emailState.emails.map(email => email.value).join(","),
-            groups: userGroups.map(group => group.value),
+            email_id: emailState.emails.map((email) => email.value).join(','),
+            groups: userGroups.map((group) => group.value),
             roleFilters: [
                 ...directPermission
-                    .filter(permission => (permission.team?.value && permission.environment.length && permission.entityName.length))
-                    .map(permission => ({
+                    .filter(
+                        (permission) =>
+                            permission.team?.value && permission.environment.length && permission.entityName.length,
+                    )
+                    .map((permission) => ({
                         ...permission,
                         action: permission.action.value,
                         team: permission.team.value,
                         environment: getSelectedEnvironments(permission),
-                        entityName: permission.entityName.find(entity => entity.value === '*') ? '' : permission.entityName.map(entity => entity.value).join(",")
+                        entityName: permission.entityName.find((entity) => entity.value === '*')
+                            ? ''
+                            : permission.entityName.map((entity) => entity.value).join(','),
                     })),
             ],
-            superAdmin: localSuperAdmin
-        }
+            superAdmin: localSuperAdmin,
+        };
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
                 ...chartPermission,
@@ -151,115 +192,124 @@ export default function UserForm({ id = null, userData = null, index, updateCall
             });
         }
         try {
-            const { result } = await saveUser(payload)
+            const { result } = await saveUser(payload);
             if (id) {
-                updateCallback(index, result)
+                updateCallback(index, result);
                 toast.success('User updated');
-            }
-            else {
-                createCallback(result)
+            } else {
+                createCallback(result);
                 toast.success('User created');
             }
-        }
-        catch (err) {
-            showError(err)
-        }
-        finally {
-            setSubmitting(false)
+        } catch (err) {
+            showError(err);
+        } finally {
+            setSubmitting(false);
         }
     }
 
     useEffect(() => {
-      userData && populateDataFromAPI(userData)
-    }, [userData])
+        userData && populateDataFromAPI(userData);
+    }, [userData]);
 
     async function populateDataFromAPI(data: CreateUser) {
         const { email_id, groups = [], superAdmin } = data;
-        setUserGroups(groups?.map(group => ({ label: group, value: group })) || [])
-        setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' })
+        setUserGroups(groups?.map((group) => ({ label: group, value: group })) || []);
+        setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' });
         if (superAdmin) {
-            setSuperAdmin(superAdmin)
+            setSuperAdmin(superAdmin);
         }
     }
 
     function handleInputChange(inputEmailValue) {
-        setEmailState(emailState => ({ ...emailState, inputEmailValue, emailError: '' }))
+        setEmailState((emailState) => ({ ...emailState, inputEmailValue, emailError: '' }));
     }
 
     function handleEmailChange(newValue: any, actionMeta: any) {
-        setEmailState(emailState => ({ ...emailState, emails: newValue || [], emailError: '' }))
-    };
+        setEmailState((emailState) => ({ ...emailState, emails: newValue || [], emailError: '' }));
+    }
 
     const createOption = (label: string) => ({
         label,
         value: label,
     });
 
-    const handleKeyDown = useCallback((event) => {
-        let { emails, inputEmailValue } = emailState;
-        inputEmailValue = inputEmailValue.trim();
-        switch (event.key) {
-            case 'Enter':
-            case 'Tab':
-            case ',':
-            case ' ': // space
-                if (inputEmailValue) {
-                    let newEmails = inputEmailValue.split(',').map((e) => { e = e.trim(); return createOption(e) });
-                    setEmailState({
-                        inputEmailValue: '',
-                        emails: [...emails, ...newEmails],
-                        emailError: '',
-                    });
-                }
-                if (event.key !== 'Tab') {
-                    event.preventDefault();
-                }
-                break;
-        }
-    }, [emailState])
+    const handleKeyDown = useCallback(
+        (event) => {
+            let { emails, inputEmailValue } = emailState;
+            inputEmailValue = inputEmailValue.trim();
+            switch (event.key) {
+                case 'Enter':
+                case 'Tab':
+                case ',':
+                case ' ': // space
+                    if (inputEmailValue) {
+                        let newEmails = inputEmailValue.split(',').map((e) => {
+                            e = e.trim();
+                            return createOption(e);
+                        });
+                        setEmailState({
+                            inputEmailValue: '',
+                            emails: [...emails, ...newEmails],
+                            emailError: '',
+                        });
+                    }
+                    if (event.key !== 'Tab') {
+                        event.preventDefault();
+                    }
+                    break;
+            }
+        },
+        [emailState],
+    );
 
     async function handleDelete() {
-        setSubmitting(true)
+        setSubmitting(true);
         try {
-            await deleteUser(id)
-            deleteCallback(index)
-            toast.success('User deleted')
-        }
-        catch (err) {
-            showError(err)
-        }
-        finally {
-            setSubmitting(false)
+            await deleteUser(id);
+            deleteCallback(index);
+            toast.success('User deleted');
+        } catch (err) {
+            showError(err);
+        } finally {
+            setSubmitting(false);
         }
     }
 
     function formatChartGroupOptionLabel({ value, label }) {
-        return <div className="flex left column"><span>{label}</span><small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small></div>
+        return (
+            <div className="flex left column">
+                <span>{label}</span>
+                <small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small>
+            </div>
+        );
     }
 
     function handleCreatableBlur(e) {
-        let { emails, inputEmailValue } = emailState
-        inputEmailValue = inputEmailValue.trim()
-        if (!inputEmailValue) return
+        let { emails, inputEmailValue } = emailState;
+        inputEmailValue = inputEmailValue.trim();
+        if (!inputEmailValue) return;
         setEmailState({
             inputEmailValue: '',
             emails: [...emails, createOption(e.target.value)],
             emailError: '',
         });
-    };
+    }
 
-    const CreatableComponents = useMemo(() => ({
-        DropdownIndicator: () => null,
-        ClearIndicator,
-        MultiValueRemove,
-        MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
-        IndicatorSeparator: () => null,
-        Menu: () => null
-    }), [])
+    const CreatableComponents = useMemo(
+        () => ({
+            DropdownIndicator: () => null,
+            ClearIndicator,
+            MultiValueRemove,
+            MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
+            IndicatorSeparator: () => null,
+            Menu: () => null,
+        }),
+        [],
+    );
 
-    const creatableOptions = useMemo(() => ([]), [])
+    const creatableOptions = useMemo(() => [], []);
 
-    const availableGroups = userGroupsList?.map(group => ({ value: group.name, label: group.name }))
+    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }));
 
     return (
         <div className="user-form">
@@ -297,7 +347,9 @@ export default function UserForm({ id = null, userData = null, index, updateCall
                         value={userGroups}
                         ref={groupPermissionsRef}
                         components={{
-                            MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
+                            MultiValueContainer: ({ ...props }) => (
+                                <MultiValueChipContainer {...props} validator={null} />
+                            ),
                             DropdownIndicator: null,
                             ClearIndicator,
                             MultiValueRemove,
@@ -388,7 +440,7 @@ export default function UserForm({ id = null, userData = null, index, updateCall
 
 const SuperAdmin: React.FC<{
     superAdmin: boolean;
-    setSuperAdmin: (checked: boolean) => any
+    setSuperAdmin: (checked: boolean) => any;
 }> = ({ superAdmin, setSuperAdmin }) => {
     return (
         <div className="flex left column top bcn-1 br-4 p-16 mb-24">
