@@ -720,7 +720,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
 
     useEffect(() => {
         const appOptions = (
-            (permission.team.value !== HELM_APP_UNASSIGNED_PROJECT &&
+            (projectId &&
                 (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(projectId)
                     ?.result) ||
             []
