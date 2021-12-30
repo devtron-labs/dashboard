@@ -104,7 +104,7 @@ export default function AppPermissions({
                     { label: 'All environments', value: '*' },
                     ...environmentsList.map((env) => ({
                         label: env.environment_name,
-                        value: env.environment_name,
+                        value: env.environmentIdentifier,
                     })),
                 ];
             }
@@ -125,10 +125,10 @@ export default function AppPermissions({
                 envClustersList.some((element) => {
                     envMap.size !== 0 &&
                         element.environments.some((env) => {
-                            if (envMap.get(env.environmentName)) {
+                            if (envMap.get(env.environmentIdentifier)) {
                                 returnArr.push({
                                     label: env.environmentName,
-                                    value: env.environmentName,
+                                    value: env.environmentIdentifier,
                                     namespace: env.namespace,
                                     clusterName: element.clusterName,
                                 });
@@ -229,7 +229,7 @@ export default function AppPermissions({
             ...defaultValueArr,
             ...selectedCluster['environments']?.map((env) => ({
                 label: env.environmentName,
-                value: env.environmentName,
+                value: env.environmentIdentifier,
                 namespace: env.namespace,
                 clusterName: clusterName,
             })),
@@ -240,7 +240,7 @@ export default function AppPermissions({
         const { action, option, name } = actionMeta;
         const { value, clusterName } = option;
         const startsWithHash = value && value.startsWith('#');
-        if (value.startsWith('*') || startsWithHash) {
+        if ((value && value.startsWith('*')) || startsWithHash) {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 const clusterName = value.substring(1);
                 // uncheck all environments
@@ -265,7 +265,7 @@ export default function AppPermissions({
                         { label: 'All environments', value: '*' },
                         ...environmentsList.map((env) => ({
                             label: env.environment_name,
-                            value: env.environment_name,
+                            value: env.environmentIdentifier,
                         })),
                     ];
                     tempPermissions[index]['environmentError'] = null;

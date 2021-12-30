@@ -686,7 +686,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     useEffect(() => {
         const envOptions = environmentsList?.map((env) => ({
             label: env.environment_name,
-            value: env.environment_name,
+            value: env.environmentIdentifier,
         }));
         setEnvironments(envOptions);
     }, [environmentsList]);
@@ -709,7 +709,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 },
                 ...cluster.environments?.map((env) => ({
                     label: env.environmentName,
-                    value: env.environmentName,
+                    value: env.environmentIdentifier,
                     namespace: env.namespace,
                     clusterName: cluster.clusterName,
                 })),
@@ -770,7 +770,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             <div
                 className={
                     'flex left column ' +
-                    ((option.value.startsWith('#') || option.value.startsWith('*')) && 'cluster-label-all')
+                    (option.value && (option.value.startsWith('#') || option.value.startsWith('*')) && 'cluster-label-all')
                 }
             >
                 <span>{option.label}</span>
@@ -1150,7 +1150,7 @@ const ValueContainer = (props) => {
 };
 
 const clusterValueContainer = (props) => {
-    let length = props.getValue().filter((opt) => !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
+    let length = props.getValue().filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
     let count = '';
     let totalEnv = props.options.reduce((len, cluster) => {
         len += cluster.options.length - 2;
