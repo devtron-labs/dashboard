@@ -79,7 +79,7 @@ function EventsComponent({ selectedTab }) {
                 </React.Fragment>
             }
 
-            {(pods.length === 0) && <MessageUI msg='Select a pod to view events' icon={MsgUIType.POD} />}
+            {(pods.length === 0) && <MessageUI msg='Events not available' />}
         </div>
     )
 }

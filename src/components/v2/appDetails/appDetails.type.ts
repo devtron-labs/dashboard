@@ -1,24 +1,24 @@
-import { iLink } from "../utils/tabUtils/link.type";
+import { iLink } from '../utils/tabUtils/link.type';
 
 export interface ApplicationObject extends iLink {
-    selectedNode: string
-    title: string
+    selectedNode: string;
+    title: string;
 }
 
 export enum APIEnvType {
     CHART = 'chart',
-    APPLICATION = 'apps'
+    APPLICATION = 'apps',
 }
 
 export enum EnvType {
     CHART = 'helm_charts',
-    APPLICATION = 'apps'
+    APPLICATION = 'apps',
 }
 
 export interface EnvDetails {
-    envType: EnvType,
-    envId: number,
-    appId: number
+    envType: EnvType;
+    envId: number;
+    appId: number;
 }
 
 export enum AggregationKeys {
@@ -28,7 +28,7 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     CustomResource = 'Custom Resource',
-    Other = 'Other'
+    Other = 'Other',
 }
 
 export enum NodeType {
@@ -61,12 +61,11 @@ export enum NodeType {
     Rollout = 'Rollout',
     PersistentVolumeClaim = 'PersistentVolumeClaim',
     PersistentVolume = 'PersistentVolume',
-    Containers = 'Containers',// containers are being treated same way as nodes for nested table generation
-    InitContainers = 'InitContainers'
+    Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
+    InitContainers = 'InitContainers',
 }
 
 // export type NodeType = keyof typeof NodeType;
-
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType.toLowerCase()) {
@@ -107,27 +106,25 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
     }
 }
 
-
-
 export interface AppDetails {
-    appId: number
-    appName: string
-    appStoreAppName: string
-    appStoreAppVersion: string
-    appStoreChartId: number
-    appStoreChartName: string
-    appStoreInstalledAppVersionId: number
-    ciArtifactId: number
-    deprecated: false
-    environmentId: number
-    environmentName: string
-    installedAppId: number
-    instanceDetail: null
-    k8sVersion: string
-    lastDeployedBy: string
-    lastDeployedTime: string
-    namespace: string
-    resourceTree: ResourceTree
+    appId: number;
+    appName: string;
+    appStoreAppName: string;
+    appStoreAppVersion: string;
+    appStoreChartId: number;
+    appStoreChartName: string;
+    appStoreInstalledAppVersionId: number;
+    ciArtifactId: number;
+    deprecated: false;
+    environmentId: number;
+    environmentName: string;
+    installedAppId: number;
+    instanceDetail: null;
+    k8sVersion: string;
+    lastDeployedBy: string;
+    lastDeployedTime: string;
+    namespace: string;
+    resourceTree: ResourceTree;
     materialInfo: MaterialInfo[];
     releaseVersion: string;
     dataSource: string;
@@ -143,7 +140,7 @@ interface MaterialInfo {
     modifiedTime: string;
     revision: string;
     url: string;
-    webhookData: string
+    webhookData: string;
 }
 
 interface OtherEnvironment {
@@ -154,64 +151,169 @@ interface OtherEnvironment {
     prod: boolean;
 }
 
-
 export interface ResourceTree {
-    conditions: any
-    newGenerationReplicaSet: string
-    nodes: Array<Node>
-    podMetadata: Array<PodMetaData>
-    status: string
+    conditions: any;
+    newGenerationReplicaSet: string;
+    nodes: Array<Node>;
+    podMetadata: Array<PodMetaData>;
+    status: string;
 }
 
 export interface PodMetaData {
-    containers: Array<string>
-    initContainers: any
-    isNew: boolean
-    name: string
-    uid: string
+    containers: Array<string>;
+    initContainers: any;
+    isNew: boolean;
+    name: string;
+    uid: string;
 }
 
 export interface Info {
-    value: string,
+    value: string;
     name: string;
 }
 export interface Node {
-    health: Health
-    kind: NodeType
-    name: string
-    namespace: string
-    networkingInfo: NetworkingInfo
-    resourceVersion: string
-    uid: string
-    version: string,
-    parentRefs: Array<Node>
+    health: Health;
+    kind: NodeType;
+    name: string;
+    namespace: string;
+    networkingInfo: NetworkingInfo;
+    resourceVersion: string;
+    uid: string;
+    version: string;
+    parentRefs: Array<Node>;
     group: string;
-    isSelected: boolean
-    info: Info[]
+    isSelected: boolean;
+    info: Info[];
 }
 
 export interface Health {
-    status: string
+    status: string;
 }
 
 export interface NetworkingInfo {
-    targetLabels: TargetLabels
+    targetLabels: TargetLabels;
 }
 
 export interface TargetLabels {
-    targetLabel: TargetLabel
+    targetLabel: TargetLabel;
 }
 
 export interface TargetLabel {
-    "app.kubernetes.io/instance": string
-    "app.kubernetes.io/name": string
+    'app.kubernetes.io/instance': string;
+    'app.kubernetes.io/name': string;
 }
 
-export interface iNodes extends Array<iNode> { }
+export interface iNodes extends Array<iNode> {}
 
 export interface iNode extends Node {
     childNodes: iNodes;
     type: NodeType;
-    isSelected: boolean
-    status: string
+    isSelected: boolean;
+    status: string;
+}
+
+export interface AppStreamData {
+    result: {
+        type: string;
+        application: Application;
+    };
+}
+
+export interface Application {
+    metadata: {
+        name: string;
+        namespace: string;
+        selfLink: string;
+        uid: string;
+        resourceVersion: string;
+        generation: number;
+        creationTimestamp: Date;
+        deletionTimestamp?: string;
+    };
+    spec: {
+        source: Source;
+        destination: Destination;
+        project: string;
+        syncPolicy: {
+            automated: {
+                prune: boolean;
+            };
+        };
+    };
+    status: {
+        resources: Resource[];
+        sync: Sync;
+        health: Health;
+        history: {
+            revision: string;
+            deployedAt: Date;
+            id: number;
+            source: Source;
+        }[];
+        reconciledAt: Date;
+        operationState: {
+            operation: {
+                sync: Sync;
+            };
+            phase: string;
+            message: string;
+            syncResult: {
+                resources: Resource[];
+                revision: string;
+                source: Source;
+            };
+            startedAt: Date;
+            finishedAt: Date;
+        };
+        observedAt: Date;
+        sourceType: string;
+        summary: {
+            externalURLs: string[];
+            images: string[];
+        };
+        conditions?: {
+            type: string;
+            message: string;
+            lastTransitionTime?: string;
+        }[];
+    };
+    operation?: any;
+}
+
+interface Source {
+    repoURL: string;
+    path: string;
+    targetRevision: string;
+    helm: {
+        valueFiles?: string[];
+        status?: string;
+    };
+    chart?: any;
+}
+
+interface Resource {
+    group: string;
+    version: string;
+    kind: string;
+    namespace: string;
+    name: string;
+    status: string;
+    message: string;
+    hookPhase: string;
+    syncPhase: string;
+    health?: Health;
+}
+
+interface Destination {
+    server: string;
+    namespace: string;
+}
+
+interface Sync {
+    status?: string;
+    comparedTo?: {
+        source: Source;
+        destination: Destination;
+    };
+    revision: string;
 }

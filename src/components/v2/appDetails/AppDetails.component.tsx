@@ -10,12 +10,14 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, NodeType } from './appDetails.type';
+import { ApplicationObject, AppStreamData, NodeType } from './appDetails.type';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
+import SyncErrorComponent from './SyncError.component';
+import { useEventSource } from '../../common';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -25,6 +27,16 @@ const AppDetailsComponent = () => {
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
     const history = useHistory();
+    const [streamData, setStreamData] = useState<AppStreamData>(null);
+    const appDetails = IndexStore.getAppDetails();
+    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+
+    const syncSSE = useEventSource(
+        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
+        [params.appId, params.envId],
+        !!appDetails?.appName && !!appDetails?.environmentName,
+        (event) => setStreamData(JSON.parse(event.data)),
+    );
 
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod);
@@ -42,15 +54,14 @@ const AppDetailsComponent = () => {
 
     return (
         <div>
-            <div className='bcn-1'>
+            <div>
                 <EnvironmentSelectorComponent />
                 <EnvironmentStatusComponent />
             </div>
 
-            {/*<------- TODO : Error display on app detail -----> */}
-            {/* <SyncError appStreamData={streamData} /> */}
+            <SyncErrorComponent appStreamData={streamData} />
 
-            <div className="resource-tree-wrapper bcn-1 flexbox pl-20 pr-20 pt-16">
+            <div className="resource-tree-wrapper flexbox pl-20 pr-20">
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
@@ -112,12 +123,12 @@ const AppDetailsComponent = () => {
 
                                             {tab.name !== AppDetailsTabs.log_analyzer &&
                                                 tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                    <span className="resource-tab__close-wrapper flex br-5">
+                                                    <div className="resource-tab__close-wrapper flex br-5">
                                                         <Cross
                                                             onClick={(e) => handleCloseTab(e, tab.url)}
                                                             className="icon-dim-16 cursor"
                                                         />
-                                                    </span>
+                                                    </div>
                                                 )}
                                         </div>
                                         <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>

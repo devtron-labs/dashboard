@@ -1,6 +1,3 @@
-.main{
-    background-color: white;
-}
 .resource-tree-wrapper{
     box-shadow: inset 0 -1px 0 0 var(--N200);
 }
@@ -20,18 +17,19 @@
     background-color: var(--N200);
 }
 
-    .resource-tab__close-wrapper:hover{
-        background-color: var(--N500);
-        
-        svg path{
-            fill: white;
-        }
-     }
 
 .resource-tab__close-wrapper{
     width: 16px;
     height: 16px;
 }
+
+.resource-tab__close-wrapper:hover{
+    background-color: var(--N500);
+    
+    svg path{
+        fill: white;
+    }
+ }
 
 .tab-list {
     list-style: none;

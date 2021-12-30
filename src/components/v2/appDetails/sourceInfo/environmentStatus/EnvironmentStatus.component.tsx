@@ -25,7 +25,7 @@ function EnvironmentStatusComponent() {
 
     return (
         <div>
-            <div className="flex left ml-20">
+            <div className="flex left ml-20 mb-16">
                 {status && (
                     <div className="app-status-card bcn-0 mr-12 br-8 p-16">
                         <div className="lh-1-33 cn-9 flex left">

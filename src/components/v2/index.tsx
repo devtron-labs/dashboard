@@ -12,8 +12,6 @@ import { getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
-import EnvironmentSelectorComponent from './appDetails/sourceInfo/EnvironmentSelector.component';
-import EnvironmentStatusComponent from './appDetails/sourceInfo/environmentStatus/EnvironmentStatus.component';
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
