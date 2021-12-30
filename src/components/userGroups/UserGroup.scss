@@ -140,5 +140,25 @@
   margin-left: -40px;
   position: absolute;
   top: 52px;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid #d0d4d9;
+}
+
+.option-label-padding{
+  padding: 8px 12px 0px 9px !important
+}
+
+.select__group{
+  border-bottom: 1px solid #d0d4d9;
+  .select__group-heading{
+    font-size: 12px;
+    font-weight: 600;
+    color: #596168;
+    text-transform: initial;
+  }
+}
+
+.cluster-label-all{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--n-900);
 }

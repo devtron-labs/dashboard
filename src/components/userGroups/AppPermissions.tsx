@@ -76,7 +76,7 @@ export default function AppPermissions({
     }, [data]);
 
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
-        if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+        if (serverMode !== SERVER_MODE.EA_ONLY && directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
                 { label: 'All applications', value: '*' },
                 ...(
@@ -144,18 +144,7 @@ export default function AppPermissions({
     }
 
     async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
-        const projectsMap = mapByKey(projectsList, 'name');
-        // if (serverMode !== SERVER_MODE.EA_ONLY) {
-        //     const allProjects = roleFilters
-        //         .map((roleFilter) => roleFilter.team)
-        //         .filter((item) => {
-        //             return Boolean(item) && item !== HELM_APP_UNASSIGNED_PROJECT;
-        //         });
-        //     const allProjectIds = allProjects.map((p) => projectsMap.get(p).id);
-        //     const uniqueProjectIds = Array.from(new Set(allProjectIds));
-        //     await fetchAppList(uniqueProjectIds);
-        // }
-
+        const projectsMap = projectsList ? mapByKey(projectsList, 'name') : new Map();
         let foundDevtronApps = false,
             foundHelmApps = false,
             uniqueProjectIdsDevtronApps = [],
@@ -164,7 +153,9 @@ export default function AppPermissions({
             ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
-                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT && projectsMap.get(directRolefilter.team).id;
+                    serverMode !== SERVER_MODE.EA_ONLY &&
+                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
+                    projectsMap.get(directRolefilter.team).id;
                 if (!directRolefilter['accessType']) {
                     directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS;
                 }

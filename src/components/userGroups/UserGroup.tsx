@@ -481,7 +481,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
     const {serverMode} = useContext(mainContext);
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
-    permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
+    permission.team && serverMode !== SERVER_MODE.EA_ONLY && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value).id
             : null;
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER];
@@ -539,8 +539,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
 
     useEffect(() => {
         const appOptions = (
-            (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(projectId)
-                ?.result || []
+            (permission.team.value !== HELM_APP_UNASSIGNED_PROJECT &&
+                (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(projectId)
+                    ?.result) ||
+            []
         )?.map((app) => ({
             label: app.name,
             value: app.name,
@@ -583,7 +585,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
 
     function formatOptionLabelClusterEnv(option) {
         return (
-            <div className="flex left column">
+            <div
+                className={
+                    'flex left column ' +
+                    ((option.value.startsWith('#') || option.value.startsWith('*')) && 'cluster-label-all')
+                }
+            >
                 <span>{option.label}</span>
                 <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
                     {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
@@ -597,7 +604,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({ permission, ha
             <div className="flex left column">
                 <span>{option.label}</span>
                 {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
-                    <><small className="light-color">Apps without an assigned project</small><div className="unassigned-project-border"></div></>
+                    <>
+                        <small className="light-color">Apps without an assigned project</small>
+                        <div className="unassigned-project-border"></div>
+                    </>
                 )}
             </div>
         );
@@ -797,7 +807,7 @@ const AppOption = props => {
                 style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
             />
             <div className="flex left column w-100">
-                <components.Option className="w-100" {...props} />
+                <components.Option className="w-100 option-label-padding" {...props} />
                 {data.value === '*' && (
                     <span className="fs-12 cn-6 ml-8 mb-4 mr-4">Allow access to existing and new apps for this project</span>
                 )}
