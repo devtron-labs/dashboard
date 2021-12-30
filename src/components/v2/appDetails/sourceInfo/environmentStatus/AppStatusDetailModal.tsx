@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { Drawer, VisibleModal } from '../../../../common'
 import TableUtil from '../../../utils/tableUtils/Table.util'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
@@ -15,17 +15,47 @@ import './environmentStatus.scss'
 //     return '';
 // }
 
-function AppStatusDetailModal({close }) {
-
+function AppStatusDetailModal({ close }) {
     const _appDetails = IndexStore.getAppDetails();
-
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || []);
     }, [_appDetails]);
+    const appStatusDetailRef = useRef<HTMLDivElement>(null);
+
+    const escKeyPressHandler = (evt): void => {
+        if (evt && evt.key === 'Escape' && typeof close === 'function') {
+            evt.preventDefault();
+            close();
+        }
+    };
+
+    const outsideClickHandler = (evt): void => {
+        if (
+            appStatusDetailRef.current &&
+            !appStatusDetailRef.current.contains(evt.target) &&
+            typeof close === 'function'
+        ) {
+            close();
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', escKeyPressHandler);
+        return (): void => {
+            document.removeEventListener('keydown', escKeyPressHandler);
+        };
+    }, [escKeyPressHandler]);
+
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler);
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler);
+        };
+    }, [outsideClickHandler]);
 
     return (
         <Drawer position="right" width="50%" >
-                <div className="app-status-detail-modal bcn-0">
+                <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
 
                     <div className="app-status-detail__header box-shadow pb-12 pt-12 mb-20 bcn-0">
                         <div className="title flex content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
