@@ -126,7 +126,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
 
         _externalAppRecievedClusterIds.push(_clusterId);
 
-        let _newExternalAppList = externalAppData.result.helmApps;
+        let _newExternalAppList = externalAppData.result.helmApps || [];
         _newExternalAppList.every(element => element.isExternal = true);
 
         setExternalHelmAppsList([...externalHelmAppsList, ..._newExternalAppList]);
