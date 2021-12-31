@@ -25,7 +25,7 @@ function ExternalAppDeploymentHistory({appId}) {
     useEffect(() => {
         getDeploymentHistory(appId)
             .then((deploymentHistoryResponse: HelmAppDeploymentHistoryResponse) => {
-                setDeploymentHistoryArr(deploymentHistoryResponse.result?.deploymentHistory?.sort((a , b) => b.DeployedAt.seconds - a.DeployedAt.seconds) || []);
+                setDeploymentHistoryArr(deploymentHistoryResponse.result?.deploymentHistory?.sort((a , b) => b.deployedAt.seconds - a.deployedAt.seconds) || []);
                 setIsLoading(false);
             })
             .catch((errors: ServerErrors) => {
@@ -60,7 +60,7 @@ function ExternalAppDeploymentHistory({appId}) {
                             <div className="w-100" style={{ height: '64px', display: 'grid', gridTemplateColumns: '20px 1fr', padding: '12px 0', gridColumnGap: '12px' }}>
                                 <div className="app-summary__icon icon-dim-22 succeeded"></div>
                                 <div className="flex column left ellipsis-right">
-                                    <div className="cn-9 fs-14">{moment(new Date(deployment.DeployedAt.seconds * 1000)).format(Moment12HourFormat)}</div>
+                                    <div className="cn-9 fs-14">{moment(new Date(deployment.deployedAt.seconds * 1000)).format(Moment12HourFormat)}</div>
                                     <div className="flex left cn-7 fs-12">
                                         {deployment.dockerImages &&
                                             <div className="app-commit__hash app-commit__hash--no-bg">
@@ -160,7 +160,7 @@ function ExternalAppDeploymentHistory({appId}) {
                     <div className="cn-9 fs-14 fw-6">Deployed at</div>
                     <div className="flex left">
                         <time className="cn-7 fs-12">
-                            {moment(new Date(deployment.DeployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                            {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
                         {
                             deployment.dockerImages.map((dockerImage, index) => {

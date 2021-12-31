@@ -28,7 +28,7 @@ export interface HelmAppDeploymentDetail {
     manifest: string,
     dockerImages: string[],
     version: number,
-    DeployedAt: DeployedAt
+    deployedAt: DeployedAt
 }
 
 interface DeployedAt {
