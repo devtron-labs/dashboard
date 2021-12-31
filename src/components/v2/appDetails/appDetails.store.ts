@@ -74,19 +74,27 @@ const AppDetailsStore = {
 
         return true;
     },
-    removeAppDetailsTab: (tabUrl: string) => {
+    removeAppDetailsTab: (tabUrl: string): string => {
         let _applicationObjectTabs = [];
 
         const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        let pushURL = '';
+        const pathname = window.location.pathname;
+
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
-            tab.isSelected = index === 0;
+            tab.isSelected = pathname === tab.url || (applicationObjectTabs.length <= 2 && index === 0);
             if (tab.url !== tabUrl) {
                 _applicationObjectTabs.push(tab);
+
+                if (!pushURL) {
+                    pushURL = pathname === tab.url ? tab.url : '';
+                }
             }
         }
 
         applicationObjectTabsSubject.next([..._applicationObjectTabs]);
+        return pushURL;
     },
     markAppDetailsTabActive: (url: string, parentUrl?: string) => {
         let idTabFound = false

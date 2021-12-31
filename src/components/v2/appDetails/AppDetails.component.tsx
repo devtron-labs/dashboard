@@ -47,9 +47,9 @@ const AppDetailsComponent = () => {
 
     const handleCloseTab = (e: any, tabUrl: string) => {
         e.stopPropagation();
-        AppDetailsStore.removeAppDetailsTab(tabUrl);
+        const pushURL = AppDetailsStore.removeAppDetailsTab(tabUrl);
         setTimeout(() => {
-            history.push(url);
+            history.push(pushURL || url);
         }, 1);
     };
 
@@ -75,13 +75,15 @@ const AppDetailsComponent = () => {
             </div>
         );
     };
-    
- 
+
+    const isTabSelected = (tab: ApplicationObject): boolean => {
+        return tab.isSelected || window.location.pathname === tab.url;
+    };
+
     return (
         <div>
-            {console.log(loading, 'loading')}
             {loading ? (
-                  <EmptyAppDetail/>
+                <EmptyAppDetail/>
             ) : (
                 <>
                     <div>
@@ -114,7 +116,7 @@ const AppDetailsComponent = () => {
                                             <div className="flex">
                                                 <div
                                                     className={`${
-                                                        tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                        isTabSelected(tab) ? 'resource-tree-tab bcn-0 cn-9' : ''
                                                     } flex left pl-12 pt-8 pb-8 pr-12 `}
                                                 >
                                                     <NavLink
@@ -122,7 +124,9 @@ const AppDetailsComponent = () => {
                                                         className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                                     >
                                                         <div
-                                                            className={`flex left ${tab.isSelected ? 'fw-6 cn-9' : ''}`}
+                                                            className={`flex left ${
+                                                                isTabSelected(tab) ? 'fw-6 cn-9' : ''
+                                                            }`}
                                                         >
                                                             {tab.title === AppDetailsTabs.log_analyzer ? (
                                                                 <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
@@ -164,7 +168,9 @@ const AppDetailsComponent = () => {
                                                         )}
                                                 </div>
                                                 <div
-                                                    className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}
+                                                    className={` ${
+                                                        !isTabSelected(tab) ? 'resource-tree-tab__border' : ''
+                                                    }`}
                                                 ></div>
                                             </div>
                                         </Tippy>
