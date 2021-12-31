@@ -19,10 +19,10 @@ const SyncErrorComponent: React.FC<{ appStreamData }> = ({ appStreamData }) => {
                     {appStreamData?.result?.application?.status?.conditions?.length} Errors
                 </span>
                 {collapsed && (
-                    <span className="fs-12 cn-9 ml-24">
+                    <span className="fs-12 cn-9 ml-24 w-80 ellipsis-right">
                         {appStreamData?.result?.application?.status?.conditions
                             .map((condition) => condition.type)
-                            .join(',')}
+                            .join(', ')}
                     </span>
                 )}
                 <DropDownIcon
