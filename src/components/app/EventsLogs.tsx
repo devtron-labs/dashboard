@@ -324,7 +324,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
         let pods = getPods();
-        
+
         return pods.map(pod => `${prefix}${Host}/api/v1/applications/${appDetails.appName}-${appDetails.environmentName}/pods/${pod}/logs?container=${containerName}&follow=true&namespace=${appDetails.namespace}&tailLines=500`);
     }
 
@@ -402,7 +402,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
 
     const uniqueKey = nodeName + containerName + logSearchString
     const { length, [length - 1]: highlightString } = logSearchString.split(" ")
-    
+
     const podMessage = "No pods available for selected " + `"${selectedLogsNode}"`;
 
     return (

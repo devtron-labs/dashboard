@@ -37,7 +37,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         }
         return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
-            <span className="artifact__add">Add Git Material</span>
+            <span className="artifact__add">Add Git Repository</span>
         </div>
     }
 
@@ -53,7 +53,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         const sortedProviders = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : this.props.providers;
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
-                {(this.props.material).id ? "Edit Git Material" : "Add Git Material"}
+                {(this.props.material).id ? "Edit Git Repository" : "Add Git Repository"}
                 {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
@@ -156,7 +156,7 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     tabIndex={3}
                     onChange={this.props.handleCheckoutPathCheckbox}
                     rootClassName="fs-14 cn-9 mb-8 flex left ">
-                    <span className="ml-12">Set Checkout Path (*Required If you’re using multiple Git Materials)</span>
+                    <span className="ml-12">Set Checkout Path (*Required If you’re using multiple Git Repositories)</span>
                 </Checkbox>
                 {this.props.isChecked ?
                     <input className="form__input"

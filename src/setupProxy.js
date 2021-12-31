@@ -7,4 +7,10 @@ module.exports = function (app) {
         logLevel: 'info',
         secure: false,
     }))
+    app.use("/grafana", createProxyMiddleware({
+        target: 'http://demo.devtron.info:32080/',
+        changeOrigin: true,
+        logLevel: 'info',
+        secure: false,
+    }))
 }

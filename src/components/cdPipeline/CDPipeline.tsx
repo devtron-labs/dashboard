@@ -25,6 +25,8 @@ import { styles, DropdownIndicator, Option } from './cdpipeline.util';
 import './cdPipeline.css';
 import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog';
+import { ConditionalWrap } from '../common/helpers/Helpers';
+import Tippy from '@tippyjs/react';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -40,6 +42,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     constructor(props) {
         super(props);
+
+
+        const urlParams = new URLSearchParams(this.props.location.search);
+        const parentPipelineType = (urlParams.get('parentPipelineType') ?? '').toLocaleUpperCase().replace('-','_');
+        const parentPipelineId = urlParams.get('parentPipelineId');
         this.state = {
             view: ViewType.LOADING,
             loadingData: false,
@@ -76,6 +83,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 runPreStageInEnv: false,
                 runPostStageInEnv: false,
                 isClusterCdActive: false,
+                parentPipelineId: +parentPipelineId,
+                parentPipelineType: parentPipelineType,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -745,9 +754,19 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderSecondaryButton() {
         if (this.props.match.params.cdPipelineId) {
-            return <button type="button" className="cta cta--workflow delete mr-16"
-                onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
-            </button>
+            let canDeletePipeline = this.props.downstreamNodeSize === 0;
+            let message = this.props.downstreamNodeSize > 0 ? "This Pipeline cannot be deleted as it has connected CD pipeline" : "";
+            return <ConditionalWrap condition={!canDeletePipeline}
+                wrap={children => <Tippy className="default-tt"
+                    content={message}>
+                    <div>{children}</div>
+                </Tippy>}>
+                <button type="button"
+                    className={`cta cta--workflow delete mr-16`}
+                    disabled={!canDeletePipeline}
+                    onClick={() => { this.setState({ showDeleteModal: true }) }}>Delete Pipeline
+                </button>
+            </ConditionalWrap>
         }
         else {
             if (this.state.isAdvanced) {

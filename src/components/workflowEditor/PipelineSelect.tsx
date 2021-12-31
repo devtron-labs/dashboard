@@ -19,7 +19,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
                 </div>
                 <div>
                     <h4 className="pipeline-webhook__title">Continuous Integration</h4>
-                    <p className="pipeline-webhook__text">Build docker image from a source code repository.</p>
+                    <p className="pipeline-webhook__text">Build container image from a source code repository.</p>
                 </div>
             </div>
             <div className="pipeline-webhook__item" onClick={(event) => {
@@ -43,7 +43,7 @@ export class PipelineSelect extends Component<PipelineSelectProps>  {
                 </div>
                 <div>
                     <h4 className="pipeline-webhook__title">Incoming Webhook</h4>
-                    <p className="pipeline-webhook__text">Receive docker image from external source via a service.</p>
+                    <p className="pipeline-webhook__text">Receive container image from external source via a service.</p>
                 </div>
             </div>
         </div>

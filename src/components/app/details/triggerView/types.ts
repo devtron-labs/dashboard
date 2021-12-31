@@ -68,6 +68,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
 }
 
 export interface NodeAttr {
+  connectingCiPipelineId?: number;
   parents: string | number[] | string[];
   x: number;
   y: number;
@@ -91,16 +92,18 @@ export interface NodeAttr {
   isExternalCI?: boolean;
   isLinkedCI?: boolean;
   environmentName?: string; //used for CDs
-  environmentId?: string;
+  environmentId?: number;
   inputMaterialList?: any[]
   rollbackMaterialList?: any[]; //used for CDs
-  linkedCount?: number; //used for CI 
+  linkedCount?: number; //used for CI
   deploymentStrategy?: string;
   height: number;
   width: number;
   preNode?: NodeAttr, //used for CDs
   postNode?: NodeAttr, //used for CDs
   stageIndex?: number; //used for CDs
+  sourceNodes?: Array<NodeAttr> //used for CI
+  downstreamNodes?: Array<NodeAttr>
 }
 
 export interface DownStreams {
@@ -189,8 +192,8 @@ export interface WorkflowType {
 }
 
 export interface WebhookPayloadDataResponse {
-  ParsedDataId: number;  
-  EventTime: string;           
+  ParsedDataId: number;
+  EventTime: string;
   MatchedFiltersCount: number;
   FailedFiltersCount: number;
   MatchedFilters: boolean;

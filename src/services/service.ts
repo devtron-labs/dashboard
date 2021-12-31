@@ -164,11 +164,6 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
     return get(URL);
 }
 
-export function getPosthogData(): Promise<ResponseType> {
-    const URL = `telemetry/meta`;
-    return get(URL);
-}
-
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     let vulnerabilities = response.result.vulnerabilities || [];
     let critical = vulnerabilities.filter((v) => v.severity === "critical").sort((a, b) => sortCallback('cveName', a, b));
@@ -294,6 +289,25 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
         }
     })
 }
+
+export function getChartReferencesForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`;
+    return get(URL);
+}
+
+export function getAppChartRefForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+    return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
+        const { result: { chartRefs, latestEnvChartRef, latestAppChartRef } } = response;
+        let selectedChartId = latestEnvChartRef || latestAppChartRef;
+        let chart = chartRefs?.find(chart => selectedChartId === chart.id);
+        return {
+            code: response.code,
+            status: response.status,
+            result: chart
+        }
+    })
+}
+
 export function getAppCheckList(): Promise<any> {
     const URL = `${Routes.APP_CHECKLIST}`;
     return get(URL);

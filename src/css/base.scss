@@ -261,6 +261,13 @@ a:focus {
     padding-right: 20px
 }
 
+.m-b-4 {
+    margin-bottom: 4px !important;
+}
+
+.m-b-16 {
+    margin-bottom: 16px !important;
+}
 
 .loading-wrapper {
     height: calc(100vh - 172px);
@@ -293,6 +300,14 @@ a:focus {
 
 .float-right {
     float: right;
+}
+
+.float-left {
+    float: left;
+}
+
+.clear-both {
+    clear: both;
 }
 
 .truncate-text {
@@ -1621,4 +1636,10 @@ button.anchor {
 
 .pl-16{
     padding-left: 16px !important;
+}
+.text__subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--n-900);
+    line-height: 1.5;
 }

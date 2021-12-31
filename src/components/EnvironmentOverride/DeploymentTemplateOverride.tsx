@@ -206,6 +206,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
         }
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
+    const chartName = state.charts.get(state.data.globalChartRefId)?.name;
     return (
         <>
             <form className="deployment-template-override-form" style={{ marginBottom: '16px' }} onSubmit={handleSubmit}>
@@ -215,6 +216,11 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     onClick={handleOverride}
                     type="deployment template"
                 />
+                <div className="form__row">
+                    <div className="m-b-4 form__label">Chart type</div>
+                    <div className="text__subtitle">{chartName}</div>
+
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridColumnGap: '16px', marginBottom: '16px' }}>
                     <div className="flex left column">
                         <label htmlFor="" className="form__label">Template version {state.duplicate ? '(app default)' : ''}</label>
@@ -226,7 +232,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                             <Select.Button style={{ height: '40px', paddingLeft: '8px', width: '100%' }}>
                                 {state.selectedChartRefId ? state.charts.get(state.selectedChartRefId).version : 'Select chart'}
                             </Select.Button>
-                            {state.charts && Array.from(state.charts).map((value, idx) => <Select.Option key={idx} value={value[0]}>{value[1].version}</Select.Option>)}
+                            {state.charts && Array.from(state.charts.values() as {id: number, name: string, version: string}[]).sort((a, b) => b.id - a.id).filter((chart) => chart.name == chartName).map((value, idx) => <Select.Option key={idx} value={value.id}>{value.version}</Select.Option>)}
                         </Select>
                     </div>}
                 </div>
