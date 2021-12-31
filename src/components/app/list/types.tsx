@@ -1,6 +1,5 @@
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
-import { FilterOption } from '../../common/filter/types';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
 export interface AppListState {
@@ -8,14 +7,7 @@ export interface AppListState {
     view: string;
     errors: ServerError[];
     apps: App[];
-    searchQuery: string;
-    searchApplied: boolean;
     showCommandBar: boolean;
-    filters: {
-        environment: FilterOption[];
-        status: FilterOption[];
-        team: FilterOption[];
-    },
     sortRule: {
         key: string;
         order: string;
@@ -55,10 +47,17 @@ export interface Environment {
         webhookData: string;
     }[];
     ciArtifactId: number;
+    clusterName: string;
+    namespace: string;
 }
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
-
+    payloadParsedFromUrl?: any;
+    appCheckListRes? : any;
+    serverMode? : string;
+    clearAllFilters: () => void;
+    sortApplicationList : (key: string) => void;
+    updateLastDataSync : () => void;
 }
 
 export interface AppListResponse {

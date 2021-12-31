@@ -21,6 +21,7 @@
 }
 
 .healthy,
+.deployed,
 .synced,
 .sync.ok,
 .deploy-success {

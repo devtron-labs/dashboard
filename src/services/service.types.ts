@@ -141,3 +141,16 @@ export interface HostURLConfig {
 export interface HostURLConfigResponse extends ResponseType {
     result?: HostURLConfig;
 }
+
+export interface ClusterEnvironmentDetailList extends ResponseType {
+    result?: ClusterEnvironmentDetail[]
+}
+
+export interface ClusterEnvironmentDetail {
+    id: number, //envId
+    environment_name : string,
+    active: boolean,
+    cluster_id : number
+    cluster_name : string,
+    namespace : string
+}

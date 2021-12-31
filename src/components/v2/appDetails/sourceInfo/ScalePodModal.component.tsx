@@ -1,5 +1,3 @@
-
-
 import React, { Component } from 'react'
 import { ExternalAppScaleModalState, ExternalAppScaleModalProps, ScaleToZero } from './externalAppScaleModal.type';
 import { ViewType } from '../../../../config';
@@ -152,7 +150,7 @@ export default class ScalePodModalComponent extends Component<ExternalAppScaleMo
     renderScaleModalHeader() {
         return <>
             <div className="flex left">
-                <h1 className="cn-9 fw-6 fs-20 m-0">Select objects to scale</h1>
+                <h1 className="cn-9 fw-6 fs-20 m-0">Scale objects</h1>
                 <button type="button" className="transparent p-0" style={{ lineHeight: "0", margin: "auto", marginRight: "0" }} onClick={() => this.props.onClose()}>
                     <Close className="icon-dim-24" />
                 </button>

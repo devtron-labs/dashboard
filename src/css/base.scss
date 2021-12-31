@@ -1630,16 +1630,17 @@ button.anchor {
     align-items: flex-start !important;
 }
 
+.text__subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--n-900);
+    line-height: 1.5;
+}
+
 .lh-20{
    line-height: 20px;
 }
 
 .pl-16{
     padding-left: 16px !important;
-}
-.text__subtitle {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--n-900);
-    line-height: 1.5;
 }
