@@ -90,7 +90,6 @@ export const multiSelectStyles = {
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         boxShadow: 'none',
-        height: '100%'
     }),
     menu: (base, state) => ({
         ...base,

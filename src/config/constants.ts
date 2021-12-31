@@ -33,6 +33,7 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    //APP_NEW_LIST: 'app/new-list',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
@@ -109,7 +110,11 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    CLUSTER_ENV_MAPPING: 'env',
     APP_VERSION: '/version',
+    HELM_RELEASE_INFO_API: 'application/release-info',
+    HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
+    HELM_RELEASE_APP_DETAIL_API: 'application/app'
 };
 
 export const ViewType = {
@@ -185,6 +190,26 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }
+
+// APP LIST STARTS
+export const AppListConstants = {
+    CREATE_APP_URL: 'create-app',
+    AppTabs : {
+        DEVTRON_APPS: 'Devtron Apps',
+        HELM_APPS: 'Helm Apps'
+    },
+    AppType : {
+        DEVTRON_APPS: 'd',
+        HELM_APPS: 'h'
+    },
+    FilterType : {
+        PROJECT: 'team',
+        CLUTSER: 'cluster',
+        NAMESPACE: 'namespace',
+        ENVIRONMENT: 'environment'
+    }
+}
+// APP LIST ENDS
 
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',

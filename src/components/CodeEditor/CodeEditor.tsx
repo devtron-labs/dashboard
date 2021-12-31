@@ -32,6 +32,7 @@ interface CodeEditorInterface {
     diffView?: boolean;
     loading?: boolean;
     theme?: string;
+    original?: string;
 }
 
 interface CodeEditorHeaderInterface {
@@ -102,7 +103,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     }, [])
     const initialState = {
         mode,
-        theme: 'vs',
+        theme: theme || 'vs',
         code: value,
         height: height.toString(),
         diffMode: diffView,

@@ -68,6 +68,7 @@ const AppSelector: React.FC<{
                     justifyContent: 'flex-end',
                     padding: state.selectProps.menuIsOpen ? '0 0 0 4px' : '0',
                     color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+                    height: '30px'
                 }),
                 singleValue: (base, state) => ({
                     ...state,
