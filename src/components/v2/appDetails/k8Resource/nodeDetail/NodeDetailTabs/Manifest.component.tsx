@@ -109,15 +109,15 @@ function ManifestComponent({ selectedTab }) {
     //         markActiveTab(params.actionName)
     //     }
     // }, [params.actionName])
-
+ 
     return (
-        <div className='bcn-0' style={{ minHeight: '600px' }}>
+        <div className="bcn-0" style={{ minHeight: '600px' }}>
             {loading && !error && <MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} />}
             {error && !loading && <MessageUI msg="Manifest not available" />}
             {!error && (
                 <div>
                     <CodeEditor
-                        theme="vs-gray--dt"
+                        theme="vs-dark"
                         height={700}
                         value={manifest}
                         mode="yaml"

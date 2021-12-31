@@ -8,6 +8,8 @@ import { useSharedState } from '../../../utils/useSharedState';
 import { getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
+import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
+import { getNodeStatus } from './nodeType.util';
 
 
 function NodeTreeComponent() {
@@ -17,7 +19,6 @@ function NodeTreeComponent() {
 
     const [{ treeNodes }, dispatch] = useNodeTree();
     const [filteredNodes] = useSharedState(IndexStore.getAppDetailsFilteredNodes(), IndexStore.getAppDetailsNodesFilteredObservable())
-
     const params = useParams<{ nodeType: NodeType }>()
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
@@ -73,7 +74,8 @@ function NodeTreeComponent() {
                     activeParentNode = {
                         name: getPNodeName(_kind),
                         childNodes: [{
-                            name: _nodesByKind[0].kind
+                            name: _nodesByKind[0].kind,
+                            status: getNodeStatus(_nodesByKind[0])
                         }]
                     } as iNode
                 }
@@ -131,6 +133,12 @@ function NodeTreeComponent() {
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
                                 </div>
+                                {/* {appDe?.nodeStatusCount[kind]?.Degraded > 0 && (
+                                    <ErrorImage
+                                        className="icon-dim-16 rotate"
+                                        style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
+                                    /> */}
+                                {/* )} */}
                             </React.Fragment>
                             :
 

@@ -103,7 +103,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     }, [])
     const initialState = {
         mode,
-        theme: 'vs',
+        theme: theme || 'vs',
         code: value,
         height: height.toString(),
         diffMode: diffView,
