@@ -31,6 +31,7 @@ const AppDetailsComponent = () => {
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+    const pathname = window.location.pathname;
 
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -76,8 +77,21 @@ const AppDetailsComponent = () => {
         );
     };
 
-    const isTabSelected = (tab: ApplicationObject): boolean => {
-        return tab.isSelected || window.location.pathname === tab.url;
+    const isTabSelected = (tab: ApplicationObject, index: number): boolean => {
+        return (
+            tab.isSelected ||
+            pathname === tab.url ||
+            // Below is a simple workaround to solve k8s resources tab unselected on page load issue
+            (index === 0 &&
+                !(
+                    pathname.includes('/log-analyzer') ||
+                    pathname.includes('/manifest') ||
+                    pathname.includes('/events') ||
+                    pathname.includes('/logs') ||
+                    pathname.includes('/terminal') ||
+                    pathname.includes('/summary')
+                ))
+        );
     };
 
     return (
@@ -116,7 +130,7 @@ const AppDetailsComponent = () => {
                                             <div className="flex">
                                                 <div
                                                     className={`${
-                                                        isTabSelected(tab) ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                        isTabSelected(tab, index) ? 'resource-tree-tab bcn-0 cn-9' : ''
                                                     } flex left pl-12 pt-8 pb-8 pr-12 `}
                                                 >
                                                     <NavLink
@@ -125,7 +139,7 @@ const AppDetailsComponent = () => {
                                                     >
                                                         <div
                                                             className={`flex left ${
-                                                                isTabSelected(tab) ? 'fw-6 cn-9' : ''
+                                                                isTabSelected(tab, index) ? 'fw-6 cn-9' : ''
                                                             }`}
                                                         >
                                                             {tab.title === AppDetailsTabs.log_analyzer ? (
@@ -169,7 +183,7 @@ const AppDetailsComponent = () => {
                                                 </div>
                                                 <div
                                                     className={` ${
-                                                        !isTabSelected(tab) ? 'resource-tree-tab__border' : ''
+                                                        !isTabSelected(tab, index) ? 'resource-tree-tab__border' : ''
                                                     }`}
                                                 ></div>
                                             </div>

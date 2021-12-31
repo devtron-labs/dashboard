@@ -26,9 +26,9 @@
 .resource-tab__close-wrapper:hover{
     background-color: var(--N500);
     
-    // svg path{
-    //     fill: white;
-    // }
+    svg use {
+        fill: var(--white);
+    }
  }
 
 .tab-list {
