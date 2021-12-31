@@ -158,7 +158,12 @@
 }
 
 .select__option{
-  padding: 4px 12px !important
+  padding: 4px 12px !important;
+  mark{
+    padding: 0;
+    background-color: #ffd597;
+    font-weight: 600;
+  }
 }
 
 .select--is-disabled{

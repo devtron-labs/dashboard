@@ -777,7 +777,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         );
     }
 
-    function formatOptionLabelClusterEnv(option) {
+    function formatOptionLabelClusterEnv(option, { inputValue }) {
         return (
             <div
                 className={
@@ -787,10 +787,36 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         'cluster-label-all')
                 }
             >
-                <span>{option.label}</span>
-                <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
-                    {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
-                </small>
+                {!inputValue ? (
+                    <>
+                        <span>{option.label}</span>
+                        <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
+                            {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
+                        </small>
+                    </>
+                ) : (
+                    <>
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: option.label.replace(
+                                    new RegExp(inputValue, 'gi'),
+                                    (highlighted) => `<mark>${highlighted}</mark>`,
+                                ),
+                            }}
+                        />
+                        {option.clusterName && option.namespace && (
+                            <small
+                                className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}
+                                dangerouslySetInnerHTML={{
+                                    __html: (option.clusterName + '/' + option.namespace).replace(
+                                        new RegExp(inputValue, 'gi'),
+                                        (highlighted) => `<mark>${highlighted}</mark>`,
+                                    ),
+                                }}
+                            ></small>
+                        )}
+                    </>
+                )}
             </div>
         );
     }
