@@ -17,10 +17,7 @@ import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progr
 import * as serviceWorker from './serviceWorker';
 import Hotjar from './components/Hotjar/Hotjar';
 import { validateToken } from './services/service';
-import { getPosthogData } from './services/service';
 import Reload from './components/Reload/Reload';
-import posthog from 'posthog-js';
-import Hash from 'object-hash';
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
 const Login = lazy(() => import('./components/login/Login'));
@@ -75,45 +72,16 @@ export default function App() {
 	}, [isOnline])
 
 	useEffect(() => {
-		async function createUserId() {
-			if (process.env.NODE_ENV === 'production') {
-				let loginInfo = getLoginInfo()
-				let email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-				let hash = Hash(email);
-				try {
-					const { result: { ucid, url, apiKey } } = await getPosthogData();
-					let decodedApiKey = atob(apiKey)
-					posthog.init(decodedApiKey,
-						{
-							api_host: url,
-							autocapture: false,
-							capture_pageview: false,
-							loaded: function (posthog) {
-								posthog.identify(hash, {
-									name: hash,
-									ucid: ucid,
-								});
-								posthog.people.set({ id: hash });
-							}
-						});
-				} catch (e) { }
-			}
-		}
-
 		async function validation() {
 			try {
 				await validateToken();
 				// check if admin then direct to admin otherwise router will redirect to app list
-				createUserId()
 				if (location.search && location.search.includes("?continue=")) {
 					const newLocation = location.search.replace("?continue=", "");
 					push(newLocation);
 				}
 			}
 			catch (err) {
-				try {
-					posthog.reset();
-				} catch (e) { }
 				// push to login without breaking search
 				if (err?.code === 401) {
 					const loginPath = URLS.LOGIN_SSO;
