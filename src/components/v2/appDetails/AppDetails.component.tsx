@@ -102,7 +102,7 @@ const AppDetailsComponent = () => {
                                             className={`${
                                                 tab.name === AppDetailsTabs.log_analyzer ||
                                                 tab.name === AppDetailsTabs.k8s_Resources
-                                                    ? 'w-0 h-0 bcn-0'
+                                                    ? 'hide-section'
                                                     : ''
                                             } default-tt `}
                                             arrow={false}
