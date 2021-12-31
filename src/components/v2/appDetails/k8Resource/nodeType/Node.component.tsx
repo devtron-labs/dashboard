@@ -39,7 +39,7 @@ function NodeComponent() {
             // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             // setTabs(_tabs)
 
-            let tableHeader: Array<String>, _fcw: string;
+            let tableHeader: string[], _fcw: string;
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
@@ -59,26 +59,32 @@ function NodeComponent() {
             setTableHeader(tableHeader);
             setFirstColWidth(_fcw);
 
-            let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+            const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
+                let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
-            // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-            //     _selectedNodes = _selectedNodes.filter((node) => {
-            //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
+                // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
+                //     _selectedNodes = _selectedNodes.filter((node) => {
+                //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
 
-            //         return _podMetaData.isNew === podType;
-            //     });
-            // }
-            let _healthyNodeCount = 0;
+                //         return _podMetaData.isNew === podType;
+                //     });
+                // }
+                let _healthyNodeCount = 0;
 
-            _selectedNodes.forEach((node: Node) => {
-                if (node.health?.status.toLowerCase() === 'healthy') {
-                    _healthyNodeCount++;
-                }
+                _selectedNodes.forEach((node: Node) => {
+                    if (node.health?.status.toLowerCase() === 'healthy') {
+                        _healthyNodeCount++;
+                    }
+                });
+
+                setSelectedNodes([..._selectedNodes]);
+
+                setSelectedHealthyNodeCount(_healthyNodeCount);
             });
 
-            setSelectedNodes([..._selectedNodes]);
-
-            setSelectedHealthyNodeCount(_healthyNodeCount);
+            return (): void => {
+                selectedNodesSub.unsubscribe();
+            };
         }
     }, [params.nodeType, podType]);
 

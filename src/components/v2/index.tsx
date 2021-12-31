@@ -42,7 +42,7 @@ function RouterComponent({ envType }) {
 
             setIsLoading(false);
 
-            setTimeout(init, 30 * 60 * 1000);
+            setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
             // alert('error loading data')
