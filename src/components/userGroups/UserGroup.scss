@@ -161,6 +161,10 @@
   padding: 4px 12px !important
 }
 
+.select--is-disabled{
+  pointer-events: auto !important;
+}
+
 .cluster-label-all{
   font-size: 13px;
   font-weight: 600;

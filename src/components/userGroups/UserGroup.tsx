@@ -641,6 +641,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const [environments, setEnvironments] = useState([]);
     const [applications, setApplications] = useState([]);
     const [envClusters, setEnvClusters] = useState([]);
+    const [projectInput, setProjectInput] = useState('');
+    const [clusterInput, setClusterInput] = useState('');
+    const [envInput, setEnvInput] = useState('');
+    const [appInput, setAppInput] = useState('');
 
     const RoleValueContainer = ({
         children,
@@ -778,7 +782,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             <div
                 className={
                     'flex left column ' +
-                    (option.value && (option.value.startsWith('#') || option.value.startsWith('*')) && 'cluster-label-all')
+                    (option.value &&
+                        (option.value.startsWith('#') || option.value.startsWith('*')) &&
+                        'cluster-label-all')
                 }
             >
                 <span>{option.label}</span>
@@ -854,6 +860,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     }),
                 }}
                 formatOptionLabel={formatOptionLabelProject}
+                inputValue={projectInput}
+                onBlur={() => {
+                    setProjectInput('');
+                }}
+                onInputChange={(value, action) => {
+                    if (action.action === 'input-change') setProjectInput(value);
+                }}
             />
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
                 <div>
@@ -882,6 +895,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
+                        blurInputOnSelect={false}
+                        inputValue={clusterInput}
+                        onBlur={() => {
+                            setClusterInput('');
+                        }}
+                        onInputChange={(value, action) => {
+                            if (action.action === 'input-change') setClusterInput(value);
+                        }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
                 </div>
@@ -909,6 +930,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
+                        inputValue={envInput}
+                        onBlur={() => {
+                            setEnvInput('');
+                        }}
+                        onInputChange={(value, action) => {
+                            if (action.action === 'input-change') setEnvInput(value);
+                        }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
                 </div>
@@ -944,6 +972,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     menuPortalTarget={document.body}
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
+                    inputValue={appInput}
+                    onBlur={() => {
+                        setAppInput('');
+                    }}
+                    onInputChange={(value, action) => {
+                        if (action.action === 'input-change') setAppInput(value);
+                    }}
                 />
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
             </div>
@@ -1159,7 +1194,8 @@ const ValueContainer = (props) => {
 };
 
 const clusterValueContainer = (props) => {
-    let length = props.getValue().filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
+    let length = props.getValue().filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*'))
+        .length;
     let count = '';
     let totalEnv = props.options.reduce((len, cluster) => {
         len += cluster.options.length - 2;
