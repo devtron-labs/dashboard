@@ -198,4 +198,4 @@ export enum ACCESS_TYPE_MAP {
   HELM_APPS = 'hawf', //helm app work flow
 }
 
-export const HELM_APP_UNASSIGNED_PROJECT = 'Unassigned';
+export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';

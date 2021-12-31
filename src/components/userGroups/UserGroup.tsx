@@ -765,6 +765,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         );
     }
 
+    function formatGroupLabel(option) {
+        return (
+            <div>
+                <span>{'Cluster : ' + option.label}</span>
+            </div>
+        );
+    }
+
     function formatOptionLabelClusterEnv(option) {
         return (
             <div
@@ -859,6 +867,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         placeholder="Select environments"
                         options={envClusters}
                         formatOptionLabel={formatOptionLabelClusterEnv}
+                        formatGroupLabel={formatGroupLabel}
                         filterOption={customFilter}
                         className="basic-multi-select"
                         classNamePrefix="select"
@@ -969,7 +978,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     ValueContainer: RoleValueContainer,
                 }}
             />
-            <CloseIcon className="pointer" onClick={(e) => removeRow(index)} />
+            <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} />
         </React.Fragment>
     );
 };

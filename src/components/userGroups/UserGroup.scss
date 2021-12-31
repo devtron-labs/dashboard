@@ -157,8 +157,16 @@
   }
 }
 
+.select__option{
+  padding: 4px 12px !important
+}
+
 .cluster-label-all{
   font-size: 13px;
   font-weight: 600;
   color: var(--n-900);
+}
+
+.margin-top-6px{
+  margin-top: 6px;
 }
