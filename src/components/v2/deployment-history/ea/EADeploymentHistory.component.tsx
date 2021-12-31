@@ -14,7 +14,6 @@ import './ea-deployment-history.scss'
 function ExternalAppDeploymentHistory({appId}) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [readmeCollapsed, toggleReadmeCollapsed] = useState(true);
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<HelmAppDeploymentDetail[]>([]);
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0);
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0);
