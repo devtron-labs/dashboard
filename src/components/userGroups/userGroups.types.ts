@@ -1,18 +1,21 @@
-export enum EntityTypes{
+import { ACCESS_TYPE_MAP } from '../../config';
+
+export enum EntityTypes {
     CHART_GROUP = 'chart-group',
     DIRECT = '',
     DOCKER = 'docker',
     GIT = 'git',
     CLUSTER = 'cluster',
-    NOTIFICATION = 'notification'
+    NOTIFICATION = 'notification',
 }
 
-export enum ActionTypes{
+export enum ActionTypes {
     MANAGER = 'manager',
     ADMIN = 'admin',
     TRIGGER = 'trigger',
     VIEW = 'view',
-    UPDATE = 'update'
+    UPDATE = 'update',
+    EDIT = 'edit',
 }
 export interface CollapsedUserOrGroupProps {
     index: number;
@@ -25,7 +28,7 @@ export interface CollapsedUserOrGroupProps {
     deleteCallback: (index: number) => void;
     createCallback: (payload: any) => void;
 }
-interface RoleFilter{
+interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
     team?: OptionType;
     entityName?: OptionType[];
@@ -33,7 +36,7 @@ interface RoleFilter{
     action?: any;
 }
 
-export interface DirectPermissionsRoleFilter extends RoleFilter{
+export interface DirectPermissionsRoleFilter extends RoleFilter {
     entity: EntityTypes.DIRECT;
     team: OptionType;
     entityName: OptionType[];
@@ -44,44 +47,46 @@ export interface DirectPermissionsRoleFilter extends RoleFilter{
         label: string;
         value: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW;
     };
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
 }
 
-export interface ChartGroupPermissionsFilter extends RoleFilter{
+export interface ChartGroupPermissionsFilter extends RoleFilter {
     entity: EntityTypes.CHART_GROUP;
     team?: never;
     environment?: never;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
 }
 
-export interface APIRoleFilter{
+export interface APIRoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
     team?: string;
     entityName?: string;
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
+    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
 }
 
-export interface OptionType{
+export interface OptionType {
     label: string;
     value: string;
 }
 
-export interface UserConfig{
+export interface UserConfig {
     id: number;
     email_id: string;
     groups: string[];
     roleFilters: RoleFilter[];
 }
 
-export interface CreateUser{
+export interface CreateUser {
     id: number;
     email_id: string;
     groups: string[];
-    roleFilters: APIRoleFilter[],
+    roleFilters: APIRoleFilter[];
     superAdmin: boolean;
 }
 
-export interface CreateGroup{
+export interface CreateGroup {
     id: number;
     name: string;
     description: string;
