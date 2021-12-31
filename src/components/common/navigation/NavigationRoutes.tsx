@@ -14,6 +14,7 @@ import Reload from '../../Reload/Reload';
 const Charts = lazy(() => import('../../charts/Charts'));
 const AppDetailsPage = lazy(() => import('../../app/details/main'));
 const AppListContainer = lazy(() => import('../../app/list/AppListContainer'));
+const V2Details = lazy(() => import('../../v2/index'));
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'));
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'));
 const BulkEdit = lazy(()=> import('../../bulkEdits/BulkEdits'))
@@ -23,6 +24,7 @@ export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+
     const [serverMode, setServerMode] = useState(undefined);
     const [pageState, setPageState] = useState(ViewType.LOADING);
 
@@ -92,15 +94,23 @@ export default function NavigationRoutes() {
                       <ErrorBoundary>
                           <Switch>
                               <Route path={URLS.APP} render={() => <AppRouter />} />
-                              <Route path={URLS.CHARTS} render={() => <Charts />} />
+                              
+                              {/*----- V2 routing start---*/}
+                              {/* <Route path={`${URLS.HELM_CHARTS}`} render={() => <V2Router envType={EnvType.CHART} />} /> */}
+                              {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
+                              {/*---- V2 routing end-----*/}
+
+                              <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
+                              <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
-                              <Route path={URLS.BULK_EDITS} render={props=> < BulkEdit {...props}  />} />
+                              <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
                               <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
                               <Route>
                                   <RedirectWithSentry />
                               </Route>
                           </Switch>
+
                       </ErrorBoundary>
                   </Suspense>
               </div>}
@@ -119,7 +129,8 @@ export function AppRouter() {
                 <Switch>
                     {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
                     <Route path={`${path}/:appId(\\d+)/material-info`} render={() => <AppListContainer />} />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
+                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
                     <Route exact path="">
                         <AppListContainer />
                     </Route>
