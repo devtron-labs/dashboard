@@ -422,3 +422,9 @@
 .app-tabs-wrapper .app-tabs-sync button{
     margin-top : -2px;
 }
+
+.filter-divider {
+    width: 1px;
+    height: 20px;
+    background-color: var(--N200);
+}

@@ -389,6 +389,7 @@ export default function AppList() {
                             searchable multi
                             type={AppListConstants.FilterType.PROJECT}
                             applyFilter={applyFilter} />
+                    <span className="filter-divider"></span>
                     <Filter list={masterFilters.clusters}
                             labelKey="label"
                             buttonText="Cluster"
@@ -408,13 +409,16 @@ export default function AppList() {
                             isLabelHtml={true} />
                     {
                         serverMode == SERVER_MODE.FULL &&
-                        <Filter list={masterFilters.environments}
-                                labelKey="label"
-                                buttonText="Environment"
-                                searchable multi
-                                placeholder="Search Environment"
-                                type={AppListConstants.FilterType.ENVIRONMENT}
-                                applyFilter={applyFilter} />
+                        <>
+                            <span className="filter-divider"></span>
+                            <Filter list={masterFilters.environments}
+                                    labelKey="label"
+                                    buttonText="Environment"
+                                    searchable multi
+                                    placeholder="Search Environment"
+                                    type={AppListConstants.FilterType.ENVIRONMENT}
+                                    applyFilter={applyFilter} />
+                        </>
                     }
                 </div>
             </div>
