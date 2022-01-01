@@ -503,14 +503,14 @@ export default function AppList() {
         return <Modal rootClassName="app-create-model-wrapper" onClick={ () => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)} >
                 <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
                     <AddIcon className="icon-dim-20 fcn-9"/>
-                    <div className="ml-5">
+                    <div className="ml-8">
                         <strong>Custom app</strong>
                         <div>Connect a git repository to deploy <br/> a custom application</div>
                     </div>
                 </div>
                 <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20"/>
-                    <div className="ml-5">
+                    <div className="ml-8">
                         <strong>From Chart store</strong>
                         <div>Deploy apps using third party helm <br/> charts (eg. prometheus, redis etc.)</div>
                     </div>
