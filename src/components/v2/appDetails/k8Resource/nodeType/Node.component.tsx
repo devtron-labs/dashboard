@@ -59,7 +59,7 @@ function NodeComponent() {
             setTableHeader(tableHeader);
             setFirstColWidth(_fcw);
 
-            const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
+            const appDetailsSub = IndexStore.getAppDetailsObservable().subscribe(() => {
                 let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
                 // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -83,7 +83,7 @@ function NodeComponent() {
             });
 
             return (): void => {
-                selectedNodesSub.unsubscribe();
+                appDetailsSub.unsubscribe();
             };
         }
     }, [params.nodeType, podType]);
