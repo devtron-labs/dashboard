@@ -372,7 +372,7 @@ export default function AppList() {
                     <form style={{ display: "inline" }} onSubmit={searchApp}>
                        <div className="search">
                             <Search className="search__icon icon-dim-18"/>
-                            <input type="text" name="app_search_input" autoComplete="off" value={searchString} placeholder="Search apps" className="search__input bcn-1" onChange={onChangeSearchString} />
+                            <input type="text" name="app_search_input" autoComplete="off" value={searchString} placeholder={`${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'Search by app name' : 'Search by app or chart name'}`} className="search__input bcn-1" onChange={onChangeSearchString} />
                             {searchApplied &&
                                 <button className="search__clear-button" type="button" onClick={clearSearch}>
                                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle"/>
