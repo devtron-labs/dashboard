@@ -347,11 +347,12 @@ function SplitPane({ }) {
 }
 //TODO: CodeEditor should be composed of CodeEditorPlaceholder
 function CodeEditorPlaceholder({ className = "", style = {}, customLoader }): JSX.Element {
+    const { height } = useCodeEditorContext();
+
     if (customLoader) {
         return customLoader;
     }
 
-    const { height } = useCodeEditorContext();
     return (
         <div className={`code-editor code-editor--placeholder disabled ${className}`} style={{ ...style }}>
             <div className="flex" style={{ height: height || '100%' }}>
