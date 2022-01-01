@@ -356,7 +356,7 @@ export default function AppList() {
         return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
                 {serverMode == SERVER_MODE.FULL &&
-                    <button type="button" className="cta"
+                    <button type="button" className="cta h-32 lh-n"
                             onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}>
                         Create new
                         <span className="round-button__icon"><i className="fa fa-caret-down" aria-hidden="true"></i></span>
