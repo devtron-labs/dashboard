@@ -22,7 +22,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                     </svg>
                 </div>
                 <div className="app-list__cell app-list__cell--env">{env.name}</div>
-                <div className="app-list__cell app-list__cell--cluster-name">{env.clusterName}</div>
+                <div className="app-list__cell app-list__cell--cluster">{env.clusterName}</div>
                 <div className="app-list__cell app-list__cell--namespace">{env.namespace}</div>
                 <div className="app-list__cell app-list__cell--time">
                     {env.lastDeployedTime &&

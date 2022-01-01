@@ -286,7 +286,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                                             : '-'}
                                     </p>
                                 </div>
-                                <div className="app-list__cell app-list__cell--cluster-name">
+                                <div className="app-list__cell app-list__cell--cluster">
                                     <p className="truncate-text m-0"> {app.environmentDetail.clusterName}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--namespace">
