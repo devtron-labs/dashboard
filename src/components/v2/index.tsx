@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
 import { useRouteMatch, useParams, Redirect } from 'react-router';
-import { Progressing } from '../common';
+import { DetailsProgressing } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
@@ -52,11 +52,11 @@ function RouterComponent({ envType }) {
     return (
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
-            
+
             {isLoading ? (
-                <div style={{ height: '560px' }} className="flex"></div>
+                <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
-                <Suspense fallback={<Progressing pageLoader />}>
+                <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
                         <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
