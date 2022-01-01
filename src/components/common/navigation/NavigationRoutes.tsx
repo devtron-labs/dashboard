@@ -1,6 +1,6 @@
-import React, { lazy, Suspense, useEffect, useState, createContext } from 'react';
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { URLS, AppListConstants, ViewType } from '../../../config';
+import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config';
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common';
 import Navigation from './Navigation';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
@@ -92,7 +92,6 @@ export default function NavigationRoutes() {
                       <ErrorBoundary>
                           <Switch>
                               <Route path={URLS.APP} render={() => <AppRouter />} />
-                              <Route path={URLS.APP_LIST} render={() => <AppListRouter />} />
                               <Route path={URLS.CHARTS} render={() => <Charts />} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
@@ -118,10 +117,10 @@ export function AppRouter() {
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    {/* <Route path={`${path}/:appId(\\d+)/edit`} render={() => <AppCompose />} /> */}
+                    <Route path={`${path}/${URLS.APP_LIST}`} render={() => <AppListRouter />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
                     <Route exact path="">
-                        <RedirectToDevtronAppList />
+                        <RedirectToAppList />
                     </Route>
                     <Route>
                         <RedirectWithSentry />
@@ -141,7 +140,7 @@ export function AppListRouter() {
                 <Switch>
                     <Route path={`${path}/:appType`} render={() => <NewAppList />} />
                     <Route exact path="">
-                        <RedirectToDevtronAppList />
+                        <RedirectToAppList />
                     </Route>
                     <Route>
                         <RedirectWithSentry />
@@ -157,16 +156,22 @@ export function RedirectWithSentry() {
     const { pathname } = useLocation()
     useEffect(() => {
         if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, Sentry.Severity.Warning)
-        push(`${URLS.APP_LIST}`)
+        push(`${URLS.APP}/${URLS.APP_LIST}`)
     }, [])
     return null
 }
 
-export function RedirectToDevtronAppList() {
+export function RedirectToAppList() {
     const { push } = useHistory()
     const { pathname } = useLocation()
+    const {serverMode} = useContext(mainContext);
     useEffect(() => {
-        push(`${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}`)
+        let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`;
+        if(serverMode == SERVER_MODE.FULL){
+            push(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+        }else{
+            push(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+        }
     }, [])
     return null
 }

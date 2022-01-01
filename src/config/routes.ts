@@ -9,9 +9,9 @@ export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
-    APP_LIST: '/apps',
-    APP_LIST_DEVTRON: '/apps/d',
-    APP_LIST_HELM: '/apps/h',
+    APP_LIST: 'list',
+    APP_LIST_DEVTRON: 'd',
+    APP_LIST_HELM: 'h',
     APP_DETAILS: 'details', //
     APP_TRIGGER: 'trigger',
     APP_CI_DETAILS: 'ci-details',

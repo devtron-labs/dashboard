@@ -190,9 +190,16 @@ export default function AppList() {
         return payload;
     }
 
+    const buildDevtronAppListUrl = () : string => {
+        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}`;
+    }
+
+    const buildHelmAppListUrl = () : string => {
+        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`;
+    }
 
     function openDevtronAppCreateModel(event: React.MouseEvent) {
-        let url = `${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_APP_URL}${location.search}`
+        let url = `${buildDevtronAppListUrl()}/${AppListConstants.CREATE_APP_URL}${location.search}`
         history.push(`${url}`);
     }
 
@@ -228,7 +235,7 @@ export default function AppList() {
         }
 
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
@@ -247,7 +254,7 @@ export default function AppList() {
         query[queryParamType] = str;
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
@@ -271,7 +278,7 @@ export default function AppList() {
         query[queryParamType] = arr.toString();
         if (query[queryParamType] == "") delete query[queryParamType];
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
@@ -292,7 +299,7 @@ export default function AppList() {
         setSearchString("");
 
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
@@ -306,7 +313,7 @@ export default function AppList() {
         query["orderBy"] = key;
         query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM}?${queryStr}`;
+        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
@@ -314,7 +321,7 @@ export default function AppList() {
         if (appTabType == currentTab){
             return;
         }
-        let url = (appTabType == AppListConstants.AppTabs.DEVTRON_APPS) ? `${URLS.APP_LIST_DEVTRON}${location.search}` : `${URLS.APP_LIST_HELM}${location.search}`;
+        let url = (appTabType == AppListConstants.AppTabs.DEVTRON_APPS) ? `${buildDevtronAppListUrl()}${location.search}` : `${buildHelmAppListUrl()}${location.search}`;
         history.push(url);
         setCurrentTab(appTabType);
     }
@@ -480,13 +487,13 @@ export default function AppList() {
     }
 
     const closeDevtronAppCreateModal = () => {
-        let url = `${URLS.APP_LIST_DEVTRON}${location.search}`;
+        let url = `${buildDevtronAppListUrl()}${location.search}`;
         history.push(`${url}`);
     }
 
     function renderAppCreateRouter() {
         return <Switch>
-            <Route path={`${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_APP_URL}`}
+            <Route path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_APP_URL}`}
                    render={(props) => <AddNewApp close={closeDevtronAppCreateModal}  match={props.match} location={props.location} history={props.history} />}
             />
         </Switch>

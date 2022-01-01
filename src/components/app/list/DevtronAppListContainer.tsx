@@ -86,7 +86,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         })
         query['offset'] = offset;
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
+        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
@@ -100,7 +100,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         query['offset'] = 0;
         query['pageSize'] = size;
         let queryStr = queryString.stringify(query);
-        let url = `${URLS.APP_LIST_DEVTRON}?${queryStr}`;
+        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`;
         this.props.history.push(url);
     }
 
