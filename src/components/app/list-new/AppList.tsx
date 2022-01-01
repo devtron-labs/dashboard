@@ -446,7 +446,7 @@ export default function AppList() {
                     }
                 })
             })}
-            <button type="button" className="saved-filters__clear-btn" onClick={() => { removeAllFilters() }}>
+            <button type="button" className="saved-filters__clear-btn fs-13" onClick={() => { removeAllFilters() }}>
                 Clear All Filters
             </button>
         </div>

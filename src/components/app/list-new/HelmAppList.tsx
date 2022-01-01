@@ -210,7 +210,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             <div className="app-list__header">
                 <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
-                    {sseConnection && <span>App name</span>}
+                    {sseConnection && <span>App/Release name</span>}
                     {!sseConnection && (
                         <button
                             className="app-list__cell-header"
@@ -219,7 +219,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                                 sortApplicationList('appNameSort');
                             }}
                         >
-                            App name
+                            App/Release name
                             {sortBy == SortBy.APP_NAME ? (
                                 <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'}`}></span>
                             ) : (
@@ -264,7 +264,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                             >
                                 <div className="app-list__cell--icon">
                                     <LazyImage
-                                        className="chart-grid-item__icon"
+                                        className="chart-grid-item__icon icon-dim-24"
                                         src={app.chartAvatar}
                                         onError={handleImageError}
                                     />
