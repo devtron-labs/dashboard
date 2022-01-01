@@ -211,7 +211,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 		// scroll to the editor view with animation for only update-chart
 		if (envId) {
 			setTimeout(() => {
-				deployChartForm.current.scrollTo({
+				deployChartForm.current?.scrollTo({
 					top: deployChartEditor.current.offsetTop,
 					behavior: 'smooth',
 				});
