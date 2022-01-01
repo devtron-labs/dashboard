@@ -31,6 +31,7 @@ interface CodeEditorInterface {
     shebang?: string | JSX.Element;
     diffView?: boolean;
     loading?: boolean;
+    customLoader?: JSX.Element;
     theme?: string;
     original?: string;
 }
@@ -80,7 +81,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading, theme=""}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -227,8 +228,8 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
             {children}
             {loading ?
-                <CodeEditorPlaceholder />
-                :
+                <CodeEditorPlaceholder customLoader={customLoader} />
+             :
                 <>
                     {shebang && <div className="shebang">{shebang}</div>}
                     {state.diffMode ?
@@ -345,8 +346,12 @@ function SplitPane({ }) {
     )
 }
 //TODO: CodeEditor should be composed of CodeEditorPlaceholder
-function CodeEditorPlaceholder({ className = "", style = {} }) {
-    const { height } = useCodeEditorContext()
+function CodeEditorPlaceholder({ className = "", style = {}, customLoader }): JSX.Element {
+    if (customLoader) {
+        return customLoader;
+    }
+
+    const { height } = useCodeEditorContext();
     return (
         <div className={`code-editor code-editor--placeholder disabled ${className}`} style={{ ...style }}>
             <div className="flex" style={{ height: height || '100%' }}>
@@ -355,7 +360,7 @@ function CodeEditorPlaceholder({ className = "", style = {} }) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 CodeEditor.LanguageChanger = LanguageChanger

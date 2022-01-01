@@ -43,7 +43,7 @@ function EventsComponent({ selectedTab }) {
 
 
     return (
-        <div className='bcn-0'>
+        <div className="bcn-0" style={{ minHeight: '600px' }}>
             {pods && pods.length > 0 &&
                 <React.Fragment>
                     {!loading && events && events.length > 0 &&
