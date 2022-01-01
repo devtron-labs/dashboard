@@ -471,7 +471,7 @@ export default function AppList() {
             <div className="app-tabs-sync">
                 {
                     lastDataSyncTimeString && ((params.appType == AppListConstants.AppType.DEVTRON_APPS) || (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) &&
-                    <span>{lastDataSyncTimeString} <button className="text-primary btn btn-link p-0" onClick={syncNow}>sync now</button></span>
+                    <span>{lastDataSyncTimeString} <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>Sync now</button></span>
                 }
                 {
                     params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps &&
