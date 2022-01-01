@@ -90,7 +90,12 @@ export class Filter extends Component<FilterProps, FilterState>{
             return <label key={index} className="filter-element">
                 <input type="checkbox" className="filter-element__input" value={env.key}
                     checked={env.isChecked} onChange={this.handleSelection} />
-                    {env[this.props.labelKey]}
+                {
+                    this.props.isLabelHtml ?
+                    <div dangerouslySetInnerHTML={{__html: env[this.props.labelKey]}} /> :
+                    <span>{env[this.props.labelKey]}</span>
+                }
+
                 <span className="filter-element__checkmark"></span>
             </label>
         })

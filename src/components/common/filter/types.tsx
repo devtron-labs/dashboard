@@ -17,6 +17,7 @@ export interface FilterProps {
     badgeCount?: number;
     isDisabled? : boolean;
     disableTooltipMessage? : string;
+    isLabelHtml? :boolean;
 }
 
 export interface FilterState {

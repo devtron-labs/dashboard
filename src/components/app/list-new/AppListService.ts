@@ -92,11 +92,10 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
                         isChecked: _isClusterSelected
                     })
                 }
-
                 let _namespace = clusterNamespaceMapping.namespace;
                 filters.namespaces.push({
                     key: _clusterId + "_" + _namespace,
-                    label: _namespace + " (" + _clusterName + ")",
+                    label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
                     isSaved: true,
                     isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
                     clusterId : _clusterId,

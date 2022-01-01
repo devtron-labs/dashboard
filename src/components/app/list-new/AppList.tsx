@@ -404,7 +404,8 @@ export default function AppList() {
                             type={AppListConstants.FilterType.NAMESPACE}
                             applyFilter={applyFilter}
                             isDisabled={!_isAnyClusterFilterApplied}
-                            disableTooltipMessage={"Select a cluster first"} />
+                            disableTooltipMessage={"Select a cluster first"}
+                            isLabelHtml={true} />
                     {
                         serverMode == SERVER_MODE.FULL &&
                         <Filter list={masterFilters.environments}
