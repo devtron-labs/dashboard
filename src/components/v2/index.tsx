@@ -13,6 +13,8 @@ import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 
+let initTimer = null;
+
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -24,6 +26,10 @@ function RouterComponent({ envType }) {
         setIsLoading(true);
 
         if (params.appId && params.envId) {
+            if (initTimer) {
+                clearTimeout(initTimer);
+            }
+
             init();
         }
     }, [params.appId, params.envId]);
@@ -42,7 +48,7 @@ function RouterComponent({ envType }) {
 
             setIsLoading(false);
 
-            setTimeout(init, 30000);
+            initTimer = setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
             // alert('error loading data')
