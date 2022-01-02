@@ -34,6 +34,15 @@ function RouterComponent({ envType }) {
         }
     }, [params.appId, params.envId]);
 
+    // clearing the timer on component unmount
+    useEffect(() => {
+        return (): void => {
+            if (initTimer) {
+                clearTimeout(initTimer);
+            }
+        };
+    }, []);
+
     const init = async () => {
         try {
             let response = null;
@@ -51,7 +60,6 @@ function RouterComponent({ envType }) {
             initTimer = setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
-            // alert('error loading data')
         }
     };
 
