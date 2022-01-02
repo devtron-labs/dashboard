@@ -64,57 +64,59 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const postInitialize = (sessionId: string) => {
-
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
 
         socket?.close();
 
-        setFirstMessageReceived(false)
+        setFirstMessageReceived(false);
 
         socket = new SockJS(socketURL);
+        const _socket = socket;
+        const _terminal = terminal;
+        const _fitAddon = fitAddon;
 
-        terminal.onData(function (data) {
-            const inData = { Op: 'stdin', SessionID: "", Data: data };
-            if (socket.readyState === WebSocket.OPEN) {
-                socket?.send(JSON.stringify(inData));
+        _terminal.onData(function (data) {
+            const inData = { Op: 'stdin', SessionID: '', Data: data };
+            if (_socket.readyState === WebSocket.OPEN) {
+                _socket?.send(JSON.stringify(inData));
             }
-        })
+        });
 
-        socket.onopen = function () {
+        _socket.onopen = function () {
             const startData = { Op: 'bind', SessionID: sessionId };
-            socket.send(JSON.stringify(startData));
+            _socket.send(JSON.stringify(startData));
 
-            let dim = fitAddon.proposeDimensions();
+            let dim = _fitAddon.proposeDimensions();
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
 
-            socket.send(JSON.stringify(resize));
+            _socket.send(JSON.stringify(resize));
 
             if (isReconnection) {
-                terminal.writeln("");
-                terminal.writeln("---------------------------------------------");
-                terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
-                terminal.writeln("---------------------------------------------");
+                _terminal.writeln('');
+                _terminal.writeln('---------------------------------------------');
+                _terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
+                _terminal.writeln('---------------------------------------------');
                 setIsReconnection(false);
             }
         };
 
-        socket.onmessage = function (evt) {
-            terminal.write(JSON.parse(evt.data).Data);
-            terminal.focus();
+        _socket.onmessage = function (evt) {
+            _terminal.write(JSON.parse(evt.data).Data);
+            _terminal.focus();
 
             if (!firstMessageReceived) {
-                setFirstMessageReceived(true)
+                setFirstMessageReceived(true);
             }
-        }
+        };
 
-        socket.onclose = function (evt) {
+        _socket.onclose = function (evt) {
             terminalViewProps.setSocketConnection('DISCONNECTED');
-        }
+        };
 
-        socket.onerror = function (evt) {
+        _socket.onerror = function (evt) {
             terminalViewProps.setSocketConnection('DISCONNECTED');
-        }
-    }
+        };
+    };
 
     const reconnect = () => {
         terminalViewProps.setSocketConnection("DISCONNECTING");
