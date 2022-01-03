@@ -212,7 +212,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
 
     function _buildAppDetailUrl(app : HelmApp){
         if (app.isExternal){
-            return `${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
         }else{
             return `/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
         }

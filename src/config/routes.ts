@@ -7,10 +7,10 @@ export interface NavItem {
 
 export const URLS = {
     CHARTS: '/chart-store',
-    EXTERNAL_APPS: '/ea',
     CHARTS_OLD: '/chart-store-old',
     CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
+    EXTERNAL_APPS: 'ea',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',

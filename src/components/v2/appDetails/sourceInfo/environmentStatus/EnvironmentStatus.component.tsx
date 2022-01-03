@@ -75,7 +75,7 @@ function EnvironmentStatusComponent() {
                             <div>
                                 <Link
                                     className="cb-5 fw-6"
-                                    to={`${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
+                                    to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
                                 >
                                     Details
                                 </Link>

@@ -103,7 +103,6 @@ export default function NavigationRoutes() {
 
                               <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
                               <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
-                              <Route path={`${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps/>} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                               <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
@@ -131,6 +130,7 @@ export function AppRouter() {
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_LIST}`} render={() => <AppListRouter />} />
+                    <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
                     <Route exact path="">
