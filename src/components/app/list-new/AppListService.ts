@@ -42,7 +42,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         if(projectsRes.result && Array.isArray(projectsRes.result)){
             projectsRes.result.push({
                 id : 0,
-                name : 'Apps With No Projects',
+                name : 'Apps with no projects',
                 active : true
             })
         }

@@ -87,7 +87,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         let badge = this.props.badgeCount ? this.props.badgeCount : this.getSavedFilter();
 
         let filterOptions = this.state.filteredList.map((env, index) => {
-            return <label key={index} className="filter-element">
+            return <label key={index} className={`filter-element ${!env.key ? 'fw-6' : 'fw-4'}`}>
                 <input type="checkbox" className="filter-element__input" value={env.key}
                     checked={env.isChecked} onChange={this.handleSelection} />
                 {
