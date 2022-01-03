@@ -1,0 +1,7 @@
+.generic-body > .row:hover{
+    background: var(--N100);
+}
+
+.generic-body > .row:nth-child(odd){
+    /* background: var(--N100); */
+}

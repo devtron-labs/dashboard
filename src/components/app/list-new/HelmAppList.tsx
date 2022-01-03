@@ -3,7 +3,7 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
 import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
-import { Host, SERVER_MODE } from '../../../config';
+import { Host, SERVER_MODE, URLS } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link, withRouter } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
@@ -127,7 +127,10 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
 
         _externalAppRecievedClusterIds.push(_clusterId);
-        _externalAppRecievedHelmApps.push(...externalAppData.result.helmApps);
+        let _newExternalAppList = externalAppData.result.helmApps || [];
+        _newExternalAppList.every(element => element.isExternal = true);
+
+        _externalAppRecievedHelmApps.push(..._newExternalAppList);
         setExternalHelmAppsList(_externalAppRecievedHelmApps);
 
         let _requestedSortedClusterIdsJson = JSON.stringify(
@@ -207,6 +210,14 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         target.src = defaultChartImage;
     }
 
+    function _buildAppDetailUrl(app : HelmApp){
+        if (app.isExternal){
+            return `${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+        }else{
+            return `/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+        }
+    }
+
     function renderHeaders() {
         let sortIcon = sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down';
         return (
@@ -267,10 +278,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 {filteredHelmAppsList.map((app) => {
                     return (
                         <React.Fragment key={app.appId}>
-                            <Link
-                                to={`/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`}
-                                className="app-list__row"
-                            >
+                            <Link to={_buildAppDetailUrl(app)} className="app-list__row">
                                 <div className="app-list__cell--icon">
                                     <LazyImage
                                         className="chart-grid-item__icon icon-dim-24"

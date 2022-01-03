@@ -59,7 +59,7 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
     const nodesGroup = nodes.reduce((agg, curr) => {
         agg[curr.kind] = agg[curr.kind] || new Map();
         if (curr.kind === Nodes.Pod) {
-            curr.info.forEach(({ name, value }) => {
+            curr.info?.forEach(({ name, value }) => {
                 if (name === 'Status Reason') {
                     curr.status = value.toLowerCase()
                 }
