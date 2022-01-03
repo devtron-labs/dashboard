@@ -908,11 +908,17 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         formatOptionLabel={formatOptionLabelClusterEnv}
                         formatGroupLabel={formatGroupLabel}
                         filterOption={customFilter}
-                        className="basic-multi-select"
+                        className="basic-multi-select cluster-select"
                         classNamePrefix="select"
                         menuPortalTarget={document.body}
                         hideSelectedOptions={false}
-                        styles={tempMultiSelectStyles}
+                        styles={{
+                            ...tempMultiSelectStyles,
+                            option: (base, state) => ({
+                                ...base,
+                                padding: '4px 12px'
+                            }),
+                        }}
                         components={{
                             ClearIndicator: null,
                             ValueContainer: clusterValueContainer,
