@@ -147,6 +147,8 @@ export default function AppList() {
                 isSaved: true,
                 isChecked: filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()) && filterApplied.clusterVsNamespaceMap.get(namespace.clusterId.toString()).includes(namespace.key.split("_")[1]),
                 toShow : filterApplied.clusterVsNamespaceMap.size == 0 || filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()),
+                actualName: namespace.actualName,
+                clusterName : namespace.clusterName,
                 clusterId : namespace.clusterId
             }
         })
@@ -430,19 +432,28 @@ export default function AppList() {
         let appliedFilters = <div className="saved-filters">
             {keys.map((key) => {
                 let filterType = '';
+                let _filterKey = '';
                 if (key == 'projects'){
                     filterType = AppListConstants.FilterType.PROJECT;
+                    _filterKey = 'project';
                 }else if (key == 'clusters'){
                     filterType = AppListConstants.FilterType.CLUTSER;
+                    _filterKey = 'cluster';
                 }else if (key == 'namespaces'){
                     filterType = AppListConstants.FilterType.NAMESPACE;
+                    _filterKey = 'namespace';
                 }else if (key == 'environments'){
                     filterType = AppListConstants.FilterType.ENVIRONMENT;
+                    _filterKey = 'environment';
                 }
                 return masterFilters[key].map((filter) => {
                     if (filter.isChecked) {
                         count++;
-                        return <div key={filter.key} className="saved-filter">{key} : {filter.label}
+                        let _text = (filterType == AppListConstants.FilterType.NAMESPACE) ? filter.actualName + ' (' + filter.clusterName + ')' : filter.label;
+                        return <div key={filter.key} className="saved-filter">
+                            <span className="fw-6 mr-5">{_filterKey}</span>
+                            <span className="saved-filter-divider"></span>
+                            <span className="ml-5">{_text}</span>
                             <button type="button" className="saved-filter__clear-btn"
                                     onClick={(event) => removeFilter(filter, filterType)} >
                                 <i className="fa fa-times-circle" aria-hidden="true"></i>

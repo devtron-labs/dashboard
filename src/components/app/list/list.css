@@ -428,3 +428,10 @@
     height: 20px;
     background-color: var(--N200);
 }
+
+.saved-filter-divider{
+    position: absolute;
+    height: 32px;
+    width: 1px;
+    background-color: #72767a;
+}

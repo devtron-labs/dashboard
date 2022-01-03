@@ -99,6 +99,8 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
                     isSaved: true,
                     isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
                     clusterId : _clusterId,
+                    actualName : _namespace,
+                    clusterName : _clusterName,
                     toShow : filterApplied.clusterVsNamespaceMap.size == 0 || _isClusterSelected
                 })
 
