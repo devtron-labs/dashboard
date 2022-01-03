@@ -1,24 +1,15 @@
 import { get } from "../../../../../services/api";
-import AppDetail from "../../../../app/details/appDetails/AppDetails";
 import { AppDetails } from "../../appDetails.type";
-import IndexStore from "../../index.store";
 
 
-export const getManifestResource = (ad: AppDetails, nodeName: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const ed = IndexStore.getiNodesByKind(cn?.kind)[0]
+export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
+    const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
 
-    let group ;
-    if (!group){ 
-        group = '';
-    }else{
-        group = cn.group
-    }
     return get(`api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`)
 }
 
-export const getEvent = (ad: AppDetails, nodeName: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
+export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
+    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`)
 }
 

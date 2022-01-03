@@ -30,7 +30,7 @@ function EventsComponent({ selectedTab }) {
     useEffect(() => {
         setLoading(true)
 
-        getEvent(appDetails, params.podName).then((response) => {
+        getEvent(appDetails, params.podName, params.nodeType).then((response) => {
             setEvents(response.result.items || [])
             setLoading(false)
         }).catch((err) => {

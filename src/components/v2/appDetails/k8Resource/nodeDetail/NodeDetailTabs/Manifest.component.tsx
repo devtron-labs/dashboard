@@ -27,10 +27,9 @@ function ManifestComponent({ selectedTab }) {
 
     useEffect(() => {
         setLoading(true);
-        let title = url.split('/').slice(-2);
         selectedTab(NodeDetailTab.MANIFEST, url);
 
-        getManifestResource(appDetails, params.podName)
+        getManifestResource(appDetails, params.podName, params.nodeType)
             .then((response) => {
                 const _manifest = response?.result?.manifest;
                 if (_manifest) {
