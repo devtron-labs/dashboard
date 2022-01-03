@@ -27,7 +27,7 @@ function NodeDetailComponent() {
             setTabs(_tabs)
         }
 
-    }, [params.nodeType, params.podName])
+    }, [])
 
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
