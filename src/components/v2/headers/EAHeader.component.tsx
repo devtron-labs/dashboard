@@ -18,7 +18,7 @@ function EAHeaderComponent() {
     return (
         <div className="app-page-header" style={{ gridTemplateColumns: "unset" }}>
             <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
-                <Link to={`${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`} className="devtron-breadcrumb__item">
+                <Link to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`} className="devtron-breadcrumb__item">
                     <div className="cb-5">Helm apps</div>
                 </Link>
                 <span className="ml-4 mr-4">/</span>

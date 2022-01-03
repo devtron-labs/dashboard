@@ -93,7 +93,7 @@ function ExternalAppDeploymentHistory({appId}) {
     }
 
     function renderSelectedDeploymentTabs() {
-        return <ul className="ml-20 tab-list tab-list--borderd mr-20">
+        return <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
             {deploymentTabs.map((tab, index) => {
                 return (
                     <li onClick={() => changeDeploymentTab(index)} key={index} className="tab-list__tab">
