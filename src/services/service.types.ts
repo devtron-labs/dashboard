@@ -156,7 +156,7 @@ export interface ClusterEnvironmentDetail {
 }
 
 export interface EnvironmentListHelmResponse extends ResponseType{
-    result?: EnvironmentListHelmResult
+    result?: EnvironmentListHelmResult[]
 }
 
 export interface EnvironmentListHelmResult {
