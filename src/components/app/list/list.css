@@ -435,3 +435,11 @@
     width: 1px;
     background-color: #72767a;
 }
+
+.cluster-select-message-strip{
+    background-color: var(--V100);
+    height: 32px;
+    margin: 0 32px;
+    padding: 6px 52px 6px 16px;
+    border: solid 1px #c5bbfa;
+}

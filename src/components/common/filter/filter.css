@@ -199,3 +199,14 @@
         margin: auto 10px;
     }
 }
+
+.pulse-highlight {
+    width: 12px;
+    height: 12px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: #ff7e5b;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    border-radius: 50%;
+}

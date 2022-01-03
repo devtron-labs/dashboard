@@ -14,6 +14,7 @@ import { AllCheckModal } from '../../checkList/AllCheckModal';
 import EmptyState from '../../EmptyState/EmptyState';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg';
 import './HelmAppList.css';
 import '../list/list.css';
 
@@ -252,7 +253,13 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             <>
                 {
                     !clusterIdsCsv &&
-                    <div>To view helm charts deployed from outside devtron, please select a cluster from above filters. Learn more</div>
+                    <div className="bcn-0">
+                        <div className="h-8"></div>
+                        <div className="cluster-select-message-strip flex left">
+                            <span className="mr-8 flex"><InfoFillPurple className="icon-dim-20" /></span>
+                            <span>To view helm charts deployed from outside devtron, please select a cluster from above filters. <a className="learn-more__href cursor">Learn more</a> </span>
+                        </div>
+                    </div>
                 }
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
                 {filteredHelmAppsList.map((app) => {
@@ -324,27 +331,29 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     }
 
     function askToClearFilters(){
-        return <Empty
+        return <div style={{height : "calc(100vh - 250px)"}}>
+        <Empty
             view={AppListViewType.NO_RESULT}
             title={'No apps found'}
             message={"We couldn't find any matching applications."}
             buttonLabel={'Clear filters'}
             clickHandler={clearAllFilters}
         />
+        </div>
     }
     
-    function askToClearFiltersWithSelectClusterTip(){
-        return <div>
+    function askToClearFiltersWithSelectClusterTip (){
+        return <div className="flex column">
             {askToClearFilters()}
-            <EmptyState>
+            <div style={{width : '300px'}}>
                 <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top">
-                    <div><InfoFill style={{width : '20px', height : '20px'}}/></div>
-                    <div>
+                    <div><InfoFill className="icon-dim-20" /></div>
+                    <div className="ml-12">
                         <span className="fw-6">Tip </span>
                         <span>Select a cluster from above filters to see apps deployed from outside devtron.</span>
                     </div>
                 </p>
-            </EmptyState>
+            </div>
         </div>
     }
 

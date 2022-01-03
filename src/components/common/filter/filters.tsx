@@ -117,10 +117,13 @@ export class Filter extends Component<FilterProps, FilterState>{
             {
                 this.props.isDisabled && this.props.disableTooltipMessage &&
                 <Tippy arrow={true} placement="top" content={this.props.disableTooltipMessage} hideOnClick={false}>
-                    <button type="button" className="filter__trigger disable__button">
-                        {this.props.buttonText}
-                        <span className="filter-icon"><i className={faIcon}></i></span>
-                    </button>
+                    <div>
+                        <div className="pulse-highlight"></div>
+                        <button type="button" className="filter__trigger disable__button">
+                            {this.props.buttonText}
+                            <span className="filter-icon"><i className={faIcon}></i></span>
+                        </button>
+                    </div>
                 </Tippy>
             }
             {
