@@ -1,7 +1,7 @@
-import { getAppCheckList, getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList , getClusterNamespaceMapping} from '../../../services/service';
+import { getAppCheckList, getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList , getEnvironmentListHelmApps} from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
 import {get, post} from '../../../services/api';
-import {ResponseType, ClusterEnvironmentDetail} from '../../../services/service.types';
+import {ResponseType, ClusterEnvironmentDetail, EnvironmentListHelmResult, EnvironmentHelmResult} from '../../../services/service.types';
 
 
 export interface AppListResponse extends ResponseType{
@@ -38,7 +38,7 @@ export interface AppEnvironmentDetail {
 }
 
 export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Promise<any> => {
-    return Promise.all([(serverMode == SERVER_MODE.FULL ? getAppCheckList() : { result: undefined}) , getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getClusterNamespaceMapping()]).then(([appCheckListRes, projectsRes, environmentListRes, clusterNamespaceMappingRes]) => {
+    return Promise.all([(serverMode == SERVER_MODE.FULL ? getAppCheckList() : { result: undefined}) , getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getEnvironmentListHelmApps()]).then(([appCheckListRes, projectsRes, environmentListRes, clusterNamespaceMappingRes]) => {
 
         // push apps with no projects in project res
         if(projectsRes.result && Array.isArray(projectsRes.result)){
@@ -81,9 +81,9 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
 
         // set filter clusters|namespace starts
         if(clusterNamespaceMappingRes.result && Array.isArray(clusterNamespaceMappingRes.result)){
-            clusterNamespaceMappingRes.result.forEach((clusterNamespaceMapping : ClusterEnvironmentDetail) => {
-                let _clusterId = clusterNamespaceMapping.cluster_id;
-                let _clusterName = clusterNamespaceMapping.cluster_name;
+            clusterNamespaceMappingRes.result.forEach((clusterNamespaceMapping : EnvironmentListHelmResult) => {
+                let _clusterId = clusterNamespaceMapping.clusterId;
+                let _clusterName = clusterNamespaceMapping.clusterName;
                 let _isClusterSelected = filterApplied.clusterVsNamespaceMap.has(_clusterId.toString());
                 let _isClusterAddedInFilter = filters.clusters.some(_cluster => _cluster.key == _clusterId);
                 if (!_isClusterAddedInFilter){
@@ -94,20 +94,24 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
                         isChecked: _isClusterSelected
                     })
                 }
-                let _namespace = clusterNamespaceMapping.namespace;
-                filters.namespaces.push({
-                    key: _clusterId + "_" + _namespace,
-                    label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
-                    isSaved: true,
-                    isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
-                    clusterId : _clusterId,
-                    actualName : _namespace,
-                    clusterName : _clusterName,
-                    toShow : filterApplied.clusterVsNamespaceMap.size == 0 || _isClusterSelected
-                })
 
+                clusterNamespaceMapping.environments.forEach((environment : EnvironmentHelmResult) => {
+                    let _namespace = environment.namespace;
+                    filters.namespaces.push({
+                        key: _clusterId + "_" + _namespace,
+                        label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
+                        isSaved: true,
+                        isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
+                        clusterId : _clusterId,
+                        actualName : _namespace,
+                        clusterName : _clusterName,
+                        toShow : filterApplied.clusterVsNamespaceMap.size == 0 || _isClusterSelected
+                    })
+                })
             })
         }
+        filters.clusters = filters.clusters.sort((a, b) => { return sortByLabel(a, b) });
+        filters.namespaces = filters.namespaces.sort((a, b) => { return sortByLabel(a, b) });
         // set filter clusters|namespace ends
 
         // set filter environments starts

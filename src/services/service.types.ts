@@ -154,3 +154,20 @@ export interface ClusterEnvironmentDetail {
     cluster_name : string,
     namespace : string
 }
+
+export interface EnvironmentListHelmResponse extends ResponseType{
+    result?: EnvironmentListHelmResult
+}
+
+export interface EnvironmentListHelmResult {
+    clusterId : number,
+    clusterName : string,
+    environments : EnvironmentHelmResult[]
+}
+
+export interface EnvironmentHelmResult {
+    environmentId : number,
+    environmentName: string,
+    namespace: string,
+    environmentIdentifier: string
+}
