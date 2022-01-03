@@ -103,8 +103,9 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 withCredentials: true,
             });
             let _externalAppRecievedClusterIds = [];
+            let _externalAppRecievedHelmApps = [];
             _sseConnection.onmessage = function (message) {
-                _onExternalAppDataFromSse(message, _externalAppRecievedClusterIds, _sseConnection);
+                _onExternalAppDataFromSse(message, _externalAppRecievedClusterIds, _externalAppRecievedHelmApps, _sseConnection);
             };
             setSseConnection(_sseConnection);
         }
@@ -114,7 +115,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',');
     }
 
-    function _onExternalAppDataFromSse(message: MessageEvent, _externalAppRecievedClusterIds : string[], _sseConnection: EventSource) {
+    function _onExternalAppDataFromSse(message: MessageEvent, _externalAppRecievedClusterIds : string[], _externalAppRecievedHelmApps : HelmApp[], _sseConnection: EventSource) {
         let externalAppData: AppListResponse = JSON.parse(message.data);
         if (externalAppData.result.errored || !externalAppData.result.clusterIds?.length) {
             return;
@@ -126,7 +127,8 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
 
         _externalAppRecievedClusterIds.push(_clusterId);
-        setExternalHelmAppsList([...externalHelmAppsList, ...externalAppData.result.helmApps]);
+        _externalAppRecievedHelmApps.push(...externalAppData.result.helmApps);
+        setExternalHelmAppsList(_externalAppRecievedHelmApps);
 
         let _requestedSortedClusterIdsJson = JSON.stringify(
             clusterIdsCsv.split(',').sort((a, b) => a.localeCompare(b)),
