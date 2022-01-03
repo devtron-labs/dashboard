@@ -7,8 +7,7 @@ import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getInstalledAppDetail } from '../charts/charts.service';
-import { getInstalledChartDetail } from './appDetails/appDetails.api';
+import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
@@ -25,13 +24,11 @@ function RouterComponent({ envType }) {
 
         setIsLoading(true);
 
-        if (params.appId && params.envId) {
             if (initTimer) {
                 clearTimeout(initTimer);
             }
 
             init();
-        }
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount

@@ -22,7 +22,6 @@ function EnvironmentSelectorComponent() {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
 
     useEffect(() => {
-        if (params.appId) {
             getAppOtherEnvironment(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || []);
@@ -31,7 +30,6 @@ function EnvironmentSelectorComponent() {
                     console.error('erroe in fetching environments');
                     setEnvironments([]);
                 });
-        }
     }, [params.appId]);
 
     useEffect(() => {

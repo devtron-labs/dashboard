@@ -4,9 +4,10 @@ import { StatusFilterButtonComponent } from './StatusFilterButton.component';
 
 export default function FilterResource() {
 
-    const handleFileterChange = (sName: string) => {
-        IndexStore.updateFilterSearch(sName)
-    }
+    {/* ---for  later purpose---- */}
+    // const handleFileterChange = (sName: string) => {
+    //     IndexStore.updateFilterSearch(sName)
+    // }
     
     return (
         <div className="flexbox pr-20 w-100">
