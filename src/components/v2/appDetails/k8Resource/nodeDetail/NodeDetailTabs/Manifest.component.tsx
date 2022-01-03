@@ -110,7 +110,7 @@ function ManifestComponent({ selectedTab }) {
     // }, [params.actionName])
  
     return (
-        <div className="bcn-0" style={{ minHeight: '600px' }}>
+        <div style={{ minHeight: '600px', background:'#0B0F22' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div>
