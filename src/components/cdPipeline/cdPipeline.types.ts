@@ -23,6 +23,7 @@ export interface SavedDeploymentStrategy {
 
 export interface CDPipelineProps extends RouteComponentProps<{ appId: string, ciPipelineId: string, cdPipelineId?: string, workflowId: string }> {
     appName: string;
+    downstreamNodeSize: number;
     getWorkflows: () => void;
     close: () => void;
 }
@@ -70,6 +71,8 @@ export interface CDPipelineState {
         runPreStageInEnv: boolean;
         runPostStageInEnv: boolean;
         isClusterCdActive: boolean;
+        parentPipelineId: number;
+        parentPipelineType: string;
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
@@ -105,6 +108,8 @@ export interface PipelineConfig{
         runPreStageInEnv: boolean;
         runPostStageInEnv: boolean;
         isClusterCdActive: boolean;
+        parentPipelineId: number;
+        parentPipelineType: string;
     };
 
 
@@ -156,5 +161,3 @@ export interface AdvanceCDPipelineModalProps{
     deleteStage: (key: "preStage" | "postStage") => void
     renderAddStage: (key: "preStage" | "postStage") => void;
 }
-
-
