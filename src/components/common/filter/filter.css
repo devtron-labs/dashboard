@@ -39,7 +39,8 @@
 }
 
 .filter__trigger.disable__button {
-    opacity: 0.6;
+    background-color: var(--N100);
+    color: var(--N500);
     cursor: not-allowed;
 }
 
