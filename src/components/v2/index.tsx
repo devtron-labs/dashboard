@@ -64,21 +64,23 @@ function RouterComponent({ envType }) {
         }
     };
 
-    const redirectToHomePage = () => {
-
-    }
+    const redirectToHomePage = () => {};
 
     const PageNotFound = () => {
-        return  (<section className="app-not-configured w-100">
-        <img src={ErrorImage} />
-        <div className='w-250 flex column'>
-        <h4 className='fw-6'>Page not found :(</h4>
-        <div className='mb-20 flex text-align' >Either this page doesn't exist, or you don't have access to this page.</div>
-            <button className="cta" onClick={redirectToHomePage}>
-            Go back to home page
-            </button>
-            </div>
-    </section>)
+        return (
+            <section className="app-not-configured w-100">
+                <img src={ErrorImage} />
+                <div className="w-250 flex column">
+                    <h4 className="fw-6">Page not found :(</h4>
+                    <div className="mb-20 flex align-center">
+                        Either this page doesn't exist, or you don't have access to this page.
+                    </div>
+                    <div className="cta" onClick={redirectToHomePage}>
+                        Go back to home page
+                    </div>
+                </div>
+            </section>
+        );
     };
 
     return (
@@ -86,7 +88,7 @@ function RouterComponent({ envType }) {
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
             {isError ? (
-                <PageNotFound/>
+                <PageNotFound />
             ) : isLoading ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
