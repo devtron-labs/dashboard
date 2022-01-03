@@ -53,7 +53,7 @@ const AppDetailsStore = {
             return false
         }
 
-        let alredyAdded = false
+        let alreadyAdded = false
         let title = tabKind + '/' + tabName
         tabName = tabKind + '/...' + tabName.slice(-6)
 
@@ -62,11 +62,11 @@ const AppDetailsStore = {
             tab.isSelected = false
             if (tab.name.toLowerCase() === tabName.toLowerCase()) {
                 tab.isSelected = true
-                alredyAdded = true
+                alreadyAdded = true
             }
         }
 
-        if (!alredyAdded) {
+        if (!alreadyAdded) {
             applicationObjectTabs.push(addAOT(tabName, tabURL, true, title))
         }
 

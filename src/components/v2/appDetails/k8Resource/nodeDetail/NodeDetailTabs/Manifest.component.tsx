@@ -111,7 +111,7 @@ function ManifestComponent({ selectedTab }) {
  
     return (
         <div className="bcn-0" style={{ minHeight: '600px' }}>
-            {error && !loading && <MessageUI msg="Manifest not available" />}
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div>
                     <CodeEditor
@@ -121,7 +121,7 @@ function ManifestComponent({ selectedTab }) {
                         mode="yaml"
                         readOnly={true}
                         loading={loading}
-                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} />}
+                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24}/>}
                         // readOnly={activeTab !== 'Desired manifest'}
                         // onChange={handleEditorValueChange}
                     ></CodeEditor>

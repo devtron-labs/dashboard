@@ -374,7 +374,6 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             return
         }
         let pods = getPods();
-        console.log("payload", { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods })
         
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);

@@ -44,6 +44,9 @@ function EventsComponent({ selectedTab }) {
 
     return (
         <div className="bcn-0" style={{ minHeight: '600px' }}>
+            {/* in case of pod deletion */}
+            {/* <MessageUI msg='This resource no longer exists' size={32} /> */}
+                
             {pods && pods.length > 0 &&
                 <React.Fragment>
                     {!loading && events && events.length > 0 &&
@@ -73,13 +76,13 @@ function EventsComponent({ selectedTab }) {
                         </div>
                     }
 
-                    {(!loading && (!events || events.length === 0)) && <MessageUI msg='Events not available' />}
+                    {(!loading && (!events || events.length === 0)) && <MessageUI msg='Events not available' size={24}/>}
 
-                    {loading && <MessageUI msg='fetching events' icon={MsgUIType.LOADING} />}
+                    {loading && <MessageUI msg='fetching events' icon={MsgUIType.LOADING} size={24}/>}
                 </React.Fragment>
             }
 
-            {(pods.length === 0) && <MessageUI msg='Events not available' />}
+            {(pods.length === 0) && <MessageUI msg='Events not available' size={24}/>}
         </div>
     )
 }
