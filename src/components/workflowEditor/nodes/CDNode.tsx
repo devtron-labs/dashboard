@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
+import Tippy from '@tippyjs/react';
+
 export interface CDNodeProps {
     id: string;
     deploymentStrategy: string;
@@ -13,24 +16,39 @@ export interface CDNodeProps {
     environmentName: string;
     environmentId: number;
     to: string;
+    toggleCDMenu: () => void;
 }
 
 export class CDNode extends Component<CDNodeProps> {
 
     renderCardContent() {
     return (
-    <Link to={this.props.to} className="no-decor">
-        <div className="workflow-node cursor">
-            <div className="workflow-node__trigger-type workflow-node__trigger-type--create">{this.props.triggerType}</div>
-            <div className="workflow-node__title flex">
-                <div className="workflow-node__full-width-minus-Icon">
-                    <span className="workflow-node__text-light">{this.props.title}</span>
-                    <span className="ellipsis-right">{this.props.environmentName}</span>
+        <>
+            <Link to={this.props.to} className="no-decor">
+                <div className="workflow-node cursor">
+                    <div className="workflow-node__trigger-type workflow-node__trigger-type--create">{this.props.triggerType}</div>
+                    <div className="workflow-node__title flex">
+                        <div className="workflow-node__full-width-minus-Icon">
+                            <span className="workflow-node__text-light">{this.props.title}</span>
+                            <span className="ellipsis-right">{this.props.environmentName}</span>
+                        </div>
+                        <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
+                    </div>
                 </div>
-                <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
-            </div>
-        </div>
-    </Link>
+            </Link>
+
+            <button className="workflow-node__add-cd-btn">
+                <Tippy className="default-tt" arrow={false} placement="top" content={
+                    <span style={{ display: "block", width: "145px" }}> Add deployment pipeline </span>}>
+                    <Add className="icon-dim-18 fcb-5" onClick={(event: any) => {
+                        event.stopPropagation();
+                        let { top, left } = event.target.getBoundingClientRect();
+                        top = top + 25;
+                        this.props.toggleCDMenu();
+                    }} />
+                </Tippy>
+            </button>
+        </>
     )
     }
 

@@ -20,6 +20,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { isGitopsConfigured, getHostURLConfiguration } from '../../services/service';
 import { PipelineSelect } from './PipelineSelect';
 import './workflowEditor.css';
+import { NodeAttr } from '../app/details/triggerView/types';
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
 
@@ -31,6 +32,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             workflows: [],
             appName: "",
             allCINodeMap: new Map(),
+            allDeploymentNodeMap: new Map(),
             showDeleteDialog: false,
             showCIMenu: false,
             isGitOpsConfigAvailable: false,
@@ -55,19 +57,18 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             this.setState({ isGitOpsConfigAvailable });
         })
         getCreateWorkflows(this.props.match.params.appId).then((result) => {
-            let allCINodeMap = new Map();
-            let allCINodes = [];
-            for (let i = 0; i < result.workflows.length; i++) {
-                let ciNodes = result.workflows[i].nodes.filter(node => node.type === 'CI');
-                allCINodes = allCINodes.concat(ciNodes);
-            }
-            for (let i = 0; i < allCINodes.length; i++) {
-                allCINodeMap.set(allCINodes[i].id, allCINodes[i]);
-            }
+            let allCINodeMap = new Map(result.workflows
+                .flatMap( wf => wf.nodes.filter(node => node.type == 'CI'))
+                .map(ciPipeline => [ciPipeline.id, ciPipeline] as [string, NodeAttr]));
+            let allDeploymentNodeMap = new Map(result.workflows
+                .flatMap( wf => wf.nodes.filter(node => node.type == 'CD'))
+                .map(cdPipeline => [cdPipeline.id, cdPipeline] as [string, NodeAttr]));
+
             this.setState({
                 appName: result.appName,
                 workflows: result.workflows,
                 allCINodeMap: allCINodeMap,
+                allDeploymentNodeMap: allDeploymentNodeMap,
                 view: ViewType.FORM
             });
         }).catch((errors) => {
@@ -133,8 +134,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         this.handleCISelect(workflowId || 0, type);
     }
 
-    handleCDSelect = (workflowId, ciPipelineId) => {
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline`;
+    handleCDSelect = (workflowId: number | string, ciPipelineId: number| string, parentPipelineType: string, parentPipelineId?: number| string) => {
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`;
         this.props.history.push(LINK);
     }
 
@@ -178,9 +179,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             }} />
             <Route path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(pipeline => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`)}
                 render={(props) => {
+                    let cdNode = this.state.allDeploymentNodeMap.get(props.match.params.cdPipelineId);
+                    let downstreamNodeSize = (cdNode?.downstreams?.length ?? 0)
                     return <CDPipeline match={props.match} history={props.history} location={props.location}
                         appName={this.state.appName}
                         close={this.closePipeline}
+                        downstreamNodeSize = {downstreamNodeSize}
                         getWorkflows={this.getWorkflows} />
                 }}
             />

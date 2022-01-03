@@ -1,5 +1,5 @@
 import { get, post } from './api';
-import { Routes } from '../config';
+import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList } from './service.types';
@@ -81,8 +81,12 @@ export function getAppListMin(teamId = null, options?): Promise<AppListMin> {
     });
 }
 
-export function getProjectFilteredApps(projectIds: number[] | string[]): Promise<ProjectFilteredApps> {
-    return get(`app/min?teamIds=${projectIds.join(",")}`)
+export function getProjectFilteredApps(
+    projectIds: number[] | string[],
+    accessType?: string,
+): Promise<ProjectFilteredApps> {
+    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&onlyCharts=true' : '';
+    return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`);
 }
 
 export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
@@ -161,11 +165,6 @@ export function validateToken() {
 
 function getLastExecution(queryString: number | string): Promise<ResponseType> {
     const URL = `security/scan/executionDetail?${queryString}`;
-    return get(URL);
-}
-
-export function getPosthogData(): Promise<ResponseType> {
-    const URL = `telemetry/meta`;
     return get(URL);
 }
 
