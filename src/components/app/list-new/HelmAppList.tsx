@@ -335,7 +335,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             <EmptyState>
                 <img src={NoClusterSelectImage} width="250" height="250" alt="No Cluster Selected" />
                 <h2 className="fs-16 fw-4 c-9">Select cluster to see deployed apps</h2>
-                <p className="text-left">Helm-based applications deployed from devtron or other sources will be shown here. Learn more</p>
+                <p className="text-left" style={{width: '300px'}}>Helm-based applications deployed from devtron or other sources will be shown here. Learn more</p>
             </EmptyState>
         </div>
     }
