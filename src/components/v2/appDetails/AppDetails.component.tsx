@@ -10,12 +10,14 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, NodeType } from './appDetails.type';
+import { ApplicationObject, AppStreamData, NodeType } from './appDetails.type';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
+import SyncErrorComponent from './SyncError.component';
+import { Progressing, useEventSource } from '../../common';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -24,7 +26,19 @@ const AppDetailsComponent = () => {
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
+    const [loading, setLoading] = useState(true);
     const history = useHistory();
+    const [streamData, setStreamData] = useState<AppStreamData>(null);
+    const appDetails = IndexStore.getAppDetails();
+    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+    const pathname = window.location.pathname;
+
+    const syncSSE = useEventSource(
+        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
+        [params.appId, params.envId],
+        !!appDetails?.appName && !!appDetails?.environmentName,
+        (event) => setStreamData(JSON.parse(event.data)),
+    );
 
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod);
@@ -32,25 +46,41 @@ const AppDetailsComponent = () => {
         AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
     }, [params.appId, params.envId]);
 
-    const handleCloseTab = (e: any, tabName: string) => {
+    const handleCloseTab = (e: any, tabUrl: string) => {
         e.stopPropagation();
-        AppDetailsStore.removeAppDetailsTab(tabName);
+        const pushURL = AppDetailsStore.removeAppDetailsTab(tabUrl);
         setTimeout(() => {
-            history.push(url);
+            history.push(pushURL || url);
         }, 1);
+    };
+
+    const isTabSelected = (tab: ApplicationObject, index: number): boolean => {
+        return (
+            tab.isSelected ||
+            pathname === tab.url ||
+            // Below is a simple workaround to solve k8s resources tab unselected on page load issue
+            (index === 0 &&
+                !(
+                    pathname.includes('/log-analyzer') ||
+                    pathname.includes('/manifest') ||
+                    pathname.includes('/events') ||
+                    pathname.includes('/logs') ||
+                    pathname.includes('/terminal') ||
+                    pathname.includes('/summary')
+                ))
+        );
     };
 
     return (
         <div>
-            <div className='bcn-1'>
+            <div>
                 <EnvironmentSelectorComponent />
                 <EnvironmentStatusComponent />
             </div>
 
-            {/*<------- TODO : Error display on app detail -----> */}
-            {/* <SyncError appStreamData={streamData} /> */}
+            <SyncErrorComponent appStreamData={streamData} />
 
-            <div className="resource-tree-wrapper bcn-1 flexbox pl-20 pr-20 pt-16">
+            <div className="resource-tree-wrapper flexbox pl-20 pr-20">
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
@@ -59,7 +89,7 @@ const AppDetailsComponent = () => {
                                     className={`${
                                         tab.name === AppDetailsTabs.log_analyzer ||
                                         tab.name === AppDetailsTabs.k8s_Resources
-                                            ? 'w-0 h-0 bcn-0'
+                                            ? 'hide-section'
                                             : ''
                                     } default-tt `}
                                     arrow={false}
@@ -73,14 +103,18 @@ const AppDetailsComponent = () => {
                                     <div className="flex">
                                         <div
                                             className={`${
-                                                tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                isTabSelected(tab, index) ? 'resource-tree-tab bcn-0 cn-9' : ''
                                             } flex left pl-12 pt-8 pb-8 pr-12 `}
                                         >
                                             <NavLink
                                                 to={`${tab.url}`}
                                                 className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                             >
-                                                <div className={`flex left ${tab.isSelected ? 'fw-6 cn-9' : ''}`}>
+                                                <div
+                                                    className={`flex left ${
+                                                        isTabSelected(tab, index) ? 'fw-6 cn-9' : ''
+                                                    }`}
+                                                >
                                                     {tab.title === AppDetailsTabs.log_analyzer ? (
                                                         <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
                                                             {' '}
@@ -112,15 +146,19 @@ const AppDetailsComponent = () => {
 
                                             {tab.name !== AppDetailsTabs.log_analyzer &&
                                                 tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                    <span className="resource-tab__close-wrapper flex br-5">
+                                                    <div className="resource-tab__close-wrapper flex br-5">
                                                         <Cross
-                                                            onClick={(e) => handleCloseTab(e, tab.name)}
+                                                            onClick={(e) => handleCloseTab(e, tab.url)}
                                                             className="icon-dim-16 cursor"
                                                         />
-                                                    </span>
+                                                    </div>
                                                 )}
                                         </div>
-                                        <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>
+                                        <div
+                                            className={` ${
+                                                !isTabSelected(tab, index) ? 'resource-tree-tab__border' : ''
+                                            }`}
+                                        ></div>
                                     </div>
                                 </Tippy>
                             </li>

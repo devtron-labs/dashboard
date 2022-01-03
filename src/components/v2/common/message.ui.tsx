@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-filled-gray.svg'
+import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
 import { Spinner } from 'patternfly-react';
 import { Pod as PodIcon } from '../../common';
 
@@ -14,9 +14,10 @@ export interface MsgUIProps {
     icon?: MsgUIType
     bodyStyle?: any
     msgStyle?: any
+    size: number
 }
 
-const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle }) => {
+const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size }) => {
     return (
         <div className='flex column' style={{ ...bodyStyle, paddingTop: '100px' }}>
             <div>
@@ -27,11 +28,11 @@ const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle }) => 
                         case MsgUIType.POD:
                             return <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
                         default:
-                            return <InfoIcon />
+                            return <InfoIcon width={size} height={size}/>
                     }
                 })()}
             </div>
-            <div style={{ ...msgStyle, marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{msg}</div>
+            <div className='fs-14' style={{ ...msgStyle, marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{msg}</div>
         </div>
     )
 }

@@ -10,6 +10,7 @@ import { URLS } from '../../../../../config';
 import { AppType } from "../../../appDetails/appDetails.type";
 import { Link } from 'react-router-dom';
 import { useRouteMatch, useHistory } from 'react-router';
+import Tippy from '@tippyjs/react';
 
 function EnvironmentStatusComponent() {
     const appDetails = IndexStore.getAppDetails();
@@ -26,12 +27,14 @@ function EnvironmentStatusComponent() {
 
     return (
         <div>
-            <div className="flex left ml-20">
+            <div className="flex left ml-20 mb-16">
                 {status && (
                     <div className="app-status-card bcn-0 mr-12 br-8 p-16">
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
-                            <Question className="icon-dim-16 ml-4" />
+                            <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
+                                <Question className="cursor icon-dim-16 ml-4" />
+                            </Tippy>
                         </div>
 
                         <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
@@ -64,9 +67,11 @@ function EnvironmentStatusComponent() {
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Last updated</span>
-                            <Question className="icon-dim-16 ml-4" />
+                            <Tippy className="default-tt cursor" arrow={false} content={'When was this app last updated'}>
+                                <Question className="cursor icon-dim-16 ml-4" />
+                            </Tippy>
                         </div>
-                        <div className=" fw-6 fs-14 text-capitalize">
+                        <div className=" fw-6 fs-14">
                             {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
                         </div>
                         {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
@@ -88,7 +93,9 @@ function EnvironmentStatusComponent() {
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart used</span>
-                            <Question className="icon-dim-16 ml-4" />
+                            <Tippy className="default-tt cursor" arrow={false} content={'Chart used to deploy to this application'}>
+                                <Question className="cursor icon-dim-16 ml-4" />
+                            </Tippy>
                         </div>
                         <div className=" fw-6 fs-14">
                             {

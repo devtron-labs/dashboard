@@ -10,7 +10,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
     const [selectedTab, setSelectedTab] = useState('all')
     const params = useParams<{ envId: string, appId: string }>()
 
-    const handleFileterClick = (filterName: string) => {
+    const handleFilterClick = (filterName: string) => {
         IndexStore.updateFilterType(filterName)
         setSelectedTab(filterName.toLowerCase())
     }
@@ -20,7 +20,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
         if (nodes.length > 0) {
             let allNodeCount: number = 0, healthyNodeCount: number = 0, progressingNodeCount: number = 0, failedNodeCount: number = 0
 
-            nodes.map((_node) => {
+            nodes.forEach((_node) => {
                 let _nodeHealth = _node.health?.status || ''
 
                 if (_nodeHealth.toLowerCase() === "healthy") {
@@ -53,7 +53,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
                 tabs.length && tabs.map((tab: any, index: number) => {
                     return (<React.Fragment key={`${'filter_tab_' + index}`}>
                         { (tab.count > 0) &&
-                            <a onClick={() => { handleFileterClick(tab.status) }} className={`${(tab.status.toLowerCase() === selectedTab) ? 'bcb-1' : ''} p-6 pointer border-right cn-9 pr-6 fw-6 no-decor flex left`} >
+                            <a onClick={() => { handleFilterClick(tab.status) }} className={`${(tab.status.toLowerCase() === selectedTab) ? 'bcb-1' : ''} p-6 pointer border-right cn-9 pr-6 fw-6 no-decor flex left`} >
                                 {index !== 0 && <span className={`app-summary__icon icon-dim-16 mr-6 ${tab.status.toLowerCase()} ${tab.status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
                                 <span className="capitalize">{tab.status.toLowerCase()}</span>
                                 <span className="pl-4">({tab.count})</span>

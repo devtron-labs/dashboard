@@ -30,7 +30,7 @@ function EventsComponent({ selectedTab }) {
     useEffect(() => {
         setLoading(true)
 
-        getEvent(appDetails, params.podName).then((response) => {
+        getEvent(appDetails, params.podName, params.nodeType).then((response) => {
             setEvents(response.result.items || [])
             setLoading(false)
         }).catch((err) => {
@@ -43,14 +43,17 @@ function EventsComponent({ selectedTab }) {
 
 
     return (
-        <div className='bcn-0'>
+        <div style={{ minHeight: '600px', background:'#0B0F22' }}>
+            {/* in case of pod deletion */}
+            {/* <MessageUI msg='This resource no longer exists' size={32} /> */}
+                
             {pods && pods.length > 0 &&
                 <React.Fragment>
                     {!loading && events && events.length > 0 &&
-                        <div className="cn-9" >
-                            <table className="table">
-                                <thead>
-                                    <tr>
+                        <div className="cn-0" >
+                            <table className="table" >
+                                <thead style={{ minHeight: '600px', background:'#0B0F22' }}>
+                                    <tr className='no-border'>
                                         {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                             return <th key={`eh_${idx}`}>{head}</th>
                                         })}
@@ -60,7 +63,7 @@ function EventsComponent({ selectedTab }) {
 
                                     {events.map((event, index) => {
                                         return (
-                                            <tr key={`eb_${index}`}>
+                                            <tr className='no-border' key={`eb_${index}`}>
                                                 <td>{event.reason}</td>
                                                 <td>{event.message}</td>
                                                 <td>{event.count}</td>
@@ -73,13 +76,13 @@ function EventsComponent({ selectedTab }) {
                         </div>
                     }
 
-                    {(!loading && (!events || events.length === 0)) && <MessageUI msg='Events not available' />}
+                    {(!loading && (!events || events.length === 0)) && <MessageUI msg='Events not available' size={24}/>}
 
-                    {loading && <MessageUI msg='fetching events' icon={MsgUIType.LOADING} />}
+                    {loading && <MessageUI msg='fetching events' icon={MsgUIType.LOADING} size={24}/>}
                 </React.Fragment>
             }
 
-            {(pods.length === 0) && <MessageUI msg='Select a pod to view events' icon={MsgUIType.POD} />}
+            {(pods.length === 0) && <MessageUI msg='Events not available' size={24}/>}
         </div>
     )
 }

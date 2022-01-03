@@ -24,7 +24,7 @@ function EnvironmentSelectorComponent() {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
 
     useEffect(() => {
-        if (params.appId && appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
+        if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
             getAppOtherEnvironment(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || []);

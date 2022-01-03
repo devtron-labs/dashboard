@@ -8,6 +8,9 @@ import { useSharedState } from '../../../utils/useSharedState';
 import { getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
+import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
+import { getNodeStatus } from './nodeType.util';
+import { node } from 'prop-types';
 
 
 function NodeTreeComponent() {
@@ -17,7 +20,6 @@ function NodeTreeComponent() {
 
     const [{ treeNodes }, dispatch] = useNodeTree();
     const [filteredNodes] = useSharedState(IndexStore.getAppDetailsFilteredNodes(), IndexStore.getAppDetailsNodesFilteredObservable())
-
     const params = useParams<{ nodeType: NodeType }>()
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
@@ -73,7 +75,8 @@ function NodeTreeComponent() {
                     activeParentNode = {
                         name: getPNodeName(_kind),
                         childNodes: [{
-                            name: _nodesByKind[0].kind
+                            name: _nodesByKind[0].kind,
+                            status: getNodeStatus(_nodesByKind[0])
                         }]
                     } as iNode
                 }
@@ -116,12 +119,27 @@ function NodeTreeComponent() {
 
     }, [filteredNodes.length])
 
+    const hasErrorInTreeNode = (treeNode: iNode) => {
+        let status = treeNode.status || treeNode.health?.status
+
+        if(status && status.toLowerCase() !== 'healthy'){
+            return true
+        }
+
+        return false
+    }
+
+    const hasErrorInChildTreeNode = (pTreeNode: iNode) => {
+        let erroNodes = pTreeNode.childNodes.filter((cNode) => hasErrorInTreeNode(cNode))
+
+        return erroNodes.length > 0
+    }
+
     const makeNodeTree = (treeNodes: iNodes, parentNode?: iNode) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name} >
                     <div className={`flex left cursor fw-6 cn-9 fs-14 `} onClick={(e) => handleNodeClick(treeNode, parentNode, e)}>
-
                         {treeNode.childNodes?.length > 0 ?
                             <React.Fragment>
                                 <DropDown
@@ -131,12 +149,21 @@ function NodeTreeComponent() {
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
                                 </div>
+                                {!treeNode.isSelected && hasErrorInChildTreeNode(treeNode) && <ErrorImage
+                                    className="icon-dim-16 rotate"
+                                    style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
+                                />}
                             </React.Fragment>
                             :
-
-                            <NavLink to={`${k8URL}/${treeNode.name.toLowerCase()}`} className={`no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '}`}>
-                                {treeNode.name}
-                            </NavLink>
+                            <React.Fragment>
+                                <NavLink to={`${k8URL}/${treeNode.name.toLowerCase()}`} className={`no-decor fs-14 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-1-43 ${(treeNode.isSelected) ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '}`}>
+                                    {treeNode.name}
+                                </NavLink>
+                                {hasErrorInTreeNode(treeNode) && <ErrorImage
+                                    className="icon-dim-16 rotate"
+                                    style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
+                                />}
+                            </React.Fragment>
                         }
                     </div>
 

@@ -27,10 +27,9 @@ function ManifestComponent({ selectedTab }) {
 
     useEffect(() => {
         setLoading(true);
-        let title = url.split('/').slice(-2);
         selectedTab(NodeDetailTab.MANIFEST, url);
 
-        getManifestResource(appDetails, params.podName)
+        getManifestResource(appDetails, params.podName, params.nodeType)
             .then((response) => {
                 const _manifest = response?.result?.manifest;
                 if (_manifest) {
@@ -109,19 +108,20 @@ function ManifestComponent({ selectedTab }) {
     //         markActiveTab(params.actionName)
     //     }
     // }, [params.actionName])
-
+ 
     return (
-        <div className='bcn-0' style={{ minHeight: '600px' }}>
-            {loading && !error && <MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} />}
-            {error && !loading && <MessageUI msg="Manifest not available" />}
+        <div style={{ minHeight: '600px', background:'#0B0F22' }}>
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div>
                     <CodeEditor
-                        theme="vs-gray--dt"
+                        theme="vs-dark"
                         height={700}
                         value={manifest}
                         mode="yaml"
                         readOnly={true}
+                        loading={loading}
+                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24}/>}
                         // readOnly={activeTab !== 'Desired manifest'}
                         // onChange={handleEditorValueChange}
                     ></CodeEditor>

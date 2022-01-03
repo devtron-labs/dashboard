@@ -870,6 +870,11 @@ button.anchor {
     height: 100%;
 }
 
+.details-loader {
+    width: 100vw;
+    height: calc(100vh - 80px);
+}
+
 .configuration-list {
     display: grid;
     grid-template-columns: 24px 1fr 24px;
@@ -1630,6 +1635,15 @@ button.anchor {
     align-items: flex-start !important;
 }
 
+
+.lh-20{
+   line-height: 20px;
+}
+
+.pl-16{
+    padding-left: 16px !important;
+}
+
 .text__subtitle {
     font-size: 13px;
     font-weight: 600;
@@ -1653,10 +1667,6 @@ button.anchor {
     height : 8px;
 }
 
-.lh-20{
-   line-height: 20px;
-}
-
-.pl-16{
-    padding-left: 16px !important;
+.hide-section {
+    display: none;
 }

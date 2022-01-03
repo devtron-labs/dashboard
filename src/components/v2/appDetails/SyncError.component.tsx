@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-object.svg';
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { not } from '../../common';
 
@@ -12,17 +12,17 @@ const SyncErrorComponent: React.FC<{ appStreamData }> = ({ appStreamData }) => {
     )
         return null;
     return (
-        <div className="top flex left column w-100 bcr-1 pl-25 pr-25">
+        <div className="top flex left column w-100 bcr-1 pl-25 pr-25 mb-16">
             <div className="flex left w-100 " style={{ height: '56px' }}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
                 <span className="cr-5 fs-14 fw-6">
                     {appStreamData?.result?.application?.status?.conditions?.length} Errors
                 </span>
                 {collapsed && (
-                    <span className="fs-12 cn-9 ml-24">
+                    <span className="fs-12 cn-9 ml-24 w-80 ellipsis-right">
                         {appStreamData?.result?.application?.status?.conditions
                             .map((condition) => condition.type)
-                            .join(',')}
+                            .join(', ')}
                     </span>
                 )}
                 <DropDownIcon

@@ -2,18 +2,17 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
 import { useRouteMatch, useParams, Redirect } from 'react-router';
-import { Progressing } from '../common';
+import { DetailsProgressing } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getInstalledAppDetail } from '../charts/charts.service';
-import { getInstalledChartDetail } from './appDetails/appDetails.api';
+import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
-import EnvironmentSelectorComponent from './appDetails/sourceInfo/EnvironmentSelector.component';
-import EnvironmentStatusComponent from './appDetails/sourceInfo/environmentStatus/EnvironmentStatus.component';
+
+let initTimer = null;
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -25,10 +24,21 @@ function RouterComponent({ envType }) {
 
         setIsLoading(true);
 
-        if (params.appId && params.envId) {
+            if (initTimer) {
+                clearTimeout(initTimer);
+            }
+
             init();
-        }
     }, [params.appId, params.envId]);
+
+    // clearing the timer on component unmount
+    useEffect(() => {
+        return (): void => {
+            if (initTimer) {
+                clearTimeout(initTimer);
+            }
+        };
+    }, []);
 
     const init = async () => {
         try {
@@ -44,21 +54,20 @@ function RouterComponent({ envType }) {
 
             setIsLoading(false);
 
-            setTimeout(init, 30 * 60 * 1000);
+            initTimer = setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
-            // alert('error loading data')
         }
     };
 
     return (
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
-            
+
             {isLoading ? (
-                <div style={{ height: '560px' }} className="flex"></div>
+                <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
-                <Suspense fallback={<Progressing pageLoader />}>
+                <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
                         <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />

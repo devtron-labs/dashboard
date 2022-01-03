@@ -12,6 +12,7 @@ import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
 import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
+import { getNodeStatus } from './nodeType.util';
 
 function NodeComponent() {
     const { path, url } = useRouteMatch();
@@ -38,7 +39,7 @@ function NodeComponent() {
             // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             // setTabs(_tabs)
 
-            let tableHeader: Array<String>, _fcw: string;
+            let tableHeader: string[], _fcw: string;
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
@@ -58,26 +59,32 @@ function NodeComponent() {
             setTableHeader(tableHeader);
             setFirstColWidth(_fcw);
 
-            let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+            const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
+                let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
 
-            // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-            //     _selectedNodes = _selectedNodes.filter((node) => {
-            //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
+                // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
+                //     _selectedNodes = _selectedNodes.filter((node) => {
+                //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
 
-            //         return _podMetaData.isNew === podType;
-            //     });
-            // }
-            let _healthyNodeCount = 0;
+                //         return _podMetaData.isNew === podType;
+                //     });
+                // }
+                let _healthyNodeCount = 0;
 
-            _selectedNodes.forEach((node: Node) => {
-                if (node.health?.status.toLowerCase() === 'healthy') {
-                    _healthyNodeCount++;
-                }
+                _selectedNodes.forEach((node: Node) => {
+                    if (node.health?.status.toLowerCase() === 'healthy') {
+                        _healthyNodeCount++;
+                    }
+                });
+
+                setSelectedNodes([..._selectedNodes]);
+
+                setSelectedHealthyNodeCount(_healthyNodeCount);
             });
 
-            setSelectedNodes([..._selectedNodes]);
-
-            setSelectedHealthyNodeCount(_healthyNodeCount);
+            return (): void => {
+                selectedNodesSub.unsubscribe();
+            };
         }
     }, [params.nodeType, podType]);
 
@@ -122,23 +129,6 @@ function NodeComponent() {
         }
     };
 
-    const getNodeStatus = (node: iNode) => {
-        if (node.info && node.info.length > 0) {
-            const statusReason = node.info.filter((_info) => {
-                return _info.name === 'Status Reason';
-            });
-            if (statusReason && statusReason.length > 0) {
-                return statusReason[0].value;
-            }
-        }
-        if (node.status) {
-            return node.status;
-        }
-        if (node.health?.status) {
-            return node.health?.status;
-        }
-        return '';
-    };
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {

@@ -81,9 +81,9 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({ subje
             cursorStyle: 'bar',
             cursorWidth: 0,
             theme: {
-                background: '#ffffff',
-                foreground: '#000a14',
-                selection: '#0066cc4d',
+                background: '#000',
+                foreground: '#FFFFFF',
+                // selection: '#0066cc4d',
             },
         });
         terminal.current.attachCustomKeyEventHandler(handleKeyPress)
@@ -142,8 +142,8 @@ function ResizableLogs({fitAddon, height, width, showCopyToast}){
 
     return (
         <div id="xterm-logs" style={{ height, width }}>
-            <span className={`br-8 bcn-9 cn-0 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`} style={{zIndex: 9}}>
-                <CheckIcon className="icon-dim-24 scg-5" />
+            <span className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`} style={{zIndex: 9}}>
+                <CheckIcon className="icon-dim-24 scn-9" />
                 <div className="">Copied!</div>
             </span>
         </div>

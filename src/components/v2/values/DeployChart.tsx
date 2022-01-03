@@ -3,7 +3,7 @@ import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, Delete
 import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
-import { useHistory, useParams } from 'react-router'
+import { useHistory, useParams, useRouteMatch, } from 'react-router'
 import { URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
@@ -104,6 +104,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
 	const [showCodeEditorError, setCodeEditorError] = useState(false);
 	const deployChartForm = useRef(null);
 	const deployChartEditor = useRef(null);
+	const history = useHistory()
+	const {url} = useRouteMatch()
 
 	const fetchProjects = async () => {
 		let { result } = await getTeamListMin();
@@ -176,7 +178,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				await updateChart(payload)
 				toast.success('Deployment initiated')
 				setLoading(false)
+				let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}`;
+				history.push(_url);
+				console.log(url)
 				onHide(true)
+			
 			}
 
 			else {
@@ -206,7 +212,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 		// scroll to the editor view with animation for only update-chart
 		if (envId) {
 			setTimeout(() => {
-				deployChartForm.current.scrollTo({
+				deployChartForm.current?.scrollTo({
 					top: deployChartEditor.current.offsetTop,
 					behavior: 'smooth',
 				});
@@ -405,7 +411,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
 	return (<>
 		<div className={`deploy-chart-container bcn-0 ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`} style={{height: 'calc(100vh - 90px)'}}>
 			<div className="header-container flex column">
-				<div className="title">{chartName}/ {name}</div>
 				<div className="border" />
 			</div>
 			<ReadmeColumn readmeCollapsed={readmeCollapsed} toggleReadmeCollapsed={toggleReadmeCollapsed} readme={readme} />

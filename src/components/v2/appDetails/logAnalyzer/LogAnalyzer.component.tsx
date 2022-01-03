@@ -7,7 +7,7 @@ import { useRouteMatch } from 'react-router';
 function LogAnalyzerComponent() {
     const { url } = useRouteMatch();
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActive(AppDetailsTabs.log_analyzer, url)
+        AppDetailsStore.markAppDetailsTabActive(url)
     }, [])
 
     return (

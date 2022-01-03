@@ -53,7 +53,7 @@ const AppDetailsStore = {
             return false
         }
 
-        let alredyAdded = false
+        let alreadyAdded = false
         let title = tabKind + '/' + tabName
         tabName = tabKind + '/...' + tabName.slice(-6)
 
@@ -62,11 +62,11 @@ const AppDetailsStore = {
             tab.isSelected = false
             if (tab.name.toLowerCase() === tabName.toLowerCase()) {
                 tab.isSelected = true
-                alredyAdded = true
+                alreadyAdded = true
             }
         }
 
-        if (!alredyAdded) {
+        if (!alreadyAdded) {
             applicationObjectTabs.push(addAOT(tabName, tabURL, true, title))
         }
 
@@ -74,22 +74,29 @@ const AppDetailsStore = {
 
         return true;
     },
-    removeAppDetailsTab: (tabName: string) => {
-        let _applicationObjectTabs = []
+    removeAppDetailsTab: (tabUrl: string): string => {
+        let _applicationObjectTabs = [];
 
-        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        let pushURL = '';
+        const pathname = window.location.pathname;
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
-            tab.isSelected = index === 0
-            if (tab.name.toLowerCase() !== tabName.toLowerCase()) {
-                _applicationObjectTabs.push(tab)
+            tab.isSelected = pathname === tab.url || (applicationObjectTabs.length <= 2 && index === 0);
+            if (tab.url !== tabUrl) {
+                _applicationObjectTabs.push(tab);
+
+                if (!pushURL) {
+                    pushURL = pathname === tab.url ? tab.url : '';
+                }
             }
         }
 
-        applicationObjectTabsSubject.next([...applicationObjectTabs])
+        applicationObjectTabsSubject.next([..._applicationObjectTabs]);
+        return pushURL;
     },
-    markAppDetailsTabActive: (tabName: string, url: string) => {
+    markAppDetailsTabActive: (url: string, parentUrl?: string) => {
         let idTabFound = false
 
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
@@ -99,6 +106,9 @@ const AppDetailsStore = {
             tab.isSelected = false
             if (tab.url === url) {
                 tab.isSelected = true
+                idTabFound = true
+            }else if(tab.url.indexOf(parentUrl) > -1){
+                tab.url = url 
                 idTabFound = true
             }
         }
