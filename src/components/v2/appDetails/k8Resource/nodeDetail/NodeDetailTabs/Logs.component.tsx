@@ -34,7 +34,6 @@ function LogsComponent({ selectedTab }) {
     const [containers, setContainers] = useState([]);
     const [podOptions, setPodOptions] = useState([]);
     const [selectedContainerName, setSelectedContainerName] = useState('');
-    //const [selectedPodName, setSelectedPodName] = useState('');
     const [tempSearch, setTempSearch] = useState<string>('');
     const [logSearchString, setLogSearchString] = useState('');
     const [grepTokens, setGrepTokens] = useState(null);
@@ -372,7 +371,7 @@ function LogsComponent({ selectedTab }) {
                             name="log_search_input"
                         /> */}
 
-                        <form className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4"
+                        <form className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
                             onSubmit={handleLogSearchSubmit}
                         >
                             <input
