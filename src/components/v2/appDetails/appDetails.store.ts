@@ -83,7 +83,7 @@ const AppDetailsStore = {
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
-            tab.isSelected = (pathname === tab.url) || (applicationObjectTabs.length <= 2 && index === 0);
+             tab.isSelected = (applicationObjectTabs.length <= 2 && index === 0);
             if (tab.url !== tabUrl) {
                 _applicationObjectTabs.push(tab);
 
