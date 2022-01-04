@@ -438,8 +438,16 @@
 
 .cluster-select-message-strip{
     background-color: var(--V100);
-    height: 32px;
-    margin: 0 32px;
-    padding: 6px 52px 6px 16px;
     border: solid 1px #c5bbfa;
+}
+
+.above-header-message {
+    min-height: 32px;
+    margin: 0 32px;
+    padding: 6px;
+}
+
+.ea-fetch-error-message{
+    background-color: var(--R200);
+    border: solid 1px var(--R200);
 }

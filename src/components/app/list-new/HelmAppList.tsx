@@ -15,6 +15,8 @@ import EmptyState from '../../EmptyState/EmptyState';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg';
+import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
 import './HelmAppList.css';
 import '../list/list.css';
 
@@ -28,6 +30,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC);
     const [clusterIdsCsv, setClusterIdsCsv] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined);
+    const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
 
     // component load
     useEffect(() => {
@@ -94,6 +97,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
         setSseConnection(undefined);
         setFetchingExternalAppsState(false);
+        setExternalHelmListFetchErrors([]);
     }
 
     function _getExternalHelmApps() {
@@ -104,8 +108,14 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             });
             let _externalAppRecievedClusterIds = [];
             let _externalAppRecievedHelmApps = [];
+            let _externalAppFetchErrors : string[] = [];
             _sseConnection.onmessage = function (message) {
-                _onExternalAppDataFromSse(message, _externalAppRecievedClusterIds, _externalAppRecievedHelmApps, _sseConnection);
+                _onExternalAppDataFromSse(message, _externalAppRecievedClusterIds, _externalAppRecievedHelmApps, _externalAppFetchErrors, _sseConnection);
+            };
+            _sseConnection.onerror = function (err) {
+                _externalAppFetchErrors.push("Some network error occured while fetching external apps.");
+                setExternalHelmListFetchErrors(_externalAppFetchErrors);
+                _closeSseConnection(_sseConnection);
             };
             setSseConnection(_sseConnection);
         }
@@ -115,15 +125,20 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',');
     }
 
-    function _onExternalAppDataFromSse(message: MessageEvent, _externalAppRecievedClusterIds : string[], _externalAppRecievedHelmApps : HelmApp[], _sseConnection: EventSource) {
+    function _onExternalAppDataFromSse(message: MessageEvent, _externalAppRecievedClusterIds : string[], _externalAppRecievedHelmApps : HelmApp[], _externalAppFetchErrors : string[], _sseConnection: EventSource) {
         let externalAppData: AppListResponse = JSON.parse(message.data);
-        if (externalAppData.result.errored || !externalAppData.result.clusterIds?.length) {
+        if (!externalAppData.result.clusterIds?.length) {
             return;
         }
 
         let _clusterId = externalAppData.result.clusterIds[0].toString();
         if (_externalAppRecievedClusterIds.includes(_clusterId)){
             return;
+        }
+
+        if(externalAppData.result.errored){
+            _externalAppFetchErrors.push(externalAppData.result.errorMsg || "Some error occured while fetching external apps");
+            setExternalHelmListFetchErrors(_externalAppFetchErrors);
         }
 
         _externalAppRecievedClusterIds.push(_clusterId);
@@ -141,10 +156,14 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         );
 
         if (_requestedSortedClusterIdsJson == _recievedSortedClusterIdsJson) {
-            _sseConnection.close();
-            setSseConnection(undefined);
-            setFetchingExternalAppsState(false);
+            _closeSseConnection(_sseConnection);
         }
+    }
+
+    function _closeSseConnection (_sseConnection: EventSource){
+        _sseConnection.close();
+        setSseConnection(undefined);
+        setFetchingExternalAppsState(false);
     }
 
     function handleFilteration() {
@@ -218,6 +237,12 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
     }
 
+    function _removeExternalAppFetchError(index : number){
+        let _externalHelmListFetchErrors = [...externalHelmListFetchErrors];
+        _externalHelmListFetchErrors.splice(index, 1);
+        setExternalHelmListFetchErrors(_externalHelmListFetchErrors);
+    }
+
     function renderHeaders() {
         let sortIcon = sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down';
         return (
@@ -268,12 +293,25 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                     !clusterIdsCsv &&
                     <div className="bcn-0">
                         <div className="h-8"></div>
-                        <div className="cluster-select-message-strip flex left">
+                        <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex"><InfoFillPurple className="icon-dim-20" /></span>
                             <span>To view helm charts deployed from outside devtron, please select a cluster from above filters. <a className="learn-more__href cursor">Learn more</a> </span>
                         </div>
                     </div>
                 }
+
+                {externalHelmListFetchErrors.map((externalHelmListFetchError, index) => {
+                    return <div className="bcn-0" key={index}>
+                        <div className="h-8"></div>
+                        <div className="ea-fetch-error-message above-header-message flex left">
+                            <span className="mr-8 flex"><ErrorExclamationIcon className="icon-dim-20" /></span>
+                            <span>{externalHelmListFetchError}</span>
+                            <CloseIcon className="icon-dim-24 align-right cursor" onClick={() => _removeExternalAppFetchError(index)} />
+                        </div>
+                    </div>
+                })}
+
+
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
                 {filteredHelmAppsList.map((app) => {
                     return (
