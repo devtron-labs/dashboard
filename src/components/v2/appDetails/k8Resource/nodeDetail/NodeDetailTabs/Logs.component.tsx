@@ -49,23 +49,23 @@ function LogsComponent({ selectedTab }) {
 
     const isLogAnalyzer = !params.podName;
 
-    const handlePodSelecction = (cs) => {
+    const handlePodSelecction = (cs, selectedOption) => {
         setContainers(cs.containers);
         setSelectedPods(cs.pods);
-        setSelectedContainerName(cs.containers[0]);
+        setSelectedContainerName(`${selectedOption}_${cs.containers[0]}`);
     };
 
     const handlePodChange = (selectedOption) => {
         onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
-                handlePodSelecction(IndexStore.getAllContainers());
+                handlePodSelecction(IndexStore.getAllContainers(), selectedOption);
                 break;
             case 'All new pods':
-                handlePodSelecction(IndexStore.getAllNewContainers());
+                handlePodSelecction(IndexStore.getAllNewContainers(), selectedOption);
                 break;
             case 'All old pods':
-                handlePodSelecction(IndexStore.getAllOldContainers());
+                handlePodSelecction(IndexStore.getAllOldContainers(), selectedOption);
                 break;
             default:
                 const cs = IndexStore.getAllContainersForPod(selectedOption);
