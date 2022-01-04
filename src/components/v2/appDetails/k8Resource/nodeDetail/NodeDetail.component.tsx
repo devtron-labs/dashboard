@@ -22,11 +22,8 @@ function NodeDetailComponent() {
     const history = useHistory()
 
     useEffect(() => {
-        if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
             setTabs(_tabs)
-        }
-
     }, [])
 
 
