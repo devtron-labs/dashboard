@@ -114,7 +114,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             };
             _sseConnection.onerror = function (err) {
                 _externalAppFetchErrors.push("Some network error occured while fetching external apps.");
-                setExternalHelmListFetchErrors(_externalAppFetchErrors);
+                setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
                 _closeSseConnection(_sseConnection);
             };
             setSseConnection(_sseConnection);
@@ -138,7 +138,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
 
         if(externalAppData.result.errored){
             _externalAppFetchErrors.push(externalAppData.result.errorMsg || "Some error occured while fetching external apps");
-            setExternalHelmListFetchErrors(_externalAppFetchErrors);
+            setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
 
         _externalAppRecievedClusterIds.push(_clusterId);
@@ -146,7 +146,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         _newExternalAppList.every(element => element.isExternal = true);
 
         _externalAppRecievedHelmApps.push(..._newExternalAppList);
-        setExternalHelmAppsList(_externalAppRecievedHelmApps);
+        setExternalHelmAppsList([..._externalAppRecievedHelmApps]);
 
         let _requestedSortedClusterIdsJson = JSON.stringify(
             clusterIdsCsv.split(',').sort((a, b) => a.localeCompare(b)),
