@@ -377,7 +377,7 @@ function LogsComponent({ selectedTab }) {
                             <input
                                 value={tempSearch}
                                 className='bw-0 w-100'
-                                style={{ background: 'transparent' }}
+                                style={{ background: 'transparent', outline: 'none' }}
                                 onKeyUp={handleLogsSearch}
                                 onChange={(e) => setTempSearch(e.target.value)}
                                 type="search"

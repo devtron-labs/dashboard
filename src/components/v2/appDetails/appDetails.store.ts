@@ -83,12 +83,12 @@ const AppDetailsStore = {
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
-            tab.isSelected = pathname === tab.url || (applicationObjectTabs.length <= 2 && index === 0);
+            tab.isSelected = (pathname === tab.url) || (applicationObjectTabs.length <= 2 && index === 0);
             if (tab.url !== tabUrl) {
                 _applicationObjectTabs.push(tab);
 
                 if (!pushURL) {
-                    pushURL = pathname === tab.url ? tab.url : '';
+                    pushURL = (pathname === tab.url) ? tab.url : '';
                 }
             }
         }
@@ -97,7 +97,7 @@ const AppDetailsStore = {
         return pushURL;
     },
     markAppDetailsTabActive: (url: string, parentUrl?: string) => {
-        let idTabFound = false
+        let isTabFound = false
 
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
 
@@ -106,16 +106,13 @@ const AppDetailsStore = {
             tab.isSelected = false
             if (tab.url === url) {
                 tab.isSelected = true
-                idTabFound = true
-            }else if(tab.url.indexOf(parentUrl) > -1){
-                tab.url = url 
-                idTabFound = true
+                isTabFound = true
             }
         }
 
         applicationObjectTabsSubject.next([...applicationObjectTabs])
 
-        return idTabFound
+        return isTabFound
     },
 
     setNodeTreeActiveParentNode: (_n: iNode) => {

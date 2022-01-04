@@ -71,9 +71,9 @@ function RouterComponent({ envType }) {
             <section className="app-not-configured w-100">
                 <img src={ErrorImage} />
                 <div className="w-250 flex column">
-                    <h4 className="fw-6">Page not found :(</h4>
+                    <h4 className="fw-6">This app does not exist</h4>
                     <div className="mb-20 flex align-center">
-                        Either this page doesn't exist, or you don't have access to this page.
+                    We could not find and connect to this application. 
                     </div>
                     <div className="cta" onClick={redirectToHomePage}>
                         Go back to home page

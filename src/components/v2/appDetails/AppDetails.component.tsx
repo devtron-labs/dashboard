@@ -112,7 +112,7 @@ const AppDetailsComponent = () => {
                                             >
                                                 <div
                                                     className={`flex left ${
-                                                        isTabSelected(tab, index) ? 'fw-6 cn-9' : ''
+                                                        isTabSelected(tab, index) ? 'cn-9' : ''
                                                     }`}
                                                 >
                                                     {tab.title === AppDetailsTabs.log_analyzer ? (
