@@ -448,6 +448,6 @@
 }
 
 .ea-fetch-error-message{
-    background-color: var(--R200);
+    background-color: var(--R100);
     border: solid 1px var(--R200);
 }
