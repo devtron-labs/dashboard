@@ -50,7 +50,8 @@ const AppDetailsComponent = () => {
         e.stopPropagation();
         const pushURL = AppDetailsStore.removeAppDetailsTab(tabUrl);
         setTimeout(() => {
-            history.push(pushURL || url);
+            let _url = pushURL ? pushURL : url;
+            history.push(_url);
         }, 1);
     };
 
@@ -110,11 +111,7 @@ const AppDetailsComponent = () => {
                                                 to={`${tab.url}`}
                                                 className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                             >
-                                                <div
-                                                    className={`flex left ${
-                                                        isTabSelected(tab, index) ? 'cn-9' : ''
-                                                    }`}
-                                                >
+                                                <div className={`flex left ${isTabSelected(tab, index) ? 'cn-9' : ''}`}>
                                                     {tab.title === AppDetailsTabs.log_analyzer ? (
                                                         <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
                                                             {' '}
