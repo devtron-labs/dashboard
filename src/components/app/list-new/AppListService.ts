@@ -97,16 +97,20 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
 
                 clusterNamespaceMapping.environments.forEach((environment : EnvironmentHelmResult) => {
                     let _namespace = environment.namespace;
-                    filters.namespaces.push({
-                        key: _clusterId + "_" + _namespace,
-                        label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
-                        isSaved: true,
-                        isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
-                        clusterId : _clusterId,
-                        actualName : _namespace,
-                        clusterName : _clusterName,
-                        toShow : filterApplied.clusterVsNamespaceMap.size == 0 || _isClusterSelected
-                    })
+
+                    // avoid pushing same namespace for same cluster multiple times (can be data bug in backend)
+                    if(!filters.namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
+                        filters.namespaces.push({
+                            key: _clusterId + "_" + _namespace,
+                            label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
+                            isSaved: true,
+                            isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
+                            clusterId : _clusterId,
+                            actualName : _namespace,
+                            clusterName : _clusterName,
+                            toShow : filterApplied.clusterVsNamespaceMap.size == 0 || _isClusterSelected
+                        })
+                    }
                 })
             })
         }
