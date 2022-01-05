@@ -69,7 +69,7 @@ const AppDetailsComponent = () => {
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
-                            <li key={index + 'tab'} className="flex left ellipsis-right ">
+                            <li key={index + 'tab'} id={`${params.appId}`} className="flex left ellipsis-right ">
                                 <Tippy
                                     className={`${
                                         tab.name === AppDetailsTabs.log_analyzer ||

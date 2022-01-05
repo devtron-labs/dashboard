@@ -1,7 +1,7 @@
 import React from 'react'
 import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
 import { Spinner } from 'patternfly-react';
-import { Pod as PodIcon } from '../../common';
+import { Pod as PodIcon, Progressing } from '../../common';
 
 
 export enum MsgUIType {
@@ -24,15 +24,15 @@ const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size 
                 {(() => {
                     switch (icon) {
                         case MsgUIType.LOADING:
-                            return <Spinner loading></Spinner>
+                            return <div className='fcn-0'><Progressing /></div>
                         case MsgUIType.POD:
                             return <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
                         default:
-                            return <InfoIcon width={size} height={size}/>
+                            return <InfoIcon className="fcn-0" width={size} height={size}/>
                     }
                 })()}
             </div>
-            <div className='fs-14' style={{ ...msgStyle, marginTop: '8px', color: 'rgb(156, 148, 148)' }}>{msg}</div>
+            <div className='fs-14' style={{ ...msgStyle, marginTop: '8px', color: 'white' }}>{msg}</div>
         </div>
     )
 }

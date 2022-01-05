@@ -40,7 +40,7 @@ function EventsComponent({ selectedTab }) {
     }, [podName]);
 
     return (
-        <div style={{ minHeight: '600px', background: '#0B0F22' }}>
+        <div style={{ minHeight: '600px', background: '#0B0F22' }} className=''>
             {/* in case of pod deletion */}
             {/* <MessageUI msg='This resource no longer exists' size={32} /> */}
 

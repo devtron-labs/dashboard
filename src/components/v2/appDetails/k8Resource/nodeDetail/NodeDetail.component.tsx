@@ -51,7 +51,7 @@ function NodeDetailComponent() {
 
     return (
         <React.Fragment>
-            <div className=" bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
+            <div className="node-details_tab bcn-0 flex left top w-100 pl-20 border-bottom pr-20">
                 {
                     (tabs && tabs.length > 0) && tabs.map((tab: string, index: number) => {
                         return (
