@@ -3,13 +3,14 @@ import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClipboard } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as Clear } from '../../assets/icons/ic-error-exclamation.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
 import { editor } from 'monaco-editor';
 
 interface WarningProps { text: string }
-
+interface ErrorBarProps { text: string }
 interface InformationProps { text: string }
 
 interface CodeEditorInterface {
@@ -38,6 +39,7 @@ interface CodeEditorInterface {
 
 interface CodeEditorHeaderInterface {
     children?: any;
+    hideDefaultSplitHeader?: boolean;
 }
 interface CodeEditorComposition {
     Header?: React.FC<any>;
@@ -46,6 +48,7 @@ interface CodeEditorComposition {
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
     Warning?: React.FC<{ text: string }>;
+    ErrorBar?: React.FC<{ text: string }>;
     Information?: React.FC<InformationProps>
 }
 interface CodeEditorHeaderComposition {
@@ -113,7 +116,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-   
+
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco
@@ -200,6 +203,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
     }, [height])
 
+    useEffect(() => {
+      dispatch({ type: 'setDiff', value: diffView })
+    }, [diffView])
+
     function handleOnChange(newValue, e) {
         dispatch({ type: 'setCode', value: newValue })
     }
@@ -262,11 +269,11 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     );
 })
 
-const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children }) => {
+const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
     return <div className="code-editor__header flex left">
         {children}
-        {defaultValue && <SplitPane />}
+        {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
     </div>
 }
 
@@ -320,6 +327,15 @@ const Warning: React.FC<WarningProps> = function (props) {
     return <div className="code-editor__warning">{props.text}</div>
 }
 
+const ErrorBar: React.FC<ErrorBarProps> = function (props) {
+    return (
+        <div className="code-editor__error">
+            <Clear className="code-editor__information-info-icon" />
+            {props.text}
+        </div>
+    );
+};
+
 const Information: React.FC<InformationProps> = function (props) {
     return <div className="code-editor__information">
         <Info className="code-editor__information-info-icon" />
@@ -370,6 +386,7 @@ CodeEditor.ValidationError = ValidationError
 CodeEditor.Clipboard = Clipboard
 CodeEditor.Header = Header
 CodeEditor.Warning = Warning;
+CodeEditor.ErrorBar = ErrorBar;
 CodeEditor.Information = Information;
 
 export default CodeEditor

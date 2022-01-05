@@ -123,3 +123,13 @@
     margin-right: 4px;
     background: url('../../assets/icons/ic-compare.svg');
 }
+
+.code-editor__error {
+    background-color: #fde7e7;
+    color: #862020;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+}
