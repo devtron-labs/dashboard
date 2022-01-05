@@ -50,7 +50,8 @@ export default function AppList() {
 
     // on page load
     useEffect(() => {
-        setCurrentTab(params.appType == AppListConstants.AppType.DEVTRON_APPS ? AppListConstants.AppTabs.DEVTRON_APPS : AppListConstants.AppTabs.HELM_APPS);
+        let _currentTab = params.appType == AppListConstants.AppType.DEVTRON_APPS ? AppListConstants.AppTabs.DEVTRON_APPS : AppListConstants.AppTabs.HELM_APPS;
+        setCurrentTab(_currentTab);
 
         // set search data
         let searchQuery = location.search;
@@ -69,7 +70,8 @@ export default function AppList() {
             setAppCheckListRes(initData.appCheckListRes);
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
-            setMasterFilters(initData.filters)
+            setMasterFilters(initData.filters);
+            applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
             setDataStateType(AppListViewType.LIST);
         }).catch((errors: ServerErrors) => {
             showError(errors);
@@ -96,6 +98,32 @@ export default function AppList() {
         setParsedPayloadOnUrlChange(onRequestUrlChange());
     }, [location.search])
 
+
+    const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters : any[], currentTab : string) : void => {
+        // return if not single cluster
+        if(clusterFilters.length != 1) {
+            return;
+        }
+
+        let _cluster = clusterFilters[0]
+
+        // return if any cluster filter applied
+        let _isAnyClusterFilterApplied = clusterFilters.some(_cluster => _cluster.isChecked);
+        if(_isAnyClusterFilterApplied){
+            return;
+        }
+
+        // auto check cluster
+        let _filterOptions : FilterOption[] = [];
+        _filterOptions.push({
+            key : _cluster.key,
+            label : _cluster.label,
+            isSaved : _cluster.isSaved,
+            isChecked : true
+        })
+
+        applyFilter(AppListConstants.FilterType.CLUTSER, _filterOptions, currentTab);
+    }
 
     const onRequestUrlChange = () : any => {
         let searchQuery = location.search;
@@ -241,7 +269,7 @@ export default function AppList() {
         history.push(url);
     }
 
-    const applyFilter = (type: string, list: FilterOption[]): void => {
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab : string = undefined): void => {
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
@@ -256,7 +284,8 @@ export default function AppList() {
         query[queryParamType] = str;
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
+        let _currentTab = selectedAppTab || currentTab;
+        let url = `${_currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
     }
 
