@@ -50,12 +50,18 @@ function ManifestComponent({ selectedTab }) {
             });
     }, [params.podName]);
 
+    useEffect(() => {
+        if (!isEditmode && activeManifestEditorData !== modifiedManifest) {
+            setActiveManifestEditorData(modifiedManifest);
+        }
+    }, [isEditmode]);
+
     //For External
 
     const handleEditorValueChange = (codeEditorData: string) => {
-      if (activeTab === 'Live manifest' && isEditmode) {
-        setModifiedManifest(codeEditorData);
-      }
+        if (activeTab === 'Live manifest' && isEditmode) {
+            setModifiedManifest(codeEditorData);
+        }
     };
     const handleEditLiveManifest = () => {
         setIsEditmode(true);
@@ -69,10 +75,11 @@ function ManifestComponent({ selectedTab }) {
             `Encountered data validation error while saving. “Show here error message received from k8s api server”`,
         );
     };
+
     const handleCancel = () => {
         setIsEditmode(false);
         setModifiedManifest(manifest);
-        setActiveManifestEditorData(manifest);
+        setActiveManifestEditorData('');
     };
 
     const markActiveTab = (_tabName: string) => {
