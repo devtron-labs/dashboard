@@ -40,7 +40,7 @@ function EventsComponent({ selectedTab }) {
     }, [podName]);
 
     return (
-        <div style={{ minHeight: '600px', background: '#0B0F22' }} className=''>
+        <div style={{ minHeight: '650px', background: '#0B0F22' }} className=''>
             {/* in case of pod deletion */}
             {/* <MessageUI msg='This resource no longer exists' size={32} /> */}
 
@@ -49,7 +49,7 @@ function EventsComponent({ selectedTab }) {
                     {!loading && events && events.length > 0 && (
                         <div className="cn-0">
                             <table className="table">
-                                <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
+                                <thead style={{ minHeight: '650px', background: '#0B0F22' }}>
                                     <tr className="no-border">
                                         {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                             return <th key={`eh_${idx}`}>{head}</th>;
