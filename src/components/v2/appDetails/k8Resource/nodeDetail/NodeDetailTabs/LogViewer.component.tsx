@@ -81,7 +81,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({ subje
             cursorStyle: 'bar',
             cursorWidth: 0,
             theme: {
-                background: '#000',
+                background: '#0b0f22',
                 foreground: '#FFFFFF',
                 // selection: '#0066cc4d',
             },
