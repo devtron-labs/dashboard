@@ -27,6 +27,7 @@ export default function NavigationRoutes() {
     const match = useRouteMatch()
     const [serverMode, setServerMode] = useState(undefined);
     const [pageState, setPageState] = useState(ViewType.LOADING);
+    const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true);
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -87,10 +88,10 @@ export default function NavigationRoutes() {
         return <Reload />;
     } else {
       return (
-        <mainContext.Provider value={{serverMode, setServerMode}}>
+        <mainContext.Provider value={{serverMode, setServerMode, setPageOverflowEnabled}}>
           <main>
               <Navigation history={history} match={match} location={location} />
-              {serverMode &&  <div className="main">
+              {serverMode &&  <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                   <Suspense fallback={<Progressing pageLoader />}>
                       <ErrorBoundary>
                           <Switch>

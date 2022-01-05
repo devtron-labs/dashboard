@@ -24,7 +24,7 @@ export default function AppList() {
     const location = useLocation();
     const history = useHistory();
     const params = useParams<{ appType: string}>();
-    const {serverMode} = useContext(mainContext);
+    const {serverMode, setPageOverflowEnabled} = useContext(mainContext);
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
@@ -383,6 +383,10 @@ export default function AppList() {
         setFetchingExternalApps(fetching);
     }
 
+    const onShowHideFilterContent = (show : boolean) : void => {
+        setPageOverflowEnabled(!show);
+    }
+
     function renderPageHeader() {
         return <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
@@ -419,7 +423,8 @@ export default function AppList() {
                             placeholder="Search Project"
                             searchable multi
                             type={AppListConstants.FilterType.PROJECT}
-                            applyFilter={applyFilter} />
+                            applyFilter={applyFilter}
+                            onShowHideFilterContent={onShowHideFilterContent} />
                     <span className="filter-divider"></span>
                     <Filter list={masterFilters.clusters}
                             labelKey="label"
@@ -427,7 +432,8 @@ export default function AppList() {
                             searchable multi
                             placeholder="Search Cluster"
                             type={AppListConstants.FilterType.CLUTSER}
-                            applyFilter={applyFilter} />
+                            applyFilter={applyFilter}
+                            onShowHideFilterContent={onShowHideFilterContent} />
                     <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
                             labelKey="label"
                             buttonText="Namespace"
@@ -437,7 +443,8 @@ export default function AppList() {
                             applyFilter={applyFilter}
                             isDisabled={!_isAnyClusterFilterApplied}
                             disableTooltipMessage={"Select a cluster first"}
-                            isLabelHtml={true} />
+                            isLabelHtml={true}
+                            onShowHideFilterContent={onShowHideFilterContent} />
                     {
                         serverMode == SERVER_MODE.FULL &&
                         <>
@@ -448,7 +455,8 @@ export default function AppList() {
                                     searchable multi
                                     placeholder="Search Environment"
                                     type={AppListConstants.FilterType.ENVIRONMENT}
-                                    applyFilter={applyFilter} />
+                                    applyFilter={applyFilter}
+                                    onShowHideFilterContent={onShowHideFilterContent} />
                         </>
                     }
                 </div>

@@ -29,8 +29,10 @@ export class Filter extends Component<FilterProps, FilterState>{
 
     handleClick = (event: React.MouseEvent): void => {
         event.stopPropagation();
+        let _show = false;
         let list = JSON.parse(JSON.stringify(this.props.list));
-        this.setState({ list: list, filteredList: list, searchStr: "", show: false });
+        this.setState({ list: list, filteredList: list, searchStr: "", show: _show });
+        this.notifiyShowHideFilterContent(_show);
     }
 
     handleSearch = (event): void => {
@@ -68,8 +70,10 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     applyFilter = (): void => {
-        this.setState({ show: false });
+        let _show = false;
+        this.setState({ show: _show });
         this.props.applyFilter(this.props.type, this.state.list);
+        this.notifiyShowHideFilterContent(_show);
     }
 
     getSavedFilter = (): number => {
@@ -78,6 +82,18 @@ export class Filter extends Component<FilterProps, FilterState>{
             if (item.isChecked) count++;
         })
         return count;
+    }
+
+    onFilterButtonClick = () : void => {
+        let _show = !this.state.show;
+        this.setState({ show: _show });
+        this.notifiyShowHideFilterContent(_show);
+    }
+
+    notifiyShowHideFilterContent = (show : boolean) : void => {
+        if(this.props.onShowHideFilterContent){
+            this.props.onShowHideFilterContent(show);
+        }
     }
 
     render() {
@@ -108,7 +124,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         return <div className="filter" >
             {
                 (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
-                <button type="button" className="filter__trigger" onClick={() => this.setState({ show: !this.state.show })}>
+                <button type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
                     {this.props.buttonText}
                     {badge > 0 ? <span className="badge">{badge}</span> : null}
                     <span className="filter-icon"><i className={faIcon}></i></span>

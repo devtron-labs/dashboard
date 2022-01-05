@@ -18,6 +18,7 @@ export interface FilterProps {
     isDisabled? : boolean;
     disableTooltipMessage? : string;
     isLabelHtml? :boolean;
+    onShowHideFilterContent?: (show : boolean) => void;
 }
 
 export interface FilterState {

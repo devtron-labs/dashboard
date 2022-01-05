@@ -12,6 +12,10 @@
     overflow-y: auto;
 }
 
+.main__overflow-disabled {
+    overflow-y: hidden !important;
+}
+
 
 .title-container {
     color: white;
