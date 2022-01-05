@@ -17,7 +17,7 @@ export interface MsgUIProps {
     size: number
 }
 
-const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size }) => {
+const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size=24 }) => {
     return (
         <div className='flex column' style={{ ...bodyStyle, paddingTop: '100px' }}>
             <div>

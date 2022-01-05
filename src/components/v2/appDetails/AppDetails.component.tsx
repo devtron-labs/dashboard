@@ -56,6 +56,13 @@ const AppDetailsComponent = () => {
         }, 1);
     };
 
+    // useEffect(() => {
+    //     var event = new CustomEvent('pod_deleted', { detail: `${podName}` });
+    //     // document.addEventListener('pod_deleted', (e: any) => {
+    //     //     console.log(e?.detail);
+    //     // });
+    // }, []);
+
     return (
         <div>
             <div>
@@ -69,7 +76,11 @@ const AppDetailsComponent = () => {
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
-                            <li key={index + 'tab'} id={`${params.appId}`} className="flex left ellipsis-right ">
+                            <li
+                                key={index + 'tab'}
+                                id={`${params.nodeType}_${tab.name}`}
+                                className="flex left ellipsis-right "
+                            >
                                 <Tippy
                                     className={`${
                                         tab.name === AppDetailsTabs.log_analyzer ||
@@ -135,11 +146,7 @@ const AppDetailsComponent = () => {
                                                     </div>
                                                 )}
                                         </div>
-                                        <div
-                                            className={` ${
-                                                !tab.isSelected ? 'resource-tree-tab__border' : ''
-                                            }`}
-                                        ></div>
+                                        <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>
                                     </div>
                                 </Tippy>
                             </li>

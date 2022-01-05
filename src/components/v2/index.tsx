@@ -87,9 +87,11 @@ function RouterComponent({ envType }) {
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
-            {isError ? (
-                <PageNotFound />
-            ) : isLoading ? (
+            
+            {/* {isError ? (
+                <PageNotFound /> */}
+            {/* ) : */}
+            { isLoading ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
                 <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
@@ -100,6 +102,8 @@ function RouterComponent({ envType }) {
                     </Switch>
                 </Suspense>
             )}
+
+            
         </React.Fragment>
     );
 }

@@ -10,8 +10,6 @@ import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
 import { getNodeStatus } from './nodeType.util';
-import { node } from 'prop-types';
-
 
 function NodeTreeComponent() {
     const { url, path } = useRouteMatch();

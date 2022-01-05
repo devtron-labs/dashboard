@@ -246,7 +246,7 @@ function LogsComponent({ selectedTab }) {
 
     return (
         <React.Fragment>
-            <div className="container-fluid bcn-0">
+            <div className="container-fluid bcn-0" >
                 <div className="row pt-2 pb-2 pl-16 pr-16">
                     <div className="col-6 d-flex align-items-center">
                         <Tippy
@@ -413,7 +413,7 @@ function LogsComponent({ selectedTab }) {
                 </div>
             </div>
             {!logsCleared && selectedContainerName && (
-                <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
+                <div style={{ gridColumn: '1 / span 2', background: '#0b0f22' }} className="flex column log-viewer-container">
                     <div
                         className={`pod-readyState pod-readyState--top bcr-7 ${
                             logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
@@ -445,7 +445,7 @@ function LogsComponent({ selectedTab }) {
                         )}
                     </div>
 
-                    <div className="log-viewer" style={{ minHeight: '650px' }}>
+                    <div className="log-viewer" style={{ minHeight: '600px' }}>
                         <LogViewerComponent
                             subject={subject}
                             highlightString={highlightString}

@@ -3,7 +3,7 @@ import { NodeDetailTab } from "./nodeDetail.type"
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
 
-    if (nodeType === NodeType.Pod) {
+    if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
 
         return [
             NodeDetailTab.MANIFEST,
@@ -11,7 +11,7 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
             NodeDetailTab.LOGS,
             NodeDetailTab.TERMINAL
         ]
-    } else if (nodeType === NodeType.Containers) {
+    } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
         return [
             NodeDetailTab.LOGS,
         ]
