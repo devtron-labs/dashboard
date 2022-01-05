@@ -916,7 +916,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ...tempMultiSelectStyles,
                             option: (base, state) => ({
                                 ...base,
-                                padding: '4px 12px'
+                                padding: '4px 12px',
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                color: 'var(--N900)',
                             }),
                         }}
                         components={{
