@@ -50,26 +50,10 @@ const AppDetailsComponent = () => {
         e.stopPropagation();
         const pushURL = AppDetailsStore.removeAppDetailsTab(tabUrl);
         setTimeout(() => {
-            let _url = pushURL ? pushURL : url;
-            history.push(_url);
+            if (pushURL) {
+                history.push(pushURL);
+            }
         }, 1);
-    };
-
-    const isTabSelected = (tab: ApplicationObject, index: number): boolean => {
-        return (
-            tab.isSelected ||
-            pathname === tab.url ||
-            // Below is a simple workaround to solve k8s resources tab unselected on page load issue
-            (index === 0 &&
-                !(
-                    pathname.includes('/log-analyzer') ||
-                    pathname.includes('/manifest') ||
-                    pathname.includes('/events') ||
-                    pathname.includes('/logs') ||
-                    pathname.includes('/terminal') ||
-                    pathname.includes('/summary')
-                ))
-        );
     };
 
     return (
@@ -104,14 +88,14 @@ const AppDetailsComponent = () => {
                                     <div className="flex">
                                         <div
                                             className={`${
-                                                isTabSelected(tab, index) ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
                                             } flex left pl-12 pt-8 pb-8 pr-12 `}
                                         >
                                             <NavLink
                                                 to={`${tab.url}`}
                                                 className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                             >
-                                                <div className={`flex left ${isTabSelected(tab, index) ? 'cn-9' : ''}`}>
+                                                <div className={`flex left ${tab.isSelected ? 'cn-9' : ''}`}>
                                                     {tab.title === AppDetailsTabs.log_analyzer ? (
                                                         <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
                                                             {' '}
@@ -153,7 +137,7 @@ const AppDetailsComponent = () => {
                                         </div>
                                         <div
                                             className={` ${
-                                                !isTabSelected(tab, index) ? 'resource-tree-tab__border' : ''
+                                                !tab.isSelected ? 'resource-tree-tab__border' : ''
                                             }`}
                                         ></div>
                                     </div>

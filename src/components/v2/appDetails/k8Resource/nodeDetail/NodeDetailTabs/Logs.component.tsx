@@ -49,7 +49,7 @@ function LogsComponent({ selectedTab }) {
 
     const isLogAnalyzer = !params.podName;
 
-    const handlePodSelecction = (cs, selectedOption) => {
+    const handlePodSelection = (cs, selectedOption) => {
         setContainers(cs.containers);
         setSelectedPods(cs.pods);
         setSelectedContainerName(`${selectedOption}_${cs.containers[0]}`);
@@ -59,13 +59,13 @@ function LogsComponent({ selectedTab }) {
         onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
-                handlePodSelecction(IndexStore.getAllContainers(), selectedOption);
+                handlePodSelection(IndexStore.getAllContainers(), selectedOption);
                 break;
             case 'All new pods':
-                handlePodSelecction(IndexStore.getAllNewContainers(), selectedOption);
+                handlePodSelection(IndexStore.getAllNewContainers(), selectedOption);
                 break;
             case 'All old pods':
-                handlePodSelecction(IndexStore.getAllOldContainers(), selectedOption);
+                handlePodSelection(IndexStore.getAllOldContainers(), selectedOption);
                 break;
             default:
                 const cs = IndexStore.getAllContainersForPod(selectedOption);
@@ -146,8 +146,6 @@ function LogsComponent({ selectedTab }) {
 
             urls.push(_url);
         });
-
-        console.log('payload', { urls: urls, grepTokens: grepTokens, timeout: 300, pods: selectedPods });
 
         workerRef.current['postMessage' as any]({
             type: 'start',
@@ -363,7 +361,7 @@ function LogsComponent({ selectedTab }) {
                         )}
                     </div>
                     {/* <div > */}
-                        {/* <input
+                    {/* <input
                             type="text"
                             onKeyUp={handleLogsSearch}
                             className="w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4"
@@ -371,46 +369,47 @@ function LogsComponent({ selectedTab }) {
                             name="log_search_input"
                         /> */}
 
-                        <form className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
-                            onSubmit={handleLogSearchSubmit}
-                        >
-                            <input
-                                value={tempSearch}
-                                className='bw-0 w-100'
-                                style={{ background: 'transparent', outline: 'none' }}
-                                onKeyUp={handleLogsSearch}
-                                onChange={(e) => setTempSearch(e.target.value)}
-                                type="search"
-                                name="log_search_input"
-                                placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
+                    <form
+                        className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
+                        onSubmit={handleLogSearchSubmit}
+                    >
+                        <input
+                            value={tempSearch}
+                            className="bw-0 w-100"
+                            style={{ background: 'transparent', outline: 'none' }}
+                            onKeyUp={handleLogsSearch}
+                            onChange={(e) => setTempSearch(e.target.value)}
+                            type="search"
+                            name="log_search_input"
+                            placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
+                        />
+                        {logSearchString && (
+                            <CloseImage
+                                className="icon-dim-20 pointer"
+                                onClick={(e) => {
+                                    setLogSearchString('');
+                                    setTempSearch('');
+                                }}
                             />
-                            {logSearchString && (
-                                <CloseImage
-                                    className="icon-dim-20 pointer"
-                                    onClick={(e) => {
-                                        setLogSearchString('');
-                                        setTempSearch('');
-                                    }}
-                                />
-                            )}
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    <div>
-                                        <div className="flex column left">
-                                            <h5>Supported grep commands</h5>
-                                            <span>grep 500</span>
-                                            <span>grep -A 2 -B 3 -C 5 error</span>
-                                            <span>grep 500 | grep internal</span>
-                                        </div>
+                        )}
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={
+                                <div>
+                                    <div className="flex column left">
+                                        <h5>Supported grep commands</h5>
+                                        <span>grep 500</span>
+                                        <span>grep -A 2 -B 3 -C 5 error</span>
+                                        <span>grep 500 | grep internal</span>
                                     </div>
-                                }
-                            >
-                                <Question className='icon-dim-24'/>
-                            </Tippy>
-                        </form>
+                                </div>
+                            }
+                        >
+                            <Question className="icon-dim-24" />
+                        </Tippy>
+                    </form>
                 </div>
             </div>
             {!logsCleared && selectedContainerName && (

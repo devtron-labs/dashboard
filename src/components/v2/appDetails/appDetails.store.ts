@@ -44,7 +44,6 @@ const AppDetailsStore = {
         _nodeTreeActiveNode = undefined
     },
     addAppDetailsTab: (tabKind: string, tabName: string, tabURL: string) => {
-
         if (!tabName || !tabURL || !tabKind) return
 
         let applicationObjectTabs = applicationObjectTabsSubject.getValue()
@@ -80,20 +79,24 @@ const AppDetailsStore = {
         const applicationObjectTabs = applicationObjectTabsSubject.getValue();
         let pushURL = '';
         const pathname = window.location.pathname;
-
+        var selectedRemoved = false;
+        
+        var remainingTabs = [] as Array<ApplicationObject>
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
-             tab.isSelected = (applicationObjectTabs.length <= 2 && index === 0);
-            if (tab.url !== tabUrl) {
-                _applicationObjectTabs.push(tab);
-
-                if (!pushURL) {
-                    pushURL = (pathname === tab.url) ? tab.url : '';
-                }
+            if (tab.url == tabUrl) {
+                selectedRemoved = tab.isSelected
+                continue
             }
+            remainingTabs.push(tab)
         }
 
-        applicationObjectTabsSubject.next([..._applicationObjectTabs]);
+        if (selectedRemoved) {
+            applicationObjectTabs[0].isSelected = true
+            pushURL = applicationObjectTabs[0].url
+        }
+
+        applicationObjectTabsSubject.next([...remainingTabs]);
         return pushURL;
     },
     markAppDetailsTabActive: (url: string, parentUrl?: string) => {
