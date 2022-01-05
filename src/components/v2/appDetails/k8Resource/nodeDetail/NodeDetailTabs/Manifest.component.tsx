@@ -18,9 +18,9 @@ function ManifestComponent({ selectedTab }) {
     const { url } = useRouteMatch();
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const [manifest, setManifest] = useState('');
+    const [modifiedManifest, setModifiedManifest] = useState('');
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('');
     const [desiredManifest, setDesiredManifest] = useState('');
-    const [diffMode, setDiffMode] = useState(false);
     const appDetails = IndexStore.getAppDetails();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -37,6 +37,7 @@ function ManifestComponent({ selectedTab }) {
                 if (_manifest) {
                     setManifest(_manifest);
                     setActiveManifestEditorData(_manifest);
+                    setModifiedManifest(_manifest);
                 } else {
                     setError(true);
                 }
@@ -52,26 +53,14 @@ function ManifestComponent({ selectedTab }) {
     //For External
 
     const handleEditorValueChange = (codeEditorData: string) => {
-        if (activeTab === 'Desired manifest') {
-            setDesiredManifest(codeEditorData);
-            setActiveManifestEditorData(codeEditorData);
-            dispatch({
-                type: TabActions.EnableTab,
-                tabName: 'Compare',
-            });
-        }
+      if (activeTab === 'Live manifest' && isEditmode) {
+        setModifiedManifest(codeEditorData);
+      }
     };
-
     const handleEditLiveManifest = () => {
         setIsEditmode(true);
-        markActiveTab('Live Manifest');
-        setActiveManifestEditorData(manifest);
-        if (!desiredManifest) {
-            setDesiredManifest(manifest);
-            setActiveManifestEditorData(manifest);
-        } else {
-            setActiveManifestEditorData(desiredManifest);
-        }
+        markActiveTab('Live manifest');
+        setActiveManifestEditorData(modifiedManifest);
     };
 
     const handleApplyChanges = () => {
@@ -82,6 +71,8 @@ function ManifestComponent({ selectedTab }) {
     };
     const handleCancel = () => {
         setIsEditmode(false);
+        setModifiedManifest(manifest);
+        setActiveManifestEditorData(manifest);
     };
 
     const markActiveTab = (_tabName: string) => {
@@ -93,8 +84,8 @@ function ManifestComponent({ selectedTab }) {
 
     const updateEditor = (_tabName: string) => {
         switch (_tabName) {
-            case 'Live Manifest':
-                setActiveManifestEditorData(manifest);
+            case 'Live manifest':
+                setActiveManifestEditorData(modifiedManifest);
                 break;
             case 'Compare':
                 setActiveManifestEditorData(desiredManifest);
@@ -170,12 +161,12 @@ function ManifestComponent({ selectedTab }) {
                         );
                     })}
 
-                    {activeTab === 'Live Manifest' && (
+                    {activeTab === 'Live manifest' && (
                         <>
                             <div className="pl-16 pr-16">|</div>
                             {!isEditmode ? (
                                 <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
-                                    <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
+                                    <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live manifest
                                 </div>
                             ) : (
                                 <div>
@@ -197,17 +188,18 @@ function ManifestComponent({ selectedTab }) {
                     height={600}
                     value={activeManifestEditorData}
                     mode="yaml"
-                    readOnly={activeTab !== 'Live Manifest' || (!isEditmode && activeTab === 'Live Manifest')}
+                    readOnly={activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')}
+                    onChange={handleEditorValueChange}
                 >
                     {activeTab === 'Compare' && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <div className="split-header">
-                                <div className="left-pane">Live Manifest</div>
+                                <div className="left-pane">Live manifest</div>
                                 <div className="right-pane">Desired manifest (view only)</div>
                             </div>
                         </CodeEditor.Header>
                     )}
-                    {activeTab === 'Live Manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
+                    {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
                 {/* {diffMode ? (
                     <CodeEditor
