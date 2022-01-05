@@ -84,7 +84,7 @@ export default () => {
                     const element = urls[index];
                     console.log(element)
                     wrappers[index] = Object.assign({}, bp)
-                    wrappers[index].prefix = pods[index] + ": "
+                    wrappers[index].prefix = `${typeof pods[index] === 'object' ? pods[index].name : pods[index]}: `;
                     wrappers[index].eventSrc = new EventSource(element, { withCredentials: true })
                     wrappers[index].grepTokens = grepTokens
                     const eventListener = wrappers[index].eventListener.bind(wrappers[index])
