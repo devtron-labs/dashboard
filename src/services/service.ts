@@ -86,7 +86,7 @@ export function getProjectFilteredApps(
     projectIds: number[] | string[],
     accessType?: string,
 ): Promise<ProjectFilteredApps> {
-    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&onlyCharts=true' : '';
+    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : '';
     return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`);
 }
 
