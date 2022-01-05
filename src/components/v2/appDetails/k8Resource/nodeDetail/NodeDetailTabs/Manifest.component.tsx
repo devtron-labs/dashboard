@@ -4,14 +4,11 @@ import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
-import AppDetailsStore from '../../../appDetails.store';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getManifestResource } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import { Progressing } from '../../../../../common';
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-filled-gray.svg';
-import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
 function ManifestComponent({ selectedTab }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -118,25 +115,6 @@ function ManifestComponent({ selectedTab }) {
     }, [params.actionName]);
 
     return (
-        // <div style={{ minHeight: '600px', background:'#0B0F22' }}>
-        //     {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
-        //     {!error && (
-        //         <div>
-        //             <CodeEditor
-        //                 theme="vs-dark"
-        //                 height={700}
-        //                 value={manifest}
-        //                 mode="yaml"
-        //                 readOnly={true}
-        //                 loading={loading}
-        //                 customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24}/>}
-        //                 // readOnly={activeTab !== 'Desired manifest'}
-        //                 // onChange={handleEditorValueChange}
-        //             ></CodeEditor>
-        //         </div>
-        //     )}
-        // </div>
-
         <>
             {loading && (
                 <div className="flex bcn-0" style={{ minHeight: '600px' }}>
@@ -208,28 +186,6 @@ function ManifestComponent({ selectedTab }) {
                     )}
                     {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
-                {/* {diffMode ? (
-                    <CodeEditor
-                        defaultValue={''}
-                        diffView={diffMode}
-                        // original={manifest}
-                        theme="vs-gray--dt"
-                        height={600}
-                        value={activeManifestEditorData}
-                        mode="yaml"
-                        readOnly={activeTab === 'Desired manifest'}
-                    ></CodeEditor>
-                ) : (
-                    <CodeEditor
-                        theme="vs-gray--dt"
-                        height={600}
-                        value={activeManifestEditorData}
-                        mode="yaml"
-                        readOnly={true}
-                        // readOnly={activeTab !== 'Desired manifest'}
-                        // onChange={handleEditorValueChange}
-                    ></CodeEditor>
-                )} */}
             </div>
         </>
     );
