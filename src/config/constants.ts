@@ -114,6 +114,8 @@ export const Routes = {
     HELM_RELEASE_INFO_API: 'application/release-info',
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
     HELM_RELEASE_APP_DETAIL_API: 'application/app'
+    MANIFEST: 'orchestrator/k8s/resource',
+    EVENTS: 'orchestrator/k8s/events',
 };
 
 export const ViewType = {
