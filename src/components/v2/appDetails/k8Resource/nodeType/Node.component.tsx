@@ -25,9 +25,7 @@ function NodeComponent() {
     const [podType, setPodType] = useState(false);
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
-    // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>();
-    // const [tabs, setTabs] = useState([])
 
     useEffect(() => {
         if (!copied) return;
@@ -36,8 +34,6 @@ function NodeComponent() {
 
     useEffect(() => {
         if (params.nodeType) {
-            // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
-            // setTabs(_tabs)
 
             let tableHeader: string[], _fcw: string;
 

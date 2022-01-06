@@ -61,12 +61,9 @@ function NodeTreeComponent() {
         return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType);
     };
 
-    const geInfo = (nodeByKind) => {
+    const getInfo = (nodeByKind) => {
         return nodeByKind.map((_node) => {
-            return {
-                name: '',
-                value: getNodeStatus(_node)
-            }
+            return getNodeStatus(_node)
         });
     };
 
@@ -84,13 +81,12 @@ function NodeTreeComponent() {
 
                 const _nodesByKind = IndexStore.getiNodesByKind(_kind);
                 if (_nodesByKind && _nodesByKind.length > 0) {
-                    console.log('node', geInfo(_nodesByKind));
                     activeParentNode = {
                         name: getPNodeName(_kind),
                         childNodes: [
                             {
                                 name: _nodesByKind[0].kind,
-                                info: geInfo(_nodesByKind),
+                                status: getInfo(_nodesByKind),
                             },
                         ],
                     } as iNode;
@@ -134,11 +130,8 @@ function NodeTreeComponent() {
     }, [filteredNodes.length]);
 
     const hasErrorInTreeNode = (treeNode: iNode) => {
-        if (
-            treeNode?.info &&
-            treeNode?.info.filter(({value}) => value.toLowerCase() === 'crashloopbackoff' ).length > 0
-        ) {
-            return true;
+        if(treeNode.status && treeNode.status.toLowerCase() === 'degraded'){
+            return true
         }
         return false;
     };

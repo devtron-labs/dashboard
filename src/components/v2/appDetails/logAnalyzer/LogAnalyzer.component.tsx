@@ -12,7 +12,7 @@ function LogAnalyzerComponent() {
 
     return (
         <div className="resource-node-wrapper">
-            <LogsComponent selectedTab={null} />
+            <LogsComponent selectedTab={null} isDeleted={false} />
         </div>
     )
 }

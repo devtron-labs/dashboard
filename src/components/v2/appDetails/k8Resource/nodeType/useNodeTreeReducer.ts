@@ -57,7 +57,7 @@ const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
                 _alreadyAddedNodes.push(node.kind)
                 const _inode = {} as iNode;
                 _inode.name = node.kind
-                _inode.info = node.info
+                _inode.status = node.health?.status
                 _nodes.push(_inode)
             }
 

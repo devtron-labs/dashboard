@@ -58,13 +58,6 @@ const AppDetailsComponent = () => {
         }, 1);
     };
 
-    // useEffect(() => {
-    //     var event = new CustomEvent('pod_deleted', { detail: `${podName}` });
-    //     // document.addEventListener('pod_deleted', (e: any) => {
-    //     //     console.log(e?.detail);
-    //     // });
-    // }, []);
-
     return (
         <div>
             <div>
@@ -110,7 +103,7 @@ const AppDetailsComponent = () => {
                                                         to={`${tab.url}`}
                                                         className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                                     >
-                                                        <div className={`flex left ${tab.isSelected ? 'cn-9' : ''}`}>
+                                                        <div className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${tab.isDeleted && 'tab-list__deleted cr-5'}`}>
                                                             {tab.title === AppDetailsTabs.log_analyzer ? (
                                                                 <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
                                                                     {' '}

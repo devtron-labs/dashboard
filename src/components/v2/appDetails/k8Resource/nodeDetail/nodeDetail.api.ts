@@ -10,7 +10,7 @@ export const getManifestResource = (ad: AppDetails, podName: string, nodeType: s
 
 export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`)
+    return get(`api/${cn?.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn?.uid}&resourceName=${cn?.name}`)
 }
 
 export const getLogsURL = (ad, nodeName, Host, container) => {

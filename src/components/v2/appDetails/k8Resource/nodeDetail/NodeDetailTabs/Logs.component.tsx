@@ -20,11 +20,12 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { EnvType } from '../../../appDetails.type';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
+import MessageUI from '../../../../common/message.ui';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
 
-function LogsComponent({ selectedTab }) {
+function LogsComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
     const key = useKeyDown();
     const { url } = useRouteMatch();
@@ -244,9 +245,13 @@ function LogsComponent({ selectedTab }) {
         setLogSearchString(tempSearch);
     };
 
-    return (
+    return isDeleted ? (
+        <div>
+            <MessageUI msg="This resource no longer exists" size={32} />
+        </div>
+    ) : (
         <React.Fragment>
-            <div className="container-fluid bcn-0" >
+            <div className="container-fluid bcn-0">
                 <div className="row pt-2 pb-2 pl-16 pr-16">
                     <div className="col-6 d-flex align-items-center">
                         <Tippy
@@ -413,7 +418,10 @@ function LogsComponent({ selectedTab }) {
                 </div>
             </div>
             {!logsCleared && selectedContainerName && (
-                <div style={{ gridColumn: '1 / span 2', background: '#0b0f22' }} className="flex column log-viewer-container">
+                <div
+                    style={{ gridColumn: '1 / span 2', background: '#0b0f22' }}
+                    className="flex column log-viewer-container"
+                >
                     <div
                         className={`pod-readyState pod-readyState--top bcr-7 ${
                             logsPaused || readyState === 2 ? 'pod-readyState--show' : ''

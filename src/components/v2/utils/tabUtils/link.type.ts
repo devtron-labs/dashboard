@@ -10,6 +10,7 @@ export interface iLink {
     count?: number;
     url?: string;
     isDeleted?: boolean;
+    uid? : string;
 }
 
 export interface iLinks extends Array<iLink> { }

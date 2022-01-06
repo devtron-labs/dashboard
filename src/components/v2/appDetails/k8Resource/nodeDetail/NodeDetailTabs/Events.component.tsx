@@ -7,7 +7,7 @@ import moment from 'moment';
 import { NodeType } from '../../../appDetails.type';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
-function EventsComponent({ selectedTab }) {
+function EventsComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const { url } = useRouteMatch();
     const [events, setEvents] = useState([]);
@@ -40,50 +40,54 @@ function EventsComponent({ selectedTab }) {
     }, [podName]);
 
     return (
-        <div style={{ minHeight: '100vh', background: '#0B0F22' }} className=''>
-            {/* in case of pod deletion */}
-            
-            {/* {tab.isDeleted && <MessageUI msg='This resource no longer exists' size={32} />} */}
-
-            {pods && pods.length > 0 && (
-                <React.Fragment>
-                    {!loading && events && events.length > 0 && (
-                        <div className="cn-0">
-                            <table className="table">
-                                <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
-                                    <tr className="no-border">
-                                        {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
-                                            return <th key={`eh_${idx}`}>{head}</th>;
+        <div style={{ minHeight: '600px', background: '#0B0F22' }} className="">
+            {isDeleted ? (
+                <div>
+                    <MessageUI msg="This resource no longer exists" size={32} />
+                </div>
+            ) : (
+                pods &&
+                pods.length > 0 && (
+                    <React.Fragment>
+                        {!loading && events && events.length > 0 && (
+                            <div className="cn-0 ">
+                                <table className="table pl-20">
+                                    <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
+                                        <tr className="no-border pl-20">
+                                            {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
+                                                return <th key={`eh_${idx}`}>{head}</th>;
+                                            })}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {events.map((event, index) => {
+                                            return (
+                                                <tr className="no-border pl-20" key={`eb_${index}`}>
+                                                    <td>{event.reason}</td>
+                                                    <td>{event.message}</td>
+                                                    <td>{event.count}</td>
+                                                    <td>
+                                                        {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
+                                                            .add(5, 'hours')
+                                                            .add(30, 'minutes')
+                                                            .format('YYYY-MM-DD HH:mm:ss')}
+                                                    </td>
+                                                </tr>
+                                            );
                                         })}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {events.map((event, index) => {
-                                        return (
-                                            <tr className="no-border" key={`eb_${index}`}>
-                                                <td>{event.reason}</td>
-                                                <td>{event.message}</td>
-                                                <td>{event.count}</td>
-                                                <td>
-                                                    {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
-                                                        .add(5, 'hours')
-                                                        .add(30, 'minutes')
-                                                        .format('YYYY-MM-DD HH:mm:ss')}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
-                    {!loading && (!events || events.length === 0) && <MessageUI msg="Events not available" size={24} />}
+                        {!loading && (!events || events.length === 0) && (
+                            <MessageUI msg="Events not available" size={24} />
+                        )}
 
-                    {loading && <MessageUI msg="fetching events" icon={MsgUIType.LOADING} size={24} />}
-                </React.Fragment>
+                        {loading && <MessageUI msg="fetching events" icon={MsgUIType.LOADING} size={24} />}
+                    </React.Fragment>
+                )
             )}
-
             {pods.length === 0 && <MessageUI msg="Events not available" size={24} />}
         </div>
     );

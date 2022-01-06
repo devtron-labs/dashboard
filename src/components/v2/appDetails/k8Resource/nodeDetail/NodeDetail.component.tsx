@@ -54,7 +54,9 @@ function NodeDetailComponent() {
     };
 
     const currentTab = applicationObjectTabs.filter(
-        (tab) => tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6),
+        (tab) => { 
+           return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6)
+       }
     );
     const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false;
 
@@ -99,13 +101,13 @@ function NodeDetailComponent() {
                     <Route
                         path={`${path}/${NodeDetailTab.EVENTS}`}
                         render={() => {
-                            return <EventsComponent selectedTab={handleSelectedTab} />;
+                            return <EventsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
                         }}
                     />
                     <Route
                         path={`${path}/${NodeDetailTab.LOGS}`}
                         render={() => {
-                            return <LogsComponent selectedTab={handleSelectedTab} />;
+                            return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted}  />;
                         }}
                     />
                     <Route
@@ -117,7 +119,7 @@ function NodeDetailComponent() {
                     <Route
                         path={`${path}/${NodeDetailTab.TERMINAL}`}
                         render={() => {
-                            return <TerminalComponent selectedTab={handleSelectedTab} />;
+                            return <TerminalComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
                         }}
                     />
                 </Switch>
