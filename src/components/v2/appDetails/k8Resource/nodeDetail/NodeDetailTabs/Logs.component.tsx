@@ -20,11 +20,12 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { EnvType } from '../../../appDetails.type';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
+import MessageUI from '../../../../common/message.ui';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
 
-function LogsComponent({ selectedTab }) {
+function LogsComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
     const key = useKeyDown();
     const { url } = useRouteMatch();
@@ -34,7 +35,6 @@ function LogsComponent({ selectedTab }) {
     const [containers, setContainers] = useState([]);
     const [podOptions, setPodOptions] = useState([]);
     const [selectedContainerName, setSelectedContainerName] = useState('');
-    //const [selectedPodName, setSelectedPodName] = useState('');
     const [tempSearch, setTempSearch] = useState<string>('');
     const [logSearchString, setLogSearchString] = useState('');
     const [grepTokens, setGrepTokens] = useState(null);
@@ -50,23 +50,23 @@ function LogsComponent({ selectedTab }) {
 
     const isLogAnalyzer = !params.podName;
 
-    const handlePodSelecction = (cs) => {
+    const handlePodSelection = (cs, selectedOption) => {
         setContainers(cs.containers);
         setSelectedPods(cs.pods);
-        setSelectedContainerName(cs.containers[0]);
+        setSelectedContainerName(`${selectedOption}_${cs.containers[0]}`);
     };
 
     const handlePodChange = (selectedOption) => {
         onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
-                handlePodSelecction(IndexStore.getAllContainers());
+                handlePodSelection(IndexStore.getAllContainers(), selectedOption);
                 break;
             case 'All new pods':
-                handlePodSelecction(IndexStore.getAllNewContainers());
+                handlePodSelection(IndexStore.getAllNewContainers(), selectedOption);
                 break;
             case 'All old pods':
-                handlePodSelecction(IndexStore.getAllOldContainers());
+                handlePodSelection(IndexStore.getAllOldContainers(), selectedOption);
                 break;
             default:
                 const cs = IndexStore.getAllContainersForPod(selectedOption);
@@ -147,8 +147,6 @@ function LogsComponent({ selectedTab }) {
 
             urls.push(_url);
         });
-
-        console.log('payload', { urls: urls, grepTokens: grepTokens, timeout: 300, pods: selectedPods });
 
         workerRef.current['postMessage' as any]({
             type: 'start',
@@ -247,7 +245,11 @@ function LogsComponent({ selectedTab }) {
         setLogSearchString(tempSearch);
     };
 
-    return (
+    return isDeleted ? (
+        <div>
+            <MessageUI msg="This resource no longer exists" size={32} />
+        </div>
+    ) : (
         <React.Fragment>
             <div className="container-fluid bcn-0">
                 <div className="row pt-2 pb-2 pl-16 pr-16">
@@ -364,7 +366,7 @@ function LogsComponent({ selectedTab }) {
                         )}
                     </div>
                     {/* <div > */}
-                        {/* <input
+                    {/* <input
                             type="text"
                             onKeyUp={handleLogsSearch}
                             className="w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4"
@@ -372,50 +374,54 @@ function LogsComponent({ selectedTab }) {
                             name="log_search_input"
                         /> */}
 
-                        <form className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4"
-                            onSubmit={handleLogSearchSubmit}
-                        >
-                            <input
-                                value={tempSearch}
-                                className='bw-0 w-100'
-                                style={{ background: 'transparent' }}
-                                onKeyUp={handleLogsSearch}
-                                onChange={(e) => setTempSearch(e.target.value)}
-                                type="search"
-                                name="log_search_input"
-                                placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
+                    <form
+                        className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
+                        onSubmit={handleLogSearchSubmit}
+                    >
+                        <input
+                            value={tempSearch}
+                            className="bw-0 w-100"
+                            style={{ background: 'transparent', outline: 'none' }}
+                            onKeyUp={handleLogsSearch}
+                            onChange={(e) => setTempSearch(e.target.value)}
+                            type="search"
+                            name="log_search_input"
+                            placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
+                        />
+                        {logSearchString && (
+                            <CloseImage
+                                className="icon-dim-20 pointer"
+                                onClick={(e) => {
+                                    setLogSearchString('');
+                                    setTempSearch('');
+                                }}
                             />
-                            {logSearchString && (
-                                <CloseImage
-                                    className="icon-dim-20 pointer"
-                                    onClick={(e) => {
-                                        setLogSearchString('');
-                                        setTempSearch('');
-                                    }}
-                                />
-                            )}
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    <div>
-                                        <div className="flex column left">
-                                            <h5>Supported grep commands</h5>
-                                            <span>grep 500</span>
-                                            <span>grep -A 2 -B 3 -C 5 error</span>
-                                            <span>grep 500 | grep internal</span>
-                                        </div>
+                        )}
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={
+                                <div>
+                                    <div className="flex column left">
+                                        <h5>Supported grep commands</h5>
+                                        <span>grep 500</span>
+                                        <span>grep -A 2 -B 3 -C 5 error</span>
+                                        <span>grep 500 | grep internal</span>
                                     </div>
-                                }
-                            >
-                                <Question className='icon-dim-24'/>
-                            </Tippy>
-                        </form>
+                                </div>
+                            }
+                        >
+                            <Question className="icon-dim-24" />
+                        </Tippy>
+                    </form>
                 </div>
             </div>
             {!logsCleared && selectedContainerName && (
-                <div style={{ gridColumn: '1 / span 2' }} className="flex column log-viewer-container">
+                <div
+                    style={{ gridColumn: '1 / span 2', background: '#0b0f22' }}
+                    className="flex column log-viewer-container"
+                >
                     <div
                         className={`pod-readyState pod-readyState--top bcr-7 ${
                             logsPaused || readyState === 2 ? 'pod-readyState--show' : ''

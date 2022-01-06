@@ -7,6 +7,7 @@ import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types';
 import './nodeType.scss';
 import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
+import AppDetailsStore from '../../appDetails.store';
 
 function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId }) {
     const { path } = useRouteMatch();
@@ -25,6 +26,7 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
 
     const PodPopup: React.FC<{ appName: string, environmentName: string, name: string, kind: NodeType, group, version, namespace: string, describeNode: (tab?: NodeDetailTabsType) => void, appId: number }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode, appId }) => {
         const params = useParams<{ appId: string; envId: string }>();
+        
         async function asyncDeletePod(e) {
             let apiParams = {
                 appId: appId,
@@ -38,8 +40,10 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
                 name,
             };
             try {
+                
                 await deleteResource(apiParams);
                 toast.success('Deletion initiated successfully.');
+                AppDetailsStore.markResourceDeleted(kind, name)
             } catch (err) {
                 showError(err);
             }

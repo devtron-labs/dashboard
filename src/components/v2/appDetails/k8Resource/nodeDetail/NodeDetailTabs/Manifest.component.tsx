@@ -13,7 +13,7 @@ import { Progressing } from '../../../../../common';
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-filled-gray.svg';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
-function ManifestComponent({ selectedTab }) {
+function ManifestComponent({ selectedTab, isDeleted }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
     const { url } = useRouteMatch();
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -28,23 +28,26 @@ function ManifestComponent({ selectedTab }) {
     useEffect(() => {
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
-
-        getManifestResource(appDetails, params.podName, params.nodeType)
-            .then((response) => {
-                const _manifest = response?.result?.manifest;
-                if (_manifest) {
-                    setManifest(_manifest);
-                    setActiveManifestEditorData(_manifest);
-                } else {
+        try {
+            getManifestResource(appDetails, params.podName, params.nodeType)
+                .then((response) => {
+                    const _manifest = response?.result?.manifest;
+                    if (_manifest) {
+                        setManifest(_manifest);
+                        setActiveManifestEditorData(_manifest);
+                    } else {
+                        setError(true);
+                    }
+                    setLoading(false);
+                })
+                .catch((err) => {
                     setError(true);
-                }
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(true);
-                console.log('err', err);
-                setLoading(false);
-            });
+                    console.log('err', err);
+                    setLoading(false);
+                });
+        } catch (err) {
+            console.log('err', err);
+        }
     }, [params.podName]);
 
     //For External
@@ -108,9 +111,13 @@ function ManifestComponent({ selectedTab }) {
     //         markActiveTab(params.actionName)
     //     }
     // }, [params.actionName])
- 
-    return (
-        <div style={{ minHeight: '600px', background:'#0B0F22' }}>
+
+    return isDeleted ? (
+        <div>
+            <MessageUI msg="This resource no longer exists" size={32} />
+        </div>
+    ) : (
+        <div style={{ minHeight: '600px', background: '#0B0F22' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div>
@@ -121,67 +128,67 @@ function ManifestComponent({ selectedTab }) {
                         mode="yaml"
                         readOnly={true}
                         loading={loading}
-                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24}/>}
+                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
                         // readOnly={activeTab !== 'Desired manifest'}
                         // onChange={handleEditorValueChange}
                     ></CodeEditor>
                 </div>
             )}
         </div>
-
-        // <>
-        //     {loading && (
-        //         <div className="flex bcn-0" style={{ minHeight: '600px' }}>
-        //             <Progressing pageLoader />
-        //         </div>
-        //     )}
-        //     {!activeManifestEditorData && (
-        //         <div style={{ gridColumn: '1 / span 2' }} className="flex">
-        //             <NoEvents title="Manifest not available" />
-        //         </div>
-        //     )}
-        //     <div className="bcn-0">
-        //         {/* <div className="flex left pl-20 pr-20 border-bottom">
-        //         {
-        //             tabs.map((tab: iLink, index) => {
-        //                 return (
-        //                     <div key={index + "tab"} className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}>
-        //                         <div className={`${tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'} bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`} onClick={() => handleTabClick(tab)}>
-        //                             {tab.name}
-        //                         </div>
-        //                     </div>
-        //                 )
-        //             })
-        //         }
-        //         <div className="pl-16 pr-16">|</div>
-        //         <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
-        //             <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
-        //         </div>
-        //     </div> */}
-        //         {/* {
-        //         diffMode ?
-        //             <CodeEditor
-        //                 original={manifest}
-        //                 theme='vs-gray--dt'
-        //                 height={600}
-        //                 value={activeManifestEditorData}
-        //                 mode="yaml"
-        //                 readOnly={activeTab !== 'Desired manifest'}
-        //             >
-        //             </CodeEditor> : */}
-        //         <CodeEditor
-        //             theme="vs-gray--dt"
-        //             height={600}
-        //             value={activeManifestEditorData}
-        //             mode="yaml"
-        //             readOnly={true}
-        //             // readOnly={activeTab !== 'Desired manifest'}
-        //             // onChange={handleEditorValueChange}
-        //         ></CodeEditor>
-        //         {/* } */}
-        //     </div>
-        // </>
     );
+
+    // <>
+    //     {loading && (
+    //         <div className="flex bcn-0" style={{ minHeight: '600px' }}>
+    //             <Progressing pageLoader />
+    //         </div>
+    //     )}
+    //     {!activeManifestEditorData && (
+    //         <div style={{ gridColumn: '1 / span 2' }} className="flex">
+    //             <NoEvents title="Manifest not available" />
+    //         </div>
+    //     )}
+    //     <div className="bcn-0">
+    //         {/* <div className="flex left pl-20 pr-20 border-bottom">
+    //         {
+    //             tabs.map((tab: iLink, index) => {
+    //                 return (
+    //                     <div key={index + "tab"} className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}>
+    //                         <div className={`${tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'} bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`} onClick={() => handleTabClick(tab)}>
+    //                             {tab.name}
+    //                         </div>
+    //                     </div>
+    //                 )
+    //             })
+    //         }
+    //         <div className="pl-16 pr-16">|</div>
+    //         <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
+    //             <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live Manifest
+    //         </div>
+    //     </div> */}
+    //         {/* {
+    //         diffMode ?
+    //             <CodeEditor
+    //                 original={manifest}
+    //                 theme='vs-gray--dt'
+    //                 height={600}
+    //                 value={activeManifestEditorData}
+    //                 mode="yaml"
+    //                 readOnly={activeTab !== 'Desired manifest'}
+    //             >
+    //             </CodeEditor> : */}
+    //         <CodeEditor
+    //             theme="vs-gray--dt"
+    //             height={600}
+    //             value={activeManifestEditorData}
+    //             mode="yaml"
+    //             readOnly={true}
+    //             // readOnly={activeTab !== 'Desired manifest'}
+    //             // onChange={handleEditorValueChange}
+    //         ></CodeEditor>
+    //         {/* } */}
+    //     </div>
+    // </>
 }
 
 export default ManifestComponent;

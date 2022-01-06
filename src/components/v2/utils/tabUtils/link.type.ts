@@ -9,6 +9,8 @@ export interface iLink {
     status?: string;
     count?: number;
     url?: string;
+    isDeleted?: boolean;
+    uid? : string;
 }
 
 export interface iLinks extends Array<iLink> { }

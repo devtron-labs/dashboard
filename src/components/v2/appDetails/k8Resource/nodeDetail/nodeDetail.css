@@ -10,10 +10,14 @@
     border-bottom: solid 2px var(--B500) ;
 }       
 
-.selected-manifest-tab{
+.dark-background{
     background-color: #0b0f22;
 }
 
 .summary-view__card {
     background-color: #f2f4f7;
+}
+
+.node-details_tab{
+    border: none;
 }

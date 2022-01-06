@@ -25,7 +25,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
 
                 if (_nodeHealth.toLowerCase() === "healthy") {
                     healthyNodeCount++
-                } else if (_nodeHealth.toLowerCase() === "failed") {
+                } else if (_nodeHealth.toLowerCase() === "degraded") {
                     failedNodeCount++
                 } else if (_nodeHealth.toLowerCase() === "progressing") {
                     progressingNodeCount++
@@ -37,7 +37,7 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({ }) => {
             const statusViewTabJSON = [
                 { status: "ALL", count: allNodeCount, isSelected: true },
                 { status: "HEALTHY", count: healthyNodeCount, isSelected: false },
-                { status: "FAILED", count: failedNodeCount, isSelected: false },
+                { status: "DEGRADED", count: failedNodeCount, isSelected: false },
                 { status: "PROGRESSING", count: progressingNodeCount, isSelected: false },
             ]
 

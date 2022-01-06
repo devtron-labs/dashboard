@@ -25,9 +25,7 @@ function NodeComponent() {
     const [podType, setPodType] = useState(false);
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
-    // const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const params = useParams<{ nodeType: NodeType }>();
-    // const [tabs, setTabs] = useState([])
 
     useEffect(() => {
         if (!copied) return;
@@ -36,8 +34,6 @@ function NodeComponent() {
 
     useEffect(() => {
         if (params.nodeType) {
-            // const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
-            // setTabs(_tabs)
 
             let tableHeader: string[], _fcw: string;
 
@@ -61,7 +57,7 @@ function NodeComponent() {
 
             const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
                 let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
-
+             
                 // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 //     _selectedNodes = _selectedNodes.filter((node) => {
                 //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
