@@ -49,29 +49,20 @@ const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
 
     let _nodes = []
     let _alreadyAddedNodes = []
-    //let uniqueINodes = new Set();
 
     nodes.forEach((node: Node) => {
         const aggregator = getAggregator(node.kind)
-
         if (aggregator.toLowerCase() === parentNodeName.toLowerCase()) {
-            // uniqueINodes.add(node.kind)
             if (_alreadyAddedNodes.indexOf(node.kind) === -1) {
                 _alreadyAddedNodes.push(node.kind)
-
                 const _inode = {} as iNode;
                 _inode.name = node.kind
+                _inode.info = node.info
                 _nodes.push(_inode)
             }
 
         }
     });
-
-    // uniqueINodes.forEach((_n: any) => {
-    //     const _inode = {} as iNode;
-    //     _inode.name = _n
-    //     _nodes.push(_inode)
-    // })
 
     return _nodes
 }

@@ -57,76 +57,70 @@ function NodeDetailComponent() {
         (tab) => tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6),
     );
     const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false;
-    console.log(isDeleted);
+
     return (
         <React.Fragment>
-            <div className="node-details_tab bcn-0 flex left top w-100 pl-20 border-bottom pr-20 ">
-                {isDeleted ? (
-                    <MessageUI msg="This resource no longer exists" size={32} />
-                ) : (
-                    <>
-                        {tabs &&
-                            tabs.length > 0 &&
-                            tabs.map((tab: string, index: number) => {
-                                return (
-                                    <div
-                                        key={index + 'resourceTreeTab'}
-                                        className={`${
-                                            tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                ? 'default-tab-row cb-5'
-                                                : 'cn-7'
-                                        } pt-6 pb-6 cursor pl-8 pr-8`}
-                                    >
-                                        <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
-                                            <span
-                                                className={`${
-                                                    tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                        ? 'cb-5'
-                                                        : 'cn-9'
-                                                } default-tab-cell `}
-                                            >
-                                                {' '}
-                                                {tab.toLowerCase()}
-                                            </span>
-                                        </NavLink>
-                                    </div>
-                                );
-                            })}{' '}
-                    </>
-                )}
+            <div className="node-details_tab bcn-0 flex left top w-100 border-bottom pr-20 ">
+                <>
+                    {tabs &&
+                        tabs.length > 0 &&
+                        tabs.map((tab: string, index: number) => {
+                            return (
+                                <div
+                                    key={index + 'resourceTreeTab'}
+                                    className={`${
+                                        tab.toLowerCase() === selectedTabName.toLowerCase()
+                                            ? 'default-tab-row cb-5'
+                                            : 'cn-7'
+                                    } pl-20 pt-6 pb-6 cursor pl-8 pr-8`}
+                                >
+                                    <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
+                                        <span
+                                            className={`${
+                                                tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
+                                            } default-tab-cell `}
+                                        >
+                                            {' '}
+                                            {tab.toLowerCase()}
+                                        </span>
+                                    </NavLink>
+                                </div>
+                            );
+                        })}{' '}
+                </>
             </div>
-            {!isDeleted && <Switch>
-                <Route
-                    path={`${path}/${NodeDetailTab.MANIFEST}`}
-                    render={() => {
-                        return <ManifestComponent selectedTab={handleSelectedTab} />;
-                    }}
-                />
-                <Route
-                    path={`${path}/${NodeDetailTab.EVENTS}`}
-                    render={() => {
-                        return <EventsComponent selectedTab={handleSelectedTab} />;
-                    }}
-                />
-                <Route
-                    path={`${path}/${NodeDetailTab.LOGS}`}
-                    render={() => {
-                        return <LogsComponent selectedTab={handleSelectedTab} />;
-                    }}
-                />
-                <Route
-                    path={`${path}/${NodeDetailTab.SUMMARY}`}
-                    render={() => {
-                        return <SummaryComponent selectedTab={handleSelectedTab} />;
-                    }}
-                />
-                <Route
-                    path={`${path}/${NodeDetailTab.TERMINAL}`}
-                    render={() => {
-                        return <TerminalComponent selectedTab={handleSelectedTab} />;
-                    }}
-                />
-            </Switch>}
+                <Switch>
+                    <Route
+                        path={`${path}/${NodeDetailTab.MANIFEST}`}
+                        render={() => {
+                            return <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                        }}
+                    />
+                    <Route
+                        path={`${path}/${NodeDetailTab.EVENTS}`}
+                        render={() => {
+                            return <EventsComponent selectedTab={handleSelectedTab} />;
+                        }}
+                    />
+                    <Route
+                        path={`${path}/${NodeDetailTab.LOGS}`}
+                        render={() => {
+                            return <LogsComponent selectedTab={handleSelectedTab} />;
+                        }}
+                    />
+                    <Route
+                        path={`${path}/${NodeDetailTab.SUMMARY}`}
+                        render={() => {
+                            return <SummaryComponent selectedTab={handleSelectedTab} />;
+                        }}
+                    />
+                    <Route
+                        path={`${path}/${NodeDetailTab.TERMINAL}`}
+                        render={() => {
+                            return <TerminalComponent selectedTab={handleSelectedTab} />;
+                        }}
+                    />
+                </Switch>
         </React.Fragment>
     );
 }

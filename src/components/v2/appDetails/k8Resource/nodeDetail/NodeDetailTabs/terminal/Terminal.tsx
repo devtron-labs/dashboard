@@ -97,6 +97,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 _terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
                 _terminal.writeln('---------------------------------------------');
                 setIsReconnection(false);
+
+                if(firstMessageReceived){
+                    terminalViewProps.setSocketConnection('CONNECTED');
+                }
             }
         };
 
