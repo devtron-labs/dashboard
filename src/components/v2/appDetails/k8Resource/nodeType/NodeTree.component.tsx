@@ -118,9 +118,7 @@ function NodeTreeComponent() {
     }, [filteredNodes.length])
 
     const hasErrorInTreeNode = (treeNode: iNode) => {
-        let status = treeNode.status || treeNode.health?.status
-
-        if(status && status.toLowerCase() !== 'healthy'){
+        if(treeNode.status && treeNode.status.toLowerCase() !== 'healthy'){
             return true
         }
 
