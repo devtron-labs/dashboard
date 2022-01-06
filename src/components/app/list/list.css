@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
+    padding: 12px 20px;
 }
 
 .app-header__text {
@@ -27,7 +27,7 @@
 }
 
 .search-filter-section {
-    padding: 12px 24px;
+    padding: 12px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -79,7 +79,7 @@
     font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    padding-left: 24px;
+    padding-left: 20px;
     box-shadow: 0 1px 0 0 var(--N200);
     background: white;
     z-index: var(--app-list-header-index);
@@ -100,7 +100,7 @@
     letter-spacing: normal;
     color: var(--N900);
     align-items: center;
-    padding-left: 24px;
+    padding-left: 20px;
     cursor: pointer;
     background-color: white;
     box-shadow: inset 0 -1px 0 0 var(--N100);
@@ -409,13 +409,13 @@
 }
 
 .app-tabs-wrapper .tab-list{
-    padding-left: 30px;
+    padding-left: 20px;
     background-color: white;
 }
 
 .app-tabs-wrapper .app-tabs-sync{
     position: absolute;
-    right: 28px;
+    right: 20px;
     top: 10px;
 }
 
@@ -443,7 +443,7 @@
 
 .above-header-message {
     min-height: 32px;
-    margin: 0 32px;
+    margin: 0 20px;
     padding: 6px;
 }
 

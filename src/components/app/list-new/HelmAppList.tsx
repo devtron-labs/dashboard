@@ -8,7 +8,7 @@ import { AppListViewType } from '../config';
 import { Link, withRouter } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
 import NoClusterSelectImage from '../../../assets/img/ic-no-cluster-select@2x.png';
-import defaultChartImage from '../../../assets/icons/ic-plc-chart.svg';
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg';
 import { Empty } from '../list/emptyView/Empty';
 import { AllCheckModal } from '../../checkList/AllCheckModal';
 import EmptyState from '../../EmptyState/EmptyState';
