@@ -118,7 +118,7 @@ const AppDetailsStore = {
 
         return isTabFound;
     },
-    markK8sResourceDelete: (objectKind: string, objectName: string) => {
+    markResourceDeleted: (objectKind: string, objectName: string) => {
         const applicationObjectTabs = applicationObjectTabsSubject.getValue();
 
         objectName = objectKind + '/...' + objectName.slice(-6);

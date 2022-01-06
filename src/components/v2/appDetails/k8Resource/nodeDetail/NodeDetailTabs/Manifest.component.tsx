@@ -28,8 +28,8 @@ function ManifestComponent({ selectedTab }) {
     useEffect(() => {
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
-
-        getManifestResource(appDetails, params.podName, params.nodeType)
+        try{
+            getManifestResource(appDetails, params.podName, params.nodeType)
             .then((response) => {
                 const _manifest = response?.result?.manifest;
                 if (_manifest) {
@@ -45,6 +45,12 @@ function ManifestComponent({ selectedTab }) {
                 console.log('err', err);
                 setLoading(false);
             });
+        }
+        catch(err){
+            console.log('err', err);
+        }
+
+       
     }, [params.podName]);
 
     //For External

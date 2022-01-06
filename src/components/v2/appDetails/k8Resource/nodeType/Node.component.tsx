@@ -61,7 +61,7 @@ function NodeComponent() {
 
             const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
                 let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
-
+             
                 // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 //     _selectedNodes = _selectedNodes.filter((node) => {
                 //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);

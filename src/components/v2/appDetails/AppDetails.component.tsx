@@ -18,6 +18,8 @@ import EnvironmentStatusComponent from './sourceInfo/environmentStatus/Environme
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
 import { Progressing, useEventSource } from '../../common';
+import { table } from 'console';
+import MessageUI from '../common/message.ui';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -76,80 +78,86 @@ const AppDetailsComponent = () => {
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
-                            <li
-                                key={index + 'tab'}
-                                id={`${params.nodeType}_${tab.name}`}
-                                className="flex left ellipsis-right "
-                            >
-                                <Tippy
-                                    className={`${
-                                        tab.name === AppDetailsTabs.log_analyzer ||
-                                        tab.name === AppDetailsTabs.k8s_Resources
-                                            ? 'hide-section'
-                                            : ''
-                                    } default-tt `}
-                                    arrow={false}
-                                    placement="top"
-                                    content={
-                                        tab.name !== AppDetailsTabs.log_analyzer &&
-                                        tab.name !== AppDetailsTabs.k8s_Resources &&
-                                        tab.title
-                                    }
-                                >
-                                    <div className="flex">
-                                        <div
+                            <>
+                                
+                                    <li
+                                        key={index + 'tab'}
+                                        id={`${params.nodeType}_${tab.name}`}
+                                        className="flex left ellipsis-right "
+                                    >
+                                        <Tippy
                                             className={`${
-                                                tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
-                                            } flex left pl-12 pt-8 pb-8 pr-12 `}
+                                                tab.name === AppDetailsTabs.log_analyzer ||
+                                                tab.name === AppDetailsTabs.k8s_Resources
+                                                    ? 'hide-section'
+                                                    : ''
+                                            } default-tt `}
+                                            arrow={false}
+                                            placement="top"
+                                            content={
+                                                tab.name !== AppDetailsTabs.log_analyzer &&
+                                                tab.name !== AppDetailsTabs.k8s_Resources &&
+                                                tab.title
+                                            }
                                         >
-                                            <NavLink
-                                                to={`${tab.url}`}
-                                                className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
-                                            >
-                                                <div className={`flex left ${tab.isSelected ? 'cn-9' : ''}`}>
-                                                    {tab.title === AppDetailsTabs.log_analyzer ? (
-                                                        <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
-                                                            {' '}
-                                                            <LogAnalyzerIcon />
-                                                        </span>
-                                                    ) : (
-                                                        ''
-                                                    )}
-                                                    {tab.title === AppDetailsTabs.k8s_Resources ? (
-                                                        <span className="icon-dim-16 resource-tree__tab-hover fcn-9 ">
-                                                            {' '}
-                                                            <K8ResourceIcon />
-                                                        </span>
-                                                    ) : (
-                                                        ''
-                                                    )}
-                                                    <span
-                                                        className={`${
-                                                            tab.name !== AppDetailsTabs.k8s_Resources &&
-                                                            tab.name !== AppDetailsTabs.log_analyzer
-                                                                ? 'mr-8'
-                                                                : 'ml-8 text-capitalize '
-                                                        } fs-12 `}
+                                            <div className="flex">
+                                                <div
+                                                    className={`${
+                                                        tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                    } flex left pl-12 pt-8 pb-8 pr-12 `}
+                                                >
+                                                    <NavLink
+                                                        to={`${tab.url}`}
+                                                        className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                                     >
-                                                        {tab.name}
-                                                    </span>
-                                                </div>
-                                            </NavLink>
+                                                        <div className={`flex left ${tab.isSelected ? 'cn-9' : ''}`}>
+                                                            {tab.title === AppDetailsTabs.log_analyzer ? (
+                                                                <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
+                                                                    {' '}
+                                                                    <LogAnalyzerIcon />
+                                                                </span>
+                                                            ) : (
+                                                                ''
+                                                            )}
+                                                            {tab.title === AppDetailsTabs.k8s_Resources ? (
+                                                                <span className="icon-dim-16 resource-tree__tab-hover fcn-9 ">
+                                                                    {' '}
+                                                                    <K8ResourceIcon />
+                                                                </span>
+                                                            ) : (
+                                                                ''
+                                                            )}
+                                                            <span
+                                                                className={`${
+                                                                    tab.name !== AppDetailsTabs.k8s_Resources &&
+                                                                    tab.name !== AppDetailsTabs.log_analyzer
+                                                                        ? 'mr-8'
+                                                                        : 'ml-8 text-capitalize '
+                                                                } fs-12 `}
+                                                            >
+                                                                {tab.name}
+                                                            </span>
+                                                        </div>
+                                                    </NavLink>
 
-                                            {tab.name !== AppDetailsTabs.log_analyzer &&
-                                                tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                    <div className="resource-tab__close-wrapper flex br-5">
-                                                        <Cross
-                                                            onClick={(e) => handleCloseTab(e, tab.url)}
-                                                            className="icon-dim-16 cursor"
-                                                        />
-                                                    </div>
-                                                )}
-                                        </div>
-                                        <div className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}></div>
-                                    </div>
-                                </Tippy>
-                            </li>
+                                                    {tab.name !== AppDetailsTabs.log_analyzer &&
+                                                        tab.name !== AppDetailsTabs.k8s_Resources && (
+                                                            <div className="resource-tab__close-wrapper flex br-5">
+                                                                <Cross
+                                                                    onClick={(e) => handleCloseTab(e, tab.url)}
+                                                                    className="icon-dim-16 cursor"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                </div>
+                                                <div
+                                                    className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}
+                                                ></div>
+                                            </div>
+                                        </Tippy>
+                                    </li>
+                                
+                            </>
                         );
                     })}
                 </ul>

@@ -42,7 +42,8 @@ function EventsComponent({ selectedTab }) {
     return (
         <div style={{ minHeight: '100vh', background: '#0B0F22' }} className=''>
             {/* in case of pod deletion */}
-            {/* <MessageUI msg='This resource no longer exists' size={32} /> */}
+            
+            {/* {tab.isDeleted && <MessageUI msg='This resource no longer exists' size={32} />} */}
 
             {pods && pods.length > 0 && (
                 <React.Fragment>
