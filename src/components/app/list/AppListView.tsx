@@ -52,7 +52,7 @@ export class AppListView extends Component<AppListViewProps>{
                     </div>
                     <div className="app-list__cell app-list__cell--env">
                         <span className="app-list__cell-header">Environment</span>
-                        <Tippy arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
+                        <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
                             <HelpOutlineIcon className="icon-dim-20"/>
                         </Tippy>
                     </div>
@@ -86,7 +86,7 @@ export class AppListView extends Component<AppListViewProps>{
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.defaultEnv && app.defaultEnv.lastDeployedTime &&
-                                        <Tippy arrow={true} placement="top" content={app.defaultEnv.lastDeployedTime}>
+                                        <Tippy className="default-tt" arrow={true} placement="top" content={app.defaultEnv.lastDeployedTime}>
                                             <p className="truncate-text m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
                                         </Tippy>
                                     }

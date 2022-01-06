@@ -270,7 +270,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 </div>
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header">Environment</span>
-                    <Tippy arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
+                    <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
                         <HelpOutlineIcon className="icon-dim-20" />
                     </Tippy>
                 </div>
@@ -345,6 +345,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.lastDeployedAt && (
                                         <Tippy
+                                            className="default-tt"
                                             arrow={true}
                                             placement="top"
                                             content={handleUTCTime(app.lastDeployedAt, false)}
