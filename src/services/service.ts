@@ -347,3 +347,8 @@ export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     const URL = `git/host/webhook-meta-config/${gitProviderId}`;
     return get(URL);
 }
+
+export function getVersionConfig() {
+    const URL = `${Routes.APP_VERSION}`;
+    return get(URL);
+}
