@@ -108,6 +108,8 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    MANIFEST: 'orchestrator/k8s/resource',
+    EVENTS: 'orchestrator/k8s/events',
 };
 
 export const ViewType = {
