@@ -124,22 +124,25 @@ export class Filter extends Component<FilterProps, FilterState>{
         return <div className="filter" >
             {
                 (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
-                <button type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
-                    {this.props.buttonText}
-                    {badge > 0 ? <span className="badge">{badge}</span> : null}
-                    <span className="filter-icon"><i className={faIcon}></i></span>
-                </button>
+                <div>
+                    {
+                        this.props.showPulsatingDot && !this.state.show &&
+                        <div className="pulse-highlight"></div>
+                    }
+                    <button type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
+                        {this.props.buttonText}
+                        {badge > 0 ? <span className="badge">{badge}</span> : null}
+                        <span className="filter-icon"><i className={faIcon}></i></span>
+                    </button>
+                </div>
             }
             {
                 this.props.isDisabled && this.props.disableTooltipMessage &&
                 <Tippy arrow={true} placement="top" content={this.props.disableTooltipMessage} hideOnClick={false}>
-                    <div>
-                        <div className="pulse-highlight"></div>
-                        <button type="button" className="filter__trigger disable__button">
-                            {this.props.buttonText}
-                            <span className="filter-icon"><i className={faIcon}></i></span>
-                        </button>
-                    </div>
+                    <button type="button" className="filter__trigger disable__button">
+                        {this.props.buttonText}
+                        <span className="filter-icon"><i className={faIcon}></i></span>
+                    </button>
                 </Tippy>
             }
             {

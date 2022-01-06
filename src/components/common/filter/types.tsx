@@ -19,6 +19,7 @@ export interface FilterProps {
     disableTooltipMessage? : string;
     isLabelHtml? :boolean;
     onShowHideFilterContent?: (show : boolean) => void;
+    showPulsatingDot? : boolean;
 }
 
 export interface FilterState {

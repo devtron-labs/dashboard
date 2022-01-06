@@ -20,7 +20,7 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import './HelmAppList.css';
 import '../list/list.css';
 
-export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState, updateLastDataSync }) {
+export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState, updateLastDataSync, setShowPulsatingDotState }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [devtronInstalledHelmAppsList, setDevtronInstalledHelmAppsList] = useState<HelmApp[]>([]);
@@ -213,6 +213,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         setSortBy(_sortBy);
         setSortOrder(_sortOrder);
         setFilteredHelmAppsList(_filteredDevtronInstalledHelmAppsList);
+        setShowPulsatingDotState(_filteredDevtronInstalledHelmAppsList.length == 0 && !clusterIdsCsv);
     }
 
     function _isAnyFilterationAppliedExceptCluster() {

@@ -45,6 +45,7 @@ export default function AppList() {
 
     // filters
     const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
+    const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false);
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false);
 
 
@@ -383,6 +384,10 @@ export default function AppList() {
         setFetchingExternalApps(fetching);
     }
 
+    const setShowPulsatingDotState = (show : boolean) : void => {
+        setShowPulsatingDot(show);
+    }
+
     const onShowHideFilterContent = (show : boolean) : void => {
         setPageOverflowEnabled(!show);
     }
@@ -433,7 +438,8 @@ export default function AppList() {
                             placeholder="Search Cluster"
                             type={AppListConstants.FilterType.CLUTSER}
                             applyFilter={applyFilter}
-                            onShowHideFilterContent={onShowHideFilterContent} />
+                            onShowHideFilterContent={onShowHideFilterContent}
+                            showPulsatingDot={showPulsatingDot}/>
                     <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
                             labelKey="label"
                             buttonText="Namespace"
@@ -612,7 +618,7 @@ export default function AppList() {
                     }
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
-                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync}/>
+                        <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState}/>
                     }
                  </>
             }
