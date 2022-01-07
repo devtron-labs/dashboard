@@ -62,8 +62,7 @@
             }
 
             &.event__row-bc{
-                background-color: var(--N000);
-                opacity: 0.05;
+                background-color: rgba(255, 255, 255, 0.05);
             }
         }
     }
@@ -83,7 +82,7 @@
             width: 100%;
             padding: 0 0 0 20px;
             overflow: hidden;
-            background-color: #000;
+            background-color: #0b0f22;
             &:focus {
                 outline: none;
             }

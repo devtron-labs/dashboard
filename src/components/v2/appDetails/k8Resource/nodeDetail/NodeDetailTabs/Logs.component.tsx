@@ -252,7 +252,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     ) : (
         <React.Fragment>
             <div className="container-fluid bcn-0">
-                <div className="row pt-2 pb-2 pl-16 pr-16">
+                <div className="row pt-2 pb-2 pl-16 pr-16 border-top">
                     <div className="col-6 d-flex align-items-center">
                         <Tippy
                             className="default-tt"

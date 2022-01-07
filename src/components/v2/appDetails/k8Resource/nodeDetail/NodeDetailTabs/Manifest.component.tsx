@@ -12,6 +12,7 @@ import IndexStore from '../../../index.store';
 import { Progressing } from '../../../../../common';
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-filled-gray.svg';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
+import { editor } from 'monaco-editor';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -111,6 +112,18 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     //         markActiveTab(params.actionName)
     //     }
     // }, [params.actionName])
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            //@ts-ignore
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+
 
     return isDeleted ? (
         <div>
