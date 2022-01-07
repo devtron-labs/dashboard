@@ -122,7 +122,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             {!error && (
                 <div>
                     <CodeEditor
-                        theme="vs-dark"
+                        theme="vs-dark--dt"
                         height={700}
                         value={manifest}
                         mode="yaml"
