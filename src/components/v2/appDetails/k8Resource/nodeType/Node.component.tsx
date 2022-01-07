@@ -253,11 +253,11 @@ function NodeComponent() {
     };
 
     return (
-        <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0 }}>
+        <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}>
             {false ? (
                 <PodHeaderComponent callBack={setPodType} />
             ) : (
-                <div className="border-bottom  pt-10 pb-10">
+                <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
                     <div className="pl-16 fw-6 fs-14 text-capitalize">
                         <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                         <span>({selectedNodes?.length})</span>

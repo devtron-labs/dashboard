@@ -8,15 +8,16 @@ import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router
 import { get} from '../../../services/api';
 import { handleUTCTime} from '../../common';
 import  './header.css'
+import IndexStore from '../appDetails/index.store';
 
 function ChartHeaderComponent() {
     const match = useRouteMatch();
     const history = useHistory();
-    const params = useParams<{ appId: string, envId: string }>()
+    const params = useParams<{ appId: string, envId: string, appName: string }>()
     const { path } = useRouteMatch();
+    const appDetails = IndexStore.getAppDetails()
 
     function handleBreadcrumbChartChange(selected) {
-        console.log("handleBreadcrumbChartChange", selected)
         const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId });
         history.push(newUrl)
     }
@@ -66,8 +67,12 @@ function ChartHeaderComponent() {
 
     return (
         <div className="app-page-header" style={{ gridTemplateColumns: "unset" }}>
-            <div className="m-0 flex left fs-12 cn-9">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
+            <div className="m-0 flex left ">
+                <span className='cb-5 fs-16'>Helm Apps </span>
+                <span className='fs-16 cn-9 ml-4 mr-4'> / </span>
+                <span className='fs-16 cn-9'>{appDetails.appName}</span>
+
+                {/* <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} /> */}
             </div>
 
             <ul role="tablist" className="tab-list">

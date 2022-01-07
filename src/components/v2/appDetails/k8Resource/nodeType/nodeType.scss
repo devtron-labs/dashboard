@@ -103,3 +103,10 @@
 .node-row__pdding{
     padding-left: 32px !important;
 }
+
+.node-detail__sticky-header{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--N000);
+}
