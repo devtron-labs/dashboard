@@ -192,7 +192,7 @@ const IndexStore = {
     },
 
     getAllContainersForPod: (_name: string) => {
-        return _appDetailsSubject.getValue().resourceTree.podMetadata.filter((pod) => pod.name === _name)[0].containers;
+        return _appDetailsSubject.getValue().resourceTree.podMetadata.find((pod) => pod.name === _name).containers;
     },
 
     getAllContainers: () => {
@@ -234,7 +234,7 @@ const IndexStore = {
             });
         });
 
-        return { containers: containers, pods: pods.map((p) => p.name) };
+        return { containers: containers, pods: pods };
     },
 
     getPodForAContainer: (_c: string) => {
