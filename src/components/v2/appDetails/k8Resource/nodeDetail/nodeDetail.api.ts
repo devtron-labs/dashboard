@@ -1,8 +1,11 @@
 import { Routes } from '../../../../../config';
 import { get, post } from '../../../../../services/api';
-import { AppDetails } from '../../appDetails.type';
+import { AppDetails, AppType } from '../../appDetails.type';
 
 export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
+        return getManifestResourceHelmApps(ad, podName, nodeType);
+    }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0];
 
     return get(
@@ -13,6 +16,9 @@ export const getManifestResource = (ad: AppDetails, podName: string, nodeType: s
 };
 
 export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
+        return getEventHelmApps(ad, nodeName, nodeType);
+    }
     const cn = ad.resourceTree.nodes.filter(
         (node) => node.name === nodeName && node.kind.toLowerCase() === nodeType,
     )[0];
@@ -22,38 +28,41 @@ export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => 
 };
 
 function createBody(appDetails: AppDetails, nodeName: string, nodeType: string) {
+    const selectedResource = appDetails.resourceTree.nodes.filter(
+        (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
+    )[0];
     return {
         appIdentifier: {
-            clusterId: 1,
-            namespace: appDetails.namespace,
+            clusterId: appDetails.clusterId,
+            namespace: selectedResource.namespace,
             releaseName: appDetails.appName,
         },
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
-                    Group: '',
-                    Version: 'v1',
-                    Kind: nodeType,
+                    Group: selectedResource.group ? selectedResource.group : '',
+                    Version: selectedResource.version ? selectedResource.version : 'v1',
+                    Kind: selectedResource.kind,
                 },
-                namespace: appDetails.namespace,
-                name: nodeName,
+                namespace: selectedResource.namespace,
+                name: selectedResource.name,
             },
-            podLogsRequest: {
-                containerName: 'envoy',
-            },
+            // podLogsRequest: {
+            //     containerName: 'envoy',
+            // },
         },
     };
 }
 
-export const getManifestResourceHelmApps = (ad: AppDetails, nodeName: string, nodeType: string) => {
+function getManifestResourceHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
     const requestData = createBody(ad, nodeName, nodeType);
     return post(Routes.MANIFEST, requestData);
-};
+}
 
-export const getEventHelmApps = (ad: AppDetails, nodeName: string, nodeType: string) => {
+function getEventHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
     const requestData = createBody(ad, nodeName, nodeType);
     return post(Routes.EVENTS, requestData);
-};
+}
 
 export const getLogsURL = (ad, nodeName, Host, container) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];

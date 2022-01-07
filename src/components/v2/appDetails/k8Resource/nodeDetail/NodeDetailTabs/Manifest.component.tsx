@@ -9,6 +9,7 @@ import { getManifestResource } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
+import { AppType } from '../../../appDetails.type';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -30,7 +31,10 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         try {
             getManifestResource(appDetails, params.podName, params.nodeType)
                 .then((response) => {
-                    const _manifest = response?.result?.manifest;
+                    const _manifest =
+                        appDetails.appType === AppType.EXTERNAL_HELM_CHART
+                            ? JSON.stringify(response?.result?.manifest)
+                            : response?.result?.manifest;
                     if (_manifest) {
                         setManifest(_manifest);
                         setActiveManifestEditorData(_manifest);
@@ -126,69 +130,87 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
-                    <div className="bcn-0">
-                        <div className="flex left pl-20 pr-20 border-bottom">
-                            {tabs.map((tab: iLink, index) => {
-                                return (
-                                    <div
-                                        key={index + 'tab'}
-                                        className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
-                                    >
+                    {appDetails.appType === AppType.EXTERNAL_HELM_CHART ? (
+                        <div className="bcn-0">
+                            <div className="flex left pl-20 pr-20 border-bottom">
+                                {tabs.map((tab: iLink, index) => {
+                                    return (
                                         <div
-                                            className={`${
-                                                tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
-                                            } bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`}
-                                            onClick={() => handleTabClick(tab)}
+                                            key={index + 'tab'}
+                                            className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
                                         >
-                                            {tab.name}
+                                            <div
+                                                className={`${
+                                                    tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
+                                                } bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`}
+                                                onClick={() => handleTabClick(tab)}
+                                            >
+                                                {tab.name}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
 
-                            {activeTab === 'Live manifest' && (
-                                <>
-                                    <div className="pl-16 pr-16">|</div>
-                                    {!isEditmode ? (
-                                        <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
-                                            <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live manifest
+                                {activeTab === 'Live manifest' && (
+                                    <>
+                                        <div className="pl-16 pr-16">|</div>
+                                        {!isEditmode ? (
+                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
+                                                <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live manifest
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <button className="apply-change" onClick={handleApplyChanges}>
+                                                    Apply Changes
+                                                </button>
+                                                <button className="cancel-change" onClick={handleCancel}>
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                            <CodeEditor
+                                defaultValue={manifest}
+                                diffView={activeTab === 'Compare'}
+                                theme="vs-dark"
+                                height={700}
+                                value={activeManifestEditorData}
+                                mode="yaml"
+                                readOnly={
+                                    activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')
+                                }
+                                onChange={handleEditorValueChange}
+                                loading={loading}
+                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
+                            >
+                                {activeTab === 'Compare' && (
+                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                        <div className="split-header">
+                                            <div className="left-pane">Live manifest</div>
+                                            <div className="right-pane">Desired manifest (view only)</div>
                                         </div>
-                                    ) : (
-                                        <div>
-                                            <button className="apply-change" onClick={handleApplyChanges}>
-                                                Apply Changes
-                                            </button>
-                                            <button className="cancel-change" onClick={handleCancel}>
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    )}
-                                </>
-                            )}
+                                    </CodeEditor.Header>
+                                )}
+                                {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
+                            </CodeEditor>
                         </div>
-                        <CodeEditor
-                            defaultValue={manifest}
-                            diffView={activeTab === 'Compare'}
-                            theme="vs-dark"
-                            height={700}
-                            value={activeManifestEditorData}
-                            mode="yaml"
-                            readOnly={activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')}
-                            onChange={handleEditorValueChange}
-                            loading={loading}
-                            customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
-                        >
-                            {activeTab === 'Compare' && (
-                                <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                    <div className="split-header">
-                                        <div className="left-pane">Live manifest</div>
-                                        <div className="right-pane">Desired manifest (view only)</div>
-                                    </div>
-                                </CodeEditor.Header>
-                            )}
-                            {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
-                        </CodeEditor>
-                    </div>
+                    ) : (
+                        <div>
+                            <CodeEditor
+                                theme="vs-dark"
+                                height={700}
+                                value={manifest}
+                                mode="yaml"
+                                readOnly={true}
+                                loading={loading}
+                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
+                                // readOnly={activeTab !== 'Desired manifest'}
+                                // onChange={handleEditorValueChange}
+                            ></CodeEditor>
+                        </div>
+                    )}
                 </>
             )}
         </div>
