@@ -108,7 +108,6 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
-    APP_VERSION: '/version',
 };
 
 export const ViewType = {
@@ -184,9 +183,3 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }
-
-export enum SERVER_MODE {
-    EA_ONLY = 'EA_ONLY',
-    FULL = 'FULL',
-}
-export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;

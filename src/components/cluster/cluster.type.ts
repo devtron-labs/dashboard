@@ -1,5 +1,4 @@
 import { RouteComponentProps } from "react-router-dom";
-import { SERVER_MODE_TYPE } from "../../config";
 
 export const POLLING_INTERVAL = 30000;
 
@@ -53,7 +52,6 @@ export interface ClusterInstallStatusProps {
 
 
 export interface ClusterListProps extends RouteComponentProps<{}> {
-    serverMode: SERVER_MODE_TYPE
     // view: string;
     // clusters: {
     //     id: number;

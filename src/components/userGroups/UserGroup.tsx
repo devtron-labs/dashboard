@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { useAsync, NavigationArrow, getRandomColor, not, useKeyDown, noop, ConditionalWrap, Progressing, showError, removeItemsFromArray, getRandomString, Option, MultiValueContainer, MultiValueRemove, multiSelectStyles, sortBySelected, mapByKey, useEffectAfterMount } from '../common'
@@ -8,7 +8,7 @@ import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/se
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
 import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, OptionType, CollapsedUserOrGroupProps } from './userGroups.types'
-import { DOCUMENTATION, Routes, SERVER_MODE } from '../../config'
+import { DOCUMENTATION, Routes } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg';
@@ -20,7 +20,6 @@ import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import './UserGroup.scss';
-import { mainContext } from '../common/navigation/NavigationRoutes';
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean, result: { id: number, name: string }[], error: any }>;
@@ -96,19 +95,8 @@ function HeaderSection() {
 }
 
 export default function UserGroupRoute() {
-    const {serverMode} = useContext(mainContext);
-    const { url, path } = useRouteMatch();
-    const [listsLoading, lists, listsError, reloadLists] = useAsync(
-        () =>
-            Promise.allSettled([
-                getGroupList(),
-                get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
-                getUserRole(),
-            ]),
-        [serverMode],
-    );
+    const { url, path } = useRouteMatch()
+    const [listsLoading, lists, listsError, reloadLists] = useAsync(() => Promise.allSettled([getGroupList(), get(Routes.PROJECT_LIST), getEnvironmentListMin(), getChartGroups(), getUserRole()]), [])
     const [appsList, setAppsList] = useState(new Map())
     useEffect(() => {
         if (!lists) return
