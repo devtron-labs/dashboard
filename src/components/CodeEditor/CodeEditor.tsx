@@ -8,6 +8,7 @@ import './codeEditor.scss';
 import ReactGA from 'react-ga';
 import { editor } from 'monaco-editor';
 
+
 interface WarningProps { text: string }
 
 interface InformationProps { text: string }
@@ -113,7 +114,18 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-   
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            //@ts-ignore
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+    
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco

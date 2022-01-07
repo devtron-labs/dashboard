@@ -136,6 +136,7 @@ const AppDetailsStore = {
                 tab.isDeleted = true;
             }
         }
+        applicationObjectTabsSubject.next([...applicationObjectTabs]);
     },
 
     setNodeTreeActiveParentNode: (_n: iNode) => {
