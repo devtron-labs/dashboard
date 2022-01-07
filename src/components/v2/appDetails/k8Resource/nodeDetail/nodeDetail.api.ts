@@ -2,16 +2,24 @@ import { Routes } from '../../../../../config';
 import { get, post } from '../../../../../services/api';
 import { AppDetails } from '../../appDetails.type';
 
-// export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
-//     const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
+export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
+    const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0];
 
-//     return get(`api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${ad.namespace}&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`)
-// }
+    return get(
+        `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
+            ad.namespace
+        }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
+    );
+};
 
-// export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
-//     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-//     return get(`api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`)
-// }
+export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
+    const cn = ad.resourceTree.nodes.filter(
+        (node) => node.name === nodeName && node.kind.toLowerCase() === nodeType,
+    )[0];
+    return get(
+        `api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
+    );
+};
 
 function createBody(appDetails: AppDetails, nodeName: string, nodeType: string) {
     return {
@@ -37,14 +45,9 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string) 
     };
 }
 
-export const getManifestResource = (ad: AppDetails, nodeName: string, nodeType: string) => {
+export const getManifestResourceHelmApps = (ad: AppDetails, nodeName: string, nodeType: string) => {
     const requestData = createBody(ad, nodeName, nodeType);
     return post(Routes.MANIFEST, requestData);
-};
-
-export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    return get(`api/${cn?.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn?.uid}&resourceName=${cn?.name}`)
 };
 
 export const getEventHelmApps = (ad: AppDetails, nodeName: string, nodeType: string) => {
