@@ -33,13 +33,7 @@ const AppDetailsStore = {
     },
     initAppDetailsTabs: (_url: string, displayLogAnalyzer: boolean, isLogAnalyserURL: boolean) => {
         let aots = [] as Array<ApplicationObject>;
-        let applicationObjectTabs = applicationObjectTabsSubject.getValue();
 
-        // let details = IndexStore.getAppDetails()
-        // details.resourceTree.nodes.filter((node)=>{
-        //     node.uid === applicationObjectTabs
-        // })
-        
         aots.push(addAOT(AppDetailsTabs.k8s_Resources, _url + '/' + URLS.APP_DETAILS_K8, !isLogAnalyserURL));
 
         if (displayLogAnalyzer) {
