@@ -24,11 +24,6 @@ const publishFilteredNodes = () => {
         if (_nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()) {
             return true;
         }
-        // let _nodeHealth = _node.health?.status || ""
-
-        // if (_node.name.indexOf(_nodeFilter.searchString) === -1) {
-        //     return false
-        // }
 
         return false;
     });
@@ -39,13 +34,11 @@ const publishFilteredNodes = () => {
 const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kind: string) => {
     return _allParentNodes.map((_pn: iNode) => {
         let childNodes = [];
-        //let _childNodesTypes = []
 
         _nodes.forEach((_n: Node) => {
             _n.parentRefs?.forEach((_pr) => {
                 if (_pr.uid === _pn.uid) {
                     childNodes.push(_n as iNode);
-                    //_childNodesTypes.push(_n.name)
                 }
             });
         });
@@ -81,11 +74,9 @@ const getAllParentNods = (_nodes: Array<Node>, _kind: string): Array<iNode> => {
 
     _nodes.forEach((_n) => {
         _n.parentRefs?.forEach((_prn: Node) => {
-            //if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
             let prn = _n as iNode;
             _allParentNodes.push(prn);
             _allParentNodeTypes.push(_prn.kind);
-            // }
         });
     });
 

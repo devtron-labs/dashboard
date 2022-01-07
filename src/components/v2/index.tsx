@@ -20,6 +20,7 @@ function RouterComponent({ envType }) {
     const [isError, setIsError] = useState(false);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
+    const [statusCode, setStatusCode] = useState(0);
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -53,6 +54,7 @@ function RouterComponent({ envType }) {
             }
 
             IndexStore.setAppDetails(response.result);
+            setStatusCode(response?.code);
 
             setIsLoading(false);
 
@@ -72,9 +74,7 @@ function RouterComponent({ envType }) {
                 <img src={ErrorImage} />
                 <div className="w-250 flex column">
                     <h4 className="fw-6">This app does not exist</h4>
-                    <div className="mb-20 flex align-center">
-                    We could not find and connect to this application. 
-                    </div>
+                    <div className="mb-20 flex align-center">We could not find and connect to this application.</div>
                     <div className="cta" onClick={redirectToHomePage}>
                         Go back to home page
                     </div>
@@ -87,11 +87,9 @@ function RouterComponent({ envType }) {
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
-            
-            {/* {isError ? (
-                <PageNotFound /> */}
-            {/* ) : */}
-            { isLoading ? (
+            {statusCode == 404 && <PageNotFound />}
+
+            {isLoading ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
                 <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
@@ -102,8 +100,6 @@ function RouterComponent({ envType }) {
                     </Switch>
                 </Suspense>
             )}
-
-            
         </React.Fragment>
     );
 }
