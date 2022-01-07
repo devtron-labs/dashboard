@@ -3,7 +3,7 @@ import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClipboard } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as Clear } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
@@ -342,7 +342,7 @@ const Warning: React.FC<WarningProps> = function (props) {
 const ErrorBar: React.FC<ErrorBarProps> = function (props) {
     return (
         <div className="code-editor__error">
-            <Clear className="code-editor__information-info-icon" />
+            <ErrorIcon className="code-editor__information-info-icon" />
             {props.text}
         </div>
     );

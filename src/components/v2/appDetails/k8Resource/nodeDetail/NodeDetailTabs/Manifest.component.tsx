@@ -125,18 +125,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         <div style={{ minHeight: '600px', background: '#0B0F22' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
-                <div>
-                    <CodeEditor
-                        theme="vs-dark--dt"
-                        height={700}
-                        value={manifest}
-                        mode="yaml"
-                        readOnly={true}
-                        loading={loading}
-                        customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
-                        // readOnly={activeTab !== 'Desired manifest'}
-                        // onChange={handleEditorValueChange}
-                    ></CodeEditor>
+                <>
                     <div className="bcn-0">
                         <div className="flex left pl-20 pr-20 border-bottom">
                             {tabs.map((tab: iLink, index) => {
@@ -200,7 +189,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
                         </CodeEditor>
                     </div>
-                </div>
+                </>
             )}
         </div>
     );
