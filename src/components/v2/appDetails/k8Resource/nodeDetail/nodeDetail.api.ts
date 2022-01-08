@@ -1,5 +1,5 @@
 import { Routes } from '../../../../../config';
-import { get, post } from '../../../../../services/api';
+import { get, post, put } from '../../../../../services/api';
 import { AppDetails, AppType } from '../../appDetails.type';
 
 export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
@@ -27,11 +27,11 @@ export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => 
     );
 };
 
-function createBody(appDetails: AppDetails, nodeName: string, nodeType: string) {
+function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0];
-    return {
+    let requestBody = {
         appIdentifier: {
             clusterId: appDetails.clusterId,
             namespace: selectedResource.namespace,
@@ -52,12 +52,26 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string) 
             // },
         },
     };
+    if (updatedManifest) {
+        requestBody.k8sRequest['patch'] = updatedManifest;
+    }
+    return requestBody;
 }
 
 function getManifestResourceHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
     const requestData = createBody(ad, nodeName, nodeType);
     return post(Routes.MANIFEST, requestData);
 }
+
+export const updateManifestResourceHelmApps = (
+    ad: AppDetails,
+    nodeName: string,
+    nodeType: string,
+    updatedManifest: string,
+) => {
+    const requestData = createBody(ad, nodeName, nodeType, updatedManifest);
+    return put(Routes.MANIFEST, requestData);
+};
 
 function getEventHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
     const requestData = createBody(ad, nodeName, nodeType);

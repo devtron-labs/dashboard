@@ -5,11 +5,12 @@ import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import { NodeDetailTab } from '../nodeDetail.type';
-import { getManifestResource } from '../nodeDetail.api';
+import { getManifestResource, updateManifestResourceHelmApps } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { AppType } from '../../../appDetails.type';
+import YAML from 'yaml';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -74,10 +75,33 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     };
 
     const handleApplyChanges = () => {
-        setIsEditmode(false);
-        setErrorText(
-            `Encountered data validation error while saving. “Show here error message received from k8s api server”`,
-        );
+        setLoading(true);
+        let manifestString;
+        try {
+            manifestString = JSON.stringify(YAML.parse(modifiedManifest));
+        } catch (err2) {
+            setErrorText(`Encountered data validation error while saving. “${err2}”`);
+        }
+        if(!manifestString){
+          setLoading(false);
+        }
+        manifestString &&
+            updateManifestResourceHelmApps(appDetails, params.podName, params.nodeType, manifestString)
+                .then((response) => {
+                    setIsEditmode(false);
+                    const _manifest = JSON.stringify(response?.result?.manifest);
+                    if (_manifest) {
+                        setManifest(_manifest);
+                        setErrorText(``);
+                    } else {
+                        setErrorText(`Encountered data validation error while saving. “Some error occured”`);
+                    }
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    setLoading(false);
+                    setErrorText(`Encountered data validation error while saving. “${err.errors[0]?.internalMessage}”`);
+                });
     };
 
     const handleCancel = () => {
@@ -130,8 +154,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
-                    {appDetails.appType === AppType.EXTERNAL_HELM_CHART ? (
-                        <div className="bcn-0">
+                    <div className="bcn-0">
+                        {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
                             <div className="flex left pl-20 pr-20 border-bottom">
                                 {tabs.map((tab: iLink, index) => {
                                     return (
@@ -171,46 +195,30 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     </>
                                 )}
                             </div>
-                            <CodeEditor
-                                defaultValue={manifest}
-                                diffView={activeTab === 'Compare'}
-                                theme="vs-dark"
-                                height={700}
-                                value={activeManifestEditorData}
-                                mode="yaml"
-                                readOnly={
-                                    activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')
-                                }
-                                onChange={handleEditorValueChange}
-                                loading={loading}
-                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
-                            >
-                                {activeTab === 'Compare' && (
-                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                        <div className="split-header">
-                                            <div className="left-pane">Live manifest</div>
-                                            <div className="right-pane">Desired manifest (view only)</div>
-                                        </div>
-                                    </CodeEditor.Header>
-                                )}
-                                {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
-                            </CodeEditor>
-                        </div>
-                    ) : (
-                        <div>
-                            <CodeEditor
-                                theme="vs-dark"
-                                height={700}
-                                value={manifest}
-                                mode="yaml"
-                                readOnly={true}
-                                loading={loading}
-                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
-                                // readOnly={activeTab !== 'Desired manifest'}
-                                // onChange={handleEditorValueChange}
-                            ></CodeEditor>
-                        </div>
-                    )}
+                        )}
+                        <CodeEditor
+                            defaultValue={manifest}
+                            diffView={activeTab === 'Compare'}
+                            theme="vs-dark"
+                            height={700}
+                            value={activeManifestEditorData}
+                            mode="yaml"
+                            readOnly={activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')}
+                            onChange={handleEditorValueChange}
+                            loading={loading}
+                            customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
+                        >
+                            {activeTab === 'Compare' && (
+                                <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                    <div className="split-header">
+                                        <div className="left-pane">Live manifest</div>
+                                        <div className="right-pane">Desired manifest</div>
+                                    </div>
+                                </CodeEditor.Header>
+                            )}
+                            {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
+                        </CodeEditor>
+                    </div>
                 </>
             )}
         </div>
