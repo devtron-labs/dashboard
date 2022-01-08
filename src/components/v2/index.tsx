@@ -17,7 +17,6 @@ let initTimer = null;
 
 function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
-    const [isError, setIsError] = useState(false);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
     const [statusCode, setStatusCode] = useState(0);
@@ -62,7 +61,6 @@ function RouterComponent({ envType }) {
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
             setIsLoading(false);
-            setIsError(true);
         }
     };
 
@@ -87,7 +85,7 @@ function RouterComponent({ envType }) {
         <React.Fragment>
             {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
-            {statusCode == 404 && <PageNotFound />}
+            {statusCode === 404 && <PageNotFound />}
 
             {isLoading ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />

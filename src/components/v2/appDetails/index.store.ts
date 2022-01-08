@@ -183,7 +183,7 @@ const IndexStore = {
     },
 
     getAllContainersForPod: (_name: string) => {
-        return _appDetailsSubject.getValue().resourceTree.podMetadata.find((pod) => pod.name === _name).containers;
+        return _appDetailsSubject.getValue().resourceTree?.podMetadata?.find((pod) => pod.name === _name)?.containers;
     },
 
     getAllContainers: () => {

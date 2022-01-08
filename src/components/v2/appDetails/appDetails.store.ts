@@ -34,7 +34,9 @@ const AppDetailsStore = {
     initAppDetailsTabs: (_url: string, displayLogAnalyzer: boolean, isLogAnalyserURL: boolean) => {
         let aots = [] as Array<ApplicationObject>;
 
-        aots.push(addAOT(AppDetailsTabs.k8s_Resources, _url + '/' + URLS.APP_DETAILS_K8, !isLogAnalyserURL));
+        let url = `${_url}${_url.endsWith('/') ? '' : '/' }`
+        
+        aots.push(addAOT(AppDetailsTabs.k8s_Resources,  url + URLS.APP_DETAILS_K8, !isLogAnalyserURL));
 
         if (displayLogAnalyzer) {
             aots.push(addAOT(AppDetailsTabs.log_analyzer, _url + '/' + URLS.APP_DETAILS_LOG, isLogAnalyserURL));

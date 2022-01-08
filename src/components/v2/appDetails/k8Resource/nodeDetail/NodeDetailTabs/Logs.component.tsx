@@ -20,7 +20,7 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { EnvType } from '../../../appDetails.type';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
-import MessageUI from '../../../../common/message.ui';
+import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
@@ -176,7 +176,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
             setContainers(containers);
 
-            setSelectedContainerName(_selectedContainerName || containers[0]);
+            setSelectedContainerName(_selectedContainerName || (containers && containers[0]));
         } else {
             let additionalPodOptions = [{ label: 'All pods', value: 'All pods' }];
             if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
@@ -477,15 +477,14 @@ function LogsComponent({ selectedTab, isDeleted }) {
             )}
 
             {!selectedContainerName && (
-                <div className="no-pod no-pod--container">
-                    <div className="no-pod__container-icon">
-                        {Array(6)
-                            .fill(0)
-                            .map((z, idx) => (
-                                <span key={idx} className="no-pod__container-sub-icon"></span>
-                            ))}
-                    </div>
-                    {containers.length > 0 ? <p>Select a container to view logs</p> : <p>No container</p>}
+                <div className="no-pod no-pod--container ">
+                    <MessageUI
+                        icon={MsgUIType.NO_CONTAINER}
+                        msg={`${
+                            containers && containers.length > 0 ? 'Select a container to view logs' : 'No container'
+                        }`}
+                        size={32}
+                    />
                 </div>
             )}
         </React.Fragment>
