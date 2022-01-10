@@ -53,20 +53,20 @@ function EventsComponent({ selectedTab, isDeleted }) {
                             <div className="cn-0 ">
                                 <table className="table pl-20">
                                     <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
-                                        <tr className="no-border pl-20">
+                                        <tr className="no-border pl-20 event-row">
                                             {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
-                                                return <th key={`eh_${idx}`}>{head}</th>;
+                                                return <th key={`eh_${idx}`} className={'cell-style capitalize ' + head + (idx ===0 && ' pad-left-20')}>{head}</th>;
                                             })}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {events.map((event, index) => {
                                             return (
-                                                <tr className="no-border pl-20" key={`eb_${index}`}>
-                                                    <td>{event.reason}</td>
-                                                    <td>{event.message}</td>
-                                                    <td>{event.count}</td>
-                                                    <td>
+                                                <tr className={'no-border pl-20 event-row ' + (index % 2 === 0 && 'alternate-row')} key={`eb_${index}`}>
+                                                    <td className="cell-style reason pad-left-20">{event.reason}</td>
+                                                    <td className="cell-style message">{event.message}</td>
+                                                    <td className="cell-style count">{event.count}</td>
+                                                    <td className="cell-style timestamp">
                                                         {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
                                                             .add(5, 'hours')
                                                             .add(30, 'minutes')
