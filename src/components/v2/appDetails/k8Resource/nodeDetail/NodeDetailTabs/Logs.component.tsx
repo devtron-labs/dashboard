@@ -164,9 +164,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
 
-        let urls = selectedPodContainers.flatMap( _podContainer => {
+        let urls = selectedPodContainers.flatMap( _podContainer =>
             _podContainer.containerNames.map(_containerName => getLogsURL(appDetails, _podContainer.podName, Host, _containerName))
-        })
+        )
 
         // containers.forEach((c) => {
         //     let _url: String;
