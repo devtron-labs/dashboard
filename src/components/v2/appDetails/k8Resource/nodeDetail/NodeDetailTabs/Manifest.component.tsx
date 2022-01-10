@@ -11,6 +11,8 @@ import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { AppType } from '../../../appDetails.type';
 import YAML from 'yaml';
+import { toast } from 'react-toastify';
+import { ToastBody } from '../../../../../common';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
@@ -47,7 +49,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 })
                 .catch((err) => {
                     setError(true);
-                    console.log('err', err);
+                    showError(err);
                     setLoading(false);
                 });
         } catch (err) {
@@ -82,8 +84,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         } catch (err2) {
             setErrorText(`Encountered data validation error while saving. “${err2}”`);
         }
-        if(!manifestString){
-          setLoading(false);
+        if (!manifestString) {
+            setLoading(false);
         }
         manifestString &&
             updateManifestResourceHelmApps(appDetails, params.podName, params.nodeType, manifestString)
@@ -93,14 +95,12 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     if (_manifest) {
                         setManifest(_manifest);
                         setErrorText(``);
-                    } else {
-                        setErrorText(`Encountered data validation error while saving. “Some error occured”`);
                     }
                     setLoading(false);
                 })
                 .catch((err) => {
                     setLoading(false);
-                    setErrorText(`Encountered data validation error while saving. “${err.errors[0]?.internalMessage}”`);
+                    showError(err);
                 });
     };
 
@@ -144,6 +144,21 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             markActiveTab(params.actionName);
         }
     }, [params.actionName]);
+
+    function showError({ code, message }) {
+        if (code === 400) {
+            setErrorText(`Encountered data validation error while saving. “${message}”`);
+        } else if (code === 500) {
+            toast.error(
+                <ToastBody
+                    title="Could not apply changes"
+                    subtitle="API server not reachable. Please contact your admin to resolve the issue.."
+                />,
+            );
+        } else if (code === 403) {
+            toast.error(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />);
+        }
+    }
 
     return isDeleted ? (
         <div>
