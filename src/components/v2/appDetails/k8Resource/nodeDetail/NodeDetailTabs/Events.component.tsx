@@ -29,7 +29,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
 
         getEvent(appDetails, params.podName, params.nodeType)
             .then((response) => {
-                setEvents(response.result.items || []);
+                setEvents(response.result.items || (response.result.events && response.result.events.items) || []);
                 setLoading(false);
             })
             .catch((err) => {
