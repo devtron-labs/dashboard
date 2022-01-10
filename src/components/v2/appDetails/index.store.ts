@@ -238,6 +238,30 @@ const IndexStore = {
         return { containers: containers, pods: pods };
     },
 
+    getAllPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata;
+
+        return pods;
+    },
+
+    getAllNewPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter((p) => p.isNew);
+
+        return pods;
+    },
+
+    getAllOldPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter((p) => !p.isNew);
+
+        return pods;
+    },
+
     getPodForAContainer: (_c: string) => {
         let podeName;
 

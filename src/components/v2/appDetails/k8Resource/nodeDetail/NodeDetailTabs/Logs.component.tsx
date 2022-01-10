@@ -25,6 +25,11 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
 
+interface PodContainer {
+    podName: String
+    containerNames: Array<String>
+}
+
 function LogsComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
     const key = useKeyDown();
@@ -42,6 +47,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     const [logsCleared, setLogsCleared] = useState(false);
     const [readyState, setReadyState] = useState(null);
     const [selectedPods, setSelectedPods] = useState([]);
+    const [selectedPodContainers, setSelectedPodContainers] = useState([] as Array<PodContainer>)
 
     const logsPausedRef = useRef(false);
     const workerRef = useRef(null);
@@ -60,15 +66,39 @@ function LogsComponent({ selectedTab, isDeleted }) {
         onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
+                setSelectedPodContainers(IndexStore.getAllPods().map( _pod => {
+                    return {
+                        podName: _pod.name,
+                        containerNames: _pod.containers
+                    } as PodContainer
+                }))
                 handlePodSelection(IndexStore.getAllContainers(), selectedOption);
                 break;
             case 'All new pods':
+                setSelectedPodContainers(IndexStore.getAllNewPods().map( _pod => {
+                    return {
+                        podName: _pod.name,
+                        containerNames: _pod.containers
+                    } as PodContainer
+                }))
                 handlePodSelection(IndexStore.getAllNewContainers(), selectedOption);
                 break;
             case 'All old pods':
+                setSelectedPodContainers(IndexStore.getAllOldPods().map( _pod => {
+                    return {
+                        podName: _pod.name,
+                        containerNames: _pod.containers
+                    } as PodContainer
+                }))
                 handlePodSelection(IndexStore.getAllOldContainers(), selectedOption);
                 break;
             default:
+                setSelectedPodContainers(IndexStore.getAllPods().filter( _pod => _pod.name == selectedOption).map( _pod => {
+                    return {
+                        podName: _pod.name,
+                        containerNames: _pod.containers
+                    } as PodContainer
+                }))
                 const cs = IndexStore.getAllContainersForPod(selectedOption);
                 setContainers(cs);
                 setSelectedPods([selectedOption]);
@@ -134,19 +164,21 @@ function LogsComponent({ selectedTab, isDeleted }) {
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
 
-        let urls = [];
+        let urls = selectedPodContainers.flatMap( _podContainer => {
+            _podContainer.containerNames.map(_containerName => getLogsURL(appDetails, _podContainer.podName, Host, _containerName))
+        })
 
-        containers.forEach((c) => {
-            let _url;
+        // containers.forEach((c) => {
+        //     let _url: String;
 
-            if (isLogAnalyzer) {
-                _url = getLogsURL(appDetails, IndexStore.getPodForAContainer(c), Host, c);
-            } else {
-                _url = getLogsURL(appDetails, params.podName, Host, c);
-            }
+        //     if (isLogAnalyzer) {
+        //         _url = getLogsURL(appDetails, IndexStore.getPodForAContainer(c), Host, c);
+        //     } else {
+        //         _url = getLogsURL(appDetails, params.podName, Host, c);
+        //     }
 
-            urls.push(_url);
-        });
+        //     urls.push(_url);
+        // });
 
         workerRef.current['postMessage' as any]({
             type: 'start',
