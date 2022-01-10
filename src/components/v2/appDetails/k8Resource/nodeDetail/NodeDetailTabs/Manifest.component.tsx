@@ -156,7 +156,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 />,
             );
         } else if (code === 403) {
-            toast.error(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />);
+            toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
+                className: 'devtron-toast unauthorized',
+            });
         }
     }
 

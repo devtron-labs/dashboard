@@ -182,3 +182,9 @@
         background: #171b2d;
     }
 }
+
+.devtron-toast.unauthorized {
+    &:before {
+        background-image: url('../../../../assets/icons/ic-locked.svg');
+    }
+}
