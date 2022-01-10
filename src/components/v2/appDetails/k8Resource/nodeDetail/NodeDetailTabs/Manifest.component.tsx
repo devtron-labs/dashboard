@@ -49,7 +49,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         } catch (err) {
             console.log('err', err);
         }
-    }, [params.podName]);
+    }, [params.podName, params.nodeType]);
 
     //For External
 

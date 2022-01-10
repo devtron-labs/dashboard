@@ -37,7 +37,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                 setEvents([]);
                 setLoading(false);
             });
-    }, [podName]);
+    }, [params.podName, params.nodeType]);
 
     return (
         <div style={{ minHeight: '600px', background: '#0B0F22' }}>
