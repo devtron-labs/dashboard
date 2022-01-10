@@ -150,34 +150,35 @@
 }
 
 .selected-manifest-tab {
-  background-color: #000a14;
+    background-color: #000a14;
 }
 
-.event-row{
-  background: var(--n-0);
-  font-family: monospace;
-  font-size: 13px;
-  margin: 8px;
-  .capitalize{
-    text-transform: capitalize;
-  }
-  .cell-style{
-    padding: 8px 10px;
-    border: none;
-    &.timestamp,&.reason{
-      width: 16%;
+.event-row {
+    background: var(--n-0);
+    font-family: monospace;
+    font-size: 13px;
+    margin: 8px;
+    .capitalize {
+        text-transform: capitalize;
     }
-    &.message{
-      width: 60%;
+    .cell-style {
+        padding: 8px 10px;
+        border: none;
+        &.timestamp,
+        &.reason {
+            width: 16%;
+        }
+        &.message {
+            width: 60%;
+        }
+        &.count {
+            width: 8%;
+        }
+        &.pad-left-20 {
+            padding-left: 20px;
+        }
     }
-    &.count{
-      width: 8%;
+    &.alternate-row {
+        background: #171b2d;
     }
-    &.pad-left-20{
-      padding-left: 20px;;
-    }
-  }
-  &.alternate-row{
-    background: #171b2d;
-  }
 }
