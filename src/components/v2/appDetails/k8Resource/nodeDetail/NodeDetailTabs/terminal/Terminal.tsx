@@ -261,7 +261,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     return (
-        <div className="terminal-view">
+        <div className="terminal-view" style={{ height: '100vh' }}>
             <div
                 style={{ zIndex: 4, textTransform: 'capitalize' }}
                 className={`${
