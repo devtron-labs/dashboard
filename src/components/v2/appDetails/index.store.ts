@@ -232,7 +232,7 @@ const IndexStore = {
         let podeName;
 
         _appDetailsSubject.getValue().resourceTree.podMetadata.forEach((p) => {
-            p.containers.forEach((c) => {
+            p.containers.find((c) => {
                 if (c === _c) {
                     podeName = p.name;
                 }
