@@ -41,7 +41,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     let _manifest;
                     if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest);
-                        setDesiredManifest(response[1]?.result?.manifest);
+                        setDesiredManifest(response[1]?.result?.manifest || '');
                     } else {
                         _manifest = response[0]?.result?.manifest;
                     }
@@ -130,8 +130,6 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 setActiveManifestEditorData(modifiedManifest);
                 break;
             case 'Compare':
-                setActiveManifestEditorData(desiredManifest);
-                break;
             case 'Desired manifest':
                 setActiveManifestEditorData(desiredManifest);
                 break;
