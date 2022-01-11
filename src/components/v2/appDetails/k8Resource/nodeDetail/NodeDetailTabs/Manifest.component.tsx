@@ -5,7 +5,7 @@ import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import { NodeDetailTab } from '../nodeDetail.type';
-import { getManifestResource, updateManifestResourceHelmApps } from '../nodeDetail.api';
+import { getDesiredManifestResource, getManifestResource, updateManifestResourceHelmApps } from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
@@ -32,12 +32,19 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
         try {
-            getManifestResource(appDetails, params.podName, params.nodeType)
+            Promise.all([
+                getManifestResource(appDetails, params.podName, params.nodeType),
+                appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+            ])
                 .then((response) => {
-                    const _manifest =
-                        appDetails.appType === AppType.EXTERNAL_HELM_CHART
-                            ? JSON.stringify(response?.result?.manifest)
-                            : response?.result?.manifest;
+                    let _manifest;
+                    if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+                        _manifest = JSON.stringify(response[0]?.result?.manifest);
+                        setDesiredManifest(response[1]?.result?.manifest);
+                    } else {
+                        _manifest = response[0]?.result?.manifest;
+                    }
                     if (_manifest) {
                         setManifest(_manifest);
                         setActiveManifestEditorData(_manifest);
@@ -159,6 +166,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
                 className: 'devtron-toast unauthorized',
             });
+        } else {
+            toast.error('Some Error Occurred"');
         }
     }
 

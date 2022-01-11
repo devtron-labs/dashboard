@@ -15,6 +15,23 @@ export const getManifestResource = (ad: AppDetails, podName: string, nodeType: s
     );
 };
 
+export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
+    const selectedResource = appDetails.resourceTree.nodes.filter(
+        (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
+    )[0];
+    const requestData = {
+        appId: `${appDetails.clusterId}|${selectedResource.namespace}|${appDetails.appName}`,
+        resource: {
+            Group: selectedResource.group ? selectedResource.group : '',
+            Version: selectedResource.version ? selectedResource.version : 'v1',
+            Kind: selectedResource.kind,
+            namespace: selectedResource.namespace,
+            name: selectedResource.name,
+        },
+    };
+    return post(Routes.DESIRED_MANIFEST, requestData);
+};
+
 export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
     if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
         return getEventHelmApps(ad, nodeName, nodeType);

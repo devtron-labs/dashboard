@@ -115,6 +115,7 @@ export const Routes = {
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
     HELM_RELEASE_APP_DETAIL_API: 'application/app',
     MANIFEST: 'k8s/resource',
+    DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
 };
 
