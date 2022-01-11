@@ -17,10 +17,17 @@ import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg';
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
-import './HelmAppList.css';
 import '../list/list.css';
 
-export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortApplicationList, clearAllFilters, setFetchingExternalAppsState, updateLastDataSync, setShowPulsatingDotState }) {
+export default function HelmAppList({
+    serverMode,
+    payloadParsedFromUrl,
+    sortApplicationList,
+    clearAllFilters,
+    setFetchingExternalAppsState,
+    updateLastDataSync,
+    setShowPulsatingDotState,
+}) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [devtronInstalledHelmAppsList, setDevtronInstalledHelmAppsList] = useState<HelmApp[]>([]);
@@ -55,7 +62,6 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
     }, [dataStateType]);
 
-
     // when external app data comes
     useEffect(() => {
         if (dataStateType == AppListViewType.LIST) {
@@ -64,15 +70,19 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     }, [externalHelmAppsList]);
 
     useEffect(() => {
-        if (serverMode == SERVER_MODE.EA_ONLY){
+        if (serverMode == SERVER_MODE.EA_ONLY) {
             setDataStateType(AppListViewType.LIST);
-            if(clusterIdsCsv){
+            if (clusterIdsCsv) {
                 _getExternalHelmApps();
             }
-        }else{
+        } else {
             getDevtronInstalledHelmApps(clusterIdsCsv)
                 .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
-                    setDevtronInstalledHelmAppsList(devtronInstalledHelmAppsListResponse.result ? devtronInstalledHelmAppsListResponse.result.helmApps : []);
+                    setDevtronInstalledHelmAppsList(
+                        devtronInstalledHelmAppsListResponse.result
+                            ? devtronInstalledHelmAppsListResponse.result.helmApps
+                            : [],
+                    );
                     setDataStateType(AppListViewType.LIST);
                     _getExternalHelmApps();
                 })
@@ -108,12 +118,18 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
             });
             let _externalAppRecievedClusterIds = [];
             let _externalAppRecievedHelmApps = [];
-            let _externalAppFetchErrors : string[] = [];
+            let _externalAppFetchErrors: string[] = [];
             _sseConnection.onmessage = function (message) {
-                _onExternalAppDataFromSse(message, _externalAppRecievedClusterIds, _externalAppRecievedHelmApps, _externalAppFetchErrors, _sseConnection);
+                _onExternalAppDataFromSse(
+                    message,
+                    _externalAppRecievedClusterIds,
+                    _externalAppRecievedHelmApps,
+                    _externalAppFetchErrors,
+                    _sseConnection,
+                );
             };
             _sseConnection.onerror = function (err) {
-                _externalAppFetchErrors.push("Some network error occured while fetching external apps.");
+                _externalAppFetchErrors.push('Some network error occured while fetching external apps.');
                 setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
                 _closeSseConnection(_sseConnection);
             };
@@ -125,25 +141,33 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',');
     }
 
-    function _onExternalAppDataFromSse(message: MessageEvent, _externalAppRecievedClusterIds : string[], _externalAppRecievedHelmApps : HelmApp[], _externalAppFetchErrors : string[], _sseConnection: EventSource) {
+    function _onExternalAppDataFromSse(
+        message: MessageEvent,
+        _externalAppRecievedClusterIds: string[],
+        _externalAppRecievedHelmApps: HelmApp[],
+        _externalAppFetchErrors: string[],
+        _sseConnection: EventSource,
+    ) {
         let externalAppData: AppListResponse = JSON.parse(message.data);
         if (!externalAppData.result.clusterIds?.length) {
             return;
         }
 
         let _clusterId = externalAppData.result.clusterIds[0].toString();
-        if (_externalAppRecievedClusterIds.includes(_clusterId)){
+        if (_externalAppRecievedClusterIds.includes(_clusterId)) {
             return;
         }
 
-        if(externalAppData.result.errored){
-            _externalAppFetchErrors.push(externalAppData.result.errorMsg || "Some error occured while fetching external apps");
+        if (externalAppData.result.errored) {
+            _externalAppFetchErrors.push(
+                externalAppData.result.errorMsg || 'Some error occured while fetching external apps',
+            );
             setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
 
         _externalAppRecievedClusterIds.push(_clusterId);
         let _newExternalAppList = externalAppData.result.helmApps || [];
-        _newExternalAppList.every(element => element.isExternal = true);
+        _newExternalAppList.every((element) => (element.isExternal = true));
 
         _externalAppRecievedHelmApps.push(..._newExternalAppList);
         setExternalHelmAppsList([..._externalAppRecievedHelmApps]);
@@ -160,7 +184,7 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         }
     }
 
-    function _closeSseConnection (_sseConnection: EventSource){
+    function _closeSseConnection(_sseConnection: EventSource) {
         _sseConnection.close();
         setSseConnection(undefined);
         setFetchingExternalAppsState(false);
@@ -190,7 +214,10 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 _clusterVsNamespaces.map((_clusterVsNamespace) => {
                     let _clusterId = _clusterVsNamespace.split('_')[0];
                     let _namespace = _clusterVsNamespace.split('_')[1];
-                    _includes = _includes || (app.environmentDetail.clusterId == _clusterId && (!_namespace || app.environmentDetail.namespace == _namespace));
+                    _includes =
+                        _includes ||
+                        (app.environmentDetail.clusterId == _clusterId &&
+                            (!_namespace || app.environmentDetail.namespace == _namespace));
                 });
                 return _includes;
             });
@@ -199,15 +226,21 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         // handle search
         if (_search?.length) {
             _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter(
-                (app) => app.appName.toLowerCase().includes(_search.toLowerCase()) || app.chartName.toLowerCase().includes(_search.toLowerCase()),
+                (app) =>
+                    app.appName.toLowerCase().includes(_search.toLowerCase()) ||
+                    app.chartName.toLowerCase().includes(_search.toLowerCase()),
             );
         }
 
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) => a.appName.localeCompare(b.appName));
+            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+                a.appName.localeCompare(b.appName),
+            );
         } else {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) => b.appName.localeCompare(a.appName));
+            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+                b.appName.localeCompare(a.appName),
+            );
         }
 
         setSortBy(_sortBy);
@@ -217,7 +250,11 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     }
 
     function _isAnyFilterationAppliedExceptCluster() {
-        return payloadParsedFromUrl.teams?.length || payloadParsedFromUrl.appNameSearch?.length || payloadParsedFromUrl.environments?.length;
+        return (
+            payloadParsedFromUrl.teams?.length ||
+            payloadParsedFromUrl.appNameSearch?.length ||
+            payloadParsedFromUrl.environments?.length
+        );
     }
 
     function _isAnyFilterationApplied() {
@@ -230,15 +267,15 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         target.src = defaultChartImage;
     }
 
-    function _buildAppDetailUrl(app : HelmApp){
-        if (app.isExternal){
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
-        }else{
-            return `/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+    function _buildAppDetailUrl(app: HelmApp) {
+        if (app.isExternal) {
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`;
+        } else {
+            return `/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`;
         }
     }
 
-    function _removeExternalAppFetchError(index : number){
+    function _removeExternalAppFetchError(index: number) {
         let _externalHelmListFetchErrors = [...externalHelmListFetchErrors];
         _externalHelmListFetchErrors.splice(index, 1);
         setExternalHelmListFetchErrors(_externalHelmListFetchErrors);
@@ -270,7 +307,12 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
                 </div>
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header">Environment</span>
-                    <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
+                    <Tippy
+                        className="default-tt"
+                        arrow={true}
+                        placement="top"
+                        content="Environment is a unique combination of cluster and namespace"
+                    >
                         <HelpOutlineIcon className="icon-dim-20" />
                     </Tippy>
                 </div>
@@ -290,28 +332,38 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
     function renderApplicationList() {
         return (
             <>
-                {
-                    !clusterIdsCsv &&
+                {!clusterIdsCsv && (
                     <div className="bcn-0">
                         <div className="h-8"></div>
                         <div className="cluster-select-message-strip above-header-message flex left">
-                            <span className="mr-8 flex"><InfoFillPurple className="icon-dim-20" /></span>
-                            <span>To view helm charts deployed from outside devtron, please select a cluster from above filters. <a className="learn-more__href cursor">Learn more</a> </span>
+                            <span className="mr-8 flex">
+                                <InfoFillPurple className="icon-dim-20" />
+                            </span>
+                            <span>
+                                To view helm charts deployed from outside devtron, please select a cluster from above
+                                filters. <a className="learn-more__href cursor">Learn more</a>{' '}
+                            </span>
                         </div>
                     </div>
-                }
+                )}
 
                 {externalHelmListFetchErrors.map((externalHelmListFetchError, index) => {
-                    return <div className="bcn-0" key={index}>
-                        <div className="h-8"></div>
-                        <div className="ea-fetch-error-message above-header-message flex left">
-                            <span className="mr-8 flex"><ErrorExclamationIcon className="icon-dim-20" /></span>
-                            <span>{externalHelmListFetchError}</span>
-                            <CloseIcon className="icon-dim-24 align-right cursor" onClick={() => _removeExternalAppFetchError(index)} />
+                    return (
+                        <div className="bcn-0" key={index}>
+                            <div className="h-8"></div>
+                            <div className="ea-fetch-error-message above-header-message flex left">
+                                <span className="mr-8 flex">
+                                    <ErrorExclamationIcon className="icon-dim-20" />
+                                </span>
+                                <span>{externalHelmListFetchError}</span>
+                                <CloseIcon
+                                    className="icon-dim-24 align-right cursor"
+                                    onClick={() => _removeExternalAppFetchError(index)}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    );
                 })}
-
 
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
                 {filteredHelmAppsList.map((app) => {
@@ -364,95 +416,101 @@ export default function HelmAppList({ serverMode, payloadParsedFromUrl, sortAppl
         );
     }
 
-    function renderAllCheckModal(){
-        return <div style={{ width: '600px', margin: 'auto', marginTop: '20px' }} className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20">
-            <AllCheckModal />
-        </div>
-    }
-
-    function askToSelectClusterId(){
-        return <div style={{ height: "calc(100vh - 150px)" }}>
-            <EmptyState>
-                <img src={NoClusterSelectImage} width="250" height="250" alt="No Cluster Selected" />
-                <h2 className="fs-16 fw-4 c-9">Select cluster to see deployed apps</h2>
-                <p className="text-left" style={{width: '300px'}}>Helm-based applications deployed from devtron or other sources will be shown here. Learn more</p>
-            </EmptyState>
-        </div>
-    }
-
-    function askToClearFilters(){
-        return <div style={{height : "calc(100vh - 250px)"}}>
-        <Empty
-            view={AppListViewType.NO_RESULT}
-            title={'No apps found'}
-            message={"We couldn't find any matching applications."}
-            buttonLabel={'Clear filters'}
-            clickHandler={clearAllFilters}
-        />
-        </div>
-    }
-    
-    function askToClearFiltersWithSelectClusterTip (){
-        return <div className="flex column">
-            {askToClearFilters()}
-            <div style={{width : '300px'}}>
-                <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top">
-                    <div><InfoFill className="icon-dim-20" /></div>
-                    <div className="ml-12">
-                        <span className="fw-6">Tip </span>
-                        <span>Select a cluster from above filters to see apps deployed from outside devtron.</span>
-                    </div>
-                </p>
+    function renderAllCheckModal() {
+        return (
+            <div
+                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
+                className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
+            >
+                <AllCheckModal />
             </div>
-        </div>
+        );
+    }
+
+    function askToSelectClusterId() {
+        return (
+            <div style={{ height: 'calc(100vh - 150px)' }}>
+                <EmptyState>
+                    <img src={NoClusterSelectImage} width="250" height="250" alt="No Cluster Selected" />
+                    <h2 className="fs-16 fw-4 c-9">Select cluster to see deployed apps</h2>
+                    <p className="text-left" style={{ width: '300px' }}>
+                        Helm-based applications deployed from devtron or other sources will be shown here. Learn more
+                    </p>
+                </EmptyState>
+            </div>
+        );
+    }
+
+    function askToClearFilters(showTippy?: boolean) {
+        return (
+            <Empty
+                view={AppListViewType.NO_RESULT}
+                title={'No apps found'}
+                message={"We couldn't find any matching applications."}
+                buttonLabel={'Clear filters'}
+                clickHandler={clearAllFilters}
+            >
+                {showTippy && (
+                    <div className='mt-18'>
+                        <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top" style={{ width: '300px' }}>
+                            <div>
+                                <InfoFill className="icon-dim-20" />
+                            </div>
+                            <div className="ml-12">
+                                <span className="fw-6">Tip </span>
+                                <span>
+                                    Select a cluster from above filters to see apps deployed from outside devtron.
+                                </span>
+                            </div>
+                        </p>
+                    </div>
+                )}
+            </Empty>
+        );
+    }
+
+    function askToClearFiltersWithSelectClusterTip() {
+        return <div className="flex column">{askToClearFilters(true)}</div>;
     }
 
     function renderFullModeApplicationListContainer() {
-        if (!sseConnection && filteredHelmAppsList.length == 0){
-            if(_isAnyFilterationAppliedExceptCluster() && !clusterIdsCsv){
-                return askToClearFiltersWithSelectClusterTip()
-            }else if(_isAnyFilterationApplied()){
-                return askToClearFilters()
-            }else if(!clusterIdsCsv){
-                return askToSelectClusterId()
-            }else{
-                return renderAllCheckModal()
+        if (!sseConnection && filteredHelmAppsList.length == 0) {
+            if (_isAnyFilterationAppliedExceptCluster() && !clusterIdsCsv) {
+                return askToClearFiltersWithSelectClusterTip();
+            } else if (_isAnyFilterationApplied()) {
+                return askToClearFilters();
+            } else if (!clusterIdsCsv) {
+                return askToSelectClusterId();
+            } else {
+                return renderAllCheckModal();
             }
-        }else{
-            return renderApplicationList()
+        } else {
+            return renderApplicationList();
         }
     }
 
-
     function renderOnlyEAModeApplicationListContainer() {
-        return renderFullModeApplicationListContainer()
+        return renderFullModeApplicationListContainer();
     }
 
     return (
         <>
-            {dataStateType == AppListViewType.LOADING &&
+            {dataStateType == AppListViewType.LOADING && (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
-            }
-            {dataStateType == AppListViewType.ERROR &&
+            )}
+            {dataStateType == AppListViewType.ERROR && (
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            }
-            {
-                dataStateType == AppListViewType.LIST &&
-                <div className="app-list">
-                    {
-                        serverMode == SERVER_MODE.FULL &&
-                        renderFullModeApplicationListContainer()
-                    }
-                    {
-                        serverMode == SERVER_MODE.EA_ONLY &&
-                        renderOnlyEAModeApplicationListContainer()
-                    }
+            )}
+            {dataStateType == AppListViewType.LIST && (
+                <div className="">
+                    {serverMode == SERVER_MODE.FULL && renderFullModeApplicationListContainer()}
+                    {serverMode == SERVER_MODE.EA_ONLY && renderOnlyEAModeApplicationListContainer()}
                 </div>
-            }
+            )}
         </>
     );
 }

@@ -472,7 +472,7 @@ export default function AppList() {
     function renderAppliedFilters() {
         let count = 0;
         let keys = Object.keys(masterFilters);
-        let appliedFilters = <div className="saved-filters position-rel">
+        let appliedFilters = <div className="saved-filters__wrap position-rel">
             {keys.map((key) => {
                 let filterType = '';
                 let _filterKey = '';
