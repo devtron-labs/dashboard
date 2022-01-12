@@ -22,14 +22,14 @@ function EnvironmentSelectorComponent() {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
 
     useEffect(() => {
-            getAppOtherEnvironment(params.appId)
-                .then((response) => {
-                    setEnvironments(response.result || []);
-                })
-                .catch((error) => {
-                    console.error('erroe in fetching environments');
-                    setEnvironments([]);
-                });
+        getAppOtherEnvironment(params.appId)
+            .then((response) => {
+                setEnvironments(response.result || []);
+            })
+            .catch((error) => {
+                console.error('erroe in fetching environments');
+                setEnvironments([]);
+            });
     }, [params.appId]);
 
     useEffect(() => {

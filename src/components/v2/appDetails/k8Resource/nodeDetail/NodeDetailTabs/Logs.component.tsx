@@ -26,14 +26,14 @@ const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
 
 interface PodContainerOptions {
-    podOptions: Array<{name: string, selected: boolean}>
-    containerOptions: Array<{name: string, selected: boolean}>
+    podOptions: Array<{ name: string; selected: boolean }>;
+    containerOptions: Array<{ name: string; selected: boolean }>;
 }
 
 interface LogState {
-    selectedPods : Array<string>
-    selectedContainer: string
-    grepTokens?: any
+    selectedPods: Array<string>;
+    selectedContainer: string;
+    grepTokens?: any;
 }
 
 function LogsComponent({ selectedTab, isDeleted }) {
@@ -60,65 +60,72 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const isLogAnalyzer = !params.podName;
 
-    const [logState, setLogState] = useState<LogState>(() => getInitialStateOfLogs(isLogAnalyzer, params, location))
+    const [logState, setLogState] = useState<LogState>(() => getInitialStateOfLogs(isLogAnalyzer, params, location));
 
-    const [podContainerOptions, setPodContainerOptions] = useState(() => getInitialPodContainerOptions(isLogAnalyzer, params))
+    const [podContainerOptions, setPodContainerOptions] = useState(() =>
+        getInitialPodContainerOptions(isLogAnalyzer, params),
+    );
 
     const handlePodChange = (selectedOption: string) => {
         let pods: Array<PodMetaData>;
         onLogsCleared();
         switch (selectedOption) {
             case 'All pods':
-                pods = IndexStore.getAllPods()
+                pods = IndexStore.getAllPods();
                 break;
             case 'All new pods':
-                pods = IndexStore.getAllNewPods()
+                pods = IndexStore.getAllNewPods();
                 break;
             case 'All old pods':
-                pods = IndexStore.getAllNewPods()
+                pods = IndexStore.getAllNewPods();
                 break;
             default:
-                pods = IndexStore.getAllPods().filter( _pod => _pod.name == selectedOption)
+                pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);
                 break;
         }
         if (pods.length == 0) {
-            return
+            return;
         }
-        updateStateForPodSelection(pods)
+        updateStateForPodSelection(pods);
     };
 
     const updateStateForPodSelection = (pods: Array<PodMetaData>) => {
-        let podNames = pods.filter( _pod => _pod.containers.includes(logState.selectedContainer)).map( _pod => _pod.name)
+        let podNames = pods
+            .filter((_pod) => _pod.containers.includes(logState.selectedContainer))
+            .map((_pod) => _pod.name);
         if (podNames.length == 0) {
-            let containerOptions = pods[0].containers.map((_containerName, index) => ({name: _containerName, selected: index == 0}))
+            let containerOptions = pods[0].containers.map((_containerName, index) => ({
+                name: _containerName,
+                selected: index == 0,
+            }));
             setPodContainerOptions({
                 podOptions: podContainerOptions.podOptions,
-                containerOptions: containerOptions
-            })
-            return
+                containerOptions: containerOptions,
+            });
+            return;
         }
         setLogState({
             selectedPods: podNames,
             selectedContainer: logState.selectedContainer,
-            grepTokens: logState.grepTokens
-        })
-    }
+            grepTokens: logState.grepTokens,
+        });
+    };
 
     const handleContainerChange = (selectedContainer: string) => {
         setLogState({
             selectedPods: logState.selectedPods,
             selectedContainer: selectedContainer,
-            grepTokens: logState.grepTokens
-        })
-    }
+            grepTokens: logState.grepTokens,
+        });
+    };
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
             setLogState({
                 selectedPods: logState.selectedPods,
                 selectedContainer: logState.selectedContainer,
-                grepTokens: undefined
-            })
+                grepTokens: undefined,
+            });
             return;
         }
         const pipes = parsePipes(searchText);
@@ -130,9 +137,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
         setLogState({
             selectedPods: logState.selectedPods,
             selectedContainer: logState.selectedContainer,
-            grepTokens: tokens
-        })
-    }
+            grepTokens: tokens,
+        });
+    };
 
     const parsePipes = (expression: string): Array<string> => {
         const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p);
@@ -191,9 +198,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
 
-        let urls = logState.selectedPods.map(_pod => {
-                return getLogsURL(appDetails, _pod, Host, logState.selectedContainer);
-        })
+        let urls = logState.selectedPods.map((_pod) => {
+            return getLogsURL(appDetails, _pod, Host, logState.selectedContainer);
+        });
 
         workerRef.current['postMessage' as any]({
             type: 'start',
@@ -225,7 +232,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
         setLogSearchString(tempSearch);
     };
 
-
     useEffect(() => {
         if (selectedTab) {
             selectedTab(NodeDetailTab.LOGS, url);
@@ -239,7 +245,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
         fetchLogs();
 
         return () => stopWorker;
-    }, [logState])
+    }, [logState]);
 
     return isDeleted ? (
         <div>
@@ -288,11 +294,14 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                     <div style={{ minWidth: '200px' }}>
                                         <Select
                                             placeholder="Select Pod"
-                                            options={
-                                                podContainerOptions.podOptions.map(_pod => ({label: _pod.name, value: _pod.name}))
-                                            }
+                                            options={podContainerOptions.podOptions.map((_pod) => ({
+                                                label: _pod.name,
+                                                value: _pod.name,
+                                            }))}
                                             defaultValue={
-                                                podContainerOptions.podOptions.filter(_pod => _pod.selected).map(_pod => ({label: _pod.name, value: _pod.name}))[0]
+                                                podContainerOptions.podOptions
+                                                    .filter((_pod) => _pod.selected)
+                                                    .map((_pod) => ({ label: _pod.name, value: _pod.name }))[0]
                                             }
                                             onChange={(selected) => handlePodChange(selected.value)}
                                             styles={{
@@ -330,11 +339,17 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                 <div style={{ minWidth: '145px' }}>
                                     <Select
                                         placeholder="Select Containers"
-                                        options={
-                                            podContainerOptions.containerOptions.map(_container => ({label: _container.name, value: _container.name}))
-                                        }
+                                        options={podContainerOptions.containerOptions.map((_container) => ({
+                                            label: _container.name,
+                                            value: _container.name,
+                                        }))}
                                         defaultValue={
-                                            podContainerOptions.containerOptions.filter(_container => _container.selected).map(_container => ({label: _container.name, value: _container.name}))[0]
+                                            podContainerOptions.containerOptions
+                                                .filter((_container) => _container.selected)
+                                                .map((_container) => ({
+                                                    label: _container.name,
+                                                    value: _container.name,
+                                                }))[0]
                                         }
                                         onChange={(selected) => {
                                             handleContainerChange((selected as any).value as string);
@@ -389,7 +404,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             <CloseImage
                                 className="icon-dim-20 pointer"
                                 onClick={(e) => {
-                                    e.preventDefault()
+                                    e.preventDefault();
                                     handleSearchTextChange('');
                                     setTempSearch('');
                                 }}
@@ -479,7 +494,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
                     <MessageUI
                         icon={MsgUIType.NO_CONTAINER}
                         msg={`${
-                            (podContainerOptions?.containerOptions ?? []).length > 0 ? 'Select a container to view logs' : 'No container'
+                            (podContainerOptions?.containerOptions ?? []).length > 0
+                                ? 'Select a container to view logs'
+                                : 'No container'
                         }`}
                         size={32}
                     />
@@ -489,66 +506,87 @@ function LogsComponent({ selectedTab, isDeleted }) {
     );
 }
 
-function getInitialStateOfLogs(isLogAnalyzer: boolean, params: { actionName: string; podName: string; nodeType: string }, location: any): LogState {
+function getInitialStateOfLogs(
+    isLogAnalyzer: boolean,
+    params: { actionName: string; podName: string; nodeType: string },
+    location: any,
+): LogState {
     if (!isLogAnalyzer) {
         let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
-        const containers = IndexStore.getAllPods().filter(_pod => _pod.name == params.podName).flatMap(_pod => _pod.containers).sort();
+        const containers = IndexStore.getAllPods()
+            .filter((_pod) => _pod.name == params.podName)
+            .flatMap((_pod) => _pod.containers)
+            .sort();
 
         if (containers.length == 0) {
-            return
+            return;
         }
 
         if (!_selectedContainerName) {
-            _selectedContainerName = containers[0] as string
+            _selectedContainerName = containers[0] as string;
         }
 
         return {
             selectedPods: [params.podName],
             selectedContainer: _selectedContainerName,
-        } as LogState
+        } as LogState;
     } else {
         //In case of log analyzer by default we select all Pods
-        const pods = IndexStore.getAllPods().map(_pod => _pod.name);
+        const pods = IndexStore.getAllPods().map((_pod) => _pod.name);
         if (pods.length == 0) {
-            return
+            return;
         }
-        const containers = IndexStore.getAllPods()[0].containers.sort()
-        let _selectedContainerName: string = ''
+        const containers = IndexStore.getAllPods()[0].containers.sort();
+        let _selectedContainerName: string = '';
 
         if (containers.length > 0) {
-            _selectedContainerName = containers[0]
+            _selectedContainerName = containers[0];
         }
 
         return {
             selectedPods: pods,
             selectedContainer: _selectedContainerName,
-        } as LogState
+        } as LogState;
     }
 }
 
-function getInitialPodContainerOptions(isLogAnalyzer: boolean, params: { actionName: string; podName: string; nodeType: string } ): PodContainerOptions {
+function getInitialPodContainerOptions(
+    isLogAnalyzer: boolean,
+    params: { actionName: string; podName: string; nodeType: string },
+): PodContainerOptions {
     if (!isLogAnalyzer) {
-       let containerOptions = IndexStore.getAllPods().filter(_pod => _pod.name == params.podName)
-                            .flatMap(_pod => _pod.containers)
-                            .map((_container, index) => { return {name: _container, selected: index == 0}})
-        let podOptions = [{name: params.podName, selected: true}]
+        let containerOptions = IndexStore.getAllPods()
+            .filter((_pod) => _pod.name == params.podName)
+            .flatMap((_pod) => _pod.containers)
+            .map((_container, index) => {
+                return { name: _container, selected: index == 0 };
+            });
+        let podOptions = [{ name: params.podName, selected: true }];
         return {
             containerOptions: containerOptions,
-            podOptions: []
-        } as PodContainerOptions
+            podOptions: [],
+        } as PodContainerOptions;
     } else {
         let additionalPodOptions = [{ name: 'All pods', selected: true }];
         if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
             additionalPodOptions.push({ name: 'All new pods', selected: false });
             additionalPodOptions.push({ name: 'All old pods', selected: false });
         }
-        const podOptions = additionalPodOptions.concat(IndexStore.getAllPods().map(_pod => { return {name:_pod.name, selected: false} }));
-        const containerOptions = IndexStore.getAllPods()[0].containers.sort().map((_container, index) => { return {name: _container, selected: index == 0} })
-        console.log(containerOptions)
+        const podOptions = additionalPodOptions.concat(
+            IndexStore.getAllPods().map((_pod) => {
+                return { name: _pod.name, selected: false };
+            }),
+        );
+        const containerOptions = IndexStore.getAllPods()[0]
+            .containers.sort()
+            .map((_container, index) => {
+                return { name: _container, selected: index == 0 };
+            });
+        console.log(containerOptions);
         return {
             containerOptions: containerOptions,
-            podOptions: podOptions
-        } as PodContainerOptions
+            podOptions: podOptions,
+        } as PodContainerOptions;
     }
 }
 

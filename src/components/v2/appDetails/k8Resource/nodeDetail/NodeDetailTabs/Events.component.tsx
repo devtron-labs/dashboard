@@ -70,7 +70,9 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                         {events.map((event, index) => {
                                             return (
                                                 <tr
-                                                    className={`${index % 2 === 0 ? 'event__row-bc' : '' } no-border events-logs__events-table-row w-100 mono fs-13`}
+                                                    className={`${
+                                                        index % 2 === 0 ? 'event__row-bc' : ''
+                                                    } no-border events-logs__events-table-row w-100 mono fs-13`}
                                                     key={`eb_${index}`}
                                                 >
                                                     <td className="pl-20 pr-20">{event.reason}</td>
