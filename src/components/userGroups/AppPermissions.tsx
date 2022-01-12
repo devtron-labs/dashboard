@@ -429,7 +429,11 @@ function AppPermissionDetail({
 }: AppPermissionsDetailType) {
     return (
         <>
-            <legend>{accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? 'Direct ' : 'Manage '}permissions</legend>
+            <legend>
+                {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ?
+                'Manage permission for custom apps created using devtron' :
+                'Manage permission for helm apps deployed from devtron or outside devtron'}
+            </legend>
             <div
                 className="w-100 mb-26"
                 style={{
