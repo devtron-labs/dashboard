@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useSharedState } from '../../utils/useSharedState';
 
 export const StatusFilterButtonComponent: React.FC<{}> = ({}) => {
-
     const [tabs, setTabs] = useState([]);
     const [selectedTab, setSelectedTab] = useState('all');
     const params = useParams<{ envId: string; appId: string }>();
@@ -16,7 +15,6 @@ export const StatusFilterButtonComponent: React.FC<{}> = ({}) => {
     };
 
     useEffect(() => {
-        
         const nodeSubs = IndexStore.getAppDetailsNodesObservable().subscribe((nodes) => {
             if (nodes && nodes.length > 0) {
                 let allNodeCount: number = 0,

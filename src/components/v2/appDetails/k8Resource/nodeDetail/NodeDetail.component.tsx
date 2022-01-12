@@ -51,11 +51,9 @@ function NodeDetailComponent() {
         }
     };
 
-    const currentTab = applicationObjectTabs.filter(
-        (tab) => { 
-           return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6)
-       }
-    );
+    const currentTab = applicationObjectTabs.filter((tab) => {
+        return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6);
+    });
     const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false;
 
     return (
@@ -89,38 +87,38 @@ function NodeDetailComponent() {
                         })}{' '}
                 </>
             </div>
-                <Switch>
-                    <Route
-                        path={`${path}/${NodeDetailTab.MANIFEST}`}
-                        render={() => {
-                            return <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.EVENTS}`}
-                        render={() => {
-                            return <EventsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.LOGS}`}
-                        render={() => {
-                            return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted}  />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.SUMMARY}`}
-                        render={() => {
-                            return <SummaryComponent selectedTab={handleSelectedTab} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.TERMINAL}`}
-                        render={() => {
-                            return <TerminalComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                </Switch>
+            <Switch>
+                <Route
+                    path={`${path}/${NodeDetailTab.MANIFEST}`}
+                    render={() => {
+                        return <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.EVENTS}`}
+                    render={() => {
+                        return <EventsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.LOGS}`}
+                    render={() => {
+                        return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.SUMMARY}`}
+                    render={() => {
+                        return <SummaryComponent selectedTab={handleSelectedTab} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.TERMINAL}`}
+                    render={() => {
+                        return <TerminalComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+            </Switch>
         </React.Fragment>
     );
 }

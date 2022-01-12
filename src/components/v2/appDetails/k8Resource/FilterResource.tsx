@@ -1,14 +1,15 @@
-import React from 'react'
+import React from 'react';
 import IndexStore from '../index.store';
 import { StatusFilterButtonComponent } from './StatusFilterButton.component';
 
 export default function FilterResource() {
-
-    {/* ---for  later purpose---- */}
+    {
+        /* ---for  later purpose---- */
+    }
     // const handleFileterChange = (sName: string) => {
     //     IndexStore.updateFilterSearch(sName)
     // }
-    
+
     return (
         <div className="flexbox pr-20 w-100">
             {/* ---for  later purpose---- */}
@@ -22,5 +23,5 @@ export default function FilterResource() {
                 <StatusFilterButtonComponent />
             </div>
         </div>
-    )
+    );
 }

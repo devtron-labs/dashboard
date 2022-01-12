@@ -34,7 +34,6 @@ function NodeComponent() {
 
     useEffect(() => {
         if (params.nodeType) {
-
             let tableHeader: string[], _fcw: string;
 
             switch (params.nodeType) {
@@ -57,7 +56,7 @@ function NodeComponent() {
 
             const selectedNodesSub = IndexStore.getAppDetailsNodesObservable().subscribe(() => {
                 let _selectedNodes = IndexStore.getiNodesByKind(params.nodeType); //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
-             
+
                 // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
                 //     _selectedNodes = _selectedNodes.filter((node) => {
                 //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
@@ -125,7 +124,6 @@ function NodeComponent() {
         }
     };
 
-
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
@@ -164,43 +162,42 @@ function NodeComponent() {
                                         {getNodeStatus(node)}
                                     </div>
                                 </div>
-                                </div>
+                            </div>
 
-                                <div>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                        trigger="mouseenter click"
-                                    >
-                                        <Clipboard
-                                            className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                copyToClipboard(node?.name, () => setCopied(true));
+                            <div>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="bottom"
+                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                    trigger="mouseenter click"
+                                >
+                                    <Clipboard
+                                        className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            copyToClipboard(node?.name, () => setCopied(true));
+                                        }}
+                                    />
+                                </Tippy>
+                                {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                    return (
+                                        <a
+                                            key={'tab__' + index}
+                                            onClick={() => {
+                                                if (node.kind === NodeType.Containers) {
+                                                    handleActionTabClick(node['pNode'], kind, node.name);
+                                                } else {
+                                                    handleActionTabClick(node, kind);
+                                                }
                                             }}
-                                        />
-                                    </Tippy>
-                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                        return (
-                                            <a
-                                                key={'tab__' + index}
-                                                onClick={() => {
-                                                    if (node.kind === NodeType.Containers) {
-                                                        handleActionTabClick(node['pNode'], kind, node.name);
-                                                    } else {
-                                                        handleActionTabClick(node, kind);
-                                                    }
-                                                }}
-                                                className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
-                                            >
-                                                {kind}
-                                            </a>
-                                        );
-                                    })}
-                                </div>
-                            
+                                            className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+                                        >
+                                            {kind}
+                                        </a>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -253,7 +250,10 @@ function NodeComponent() {
     };
 
     return (
-        <div className="container-fluid" style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}>
+        <div
+            className="container-fluid"
+            style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
+        >
             {false ? (
                 <PodHeaderComponent callBack={setPodType} />
             ) : (

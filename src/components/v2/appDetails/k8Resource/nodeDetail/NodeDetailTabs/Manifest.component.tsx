@@ -117,13 +117,12 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         inherit: true,
         rules: [
             //@ts-ignore
-            { background: '#0B0F22' }
+            { background: '#0B0F22' },
         ],
         colors: {
             'editor.background': '#0B0F22',
-        }
+        },
     });
-
 
     return isDeleted ? (
         <div>

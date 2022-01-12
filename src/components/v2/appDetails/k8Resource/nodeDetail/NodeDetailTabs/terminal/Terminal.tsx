@@ -21,12 +21,11 @@ interface TerminalViewProps {
     setSocketConnection: (flag: SocketConnectionType) => void;
 }
 
-let socket = undefined
-let terminal = undefined
-let fitAddon = undefined
+let socket = undefined;
+let terminal = undefined;
+let fitAddon = undefined;
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
-    
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
@@ -60,8 +59,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
 
             return true;
-        })
-    }
+        });
+    };
 
     const postInitialize = (sessionId: string) => {
         let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
@@ -98,7 +97,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 _terminal.writeln('---------------------------------------------');
                 setIsReconnection(false);
 
-                if(firstMessageReceived){
+                if (firstMessageReceived) {
                     terminalViewProps.setSocketConnection('CONNECTED');
                 }
             }
@@ -123,13 +122,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     };
 
     const reconnect = () => {
-        terminalViewProps.setSocketConnection("DISCONNECTING");
+        terminalViewProps.setSocketConnection('DISCONNECTING');
         terminal?.reset();
 
         setTimeout(() => {
-            terminalViewProps.setSocketConnection("CONNECTING");
-        }, 100)
-    }
+            terminalViewProps.setSocketConnection('CONNECTING');
+        }, 100);
+    };
 
     useEffect(() => {
         if (terminalViewProps.socketConnection === 'DISCONNECTING') {
@@ -141,8 +140,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.socketConnection === 'CONNECTING') {
             getNewSession();
         }
-
-    }, [terminalViewProps.socketConnection])
+    }, [terminalViewProps.socketConnection]);
 
     useEffect(() => {
         ReactGA.event({
@@ -151,9 +149,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect()
-
-    }, [terminalViewProps.nodeName])
+        reconnect();
+    }, [terminalViewProps.nodeName]);
 
     useEffect(() => {
         ReactGA.event({
@@ -162,9 +159,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect()
-
-    }, [terminalViewProps.containerName])
+        reconnect();
+    }, [terminalViewProps.containerName]);
 
     useEffect(() => {
         ReactGA.event({
@@ -173,9 +169,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect()
-
-    }, [terminalViewProps.shell])
+        reconnect();
+    }, [terminalViewProps.shell]);
 
     useEffect(() => {
         if (terminalViewProps.terminalCleared) {
@@ -183,7 +178,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminal?.focus();
             terminalViewProps.setTerminalCleared(false);
         }
-    }, [terminalViewProps.terminalCleared])
+    }, [terminalViewProps.terminalCleared]);
 
     useEffect(() => {
         if (firstMessageReceived) {
@@ -191,30 +186,35 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminal.setOption('cursorBlink', true);
             terminalViewProps.setSocketConnection('CONNECTED');
         }
-    }, [firstMessageReceived])
+    }, [firstMessageReceived]);
 
     useEffect(() => {
-        if (!window.location.origin) { // Some browsers (mainly IE) do not have this property, so we need to build it manually...
+        if (!window.location.origin) {
+            // Some browsers (mainly IE) do not have this property, so we need to build it manually...
             // @ts-ignore
-            window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
+            window.location.origin =
+                window.location.protocol +
+                '//' +
+                window.location.hostname +
+                (window.location.port ? ':' + window.location.port : '');
         }
 
-        terminalViewProps.setSocketConnection("CONNECTING");
+        terminalViewProps.setSocketConnection('CONNECTING');
 
         ReactGA.event({
             category: 'Terminal',
             action: 'Open',
-        })
+        });
 
-        setGA_session_duration(moment())
+        setGA_session_duration(moment());
 
         return () => {
-            socket?.close()
-            terminal?.dispose()
+            socket?.close();
+            terminal?.dispose();
 
-            socket = undefined
-            terminal = undefined
-            fitAddon = undefined
+            socket = undefined;
+            terminal = undefined;
+            fitAddon = undefined;
 
             let duration = moment(ga_session_duration).fromNow();
 
@@ -258,7 +258,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .catch((error) => {
                 console.log('error while getNewSession ', error);
             });
-    }
+    };
 
     return (
         <div className="terminal-view" style={{ height: '100vh' }}>

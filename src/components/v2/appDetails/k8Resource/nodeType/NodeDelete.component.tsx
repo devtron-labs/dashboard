@@ -98,7 +98,7 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
             await deleteResource(apiParams);
             toast.success('Deletion initiated successfully.');
             // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
-            const _tabs = AppDetailsStore.getAppDetailsTabs()
+            const _tabs = AppDetailsStore.getAppDetailsTabs();
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
 
             appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTab(_tab.url));
