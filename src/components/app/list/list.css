@@ -55,17 +55,49 @@
     margin: 11px 0px;
 }
 
-.saved-filters {
-    padding: 6px 14px;
+.saved-filters__wrap {
+    padding: 6px 20px;
     display: flex;
     flex-wrap: wrap;
     background-color: var(--white);
     z-index: var(--app-list-header-index);
 }
 
-.app-list {
-    box-shadow: 0 1px 0 0 var(--N200);
-    margin-bottom: 1px;
+.saved-filter {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+    background-color: #f7fafc;
+    text-transform: lowercase;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: var(--N900);
+    cursor: default;
+    padding-left: 6px;
+    padding-right: 6px;
+    user-select: none;
+    margin: 0 12px 0 0;
+    min-height: 24px;
+}
+
+.saved-filter__close-btn {
+    font-size: 14px;
+    line-height: 1;
+    margin-left: 10px;
+    color: #72767a;
+    border: none;
+    padding: 1px;
+    background-color: #f7fafc;
+}
+
+.saved-filters__clear-btn{
+   margin: 0;
+   padding: 0;
 }
 
 .app-list__header {
@@ -430,10 +462,9 @@
 }
 
 .saved-filter-divider{
-    position: absolute;
-    height: 32px;
+    height: 24px;
     width: 1px;
-    background-color: #72767a;
+    background-color: var(--N200);
 }
 
 .cluster-select-message-strip{
