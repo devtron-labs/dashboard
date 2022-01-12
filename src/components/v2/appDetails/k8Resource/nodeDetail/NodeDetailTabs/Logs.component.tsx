@@ -209,6 +209,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     };
 
     const handleLogsSearch = (e) => {
+        e.preventDefault()
         if (e.key === 'Enter' || e.keyCode === 13) {
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');

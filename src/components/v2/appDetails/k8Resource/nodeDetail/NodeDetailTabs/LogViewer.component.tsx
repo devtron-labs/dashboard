@@ -75,7 +75,9 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     function handleSelectionChange() {
         copyToClipboard(terminal.current.getSelection());
-        setPopupText(true);
+        if (terminal.current.getSelection()) {
+            setPopupText(true);
+        }
     }
 
     useEffect(() => {
