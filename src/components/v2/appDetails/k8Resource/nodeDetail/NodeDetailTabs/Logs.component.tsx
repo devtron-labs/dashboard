@@ -191,7 +191,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const onLogsCleared = () => {
         setLogsCleared(true);
-        setTimeout(() => setLogsCleared(false), 1000);
+        setTimeout(() => setLogsCleared(false), 100);
     };
 
     const fetchLogs = () => {
@@ -209,6 +209,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     };
 
     const handleLogsSearch = (e) => {
+        e.preventDefault()
         if (e.key === 'Enter' || e.keyCode === 13) {
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
@@ -241,7 +242,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
-        onLogsCleared();
+        onLogsCleared()
         stopWorker();
         fetchLogs();
 
@@ -431,7 +432,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                     </form>
                 </div>
             </div>
-            {!logsCleared && logState.selectedContainer && logState.selectedPods.length > 0 && (
+            {logState.selectedContainer && logState.selectedPods.length > 0 && (
                 <div
                     style={{ gridColumn: '1 / span 2', background: '#0b0f22' }}
                     className="flex column log-viewer-container"
@@ -472,6 +473,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             subject={subject}
                             highlightString={highlightString}
                             rootClassName="event-logs__logs"
+                            reset={logsCleared}
                         />
                     </div>
 
